@@ -6,3 +6,4 @@ System.Management.Automation.dll
 Microsoft.PowerShell.ConsoleHost.dll
 winutil.exe.config
 winutil.pdb
+*.zip
