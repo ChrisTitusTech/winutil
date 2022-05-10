@@ -1,3 +1,8 @@
 
 ooshutup10.cfg
 OOSU10.exe
+*.exe
+System.Management.Automation.dll
+Microsoft.PowerShell.ConsoleHost.dll
+winutil.exe.config
+winutil.pdb
