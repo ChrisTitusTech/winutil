@@ -626,31 +626,30 @@ $WPFinstall.Add_Click({
     foreach ( $node in $wingetinstall )
     {
         Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
-        $wingetResult.Add("Installed $node `n")
+        $wingetResult.Add("$node`n")
     }
     $wingetResult.ToArray()
     $wingetResult | % { $_ } | Out-Host
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
 
+    # Popup after finished
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Installed Programs "
     $Messageboxbody = ($wingetResult)
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 
 })
 
 $WPFInstallUpgrade.Add_Click({
     Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
+    
     $ButtonType = [System.Windows.MessageBoxButton]::OK
-
     $MessageboxTitle = "Upgraded All Programs "
     $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
 #===========================================================================
@@ -1192,12 +1191,12 @@ $WPFtweaksbutton.Add_Click({
     Write-Host "Finished Removing Bloatware Apps"
     $WPFEssTweaksDeBloat.IsChecked = $false
     }
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Tweaks are Finished "
     $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 #===========================================================================
 # Undo All
@@ -1330,12 +1329,13 @@ $WPFundoall.Add_Click({
 	Write-Host "Done - Reverted to Stock Settings"
 
     Write-Host "Essential Undo Completed"
+
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Undo All"
     $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 #===========================================================================
 # Tab 3 - Config Buttons
@@ -1380,12 +1380,12 @@ $WPFFeatureInstall.Add_Click({
     nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
     Write-Host "NFS is now setup for user based NFS mounts"
  }
+ $ButtonType = [System.Windows.MessageBoxButton]::OK
  $MessageboxTitle = "All features are now installed "
  $Messageboxbody = ("Done")
+ $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
- $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
- [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+ [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
 $WPFPanelcontrol.Add_Click({
@@ -1599,12 +1599,12 @@ foreach ($service in $services) {
     
     Write-Host "Process complete. Please reboot your computer."
 
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Reset Windows Update "
     $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 $WPFUpdatesdisable.Add_Click({
  # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1
@@ -1717,12 +1717,13 @@ $WPFUpdatessecurity.Add_Click({
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
+    
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
     $MessageboxTitle = "Set Security Updates"
     $Messageboxbody = ("Recommended Update settings loaded")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    $MEssageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$messageicon)
+    [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
 #===========================================================================

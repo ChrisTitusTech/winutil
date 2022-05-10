@@ -1,4 +1,10 @@
-Add-Type –assemblyName PresentationFramework
+<#
+.NOTES
+   Author      : Chris Titus @christitustech
+   GitHub      : https://github.com/ChrisTitusTech
+    Version 0.0.2
+    Muilti-Thread and Runspaces addition
+#>
  
 #CREATE HASHTABLE AND RUNSPACE FOR GUI
 $syncHash = [hashtable]::Synchronized(@{})
