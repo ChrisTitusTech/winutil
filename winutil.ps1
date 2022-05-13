@@ -1036,6 +1036,7 @@ $WPFtweaksbutton.Add_Click({
         $WPFEssTweaksWifi.IsChecked = $false
     }
     If ( $WPFMiscTweaksLapPower.IsChecked -eq $true ) {
+        If(!(Test-Path "HKCU:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling")){New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerThrottling"}
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000000
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000001
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -1049,6 +1050,7 @@ $WPFtweaksbutton.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $false
         }
     If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
+        If(!(Test-Path "HKCU:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling")){New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerThrottling"}
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000001
         Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000000
         $WPFMiscTweaksPower.IsChecked = $false 
