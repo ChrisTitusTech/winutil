@@ -131,6 +131,7 @@ $inputXML = @"
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
 							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
 							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
+							<CheckBox Name="Installsteelseriesgg" Content="SteelSeries GG" Margin="5,0"/>
 							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
 							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
@@ -570,6 +571,10 @@ $WPFinstall.Add_Click({
     If ( $WPFInstallrufus.IsChecked -eq $true ) { 
        $wingetinstall.Add("Rufus.Rufus")
         $WPFInstallrufus.IsChecked = $false
+    }   
+    If ( $WPFInstallsteelseriesgg.IsChecked -eq $true ) { 
+       $wingetinstall.Add("SteelSeries.GG")
+        $WPFInstallsteelseriesgg.IsChecked = $false
     }   
     If ( $WPFInstallsignal.IsChecked -eq $true ) { 
         $wingetinstall.Add("OpenWhisperSystems.Signal")
