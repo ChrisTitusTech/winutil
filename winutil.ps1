@@ -135,6 +135,7 @@ $inputXML = @"
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
 							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+							<CheckBox Name="Installveracrypt" Content="VeraCrypt" Margin="5,0"/>
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
 
@@ -434,6 +435,10 @@ $WPFinstall.Add_Click({
     If ( $WPFInstallterminal.IsChecked -eq $true ) { 
        $wingetinstall.Add("Microsoft.WindowsTerminal")
         $WPFInstallterminal.IsChecked = $false
+    }
+    If ( $WPFInstallveracrypt.IsChecked -eq $true ) { 
+       $wingetinstall.Add("IDRIX.VeraCrypt")
+        $WPFInstallveracrypt.IsChecked = $false
     }
     If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
        $wingetinstall.Add("TranslucentTB.TranslucentTB")
