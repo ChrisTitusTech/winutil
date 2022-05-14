@@ -205,6 +205,7 @@ $inputXML = @"
 							<Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
 							<Label Content="Fixes" FontSize="16"/>
 							<Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
+                            <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="DISM" Margin="20,5,20,0" Padding="10"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
@@ -1388,8 +1389,12 @@ $WPFFeatureInstall.Add_Click({
  [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
+$WPFPanelDISM.Add_Click({
+Start-Process PowerShell -ArgumentList 'DISM /Online /Cleanup-Image /Restorehealth; Read-Host "Press Enter"' -verb runas
+})
+
 $WPFPanelcontrol.Add_Click({
- cmd /c control
+cmd /c control
 })
 $WPFPanelnetwork.Add_Click({
 cmd /c ncpa.cpl
@@ -1513,6 +1518,8 @@ foreach ($service in $services) {
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
+
+
     
     Write-Host "2. Remove QMGR Data file..." 
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
