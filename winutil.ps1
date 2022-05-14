@@ -125,6 +125,7 @@ $inputXML = @"
 							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
+							<CheckBox Name="Installghub" Content="Logitech G HUB" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
 							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
@@ -529,6 +530,10 @@ $WPFinstall.Add_Click({
     If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
        $wingetinstall.Add("KeePassXCTeam.KeePassXC")
         $WPFInstallkeepass.IsChecked = $false
+    }              
+    If ( $WPFInstallghub.IsChecked -eq $true ) { 
+       $wingetinstall.Add("Logitech.GHUB")
+        $WPFInstallghub.IsChecked = $false
     }              
     If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
        $wingetinstall.Add("LibreWolf.LibreWolf")
