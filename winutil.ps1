@@ -231,7 +231,7 @@ $inputXML = @"
 							<Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Margin="10,5">
-							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in buisness environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
+							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in business environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Margin="10,5">
