@@ -205,7 +205,7 @@ $inputXML = @"
 							<Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
 							<Label Content="Fixes" FontSize="16"/>
 							<Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
-                            <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="DISM" Margin="20,5,20,0" Padding="10"/>
+                            <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="Scan for Corruption" Margin="20,5,20,0" Padding="10"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
@@ -1390,7 +1390,11 @@ $WPFFeatureInstall.Add_Click({
 })
 
 $WPFPanelDISM.Add_Click({
-Start-Process PowerShell -ArgumentList 'DISM /Online /Cleanup-Image /Restorehealth; Read-Host "Press Enter"' -verb runas
+Start-Process PowerShell -ArgumentList 'Write-Host "Chkdsk" -ForegroundColor Green; Chkdsk; 
+Write-Host "SFC - 1st scan" -ForegroundColor Green; sfc /scannow;
+Write-Host "DISM" -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+Write-Host "SFC - 2nd scan" -ForegroundColor Green; sfc /scannow; 
+Read-Host "Press Enter"' -verb runas
 })
 
 $WPFPanelcontrol.Add_Click({
