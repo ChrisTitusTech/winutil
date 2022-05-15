@@ -253,15 +253,16 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace
 [xml]$XAML = $inputXML
 #Read XAML
  
-    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
-  try{$Form=[Windows.Markup.XamlReader]::Load( $reader )}
+$reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+try{$Form=[Windows.Markup.XamlReader]::Load( $reader )}
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     write-host $error[0].Exception.Message -ForegroundColor Red
-    if ($error[0].Exception.Message -like "*button*"){
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
+    If ($error[0].Exception.Message -like "*button*") {
+        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
+    }
 }
-catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+catch{# If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
         }
  
@@ -272,7 +273,7 @@ catch{#if it broke some other way <img draggable="false" role="img" class="emoji
 $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name)}
  
 Function Get-FormVariables{
-if ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
+If ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
 write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
 get-variable WPF*
 }
@@ -1168,7 +1169,7 @@ $WPFtweaksbutton.Add_Click({
         "*AdobePhotoshopExpress*"
         "*HotspotShieldFreeVPN*"
 
-        #Optional: Typically not removed but you can if you need to for some reason
+        #Optional: Typically not removed but you can if you need to
         "*Microsoft.Advertising.Xaml*"
         #"*Microsoft.MSPaint*"
         #"*Microsoft.MicrosoftStickyNotes*"
@@ -1431,7 +1432,7 @@ function New-Directory($path) {
     $p, $components = $path -split '[\\/]'
     $components | ForEach-Object {
         $p = "$p\$_"
-        if (!(Test-Path $p)) {
+        If (!(Test-Path $p)) {
             New-Item -ItemType Directory $p | Out-Null
         }
     }
@@ -1468,7 +1469,7 @@ New-ItemProperty `
 # 1: PCs on my local network
 # 3: PCs on my local network, and PCs on the Internet
 $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-if (Test-Path $deliveryOptimizationPath) {
+If (Test-Path $deliveryOptimizationPath) {
     New-ItemProperty `
         -Path $deliveryOptimizationPath `
         -Name DODownloadMode `
@@ -1578,10 +1579,9 @@ foreach ($service in $services) {
     Get-BitsTransfer | Remove-BitsTransfer 
     
     Write-Host "10) Attempting to install the Windows Update Agent..." 
-    if($arch -eq 64){ 
+    If ($arch -eq 64) { 
         wusa Windows8-RT-KB2937636-x64 /quiet 
-    } 
-    else{ 
+    } else { 
         wusa Windows8-RT-KB2937636-x86 /quiet 
     } 
     
@@ -1627,7 +1627,7 @@ function New-Directory($path) {
     $p, $components = $path -split '[\\/]'
     $components | ForEach-Object {
         $p = "$p\$_"
-        if (!(Test-Path $p)) {
+        If (!(Test-Path $p)) {
             New-Item -ItemType Directory $p | Out-Null
         }
     }
@@ -1664,7 +1664,7 @@ New-ItemProperty `
 # 1: PCs on my local network
 # 3: PCs on my local network, and PCs on the Internet
 $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-if (Test-Path $deliveryOptimizationPath) {
+If (Test-Path $deliveryOptimizationPath) {
     New-ItemProperty `
         -Path $deliveryOptimizationPath `
         -Name DODownloadMode `
