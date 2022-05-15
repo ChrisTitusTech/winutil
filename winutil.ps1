@@ -120,6 +120,7 @@ $inputXML = @"
 							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
 							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
 							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
+							<CheckBox Name="Installcorsairicue" Content="Corsair iCUE" Margin="5,0"/>
 							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
 							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
@@ -481,6 +482,10 @@ $WPFinstall.Add_Click({
        $wingetinstall.Add("eloston.ungoogled-chromium")
         $WPFInstallchromium.IsChecked = $false
     }             
+    If ( $WPFInstallcorsairicue.IsChecked -eq $true ) { 
+       $wingetinstall.Add("Corsair.iCUE.4")
+        $WPFInstallcorsairicue.IsChecked = $false
+    }                            
     If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
        $wingetinstall.Add("CPUID.CPU-Z")
         $WPFInstallcpuz.IsChecked = $false
