@@ -75,7 +75,7 @@ $inputXML = @"
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
 
-							<Label Content="Document" FontSize="16" Margin="5,0"/>
+							<Label Content="Documents" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
 							<CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
 							<CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
@@ -135,7 +135,7 @@ $inputXML = @"
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
 							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
-							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
+							<Button Name="install" Background="AliceBlue" Content="Start Installs" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
 
 						</StackPanel>
