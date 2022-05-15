@@ -1506,7 +1506,8 @@ foreach ($service in $services) {
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
-    
+})
+$WPFFixesUpdate.Add_Click({
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
     Write-Host "1. Stopping Windows Update Services..." 
     Stop-Service -Name BITS 
