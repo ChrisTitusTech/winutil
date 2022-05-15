@@ -86,6 +86,7 @@ $inputXML = @"
 							<CheckBox Name="Installbluestacks" Content="BlueStacks" Margin="5,0"/>
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
+							<CheckBox Name="Installleagueoflegendsna" Content="League of Legends (NA)" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
 
 							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
@@ -513,6 +514,10 @@ $WPFinstall.Add_Click({
     If ( $WPFInstallgog.IsChecked -eq $true ) { 
        $wingetinstall.Add("GOG.Galaxy")
         $WPFInstallgog.IsChecked = $false
+    }                  
+    If ( $WPFInstallleagueoflegendsna.IsChecked -eq $true ) { 
+       $wingetinstall.Add("RiotGames.LeagueOfLegends.NA")
+        $WPFInstallleagueoflegendsna.IsChecked = $false
     }                  
     If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
        $wingetinstall.Add("TechPowerUp.GPU-Z")
