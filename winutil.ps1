@@ -83,6 +83,7 @@ $inputXML = @"
 							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
 
 							<Label Content="Games" FontSize="16" Margin="5,0"/>
+							<CheckBox Name="Installbluestacks" Content="BlueStacks" Margin="5,0"/>
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
@@ -488,6 +489,10 @@ $WPFinstall.Add_Click({
        $wingetinstall.Add("File-New-Project.EarTrumpet")
         $WPFInstalleartrumpet.IsChecked = $false
     }           
+    If ( $WPFInstallbluestacks.IsChecked -eq $true ) { 
+       $wingetinstall.Add("BlueStack.BlueStacks")
+        $WPFInstallbluestacks.IsChecked = $false
+    }                                      
     If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
        $wingetinstall.Add("EpicGames.EpicGamesLauncher")
         $WPFInstallepicgames.IsChecked = $false
