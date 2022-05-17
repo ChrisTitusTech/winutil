@@ -335,6 +335,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             "Paneluser" {cmd /c "control userpasswords2"}
             "Updatesdefault" {Invoke-Runspace $Updatesdefault}
             "Updatesdisable" {Invoke-Runspace $Updatesdisable}
+            "Updatessecurity" {Invoke-Runspace $Updatessecurity}
         }
     }
 
@@ -1559,7 +1560,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         }
 
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatessecurity.Content = "Running"},"Normal")
-        [System.Windows.MessageBox]::Show("Updates Disable",'I am going to install the disable Updates',"OK","Info")
+        [System.Windows.MessageBox]::Show("Updates Security",'I am going to install the Security Updates',"OK","Info")
 
         <#TODO Make sure this runs in a runspace and elevates to an admin prompt
         Write-Host "Disabling driver offering through Windows Update..."
