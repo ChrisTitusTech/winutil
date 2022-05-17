@@ -196,6 +196,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
         }
+        If ( $WPFInstallveracrypt.IsChecked -eq $true ) { 
+            $wingetinstall.Add("IDRIX.VeraCrypt")
+            $WPFInstallveracrypt.IsChecked = $false
+        }
         If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
             $wingetinstall.Add("TranslucentTB.TranslucentTB")
             $WPFInstallttaskbar.IsChecked = $false
