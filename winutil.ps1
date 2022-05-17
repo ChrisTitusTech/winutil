@@ -620,7 +620,7 @@ $WPFinstall.Add_Click({
     }    
 
     # If Winget isn't Installed, Open MS Store Window to Install
-    if (!Get-AppPackage -name 'Microsoft.DesktopAppInstaller') {
+    if (!(Get-AppPackage -name 'Microsoft.DesktopAppInstaller')) {
         Start-Process "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1"
         $nid = (Get-Process AppInstaller).Id; Wait-Process -Id $nid
     }
