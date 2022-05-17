@@ -42,6 +42,12 @@ Function Get-FormVariables {
 Get-FormVariables
 
 #===========================================================================
+# Global Variables
+#===========================================================================
+$AppTitle = "Chris Titus Tech's Windows Utility"
+
+
+#===========================================================================
 # Navigation Controls
 #===========================================================================
 
@@ -433,31 +439,51 @@ $WPFinstall.Add_Click({
         # Define Output variable
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
         foreach ( $node in $wingetinstall ) {
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
-            $wingetResult.Add("$node`n")
+            try {
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
+                $wingetResult.Add("$node`n")
+            }
+            catch [System.InvalidOperationException] {
+                Write-Warning "Allow Yes on User Access Control to Install"
+            }
+            catch {
+                Write-Error $_.Exception
+            }
         }
         $wingetResult.ToArray()
         $wingetResult | % { $_ } | Out-Host
 
         # Popup after finished
         $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Installed Programs "
-        $Messageboxbody = ($wingetResult)
+        if ($wingetResult -ne "") {
+            $Messageboxbody = "Installed Programs `n$($wingetResult)"
+        }
+        else {
+            $Messageboxbody = "No Program(s) are installed"
+        }
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
 
     })
 
 $WPFInstallUpgrade.Add_Click({
-        Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
-    
+        $isUpgradeSuccess = $false
+        try {
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
+            $isUpgradeSuccess = $true
+        }
+        catch [System.InvalidOperationException] {
+            Write-Warning "Allow Yes on User Access Control to Upgrade"
+        }
+        catch {
+            Write-Error $_.Exception
+        }
         $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Upgraded All Programs "
-        $Messageboxbody = ("Done")
+        $Messageboxbody = if($isUpgradeSuccess) {"Upgrade Done"} else {"Upgrade was not succesful"}
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
     })
 
 #===========================================================================
