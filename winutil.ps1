@@ -378,6 +378,49 @@ $WPFinstall.Add_Click({
         $WPFInstallzoom.IsChecked = $false
     }    
 
+    # Check if winget is installed
+    Write-Host "Checking if Winget is Installed..."
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){ #Checks if winget executable exists and if the Windows Version is 1809 or higher
+        Write-Host "Winget Already Installed"
+    }else{
+        if(((((Get-ComputerInfo).OSName.IndexOf("LTSC")) -ne -1) -or ((Get-ComputerInfo).OSName.IndexOf("Server") -ne -1)) -and (((Get-ComputerInfo).WindowsVersion) -ge "1809")){#Checks if Windows edition is LTSC/Server 2019+
+            #Manually Installing Winget
+            Write-Host "Running Alternative Installer for LTSC/Server Editions"
+
+            #Download Needed Files
+            Write-Host "Downloading Needed Files..."
+            Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "./Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "./Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+            Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "./b0a0692da1034339b76dce1c298a1e42_License1.xml"
+
+            #Installing Packages
+            Write-Host "Installing Packages..."
+            Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
+            Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath ".\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+            Write-Host "winget Installed (Reboot might be required before winget will work)"
+
+            #Sleep for 5 seconds to maximize chance that winget will work without reboot
+            Write-Host "Pausing for 5 seconds to maximize chance that winget will work without reboot"
+            Start-Sleep -s 5
+
+            #Removing no longer needed Files
+            Write-Host "Removing no longer needed Files..."
+            Remove-Item -Path ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+            Remove-Item -Path ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+            Remove-Item -Path ".\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+            Write-Host "Removed Files that are no longer needed"
+        }elseif(((Get-ComputerInfo).WindowsVersion) -lt "1809"){ #Checks if Windows Version is too old for winget
+            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+        }else{
+            #Installing Winget from the Microsoft Store
+    	    Write-Host "Winget not found, installing it now."
+    	    Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+    	    $nid = (Get-Process AppInstaller).Id
+    	    Wait-Process -Id $nid
+    	    Write-Host "Winget Installed"
+        }
+    }
+
     # Install all winget programs in new window
     $wingetinstall.ToArray()
     # Define Output variable
@@ -1145,8 +1188,16 @@ $WPFFeatureInstall.Add_Click({
  [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
+$WPFPanelDISM.Add_Click({
+Start-Process PowerShell -ArgumentList 'Write-Host "Chkdsk" -ForegroundColor Green; Chkdsk; 
+Write-Host "SFC - 1st scan" -ForegroundColor Green; sfc /scannow;
+Write-Host "DISM" -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+Write-Host "SFC - 2nd scan" -ForegroundColor Green; sfc /scannow; 
+Read-Host "Press Enter"' -verb runas
+})
+
 $WPFPanelcontrol.Add_Click({
- cmd /c control
+cmd /c control
 })
 $WPFPanelnetwork.Add_Click({
 cmd /c ncpa.cpl
@@ -1263,13 +1314,16 @@ foreach ($service in $services) {
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
-    
+})
+$WPFFixesUpdate.Add_Click({
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
     Write-Host "1. Stopping Windows Update Services..." 
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
+
+
     
     Write-Host "2. Remove QMGR Data file..." 
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
