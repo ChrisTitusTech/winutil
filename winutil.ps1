@@ -245,6 +245,10 @@ $WPFinstall.Add_Click({
         If ( $WPFInstalleartrumpet.IsChecked -eq $true ) { 
             $wingetinstall.Add("File-New-Project.EarTrumpet")
             $WPFInstalleartrumpet.IsChecked = $false
+        }
+        If ( $WPFInstallbluestacks.IsChecked -eq $true ) { 
+            $wingetinstall.Add("BlueStack.BlueStacks")
+            $WPFInstallbluestacks.IsChecked = $false
         }           
         If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
             $wingetinstall.Add("EpicGames.EpicGamesLauncher")
