@@ -289,6 +289,10 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
             $wingetinstall.Add("KeePassXCTeam.KeePassXC")
             $WPFInstallkeepass.IsChecked = $false
+        }
+        If ( $WPFInstallghub.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Logitech.GHUB")
+            $WPFInstallghub.IsChecked = $false
         }              
         If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
             $wingetinstall.Add("LibreWolf.LibreWolf")
