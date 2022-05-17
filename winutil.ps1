@@ -1189,8 +1189,16 @@ $WPFFeatureInstall.Add_Click({
  [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 })
 
+$WPFPanelDISM.Add_Click({
+Start-Process PowerShell -ArgumentList 'Write-Host "Chkdsk" -ForegroundColor Green; Chkdsk; 
+Write-Host "SFC - 1st scan" -ForegroundColor Green; sfc /scannow;
+Write-Host "DISM" -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+Write-Host "SFC - 2nd scan" -ForegroundColor Green; sfc /scannow; 
+Read-Host "Press Enter"' -verb runas
+})
+
 $WPFPanelcontrol.Add_Click({
- cmd /c control
+cmd /c control
 })
 $WPFPanelnetwork.Add_Click({
 cmd /c ncpa.cpl
@@ -1307,13 +1315,16 @@ foreach ($service in $services) {
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
-    
+})
+$WPFFixesUpdate.Add_Click({
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
     Write-Host "1. Stopping Windows Update Services..." 
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
+
+
     
     Write-Host "2. Remove QMGR Data file..." 
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
