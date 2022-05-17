@@ -5,263 +5,24 @@
     Version 0.0.1
 #>
 
-$inputXML = @"
-<Window x:Class="WinUtility.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WinUtility"
-        mc:Ignorable="d"
-        Background="#777777"
-        Title="Chris Titus Tech's Windows Utility" Height="533" Width="786">
-	<Viewbox>
-		<Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="3*"/>
-				<ColumnDefinition Width="7*"/>
-			</Grid.ColumnDefinitions>
-			<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0">
-				<Image Height="200" Width="200" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-				<Button Content="Install" VerticalAlignment="Top" Height="40" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
-				<Button Content="Tweaks" VerticalAlignment="Top" Height="40" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
-				<Button Content="Config" VerticalAlignment="Top" Height="40" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
-				<Button Content="Updates" VerticalAlignment="Top" Height="40" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
-			</StackPanel>
-			<TabControl Grid.Column="1" Padding="-1" Name="TabNav" SelectedIndex="0">
-				<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
-					<Grid Background="#222222">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
-							<Label Content="Browsers" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installbrave" Content="Brave" Margin="5,0"/>
-							<CheckBox Name="Installchrome" Content="Google Chrome" Margin="5,0"/>
-							<CheckBox Name="Installchromium" Content="Un-Googled Chromium" Margin="5,0"/>
-							<CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
-							<CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
-							<CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
+# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
-							<Label Content="Communications" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
-							<CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
-							<CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
-							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
-							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
-							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
-							<CheckBox Name="Installteams" Content="Microsoft Teams" Margin="5,0"/>
-							<CheckBox Name="Installzoom" Content="Zoom Video Conference" Margin="5,0"/>
-							
-
-							<Label Content="Development" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
-							<CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-							<CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
-							<CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
-							<CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
-							<CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-							<CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
-							<CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-							<CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
-							<CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
-							<CheckBox Name="Installvisualstudio" Content="Visual Studio 2022 Community" Margin="5,0"/>
-							<CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-							<CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
-
-							
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
-
-							<Label Content="Document" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
-							<CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
-							<CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
-							<CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
-							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
-
-							<Label Content="Games" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
-							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
-
-							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-							<CheckBox Name="Installmremoteng" Content="mRemoteNG" Margin="5,0"/>
-							<CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
-							<CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
-							<CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
-
-							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
-							<CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
-							<CheckBox Name="Installeartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
-							<CheckBox Name="Installflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
-							<CheckBox Name="Installgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
-							<CheckBox Name="Installgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
-							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
-							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
-							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
-							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installspotify" Content="Spotify" Margin="5,0"/>
-							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
-							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
-							<Label Content="Utilities" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
-							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
-							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
-							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
-							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
-							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
-							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
-							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
-							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
-							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
-							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
-							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
-							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
-							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
-							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
-							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
-							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
-							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
-							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
-							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
-
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Tweaks" Visibility="Collapsed" Name="Tab2">
-					<Grid Background="#333333">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="1*"/>
-							<RowDefinition Height="6*"/>
-						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2">
-							<Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
-							<Button Name="desktop" Content="Desktop" Margin="7"/>
-							<Button Name="laptop" Content="Laptop" Margin="7"/>
-							<Button Name="minimal" Content="Minimal" Margin="7"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
-							<Label FontSize="16" Content="Essential Tweaks"/>
-							<CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0"/>
-							<CheckBox Name="EssTweaksOO" Content="Run O and O Shutup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0"/>
-							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
-							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0"/>
-							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0"/>
-
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
-							<Label FontSize="16" Content="Misc. Tweaks"/>
-							<CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
-
-							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
-							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Config" Visibility="Collapsed" Name="Tab3">
-					<Grid Background="#444444">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
-							<Label Content="Features" FontSize="16"/>
-							<CheckBox Name="Featuresdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
-							<CheckBox Name="Featureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
-							<CheckBox Name="Featureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
-							<CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
-							<CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
-							<Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
-							<Label Content="Fixes" FontSize="16"/>
-							<Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
-							<Label Content="Legacy Windows Panels" FontSize="16"/>
-							<Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" Margin="20,5,20,5" Padding="10"/>
-							<Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" Margin="20,0,20,5" Padding="10"/>
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Updates" Visibility="Collapsed" Name="Tab4">
-					<Grid Background="#555555">
-						<Grid.RowDefinitions>
-							<RowDefinition/>
-							<RowDefinition/>
-							<RowDefinition/>
-						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Margin="10,5">
-
-							<TextBlock Text="This is the default settings that come with Windows. No modifications are made and will remove any custom windows update settings." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Margin="10,5">
-							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in buisness environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Margin="10,5">
-							<TextBlock Text="This completely disables ALL Windows Updates and is NOT RECOMMENDED. You system will be easier to hack and infect without security updates. However, it can be suitable if you use your system for a select purpose and do not actively browse the internet." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-
-					</Grid>
-				</TabItem>
-			</TabControl>
-		</Grid>
-	</Viewbox>
-</Window>
-
-"@
- 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
  
-    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
-  try{$Form=[Windows.Markup.XamlReader]::Load( $reader )}
+$reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+try{$Form=[Windows.Markup.XamlReader]::Load( $reader )}
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     write-host $error[0].Exception.Message -ForegroundColor Red
-    if ($error[0].Exception.Message -like "*button*"){
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
+    If ($error[0].Exception.Message -like "*button*") {
+        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
+    }
 }
-catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+catch{# If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
         }
  
@@ -272,7 +33,7 @@ catch{#if it broke some other way <img draggable="false" role="img" class="emoji
 $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name)}
  
 Function Get-FormVariables{
-if ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
+If ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
 write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
 get-variable WPF*
 }
@@ -309,7 +70,7 @@ $WPFTab4BT.Add_Click({
     })
 
 #===========================================================================
-# Install Tab1
+# Tab 1 - Install
 #===========================================================================
 $WPFinstall.Add_Click({
     $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
@@ -318,304 +79,302 @@ $WPFinstall.Add_Click({
         $WPFInstalladobe.IsChecked = $false
     }
     If ( $WPFInstalladvancedip.IsChecked -eq $true ) { 
-	   $wingetinstall.Add("Famatech.AdvancedIPScanner")
-       $WPFInstalladvancedip.IsChecked = $false
+	    $wingetinstall.Add("Famatech.AdvancedIPScanner")
+        $WPFInstalladvancedip.IsChecked = $false
     }
     If ( $WPFInstallatom.IsChecked -eq $true ) { 
         $wingetinstall.Add("GitHub.Atom")
         $WPFInstallatom.IsChecked = $false
-     }
-     If ( $WPFInstallaudacity.IsChecked -eq $true ) { 
-         $wingetinstall.Add("Audacity.Audacity")
-         $WPFInstallaudacity.IsChecked = $false
-      }
+    }
+    If ( $WPFInstallaudacity.IsChecked -eq $true ) { 
+        $wingetinstall.Add("Audacity.Audacity")
+        $WPFInstallaudacity.IsChecked = $false
+    }
     If ( $WPFInstallautohotkey.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Lexikos.AutoHotkey")
+        $wingetinstall.Add("Lexikos.AutoHotkey")
         $WPFInstallautohotkey.IsChecked = $false
     }  
     If ( $WPFInstallbrave.IsChecked -eq $true ) { 
-       $wingetinstall.Add("BraveSoftware.BraveBrowser")
+        $wingetinstall.Add("BraveSoftware.BraveBrowser")
         $WPFInstallbrave.IsChecked = $false
     }
     If ( $WPFInstallchrome.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Google.Chrome")
+        $wingetinstall.Add("Google.Chrome")
         $WPFInstallchrome.IsChecked = $false
     }
     If ( $WPFInstalldiscord.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Discord.Discord")
+        $wingetinstall.Add("Discord.Discord")
         $WPFInstalldiscord.IsChecked = $false
     }
     If ( $WPFInstallesearch.IsChecked -eq $true ) { 
-       $wingetinstall.Add("voidtools.Everything --source winget")
+        $wingetinstall.Add("voidtools.Everything --source winget")
         $WPFInstallesearch.IsChecked = $false
     }
     If ( $WPFInstalletcher.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Balena.Etcher")
+        $wingetinstall.Add("Balena.Etcher")
         $WPFInstalletcher.IsChecked = $false
     }
     If ( $WPFInstallfirefox.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Mozilla.Firefox")
+        $wingetinstall.Add("Mozilla.Firefox")
         $WPFInstallfirefox.IsChecked = $false
     }
     If ( $WPFInstallgimp.IsChecked -eq $true ) { 
-       $wingetinstall.Add("GIMP.GIMP")
+        $wingetinstall.Add("GIMP.GIMP")
         $WPFInstallgimp.IsChecked = $false
     }
     If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Git.Git")
-       $wingetinstall.Add("GitHub.GitHubDesktop")
+        $wingetinstall.Add("Git.Git")
+        $wingetinstall.Add("GitHub.GitHubDesktop")
         $WPFInstallgithubdesktop.IsChecked = $false
     }
     If ( $WPFInstallimageglass.IsChecked -eq $true ) { 
         $wingetinstall.Add("DuongDieuPhap.ImageGlass")
-         $WPFInstallimageglass.IsChecked = $false
-     }
+        $WPFInstallimageglass.IsChecked = $false
+    }
     If ( $WPFInstalljava8.IsChecked -eq $true ) { 
         $wingetinstall.Add("AdoptOpenJDK.OpenJDK.8")
-         $WPFInstalljava8.IsChecked = $false
-     }
-     If ( $WPFInstalljava16.IsChecked -eq $true ) { 
+        $WPFInstalljava8.IsChecked = $false
+    }
+    If ( $WPFInstalljava16.IsChecked -eq $true ) { 
         $wingetinstall.Add("AdoptOpenJDK.OpenJDK.16")
-         $WPFInstalljava16.IsChecked = $false
-     }
-     If ( $WPFInstalljava18.IsChecked -eq $true ) { 
+        $WPFInstalljava16.IsChecked = $false
+    }
+    If ( $WPFInstalljava18.IsChecked -eq $true ) { 
         $wingetinstall.Add("Oracle.JDK.18")
-         $WPFInstalljava18.IsChecked = $false
-     }
-     If ( $WPFInstalljetbrains.IsChecked -eq $true ) { 
+        $WPFInstalljava18.IsChecked = $false
+    }
+    If ( $WPFInstalljetbrains.IsChecked -eq $true ) { 
         $wingetinstall.Add("JetBrains.Toolbox")
-         $WPFInstalljetbrains.IsChecked = $false
-     } 
-    
+        $WPFInstalljetbrains.IsChecked = $false
+    }
     If ( $WPFInstallmpc.IsChecked -eq $true ) { 
-       $wingetinstall.Add("clsid2.mpc-hc")
+        $wingetinstall.Add("clsid2.mpc-hc")
         $WPFInstallmpc.IsChecked = $false
     }
     If ( $WPFInstallnodejs.IsChecked -eq $true ) { 
         $wingetinstall.Add("OpenJS.NodeJS")
-         $WPFInstallnodejs.IsChecked = $false
-     }
-     If ( $WPFInstallnodejslts.IsChecked -eq $true ) { 
+        $WPFInstallnodejs.IsChecked = $false
+    }
+    If ( $WPFInstallnodejslts.IsChecked -eq $true ) { 
         $wingetinstall.Add("OpenJS.NodeJS.LTS")
-         $WPFInstallnodejslts.IsChecked = $false
-     }
+        $WPFInstallnodejslts.IsChecked = $false
+    }
     If ( $WPFInstallnotepadplus.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Notepad++.Notepad++")
+        $wingetinstall.Add("Notepad++.Notepad++")
         $WPFInstallnotepadplus.IsChecked = $false
     }
     If ( $WPFInstallpowertoys.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Microsoft.PowerToys")
+        $wingetinstall.Add("Microsoft.PowerToys")
         $WPFInstallpowertoys.IsChecked = $false
     }
     If ( $WPFInstallputty.IsChecked -eq $true ) { 
-       $wingetinstall.Add("PuTTY.PuTTY")
+        $wingetinstall.Add("PuTTY.PuTTY")
         $WPFInstallputty.IsChecked = $false
     }
     If ( $WPFInstallpython3.IsChecked -eq $true ) { 
         $wingetinstall.Add("Python.Python.3")
-         $WPFInstallpython3.IsChecked = $false
+        $WPFInstallpython3.IsChecked = $false
     }
     If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
-       $wingetinstall.Add("7zip.7zip")
+        $wingetinstall.Add("7zip.7zip")
         $WPFInstallsevenzip.IsChecked = $false
     }
     If ( $WPFInstallsharex.IsChecked -eq $true ) { 
-       $wingetinstall.Add("ShareX.ShareX")
+        $wingetinstall.Add("ShareX.ShareX")
         $WPFInstallsharex.IsChecked = $false
     }
     If ( $WPFInstallsublime.IsChecked -eq $true ) { 
         $wingetinstall.Add("SublimeHQ.SublimeText.4")
-         $WPFInstallsublime.IsChecked = $false
+        $WPFInstallsublime.IsChecked = $false
     }
     If ( $WPFInstallsumatra.IsChecked -eq $true ) { 
-       $wingetinstall.Add("SumatraPDF.SumatraPDF")
+        $wingetinstall.Add("SumatraPDF.SumatraPDF")
         $WPFInstallsumatra.IsChecked = $false
     }
     If ( $WPFInstallterminal.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Microsoft.WindowsTerminal")
+        $wingetinstall.Add("Microsoft.WindowsTerminal")
         $WPFInstallterminal.IsChecked = $false
     }
     If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
-       $wingetinstall.Add("TranslucentTB.TranslucentTB")
+        $wingetinstall.Add("TranslucentTB.TranslucentTB")
         $WPFInstallttaskbar.IsChecked = $false
     }
     If ( $WPFInstallvlc.IsChecked -eq $true ) { 
-       $wingetinstall.Add("VideoLAN.VLC")
+        $wingetinstall.Add("VideoLAN.VLC")
         $WPFInstallvlc.IsChecked = $false
     }
     If ( $WPFInstallvscode.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Git.Git")
-       $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
+        $wingetinstall.Add("Git.Git")
+        $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
         $WPFInstallvscode.IsChecked = $false
     }
     If ( $WPFInstallvscodium.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Git.Git")
-       $wingetinstall.Add("VSCodium.VSCodium")
+        $wingetinstall.Add("Git.Git")
+        $wingetinstall.Add("VSCodium.VSCodium")
         $WPFInstallvscodium.IsChecked = $false
     }
     If ( $WPFInstallwinscp.IsChecked -eq $true ) { 
         $wingetinstall.Add("WinSCP.WinSCP")
-         $WPFInstallputty.IsChecked = $false
-     }
+        $WPFInstallputty.IsChecked = $false
+    }
     If ( $WPFInstallanydesk.IsChecked -eq $true ) { 
-       $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
+        $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
         $WPFInstallanydesk.IsChecked = $false
     }
     If ( $WPFInstallbitwarden.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Bitwarden.Bitwarden")
+        $wingetinstall.Add("Bitwarden.Bitwarden")
         $WPFInstallbitwarden.IsChecked = $false
     }        
     If ( $WPFInstallblender.IsChecked -eq $true ) { 
-       $wingetinstall.Add("BlenderFoundation.Blender")
+        $wingetinstall.Add("BlenderFoundation.Blender")
         $WPFInstallblender.IsChecked = $false
     }                    
     If ( $WPFInstallchromium.IsChecked -eq $true ) { 
-       $wingetinstall.Add("eloston.ungoogled-chromium")
+        $wingetinstall.Add("eloston.ungoogled-chromium")
         $WPFInstallchromium.IsChecked = $false
     }             
     If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
-       $wingetinstall.Add("CPUID.CPU-Z")
+        $wingetinstall.Add("CPUID.CPU-Z")
         $WPFInstallcpuz.IsChecked = $false
     }                            
     If ( $WPFInstalleartrumpet.IsChecked -eq $true ) { 
-       $wingetinstall.Add("File-New-Project.EarTrumpet")
+        $wingetinstall.Add("File-New-Project.EarTrumpet")
         $WPFInstalleartrumpet.IsChecked = $false
     }           
     If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
-       $wingetinstall.Add("EpicGames.EpicGamesLauncher")
+        $wingetinstall.Add("EpicGames.EpicGamesLauncher")
         $WPFInstallepicgames.IsChecked = $false
     }                                      
     If ( $WPFInstallflameshot.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Flameshot.Flameshot")
+        $wingetinstall.Add("Flameshot.Flameshot")
         $WPFInstallflameshot.IsChecked = $false
     }            
     If ( $WPFInstallfoobar.IsChecked -eq $true ) { 
-       $wingetinstall.Add("PeterPawlowski.foobar2000")
+        $wingetinstall.Add("PeterPawlowski.foobar2000")
         $WPFInstallfoobar.IsChecked = $false
     }                     
     If ( $WPFInstallgog.IsChecked -eq $true ) { 
-       $wingetinstall.Add("GOG.Galaxy")
+        $wingetinstall.Add("GOG.Galaxy")
         $WPFInstallgog.IsChecked = $false
     }                  
     If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
-       $wingetinstall.Add("TechPowerUp.GPU-Z")
+        $wingetinstall.Add("TechPowerUp.GPU-Z")
         $WPFInstallgpuz.IsChecked = $false
     }                 
     If ( $WPFInstallgreenshot.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Greenshot.Greenshot")
+        $wingetinstall.Add("Greenshot.Greenshot")
         $WPFInstallgreenshot.IsChecked = $false
     }            
     If ( $WPFInstallhandbrake.IsChecked -eq $true ) { 
-       $wingetinstall.Add("HandBrake.HandBrake")
+        $wingetinstall.Add("HandBrake.HandBrake")
         $WPFInstallhandbrake.IsChecked = $false
     }      
     If ( $WPFInstallhexchat.IsChecked -eq $true ) { 
         $wingetinstall.Add("HexChat.HexChat")
-         $WPFInstallhexchat.IsChecked = $false
-     }       
+        $WPFInstallhexchat.IsChecked = $false
+    }       
     If ( $WPFInstallhwinfo.IsChecked -eq $true ) { 
-       $wingetinstall.Add("REALiX.HWiNFO")
+        $wingetinstall.Add("REALiX.HWiNFO")
         $WPFInstallhwinfo.IsChecked = $false
     }                       
     If ( $WPFInstallinkscape.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Inkscape.Inkscape")
+        $wingetinstall.Add("Inkscape.Inkscape")
         $WPFInstallinkscape.IsChecked = $false
     }             
     If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
-       $wingetinstall.Add("KeePassXCTeam.KeePassXC")
+        $wingetinstall.Add("KeePassXCTeam.KeePassXC")
         $WPFInstallkeepass.IsChecked = $false
     }              
     If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
-       $wingetinstall.Add("LibreWolf.LibreWolf")
+        $wingetinstall.Add("LibreWolf.LibreWolf")
         $WPFInstalllibrewolf.IsChecked = $false
     }            
     If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Malwarebytes.Malwarebytes")
+        $wingetinstall.Add("Malwarebytes.Malwarebytes")
         $WPFInstallmalwarebytes.IsChecked = $false
     }          
     If ( $WPFInstallmatrix.IsChecked -eq $true ) { 
         $wingetinstall.Add("Element.Element")
-         $WPFInstallmatrix.IsChecked = $false
-     } 
+        $WPFInstallmatrix.IsChecked = $false
+    } 
     If ( $WPFInstallmremoteng.IsChecked -eq $true ) { 
-       $wingetinstall.Add("mRemoteNG.mRemoteNG")
+        $wingetinstall.Add("mRemoteNG.mRemoteNG")
         $WPFInstallmremoteng.IsChecked = $false
     }                    
     If ( $WPFInstallnvclean.IsChecked -eq $true ) { 
-       $wingetinstall.Add("TechPowerUp.NVCleanstall")
+        $wingetinstall.Add("TechPowerUp.NVCleanstall")
         $WPFInstallnvclean.IsChecked = $false
     }              
     If ( $WPFInstallobs.IsChecked -eq $true ) { 
-       $wingetinstall.Add("OBSProject.OBSStudio")
+        $wingetinstall.Add("OBSProject.OBSStudio")
         $WPFInstallobs.IsChecked = $false
     }                  
     If ( $WPFInstallobsidian.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Obsidian.Obsidian")
+        $wingetinstall.Add("Obsidian.Obsidian")
         $WPFInstallobsidian.IsChecked = $false
     }                           
     If ( $WPFInstallrevo.IsChecked -eq $true ) { 
-       $wingetinstall.Add("RevoUninstaller.RevoUninstaller")
+        $wingetinstall.Add("RevoUninstaller.RevoUninstaller")
         $WPFInstallrevo.IsChecked = $false
     }                 
     If ( $WPFInstallrufus.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Rufus.Rufus")
+        $wingetinstall.Add("Rufus.Rufus")
         $WPFInstallrufus.IsChecked = $false
     }   
     If ( $WPFInstallsignal.IsChecked -eq $true ) { 
         $wingetinstall.Add("OpenWhisperSystems.Signal")
-         $WPFInstallsignal.IsChecked = $false
-     }
+        $WPFInstallsignal.IsChecked = $false
+    }
      If ( $WPFInstallskype.IsChecked -eq $true ) { 
         $wingetinstall.Add("Microsoft.Skype")
-         $WPFInstallskype.IsChecked = $false
-     }                               
+        $WPFInstallskype.IsChecked = $false
+    }                               
     If ( $WPFInstallslack.IsChecked -eq $true ) { 
-       $wingetinstall.Add("SlackTechnologies.Slack")
+        $wingetinstall.Add("SlackTechnologies.Slack")
         $WPFInstallslack.IsChecked = $false
     }                
     If ( $WPFInstallspotify.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Spotify.Spotify")
+        $wingetinstall.Add("Spotify.Spotify")
         $WPFInstallspotify.IsChecked = $false
     }              
     If ( $WPFInstallsteam.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Valve.Steam")
+        $wingetinstall.Add("Valve.Steam")
         $WPFInstallsteam.IsChecked = $false
     }                             
     If ( $WPFInstallteamviewer.IsChecked -eq $true ) { 
         $wingetinstall.Add("TeamViewer.TeamViewer")
-         $WPFInstallteamviewer.IsChecked = $false
-     }
+        $WPFInstallteamviewer.IsChecked = $false
+    }
      If ( $WPFInstallteams.IsChecked -eq $true ) { 
         $wingetinstall.Add("Microsoft.Teams")
-         $WPFInstallteams.IsChecked = $false
-     }
-                              
+        $WPFInstallteams.IsChecked = $false
+    }                        
     If ( $WPFInstalltreesize.IsChecked -eq $true ) { 
-       $wingetinstall.Add("JAMSoftware.TreeSize.Free")
+        $wingetinstall.Add("JAMSoftware.TreeSize.Free")
         $WPFInstalltreesize.IsChecked = $false
     }                         
     If ( $WPFInstallvisualstudio.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Microsoft.VisualStudio.2022.Community")
+        $wingetinstall.Add("Microsoft.VisualStudio.2022.Community")
         $WPFInstallvisualstudio.IsChecked = $false
     }         
     If ( $WPFInstallvivaldi.IsChecked -eq $true ) { 
-       $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
+        $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
         $WPFInstallvivaldi.IsChecked = $false
     }                              
     If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) { 
-       $wingetinstall.Add("VB-Audio.Voicemeeter")
+        $wingetinstall.Add("VB-Audio.Voicemeeter")
         $WPFInstallvoicemeeter.IsChecked = $false
     }                    
     If ( $WPFInstallwindirstat.IsChecked -eq $true ) { 
-       $wingetinstall.Add("WinDirStat.WinDirStat")
+        $wingetinstall.Add("WinDirStat.WinDirStat")
         $WPFInstallwindirstat.IsChecked = $false
     }           
     If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
-       $wingetinstall.Add("WiresharkFoundation.Wireshark")
+        $wingetinstall.Add("WiresharkFoundation.Wireshark")
         $WPFInstallwireshark.IsChecked = $false
     }            
     If ( $WPFInstallzoom.IsChecked -eq $true ) { 
-       $wingetinstall.Add("Zoom.Zoom")
+        $wingetinstall.Add("Zoom.Zoom")
         $WPFInstallzoom.IsChecked = $false
     }    
 
@@ -696,7 +455,7 @@ $WPFInstallUpgrade.Add_Click({
 })
 
 #===========================================================================
-# Tab 2 - Tweaks Buttons
+# Tab 2 - Tweak Buttons
 #===========================================================================
 $WPFdesktop.Add_Click({
 
@@ -820,94 +579,93 @@ $WPFtweaksbutton.Add_Click({
         $WPFEssTweaksRP.IsChecked = $false
     }
     If ( $WPFEssTweaksServices.IsChecked -eq $true ) {
-        # Service tweaks to Manual 
+        # Set Services to Manual 
 
         $services = @(
+            "ALG"                                          # Application Layer Gateway Service(Provides support for 3rd party protocol plug-ins for Internet Connection Sharing)
+            "AJRouter"                                     # Needed for AllJoyn Router Service
+            "BcastDVRUserService_48486de"                  # GameDVR and Broadcast is used for Game Recordings and Live Broadcasts
+            #"BDESVC"                                      # Bitlocker Drive Encryption Service
+            #"BFE"                                         # Base Filtering Engine (Manages Firewall and Internet Protocol security)
+            #"BluetoothUserService_48486de"                # Bluetooth user service supports proper functionality of Bluetooth features relevant to each user session.
+            #"BrokerInfrastructure"                        # Windows Infrastructure Service (Controls which background tasks can run on the system)
+            "Browser"                                      # Let users browse and locate shared resources in neighboring computers
+            "BthAvctpSvc"                                  # AVCTP service (needed for Bluetooth Audio Devices or Wireless Headphones)
+            "CaptureService_48486de"                       # Optional screen capture functionality for applications that call the Windows.Graphics.Capture API.
+            "cbdhsvc_48486de"                              # Clipboard Service
             "diagnosticshub.standardcollector.service"     # Microsoft (R) Diagnostics Hub Standard Collector Service
             "DiagTrack"                                    # Diagnostics Tracking Service
-            "DPS"
-            "dmwappushservice"                             # WAP Push Message Routing Service (see known issues)
+            "dmwappushservice"                             # WAP Push Message Routing Service
+            "DPS"                                          # Diagnostic Policy Service (Detects and Troubleshoots Potential Problems)
+            "edgeupdate"                                   # Edge Update Service
+            "edgeupdatem"                                  # Another Update Service
+            "EntAppSvc"                                    # Enterprise Application Management.
+            "Fax"                                          # Fax Service
+            "fhsvc"                                        # Fax History
+            "FontCache"                                    # Windows font cache
+            #"FrameServer"                                 # Windows Camera Frame Server (Allows multiple clients to access video frames from camera devices)
+            "gupdate"                                      # Google Update
+            "gupdatem"                                     # Another Google Update Service
+            "iphlpsvc"                                     # ipv6(Most websites use ipv4 instead)
             "lfsvc"                                        # Geolocation Service
+            #"LicenseManager"                              # Disable LicenseManager (Windows Store may not work properly)
+            "lmhosts"                                      # TCP/IP NetBIOS Helper
             "MapsBroker"                                   # Downloaded Maps Manager
+            "MicrosoftEdgeElevationService"                # Another Edge Update Service
+            "MSDTC"                                        # Distributed Transaction Coordinator
+            "ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
             "NetTcpPortSharing"                            # Net.Tcp Port Sharing Service
+            "PcaSvc"                                       # Program Compatibility Assistant Service
+            "PerfHost"                                     # Remote users and 64-bit processes to query performance.
+            "PhoneSvc"                                     # Phone Service(Manages the telephony state on the device)
+            #"PNRPsvc"                                     # Peer Name Resolution Protocol (Some peer-to-peer and collaborative applications, such as Remote Assistance, may not function, Discord will still work)
+            #"p2psvc"                                      # Peer Name Resolution Protocol(Enables multi-party communication using Peer-to-Peer Grouping.  If disabled, some applications, such as HomeGroup, may not function. Discord will still work)iscord will still work)
+            #"p2pimsvc"                                    # Peer Networking Identity Manager (Peer-to-Peer Grouping services may not function, and some applications, such as HomeGroup and Remote Assistance, may not function correctly. Discord will still work)
+            "PrintNotify"                                  # Windows printer notifications and extentions
+            "QWAVE"                                        # Quality Windows Audio Video Experience (audio and video might sound worse)
             "RemoteAccess"                                 # Routing and Remote Access
             "RemoteRegistry"                               # Remote Registry
+            "RetailDemo"                                   # Demo Mode for Store Display
+            "RtkBtManServ"                                 # Realtek Bluetooth Device Manager Service
+            "SCardSvr"                                     # Windows Smart Card Service
+            "seclogon"                                     # Secondary Logon (Disables other credentials only password will work)
+            "SEMgrSvc"                                     # Payments and NFC/SE Manager (Manages payments and Near Field Communication (NFC) based secure elements)
             "SharedAccess"                                 # Internet Connection Sharing (ICS)
+            #"Spooler"                                     # Printing
+            "stisvc"                                       # Windows Image Acquisition (WIA)
+            #"StorSvc"                                     # StorSvc (usb external hard drive will not be reconized by windows)
+            "SysMain"                                      # Analyses System Usage and Improves Performance
             "TrkWks"                                       # Distributed Link Tracking Client
-            #"WbioSrvc"                                     # Windows Biometric Service (required for Fingerprint reader / facial detection)
-            #"WlanSvc"                                      # WLAN AutoConfig
+            #"WbioSrvc"                                    # Windows Biometric Service (required for Fingerprint reader / facial detection)
+            "WerSvc"                                       # Windows error reporting
+            "wisvc"                                        # Windows Insider program(Windows Insider will not work if Disabled)
+            #"WlanSvc"                                     # WLAN AutoConfig
             "WMPNetworkSvc"                                # Windows Media Player Network Sharing Service
-            #"wscsvc"                                       # Windows Security Center Service
+            "WpcMonSvc"                                    # Parental Controls
+            "WPDBusEnum"                                   # Portable Device Enumerator Service
+            "WpnService"                                   # WpnService (Push Notifications may not work)
+            #"wscsvc"                                      # Windows Security Center Service
             "WSearch"                                      # Windows Search
-            "XblAuthManager"                               # Xbox Live Auth Manager
-            "XblGameSave"                                  # Xbox Live Game Save Service
-            "XboxNetApiSvc"                                # Xbox Live Networking Service
-            "XboxGipSvc"                                   #Disables Xbox Accessory Management Service
-            "ndu"                                          # Windows Network Data Usage Monitor
-            "WerSvc"                                       #disables windows error reporting
-            #"Spooler"                                      #Disables your printer
-            "Fax"                                          #Disables fax
-            "fhsvc"                                        #Disables fax histroy
-            "gupdate"                                      #Disables google update
-            "gupdatem"                                     #Disable another google update
-            "stisvc"                                       #Disables Windows Image Acquisition (WIA)
-            "AJRouter"                                     #Disables (needed for AllJoyn Router Service)
-            "MSDTC"                                        # Disables Distributed Transaction Coordinator
-            "WpcMonSvc"                                    #Disables Parental Controls
-            "PhoneSvc"                                     #Disables Phone Service(Manages the telephony state on the device)
-            "PrintNotify"                                  #Disables Windows printer notifications and extentions
-            "PcaSvc"                                       #Disables Program Compatibility Assistant Service
-            "WPDBusEnum"                                   #Disables Portable Device Enumerator Service
-            #"LicenseManager"                               #Disable LicenseManager(Windows store may not work properly)
-            "seclogon"                                     #Disables  Secondary Logon(disables other credentials only password will work)
-            "SysMain"                                      #Disables sysmain
-            "lmhosts"                                      #Disables TCP/IP NetBIOS Helper
-            "wisvc"                                        #Disables Windows Insider program(Windows Insider will not work)
-            "FontCache"                                    #Disables Windows font cache
-            "RetailDemo"                                   #Disables RetailDemo whic is often used when showing your device
-            "ALG"                                          # Disables Application Layer Gateway Service(Provides support for 3rd party protocol plug-ins for Internet Connection Sharing)
-            #"BFE"                                         #Disables Base Filtering Engine (BFE) (is a service that manages firewall and Internet Protocol security)
-            #"BrokerInfrastructure"                         #Disables Windows infrastructure service that controls which background tasks can run on the system.
-            "SCardSvr"                                      #Disables Windows smart card
-            "EntAppSvc"                                     #Disables enterprise application management.
-            "BthAvctpSvc"                                   #Disables AVCTP service (if you use  Bluetooth Audio Device or Wireless Headphones. then don't disable this)
-            #"FrameServer"                                   #Disables Windows Camera Frame Server(this allows multiple clients to access video frames from camera devices.)
-            "Browser"                                       #Disables computer browser
-            "BthAvctpSvc"                                   #AVCTP service (This is Audio Video Control Transport Protocol service.)
-            #"BDESVC"                                        #Disables bitlocker
-            "iphlpsvc"                                      #Disables ipv6 but most websites don't use ipv6 they use ipv4     
-            "edgeupdate"                                    # Disables one of edge update service  
-            "MicrosoftEdgeElevationService"                 # Disables one of edge  service 
-            "edgeupdatem"                                   # disbales another one of update service (disables edgeupdatem)                          
-            "SEMgrSvc"                                      #Disables Payments and NFC/SE Manager (Manages payments and Near Field Communication (NFC) based secure elements)
-            #"PNRPsvc"                                      # Disables peer Name Resolution Protocol ( some peer-to-peer and collaborative applications, such as Remote Assistance, may not function, Discord will still work)
-            #"p2psvc"                                       # Disbales Peer Name Resolution Protocol(nables multi-party communication using Peer-to-Peer Grouping.  If disabled, some applications, such as HomeGroup, may not function. Discord will still work)
-            #"p2pimsvc"                                     # Disables Peer Networking Identity Manager (Peer-to-Peer Grouping services may not function, and some applications, such as HomeGroup and Remote Assistance, may not function correctly.Discord will still work)
-            "PerfHost"                                      #Disables  remote users and 64-bit processes to query performance .
-            "BcastDVRUserService_48486de"                   #Disables GameDVR and Broadcast   is used for Game Recordings and Live Broadcasts
-            "CaptureService_48486de"                        #Disables ptional screen capture functionality for applications that call the Windows.Graphics.Capture API.  
-            "cbdhsvc_48486de"                               #Disables   cbdhsvc_48486de (clipboard service it disables)
-            #"BluetoothUserService_48486de"                  #disbales BluetoothUserService_48486de (The Bluetooth user service supports proper functionality of Bluetooth features relevant to each user session.)
-            "WpnService"                                    #Disables WpnService (Push Notifications may not work )
-            #"StorSvc"                                       #Disables StorSvc (usb external hard drive will not be reconised by windows)
-            "RtkBtManServ"                                  #Disables Realtek Bluetooth Device Manager Service
-            "QWAVE"                                         #Disables Quality Windows Audio Video Experience (audio and video might sound worse)
-            #Hp services
+            "XblAuthManager"                               # Xbox Live Auth Manager (Disabling Breaks Xbox Live Games)
+            "XblGameSave"                                  # Xbox Live Game Save Service (Disabling Breaks Xbox Live Games)
+            "XboxNetApiSvc"                                # Xbox Live Networking Service (Disabling Breaks Xbox Live Games)
+            "XboxGipSvc"                                   # Xbox Accessory Management Service
+             # Hp services
             "HPAppHelperCap"
             "HPDiagsCap"
             "HPNetworkCap"
             "HPSysInfoCap"
             "HpTouchpointAnalyticsService"
-            #hyper-v services
-            "HvHost"                          
-            "vmickvpexchange"
+             # Hyper-V services
+            "HvHost"
             "vmicguestinterface"
-            "vmicshutdown"
             "vmicheartbeat"
-            "vmicvmsession"
+            "vmickvpexchange"
             "vmicrdv"
-            "vmictimesync" 
-            # Services which cannot be disabled
+            "vmicshutdown"
+            "vmictimesync"
+            "vmicvmsession"
+             # Services that cannot be disabled
             #"WdNisSvc"
         )
         
@@ -1214,7 +972,7 @@ $WPFtweaksbutton.Add_Click({
         "*AdobePhotoshopExpress*"
         "*HotspotShieldFreeVPN*"
 
-        #Optional: Typically not removed but you can if you need to for some reason
+        #Optional: Typically not removed but you can if you need to
         "*Microsoft.Advertising.Xaml*"
         #"*Microsoft.MSPaint*"
         #"*Microsoft.MicrosoftStickyNotes*"
@@ -1477,7 +1235,7 @@ function New-Directory($path) {
     $p, $components = $path -split '[\\/]'
     $components | ForEach-Object {
         $p = "$p\$_"
-        if (!(Test-Path $p)) {
+        If (!(Test-Path $p)) {
             New-Item -ItemType Directory $p | Out-Null
         }
     }
@@ -1514,7 +1272,7 @@ New-ItemProperty `
 # 1: PCs on my local network
 # 3: PCs on my local network, and PCs on the Internet
 $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-if (Test-Path $deliveryOptimizationPath) {
+If (Test-Path $deliveryOptimizationPath) {
     New-ItemProperty `
         -Path $deliveryOptimizationPath `
         -Name DODownloadMode `
@@ -1624,10 +1382,9 @@ foreach ($service in $services) {
     Get-BitsTransfer | Remove-BitsTransfer 
     
     Write-Host "10) Attempting to install the Windows Update Agent..." 
-    if($arch -eq 64){ 
+    If ($arch -eq 64) { 
         wusa Windows8-RT-KB2937636-x64 /quiet 
-    } 
-    else{ 
+    } else { 
         wusa Windows8-RT-KB2937636-x86 /quiet 
     } 
     
@@ -1673,7 +1430,7 @@ function New-Directory($path) {
     $p, $components = $path -split '[\\/]'
     $components | ForEach-Object {
         $p = "$p\$_"
-        if (!(Test-Path $p)) {
+        If (!(Test-Path $p)) {
             New-Item -ItemType Directory $p | Out-Null
         }
     }
@@ -1710,7 +1467,7 @@ New-ItemProperty `
 # 1: PCs on my local network
 # 3: PCs on my local network, and PCs on the Internet
 $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-if (Test-Path $deliveryOptimizationPath) {
+If (Test-Path $deliveryOptimizationPath) {
     New-ItemProperty `
         -Path $deliveryOptimizationPath `
         -Name DODownloadMode `
