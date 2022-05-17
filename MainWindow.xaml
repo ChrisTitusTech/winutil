@@ -123,6 +123,7 @@
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
 							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
 							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
+							<CheckBox Name="Installsteelseriesgg" Content="SteelSeries GG" Margin="5,0"/>
 							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
 							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
