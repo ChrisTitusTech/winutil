@@ -237,6 +237,10 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallchromium.IsChecked -eq $true ) { 
             $wingetinstall.Add("eloston.ungoogled-chromium")
             $WPFInstallchromium.IsChecked = $false
+        }
+        If ( $WPFInstallcorsairicue.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Corsair.iCUE.4")
+            $WPFInstallcorsairicue.IsChecked = $false
         }             
         If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
             $wingetinstall.Add("CPUID.CPU-Z")
