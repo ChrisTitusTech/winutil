@@ -1229,7 +1229,7 @@ $WPFUpdatesdefault.Add_Click({
 
     # Disable automatic updates.
     # This does not seem to work anymore.
-    # See How to configure automatic updates by using Group Policy or registry settings at https://support.microsoft.com/en-us/help/328010
+    # See how to configure automatic updates by using Group Policy or registry settings at https://support.microsoft.com/en-us/help/328010
     function New-Directory($path) {
         $p, $components = $path -split '[\\/]'
         $components | ForEach-Object {
