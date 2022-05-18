@@ -1200,7 +1200,7 @@ $WPFPanelDISM.Add_Click({
         Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
         Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
         Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
-        Read-Host '`nPress Enter'" -verb runas
+        Read-Host '`nPress Enter to Continue'" -verb runas
     })
 
 $WPFPanelcontrol.Add_Click({
