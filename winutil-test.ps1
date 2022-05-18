@@ -4,274 +4,44 @@
    GitHub      : https://github.com/DeveloperDurp
    Version 0.0.1
 #>
-
-[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName PresentationFramework
-[System.Windows.Forms.Application]::EnableVisualStyles()
-
-$inputXML = @"
-<Window x:Class="WinUtility.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WinUtility"
-        mc:Ignorable="d"
-        Background="#777777"
-        Title="Chris Titus Tech's Windows Utility" Height="533" Width="786">
-	<Viewbox>
-		<Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="3*"/>
-				<ColumnDefinition Width="7*"/>
-			</Grid.ColumnDefinitions>
-			<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0">
-				<Image Height="200" Width="200" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-				<Button Content="Install" VerticalAlignment="Top" Height="40" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
-				<Button Content="Tweaks" VerticalAlignment="Top" Height="40" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
-				<Button Content="Config" VerticalAlignment="Top" Height="40" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
-				<Button Content="Updates" VerticalAlignment="Top" Height="40" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
-			</StackPanel>
-			<TabControl Grid.Column="1" Padding="-1" Name="TabNav" SelectedIndex="0">
-				<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
-					<Grid Background="#222222">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
-							<Label Content="Browsers" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installbrave" Content="Brave" Margin="5,0"/>
-							<CheckBox Name="Installchrome" Content="Google Chrome" Margin="5,0"/>
-							<CheckBox Name="Installchromium" Content="Un-Googled Chromium" Margin="5,0"/>
-							<CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
-							<CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
-							<CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
-
-							<Label Content="Communications" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
-							<CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
-							<CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
-							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
-							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
-							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
-							<CheckBox Name="Installteams" Content="Microsoft Teams" Margin="5,0"/>
-							<CheckBox Name="Installzoom" Content="Zoom Video Conference" Margin="5,0"/>
-							
-
-							<Label Content="Development" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
-							<CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-							<CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
-							<CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
-							<CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
-							<CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-							<CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
-							<CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-							<CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
-							<CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
-							<CheckBox Name="Installvisualstudio" Content="Visual Studio 2022 Community" Margin="5,0"/>
-							<CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-							<CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
-
-							
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
-
-							<Label Content="Document" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
-							<CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
-							<CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
-							<CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
-							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
-
-							<Label Content="Games" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
-							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
-
-							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-							<CheckBox Name="Installmremoteng" Content="mRemoteNG" Margin="5,0"/>
-							<CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
-							<CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
-							<CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
-
-							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
-							<CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
-							<CheckBox Name="Installeartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
-							<CheckBox Name="Installflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
-							<CheckBox Name="Installgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
-							<CheckBox Name="Installgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
-							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
-							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
-							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
-							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installspotify" Content="Spotify" Margin="5,0"/>
-							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
-							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
-							<Label Content="Utilities" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
-							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
-							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
-							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
-							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
-							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
-							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
-							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
-							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
-							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
-							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
-							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
-							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
-							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
-							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
-							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
-							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
-							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
-							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
-							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
-
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Tweaks" Visibility="Collapsed" Name="Tab2">
-					<Grid Background="#333333">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="1*"/>
-							<RowDefinition Height="6*"/>
-						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2">
-							<Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
-							<Button Name="desktop" Content="Desktop" Margin="7"/>
-							<Button Name="laptop" Content="Laptop" Margin="7"/>
-							<Button Name="minimal" Content="Minimal" Margin="7"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
-							<Label FontSize="16" Content="Essential Tweaks"/>
-							<CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0"/>
-							<CheckBox Name="EssTweaksOO" Content="Run O and O Shutup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0"/>
-							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
-							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0"/>
-							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0"/>
-
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
-							<Label FontSize="16" Content="Misc. Tweaks"/>
-							<CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
-
-							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
-							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Config" Visibility="Collapsed" Name="Tab3">
-					<Grid Background="#444444">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
-							<Label Content="Features" FontSize="16"/>
-							<CheckBox Name="Featuresdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
-							<CheckBox Name="Featureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
-							<CheckBox Name="Featureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
-							<CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
-							<CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
-							<Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
-							<Label Content="Fixes" FontSize="16"/>
-							<Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
-
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
-							<Label Content="Legacy Windows Panels" FontSize="16"/>
-							<Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" Margin="20,5,20,5" Padding="10"/>
-							<Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" Margin="20,0,20,5" Padding="10"/>
-							<Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" Margin="20,0,20,5" Padding="10"/>
-						</StackPanel>
-					</Grid>
-				</TabItem>
-				<TabItem Header="Updates" Visibility="Collapsed" Name="Tab4">
-					<Grid Background="#555555">
-						<Grid.RowDefinitions>
-							<RowDefinition/>
-							<RowDefinition/>
-							<RowDefinition/>
-						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Margin="10,5">
-
-							<TextBlock Text="This is the default settings that come with Windows. No modifications are made and will remove any custom windows update settings." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Margin="10,5">
-							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in buisness environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Margin="10,5">
-							<TextBlock Text="This completely disables ALL Windows Updates and is NOT RECOMMENDED. You system will be easier to hack and infect without security updates. However, it can be suitable if you use your system for a select purpose and do not actively browse the internet." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10"/>
-						</StackPanel>
-
-					</Grid>
-				</TabItem>
-			</TabControl>
-		</Grid>
-	</Viewbox>
-</Window>
-
-"@
- 
-$inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
-#[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-[xml]$XAML = $inputXML
-#Read XAML
+#region Variables
     $global:sync = [Hashtable]::Synchronized(@{})
 
+    #WinForms dependancies 
+    [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName PresentationFramework
+    [System.Windows.Forms.Application]::EnableVisualStyles()
 
-
-    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
-  try{$global:sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
-catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-    write-host $error[0].Exception.Message -ForegroundColor Red
-    if ($error[0].Exception.Message -like "*button*"){
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
-}
-catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    #To use local files run $env:environment = "dev" before starting the ps1 file
+    if($env:environment -eq "dev"){
+        $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
+        if($confirm -eq "yes"){
+            $inputXML = Get-Content "MainWindow.xaml"
+            $global:sync["applications"] = Get-Content applications.json | ConvertFrom-Json
         }
+    }
+    else{
+        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
+        $global:sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
+    }
+        
+    $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
+    [xml]$XAML = $inputXML
+    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+    
+    try{$global:sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
+    catch [System.Management.Automation.MethodInvocationException] {
+        Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+        write-host $error[0].Exception.Message -ForegroundColor Red
+        if ($error[0].Exception.Message -like "*button*"){
+            write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
+    }
+    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+        Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    }
+
+#endregion Variables
  
 #===========================================================================
 # Store Form Objects In PowerShell
@@ -306,27 +76,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-Runspace $undotweaks}
-            "install" {install-button}
-            "tweaksbutton" {            
-                $tweakstorun = @()
-                $global:sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
-                    if ($global:sync["$_"].IsChecked -eq $true){
-                        $tweakstorun += $_
-                        $global:sync["$_"].IsChecked = $false
-                    }
-                }
-                Invoke-Runspace $tweaks $tweakstorun
-            }
-            "FeatureInstall" {
-                $featuretoinstall = @()
-                $global:sync.keys | Where-Object {$_ -like "*feature*" -and $_ -notlike "FeatureInstall"} | ForEach-Object {
-                    if ($global:sync["$_"].IsChecked -eq $true){
-                        $featuretoinstall += $_
-                        $global:sync["$_"].IsChecked = $false
-                    }
-                }
-                Invoke-Runspace $features $featuretoinstall
-            }
+            "install" {Invoke-Runspace $installprograms $(uncheckall "Install")}
+            "tweaksbutton" {Invoke-Runspace $tweaks $(uncheckall "tweaks")}
+            "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
             "Panelcontrol" {cmd /c control}
             "Panelnetwork" {cmd /c ncpa.cpl}
             "Panelpower" {cmd /c powercfg.cpl}
@@ -339,102 +91,16 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         }
     }
 
-
-    function install-button {
-        if ($global:sync["InstallerRunning"] -eq $true){
-            [System.Windows.MessageBox]::Show("Installers are currently running, please wait",'Installers are currently running',"OK","Info")
-            Return
-        }
-        $global:sync["InstallerRunning"] = $true
-        $programstoinstall = @()
-        $global:sync.keys | Where-Object {$_ -like "Install?*" -and $_ -notlike "InstallUpgrade"} | ForEach-Object {
+    function uncheckall {
+        param($group)
+        $output = @()
+        $global:sync.keys | Where-Object {$_ -like "*$($group)?*" -and $_ -notlike "$($group)Install" -and $_ -notlike "$($group)Install"} | ForEach-Object {
             if ($global:sync["$_"].IsChecked -eq $true){
-
-                $program = Switch ($_){
-                    "Installadobe" {"Adobe.Acrobat.Reader.64-bit"}
-                    "Installadvancedip" {"Famatech.AdvancedIPScanner"}
-                    "Installatom" {"GitHub.Atom"}
-                    "Installaudacity" {"Audacity.Audacity"}
-                    "Installautohotkey" {"Lexikos.AutoHotkey"}
-                    "Installbrave" {"BraveSoftware.BraveBrowser"}
-                    "Installchrome" {"Google.Chrome"}
-                    "Installdiscord" {"Discord.Discord"}
-                    "Installesearch" {"voidtools.Everything --source winget"}
-                    "Installetcher" {"Balena.Etcher"}
-                    "Installfirefox" {"Mozilla.Firefox"}
-                    "Installgimp" {"GIMP.GIMP"}
-                    "Installgithubdesktop" {"Git.Git;GitHub.GitHubDesktop"}
-                    "Installimageglass" {"DuongDieuPhap.ImageGlass"}
-                    "Installjava8" {"AdoptOpenJDK.OpenJDK.8"}
-                    "Installjava16" {"AdoptOpenJDK.OpenJDK.16"}
-                    "Installjava18" {"Oracle.JDK.18"}
-                    "Installjetbrains" {"JetBrains.Toolbox"}
-                    "Installmpc" {"clsid2.mpc-hc"}
-                    "Installnodejs" {"OpenJS.NodeJS"}
-                    "Installnodejslts" {"OpenJS.NodeJS.LTS"}
-                    "Installnotepadplus" {"Notepad++.Notepad++"}
-                    "Installpowertoys" {"Microsoft.PowerToys"}
-                    "Installputty" {"PuTTY.PuTTY"}
-                    "Installpython3" {"Python.Python.3"}
-                    "Installsevenzip" {"7zip.7zip"}
-                    "Installsharex" {"ShareX.ShareX"}
-                    "Installsublime" {"SublimeHQ.SublimeText.4"}
-                    "Installsumatra" {"SumatraPDF.SumatraPDF"}
-                    "Installterminal" {"Microsoft.WindowsTerminal"}
-                    "Installttaskbar" {"TranslucentTB.TranslucentTB"}
-                    "Installvlc" {"VideoLAN.VLC"}
-                    "Installvscode" {"Git.Git;Microsoft.VisualStudioCode --source winget"}
-                    "Installvscodium" {"Git.Git;VSCodium.VSCodium"}
-                    "Installwinscp" {"WinSCP.WinSCP"}
-                    "Installanydesk" {"AnyDeskSoftwareGmbH.AnyDesk"}
-                    "Installbitwarden" {"Bitwarden.Bitwarden"}
-                    "Installblender" {"BlenderFoundation.Blender"}
-                    "Installchromium" {"eloston.ungoogled-chromium"}
-                    "Installcpuz" {"CPUID.CPU-Z"}
-                    "Installeartrumpet" {"File-New-Project.EarTrumpet"}
-                    "Installepicgames" {"EpicGames.EpicGamesLauncher"}
-                    "Installflameshot" {"Flameshot.Flameshot"}
-                    "Installfoobar" {"PeterPawlowski.foobar2000"}
-                    "Installgog" {"GOG.Galaxy"}
-                    "Installgpuz" {"TechPowerUp.GPU-Z"}
-                    "Installgreenshot" {"Greenshot.Greenshot"}
-                    "Installhandbrake" {"HandBrake.HandBrake"}
-                    "Installhexchat" {"HexChat.HexChat"}
-                    "Installhwinfo" {"REALiX.HWiNFO"}
-                    "Installinkscape" {"Inkscape.Inkscape"}
-                    "Installkeepass" {"KeePassXCTeam.KeePassXC"}
-                    "Installlibrewolf" {"LibreWolf.LibreWolf"}
-                    "Installmalwarebytes" {"Malwarebytes.Malwarebytes"}
-                    "Installmatrix" {"Element.Element"}
-                    "Installmremoteng" {"mRemoteNG.mRemoteNG"}
-                    "Installnvclean" {"TechPowerUp.NVCleanstall"}
-                    "Installobs" {"OBSProject.OBSStudio"}
-                    "Installobsidian" {"Obsidian.Obsidian"}
-                    "Installrevo" {"RevoUninstaller.RevoUninstaller"}
-                    "Installrufus" {"Rufus.Rufus"}
-                    "Installsignal" {"OpenWhisperSystems.Signal"}
-                    "Installskype" {"Microsoft.Skype"}
-                    "Installslack" {"SlackTechnologies.Slack"}
-                    "Installspotify" {"Spotify.Spotify"}
-                    "Installsteam" {"Valve.Steam"}
-                    "Installteamviewer" {"TeamViewer.TeamViewer"}
-                    "Installteams" {"Microsoft.Teams"}
-                    "Installtreesize" {"JAMSoftware.TreeSize.Free"}
-                    "Installvisualstudio" {"Microsoft.VisualStudio.2022.Community"}
-                    "Installvivaldi" {"VivaldiTechnologies.Vivaldi"}
-                    "Installvoicemeeter" {"VB-Audio.Voicemeeter"}
-                    "Installwindirstat" {"WinDirStat.WinDirStat"}
-                    "Installwireshark" {"WiresharkFoundation.Wireshark"}
-                    "Installzoom" {"Zoom.Zoom"}
-                }
-
-                $programstoinstall += $program
+                $output += $_
                 $global:sync["$_"].IsChecked = $false
             }
-            
-            
         }
-        Invoke-Runspace $installprograms $programstoinstall
+        Write-Output $output
     }
 
     function Invoke-Runspace {
@@ -528,10 +194,25 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
     $installPrograms = {
         Param ($programstoinstall)
-        [System.Windows.MessageBox]::Show("$Programstoinstall",'I am going to install these programs',"OK","Info")
 
-        $results = @()
-        $programstoinstall | ForEach-Object {
+        if($programstoinstall -eq $null){
+            [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
+            return
+        }
+
+        $global:sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $global:sync.install.Content},"Normal")
+        If($sync.installcheck -like "Running"){
+            [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
+            return
+        }
+
+        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Running"},"Normal")      
+
+        foreach ($program in $programstoinstall){
+
+            [System.Windows.MessageBox]::Show("$($global:sync.applications.install.$program.winget)",'I am going to install this program',"OK","Info")
+
+        }
 
         #TODO Convert this to work inside the runspace and elevate credentials
         <#
@@ -555,12 +236,21 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
             [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         #>
-        }
-        $global:sync["InstallerRunning"] = $false
+        
+        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Start Install"},"Normal")
+        [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
     }
 
     $InstallUpgrade = {
 
+        $global:sync.form.Dispatcher.Invoke([action]{$sync.InstallUpgradecheck = $global:sync.InstallUpgrade.Content},"Normal")
+        If($sync.InstallUpgradecheck -like "Running"){
+            [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
+            return
+        }
+
+        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.InstallUpgrade.Content = "Running"},"Normal")
+        Start-Sleep -Seconds 5
         #TODO Convert this to work inside the runspace
         <#
             Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
@@ -572,6 +262,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
             [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         #>
+
+        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
+        [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
     }
 
     #===========================================================================
