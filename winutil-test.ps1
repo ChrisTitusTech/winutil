@@ -7,6 +7,7 @@
 
 #region Variables
     $global:sync = [Hashtable]::Synchronized(@{})
+    $global:sync["logfile"] = "$env:userprofile\AppData\Local\Temp\winutil-logs.txt"
 
     #WinForms dependancies 
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -212,6 +213,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         foreach ($program in $programstoinstall){
 
             [System.Windows.MessageBox]::Show("$($global:sync.applications.install.$program.winget)",'I am going to install this program',"OK","Info")
+
+
 
         }
 
