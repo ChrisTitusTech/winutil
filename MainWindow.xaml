@@ -213,6 +213,7 @@
 							<Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" Margin="20,0,20,5" Padding="10"/>
 							<Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" Margin="20,0,20,5" Padding="10"/>
 							<Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" Margin="20,0,20,5" Padding="10"/>
+							<Button Name="Paneldiskcleanup" FontSize="14" Background="AliceBlue" Content="Disk Cleanup" Margin="20,0,20,5" Padding="10"/>
 						</StackPanel>
 					</Grid>
 				</TabItem>
