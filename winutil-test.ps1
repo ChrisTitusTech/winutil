@@ -23,27 +23,25 @@
     }
     else{
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
-        $global:sync["applications"] = invoke-restmethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
+        $global:sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
     }
         
     $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
     [xml]$XAML = $inputXML
-#Read XAML
-    
-#endregion Variables
-
-
     $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
-  try{$global:sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
-catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-    write-host $error[0].Exception.Message -ForegroundColor Red
-    if ($error[0].Exception.Message -like "*button*"){
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
-}
-catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
-        }
+    
+    try{$global:sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
+    catch [System.Management.Automation.MethodInvocationException] {
+        Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+        write-host $error[0].Exception.Message -ForegroundColor Red
+        if ($error[0].Exception.Message -like "*button*"){
+            write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
+    }
+    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+        Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    }
+
+#endregion Variables
  
 #===========================================================================
 # Store Form Objects In PowerShell
