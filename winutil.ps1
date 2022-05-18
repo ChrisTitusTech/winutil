@@ -270,6 +270,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("GOG.Galaxy")
             $WPFInstallgog.IsChecked = $false
         }                  
+        If ( $WPFInstallleagueoflegendsna.IsChecked -eq $true ) { 
+            $wingetinstall.Add("RiotGames.LeagueOfLegends.NA")
+            $WPFInstallleagueoflegendsna.IsChecked = $false
+        }
         If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
             $wingetinstall.Add("TechPowerUp.GPU-Z")
             $WPFInstallgpuz.IsChecked = $false
