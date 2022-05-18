@@ -8,7 +8,7 @@
 #region Variables
     $global:sync = [Hashtable]::Synchronized(@{})
 
-    #WinForms dependancies 
+    #WinForms dependencies 
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName PresentationFramework
@@ -16,7 +16,7 @@
 
     #To use local files run $env:environment = "dev" before starting the ps1 file
     if($env:environment -eq "dev"){
-        $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
+        $confirm = [System.Windows.MessageBox]::Show('$ENV:Environment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
         if($confirm -eq "yes"){
             $inputXML = Get-Content "MainWindow.xaml"
             $global:sync["applications"] = Get-Content applications.json | ConvertFrom-Json
@@ -239,7 +239,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         #>
         
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Start Install"},"Normal")
-        [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+        [System.Windows.MessageBox]::Show("Installs have completed!",'Installs are done!',"OK","Info")
     }
 
     $InstallUpgrade = {
@@ -265,7 +265,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         #>
 
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
-        [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
+        [System.Windows.MessageBox]::Show("Updates have completed!",'Updates are done!',"OK","Info")
     }
 
     #===========================================================================
@@ -298,7 +298,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                 Set-ItemProperty -Path "HKLM:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 00000000
             }
             if ($tweak -eq "EssTweaksHiber"){
-                Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 0
+                Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type Dword -Value 0
                 If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings")) {
                     New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
                 }
@@ -356,7 +356,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                     "WerSvc"                                       #disables windows error reporting
                     #"Spooler"                                      #Disables your printer
                     "Fax"                                          #Disables fax
-                    "fhsvc"                                        #Disables fax histroy
+                    "fhsvc"                                        #Disables fax history
                     "gupdate"                                      #Disables google update
                     "gupdatem"                                     #Disable another google update
                     "stisvc"                                       #Disables Windows Image Acquisition (WIA)
@@ -364,7 +364,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                     "MSDTC"                                        # Disables Distributed Transaction Coordinator
                     "WpcMonSvc"                                    #Disables Parental Controls
                     "PhoneSvc"                                     #Disables Phone Service(Manages the telephony state on the device)
-                    "PrintNotify"                                  #Disables Windows printer notifications and extentions
+                    "PrintNotify"                                  #Disables Windows printer notifications and extensions
                     "PcaSvc"                                       #Disables Program Compatibility Assistant Service
                     "WPDBusEnum"                                   #Disables Portable Device Enumerator Service
                     #"LicenseManager"                               #Disable LicenseManager(Windows store may not work properly)
