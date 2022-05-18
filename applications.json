@@ -216,7 +216,7 @@
     "Installwindirstat": {
       "winget": "WinDirStat.WinDirStat"
     },
-    "Installwinscp": {
+    "Installscp": {
       "winget": "WinSCP.WinSCP"
     },
     "Installwireshark": {
