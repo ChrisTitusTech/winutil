@@ -230,6 +230,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Bitwarden.Bitwarden")
             $WPFInstallbitwarden.IsChecked = $false
         }        
+        If ( $WPFInstallcorsairicue.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Corsair.iCUE.4")
+            $WPFInstallcorsairicue.IsChecked = $false
+        }
         If ( $WPFInstallblender.IsChecked -eq $true ) { 
             $wingetinstall.Add("BlenderFoundation.Blender")
             $WPFInstallblender.IsChecked = $false
