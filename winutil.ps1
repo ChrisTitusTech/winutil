@@ -382,13 +382,13 @@ $WPFinstall.Add_Click({
     # Check if winget is installed
     Write-Host "Checking if Winget is Installed..."
     if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        #Checks if winget executable exists and if the Windows Version is 1809 or higher
+        # Checks if winget executable exists and if the Windows Version is 1809 or higher
         Write-Host "Winget Already Installed"
     }
     else {
         if (((((Get-ComputerInfo).OSName.IndexOf("LTSC")) -ne -1) -or ((Get-ComputerInfo).OSName.IndexOf("Server") -ne -1)) -and (((Get-ComputerInfo).WindowsVersion) -ge "1809")) {
-            #Checks if Windows edition is LTSC/Server 2019+
-            #Manually Installing Winget
+            # Checks if Windows edition is LTSC/Server 2019+
+            # Manually Installing Winget
             Write-Host "Running Alternative Installer for LTSC/Server Editions"
 
             #Download Needed Files
@@ -397,17 +397,17 @@ $WPFinstall.Add_Click({
             Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "./Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
             Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "./b0a0692da1034339b76dce1c298a1e42_License1.xml"
 
-            #Installing Packages
+            # Installing Packages
             Write-Host "Installing Packages..."
             Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
             Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath ".\b0a0692da1034339b76dce1c298a1e42_License1.xml"
             Write-Host "winget Installed (Reboot might be required before winget will work)"
 
-            #Sleep for 5 seconds to maximize chance that winget will work without reboot
+            # Sleep for 5 seconds to maximize chance that winget will work without reboot
             Write-Host "Pausing for 5 seconds to maximize chance that winget will work without reboot"
             Start-Sleep -s 5
 
-            #Removing no longer needed Files
+            # Removing no longer needed Files
             Write-Host "Removing no longer needed Files..."
             Remove-Item -Path ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
             Remove-Item -Path ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
@@ -415,11 +415,11 @@ $WPFinstall.Add_Click({
             Write-Host "Removed Files that are no longer needed"
         }
         elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
-            #Checks if Windows Version is too old for winget
+            # Checks if Windows Version is too old for winget
             Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
         }
         else {
-            #Installing Winget from the Microsoft Store
+            # Installing Winget from the Microsoft Store
             Write-Host "Winget not found, installing it now."
             Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
             $nid = (Get-Process AppInstaller).Id
@@ -780,7 +780,7 @@ $WPFtweaksbutton.Add_Click({
         Write-Host "Hiding 3D Objects icon from This PC..."
         Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue  
     
-        ## Performance Tweaks and More Telemetry
+        # Performance Tweaks and More Telemetry
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 00000000
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0000000a
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 0000000a
@@ -808,7 +808,7 @@ $WPFtweaksbutton.Add_Click({
         # Remove "News and Interest" from taskbar
         Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2
 
-        # remove "Meet Now" button from taskbar
+        # Remove "Meet Now" button from taskbar
 
         If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
             New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Force | Out-Null
@@ -890,7 +890,7 @@ $WPFtweaksbutton.Add_Click({
 
     If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
         $Bloatware = @(
-            #Unnecessary Windows 10 AppX Apps
+            # Unnecessary Windows 10 AppX Apps
             "Microsoft.3DBuilder"
             "Microsoft.Microsoft3DViewer"
             "Microsoft.AppConnector"
@@ -942,8 +942,8 @@ $WPFtweaksbutton.Add_Click({
             #"Microsoft.YourPhone"
             "Microsoft.Getstarted"
             "Microsoft.MicrosoftOfficeHub"
-            #Sponsored Windows 10 AppX Apps
-            #Add sponsored/featured apps to remove in the "*AppName*" format
+            # Sponsored Windows 10 AppX Apps
+            # Add sponsored/featured apps to remove in the "*AppName*" format
             "*EclipseManager*"
             "*ActiproSoftwareLLC*"
             "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
@@ -969,7 +969,7 @@ $WPFtweaksbutton.Add_Click({
             "*HiddenCity*"
             "*AdobePhotoshopExpress*"
             "*HotspotShieldFreeVPN*"
-            #Optional: Typically not removed but you can if you need to
+            # Optional: Typically not removed but you can if you need to
             "*Microsoft.Advertising.Xaml*"
             #"*Microsoft.MSPaint*"
             #"*Microsoft.MicrosoftStickyNotes*"
@@ -1227,10 +1227,9 @@ $WPFUpdatesdefault.Add_Click({
         Exit 1
     }
 
-    # disable automatic updates.
-    # XXX this does not seem to work anymore.
-    # see How to configure automatic updates by using Group Policy or registry settings
-    #     at https://support.microsoft.com/en-us/help/328010
+    # Disable automatic updates.
+    # This does not seem to work anymore.
+    # See How to configure automatic updates by using Group Policy or registry settings at https://support.microsoft.com/en-us/help/328010
     function New-Directory($path) {
         $p, $components = $path -split '[\\/]'
         $components | ForEach-Object {
@@ -1243,9 +1242,9 @@ $WPFUpdatesdefault.Add_Click({
     }
     $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
     New-Directory $auPath 
-    # set NoAutoUpdate.
-    # 0: Automatic Updates is enabled (default).
-    # 1: Automatic Updates is disabled.
+    # Set NoAutoUpdate.
+    # 0: Automatic Updates enabled (default).
+    # 1: Automatic Updates disabled.
     New-ItemProperty `
         -Path $auPath `
         -Name NoAutoUpdate `
@@ -1253,7 +1252,7 @@ $WPFUpdatesdefault.Add_Click({
         -PropertyType DWORD `
         -Force `
     | Out-Null
-    # set AUOptions.
+    # Set AUOptions.
     # 1: Keep my computer up to date has been disabled in Automatic Updates.
     # 2: Notify of download and installation.
     # 3: Automatically download and notify of installation.
@@ -1266,8 +1265,8 @@ $WPFUpdatesdefault.Add_Click({
         -Force `
     | Out-Null
 
-    # disable Windows Update Delivery Optimization.
-    # NB this applies to Windows 10.
+    # Disable Windows Update Delivery Optimization.
+    # This applies to Windows 10.
     # 0: Disabled
     # 1: PCs on my local network
     # 3: PCs on my local network, and PCs on the Internet
@@ -1309,14 +1308,12 @@ $WPFUpdatesdefault.Add_Click({
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
 })
 $WPFFixesUpdate.Add_Click({
-    ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
+    # Reset Windows Update Script - reregister dlls, services, and remove registry entires.
     Write-Host "1. Stopping Windows Update Services..." 
     Stop-Service -Name BITS 
     Stop-Service -Name wuauserv 
     Stop-Service -Name appidsvc 
     Stop-Service -Name cryptsvc 
-
-
 
     Write-Host "2. Remove QMGR Data file..." 
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
@@ -1426,10 +1423,9 @@ $WPFUpdatesdisable.Add_Click({
         Exit 1
     }
 
-    # disable automatic updates.
-    # XXX this does not seem to work anymore.
-    # see How to configure automatic updates by using Group Policy or registry settings
-    #     at https://support.microsoft.com/en-us/help/328010
+    # Disable automatic updates.
+    # This does not seem to work anymore.
+    # See how to configure automatic updates by using Group Policy or registry settings at https://support.microsoft.com/en-us/help/328010
     function New-Directory($path) {
         $p, $components = $path -split '[\\/]'
         $components | ForEach-Object {
@@ -1442,7 +1438,7 @@ $WPFUpdatesdisable.Add_Click({
     }
     $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
     New-Directory $auPath 
-    # set NoAutoUpdate.
+    # Set NoAutoUpdate.
     # 0: Automatic Updates is enabled (default).
     # 1: Automatic Updates is disabled.
     New-ItemProperty `
@@ -1452,7 +1448,7 @@ $WPFUpdatesdisable.Add_Click({
         -PropertyType DWORD `
         -Force `
     | Out-Null
-    # set AUOptions.
+    # Set AUOptions.
     # 1: Keep my computer up to date has been disabled in Automatic Updates.
     # 2: Notify of download and installation.
     # 3: Automatically download and notify of installation.
@@ -1465,8 +1461,8 @@ $WPFUpdatesdisable.Add_Click({
         -Force `
     | Out-Null
 
-    # disable Windows Update Delivery Optimization.
-    # NB this applies to Windows 10.
+    # Disable Windows Update Delivery Optimization.
+    # This applies to Windows 10.
     # 0: Disabled
     # 1: PCs on my local network
     # 3: PCs on my local network, and PCs on the Internet
