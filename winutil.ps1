@@ -1221,6 +1221,9 @@ $WPFPanelsystem.Add_Click({
 $WPFPaneluser.Add_Click({
         cmd /c "control userpasswords2"
     })
+$WPFPaneldiskcleanup.Add_Click({
+        cmd /c cleanmgr
+    })
 #===========================================================================
 # Tab 4 - Updates Buttons
 #===========================================================================
