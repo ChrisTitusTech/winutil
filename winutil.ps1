@@ -330,6 +330,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Rufus.Rufus")
             $WPFInstallrufus.IsChecked = $false
         }   
+        If ( $WPFInstallsteelseriesgg.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SteelSeries.GG")
+            $WPFInstallsteelseriesgg.IsChecked = $false
+        } 
         If ( $WPFInstallsignal.IsChecked -eq $true ) { 
             $wingetinstall.Add("OpenWhisperSystems.Signal")
             $WPFInstallsignal.IsChecked = $false
