@@ -5,6 +5,12 @@
    Version 0.0.1
 #>
 
+#Test for admin credentials
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+    Return
+}
+
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
     $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil-logs.txt"
@@ -283,10 +289,27 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
                 }
             }
-            
+
         #endregion Check for WinGet and install if not present
 
+        $InstallScript = {
+            param ($programstoinstall, $sync)
+            foreach ($program in $programstoinstall){
+                Write-Output $sync
+                read-host   
+            }
+        }
 
+
+        Start-Process powershell.exe -Verb RunAs -Wait -Command {
+            param ($programstoinstall, $sync)
+            foreach ($program in $programstoinstall){
+                Write-Output $sync
+                read-host   
+            }
+        } -ArgumentList "$programstoinstall $sync"
+
+        
 
 
         foreach ($program in $programstoinstall){
