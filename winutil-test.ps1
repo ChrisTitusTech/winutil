@@ -292,69 +292,34 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         #endregion Check for WinGet and install if not present
 
-        $InstallScript = {
-            param ($programstoinstall, $sync)
-            foreach ($program in $programstoinstall){
-                Write-Output $sync
-                read-host   
-            }
-        }
-
-
-        Start-Process powershell.exe -Verb RunAs -Wait -Command {
-            param ($programstoinstall, $sync)
-            foreach ($program in $programstoinstall){
-                Write-Output $sync
-                read-host   
-            }
-        } -ArgumentList "$programstoinstall $sync"
-
-        
-
-
+        $results = @()
         foreach ($program in $programstoinstall){
-
-            Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) was selected to be installed." -LogPath $sync.logfile
-
-
-
-
-
-
-
-
-
-
-
-
-
+            try {
+                Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) was selected to be installed." -LogPath $sync.logfile
+                $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($sync.applications.install.$program.winget)
+                if($winget | Select-String "failed"){
+                    Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
+                    $results += $Program
+                }
+                Else{
+                    Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) was installed." -LogPath $sync.logfile
+                }
+            }
+            catch {
+                Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) failed to installed." -LogPath $sync.logfile
+                $results += $Program
+            }
         }
 
-        #TODO Convert this to work inside the runspace and elevate credentials
-        <#
-            # Install all winget programs in new window
-            $wingetinstall.ToArray()
-            # Define Output variable
-            $wingetResult = New-Object System.Collections.Generic.List[System.Object]
-            foreach ( $node in $wingetinstall )
-            {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
-                $wingetResult.Add("$node`n")
-            }
-            $wingetResult.ToArray()
-            $wingetResult | % { $_ } | Out-Host
-
-            # Popup after finished
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Installed Programs "
-            $Messageboxbody = ($wingetResult)
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-            [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-        #>
-        
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
-        [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+
+        if  ($results){
+            [System.Windows.MessageBox]::Show("The following installs have failed. $results",'Some Installs Failed',"OK","Info")
+        }
+        Else{
+            [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+        }
+       
     }
 
     $InstallUpgrade = {
