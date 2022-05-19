@@ -5,11 +5,7 @@
    Version 0.0.1
 #>
 
-#Test for admin credentials
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-    Return
-}
+
 
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
@@ -21,17 +17,28 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     Add-Type -AssemblyName PresentationFramework
     [System.Windows.Forms.Application]::EnableVisualStyles()
 
+    #Test for admin credentials
+    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+        Return
+    }
+
+    if($env:branch){
+        $branch = $env:branch
+    }
+    Else {$branch = "main"}
+
     #To use local files run $env:environment = "dev" before starting the ps1 file
     if($env:environment -eq "dev"){
         $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
-        if($confirm -eq "yes"){
-            $inputXML = Get-Content "MainWindow.xaml"
-            $sync.applications = Get-Content applications.json | ConvertFrom-Json
-        }
+    }
+    if($confirm -eq "yes"){
+        $inputXML = Get-Content "MainWindow.xaml"
+        $sync.applications = Get-Content applications.json | ConvertFrom-Json
     }
     else{
-        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
-        $sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
+        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
+        $sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/applications.json"
     }
         
     $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
