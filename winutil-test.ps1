@@ -13,7 +13,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
-    $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil-logs.txt"
+    $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil.log"
 
     #WinForms dependancies 
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
