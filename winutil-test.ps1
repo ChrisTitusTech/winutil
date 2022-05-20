@@ -52,7 +52,7 @@
         if ($error[0].Exception.Message -like "*button*"){
             write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
     }
-    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="ðŸ˜€" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
         Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
     }
 
@@ -293,28 +293,32 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         $step = "Winget Installed"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
                     }Catch{Write-Logs -Level FAILURE -Message "WinGet Install failed at $step" -LogPath $sync.logfile}
-
                 }
+                Write-Logs -Level INFO -Message "WinGet has been installed" -LogPath $sync.logfile
+                Start-Sleep -Seconds 15
             }
 
         #endregion Check for WinGet and install if not present
 
         $results = @()
         foreach ($program in $programstoinstall){
-            try {
-                Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) was selected to be installed." -LogPath $sync.logfile
-                $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($sync.applications.install.$program.winget)
-                if($winget | Select-String "failed"){
-                    Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
-                    $results += $Program
+            $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                try {
+                
+                    Write-Logs -Level INFO -Message "$($_) was selected to be installed." -LogPath $sync.logfile
+                    $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($_)
+                    if($winget | Select-String "failed"){
+                        Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
+                        $results += $_
+                    }
+                    Else{
+                        Write-Logs -Level INFO -Message "$($_) was installed." -LogPath $sync.logfile
+                    }
                 }
-                Else{
-                    Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) was installed." -LogPath $sync.logfile
+                catch {
+                    Write-Logs -Level INFO -Message "$($_) failed to installed." -LogPath $sync.logfile
+                    $results += $_
                 }
-            }
-            catch {
-                Write-Logs -Level INFO -Message "$($sync.applications.install.$program.winget) failed to installed." -LogPath $sync.logfile
-                $results += $Program
             }
         }
 
@@ -325,6 +329,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
         Else{
             [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+            Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
         }
        
     }
