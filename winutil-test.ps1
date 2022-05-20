@@ -26,7 +26,22 @@
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
         $global:sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
     }
-        
+
+    If($env:args){Write-Host "Arguments Detected, Running Args";
+        If($env:args -match "InstallUpgrade"){Invoke-Runspace $InstallUpgrade}
+        If($env:args -match "UndoTweaks"){Invoke-Runspace $undotweaks}
+        If($env:args -match "PanelControl"){cmd /c control}
+        If($env:args -match "PanelNetwork"){cmd /c ncpa.cpl}
+        If($env:args -match "PanelPower"){cmd /c powercfg.cpl}
+        If($env:args -match "PanelSound"){cmd /c mmsys.cpl}
+        If($env:args -match "PanelSystem"){cmd /c sysdm.cpl}
+        If($env:args -match "PanelUser"){cmd /c "control userpasswords2"}
+        If($env:args -match "DefaultUpdates"){Invoke-Runspace $Updatesdefault}
+        If($env:args -match "DisableUpdates"){Invoke-Runspace $Updatesdisable}
+        If($env:args -match "EnableSecurity"){Invoke-Runspace $Updatessecurity}
+        If($env:args -match "QuitAfter"){Break}
+    }
+
     $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
     [xml]$XAML = $inputXML
     $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
