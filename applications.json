@@ -46,7 +46,7 @@
       "winget": "EpicGames.EpicGamesLauncher"
     },
     "Installesearch": {
-      "winget": "voidtools.Everything --source winget"
+      "winget": "voidtools.Everything"
     },
     "Installetcher": {
       "winget": "Balena.Etcher"
@@ -208,7 +208,7 @@
       "winget": "VB-Audio.Voicemeeter"
     },
     "Installvscode": {
-      "winget": "Git.Git;Microsoft.VisualStudioCode --source winget"
+      "winget": "Git.Git;Microsoft.VisualStudioCode"
     },
     "Installvscodium": {
       "winget": "Git.Git;VSCodium.VSCodium"
@@ -224,6 +224,9 @@
     },
     "Installzoom": {
       "winget": "Zoom.Zoom"
-    }
+    },
+	"Installlibreoffice": {
+		"winget": "TheDocumentFoundation.LibreOffice"
+	}
   }
 }
