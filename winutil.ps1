@@ -148,6 +148,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("JetBrains.Toolbox")
             $WPFInstalljetbrains.IsChecked = $false
         }
+        If ( $WPFInstallmedaltv.IsChecked -eq $true ) { 
+            $wingetinstall.Add("MedalB.V.Medal")
+            $WPFInstallmedaltv.IsChecked = $false
+        }
         If ( $WPFInstallmpc.IsChecked -eq $true ) { 
             $wingetinstall.Add("clsid2.mpc-hc")
             $WPFInstallmpc.IsChecked = $false

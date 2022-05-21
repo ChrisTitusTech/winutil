@@ -99,6 +99,7 @@
 							<CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
 							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
 							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
+							<CheckBox Name="Installmedaltv" Content="Medal TV (Clips)" Margin="5,0"/>
 							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
