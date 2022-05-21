@@ -91,7 +91,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-Runspace $undotweaks}
-            "install" {Invoke-Runspace $installprograms $(uncheckall "Install")}
+            "install" {Invoke-Runspace $sync.GUIInstallPrograms $(uncheckall "Install")}
             "tweaksbutton" {Invoke-Runspace $tweaks $(uncheckall "tweaks")}
             "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
             "Panelcontrol" {cmd /c control}
@@ -207,13 +207,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     # Install Tab
     #===========================================================================
 
-    $installPrograms = {
+    $Sync.GUIInstallPrograms = {
         Param ($programstoinstall)
-
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            write-output "$(get-date): $Level :  $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-        }
 
         if($programstoinstall -eq $null){
             [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
@@ -226,7 +221,36 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             return
         }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")      
+        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
+
+        $winget = @()
+
+        foreach ($program in $programstoinstall){
+            $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                $winget += $_
+            }
+        }
+
+        Invoke-Command -ScriptBlock $sync.ScriptsInstallPrograms -ArgumentList $winget -ErrorAction SilentlyContinue -ErrorVariable $results
+
+        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
+
+        if($results){
+            [System.Windows.MessageBox]::Show("The following installs have failed. $results",'Some Installs Failed',"OK","Info")
+        }
+        Else{
+            [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+            Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
+        }
+    }
+
+    $sync.ScriptsInstallPrograms = {
+        Param ($programstoinstall)
+
+        function Write-Logs {
+            param($Level, $Message, $LogPath)
+            write-output "$(get-date): $Level :  $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+        }
 
         #region Check for WinGet and install if not present
 
@@ -302,36 +326,24 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $results = @()
         foreach ($program in $programstoinstall){
-            $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                try {
-                
-                    Write-Logs -Level INFO -Message "$($_) was selected to be installed." -LogPath $sync.logfile
-                    $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($_)
-                    if($winget | Select-String "failed"){
-                        Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
-                        $results += $_
-                    }
-                    Else{
-                        Write-Logs -Level INFO -Message "$($_) was installed." -LogPath $sync.logfile
-                    }
+            try {
+                Write-Logs -Level INFO -Message "$($program) was selected to be installed." -LogPath $sync.logfile
+                $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($program)
+                if($winget | Select-String "failed"){
+                    Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
+                    $results += $program
                 }
-                catch {
-                    Write-Logs -Level INFO -Message "$($_) failed to installed." -LogPath $sync.logfile
-                    $results += $_
+                Else{
+                    Write-Logs -Level INFO -Message "$($program) was installed." -LogPath $sync.logfile
                 }
+            }
+            catch {
+                Write-Logs -Level INFO -Message "$($program) failed to installed." -LogPath $sync.logfile
+                $results += $program
             }
         }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
 
-        if  ($results){
-            [System.Windows.MessageBox]::Show("The following installs have failed. $results",'Some Installs Failed',"OK","Info")
-        }
-        Else{
-            [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
-            Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
-        }
-       
     }
 
     $InstallUpgrade = {
