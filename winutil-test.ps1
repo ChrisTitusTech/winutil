@@ -232,7 +232,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $params = @{
             ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = $winget
+            ArgumentList = "$winget"
             ErrorAction = "Continue"
             ErrorVariable = "FAILURE"
             WarningAction = "Continue"
@@ -266,6 +266,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     $sync.ScriptsInstallPrograms = {
         Param ($programstoinstall)
         if ($programstoinstall -like "*,*"){$programstoinstall = $programstoinstall -split ","}
+        else {$programstoinstall = $programstoinstall -split " "}
 
         function Write-Logs {
             [cmdletbinding()]
