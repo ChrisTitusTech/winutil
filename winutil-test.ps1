@@ -5,8 +5,6 @@
    Version 0.0.1
 #>
 
-
-
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
     $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil.log"
@@ -35,6 +33,7 @@
     if($confirm -eq "yes"){
         $inputXML = Get-Content "MainWindow.xaml"
         $sync.applications = Get-Content applications.json | ConvertFrom-Json
+        $VerbosePreference = "Continue"
     }
     else{
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
@@ -231,25 +230,57 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             }
         }
 
-        Invoke-Command -ScriptBlock $sync.ScriptsInstallPrograms -ArgumentList $winget -ErrorAction SilentlyContinue -ErrorVariable $results
+        $params = @{
+            ScriptBlock = $sync.ScriptsInstallPrograms
+            ArgumentList = $winget
+            ErrorAction = "Continue"
+            ErrorVariable = "FAILURE"
+            WarningAction = "Continue"
+            WarningVariable = "WARNING"
+        }
+
+        Invoke-Command @params
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
 
-        if($results){
-            [System.Windows.MessageBox]::Show("The following installs have failed. $results",'Some Installs Failed',"OK","Info")
+        if($FAILURE -or $WARNING){
+            [System.Windows.MessageBox]::Show("Unable to properly run installs, please invistage the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
         }
         Else{
             [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
-            Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
         }
     }
 
+    <#
+    Running $sync.ScriptsInstallPrograms in CLI format
+    $params = @{
+        ScriptBlock = $sync.ScriptsInstallPrograms
+        ArgumentList = "git.git,WinDirStat.WinDirStat"
+    }
+    
+    Add $VerbosePreference = "Continue" to get output   
+    
+    Invoke-Command @params
+    #>
+
     $sync.ScriptsInstallPrograms = {
         Param ($programstoinstall)
+        if ($programstoinstall -like "*,*"){$programstoinstall = $programstoinstall -split ","}
 
         function Write-Logs {
+            [cmdletbinding()]
             param($Level, $Message, $LogPath)
-            write-output "$(get-date): $Level :  $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+            $date = get-date
+            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                write-Error "$date : $Level : $message"
+                return
+            }
+            if($Level -eq "Warning"){
+                Write-Warning "$date : $Level : $message"
+                return
+            }
+            Write-Verbose "$date : $Level : $message"
         }
 
         #region Check for WinGet and install if not present
@@ -259,17 +290,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 Write-Logs -Level INFO -Message "WinGet was detected" -LogPath $sync.logfile
             }
             else {
-                Write-Logs -Level INFO -Message "WinGet was not detected" -LogPath $sync.logfile
-                
 
                 if (($sync.ComputerInfo.WindowsVersion) -lt "1809") {
                     #Checks if Windows Version is too old for winget
-                    Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-                    [System.Windows.MessageBox]::Show("Winget is not supported on this version of Windows (Pre-1809)",'WinGet not supported! :(',"OK","Info")
+                    Write-Logs -Level Warning -Message "Winget is not supported on this version of Windows (Pre-1809). Stopping installs" -LogPath $sync.logfile
                     return
                 }
 
-                [System.Windows.MessageBox]::Show("Attempting to install WinGet, if you recieve any errors please reboot and try again.",'WinGet is not installed!',"OK","Info")
+                Write-Logs -Level INFO -Message "WinGet was not detected" -LogPath $sync.logfile
 
                 if (((($sync.ComputerInfo.OSName.IndexOf("LTSC")) -ne -1) -or ($sync.ComputerInfo.OSName.IndexOf("Server") -ne -1)) -and (($sync.ComputerInfo.WindowsVersion) -ge "1809")) {
                     Try{
@@ -330,7 +358,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 Write-Logs -Level INFO -Message "$($program) was selected to be installed." -LogPath $sync.logfile
                 $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($program)
                 if($winget | Select-String "failed"){
-                    Write-Logs -Level FAILURE -Message "$winget" -LogPath $sync.logfile
+                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
                     $results += $program
                 }
                 Else{
@@ -343,7 +371,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             }
         }
 
-
+        Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
     }
 
     $InstallUpgrade = {
@@ -1403,6 +1431,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 #endregion scripts
 
 #Get ComputerInfo in the background
-Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
-
+#Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
+$sync.ComputerInfo = Get-ComputerInfo | Out-Null
 $sync["Form"].ShowDialog() | out-null
