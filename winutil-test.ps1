@@ -1431,6 +1431,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 #endregion scripts
 
 #Get ComputerInfo in the background
-#Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
-$sync.ComputerInfo = Get-ComputerInfo | Out-Null
+Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
+
 $sync["Form"].ShowDialog() | out-null
