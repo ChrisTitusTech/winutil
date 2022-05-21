@@ -75,8 +75,10 @@
 							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
 
 							<Label Content="Games" FontSize="16" Margin="5,0"/>
+							<CheckBox Name="Installbluestacks" Content="BlueStacks" Margin="5,0"/>
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
+							<CheckBox Name="Installleagueoflegendsna" Content="League of Legends (NA)" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
 
 							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
@@ -97,6 +99,7 @@
 							<CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
 							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
 							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
+							<CheckBox Name="Installmedaltv" Content="Medal TV (Clips)" Margin="5,0"/>
 							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
@@ -111,22 +114,26 @@
 							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
 							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
 							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
+							<CheckBox Name="Installcorsairicue" Content="Corsair iCUE" Margin="5,0"/>
 							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
 							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
 							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
+							<CheckBox Name="Installghub" Content="Logitech G HUB" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
 							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
 							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
 							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
+							<CheckBox Name="Installsteelseriesgg" Content="SteelSeries GG" Margin="5,0"/>
 							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
 							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
 							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+							<CheckBox Name="Installveracrypt" Content="VeraCrypt" Margin="5,0"/>
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
 

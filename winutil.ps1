@@ -148,6 +148,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("JetBrains.Toolbox")
             $WPFInstalljetbrains.IsChecked = $false
         }
+        If ( $WPFInstallmedaltv.IsChecked -eq $true ) { 
+            $wingetinstall.Add("MedalB.V.Medal")
+            $WPFInstallmedaltv.IsChecked = $false
+        }
         If ( $WPFInstallmpc.IsChecked -eq $true ) { 
             $wingetinstall.Add("clsid2.mpc-hc")
             $WPFInstallmpc.IsChecked = $false
@@ -196,6 +200,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
         }
+        If ( $WPFInstallveracrypt.IsChecked -eq $true ) { 
+            $wingetinstall.Add("IDRIX.VeraCrypt")
+            $WPFInstallveracrypt.IsChecked = $false
+        }
         If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
             $wingetinstall.Add("TranslucentTB.TranslucentTB")
             $WPFInstallttaskbar.IsChecked = $false
@@ -226,6 +234,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Bitwarden.Bitwarden")
             $WPFInstallbitwarden.IsChecked = $false
         }        
+        If ( $WPFInstallcorsairicue.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Corsair.iCUE.4")
+            $WPFInstallcorsairicue.IsChecked = $false
+        }
         If ( $WPFInstallblender.IsChecked -eq $true ) { 
             $wingetinstall.Add("BlenderFoundation.Blender")
             $WPFInstallblender.IsChecked = $false
@@ -242,6 +254,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("File-New-Project.EarTrumpet")
             $WPFInstalleartrumpet.IsChecked = $false
         }           
+        If ( $WPFInstallbluestacks.IsChecked -eq $true ) { 
+            $wingetinstall.Add("BlueStack.BlueStacks")
+            $WPFInstallbluestacks.IsChecked = $false
+        }  
         If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
             $wingetinstall.Add("EpicGames.EpicGamesLauncher")
             $WPFInstallepicgames.IsChecked = $false
@@ -258,6 +274,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("GOG.Galaxy")
             $WPFInstallgog.IsChecked = $false
         }                  
+        If ( $WPFInstallleagueoflegendsna.IsChecked -eq $true ) { 
+            $wingetinstall.Add("RiotGames.LeagueOfLegends.NA")
+            $WPFInstallleagueoflegendsna.IsChecked = $false
+        }
         If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
             $wingetinstall.Add("TechPowerUp.GPU-Z")
             $WPFInstallgpuz.IsChecked = $false
@@ -286,6 +306,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("KeePassXCTeam.KeePassXC")
             $WPFInstallkeepass.IsChecked = $false
         }              
+        If ( $WPFInstallghub.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Logitech.GHUB")
+            $WPFInstallghub.IsChecked = $false
+        } 
         If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
             $wingetinstall.Add("LibreWolf.LibreWolf")
             $WPFInstalllibrewolf.IsChecked = $false
@@ -322,6 +346,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Rufus.Rufus")
             $WPFInstallrufus.IsChecked = $false
         }   
+        If ( $WPFInstallsteelseriesgg.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SteelSeries.GG")
+            $WPFInstallsteelseriesgg.IsChecked = $false
+        } 
         If ( $WPFInstallsignal.IsChecked -eq $true ) { 
             $wingetinstall.Add("OpenWhisperSystems.Signal")
             $WPFInstallsignal.IsChecked = $false
