@@ -1300,7 +1300,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
 # Arguments
 If($env:args){
-    Write-Host "Arguments Detected, Running Args"
+    Write-Verbose "Arguments Detected, Running Args"
     If($env:args -match '\bInstallUpgrade\b'){Invoke-Command -scriptblock $InstallUpgrade}
     If($env:args -match '\bUndoTweaks\b'){Invoke-Command -scriptblock $undotweaks}
     If($env:args -match '\bPanelControl\b'){cmd /c control}
@@ -1313,6 +1313,11 @@ If($env:args){
     If($env:args -match '\bDisableUpdates\b'){Invoke-Command -scriptblock $Updatesdisable}
     If($env:args -match '\bEnableSecurity\b'){Invoke-Command -scriptblock $Updatessecurity}
     If($env:args -match '\bQuitAfter\b'){Break}
+    If($env:args -match '\bInstall\b'){
+        $ProgramstoInstall = (($env:args-split " " | Where-Object {$_ -like "install*"} ) -split ":")[1]
+        Write-Verbose "Installing $ProgramstoInstall."
+        Invoke-Command -scriptblock  $sync.ScriptsInstallPrograms -ArgumentList $ProgramstoInstall
+    }
 }
 
 # Create Form
