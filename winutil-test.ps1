@@ -85,7 +85,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Switch -Wildcard ($Button){
 
             "*Tab*BT*" {switchtab $Button}
-            "*InstallUpgrade*" {Invoke-Runspace $InstallUpgrade}
+            "*InstallUpgrade*" {Invoke-Runspace $sync.GUIInstallUpgrade}
             "*desktop*" {Tweak-Buttons $Button}
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
@@ -375,7 +375,44 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
     }
 
-    $InstallUpgrade = {
+    $sync.ScriptsInstallUpgrade = {
+        [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
+        function Write-Logs {
+            [cmdletbinding()]
+            param($Level, $Message, $LogPath)
+            $date = get-date
+            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                write-Error "$date : $Level : $message"
+                return
+            }
+            if($Level -eq "Warning"){
+                Write-Warning "$date : $Level : $message"
+                return
+            }
+            Write-Verbose "$date : $Level : $message"
+        }
+        try {
+            Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
+            $winget = winget upgrade --all
+            if($winget | Select-String "failed"){
+                Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
+            }
+            Else{
+                Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
+            }
+        }
+        catch {
+            Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
+        }
+    }    
+
+    $sync.GUIInstallUpgrade = {
+
+        if ((Test-Path $env:userprofile\AppData\Local\Microsoft\WindowsApps\winget.exe) -eq $false) {
+            [System.Windows.MessageBox]::Show("Winget is not installed. Please install an application first",'Winget is not installed!',"OK","Info")
+            Return
+        }
 
         $sync.form.Dispatcher.Invoke([action]{$sync.InstallUpgradecheck = $sync.InstallUpgrade.Content},"Normal")
         If($sync.InstallUpgradecheck -like "Running"){
@@ -384,23 +421,43 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
-        Start-Sleep -Seconds 5
-        #TODO Convert this to work inside the runspace
-        <#
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
-            
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Upgraded All Programs "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-            [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-        #>
+        
+        Invoke-Command -ScriptBlock {
+            function Write-Logs {
+                [cmdletbinding()]
+                param($Level, $Message, $LogPath)
+                $date = get-date
+                write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+                if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                    write-Error "$date : $Level : $message"
+                    return
+                }
+                if($Level -eq "Warning"){
+                    Write-Warning "$date : $Level : $message"
+                    return
+                }
+                Write-Verbose "$date : $Level : $message"
+            }
+            try {
+                Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
+                $winget = winget upgrade --all
+                if($winget | Select-String "failed"){
+                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
+                }
+                Else{
+                    Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
+                }
+            }
+            catch {
+                Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
+            }
+        }
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
         [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
     }
 
+    
     #===========================================================================
     # Tab 2 - Tweaks Buttons
     #===========================================================================
