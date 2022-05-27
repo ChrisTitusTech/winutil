@@ -1399,6 +1399,15 @@ $WPFFixesUpdate.Add_Click({
         Get-BitsTransfer | Remove-BitsTransfer 
     
         Write-Host "10) Attempting to install the Windows Update Agent..." 
+        
+        $arch64 = [Environment]::Is64BitOperatingSystem
+        if ($arch64 -eq $true) {
+            $arch = 64
+        }
+        else {
+            $arch = 32
+        }
+        
         If ($arch -eq 64) { 
             wusa Windows8-RT-KB2937636-x64 /quiet 
         }
