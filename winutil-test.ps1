@@ -6,7 +6,8 @@
 #>
 
 #region Variables
-    $global:sync = [Hashtable]::Synchronized(@{})
+    $sync = [Hashtable]::Synchronized(@{})
+    $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil.log"
 
     #WinForms dependancies 
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -14,31 +15,43 @@
     Add-Type -AssemblyName PresentationFramework
     [System.Windows.Forms.Application]::EnableVisualStyles()
 
+    #Test for admin credentials
+    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+        Return
+    }
+
+    if($env:branch){
+        $branch = $env:branch
+    }
+    Else {$branch = "main"}
+
     #To use local files run $env:environment = "dev" before starting the ps1 file
     if($env:environment -eq "dev"){
         $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
-        if($confirm -eq "yes"){
-            $inputXML = Get-Content "MainWindow.xaml"
-            $global:sync["applications"] = Get-Content applications.json | ConvertFrom-Json
-        }
+    }
+    if($confirm -eq "yes"){
+        $inputXML = Get-Content "MainWindow.xaml"
+        $sync.applications = Get-Content applications.json | ConvertFrom-Json
+        $VerbosePreference = "Continue"
     }
     else{
-        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
-        $global:sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
+        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
+        $sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/applications.json"
     }
         
     $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
     [xml]$XAML = $inputXML
     $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
     
-    try{$global:sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
+    try{$sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
     catch [System.Management.Automation.MethodInvocationException] {
         Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
         write-host $error[0].Exception.Message -ForegroundColor Red
         if ($error[0].Exception.Message -like "*button*"){
             write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
     }
-    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="ðŸ˜€" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
         Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
     }
 
@@ -48,7 +61,7 @@
 # Store Form Objects In PowerShell
 #===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"] = $global:sync["Form"].FindName($_.Name)}
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sync["Form"].FindName($_.Name)}
  
 #region Functions
 
@@ -57,9 +70,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     #===========================================================================
     
     #Gives every button the invoke-button function
-    $global:sync.keys | ForEach-Object {
+    $sync.keys | ForEach-Object {
         if($($sync["$_"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-            $global:sync["$_"].Add_Click({
+            $sync["$_"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-Button $Sender.name
             })
@@ -72,12 +85,12 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         Switch -Wildcard ($Button){
 
             "*Tab*BT*" {switchtab $Button}
-            "*InstallUpgrade*" {Invoke-Runspace $InstallUpgrade}
+            "*InstallUpgrade*" {Invoke-Runspace $sync.GUIInstallUpgrade}
             "*desktop*" {Tweak-Buttons $Button}
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-Runspace $undotweaks}
-            "install" {Invoke-Runspace $installprograms $(uncheckall "Install")}
+            "install" {Invoke-Runspace $sync.GUIInstallPrograms $(uncheckall "Install")}
             "tweaksbutton" {Invoke-Runspace $tweaks $(uncheckall "tweaks")}
             "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
             "Panelcontrol" {cmd /c control}
@@ -95,10 +108,10 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     function uncheckall {
         param($group)
         $output = @()
-        $global:sync.keys | Where-Object {$_ -like "*$($group)?*" -and $_ -notlike "$($group)Install" -and $_ -notlike "$($group)Install"} | ForEach-Object {
-            if ($global:sync["$_"].IsChecked -eq $true){
+        $sync.keys | Where-Object {$_ -like "*$($group)?*" -and $_ -notlike "$($group)Install" -and $_ -notlike "$($group)Install"} | ForEach-Object {
+            if ($sync["$_"].IsChecked -eq $true){
                 $output += $_
-                $global:sync["$_"].IsChecked = $false
+                $sync["$_"].IsChecked = $false
             }
         }
         Write-Output $output
@@ -113,7 +126,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         $runspace.ApartmentState = "STA"
         $runspace.ThreadOptions = "ReuseThread"
         $runspace.Open()
-        $runspace.SessionStateProxy.SetVariable("sync", $global:sync)
+        $runspace.SessionStateProxy.SetVariable("sync", $sync)
 
         $Script.Runspace = $runspace
         $Script.BeginInvoke()
@@ -129,8 +142,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
         0..3 | ForEach-Object {
             
-            if ($x -eq $_){$global:sync["TabNav"].Items[$_].IsSelected = $true}
-            else{$global:sync["TabNav"].Items[$_].IsSelected = $false}
+            if ($x -eq $_){$sync["TabNav"].Items[$_].IsSelected = $true}
+            else{$sync["TabNav"].Items[$_].IsSelected = $false}
         }
     }
 
@@ -179,9 +192,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                 "EssTweaksTele"
             )
         }
-        $global:sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
-            if ($preset -contains $_ ){$global:sync["$_"].IsChecked = $True}
-            Else{$global:sync["$_"].IsChecked = $false} 
+        $sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
+            if ($preset -contains $_ ){$sync["$_"].IsChecked = $True}
+            Else{$sync["$_"].IsChecked = $false} 
         }
     }
 
@@ -193,7 +206,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     # Install Tab
     #===========================================================================
 
-    $installPrograms = {
+    $Sync.GUIInstallPrograms = {
         Param ($programstoinstall)
 
         if($programstoinstall -eq $null){
@@ -201,86 +214,263 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             return
         }
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $global:sync.install.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $sync.install.Content},"Normal")
         If($sync.installcheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Running"},"Normal")      
+        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
+
+        $winget = @()
 
         foreach ($program in $programstoinstall){
-
-            [System.Windows.MessageBox]::Show("$($global:sync.applications.install.$program.winget)",'I am going to install this program',"OK","Info")
-
+            $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                $winget += $_
+            }
         }
 
-        #TODO Convert this to work inside the runspace and elevate credentials
-        <#
-            # Install all winget programs in new window
-            $wingetinstall.ToArray()
-            # Define Output variable
-            $wingetResult = New-Object System.Collections.Generic.List[System.Object]
-            foreach ( $node in $wingetinstall )
-            {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
-                $wingetResult.Add("$node`n")
-            }
-            $wingetResult.ToArray()
-            $wingetResult | % { $_ } | Out-Host
+        $params = @{
+            ScriptBlock = $sync.ScriptsInstallPrograms
+            ArgumentList = "$winget"
+            ErrorAction = "Continue"
+            ErrorVariable = "FAILURE"
+            WarningAction = "Continue"
+            WarningVariable = "WARNING"
+        }
 
-            # Popup after finished
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Installed Programs "
-            $Messageboxbody = ($wingetResult)
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+        Invoke-Command @params
 
-            [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-        #>
-        
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Start Install"},"Normal")
-        [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
+
+        if($FAILURE -or $WARNING){
+            [System.Windows.MessageBox]::Show("Unable to properly run installs, please invistage the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
+        }
+        Else{
+            [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+        }
     }
 
-    $InstallUpgrade = {
+    <#
+    Running $sync.ScriptsInstallPrograms in CLI format
+    $params = @{
+        ScriptBlock = $sync.ScriptsInstallPrograms
+        ArgumentList = "git.git,WinDirStat.WinDirStat"
+    }
+    
+    Add $VerbosePreference = "Continue" to get output   
+    
+    Invoke-Command @params
+    #>
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.InstallUpgradecheck = $global:sync.InstallUpgrade.Content},"Normal")
+    $sync.ScriptsInstallPrograms = {
+        Param ($programstoinstall)
+        if ($programstoinstall -like "*,*"){$programstoinstall = $programstoinstall -split ","}
+        else {$programstoinstall = $programstoinstall -split " "}
+
+        function Write-Logs {
+            [cmdletbinding()]
+            param($Level, $Message, $LogPath)
+            $date = get-date
+            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                write-Error "$date : $Level : $message"
+                return
+            }
+            if($Level -eq "Warning"){
+                Write-Warning "$date : $Level : $message"
+                return
+            }
+            Write-Verbose "$date : $Level : $message"
+        }
+
+        #region Check for WinGet and install if not present
+
+            if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+                #Checks if winget executable exists and if the Windows Version is 1809 or higher
+                Write-Logs -Level INFO -Message "WinGet was detected" -LogPath $sync.logfile
+            }
+            else {
+
+                if (($sync.ComputerInfo.WindowsVersion) -lt "1809") {
+                    #Checks if Windows Version is too old for winget
+                    Write-Logs -Level Warning -Message "Winget is not supported on this version of Windows (Pre-1809). Stopping installs" -LogPath $sync.logfile
+                    return
+                }
+
+                Write-Logs -Level INFO -Message "WinGet was not detected" -LogPath $sync.logfile
+
+                if (((($sync.ComputerInfo.OSName.IndexOf("LTSC")) -ne -1) -or ($sync.ComputerInfo.OSName.IndexOf("Server") -ne -1)) -and (($sync.ComputerInfo.WindowsVersion) -ge "1809")) {
+                    Try{
+                        #Checks if Windows edition is LTSC/Server 2019+
+                        #Manually Installing Winget
+                        Write-Logs -Level INFO -Message "LTSC/Server Edition detected. Running Alternative Installer" -LogPath $sync.logfile
+        
+                        #Download Needed Files
+                        $step = "Downloading the required files"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "./Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "./Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "./b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
+        
+                        #Installing Packages
+                        $step = "Installing Packages"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+                        Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
+                        Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath ".\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                        
+                        #Sleep for 5 seconds to maximize chance that winget will work without reboot
+                        Start-Sleep -s 5
+        
+                        #Removing no longer needed Files
+                        $step = "Removing Files"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+                        Remove-Item -Path ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                        Remove-Item -Path ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                        Remove-Item -Path ".\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+
+                        $step = "WinGet Sucessfully installed"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+
+                    }Catch{Write-Logs -Level FAILURE -Message "WinGet Install failed at $step" -LogPath $sync.logfile}
+                }
+                else {
+                    Try{
+                        #Installing Winget from the Microsoft Store                       
+                        $step = "Installing WinGet"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+                        Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+                        $nid = (Get-Process AppInstaller).Id
+                        Wait-Process -Id $nid
+
+                        $step = "Winget Installed"
+                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
+                    }Catch{Write-Logs -Level FAILURE -Message "WinGet Install failed at $step" -LogPath $sync.logfile}
+                }
+                Write-Logs -Level INFO -Message "WinGet has been installed" -LogPath $sync.logfile
+                Start-Sleep -Seconds 15
+            }
+
+        #endregion Check for WinGet and install if not present
+
+        $results = @()
+        foreach ($program in $programstoinstall){
+            try {
+                Write-Logs -Level INFO -Message "$($program) was selected to be installed." -LogPath $sync.logfile
+                $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($program)
+                if($winget | Select-String "failed"){
+                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
+                    $results += $program
+                }
+                Else{
+                    Write-Logs -Level INFO -Message "$($program) was installed." -LogPath $sync.logfile
+                }
+            }
+            catch {
+                Write-Logs -Level INFO -Message "$($program) failed to installed." -LogPath $sync.logfile
+                $results += $program
+            }
+        }
+
+        Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
+    }
+
+    $sync.ScriptsInstallUpgrade = {
+        [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
+        function Write-Logs {
+            [cmdletbinding()]
+            param($Level, $Message, $LogPath)
+            $date = get-date
+            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                write-Error "$date : $Level : $message"
+                return
+            }
+            if($Level -eq "Warning"){
+                Write-Warning "$date : $Level : $message"
+                return
+            }
+            Write-Verbose "$date : $Level : $message"
+        }
+        try {
+            Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
+            $winget = winget upgrade --all
+            if($winget | Select-String "failed"){
+                Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
+            }
+            Else{
+                Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
+            }
+        }
+        catch {
+            Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
+        }
+    }    
+
+    $sync.GUIInstallUpgrade = {
+
+        if ((Test-Path $env:userprofile\AppData\Local\Microsoft\WindowsApps\winget.exe) -eq $false) {
+            [System.Windows.MessageBox]::Show("Winget is not installed. Please install an application first",'Winget is not installed!',"OK","Info")
+            Return
+        }
+
+        $sync.form.Dispatcher.Invoke([action]{$sync.InstallUpgradecheck = $sync.InstallUpgrade.Content},"Normal")
         If($sync.InstallUpgradecheck -like "Running"){
             [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.InstallUpgrade.Content = "Running"},"Normal")
-        Start-Sleep -Seconds 5
-        #TODO Convert this to work inside the runspace
-        <#
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
-            
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Upgraded All Programs "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
+        
+        Invoke-Command -ScriptBlock {
+            function Write-Logs {
+                [cmdletbinding()]
+                param($Level, $Message, $LogPath)
+                $date = get-date
+                write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+                if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+                    write-Error "$date : $Level : $message"
+                    return
+                }
+                if($Level -eq "Warning"){
+                    Write-Warning "$date : $Level : $message"
+                    return
+                }
+                Write-Verbose "$date : $Level : $message"
+            }
+            try {
+                Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
+                $winget = winget upgrade --all
+                if($winget | Select-String "failed"){
+                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
+                }
+                Else{
+                    Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
+                }
+            }
+            catch {
+                Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
+            }
+        }
 
-            [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-        #>
-
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
         [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
     }
 
+    
     #===========================================================================
     # Tab 2 - Tweaks Buttons
     #===========================================================================
 
     $tweaks = {
         Param($Tweakstorun)
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.tweakscheck = $global:sync.tweaksbutton.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.tweakscheck = $sync.tweaksbutton.Content},"Normal")
         If($sync.tweakscheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Running"},"Normal")
         [System.Windows.MessageBox]::Show("$Tweakstorun",'I am going to install these tweaks',"OK","Info")
         
         <#TODO Get this to run in an elevated prompt if not already.
@@ -718,7 +908,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             }
         }
         #>
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
         [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Tweaks are done!',"OK","Info")
     }
 
@@ -863,13 +1053,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     $features = {
         param ($featuretoinstall)
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.featurescheck = $global:sync.FeatureInstall.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.featurescheck = $sync.FeatureInstall.Content},"Normal")
         If($sync.tweakscheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Features are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.FeatureInstall.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Running"},"Normal")
         [System.Windows.MessageBox]::Show("$featuretoinstall",'I am going to install these features',"OK","Info")
 
         <# TODO Make sure this works in a runspace/elevated shell
@@ -921,7 +1111,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
       
        [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 
-       $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.FeatureInstall.Content = "Install Features"},"Normal")
+       $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Install Features"},"Normal")
     }
 
     #===========================================================================
@@ -930,13 +1120,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
     $Updatesdefault = {
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.Updatesdefaultcheck = $global:sync.Updatesdefault.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.Updatesdefaultcheck = $sync.Updatesdefault.Content},"Normal")
         If($sync.Updatesdefaultcheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Features are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatesdefault.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatesdefault.Content = "Running"},"Normal")
         [System.Windows.MessageBox]::Show("Updates Default",'I am going to install the defauly Updates',"OK","Info")
 
         <#TODO Make sure this works in runspace/elevate to admin shell
@@ -1135,18 +1325,18 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
         [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatesdefault.Content = "Default (Out of Box) Settings"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatesdefault.Content = "Default (Out of Box) Settings"},"Normal")
     }
 
     $Updatesdisable = {
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.Updatesdisablecheck = $global:sync.Updatesdisable.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.Updatesdisablecheck = $sync.Updatesdisable.Content},"Normal")
         If($sync.Updatesdisablecheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Features are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatesdisable.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatesdisable.Content = "Running"},"Normal")
         [System.Windows.MessageBox]::Show("Updates Disable",'I am going to install the disable Updates',"OK","Info")
 
         <#TODO Make sure this works in runspace/elevate to admin shell
@@ -1242,18 +1432,18 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
         [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatesdisable.Content = "Disable ALL Updates (NOT RECOMMENDED!)"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatesdisable.Content = "Disable ALL Updates (NOT RECOMMENDED!)"},"Normal")
     }
 
     $Updatessecurity = {
 
-        $global:sync.form.Dispatcher.Invoke([action]{$sync.Updatessecuritycheck = $global:sync.Updatessecurity.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.Updatessecuritycheck = $sync.Updatessecurity.Content},"Normal")
         If($sync.Updatessecuritycheck -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Features are in progress',"OK","Info")
             return
         }
 
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatessecurity.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatessecurity.Content = "Running"},"Normal")
         [System.Windows.MessageBox]::Show("Updates Security",'I am going to install the Security Updates',"OK","Info")
 
         <#TODO Make sure this runs in a runspace and elevates to an admin prompt
@@ -1292,10 +1482,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     
         [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.Updatessecurity.Content = "Security (Recommended) Settings"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.Updatessecurity.Content = "Security (Recommended) Settings"},"Normal")
 
     }
 
 #endregion scripts
 
-$global:sync["Form"].ShowDialog() | out-null
+#Get ComputerInfo in the background
+Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
+
+$sync["Form"].ShowDialog() | out-null
