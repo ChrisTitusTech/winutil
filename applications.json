@@ -46,7 +46,7 @@
       "winget": "EpicGames.EpicGamesLauncher"
     },
     "Installesearch": {
-      "winget": "voidtools.Everything --source winget"
+      "winget": "voidtools.Everything"
     },
     "Installetcher": {
       "winget": "Balena.Etcher"
@@ -208,7 +208,7 @@
       "winget": "VB-Audio.Voicemeeter"
     },
     "Installvscode": {
-      "winget": "Git.Git;Microsoft.VisualStudioCode --source winget"
+      "winget": "Git.Git;Microsoft.VisualStudioCode"
     },
     "Installvscodium": {
       "winget": "Git.Git;VSCodium.VSCodium"
@@ -216,7 +216,7 @@
     "Installwindirstat": {
       "winget": "WinDirStat.WinDirStat"
     },
-    "Installwinscp": {
+    "Installscp": {
       "winget": "WinSCP.WinSCP"
     },
     "Installwireshark": {
@@ -224,6 +224,47 @@
     },
     "Installzoom": {
       "winget": "Zoom.Zoom"
-    }
+    },
+    "Installlibreoffice": {
+      "winget": "TheDocumentFoundation.LibreOffice"
+    }      
+  },
+  "Preset": {
+    "desktop": [
+      "EssTweaksAH",
+      "EssTweaksDVR",
+      "EssTweaksHiber",
+      "EssTweaksHome",
+      "EssTweaksLoc",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksStorage",
+      "EssTweaksTele",
+      "EssTweaksWifi",
+      "MiscTweaksPower",
+      "MiscTweaksNum"
+    ],
+    "laptop": [
+      "EssTweaksAH",
+      "EssTweaksDVR",
+      "EssTweaksHome",
+      "EssTweaksLoc",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksStorage",
+      "EssTweaksTele",
+      "EssTweaksWifi",
+      "MiscTweaksLapPower",
+      "MiscTweaksLapNum"
+    ],
+    "minimal": [
+      "EssTweaksHome",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksTele"
+    ]
   }
 }
