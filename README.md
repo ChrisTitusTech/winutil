@@ -6,6 +6,11 @@ Launch Command:
 iwr -useb https://christitus.com/win | iex
 ```
 
+Launch Command to run as Admin:
+
+```
+Start-Process powershell.exe -Verb RunAs -ArgumentList "iwr -useb https://christitus.com/win | iex"
+```
 ## Issues
 
 If you have any issues with the script please submit them to Issues tab here on GitHub and fill out the template so I can fix any bugs or make feature requests. 
