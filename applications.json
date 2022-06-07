@@ -225,8 +225,46 @@
     "Installzoom": {
       "winget": "Zoom.Zoom"
     },
-	"Installlibreoffice": {
-		"winget": "TheDocumentFoundation.LibreOffice"
-	}
+    "Installlibreoffice": {
+      "winget": "TheDocumentFoundation.LibreOffice"
+    }      
+  },
+  "Preset": {
+    "desktop": [
+      "EssTweaksAH",
+      "EssTweaksDVR",
+      "EssTweaksHiber",
+      "EssTweaksHome",
+      "EssTweaksLoc",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksStorage",
+      "EssTweaksTele",
+      "EssTweaksWifi",
+      "MiscTweaksPower",
+      "MiscTweaksNum"
+    ],
+    "laptop": [
+      "EssTweaksAH",
+      "EssTweaksDVR",
+      "EssTweaksHome",
+      "EssTweaksLoc",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksStorage",
+      "EssTweaksTele",
+      "EssTweaksWifi",
+      "MiscTweaksLapPower",
+      "MiscTweaksLapNum"
+    ],
+    "minimal": [
+      "EssTweaksHome",
+      "EssTweaksOO",
+      "EssTweaksRP",
+      "EssTweaksServices",
+      "EssTweaksTele"
+    ]
   }
 }

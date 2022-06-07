@@ -149,52 +149,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     Function Tweak-Buttons {
         Param ($button)
-        
-        if ($button -eq "desktop"){
-            $preset = @(
-                "EssTweaksAH"
-                "EssTweaksDVR"
-                "EssTweaksHiber"
-                "EssTweaksHome"
-                "EssTweaksLoc"
-                "EssTweaksOO"
-                "EssTweaksRP"
-                "EssTweaksServices"
-                "EssTweaksStorage"
-                "EssTweaksTele"
-                "EssTweaksWifi"
-                "MiscTweaksPower"
-                "MiscTweaksNum"
-            )
-        }
-        if ($button -eq "laptop"){
-            $preset = @(
-                "EssTweaksAH"
-                "EssTweaksDVR"
-                "EssTweaksHome"
-                "EssTweaksLoc"
-                "EssTweaksOO"
-                "EssTweaksRP"
-                "EssTweaksServices"
-                "EssTweaksStorage"
-                "EssTweaksTele"
-                "EssTweaksWifi"
-                "MiscTweaksLapPower"
-                "MiscTweaksLapNum"
-            )
-        }
-        if ($button -eq "minimal"){
-            $preset = @(
-                "EssTweaksHome"
-                "EssTweaksOO"
-                "EssTweaksRP"
-                "EssTweaksServices"
-                "EssTweaksTele"
-            )
-        }
-        $sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
-            if ($preset -contains $_ ){$sync["$_"].IsChecked = $True}
-            Else{$sync["$_"].IsChecked = $false} 
+        $preset = $global:sync["applications"].preset.$button
+
+        $global:sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
+            if ($preset -contains $_ ){$global:sync["$_"].IsChecked = $True}
+            Else{$global:sync["$_"].IsChecked = $false} 
         }
     }
 
