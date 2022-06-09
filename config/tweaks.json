@@ -816,36 +816,6 @@
           "Name":  "SysMain",
           "StartupType":  "Disabled", 
           "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
-        },
-        {
-          "Name":  "dmwappushservice",
-          "StartupType":  "Disabled", 
-          "OriginalType": "Manual"
         }
       ]
   },

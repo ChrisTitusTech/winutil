@@ -97,9 +97,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             "*desktop*" {Tweak-Buttons $Button}
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
-            "*undoall*" {Invoke-Runspace $undotweaks}
+            "*undoall*" {Invoke-Runspace $Sync.GUIUndoTweaks}
             "install" {Invoke-Runspace $sync.GUIInstallPrograms $(uncheckall "Install")}
-            "tweaksbutton" {Invoke-Runspace $tweaks $(uncheckall "tweaks")}
+            "tweaksbutton" {Invoke-Runspace $Sync.GUITweaks $(uncheckall "tweaks")}
             "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
             "Panelcontrol" {cmd /c control}
             "Panelnetwork" {cmd /c ncpa.cpl}
@@ -211,7 +211,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
 
         if($FAILURE -or $WARNING){
-            [System.Windows.MessageBox]::Show("Unable to properly run installs, please invistage the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
+            [System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
         }
         Else{
             [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
@@ -343,7 +343,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     $sync.ScriptsInstallUpgrade = {
-        [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
         function Write-Logs {
             [cmdletbinding()]
             param($Level, $Message, $LogPath)
@@ -429,8 +428,47 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     # Tab 2 - Tweaks Buttons
     #===========================================================================
 
-    $tweaks = {
+    $Sync.GUITweaks = {
         Param($Tweakstorun)
+
+        if($Tweakstorun -eq $null){
+            [System.Windows.MessageBox]::Show("Please check the tweaks you wish to run",'Nothing to do',"OK","Info")
+            return
+        }
+
+        $sync.form.Dispatcher.Invoke([action]{$sync.tweakcheck = $sync.tweaksbutton.Content},"Normal")
+        If($sync.tweakcheck -like "Running"){
+            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
+            return
+        }
+
+        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Running"},"Normal")
+
+        $params = @{
+            ScriptBlock = $sync.ScriptTweaks
+            ArgumentList = "$Tweakstorun"
+            ErrorAction = "Continue"
+            ErrorVariable = "FAILURE"
+            WarningAction = "Continue"
+            WarningVariable = "WARNING"
+        }
+
+        Invoke-command @params
+
+        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
+
+        if($FAILURE -or $WARNING){
+            [System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
+        }
+        Else{
+            [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Installs are done!',"OK","Info")
+        }
+    }
+
+    $Sync.ScriptTweaks = {
+        Param($Tweakstorun)
+        if ($Tweakstorun -like "*,*"){$Tweakstorun = $Tweakstorun -split ","}
+        else {$Tweakstorun = $Tweakstorun -split " "}
 
         function Write-Logs {
             [cmdletbinding()]
@@ -575,12 +613,39 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
             }
         }
-
-        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
-        [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Tweaks are done!',"OK","Info")
+        Write-Logs -Level INFO -Message "Finished setting tweaks" -LogPath $sync.logfile
     }
 
-    $undotweaks = {
+    $Sync.GUIUndoTweaks = {
+        $sync.form.Dispatcher.Invoke([action]{$sync.tweakcheck = $sync.undoall.Content},"Normal")
+        If($sync.tweakcheck -like "Running"){
+            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
+            return
+        }
+
+        $sync.Form.Dispatcher.Invoke([action]{$sync.undoall.Content = "Running"},"Normal")
+
+        $params = @{
+            ScriptBlock = $sync.ScriptUndoTweaks
+            ErrorAction = "Continue"
+            ErrorVariable = "FAILURE"
+            WarningAction = "Continue"
+            WarningVariable = "WARNING"
+        }
+
+        Invoke-command @params
+
+        $sync.Form.Dispatcher.Invoke([action]{$sync.undoall.Content = "Undo All Tweaks"},"Normal")
+
+        if($FAILURE -or $WARNING){
+            [System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
+        }
+        Else{
+            [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Installs are done!',"OK","Info")
+        }
+    }
+
+    $sync.ScriptUndoTweaks = {
         
         function Write-Logs {
             [cmdletbinding()]
@@ -598,7 +663,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             Write-Verbose "$date : $Level : $message"
         }
 
-        Write-Logs -Level ERROR -Message "Creating Restore Point incase something bad happens" -LogPath $sync.logfile
+        Write-Logs -Level INFO -Message "Creating Restore Point incase something bad happens" -LogPath $sync.logfile
         Enable-ComputerRestore -Drive "C:\"
         Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
@@ -613,7 +678,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         }Catch{Write-Logs -Level ERROR -Message "$("$($registry.path)\$($registry.name)") was not set" -LogPath $sync.logfile}
                     }
                 }
-                Write-Logs -Level INFO -Message "Finished reseting $tweak registries" -LogPath $sync.logfile
+                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) registries" -LogPath $sync.logfile
 
                 #Services modification 
                 Foreach ($services in $($tweak.value.service)){
@@ -629,7 +694,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         }
                     }
                 }
-                Write-Logs -Level INFO -Message "Finished reseting $tweak Services" -LogPath $sync.logfile
+                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Services" -LogPath $sync.logfile
 
                 #Scheduled Tasks Modification
                 Foreach ($ScheduledTasks in $($tweak.value.ScheduledTask)){
@@ -645,7 +710,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($ScheduledTask.name) set to  $($ScheduledTask.OriginalState)" -LogPath $sync.logfile}
                     }
                 }
-                Write-Logs -Level INFO -Message "Finished reseting $tweak Scheduled Tasks" -LogPath $sync.logfile                  
+                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Scheduled Tasks" -LogPath $sync.logfile                  
         }
 
         Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
@@ -671,17 +736,17 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
         }
 
-        Write-Logs -Level ERROR -Message "Unrestricting AutoLogger directory" -LogPath $sync.logfile
+        Write-Logs -Level INFO -Message "Unrestricting AutoLogger directory" -LogPath $sync.logfile
         $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
         icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-        Write-Logs -Level ERROR -Message "Reset Local Group Policies to Stock Defaults" -LogPath $sync.logfile        
+        Write-Logs -Level INFO -Message "Reset Local Group Policies to Stock Defaults" -LogPath $sync.logfile        
         # cmd /c secedit /configure /cfg %windir%\inf\defltbase.inf /db defltbase.sdb /verbose
         cmd /c RD /S /Q "%WinDir%\System32\GroupPolicyUsers"
         cmd /c RD /S /Q "%WinDir%\System32\GroupPolicy"
         cmd /c gpupdate /force
 
-        Write-Logs -Level ERROR -Message "Restoring Clipboard History..." -LogPath $sync.logfile        
+        Write-Logs -Level INFO -Message "Restoring Clipboard History..." -LogPath $sync.logfile        
         Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
 
