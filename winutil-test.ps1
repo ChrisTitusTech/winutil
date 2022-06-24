@@ -469,7 +469,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Param($Tweakstorun)
         if ($Tweakstorun -like "*,*"){$Tweakstorun = $Tweakstorun -split ","}
         else {$Tweakstorun = $Tweakstorun -split " "}
-        [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Installs are done!',"OK","Info")
+
         function Write-Logs {
             [cmdletbinding()]
             param($Level, $Message, $LogPath)
