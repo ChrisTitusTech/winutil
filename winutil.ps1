@@ -42,6 +42,12 @@ Function Get-FormVariables {
 Get-FormVariables
 
 #===========================================================================
+# Global Variables
+#===========================================================================
+$AppTitle = "Chris Titus Tech's Windows Utility"
+
+
+#===========================================================================
 # Navigation Controls
 #===========================================================================
 
@@ -426,6 +432,12 @@ $WPFinstall.Add_Click({
                 Wait-Process -Id $nid
                 Write-Host "Winget Installed"
             }
+        }
+
+        if ($wingetinstall.Count -eq 0) {
+            $WarningMsg = "Please select the program(s) to install"
+            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+            return
         }
 
         # Install all winget programs in new window
@@ -1196,11 +1208,11 @@ $WPFFeatureInstall.Add_Click({
     })
 
 $WPFPanelDISM.Add_Click({
-        Start-Process PowerShell -ArgumentList 'Write-Host "Chkdsk" -ForegroundColor Green; Chkdsk; 
-Write-Host "SFC - 1st scan" -ForegroundColor Green; sfc /scannow;
-Write-Host "DISM" -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
-Write-Host "SFC - 2nd scan" -ForegroundColor Green; sfc /scannow; 
-Read-Host "Press Enter"' -verb runas
+        Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan; 
+        Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
+        Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+        Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
+        Read-Host '`nPress Enter to Continue'" -verb runas
     })
 
 $WPFPanelcontrol.Add_Click({
@@ -1399,7 +1411,7 @@ $WPFFixesUpdate.Add_Click({
         Get-BitsTransfer | Remove-BitsTransfer 
     
         Write-Host "10) Attempting to install the Windows Update Agent..." 
-        If ($arch -eq 64) { 
+        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) { 
             wusa Windows8-RT-KB2937636-x64 /quiet 
         }
         else { 
