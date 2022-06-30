@@ -590,7 +590,7 @@ $WPFtweaksbutton.Add_Click({
             $WPFEssTweaksOO.IsChecked = $false
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
-            Write-Host "Creating Restore Point incase something bad happens"
+            Write-Host "Creating Restore Point in case something bad happens"
             Enable-ComputerRestore -Drive "C:\"
             Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
             $WPFEssTweaksRP.IsChecked = $false
@@ -1021,7 +1021,7 @@ $WPFtweaksbutton.Add_Click({
 # Undo All
 #===========================================================================
 $WPFundoall.Add_Click({
-        Write-Host "Creating Restore Point incase something bad happens"
+        Write-Host "Creating Restore Point in case something bad happens"
         Enable-ComputerRestore -Drive "C:\"
         Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
