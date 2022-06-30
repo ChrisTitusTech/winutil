@@ -42,6 +42,12 @@ Function Get-FormVariables {
 Get-FormVariables
 
 #===========================================================================
+# Global Variables
+#===========================================================================
+$AppTitle = "Chris Titus Tech's Windows Utility"
+
+
+#===========================================================================
 # Navigation Controls
 #===========================================================================
 
@@ -426,6 +432,12 @@ $WPFinstall.Add_Click({
                 Wait-Process -Id $nid
                 Write-Host "Winget Installed"
             }
+        }
+
+        if ($wingetinstall.Count -eq 0) {
+            $WarningMsg = "Please select the program(s) to install"
+            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+            return
         }
 
         # Install all winget programs in new window
