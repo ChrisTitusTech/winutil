@@ -26,7 +26,7 @@
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml")
         $global:sync["applications"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/test/applications.json"
     }
-        
+
     $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
     [xml]$XAML = $inputXML
     $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
@@ -1298,4 +1298,27 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
 #endregion scripts
 
+# Arguments
+If($env:args){
+    Write-Verbose "Arguments Detected, Running Args"
+    If($env:args -match '\bInstallUpgrade\b'){Invoke-Command -scriptblock $InstallUpgrade}
+    If($env:args -match '\bUndoTweaks\b'){Invoke-Command -scriptblock $undotweaks}
+    If($env:args -match '\bPanelControl\b'){cmd /c control}
+    If($env:args -match '\bPanelNetwork\b'){cmd /c ncpa.cpl}
+    If($env:args -match '\bPanelPower\b'){cmd /c powercfg.cpl}
+    If($env:args -match '\bPanelSound\b'){cmd /c mmsys.cpl}
+    If($env:args -match '\bPanelSystem\b'){cmd /c sysdm.cpl}
+    If($env:args -match '\bPanelUser\b'){cmd /c "control userpasswords2"}
+    If($env:args -match '\bDefaultUpdates\b'){Invoke-Command -scriptblock $Updatesdefault}
+    If($env:args -match '\bDisableUpdates\b'){Invoke-Command -scriptblock $Updatesdisable}
+    If($env:args -match '\bEnableSecurity\b'){Invoke-Command -scriptblock $Updatessecurity}
+    If($env:args -match '\bQuitAfter\b'){Break}
+    If($env:args -match '\bInstall\b'){
+        $ProgramstoInstall = (($env:args-split " " | Where-Object {$_ -like "install*"} ) -split ":")[1]
+        Write-Verbose "Installing $ProgramstoInstall."
+        Invoke-Command -scriptblock  $sync.ScriptsInstallPrograms -ArgumentList $ProgramstoInstall
+    }
+}
+
+# Create Form
 $global:sync["Form"].ShowDialog() | out-null
