@@ -12,7 +12,7 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
-
+ 
 $reader = (New-Object System.Xml.XmlNodeReader $xaml) 
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
@@ -26,36 +26,20 @@ catch {
     # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
-
+ 
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
-
+ 
 $xaml.SelectNodes("//*[@Name]") | % { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
-
+ 
 Function Get-FormVariables {
     If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
     write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
     get-variable WPF*
 }
-
+ 
 Get-FormVariables
-
-#===========================================================================
-# Functions
-#===========================================================================
-function UncheckAll {
-    param([System.Windows.Controls.Grid]$grid)
-    foreach ( $ele in $grid.Children ) {
-        If ($ele.GetType().ToString() -eq "System.Windows.Controls.StackPanel") {
-            foreach ($subele in $ele.Children) {
-                If ($subele.GetType().ToString() -eq "System.Windows.Controls.CheckBox") {
-                    $subele.IsChecked = $false
-                }
-            }
-        }
-    }
-}
 
 #===========================================================================
 # Navigation Controls
@@ -91,234 +75,309 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 $WPFinstall.Add_Click({
         $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
-        If ( $WPFInstalladobe.IsChecked -eq $true ) {
+        If ( $WPFInstalladobe.IsChecked -eq $true ) { 
             $wingetinstall.Add("Adobe.Acrobat.Reader.64-bit")
+            $WPFInstalladobe.IsChecked = $false
         }
-        If ( $WPFInstalladvancedip.IsChecked -eq $true ) {
+        If ( $WPFInstalladvancedip.IsChecked -eq $true ) { 
             $wingetinstall.Add("Famatech.AdvancedIPScanner")
+            $WPFInstalladvancedip.IsChecked = $false
         }
-        If ( $WPFInstallatom.IsChecked -eq $true ) {
+        If ( $WPFInstallatom.IsChecked -eq $true ) { 
             $wingetinstall.Add("GitHub.Atom")
+            $WPFInstallatom.IsChecked = $false
         }
-        If ( $WPFInstallaudacity.IsChecked -eq $true ) {
+        If ( $WPFInstallaudacity.IsChecked -eq $true ) { 
             $wingetinstall.Add("Audacity.Audacity")
+            $WPFInstallaudacity.IsChecked = $false
         }
-        If ( $WPFInstallautohotkey.IsChecked -eq $true ) {
+        If ( $WPFInstallautohotkey.IsChecked -eq $true ) { 
             $wingetinstall.Add("Lexikos.AutoHotkey")
-        }
-        If ( $WPFInstallbrave.IsChecked -eq $true ) {
+            $WPFInstallautohotkey.IsChecked = $false
+        }  
+        If ( $WPFInstallbrave.IsChecked -eq $true ) { 
             $wingetinstall.Add("BraveSoftware.BraveBrowser")
+            $WPFInstallbrave.IsChecked = $false
         }
-        If ( $WPFInstallchrome.IsChecked -eq $true ) {
+        If ( $WPFInstallchrome.IsChecked -eq $true ) { 
             $wingetinstall.Add("Google.Chrome")
+            $WPFInstallchrome.IsChecked = $false
         }
-        If ( $WPFInstalldiscord.IsChecked -eq $true ) {
+        If ( $WPFInstalldiscord.IsChecked -eq $true ) { 
             $wingetinstall.Add("Discord.Discord")
+            $WPFInstalldiscord.IsChecked = $false
         }
-        If ( $WPFInstallesearch.IsChecked -eq $true ) {
+        If ( $WPFInstallesearch.IsChecked -eq $true ) { 
             $wingetinstall.Add("voidtools.Everything --source winget")
+            $WPFInstallesearch.IsChecked = $false
         }
-        If ( $WPFInstalletcher.IsChecked -eq $true ) {
+        If ( $WPFInstalletcher.IsChecked -eq $true ) { 
             $wingetinstall.Add("Balena.Etcher")
+            $WPFInstalletcher.IsChecked = $false
         }
-        If ( $WPFInstallfirefox.IsChecked -eq $true ) {
+        If ( $WPFInstallfirefox.IsChecked -eq $true ) { 
             $wingetinstall.Add("Mozilla.Firefox")
+            $WPFInstallfirefox.IsChecked = $false
         }
-        If ( $WPFInstallgimp.IsChecked -eq $true ) {
+        If ( $WPFInstallgimp.IsChecked -eq $true ) { 
             $wingetinstall.Add("GIMP.GIMP")
+            $WPFInstallgimp.IsChecked = $false
         }
-        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) {
+        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("GitHub.GitHubDesktop")
+            $WPFInstallgithubdesktop.IsChecked = $false
         }
-        If ( $WPFInstallimageglass.IsChecked -eq $true ) {
+        If ( $WPFInstallimageglass.IsChecked -eq $true ) { 
             $wingetinstall.Add("DuongDieuPhap.ImageGlass")
+            $WPFInstallimageglass.IsChecked = $false
         }
-        If ( $WPFInstalljava8.IsChecked -eq $true ) {
+        If ( $WPFInstalljava8.IsChecked -eq $true ) { 
             $wingetinstall.Add("AdoptOpenJDK.OpenJDK.8")
+            $WPFInstalljava8.IsChecked = $false
         }
-        If ( $WPFInstalljava16.IsChecked -eq $true ) {
+        If ( $WPFInstalljava16.IsChecked -eq $true ) { 
             $wingetinstall.Add("AdoptOpenJDK.OpenJDK.16")
+            $WPFInstalljava16.IsChecked = $false
         }
-        If ( $WPFInstalljava18.IsChecked -eq $true ) {
+        If ( $WPFInstalljava18.IsChecked -eq $true ) { 
             $wingetinstall.Add("Oracle.JDK.18")
+            $WPFInstalljava18.IsChecked = $false
         }
-        If ( $WPFInstalljetbrains.IsChecked -eq $true ) {
+        If ( $WPFInstalljetbrains.IsChecked -eq $true ) { 
             $wingetinstall.Add("JetBrains.Toolbox")
+            $WPFInstalljetbrains.IsChecked = $false
         }
-        If ( $WPFInstallmpc.IsChecked -eq $true ) {
+        If ( $WPFInstallmpc.IsChecked -eq $true ) { 
             $wingetinstall.Add("clsid2.mpc-hc")
+            $WPFInstallmpc.IsChecked = $false
         }
-        If ( $WPFInstallnodejs.IsChecked -eq $true ) {
+        If ( $WPFInstallnodejs.IsChecked -eq $true ) { 
             $wingetinstall.Add("OpenJS.NodeJS")
+            $WPFInstallnodejs.IsChecked = $false
         }
-        If ( $WPFInstallnodejslts.IsChecked -eq $true ) {
+        If ( $WPFInstallnodejslts.IsChecked -eq $true ) { 
             $wingetinstall.Add("OpenJS.NodeJS.LTS")
+            $WPFInstallnodejslts.IsChecked = $false
         }
-        If ( $WPFInstallnotepadplus.IsChecked -eq $true ) {
+        If ( $WPFInstallnotepadplus.IsChecked -eq $true ) { 
             $wingetinstall.Add("Notepad++.Notepad++")
+            $WPFInstallnotepadplus.IsChecked = $false
         }
-        If ( $WPFInstallpowertoys.IsChecked -eq $true ) {
+        If ( $WPFInstallpowertoys.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.PowerToys")
+            $WPFInstallpowertoys.IsChecked = $false
         }
-        If ( $WPFInstallputty.IsChecked -eq $true ) {
+        If ( $WPFInstallputty.IsChecked -eq $true ) { 
             $wingetinstall.Add("PuTTY.PuTTY")
+            $WPFInstallputty.IsChecked = $false
         }
-        If ( $WPFInstallpython3.IsChecked -eq $true ) {
+        If ( $WPFInstallpython3.IsChecked -eq $true ) { 
             $wingetinstall.Add("Python.Python.3")
+            $WPFInstallpython3.IsChecked = $false
         }
-        If ( $WPFInstallsevenzip.IsChecked -eq $true ) {
+        If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
             $wingetinstall.Add("7zip.7zip")
+            $WPFInstallsevenzip.IsChecked = $false
         }
-        If ( $WPFInstallsharex.IsChecked -eq $true ) {
+        If ( $WPFInstallsharex.IsChecked -eq $true ) { 
             $wingetinstall.Add("ShareX.ShareX")
+            $WPFInstallsharex.IsChecked = $false
         }
-        If ( $WPFInstallsublime.IsChecked -eq $true ) {
+        If ( $WPFInstallsublime.IsChecked -eq $true ) { 
             $wingetinstall.Add("SublimeHQ.SublimeText.4")
+            $WPFInstallsublime.IsChecked = $false
         }
-        If ( $WPFInstallsumatra.IsChecked -eq $true ) {
+        If ( $WPFInstallsumatra.IsChecked -eq $true ) { 
             $wingetinstall.Add("SumatraPDF.SumatraPDF")
+            $WPFInstallsumatra.IsChecked = $false
         }
-        If ( $WPFInstallterminal.IsChecked -eq $true ) {
+        If ( $WPFInstallterminal.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.WindowsTerminal")
+            $WPFInstallterminal.IsChecked = $false
         }
-        If ( $WPFInstallttaskbar.IsChecked -eq $true ) {
+        If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
             $wingetinstall.Add("TranslucentTB.TranslucentTB")
+            $WPFInstallttaskbar.IsChecked = $false
         }
-        If ( $WPFInstallvlc.IsChecked -eq $true ) {
+        If ( $WPFInstallvlc.IsChecked -eq $true ) { 
             $wingetinstall.Add("VideoLAN.VLC")
+            $WPFInstallvlc.IsChecked = $false
         }
-        If ( $WPFInstallvscode.IsChecked -eq $true ) {
+        If ( $WPFInstallvscode.IsChecked -eq $true ) { 
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
+            $WPFInstallvscode.IsChecked = $false
         }
-        If ( $WPFInstallvscodium.IsChecked -eq $true ) {
+        If ( $WPFInstallvscodium.IsChecked -eq $true ) { 
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("VSCodium.VSCodium")
+            $WPFInstallvscodium.IsChecked = $false
         }
-        If ( $WPFInstallwinscp.IsChecked -eq $true ) {
+        If ( $WPFInstallwinscp.IsChecked -eq $true ) { 
             $wingetinstall.Add("WinSCP.WinSCP")
+            $WPFInstallputty.IsChecked = $false
         }
-        If ( $WPFInstallanydesk.IsChecked -eq $true ) {
+        If ( $WPFInstallanydesk.IsChecked -eq $true ) { 
             $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
+            $WPFInstallanydesk.IsChecked = $false
         }
-        If ( $WPFInstallbitwarden.IsChecked -eq $true ) {
+        If ( $WPFInstallbitwarden.IsChecked -eq $true ) { 
             $wingetinstall.Add("Bitwarden.Bitwarden")
-        }
-        If ( $WPFInstallblender.IsChecked -eq $true ) {
+            $WPFInstallbitwarden.IsChecked = $false
+        }        
+        If ( $WPFInstallblender.IsChecked -eq $true ) { 
             $wingetinstall.Add("BlenderFoundation.Blender")
-        }
-        If ( $WPFInstallchromium.IsChecked -eq $true ) {
+            $WPFInstallblender.IsChecked = $false
+        }                    
+        If ( $WPFInstallchromium.IsChecked -eq $true ) { 
             $wingetinstall.Add("eloston.ungoogled-chromium")
-        }
-        If ( $WPFInstallcpuz.IsChecked -eq $true ) {
+            $WPFInstallchromium.IsChecked = $false
+        }             
+        If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
             $wingetinstall.Add("CPUID.CPU-Z")
-        }
-        If ( $WPFInstalleartrumpet.IsChecked -eq $true ) {
+            $WPFInstallcpuz.IsChecked = $false
+        }                            
+        If ( $WPFInstalleartrumpet.IsChecked -eq $true ) { 
             $wingetinstall.Add("File-New-Project.EarTrumpet")
-        }
-        If ( $WPFInstallepicgames.IsChecked -eq $true ) {
+            $WPFInstalleartrumpet.IsChecked = $false
+        }           
+        If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
             $wingetinstall.Add("EpicGames.EpicGamesLauncher")
-        }
-        If ( $WPFInstallflameshot.IsChecked -eq $true ) {
+            $WPFInstallepicgames.IsChecked = $false
+        }                                      
+        If ( $WPFInstallflameshot.IsChecked -eq $true ) { 
             $wingetinstall.Add("Flameshot.Flameshot")
-        }
-        If ( $WPFInstallfoobar.IsChecked -eq $true ) {
+            $WPFInstallflameshot.IsChecked = $false
+        }            
+        If ( $WPFInstallfoobar.IsChecked -eq $true ) { 
             $wingetinstall.Add("PeterPawlowski.foobar2000")
-        }
-        If ( $WPFInstallgog.IsChecked -eq $true ) {
+            $WPFInstallfoobar.IsChecked = $false
+        }                     
+        If ( $WPFInstallgog.IsChecked -eq $true ) { 
             $wingetinstall.Add("GOG.Galaxy")
-        }
-        If ( $WPFInstallgpuz.IsChecked -eq $true ) {
+            $WPFInstallgog.IsChecked = $false
+        }                  
+        If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
             $wingetinstall.Add("TechPowerUp.GPU-Z")
-        }
-        If ( $WPFInstallgreenshot.IsChecked -eq $true ) {
+            $WPFInstallgpuz.IsChecked = $false
+        }                 
+        If ( $WPFInstallgreenshot.IsChecked -eq $true ) { 
             $wingetinstall.Add("Greenshot.Greenshot")
-        }
-        If ( $WPFInstallhandbrake.IsChecked -eq $true ) {
+            $WPFInstallgreenshot.IsChecked = $false
+        }            
+        If ( $WPFInstallhandbrake.IsChecked -eq $true ) { 
             $wingetinstall.Add("HandBrake.HandBrake")
-        }
-        If ( $WPFInstallhexchat.IsChecked -eq $true ) {
+            $WPFInstallhandbrake.IsChecked = $false
+        }      
+        If ( $WPFInstallhexchat.IsChecked -eq $true ) { 
             $wingetinstall.Add("HexChat.HexChat")
-        }
-        If ( $WPFInstallhwinfo.IsChecked -eq $true ) {
+            $WPFInstallhexchat.IsChecked = $false
+        }       
+        If ( $WPFInstallhwinfo.IsChecked -eq $true ) { 
             $wingetinstall.Add("REALiX.HWiNFO")
-        }
-        If ( $WPFInstallinkscape.IsChecked -eq $true ) {
+            $WPFInstallhwinfo.IsChecked = $false
+        }                       
+        If ( $WPFInstallinkscape.IsChecked -eq $true ) { 
             $wingetinstall.Add("Inkscape.Inkscape")
-        }
-        If ( $WPFInstallkeepass.IsChecked -eq $true ) {
+            $WPFInstallinkscape.IsChecked = $false
+        }             
+        If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
             $wingetinstall.Add("KeePassXCTeam.KeePassXC")
-        }
-        If ( $WPFInstalllibrewolf.IsChecked -eq $true ) {
+            $WPFInstallkeepass.IsChecked = $false
+        }              
+        If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
             $wingetinstall.Add("LibreWolf.LibreWolf")
-        }
-        If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) {
+            $WPFInstalllibrewolf.IsChecked = $false
+        }            
+        If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) { 
             $wingetinstall.Add("Malwarebytes.Malwarebytes")
-        }
-        If ( $WPFInstallmatrix.IsChecked -eq $true ) {
+            $WPFInstallmalwarebytes.IsChecked = $false
+        }          
+        If ( $WPFInstallmatrix.IsChecked -eq $true ) { 
             $wingetinstall.Add("Element.Element")
-        }
-        If ( $WPFInstallmremoteng.IsChecked -eq $true ) {
+            $WPFInstallmatrix.IsChecked = $false
+        } 
+        If ( $WPFInstallmremoteng.IsChecked -eq $true ) { 
             $wingetinstall.Add("mRemoteNG.mRemoteNG")
-        }
-        If ( $WPFInstallnvclean.IsChecked -eq $true ) {
+            $WPFInstallmremoteng.IsChecked = $false
+        }                    
+        If ( $WPFInstallnvclean.IsChecked -eq $true ) { 
             $wingetinstall.Add("TechPowerUp.NVCleanstall")
-        }
-        If ( $WPFInstallobs.IsChecked -eq $true ) {
+            $WPFInstallnvclean.IsChecked = $false
+        }              
+        If ( $WPFInstallobs.IsChecked -eq $true ) { 
             $wingetinstall.Add("OBSProject.OBSStudio")
-        }
-        If ( $WPFInstallobsidian.IsChecked -eq $true ) {
+            $WPFInstallobs.IsChecked = $false
+        }                  
+        If ( $WPFInstallobsidian.IsChecked -eq $true ) { 
             $wingetinstall.Add("Obsidian.Obsidian")
-        }
-        If ( $WPFInstallrevo.IsChecked -eq $true ) {
+            $WPFInstallobsidian.IsChecked = $false
+        }                           
+        If ( $WPFInstallrevo.IsChecked -eq $true ) { 
             $wingetinstall.Add("RevoUninstaller.RevoUninstaller")
-        }
-        If ( $WPFInstallrufus.IsChecked -eq $true ) {
+            $WPFInstallrevo.IsChecked = $false
+        }                 
+        If ( $WPFInstallrufus.IsChecked -eq $true ) { 
             $wingetinstall.Add("Rufus.Rufus")
-        }
-        If ( $WPFInstallsignal.IsChecked -eq $true ) {
+            $WPFInstallrufus.IsChecked = $false
+        }   
+        If ( $WPFInstallsignal.IsChecked -eq $true ) { 
             $wingetinstall.Add("OpenWhisperSystems.Signal")
+            $WPFInstallsignal.IsChecked = $false
         }
-        If ( $WPFInstallskype.IsChecked -eq $true ) {
+        If ( $WPFInstallskype.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.Skype")
-        }
-        If ( $WPFInstallslack.IsChecked -eq $true ) {
+            $WPFInstallskype.IsChecked = $false
+        }                               
+        If ( $WPFInstallslack.IsChecked -eq $true ) { 
             $wingetinstall.Add("SlackTechnologies.Slack")
-        }
-        If ( $WPFInstallspotify.IsChecked -eq $true ) {
+            $WPFInstallslack.IsChecked = $false
+        }                
+        If ( $WPFInstallspotify.IsChecked -eq $true ) { 
             $wingetinstall.Add("Spotify.Spotify")
-        }
-        If ( $WPFInstallsteam.IsChecked -eq $true ) {
+            $WPFInstallspotify.IsChecked = $false
+        }              
+        If ( $WPFInstallsteam.IsChecked -eq $true ) { 
             $wingetinstall.Add("Valve.Steam")
-        }
-        If ( $WPFInstallteamviewer.IsChecked -eq $true ) {
+            $WPFInstallsteam.IsChecked = $false
+        }                             
+        If ( $WPFInstallteamviewer.IsChecked -eq $true ) { 
             $wingetinstall.Add("TeamViewer.TeamViewer")
+            $WPFInstallteamviewer.IsChecked = $false
         }
-        If ( $WPFInstallteams.IsChecked -eq $true ) {
+        If ( $WPFInstallteams.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.Teams")
-        }
-        If ( $WPFInstalltreesize.IsChecked -eq $true ) {
+            $WPFInstallteams.IsChecked = $false
+        }                        
+        If ( $WPFInstalltreesize.IsChecked -eq $true ) { 
             $wingetinstall.Add("JAMSoftware.TreeSize.Free")
-        }
-        If ( $WPFInstallvisualstudio.IsChecked -eq $true ) {
+            $WPFInstalltreesize.IsChecked = $false
+        }                         
+        If ( $WPFInstallvisualstudio.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.VisualStudio.2022.Community")
-        }
-        If ( $WPFInstallvivaldi.IsChecked -eq $true ) {
+            $WPFInstallvisualstudio.IsChecked = $false
+        }         
+        If ( $WPFInstallvivaldi.IsChecked -eq $true ) { 
             $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
-        }
-        If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) {
+            $WPFInstallvivaldi.IsChecked = $false
+        }                              
+        If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) { 
             $wingetinstall.Add("VB-Audio.Voicemeeter")
-        }
-        If ( $WPFInstallwindirstat.IsChecked -eq $true ) {
+            $WPFInstallvoicemeeter.IsChecked = $false
+        }                    
+        If ( $WPFInstallwindirstat.IsChecked -eq $true ) { 
             $wingetinstall.Add("WinDirStat.WinDirStat")
-        }
-        If ( $WPFInstallwireshark.IsChecked -eq $true ) {
+            $WPFInstallwindirstat.IsChecked = $false
+        }           
+        If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
             $wingetinstall.Add("WiresharkFoundation.Wireshark")
-        }
-        If ( $WPFInstallzoom.IsChecked -eq $true ) {
+            $WPFInstallwireshark.IsChecked = $false
+        }            
+        If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
-        }
+            $WPFInstallzoom.IsChecked = $false
+        }    
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
@@ -369,10 +428,6 @@ $WPFinstall.Add_Click({
             }
         }
 
-        # Get all selected checkbox and uncheck them before installing
-        $install_grid = $Form.FindName("GridInstall");
-        UncheckAll $install_grid
-
         # Install all winget programs in new window
         $wingetinstall.ToArray()
         # Define Output variable
@@ -396,18 +451,13 @@ $WPFinstall.Add_Click({
 
 $WPFInstallUpgrade.Add_Click({
         Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
-
+    
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "Upgraded All Programs "
         $Messageboxbody = ("Done")
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    })
-
-$WPFUncheck.Add_Click({
-        $install_grid = $Form.FindName("GridInstall");
-        UncheckAll $install_grid
     })
 
 #===========================================================================

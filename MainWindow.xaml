@@ -22,7 +22,7 @@
 			</StackPanel>
 			<TabControl Grid.Column="1" Padding="-1" Name="TabNav" SelectedIndex="0">
 				<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
-					<Grid Name="GridInstall" Background="#222222">
+					<Grid Background="#222222">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="1*"/>
 							<ColumnDefinition Width="1*"/>
@@ -129,7 +129,6 @@
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
-							<Button Name="Uncheck" Background="AliceBlue" Content="Uncheck All" Margin="20,5,20,5" ToolTip="Uncheck All Selection"/>
 
 						</StackPanel>
 					</Grid>
