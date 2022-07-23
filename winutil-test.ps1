@@ -106,17 +106,48 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
     function Invoke-Runspace {
         Param ([string]$commands,$arguments) 
+        
+        $jobCount = 1
+        Get-Job | ForEach-Object{
+            if($_.Name -like "WinUtil-*"){
+                $jobCount++
+            }
+        }
 
-        $Script = [PowerShell]::Create().AddScript($commands).AddArgument($arguments)
+        Start-Job -Name "WinUtil-$($jobCount)" -ArgumentList $commands,$arguments,$jobCount -ScriptBlock { 
+            $commands = $args[0]
+            $arguments = $args[1]
+            $jobCount = $args[2]
 
-        $runspace = [RunspaceFactory]::CreateRunspace()
-        $runspace.ApartmentState = "STA"
-        $runspace.ThreadOptions = "ReuseThread"
-        $runspace.Open()
-        $runspace.SessionStateProxy.SetVariable("sync", $global:sync)
+            $ScriptBlock = [scriptblock]::Create($commands) #Convert Script Block to correct type
 
-        $Script.Runspace = $runspace
-        $Script.BeginInvoke()
+            Start-Job -Name "Running-$($jobCount)" -ScriptBlock $ScriptBlock -ArgumentList $arguments # Run provided script block in another process
+
+            # Wait for the previous job to finish
+            do{
+                $done = $false
+                Get-Job -Name "Running-$($jobCount)" | ForEach-Object{
+                    if ($_.State -eq "Completed"){ # Check if job is complete
+                        $done = $true
+                    }
+                }
+
+                Start-Sleep -s 1
+            }until($done) #Won't stop until job is complete
+
+            [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
+            $objForm = New-Object System.Windows.Forms.Form 
+            $objForm.Text = "Task Complete"
+            $objForm.ControlBox = $true
+            $objForm.Size = New-Object System.Drawing.Size(300,200) 
+            $objForm.StartPosition = "CenterScreen"
+            $objLabel = New-Object System.Windows.Forms.Label
+            $objLabel.Location = New-Object System.Drawing.Size(10,20) 
+            $objLabel.Size = New-Object System.Drawing.Size(280,20) 
+            $objLabel.Text = "Task is Complete"
+            $objForm.Controls.Add($objLabel) 
+            [void] $objForm.ShowDialog()
+        }
     }
 
     #===========================================================================
