@@ -78,7 +78,16 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-Runspace $undotweaks}
             "install" {Invoke-Runspace $installprograms $(uncheckall "Install")}
-            "tweaksbutton" {Invoke-Runspace $tweaks $(uncheckall "tweaks")}
+            "tweaksbutton" {
+                $Tweakstorun = @()
+                $global:sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
+                    if ($global:sync["$_"].IsChecked -eq $True){
+                        $Tweakstorun += $_
+                    }
+                }
+                Invoke-Runspace $tweaks $Tweakstorun
+                uncheckall "tweaks"
+            }
             "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
             "Panelcontrol" {cmd /c control}
             "Panelnetwork" {cmd /c ncpa.cpl}
@@ -106,7 +115,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
     function Invoke-Runspace {
         Param ([string]$commands,$arguments) 
-        
+
         $jobCount = 1
         Get-Job | ForEach-Object{
             if($_.Name -like "WinUtil-*"){
@@ -123,7 +132,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
             Start-Job -Name "Running-$($jobCount)" -ScriptBlock $ScriptBlock -ArgumentList $arguments # Run provided script block in another process
 
-            # Wait for the previous job to finish
+            # Wait for the job to finish
             do{
                 $done = $false
                 Get-Job -Name "Running-$($jobCount)" | ForEach-Object{
@@ -135,6 +144,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                 Start-Sleep -s 1
             }until($done) #Won't stop until job is complete
 
+            Receive-Job -Name "Running-$($jobCount)" # Return job output
+
+            # Normal MessageBoxes don't work in a job, so instead a form is used
             [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
             $objForm = New-Object System.Windows.Forms.Form 
             $objForm.Text = "Task Complete"
@@ -304,17 +316,18 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     #===========================================================================
 
     $tweaks = {
-        Param($Tweakstorun)
+        $Tweakstorun = $args
+
         $global:sync.form.Dispatcher.Invoke([action]{$sync.tweakscheck = $global:sync.tweaksbutton.Content},"Normal")
         If($sync.tweakscheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
+            #[System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
             return
         }
 
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Running"},"Normal")
-        [System.Windows.MessageBox]::Show("$Tweakstorun",'I am going to install these tweaks',"OK","Info")
+        #[System.Windows.MessageBox]::Show("$Tweakstorun",'I am going to install these tweaks',"OK","Info")
         
-        <#TODO Get this to run in an elevated prompt if not already.
+        #TODO Get this to run in an elevated prompt if not already.
 
         Foreach($tweak in $tweakstorun){
             if ($tweak -eq "EssTweaksAH"){
@@ -748,9 +761,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
                 }
             }
         }
-        #>
-        $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
-        [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Tweaks are done!',"OK","Info")
+        
+        #$global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
+        #[System.Windows.MessageBox]::Show("Tweaks haved completed!",'Tweaks are done!',"OK","Info")
     }
 
     $undotweaks = {
