@@ -767,8 +767,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     }
 
     $undotweaks = {
-        [System.Windows.MessageBox]::Show("UNDOALL THE THINGS",'Tweaks will be undone!',"OK","Info")
-        <#TODO Get this to run in an elevated prompt if not already.
+        #[System.Windows.MessageBox]::Show("UNDOALL THE THINGS",'Tweaks will be undone!',"OK","Info")
+        #TODO Get this to run in an elevated prompt if not already.
 
         Write-Host "Creating Restore Point incase something bad happens"
         Enable-ComputerRestore -Drive "C:\"
@@ -897,8 +897,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
         Write-Host "Done - Reverted to Stock Settings"
     
         Write-Host "Essential Undo Completed"
-        #>
-        [System.Windows.MessageBox]::Show("Done",'Undo All',"OK","Info")
+        
+        #[System.Windows.MessageBox]::Show("Done",'Undo All',"OK","Info")
     }
     #===========================================================================
     # Tab 3 - Config Buttons
