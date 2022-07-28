@@ -77,7 +77,18 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-Runspace $undotweaks}
-            "install" {Invoke-Runspace $installprograms $(uncheckall "Install")}
+            "install" {
+                $ProgramstoInstall = @()
+                $global:sync.keys | Where-Object {$_ -like "*Install*"} | ForEach-Object {
+                    if ($global:sync["$_"].IsChecked -eq $True){
+                        $($sync.applications.install.$_.winget) -split ";" | ForEach-Object {
+                            $ProgramstoInstall += $_
+                        }
+                    }
+                }
+                Invoke-Runspace $installprograms $ProgramstoInstall
+                uncheckall "Install"
+            }
             "tweaksbutton" {
                 $Tweakstorun = @()
                 $global:sync.keys | Where-Object {$_ -like "*tweaks*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
@@ -237,29 +248,28 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
     #===========================================================================
 
     $installPrograms = {
-        Param ($programstoinstall)
+        $programstoinstall = $args
 
         if($programstoinstall -eq $null){
-            [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
+            #[System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
             return
         }
 
         $global:sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $global:sync.install.Content},"Normal")
         If($sync.installcheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
+            #[System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
             return
         }
 
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Running"},"Normal")      
 
         foreach ($program in $programstoinstall){
-
-            [System.Windows.MessageBox]::Show("$($global:sync.applications.install.$program.winget)",'I am going to install this program',"OK","Info")
-
+            winget install --accept-source-agreements --accept-package-agreements --silent $program
+            #[System.Windows.MessageBox]::Show("$($global:sync.applications.install.$program.winget)",'I am going to install this program',"OK","Info")
         }
 
-        #TODO Convert this to work inside the runspace and elevate credentials
-        <#
+        <#TODO Convert this to work inside the runspace and elevate credentials
+        
             # Install all winget programs in new window
             $wingetinstall.ToArray()
             # Define Output variable
@@ -273,16 +283,15 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
             $wingetResult | % { $_ } | Out-Host
 
             # Popup after finished
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
+            <#$ButtonType = [System.Windows.MessageBoxButton]::OK
             $MessageboxTitle = "Installed Programs "
             $Messageboxbody = ($wingetResult)
             $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
             [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-        #>
-        
+            #>
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.install.Content = "Start Install"},"Normal")
-        [System.Windows.MessageBox]::Show("Installs have completed!",'Installs are done!',"OK","Info")
+        #System.Windows.MessageBox]::Show("Installs have completed!",'Installs are done!',"OK","Info")
     }
 
     $InstallUpgrade = {
@@ -326,8 +335,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
         $global:sync.Form.Dispatcher.Invoke([action]{$global:sync.tweaksbutton.Content = "Running"},"Normal")
         #[System.Windows.MessageBox]::Show("$Tweakstorun",'I am going to install these tweaks',"OK","Info")
-        
-        #TODO Get this to run in an elevated prompt if not already.
 
         Foreach($tweak in $tweakstorun){
             if ($tweak -eq "EssTweaksAH"){
@@ -768,7 +775,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$global:sync["$("$($_.Name)")"
 
     $undotweaks = {
         #[System.Windows.MessageBox]::Show("UNDOALL THE THINGS",'Tweaks will be undone!',"OK","Info")
-        #TODO Get this to run in an elevated prompt if not already.
 
         Write-Host "Creating Restore Point incase something bad happens"
         Enable-ComputerRestore -Drive "C:\"
