@@ -8,6 +8,7 @@
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
     $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil.log"
+    $VerbosePreference = "Continue"
 
     #WinForms dependancies 
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
@@ -21,6 +22,15 @@
         Return
     }
 
+    #List of config files to import
+    $configs = (
+        "applications", 
+        "tweaks",
+        "preset", 
+        "feature",
+        "updates"
+    )
+
     #To use local files run $env:environment = "dev" before starting the ps1 file
     if($env:environment -eq "dev"){
         $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
@@ -28,11 +38,9 @@
     if($env:environment -eq "exe"){$confirm = "yes"}
     if($confirm -eq "yes"){
         $inputXML = Get-Content "MainWindow.xaml"
-        ("applications", "tweaks", "preset") | ForEach-Object {
-            $sync["$_"] = Get-Content ./config/$_.json | ConvertFrom-Json
-        }
-
-        $VerbosePreference = "Continue"
+        $configs | ForEach-Object {
+            $sync["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+        }        
     }
     else{
 
@@ -43,7 +51,7 @@
         Else {$branch = "main"}
 
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
-        ("applications", "tweaks", "preset") | ForEach-Object {
+        $configs | ForEach-Object {
             $sync["$_"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$_.json"
         }
     }
@@ -93,30 +101,34 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Switch -Wildcard ($Button){
 
             "*Tab*BT*" {switchtab $Button}
-            "*InstallUpgrade*" {Invoke-Runspace $sync.GUIInstallUpgrade}
+            "*InstallUpgrade*" {Invoke-command $sync.GUIInstallUpgrade}
             "*desktop*" {Tweak-Buttons $Button}
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
-            "*undoall*" {Invoke-Runspace $Sync.GUIUndoTweaks}
-            "install" {Invoke-Runspace $sync.GUIInstallPrograms $(uncheckall "Install")}
-            "tweaksbutton" {Invoke-Runspace $Sync.GUITweaks $(uncheckall "tweaks")}
-            "FeatureInstall" {Invoke-Runspace $features $(uncheckall "feature")}
+            "*undoall*" {Invoke-command $Sync.GUIUndoTweaks}
+            "install" {Invoke-command $sync.GUIInstallPrograms -ArgumentList $(uncheckall "Install")}
+            "tweaksbutton" {Invoke-command $Sync.GUITweaks -ArgumentList $(uncheckall "tweaks")}
+            "FeatureInstall" {Invoke-command $Sync.GUIFeatures -ArgumentList "$(uncheckall "feature")"}
             "Panelcontrol" {cmd /c control}
             "Panelnetwork" {cmd /c ncpa.cpl}
             "Panelpower" {cmd /c powercfg.cpl}
             "Panelsound" {cmd /c mmsys.cpl}
             "Panelsystem" {cmd /c sysdm.cpl}
             "Paneluser" {cmd /c "control userpasswords2"}
-            "Updatesdefault" {Invoke-Runspace $Updatesdefault}
-            "Updatesdisable" {Invoke-Runspace $Updatesdisable}
-            "Updatessecurity" {Invoke-Runspace $Updatessecurity}
+            "Updatesdefault" {Invoke-command $Updatesdefault}
+            "Updatesdisable" {Invoke-command $Updatesdisable}
+            "Updatessecurity" {Invoke-command $Updatessecurity}
         }
     }
 
     function uncheckall {
         param($group)
         $output = @()
-        $sync.keys | Where-Object {$_ -like "*$($group)?*" -and $_ -notlike "$($group)Install" -and $_ -notlike "$($group)Install"} | ForEach-Object {
+        $sync.keys | Where-Object {$_ -like "*$($group)?*" `
+                                -and $_ -notlike "$($group)Install" `
+                                -and $_ -notlike "*GUI*" `
+                                -and $_ -notlike "*Script*"
+                            } | ForEach-Object {
             if ($sync["$_"].IsChecked -eq $true){
                 $output += $_
                 $sync["$_"].IsChecked = $false
@@ -126,15 +138,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     function Invoke-Runspace {
-        Param ([string]$commands,$arguments) 
+        [CmdletBinding()]
+        Param (
+            $ScriptBlock,
+            $ArgumentList
+        ) 
 
-        $Script = [PowerShell]::Create().AddScript($commands).AddArgument($arguments)
-
-        $runspace = [RunspaceFactory]::CreateRunspace()
-        $runspace.ApartmentState = "STA"
-        $runspace.ThreadOptions = "ReuseThread"
-        $runspace.Open()
-        $runspace.SessionStateProxy.SetVariable("sync", $sync)
+        $Script = [PowerShell]::Create().AddScript($ScriptBlock).AddArgument($ArgumentList)
 
         $Script.Runspace = $runspace
         $Script.BeginInvoke()
@@ -167,7 +177,31 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
 #endregion Functions
 
+#===========================================================================
+# Scritps to be ran inside a runspace
+#===========================================================================
+
 #region Scripts
+
+    #===========================================================================
+    # Generic Scripts
+    #===========================================================================
+
+    $sync.WriteLogs = {
+        [cmdletbinding()]
+        param($Level, $Message, $LogPath)
+        $date = get-date
+        write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+        if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
+            write-Error "$date : $Level : $message"
+            return
+        }
+        if($Level -eq "Warning"){
+            Write-Warning "$date : $Level : $message"
+            return
+        }
+        Write-Verbose "$date : $Level : $message"
+    }
 
     #===========================================================================
     # Install Tab
@@ -206,7 +240,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             WarningVariable = "WARNING"
         }
 
-        Invoke-Command @params
+        Invoke-Runspace @params
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
 
@@ -224,9 +258,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         ScriptBlock = $sync.ScriptsInstallPrograms
         ArgumentList = "git.git,WinDirStat.WinDirStat"
     }
-    
+
     Add $VerbosePreference = "Continue" to get output   
-    
+
     Invoke-Command @params
     #>
 
@@ -236,19 +270,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         else {$programstoinstall = $programstoinstall -split " "}
 
         function Write-Logs {
-            [cmdletbinding()]
             param($Level, $Message, $LogPath)
-            $date = get-date
-            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-                write-Error "$date : $Level : $message"
-                return
-            }
-            if($Level -eq "Warning"){
-                Write-Warning "$date : $Level : $message"
-                return
-            }
-            Write-Verbose "$date : $Level : $message"
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
         }
 
         #region Check for WinGet and install if not present
@@ -344,19 +367,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     $sync.ScriptsInstallUpgrade = {
         function Write-Logs {
-            [cmdletbinding()]
             param($Level, $Message, $LogPath)
-            $date = get-date
-            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-                write-Error "$date : $Level : $message"
-                return
-            }
-            if($Level -eq "Warning"){
-                Write-Warning "$date : $Level : $message"
-                return
-            }
-            Write-Verbose "$date : $Level : $message"
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
         }
         try {
             Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
@@ -388,48 +400,28 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
         
-        Invoke-Command -ScriptBlock {
-            function Write-Logs {
-                [cmdletbinding()]
-                param($Level, $Message, $LogPath)
-                $date = get-date
-                write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-                if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-                    write-Error "$date : $Level : $message"
-                    return
-                }
-                if($Level -eq "Warning"){
-                    Write-Warning "$date : $Level : $message"
-                    return
-                }
-                Write-Verbose "$date : $Level : $message"
-            }
-            try {
-                Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
-                $winget = winget upgrade --all
-                if($winget | Select-String "failed"){
-                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
-                }
-                Else{
-                    Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
-                }
-            }
-            catch {
-                Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
-            }
+        $params = @{
+            ScriptBlock = $sync.ScriptsInstallUpgrade
+            ErrorAction = "Continue"
+            ErrorVariable = "FAILURE"
+            WarningAction = "Continue"
+            WarningVariable = "WARNING"
         }
+
+        Invoke-Runspace @params
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
         [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
     }
 
-    
     #===========================================================================
     # Tab 2 - Tweaks Buttons
     #===========================================================================
 
     $Sync.GUITweaks = {
-        Param($Tweakstorun)
+        Param(
+            $Tweakstorun
+        )
 
         if($Tweakstorun -eq $null){
             [System.Windows.MessageBox]::Show("Please check the tweaks you wish to run",'Nothing to do',"OK","Info")
@@ -446,14 +438,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $params = @{
             ScriptBlock = $sync.ScriptTweaks
-            ArgumentList = "$Tweakstorun"
+            ArgumentList = ("$Tweakstorun")
             ErrorAction = "Continue"
             ErrorVariable = "FAILURE"
             WarningAction = "Continue"
             WarningVariable = "WARNING"
         }
         
-        Invoke-command @params
+        Invoke-Runspace @params
         
         $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
 
@@ -466,24 +458,15 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     $Sync.ScriptTweaks = {
-        Param($Tweakstorun)
+        Param(
+            $Tweakstorun
+        )
         if ($Tweakstorun -like "*,*"){$Tweakstorun = $Tweakstorun -split ","}
         else {$Tweakstorun = $Tweakstorun -split " "}
 
         function Write-Logs {
-            [cmdletbinding()]
             param($Level, $Message, $LogPath)
-            $date = get-date
-            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-                write-Error "$date : $Level : $message"
-                return
-            }
-            if($Level -eq "Warning"){
-                Write-Warning "$date : $Level : $message"
-                return
-            }
-            Write-Verbose "$date : $Level : $message"
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
         }
         
         Foreach($tweak in $tweakstorun){
@@ -575,7 +558,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                     Write-Host "Showing task manager details..."
                     $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
                     Do {
-                          Start-Sleep -Milliseconds 100
+                        Start-Sleep -Milliseconds 100
                         $preferences = Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue
                     } Until ($preferences)
                     Stop-Process $taskmgr
@@ -617,50 +600,22 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     $Sync.GUIUndoTweaks = {
-        $sync.form.Dispatcher.Invoke([action]{$sync.tweakcheck = $sync.undoall.Content},"Normal")
-        If($sync.tweakcheck -like "Running"){
+        
+        If($sync.undoall.Content -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
             return
         }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.undoall.Content = "Running"},"Normal")
+        $sync.undoall.Content = "Running"
 
-        $params = @{
-            ScriptBlock = $sync.ScriptUndoTweaks
-            ErrorAction = "Continue"
-            ErrorVariable = "FAILURE"
-            WarningAction = "Continue"
-            WarningVariable = "WARNING"
-        }
-
-        Invoke-command @params
-
-        $sync.Form.Dispatcher.Invoke([action]{$sync.undoall.Content = "Undo All Tweaks"},"Normal")
-
-        if($FAILURE -or $WARNING){
-            [System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
-        }
-        Else{
-            [System.Windows.MessageBox]::Show("Tweaks haved completed!",'Installs are done!',"OK","Info")
-        }
+        Invoke-Runspace $sync.ScriptUndoTweaks
     }
 
     $sync.ScriptUndoTweaks = {
         
         function Write-Logs {
-            [cmdletbinding()]
             param($Level, $Message, $LogPath)
-            $date = get-date
-            write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-            if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-                write-Error "$date : $Level : $message"
-                return
-            }
-            if($Level -eq "Warning"){
-                Write-Warning "$date : $Level : $message"
-                return
-            }
-            Write-Verbose "$date : $Level : $message"
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
         }
 
         Write-Logs -Level INFO -Message "Creating Restore Point incase something bad happens" -LogPath $sync.logfile
@@ -752,80 +707,123 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
 
-        [System.Windows.MessageBox]::Show("Done",'Undo All',"OK","Info")
+        if($sync.undoall){
+            $sync.Form.Dispatcher.Invoke([action]{$sync.undoall.Content = "Undo All Tweaks"},"Normal") 
+            [System.Windows.MessageBox]::Show("All tweaks have been removed",'Undo is done!',"OK","Info")
+        }
     }
+
     #===========================================================================
     # Tab 3 - Config Buttons
     #===========================================================================
 
-    $features = {
-        param ($featuretoinstall)
-
-        $sync.form.Dispatcher.Invoke([action]{$sync.featurescheck = $sync.FeatureInstall.Content},"Normal")
-        If($sync.tweakscheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Features are in progress',"OK","Info")
+    $Sync.GUIFeatures = {
+        Param($featuretoinstall)
+        
+        if($featuretoinstall -notlike "*feature*"){
+            [System.Windows.MessageBox]::Show("Please check the features you wish to run",'Nothing to do',"OK","Info")
             return
         }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Running"},"Normal")
-        [System.Windows.MessageBox]::Show("$featuretoinstall",'I am going to install these features',"OK","Info")
+        #$sync.form.Dispatcher.Invoke([action]{$sync.featurecheck = $sync.FeatureInstall.Content},"Normal")
+        If($sync.FeatureInstall.Content -like "Running"){
+            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
+            return
+        }
+
+        $sync.FeatureInstall.Content = "Running"
+        [System.Windows.MessageBox]::Show("$featuretoinstall",'Tweaks are in progress',"OK","Info")
+        Invoke-Runspace $sync.ScriptInstallFeatures $featuretoinstall
+    }
+
+    $sync.ScriptFeatureInstall = {
+        param ($featuretoinstall)
+        if ($featuretoinstall -like "*,*"){$featuretoinstall = $featuretoinstall -split ","}
+        else {$featuretoinstall = $featuretoinstall -split " "}
+        [System.Windows.MessageBox]::Show("$featuretoinstall",'Tweaks are in progress',"OK","Info")
+        function Write-Logs {
+            param($Level, $Message, $LogPath)
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
+        }
+        
+        Foreach ($feature in $featuretoinstall){
+
+            $sync.feature.$feature | ForEach-Object {
+                Try{
+                    Write-Logs -Level INFO -Message "Installing Windows Feature $psitem" -LogPath $sync.logfile
+                    Enable-WindowsOptionalFeature -Online -FeatureName "$psitem" -All -ErrorAction Stop
+                    Write-output $psitem
+                }Catch{Write-Logs -Level ERROR -Message "Failed to install $psitem" -LogPath $sync.logfile}
+
+            }
+
+        }
+
+        Write-Logs -Level INFO -Message "Finished Installing features" -LogPath $sync.logfile
+
+        if($sync.FeatureInstall){
+            $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Install Features"},"Normal") 
+            [System.Windows.MessageBox]::Show("Features have been installed",'Installs are done!',"OK","Info")
+        }
+        
+    }
 
         <# TODO Make sure this works in a runspace/elevated shell
 
         If ( $Featuresdotnet.IsChecked -eq $true ) {
             Enable-WindowsOptionalFeature -Online -FeatureName "NetFx4-AdvSrvs" -All
             Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All
-       }
-       If ( $Featureshyperv.IsChecked -eq $true ) {
-           Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Tools-All" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-PowerShell" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Hypervisor" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Services" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All
-          cmd /c bcdedit /set hypervisorschedulertype classic
-          Write-Host "HyperV is now installed and configured. Please Reboot before using."
-       } 
-       If ( $Featureslegacymedia.IsChecked -eq $true ) {
-           Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All
-           Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All
-           Enable-WindowsOptionalFeature -Online -FeatureName "DirectPlay" -All
-           Enable-WindowsOptionalFeature -Online -FeatureName "LegacyComponents" -All
-       }
-       If ( $Featurewsl.IsChecked -eq $true ) {
-          Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All
-          Write-Host "WSL is now installed and configured. Please Reboot before using."
-       }
-       If ( $Featurenfs.IsChecked -eq $true ) {
-           Enable-WindowsOptionalFeature -Online -FeatureName "ServicesForNFS-ClientOnly" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "ClientForNFS-Infrastructure" -All
-          Enable-WindowsOptionalFeature -Online -FeatureName "NFS-Administration" -All
-          nfsadmin client stop
-          Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousUID" -Type DWord -Value 0
-          Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
-          nfsadmin client start
-          nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-          Write-Host "NFS is now setup for user based NFS mounts"
-       }
+        }
+        If ( $Featureshyperv.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Tools-All" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-PowerShell" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Hypervisor" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Services" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All
+            cmd /c bcdedit /set hypervisorschedulertype classic
+            Write-Host "HyperV is now installed and configured. Please Reboot before using."
+        } 
+        If ( $Featureslegacymedia.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "DirectPlay" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "LegacyComponents" -All
+        }
+        If ( $Featurewsl.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All
+            Write-Host "WSL is now installed and configured. Please Reboot before using."
+        }
+        If ( $Featurenfs.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "ServicesForNFS-ClientOnly" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "ClientForNFS-Infrastructure" -All
+            Enable-WindowsOptionalFeature -Online -FeatureName "NFS-Administration" -All
+            nfsadmin client stop
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousUID" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
+            nfsadmin client start
+            nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
+            Write-Host "NFS is now setup for user based NFS mounts"
+        }
 
-       #>
-       $ButtonType = [System.Windows.MessageBoxButton]::OK
-       $MessageboxTitle = "All features are now installed "
-       $Messageboxbody = ("Done")
-       $MessageIcon = [System.Windows.MessageBoxImage]::Information
-      
-       [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
+        
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "All features are now installed"
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+        
+        [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
 
-       $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Install Features"},"Normal")
-    }
+        $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Install Features"},"Normal")
+    }#>
 
     #===========================================================================
     # Tab 4 - Updates Buttons
     #===========================================================================
-
+    
     $Updatesdefault = {
 
         $sync.form.Dispatcher.Invoke([action]{$sync.Updatesdefaultcheck = $sync.Updatesdefault.Content},"Normal")
@@ -1187,16 +1185,22 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $MessageboxTitle = "Set Security Updates"
         $Messageboxbody = ("Recommended Update settings loaded")
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
-    
+
         [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
         
         $sync.Form.Dispatcher.Invoke([action]{$sync.Updatessecurity.Content = "Security (Recommended) Settings"},"Normal")
 
     }
 
-#endregion scripts
+#endregion Scripts
+
+$runspace = [RunspaceFactory]::CreateRunspace()
+$runspace.ApartmentState = "STA"
+$runspace.ThreadOptions = "ReuseThread"
+$runspace.Open()
+$runspace.SessionStateProxy.SetVariable("sync", $sync)
 
 #Get ComputerInfo in the background
-Invoke-Runspace -commands {$sync.ComputerInfo = Get-ComputerInfo}
+Invoke-Runspace -ScriptBlock {$sync.ComputerInfo = Get-ComputerInfo} | Out-Null
 
 $sync["Form"].ShowDialog() | out-null
