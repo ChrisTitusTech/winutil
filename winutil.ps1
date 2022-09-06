@@ -1262,16 +1262,6 @@ $WPFUpdatesdefault.Add_Click({
         Set-StrictMode -Version Latest
         $ProgressPreference = 'SilentlyContinue'
         $ErrorActionPreference = 'Stop'
-        trap {
-            Write-Host
-            Write-Host "ERROR: $_"
-            Write-Host (($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$', 'ERROR: $1')
-            Write-Host (($_.Exception.ToString() -split '\r?\n') -replace '^(.*)$', 'ERROR EXCEPTION: $1')
-            Write-Host
-            Write-Host 'Sleeping for 60m to give you time to look around the virtual machine before self-destruction...'
-            Start-Sleep -Seconds (60 * 60)
-            Exit 1
-        }
 
         # disable automatic updates.
         # XXX this does not seem to work anymore.
@@ -1354,6 +1344,7 @@ $WPFUpdatesdefault.Add_Click({
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
     })
+
 $WPFFixesUpdate.Add_Click({
         ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
         Write-Host "1. Stopping Windows Update Services..." 
@@ -1461,16 +1452,6 @@ $WPFUpdatesdisable.Add_Click({
         Set-StrictMode -Version Latest
         $ProgressPreference = 'SilentlyContinue'
         $ErrorActionPreference = 'Stop'
-        trap {
-            Write-Host
-            Write-Host "ERROR: $_"
-            Write-Host (($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$', 'ERROR: $1')
-            Write-Host (($_.Exception.ToString() -split '\r?\n') -replace '^(.*)$', 'ERROR EXCEPTION: $1')
-            Write-Host
-            Write-Host 'Sleeping for 60m to give you time to look around the virtual machine before self-destruction...'
-            Start-Sleep -Seconds (60 * 60)
-            Exit 1
-        }
 
         # disable automatic updates.
         # XXX this does not seem to work anymore.
