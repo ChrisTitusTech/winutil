@@ -203,7 +203,7 @@ $WPFinstall.Add_Click({
             $WPFInstallterminal.IsChecked = $false
         }
         If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
-            $wingetinstall.Add("TranslucentTB.TranslucentTB")
+            $wingetinstall.Add("9PF4KZ2VN4W9")
             $WPFInstallttaskbar.IsChecked = $false
         }
         If ( $WPFInstallvlc.IsChecked -eq $true ) { 
