@@ -1062,6 +1062,22 @@ $WPFtweaksbutton.Add_Click({
 
             Write-Host "Finished Removing Bloatware Apps"
             $WPFEssTweaksDeBloat.IsChecked = $false
+
+            Write-Host "Doing Security checks for Administrator Account and Group Policy"
+            if(($(Get-WMIObject -class Win32_ComputerSystem | select username).username).IndexOf('Administrator') -eq -1){
+                net user administrator /active:no
+            }
+        
+            if(!(((Get-ComputerInfo).WindowsEditionId).IndexOf('Core') -eq -1) -or !(((Get-ComputerInfo).WindowsEditionId).IndexOf('Home') -eq -1)){ # Not sure if home edition is Core or Home
+                Write-Host "Enabling gpedit.msc...Group Policy for Home Users"
+                Get-ChildItem @(
+                    "C:\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package*.mum",
+                    "C:\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package*.mum"
+                ) | ForEach-Object { dism.exe /online /norestart /add-package:"$_" }
+            }
+            Write-Host "================================="
+            Write-Host "--     Tweaks are Finished    ---"
+            Write-Host "================================="
         }
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "Tweaks are Finished "
