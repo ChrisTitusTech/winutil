@@ -634,7 +634,7 @@ $WPFtweaksbutton.Add_Click({
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
             Write-Host "Creating Restore Point in case something bad happens"
-            Enable-ComputerRestore -Drive "C:\"
+            Enable-ComputerRestore -Drive "$env:SystemDrive"
             Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
             $WPFEssTweaksRP.IsChecked = $false
         }
@@ -673,7 +673,7 @@ $WPFtweaksbutton.Add_Click({
                 "MapsBroker"                                   # Downloaded Maps Manager
                 "MicrosoftEdgeElevationService"                # Another Edge Update Service
                 "MSDTC"                                        # Distributed Transaction Coordinator
-                "ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
+                #"ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
                 "NetTcpPortSharing"                            # Net.Tcp Port Sharing Service
                 "PcaSvc"                                       # Program Compatibility Assistant Service
                 "PerfHost"                                     # Remote users and 64-bit processes to query performance.
@@ -852,7 +852,6 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "LowLevelHooksTimeout" -Type DWord -Value 1000
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Services\Ndu" -Name "Start" -Type DWord -Value 4
             Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 10
 
 
@@ -1070,8 +1069,8 @@ $WPFtweaksbutton.Add_Click({
         if(!(((Get-ComputerInfo).WindowsEditionId).IndexOf('Core') -eq -1) -or !(((Get-ComputerInfo).WindowsEditionId).IndexOf('Home') -eq -1)){ # Not sure if home edition is Core or Home
             Write-Host "Enabling gpedit.msc...Group Policy for Home Users"
             Get-ChildItem @(
-                "C:\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package*.mum",
-                "C:\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package*.mum"
+                "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package*.mum",
+                "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package*.mum"
             ) | ForEach-Object { dism.exe /online /norestart /add-package:"$_" }
         }
         Write-Host "================================="
@@ -1090,7 +1089,7 @@ $WPFtweaksbutton.Add_Click({
 #===========================================================================
 $WPFundoall.Add_Click({
         Write-Host "Creating Restore Point in case something bad happens"
-        Enable-ComputerRestore -Drive "C:\"
+        Enable-ComputerRestore -Drive "$env:SystemDrive"
         Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
         Write-Host "Enabling Telemetry..."
