@@ -36,6 +36,17 @@ $xaml.SelectNodes("//*[@Name]") | % { Set-Variable -Name "WPF$($_.Name)" -Value 
 Function Get-FormVariables {
     If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
     
+
+    write-host "██████╗████████╗████████╗"
+    write-host "██╔═══╝╚══██╔══╝╚══██╔══╝"
+    write-host "██║       ██║      ██║   "
+    write-host "██║       ██║      ██║   "
+    write-host "██████╗   ██║      ██║   "
+    write-host "╚═════╝   ╚═╝      ╚═╝   "
+    write-host "====Chris Titus Tech====="
+    write-host "=====Windows Toolbox====="
+                           
+ 
     #====DEBUG GUI Elements====
 
     #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
@@ -636,7 +647,7 @@ $WPFtweaksbutton.Add_Click({
                 "DPS"                                          # Diagnostic Policy Service (Detects and Troubleshoots Potential Problems)
                 "edgeupdate"                                   # Edge Update Service
                 "edgeupdatem"                                  # Another Update Service
-                "EntAppSvc"                                    # Enterprise Application Management.
+                #"EntAppSvc"                                    # Enterprise Application Management.
                 "Fax"                                          # Fax Service
                 "fhsvc"                                        # Fax History
                 "FontCache"                                    # Windows font cache
