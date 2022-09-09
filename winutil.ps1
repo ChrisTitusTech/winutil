@@ -497,6 +497,10 @@ $WPFinstall.Add_Click({
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
 
+        Write-Host "================================="
+        Write-Host "---  Installs are Finished    ---"
+        Write-Host "================================="
+
     })
 
 $WPFInstallUpgrade.Add_Click({
@@ -1222,6 +1226,10 @@ $WPFundoall.Add_Click({
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+        Write-Host "================================="
+        Write-Host "---   Undo All is Finished    ---"
+        Write-Host "================================="
     })
 #===========================================================================
 # Tab 3 - Config Buttons
@@ -1272,6 +1280,10 @@ $WPFFeatureInstall.Add_Click({
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+        Write-Host "================================="
+        Write-Host "---  Features are Installed   ---"
+        Write-Host "================================="
     })
 
 $WPFPanelDISM.Add_Click({
@@ -1305,67 +1317,16 @@ $WPFPaneluser.Add_Click({
 #===========================================================================
 
 $WPFUpdatesdefault.Add_Click({
-        # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1 reversed! 
-        Set-StrictMode -Version Latest
-        $ProgressPreference = 'SilentlyContinue'
-        $ErrorActionPreference = 'Stop'
-
-        # disable automatic updates.
-        # XXX this does not seem to work anymore.
-        # see How to configure automatic updates by using Group Policy or registry settings
-        #     at https://support.microsoft.com/en-us/help/328010
-        function New-Directory($path) {
-            $p, $components = $path -split '[\\/]'
-            $components | ForEach-Object {
-                $p = "$p\$_"
-                If (!(Test-Path $p)) {
-                    New-Item -ItemType Directory $p | Out-Null
-                }
-            }
-            $null
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
         }
-        $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
-        New-Directory $auPath 
-        # set NoAutoUpdate.
-        # 0: Automatic Updates is enabled (default).
-        # 1: Automatic Updates is disabled.
-        New-ItemProperty `
-            -Path $auPath `
-            -Name NoAutoUpdate `
-            -Value 0 `
-            -PropertyType DWORD `
-            -Force `
-        | Out-Null
-        # set AUOptions.
-        # 1: Keep my computer up to date has been disabled in Automatic Updates.
-        # 2: Notify of download and installation.
-        # 3: Automatically download and notify of installation.
-        # 4: Automatically download and scheduled installation.
-        New-ItemProperty `
-            -Path $auPath `
-            -Name AUOptions `
-            -Value 3 `
-            -PropertyType DWORD `
-            -Force `
-        | Out-Null
-
-        # disable Windows Update Delivery Optimization.
-        # NB this applies to Windows 10.
-        # 0: Disabled
-        # 1: PCs on my local network
-        # 3: PCs on my local network, and PCs on the Internet
-        $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-        If (Test-Path $deliveryOptimizationPath) {
-            New-ItemProperty `
-                -Path $deliveryOptimizationPath `
-                -Name DODownloadMode `
-                -Value 0 `
-                -PropertyType DWORD `
-                -Force `
-            | Out-Null
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
+        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
         }
-        # Service tweaks for Windows Update
-
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
+        
         $services = @(
             "BITS"
             "wuauserv"
@@ -1390,6 +1351,9 @@ $WPFUpdatesdefault.Add_Click({
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
+        Write-Host "================================="
+        Write-Host "---  Updates Set to Default   ---"
+        Write-Host "================================="
     })
 
 $WPFFixesUpdate.Add_Click({
@@ -1399,8 +1363,6 @@ $WPFFixesUpdate.Add_Click({
         Stop-Service -Name wuauserv 
         Stop-Service -Name appidsvc 
         Stop-Service -Name cryptsvc 
-
-
     
         Write-Host "2. Remove QMGR Data file..." 
         Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
@@ -1415,7 +1377,6 @@ $WPFFixesUpdate.Add_Click({
         Write-Host "5. Resetting the Windows Update Services to defualt settings..." 
         "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
         "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-    
         Set-Location $env:systemroot\system32 
     
         Write-Host "6. Registering some DLLs..." 
@@ -1464,6 +1425,7 @@ $WPFFixesUpdate.Add_Click({
         Write-Host "8) Resetting the WinSock..." 
         netsh winsock reset 
         netsh winhttp reset proxy 
+        netsh int ip reset
     
         Write-Host "9) Delete all BITS jobs..." 
         Get-BitsTransfer | Remove-BitsTransfer 
@@ -1493,82 +1455,37 @@ $WPFFixesUpdate.Add_Click({
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        Write-Host "================================="
+        Write-Host "-- Reset ALL Updates to Factory -"
+        Write-Host "================================="
     })
+
 $WPFUpdatesdisable.Add_Click({
-        # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1
-        Set-StrictMode -Version Latest
-        $ProgressPreference = 'SilentlyContinue'
-        $ErrorActionPreference = 'Stop'
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
+    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
+    
+    $services = @(
+        "BITS"
+        "wuauserv"
+    )
 
-        # disable automatic updates.
-        # XXX this does not seem to work anymore.
-        # see How to configure automatic updates by using Group Policy or registry settings
-        #     at https://support.microsoft.com/en-us/help/328010
-        function New-Directory($path) {
-            $p, $components = $path -split '[\\/]'
-            $components | ForEach-Object {
-                $p = "$p\$_"
-                If (!(Test-Path $p)) {
-                    New-Item -ItemType Directory $p | Out-Null
-                }
-            }
-            $null
-        }
-        $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
-        New-Directory $auPath 
-        # set NoAutoUpdate.
-        # 0: Automatic Updates is enabled (default).
-        # 1: Automatic Updates is disabled.
-        New-ItemProperty `
-            -Path $auPath `
-            -Name NoAutoUpdate `
-            -Value 1 `
-            -PropertyType DWORD `
-            -Force `
-        | Out-Null
-        # set AUOptions.
-        # 1: Keep my computer up to date has been disabled in Automatic Updates.
-        # 2: Notify of download and installation.
-        # 3: Automatically download and notify of installation.
-        # 4: Automatically download and scheduled installation.
-        New-ItemProperty `
-            -Path $auPath `
-            -Name AUOptions `
-            -Value 1 `
-            -PropertyType DWORD `
-            -Force `
-        | Out-Null
+    foreach ($service in $services) {
+        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
 
-        # disable Windows Update Delivery Optimization.
-        # NB this applies to Windows 10.
-        # 0: Disabled
-        # 1: PCs on my local network
-        # 3: PCs on my local network, and PCs on the Internet
-        $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-        If (Test-Path $deliveryOptimizationPath) {
-            New-ItemProperty `
-                -Path $deliveryOptimizationPath `
-                -Name DODownloadMode `
-                -Value 0 `
-                -PropertyType DWORD `
-                -Force `
-            | Out-Null
-        }
-        # Service tweaks for Windows Update
-
-        $services = @(
-            "BITS"
-            "wuauserv"
-        )
-
-        foreach ($service in $services) {
-            # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
-
-            Write-Host "Setting $service StartupType to Disabled"
-            Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-        }
-
-    })
+        Write-Host "Setting $service StartupType to Disabled"
+        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+    }
+    Write-Host "================================="
+    Write-Host "---  Updates ARE DISABLED     ---"
+    Write-Host "================================="
+})
 $WPFUpdatessecurity.Add_Click({
         Write-Host "Disabling driver offering through Windows Update..."
         If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
@@ -1602,6 +1519,9 @@ $WPFUpdatessecurity.Add_Click({
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        Write-Host "================================="
+        Write-Host "-- Updates Set to Recommended ---"
+        Write-Host "================================="
     })
 
 #===========================================================================
