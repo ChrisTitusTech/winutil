@@ -543,6 +543,7 @@ $WPFdesktop.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFlaptop.Add_Click({
@@ -563,6 +564,7 @@ $WPFlaptop.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFminimal.Add_Click({
@@ -583,6 +585,7 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFtweaksbutton.Add_Click({
@@ -921,6 +924,17 @@ $WPFtweaksbutton.Add_Click({
             }
             Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
             $WPFMiscTweaksLapNum.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
+            Write-Host "Disabling UAC..."
+            # This below is the pussy mode which can break some apps. Please. Leave this on 1.
+            # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
+            # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
+            Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
+            # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
+            # It will just not bother u anymore
+
+            $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
         If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
             If (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling") {
