@@ -409,7 +409,39 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
+        }
+        If ( $WPFInstallItch.IsChecked -eq $true ) { 
+            $wingetinstall.Add("ItchIo.Itch")
+            $WPFInstallItch.IsChecked = $false
+        }
+        If ( $WPFInstallUbisoft.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Ubisoft.Connect")
+            $WPFInstallUbisoft.IsChecked = $false
+        }
+        If ( $WPFInstallVortex.IsChecked -eq $true ) { 
+            $wingetinstall.Add("NexusMods.Vortex")
+            $WPFInstallVortex.IsChecked = $false
         }    
+        If ( $WPFInstallParadox.IsChecked -eq $true ) { 
+            $wingetinstall.Add("ParadoxInteractive.ParadoxLauncher")
+            $WPFInstallParadox.IsChecked = $false
+        } 
+        If ( $WPFInstallHumble.IsChecked -eq $true ) { 
+            $wingetinstall.Add("HumbleBundle.HumbleApp")
+            $WPFInstallHumble.IsChecked = $false
+        }
+        If ( $WPFInstallAmazonGames.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Amazon.Games")
+            $WPFInstallAmazonGames.IsChecked = $false
+        }
+        If ( $WPFInstallCurseForge.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Overwolf.CurseForge")
+            $WPFInstallCurseForge.IsChecked = $false
+        } 
+        If ( $WPFInstallLoot.IsChecked -eq $true ) { 
+            $wingetinstall.Add("LOOT.LOOT")
+            $WPFInstallLoot.IsChecked = $false
+        }  
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."

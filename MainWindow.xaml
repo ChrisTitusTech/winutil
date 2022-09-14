@@ -78,6 +78,14 @@
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
+							<CheckBox Name="InstallItch" Content="Itch.io" Margin="5,0"/>
+							<CheckBox Name="InstallHumble" Content="HumbleBundle" Margin="5,0"/>
+							<CheckBox Name="InstallAmazonGames" Content="Amazon Games" Margin="5,0"/>
+							<CheckBox Name="InstallCurseForge" Content="CurseForge" Margin="5,0"/>
+							<CheckBox Name="InstallParadox" Content="Paradox" Margin="5,0"/>
+							<CheckBox Name="InstallUbisoft" Content="Ubisoft" Margin="5,0"/>
+							<CheckBox Name="InstallVortex" Content="Vortex" Margin="5,0"/>
+							<CheckBox Name="InstallLoot" Content="Loot" Margin="5,0"/>
 
 							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
