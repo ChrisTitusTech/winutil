@@ -961,7 +961,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
             Write-Host "Adjusted visual effects for performance"
-            $WPFMiscTweaksDisplay.IsChecked = false
+            $WPFMiscTweaksDisplay.IsChecked = $false
         }
 
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
