@@ -5,6 +5,11 @@
    Version 0.0.1
 #>
 
+if ($IsLinux){ # PowerShell on Linux has that read-only bool variable set to $true
+   Write-Host "This utility is exclusively designed for Windows"
+   return
+}
+
 #region Variables
     $global:sync = [Hashtable]::Synchronized(@{})
 
