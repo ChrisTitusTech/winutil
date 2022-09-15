@@ -6,7 +6,7 @@
 #>
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SteffenCarlsen/winutil/test-2022/MainWindow.xaml") #uncomment for Production
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -411,7 +411,7 @@ $WPFinstall.Add_Click({
             $WPFInstallzoom.IsChecked = $false
         }    
         If ( $WPFInstalldotnet.IsChecked -eq $true ) { 
-            $wingetinstall.Add("-e --id Microsoft.dotnet")
+            $wingetinstall.Add("Microsoft.dotnet")
             $WPFInstalldotnet.IsChecked = $false
         }
 
