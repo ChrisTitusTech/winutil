@@ -224,6 +224,9 @@
     },
     "Installzoom": {
       "winget": "Zoom.Zoom"
-    }
+    },
+	"Installdotnet": {
+		"winget": "-e --id Microsoft.dotnet"
+	}
   }
 }

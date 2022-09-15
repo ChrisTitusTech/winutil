@@ -62,6 +62,7 @@
 							<CheckBox Name="Installvisualstudio" Content="Visual Studio 2022 Community" Margin="5,0"/>
 							<CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
 							<CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
+							<CheckBox Name="Installdotnet" Content=".NET SDK" Margin="5,0"/>
 
 							
 						</StackPanel>
