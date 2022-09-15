@@ -208,6 +208,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Python.Python.3")
             $WPFInstallpython3.IsChecked = $false
         }
+        If ( $WPFInstallrustlang.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Rustlang.Rust.MSVC")
+            $WPFInstallrustlang.IsChecked = $false
+        }
         If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
             $wingetinstall.Add("7zip.7zip")
             $WPFInstallsevenzip.IsChecked = $false
@@ -227,6 +231,10 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallterminal.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
+        }
+        If ( $WPFInstallalacritty.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Alacritty.Alacritty")
+            $WPFInstallalacritty.IsChecked = $false
         }
         If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
             $wingetinstall.Add("9PF4KZ2VN4W9")
