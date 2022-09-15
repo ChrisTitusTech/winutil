@@ -208,6 +208,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Python.Python.3")
             $WPFInstallpython3.IsChecked = $false
         }
+        If ( $WPFInstallrustlang.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Rustlang.Rust.MSVC")
+            $WPFInstallrustlang.IsChecked = $false
+        }
         If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
             $wingetinstall.Add("7zip.7zip")
             $WPFInstallsevenzip.IsChecked = $false
@@ -227,6 +231,10 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallterminal.IsChecked -eq $true ) { 
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
+        }
+        If ( $WPFInstallalacritty.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Alacritty.Alacritty")
+            $WPFInstallalacritty.IsChecked = $false
         }
         If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
             $wingetinstall.Add("9PF4KZ2VN4W9")
@@ -543,6 +551,7 @@ $WPFdesktop.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFlaptop.Add_Click({
@@ -563,6 +572,7 @@ $WPFlaptop.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFminimal.Add_Click({
@@ -583,6 +593,7 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFtweaksbutton.Add_Click({
@@ -635,6 +646,17 @@ $WPFtweaksbutton.Add_Click({
             curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             ./OOSU10.exe ooshutup10.cfg /quiet
             $WPFEssTweaksOO.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
+            Write-Host "Disabling UAC..."
+            # This below is the pussy mode which can break some apps. Please. Leave this on 1.
+            # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
+            # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
+            Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
+            # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
+            # It will just not bother u anymore
+
+            $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
             Write-Host "Creating Restore Point in case something bad happens"
@@ -961,7 +983,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
             Write-Host "Adjusted visual effects for performance"
-            $WPFMiscTweaksDisplay.IsChecked = false
+            $WPFMiscTweaksDisplay.IsChecked = $false
         }
 
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {

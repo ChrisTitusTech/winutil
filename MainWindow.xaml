@@ -58,12 +58,12 @@
 							<CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
 							<CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
 							<CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
+							<CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
 							<CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
 							<CheckBox Name="Installvisualstudio" Content="Visual Studio 2022 Community" Margin="5,0"/>
 							<CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
 							<CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
 
-							
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
 
@@ -107,7 +107,7 @@
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
 							<Label Content="Utilities" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
+							<CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
 							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
 							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
 							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
@@ -122,6 +122,7 @@
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
 							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
 							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
+							<CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
 							<CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
 							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
