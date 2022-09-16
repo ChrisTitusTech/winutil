@@ -7,7 +7,7 @@ This Utility is a compilation of windows tasks I perform on each Windows system 
 Launch Command:
 
 ```
-iwr -useb https://christitus.com/win | iex
+iwr -useb https://bit.ly/windows-util | iex
 ```
 
 EXE Wrapper for $5 @ https://www.cttstore.com/windows-toolbox
