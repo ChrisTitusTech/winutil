@@ -8,3 +8,4 @@ winutil.exe.config
 winutil.pdb
 *.zip
 package.psd1
+/.idea/
