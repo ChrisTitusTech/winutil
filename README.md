@@ -4,7 +4,7 @@ This Utility is a compilation of windows tasks I perform on each Windows system 
 
 ![screen-install](screen-install.png)
 
-** Launch Command: (It will launch my edited script) **
+**Launch Command: (It will launch my edited script)**
 
 ```
 iwr -useb https://bit.ly/windows-util | iex
