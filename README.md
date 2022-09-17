@@ -24,3 +24,22 @@ EXE Wrapper for $5 @ https://www.cttstore.com/windows-toolbox
   - Fixes the default windows update scheme
 
 
+## Changelogs
+
+- Added Programs to Installer
+  - TeamSpeak
+  - WhatsApp
+  - Telegram
+  - Ubisoft Connect
+  - Origin
+  - Valorant
+  - Autoruns
+  
+- Added Redistributables to Configs
+  - Visual C++
+  - DirectX
+  
+- Added Driver Installer
+  - Snappy Driver Installer Origin
+  
+  
