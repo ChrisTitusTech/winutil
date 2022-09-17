@@ -518,6 +518,7 @@ $WPFinstall.Add_Click({
             catch {
                 Write-Error $_.Exception
             }
+            # Creating Shortcut For Autoruns
             if( $node -eq "Microsoft.Sysinternals.Autoruns" ) {
                 $WshShell = New-Object -comObject WScript.Shell
                 $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Autoruns.lnk")
@@ -1302,6 +1303,7 @@ $WPFRedistInstall.Add_Click({
         }
 
         If( $WPFvisualcpp.IsChecked -eq $true ) {
+            # Source: https://github.com/abbodi1406/vcredist
             Import-Module BitsTransfer
             Start-BitsTransfer -Source "https://kutt.it/vcppredist" -Destination "./VisualCppRedist.zip"
             Expand-Archive -Path "./VisualCppRedist.zip" -DestinationPath "./"
@@ -1310,6 +1312,7 @@ $WPFRedistInstall.Add_Click({
             Remove-Item "./VisualCppRedist.zip", "./VisualCppRedist_AIO_x86_x64.exe"
         }
         If ( $WPFdirectx.IsChecked -eq $true ) {
+            # Source: https://www.guru3d.com/files-details/directx-end-user-runtimes-(june-2010).html
             Import-Module BitsTransfer
             Start-BitsTransfer -Source "https://ftp.nluug.nl/pub/games/PC/guru3d/generic/directx_Jun2010_redist-[Guru3D.com].zip" -Destination "./directx.zip"
             Expand-Archive -Path "./directx.zip" -DestinationPath "./directx" -Force
