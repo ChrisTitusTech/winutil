@@ -230,6 +230,30 @@
     },
     "Installzoom": {
       "winget": "Zoom.Zoom"
+    },
+    "Installwhatsapp": {
+      "winget": "WhatsApp.WhatsApp"
+    },
+    "Installtelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
+    "Installteamspeak": {
+      "winget": "TeamSpeakSystems.TeamSpeakClient"
+    },
+    "Installautoruns": {
+      "winget": "Microsoft.Sysinternals.Autoruns"
+    },
+    "Installubisoft": {
+      "winget": "Ubisoft.Connect"
+    },
+    "Installorigin": {
+      "winget": "ElectronicArts.EADesktop"
+    },
+    "Installorigin": {
+      "winget": "ElectronicArts.EADesktop"
+    },
+    "Installvalorant": {
+      "winget": "RiotGames.Valorant.AP"
     }
   }
 }
