@@ -5,7 +5,7 @@
     Version 0.0.1
 #>
 
-# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/d1payan/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -103,7 +103,7 @@ $WPFTab4BT.Add_Click({
     })
 
 #===========================================================================
-# Tab 1 - Install
+# Tab 1 - Installer
 #===========================================================================
 $WPFinstall.Add_Click({
         $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
@@ -417,7 +417,36 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
-        }    
+        }  
+        If ( $WPFInstallwhatsapp.IsChecked -eq $true ) { 
+            $wingetinstall.Add("WhatsApp.WhatsApp")
+            $WPFInstallwhatsapp.IsChecked = $false
+        }  
+        If ( $WPFInstalltelegram.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Telegram.TelegramDesktop")
+            $WPFInstalltelegram.IsChecked = $false
+        } 
+        If ( $WPFInstallteamspeak.IsChecked -eq $true ) {
+            $wingetinstall.Add("TeamSpeakSystems.TeamSpeakClient")
+            $WPFInstallteamspeak.IsChecked = $false
+        } 
+        If ( $WPFInstallautoruns.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.Sysinternals.Autoruns")
+            $WPFInstallautoruns.IsChecked = $false
+        }
+        If ( $WPFInstallubisoft.IsChecked -eq $true ) {
+            $wingetinstall.Add("Ubisoft.Connect")
+            $WPFInstallubisoft.IsChecked = $false
+        }
+        If ( $WPFInstallorigin.IsChecked -eq $true ) {
+            $wingetinstall.Add("ElectronicArts.EADesktop")
+            $WPFInstallorigin.IsChecked = $false
+        }
+        If ( $WPFInstallvalorant.IsChecked -eq $true ) {
+            $wingetinstall.Add("RiotGames.Valorant.AP")
+            $WPFInstallvalorant.IsChecked = $false
+        }
+        
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
@@ -471,7 +500,7 @@ $WPFinstall.Add_Click({
         if ($wingetinstall.Count -eq 0) {
             $WarningMsg = "Please select the program(s) to install"
             [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-            return
+            return  
         }
 
         # Install all winget programs in new window
@@ -489,6 +518,12 @@ $WPFinstall.Add_Click({
             catch {
                 Write-Error $_.Exception
             }
+            if( $node -eq "Microsoft.Sysinternals.Autoruns" ) {
+                $WshShell = New-Object -comObject WScript.Shell
+                $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Autoruns.lnk")
+                $Shortcut.TargetPath = "$env:USERPROFILE\AppData\Local\Microsoft\WinGet\Packages\Microsoft.Sysinternals.Autoruns_Microsoft.Winget.Source_8wekyb3d8bbwe\autoruns.exe"
+                $Shortcut.Save()
+            }
         }
         $wingetResult.ToArray()
         $wingetResult | % { $_ } | Out-Host
@@ -504,6 +539,7 @@ $WPFinstall.Add_Click({
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
+
 
         Write-Host "================================="
         Write-Host "---  Installs are Finished    ---"
@@ -1257,6 +1293,53 @@ $WPFundoall.Add_Click({
 #===========================================================================
 # Tab 3 - Config Buttons
 #===========================================================================
+$WPFRedistInstall.Add_Click({
+
+        If(($WPFvisualcpp.IsChecked -eq $false) -and ($WPFdirectx.IsChecked -eq $false)) {
+            $WarningMsg = "Please select a package(s) to install"
+            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+            return
+        }
+
+        If( $WPFvisualcpp.IsChecked -eq $true ) {
+            Import-Module BitsTransfer
+            Start-BitsTransfer -Source "https://kutt.it/vcppredist" -Destination "./VisualCppRedist.zip"
+            Expand-Archive -Path "./VisualCppRedist.zip" -DestinationPath "./"
+            & "./VisualCppRedist_AIO_x86_x64.exe" /ai | Out-Host
+            $WPFvisualcpp.IsChecked = $false
+            Remove-Item "./VisualCppRedist.zip", "./VisualCppRedist_AIO_x86_x64.exe"
+        }
+        If ( $WPFdirectx.IsChecked -eq $true ) {
+            Import-Module BitsTransfer
+            Start-BitsTransfer -Source "https://ftp.nluug.nl/pub/games/PC/guru3d/generic/directx_Jun2010_redist-[Guru3D.com].zip" -Destination "./directx.zip"
+            Expand-Archive -Path "./directx.zip" -DestinationPath "./directx" -Force
+            & "./directx\DXSETUP.exe" /silent | Out-Host
+            $WPFdirectx.IsChecked = $false
+            Remove-Item "./directx.zip", "./directx" -Recurse
+        }
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Package(s) Installed Successfully"
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+        Write-Host "================================="
+        Write-Host "---  Redistributables are Installed   ---"
+        Write-Host "================================="
+})
+
+$WPFSdioInstall.Add_Click({
+        Import-Module BitsTransfer
+        Start-BitsTransfer -Source "https://www.glenn.delahoy.com/downloads/sdio/SDIO_1.12.8.748.zip" -Destination "./SDIO.zip"
+        Expand-Archive -Path "./SDIO.zip" -DestinationPath "C:\Program Files" -Force
+        Remove-Item -Path "./SDIO.zip"
+        $WshShell = New-Object -comObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Snappy Driver Installer Origin.lnk")
+        $Shortcut.TargetPath = "C:\Program Files\SDIO_1.12.8.748\SDIO_x64_R748.exe"
+        $Shortcut.Save()
+})
+
 $WPFFeatureInstall.Add_Click({
 
         If ( $WPFFeaturesdotnet.IsChecked -eq $true ) {

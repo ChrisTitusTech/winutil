@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WinUtility"
         mc:Ignorable="d"
         Background="#777777"
-        Title="Chris Titus Tech's Windows Utility" Height="533" Width="786">
+        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1000">
 	<Viewbox>
 		<Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
 			<Grid.ColumnDefinitions>
@@ -15,13 +15,13 @@
 			</Grid.ColumnDefinitions>
 			<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0">
 				<Image Height="200" Width="200" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-				<Button Content="Install" VerticalAlignment="Top" Height="40" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
+				<Button Content="Installer" VerticalAlignment="Top" Height="40" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
 				<Button Content="Tweaks" VerticalAlignment="Top" Height="40" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
 				<Button Content="Config" VerticalAlignment="Top" Height="40" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
 				<Button Content="Updates" VerticalAlignment="Top" Height="40" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
 			</StackPanel>
 			<TabControl Grid.Column="1" Padding="-1" Name="TabNav" SelectedIndex="0">
-				<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
+				<TabItem Header="Installer" Visibility="Collapsed" Name="Tab1">
 					<Grid Background="#222222">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="1*"/>
@@ -39,6 +39,9 @@
 
 							<Label Content="Communications" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
+							<CheckBox Name="Installteamspeak" Content="TeamSpeak" Margin="5,0"/>
+							<CheckBox Name="Installwhatsapp" Content="WhatsApp" Margin="5,0"/>
+							<CheckBox Name="Installtelegram" Content="Telegram" Margin="5,0"/>
 							<CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
 							<CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
 							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
@@ -74,10 +77,13 @@
 							<CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
 							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
 
-							<Label Content="Games" FontSize="16" Margin="5,0"/>
+							<Label Content="Game Clients" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
+							<CheckBox Name="Installubisoft" Content="Ubisoft Connect" Margin="5,0"/>
+							<CheckBox Name="Installorigin" Content="Origin" Margin="5,0"/>
+							<CheckBox Name="Installvalorant" Content="Valorant" Margin="5,0"/>
 
 							<Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
@@ -110,6 +116,7 @@
 							<CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
 							<CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
 							<CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
+							<CheckBox Name="Installautoruns" Content="Autoruns" Margin="5,0"/>
 							<CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
 							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
@@ -128,6 +135,7 @@
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
 							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
 
@@ -189,6 +197,14 @@
 							<ColumnDefinition Width="1*"/>
 						</Grid.ColumnDefinitions>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
+							<Label Content="Redistributable" FontSize="16"/>
+							<CheckBox Name="visualcpp" Content="Visual C++" Margin="5,0"/>
+							<CheckBox Name="directx" Content="DirectX" Margin="5,0"/>
+							<Button Name="RedistInstall" FontSize="14" Background="AliceBlue" Content="Install" Margin="20,5,20,0" Padding="10"/>
+
+							<Label Content="Driver Manager" FontSize="16"/>
+							<Button Name="SdioInstall" FontSize="14" Background="AliceBlue" Content="Install Snappy Driver Installer Origin" Margin="20,5,20,0" Padding="10"/>
+
 							<Label Content="Features" FontSize="16"/>
 							<CheckBox Name="Featuresdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
 							<CheckBox Name="Featureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
@@ -196,9 +212,10 @@
 							<CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
 							<CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
 							<Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
+
 							<Label Content="Fixes" FontSize="16"/>
 							<Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
-							<Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" Margin="20,5,20,0" Padding="10"/>
+							<Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" Margin="20,5,20,5" Padding="10"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
