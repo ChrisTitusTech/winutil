@@ -39,7 +39,7 @@ EXE Wrapper for $5 @ https://www.cttstore.com/windows-toolbox
   - Visual C++
   - DirectX
   
-- Added Driver Installer
+- Added Driver Installer to Configs
   - Snappy Driver Installer Origin
   
   
