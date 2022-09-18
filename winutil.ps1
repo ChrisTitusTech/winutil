@@ -1341,6 +1341,11 @@ $WPFSdioInstall.Add_Click({
         $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Snappy Driver Installer Origin.lnk")
         $Shortcut.TargetPath = "C:\Program Files\SDIO_1.12.8.748\SDIO_x64_R748.exe"
         $Shortcut.Save()
+
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Completed"
+        $Messageboxbody = ("Successfully Installed SDIO")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 })
 
 $WPFFeatureInstall.Add_Click({
