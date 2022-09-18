@@ -154,6 +154,7 @@
 							<Label FontSize="16" Content="Essential Tweaks"/>
 							<CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0"/>
 							<CheckBox Name="EssTweaksOO" Content="Run O and O Shutup" Margin="5,0"/>
+
 							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0"/>
 							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
 							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
@@ -175,6 +176,7 @@
 							<CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
+							<CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
 
 							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
