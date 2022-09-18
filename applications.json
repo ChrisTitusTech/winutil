@@ -6,6 +6,9 @@
     "Installadvancedip": {
       "winget": "Famatech.AdvancedIPScanner"
     },
+    "Installalacritty": {
+      "winget": "Alacritty.Alacritty"
+    },
     "Installanydesk": {
       "winget": "AnyDeskSoftwareGmbH.AnyDesk"
     },
@@ -152,6 +155,9 @@
     },
     "Installrufus": {
       "winget": "Rufus.Rufus"
+    },
+    "Installrustlang": {
+      "winget": "Rustlang.Rust.MSVC"
     },
     "Installsevenzip": {
       "winget": "7zip.7zip"
