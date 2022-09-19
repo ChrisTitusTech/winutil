@@ -417,7 +417,11 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
-        }    
+        }
+        If ( $WPFInstalltwinkletray.IsChecked -eq $true ) {
+            $wingetinstall.Add("xanderfrangos.twinkletray")
+            $WPFInstalltwinkletray.IsChecked = $false
+        }
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
@@ -593,7 +597,7 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFtweaksbutton.Add_Click({
@@ -617,7 +621,7 @@ $WPFtweaksbutton.Add_Click({
         }
         If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
             Write-Host "Disabling Hibernation..."
-            Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 0
+            Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type Dword -Value 0
             If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings")) {
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
             }
@@ -699,6 +703,7 @@ $WPFtweaksbutton.Add_Click({
                 "MapsBroker"                                   # Downloaded Maps Manager
                 "MicrosoftEdgeElevationService"                # Another Edge Update Service
                 "MSDTC"                                        # Distributed Transaction Coordinator
+                "NahimicService"                               # Nahimic Service
                 #"ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
                 "NetTcpPortSharing"                            # Net.Tcp Port Sharing Service
                 "PcaSvc"                                       # Program Compatibility Assistant Service
