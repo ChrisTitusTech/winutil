@@ -417,7 +417,11 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
-        }    
+        }
+        If ( $WPFInstalltwinkletray.IsChecked -eq $true ) {
+            $wingetinstall.Add("xanderfrangos.twinkletray")
+            $WPFInstalltwinkletray.IsChecked = $false
+        }
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
