@@ -593,7 +593,7 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFtweaksbutton.Add_Click({
