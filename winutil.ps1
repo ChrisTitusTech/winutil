@@ -612,6 +612,14 @@ $WPFminimal.Add_Click({
 
 $WPFtweaksbutton.Add_Click({
 
+        If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
+            #Installing PowerRun to edit some restricted registry keys (Need this to disable Gamebar Presence Writer)
+            curl.exe -s "https://www.sordum.org/files/download/power-run/PowerRun.zip" -o ".\PowerRun.zip"
+            Expand-Archive -Path ".\PowerRun.zip" -DestinationPath ".\" -Force
+            Copy-Item -Path ".\PowerRun\PowerRun.exe" -Destination "$env:windir" -Force
+            Remove-Item -Path ".\PowerRun\", ".\PowerRun.zip" -Recurse
+        }
+
         If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
             Write-Host "Disabling Activity History..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
@@ -644,6 +652,10 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehavior" -Type DWord -Value 2
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
+
+            #Disabling Gamebar Presence Writer, which causes stutter in games
+            PowerRun.exe /SW:0 Powershell.exe -command {Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 0}
+
             $WPFEssTweaksDVR.IsChecked = $false
         }
         If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
@@ -1294,6 +1306,9 @@ $WPFundoall.Add_Click({
         Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
         Write-Host "Done - Reverted to Stock Settings"
+
+        #Enable Gamebar Presence Writer
+        PowerRun.exe /SW:0 Powershell.exe -command {Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 1}
 
         Write-Host "Essential Undo Completed"
 
