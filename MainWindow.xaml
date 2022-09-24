@@ -102,6 +102,7 @@
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
 							<CheckBox Name="Installspotify" Content="Spotify" Margin="5,0"/>
 							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
+							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
 							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
 						</StackPanel>
