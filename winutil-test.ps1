@@ -248,29 +248,34 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $params = @{
             ScriptBlock = $sync.ScriptsInstallPrograms
             ArgumentList = "$($winget.substring(1))"
-            VerbosePreference = "Continue"
+            Verbose = $true
         }
         Invoke-Runspace @params
 
     }
 
     <#
-    Running $sync.ScriptsInstallPrograms in CLI format
-    $params = @{
-        ScriptBlock = $sync.ScriptsInstallPrograms
-        ArgumentList = "git.git,WinDirStat.WinDirStat"
-        VerbosePreference = "Continue"
-    }
 
-    To upgrade
+        Running $sync.ScriptsInstallPrograms in CLI format
+
+        Make sure to set
+        VerbosePreference = "Continue"
+
         $params = @{
-        ScriptBlock = $sync.ScriptsInstallPrograms
-        ArgumentList = "Upgrade"
-        VerbosePreference = "Continue"
-    }
+            ScriptBlock = $sync.ScriptsInstallPrograms
+            ArgumentList = "git.git,WinDirStat.WinDirStat"
+            Verbose = $true
+        }
 
-    Invoke-Command @params
+        To upgrade
 
+        $params = @{
+            ScriptBlock = $sync.ScriptsInstallPrograms
+            ArgumentList = "Upgrade"
+            Verbose = $true
+        }
+
+        Invoke-Command @params
 
     #>
 
@@ -280,7 +285,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         function Write-Logs {
             param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message,$LogPath)
         }
 
         #region Check for WinGet and install if not present
