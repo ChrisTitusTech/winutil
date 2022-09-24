@@ -105,7 +105,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Switch -Wildcard ($Button){
 
             "*Tab*BT*" {switchtab $Button}
-            "*InstallUpgrade*" {Invoke-command $sync.GUIInstallUpgrade}
+            "*InstallUpgrade*" {Invoke-command $sync.GUIInstallPrograms -ArgumentList "Upgrade"}
             "*desktop*" {Tweak-Buttons $Button}
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
@@ -232,12 +232,20 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
+        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
 
-        foreach ($program in $programstoinstall){
-            $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                $winget += ",$_"
+        if($programstoinstall -eq "Upgrade"){
+            $winget = ",Upgrade"
+        }
+        else{
+            foreach ($program in $programstoinstall){
+                $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                    $winget += ",$_"
+                }
             }
         }
+
+
 
         $params = @{
             ScriptBlock = $sync.ScriptsInstallPrograms
@@ -343,15 +351,25 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $results = @()
         foreach ($program in $programstoinstall){
+            if($programstoinstall -eq "Upgrade"){
+                $Message = "Attempting to upgrade packages"
+                $ErrorMessage = "Failed to upgrade packages"
+                $ArgumentList = "upgrade --all"
+            }
+            else{
+                $Message = "$($program) was selected to be installed."
+                $ErrorMessage = "$($program) failed to installed."
+                $ArgumentList = "install -e --accept-source-agreements --accept-package-agreements --silent $($program)"
+            }
+
             try {
-                Write-Logs -Level INFO -Message "$($program) was selected to be installed." -LogPath $sync.logfile
+                Write-Logs -Level INFO -Message "$Message" -LogPath $sync.logfile
                 Write-Host ""
 
-                Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $($program)" -NoNewWindow -ErrorAction Stop -Wait
-
+                Start-Process -FilePath winget -ArgumentList $ArgumentList -NoNewWindow -ErrorAction Stop -Wait
             }
             catch {
-                Write-Logs -Level FAILURE -Message "$($program) failed to installed." -LogPath $sync.logfile
+                Write-Logs -Level FAILURE -Message $ErrorMessage -LogPath $sync.logfile
                 $results += $program
             }
         }
@@ -359,56 +377,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
         if($sync){
             $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
+            $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
         }
-    }
-
-    $sync.ScriptsInstallUpgrade = {
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
-        }
-        try {
-            Write-Logs -Level INFO -Message "Attempting to update programs installed via winget" -LogPath $sync.logfile
-            $winget = winget upgrade --all
-            if($winget | Select-String "failed"){
-                Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
-            }
-            Else{
-                Write-Logs -Level INFO -Message "Programs have been updated!" -LogPath $sync.logfile
-            }
-        }
-        catch {
-            Write-Logs -Level INFO -Message "failed to run winget installed." -LogPath $sync.logfile
-        }
-    }    
-
-    $sync.GUIInstallUpgrade = {
-
-        if ((Test-Path $env:userprofile\AppData\Local\Microsoft\WindowsApps\winget.exe) -eq $false) {
-            [System.Windows.MessageBox]::Show("Winget is not installed. Please install an application first",'Winget is not installed!',"OK","Info")
-            Return
-        }
-
-        $sync.form.Dispatcher.Invoke([action]{$sync.InstallUpgradecheck = $sync.InstallUpgrade.Content},"Normal")
-        If($sync.InstallUpgradecheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Updates are currently running",'Installs are in progress',"OK","Info")
-            return
-        }
-
-        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
-        
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallUpgrade
-            ErrorAction = "Continue"
-            ErrorVariable = "FAILURE"
-            WarningAction = "Continue"
-            WarningVariable = "WARNING"
-        }
-
-        Invoke-Runspace @params
-
-        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
-        [System.Windows.MessageBox]::Show("Updates haved completed!",'Updates are done!',"OK","Info")
     }
 
     #===========================================================================
