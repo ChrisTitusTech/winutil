@@ -245,15 +245,10 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             }
         }
 
-
-
         $params = @{
             ScriptBlock = $sync.ScriptsInstallPrograms
             ArgumentList = "$($winget.substring(1))"
-            ErrorAction = "Continue"
-            ErrorVariable = "FAILURE"
-            WarningAction = "Continue"
-            WarningVariable = "WARNING"
+            VerbosePreference = "Continue"
         }
         Invoke-Runspace @params
 
@@ -264,11 +259,19 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     $params = @{
         ScriptBlock = $sync.ScriptsInstallPrograms
         ArgumentList = "git.git,WinDirStat.WinDirStat"
+        VerbosePreference = "Continue"
     }
 
-    Add $VerbosePreference = "Continue" to get output   
+    To upgrade
+        $params = @{
+        ScriptBlock = $sync.ScriptsInstallPrograms
+        ArgumentList = "Upgrade"
+        VerbosePreference = "Continue"
+    }
 
     Invoke-Command @params
+
+
     #>
 
     $sync.ScriptsInstallPrograms = {
