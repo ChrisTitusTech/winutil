@@ -110,8 +110,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             "*laptop*" {Tweak-Buttons $Button}
             "*minimal*" {Tweak-Buttons $Button}
             "*undoall*" {Invoke-command $Sync.GUIUndoTweaks}
-            "install" {Invoke-command $sync.GUIInstallPrograms -ArgumentList $(uncheckall "Install")}
-            "tweaksbutton" {Invoke-command $Sync.GUITweaks -ArgumentList $(uncheckall "tweaks")}
+            "install" {Invoke-command $sync.GUIInstallPrograms -ArgumentList "$(uncheckall "Install")"}
+            "tweaksbutton" {Invoke-command $Sync.GUITweaks -ArgumentList "$(uncheckall "tweaks")"}
             "FeatureInstall" {Invoke-command $Sync.GUIFeatures -ArgumentList "$(uncheckall "feature")"}
             "Panelcontrol" {cmd /c control}
             "Panelnetwork" {cmd /c ncpa.cpl}
@@ -127,18 +127,17 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     function uncheckall {
         param($group)
-        $output = @()
         $sync.keys | Where-Object {$_ -like "*$($group)?*" `
                                 -and $_ -notlike "$($group)Install" `
                                 -and $_ -notlike "*GUI*" `
                                 -and $_ -notlike "*Script*"
                             } | ForEach-Object {
             if ($sync["$_"].IsChecked -eq $true){
-                $output += $_
+                $output += ",$_"
                 $sync["$_"].IsChecked = $false
             }
         }
-        Write-Output $output
+        Write-Output $output.Substring(1)
     }
 
     function Invoke-Runspace {
@@ -219,6 +218,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     $Sync.GUIInstallPrograms = {
         Param ($programstoinstall)
+        $programstoinstall = $programstoinstall -split ","
 
         if($programstoinstall -eq $null){
             [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
@@ -233,32 +233,29 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
 
-        $winget = @()
-
         foreach ($program in $programstoinstall){
             $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                $winget += $_
+                $winget += ",$_"
             }
         }
 
         $params = @{
             ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "$winget"
+            ArgumentList = "$($winget.substring(1))"
             ErrorAction = "Continue"
             ErrorVariable = "FAILURE"
             WarningAction = "Continue"
             WarningVariable = "WARNING"
         }
-
         Invoke-Runspace @params
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
+        #$sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
 
         if($FAILURE -or $WARNING){
-            [System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
+            #[System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
         }
         Else{
-            [System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
+            #[System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
         }
     }
 
@@ -276,8 +273,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     $sync.ScriptsInstallPrograms = {
         Param ($programstoinstall)
-        if ($programstoinstall -like "*,*"){$programstoinstall = $programstoinstall -split ","}
-        else {$programstoinstall = $programstoinstall -split " "}
+        $programstoinstall = $programstoinstall -split ","
 
         function Write-Logs {
             param($Level, $Message, $LogPath)
@@ -357,17 +353,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         foreach ($program in $programstoinstall){
             try {
                 Write-Logs -Level INFO -Message "$($program) was selected to be installed." -LogPath $sync.logfile
-                $winget = winget install -e --accept-source-agreements --accept-package-agreements --silent $($program)
-                if($winget | Select-String "failed"){
-                    Write-Logs -Level ERROR -Message "$winget" -LogPath $sync.logfile
-                    $results += $program
-                }
-                Else{
-                    Write-Logs -Level INFO -Message "$($program) was installed." -LogPath $sync.logfile
-                }
+                Write-Host ""
+
+                Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $($program)" -NoNewWindow -ErrorAction Stop -Wait
+
             }
             catch {
-                Write-Logs -Level INFO -Message "$($program) failed to installed." -LogPath $sync.logfile
+                Write-Logs -Level FAILURE -Message "$($program) failed to installed." -LogPath $sync.logfile
                 $results += $program
             }
         }
@@ -1212,5 +1204,26 @@ $runspace.SessionStateProxy.SetVariable("sync", $sync)
 
 #Get ComputerInfo in the background
 Invoke-Runspace -ScriptBlock {$sync.ComputerInfo = Get-ComputerInfo} | Out-Null
+
+write-host ""                                                                                                                             
+write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
+write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
+write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
+write-host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
+write-host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C                     T:::::T                T:::::T        "
+write-host "C:::::C       CCCCCC        T:::::T                T:::::T        "
+write-host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
+write-host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
+write-host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+write-host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
+write-host ""
+write-host "====Chris Titus Tech====="
+write-host "=====Windows Toolbox====="
 
 $sync["Form"].ShowDialog() | out-null
