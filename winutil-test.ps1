@@ -286,7 +286,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         #region Check for WinGet and install if not present
 
-            if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+            if (Test-Path $env:userprofile\AppData\Local\Microsoft\WindowsApps\winget.exe) {
                 #Checks if winget executable exists and if the Windows Version is 1809 or higher
                 Write-Logs -Level INFO -Message "WinGet was detected" -LogPath $sync.logfile
             }
