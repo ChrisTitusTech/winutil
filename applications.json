@@ -233,6 +233,9 @@
     },
     "Installzoom": {
       "winget": "Zoom.Zoom"
+    },
+    "Installtwinkletray": {
+      "winget": "xanderfrangos.twinkletray"
     }
   }
 }
