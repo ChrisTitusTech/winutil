@@ -413,11 +413,7 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
             $wingetinstall.Add("WiresharkFoundation.Wireshark")
             $WPFInstallwireshark.IsChecked = $false
-        }
-        If ( $WPFInstallsimplewall.IsChecked -eq $true ) { 
-            $wingetinstall.Add("Henry++.simplewall")
-            $WPFInstallsimplewall.IsChecked = $false
-        }             
+        }            
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false

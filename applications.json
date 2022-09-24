@@ -228,9 +228,6 @@
     "Installwireshark": {
       "winget": "WiresharkFoundation.Wireshark"
     },
-    "Installsimplewall": {
-      "winget": "Henry++.simplewall"
-    },
     "Installzoom": {
       "winget": "Zoom.Zoom"
     }
