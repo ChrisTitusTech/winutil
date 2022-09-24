@@ -7,7 +7,9 @@
 
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
-    $sync.logfile = "$env:userprofile\AppData\Local\Temp\winutil.log"
+    $sync.tempfolder = "$env:userprofile\AppData\Local\Temp"
+    $sync.logfile = "$($sync.tempfolder)\winutil.log"
+
     $VerbosePreference = "Continue"
 
     #WinForms dependancies 
@@ -307,15 +309,15 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         #Download Needed Files
                         $step = "Downloading the required files"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "./Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "./Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "./b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$($sync.tempfolder)/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$($sync.tempfolder)/b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
         
                         #Installing Packages
                         $step = "Installing Packages"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
-                        Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath ".\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                        Add-AppxProvisionedPackage -Online -PackagePath "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense -ErrorAction Stop
+                        Add-AppxProvisionedPackage -Online -PackagePath "$($sync.tempfolder)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$($sync.tempfolder)\b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
                         
                         #Sleep for 5 seconds to maximize chance that winget will work without reboot
                         Start-Sleep -s 5
@@ -323,9 +325,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                         #Removing no longer needed Files
                         $step = "Removing Files"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Remove-Item -Path ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                        Remove-Item -Path ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                        Remove-Item -Path ".\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+                        Remove-Item -Path "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                        Remove-Item -Path "$($sync.tempfolder)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                        Remove-Item -Path "$($sync.tempfolder)\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
 
                         $step = "WinGet Sucessfully installed"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
