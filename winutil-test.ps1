@@ -249,14 +249,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
         Invoke-Runspace @params
 
-        #$sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
-
-        if($FAILURE -or $WARNING){
-            #[System.Windows.MessageBox]::Show("Unable to properly run installs, please investigate the logs located at $($sync.logfile)",'Installer ran into an issue!',"OK","Warning")
-        }
-        Else{
-            #[System.Windows.MessageBox]::Show("Installs haved completed!",'Installs are done!',"OK","Info")
-        }
     }
 
     <#
@@ -365,6 +357,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
 
         Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
+        if($sync){
+            $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
+        }
     }
 
     $sync.ScriptsInstallUpgrade = {
