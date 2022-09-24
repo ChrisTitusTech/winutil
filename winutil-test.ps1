@@ -17,10 +17,10 @@
     [System.Windows.Forms.Application]::EnableVisualStyles()
 
     #Test for admin credentials
-    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-        Return
-    }
+    #if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    #    [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+    #    Return
+    #}
 
     #List of config files to import
     $configs = (
@@ -87,11 +87,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     
     #Gives every button the invoke-button function
     $sync.keys | ForEach-Object {
-        if($($sync["$_"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-            $sync["$_"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-Button $Sender.name
-            })
+        if($sync.$psitem){
+            if($($sync["$_"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+                $sync["$_"].Add_Click({
+                    [System.Object]$Sender = $args[0]
+                    Invoke-Button $Sender.name
+                })
+            }
         }
     }
 
