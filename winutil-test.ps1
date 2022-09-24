@@ -191,18 +191,24 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     $sync.WriteLogs = {
         [cmdletbinding()]
-        param($Level, $Message, $LogPath)
+        param(
+            $Level = "Info", 
+            $Message, 
+            $LogPath = "$env:userprofile\AppData\Local\Temp\winutil.log"
+        )
+
         $date = get-date
-        write-output "$date : $Level : $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
+        $delimiter = '|'
+        write-output "$date $delimiter $Level $delimiter $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
         if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-            write-Error "$date : $Level : $message"
+            write-Error "$date $delimiter $Level $delimiter $message"
             return
         }
         if($Level -eq "Warning"){
-            Write-Warning "$date : $Level : $message"
+            Write-Warning "$date $delimiter $Level $delimiter $message"
             return
         }
-        Write-Verbose "$date : $Level : $message"
+        Write-Verbose "$date $delimiter $Level $delimiter $message"
     }
 
     #===========================================================================
