@@ -417,7 +417,11 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallzoom.IsChecked -eq $true ) { 
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
-        }    
+        }
+        If ( $WPFInstalltwinkletray.IsChecked -eq $true ) {
+            $wingetinstall.Add("xanderfrangos.twinkletray")
+            $WPFInstalltwinkletray.IsChecked = $false
+        }
 
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
@@ -615,16 +619,18 @@ $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
             If (!(Test-Path "HKCU:\System\GameConfigStore")) {
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Type Hex -Value 00000000
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type Hex -Value 00000000
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type Hex -Value 00000000
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 00000000
+                New-Item -Path "HKCU:\System\GameConfigStore" -Force
             }
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type DWord -Value 0 -Force
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0 -Force
+
             $WPFEssTweaksDVR.IsChecked = $false
         }
         If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
             Write-Host "Disabling Hibernation..."
-            Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 0
+            Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type Dword -Value 0
             If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings")) {
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
             }
@@ -695,6 +701,7 @@ $WPFtweaksbutton.Add_Click({
                 "MapsBroker"                                   # Downloaded Maps Manager
                 "MicrosoftEdgeElevationService"                # Another Edge Update Service
                 "MSDTC"                                        # Distributed Transaction Coordinator
+                "NahimicService"                               # Nahimic Service
                 #"ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
                 "NetTcpPortSharing"                            # Net.Tcp Port Sharing Service
                 "PcaSvc"                                       # Program Compatibility Assistant Service
