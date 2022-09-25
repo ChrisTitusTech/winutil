@@ -107,6 +107,10 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 $WPFinstall.Add_Click({
         $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
+        If ( $WPFInstalllibreoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TheDocumentFoundation.LibreOffice")
+            $WPFInstalllibreoffice.IsChecked = $false
+        }
         If ( $WPFInstalladobe.IsChecked -eq $true ) { 
             $wingetinstall.Add("Adobe.Acrobat.Reader.64-bit")
             $WPFInstalladobe.IsChecked = $false
