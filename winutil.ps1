@@ -556,6 +556,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $true
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $true
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -577,6 +578,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $true
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $true
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
@@ -598,6 +600,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $false
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -662,6 +665,17 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Disabling TPM Check..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
             $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
+            Write-Host "Disabling UAC..."
+            # This below is the pussy mode which can break some apps. Please. Leave this on 1.
+            # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
+            # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
+            Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
+            # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
+            # It will just not bother u anymore
+
+            $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             Write-Host "Running O&O Shutup with Recommended Settings"
