@@ -437,14 +437,14 @@ $WPFinstall.Add_Click({
 
                 #Download Needed Files
                  Write-Host "Downloading Needed Files..."
-                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:userprofile\AppData\Local\Temp\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:userprofile\AppData\Local\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:userprofile\AppData\Local\Temp\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
 
                 #Installing Packages
                 Write-Host "Installing Packages..."
-                Add-AppxProvisionedPackage -Online -PackagePath "$env:userprofile\AppData\Local\Temp\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
-                Add-AppxProvisionedPackage -Online -PackagePath "$env:userprofile\AppData\Local\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$env:userprofile\AppData\Local\Temp\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
                 Write-Host "winget Installed (Reboot might be required before winget will work)"
 
                 #Sleep for 5 seconds to maximize chance that winget will work without reboot
@@ -453,9 +453,9 @@ $WPFinstall.Add_Click({
 
                 #Removing no longer needed Files
                 Write-Host "Removing no longer needed Files..."
-                Remove-Item -Path "$env:userprofile\AppData\Local\Temp\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                Remove-Item -Path "$env:userprofile\AppData\Local\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                Remove-Item -Path "$env:userprofile\AppData\Local\Temp\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+                Remove-Item -Path "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                Remove-Item -Path "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                Remove-Item -Path "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
                 Write-Host "Removed Files that are no longer needed"
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
