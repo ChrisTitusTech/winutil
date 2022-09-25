@@ -159,6 +159,7 @@
 							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0"/>
 							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
 							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
+							<CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"/>
 							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0"/>
 							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0"/>
 							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0"/>

@@ -540,6 +540,7 @@ $WPFInstallUpgrade.Add_Click({
 $WPFdesktop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
@@ -555,12 +556,12 @@ $WPFdesktop.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFlaptop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
@@ -576,12 +577,12 @@ $WPFlaptop.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFminimal.Add_Click({
     
         $WPFEssTweaksAH.IsChecked = $false
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
@@ -597,7 +598,6 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFtweaksbutton.Add_Click({
@@ -608,6 +608,13 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
             $WPFEssTweaksAH.IsChecked = $false
+        }
+
+        If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
+            Write-Host "Delete Temp Files"
+            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
+            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+            $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
@@ -652,17 +659,6 @@ $WPFtweaksbutton.Add_Click({
             curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             ./OOSU10.exe ooshutup10.cfg /quiet
             $WPFEssTweaksOO.IsChecked = $false
-        }
-        If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
-            Write-Host "Disabling UAC..."
-            # This below is the pussy mode which can break some apps. Please. Leave this on 1.
-            # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
-            # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
-            Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
-            # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
-            # It will just not bother u anymore
-
-            $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
             Write-Host "Creating Restore Point in case something bad happens"
@@ -875,8 +871,7 @@ $WPFtweaksbutton.Add_Click({
         
             ## Performance Tweaks and More Telemetry
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 10
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 10
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillAppTimeout" -Type DWord -Value 5000
@@ -891,7 +886,13 @@ $WPFtweaksbutton.Add_Click({
 
             # Network Tweaks
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "IRPStackSize" -Type DWord -Value 20
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 4294967295
 
+            # Gaming Tweaks
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "GPU Priority" -Type DWord -Value 8
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Priority" -Type DWord -Value 6
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
+        
             # Group svchost.exe processes
             $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
