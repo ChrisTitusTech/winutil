@@ -536,6 +536,7 @@ $WPFInstallUpgrade.Add_Click({
 $WPFdesktop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
@@ -556,6 +557,7 @@ $WPFdesktop.Add_Click({
 $WPFlaptop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
@@ -576,6 +578,7 @@ $WPFlaptop.Add_Click({
 $WPFminimal.Add_Click({
     
         $WPFEssTweaksAH.IsChecked = $false
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
@@ -601,6 +604,13 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
             $WPFEssTweaksAH.IsChecked = $false
+        }
+
+        If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
+            Write-Host "Delete Temp Files"
+            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
+            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+            $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
