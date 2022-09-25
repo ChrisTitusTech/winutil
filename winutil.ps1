@@ -546,6 +546,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
         $WPFEssTweaksHome.IsChecked = $true
@@ -568,6 +569,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
         $WPFEssTweaksHome.IsChecked = $true
@@ -590,6 +592,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksAH.IsChecked = $false
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
         $WPFEssTweaksHome.IsChecked = $true
@@ -622,6 +625,13 @@ $WPFtweaksbutton.Add_Click({
             Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
             Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
             $WPFEssTweaksDeleteTempFiles.IsChecked = $false
+            Write-Host "================================="
+            Write-Host "--- !!!!ERRORS ARE NORMAL!!!! ---"
+            Write-Host "--- Cleaned following folders:---"
+            Write-Host "--- C:\Windows\Temp           ---"
+            Write-Host "---"$env:TEMP"---"
+            Write-Host "================================="
+
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
@@ -666,6 +676,12 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
             $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
         }
+        If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
+            Write-Host "Running Disk Cleanup on Drive C:..."
+            cmd /c cleanmgr.exe /d C: /VERYLOWDISK
+            $WPFEssTweaksDiskCleanup.IsChecked = $false
+        }
+        
         If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
             Write-Host "Disabling UAC..."
             # This below is the pussy mode which can break some apps. Please. Leave this on 1.
