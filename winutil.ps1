@@ -107,6 +107,10 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 $WPFinstall.Add_Click({
         $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
+        If ( $WPFInstalllibreoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TheDocumentFoundation.LibreOffice")
+            $WPFInstalllibreoffice.IsChecked = $false
+        }
         If ( $WPFInstalladobe.IsChecked -eq $true ) { 
             $wingetinstall.Add("Adobe.Acrobat.Reader.64-bit")
             $WPFInstalladobe.IsChecked = $false
@@ -436,15 +440,15 @@ $WPFinstall.Add_Click({
                 Write-Host "Running Alternative Installer for LTSC/Server Editions"
 
                 #Download Needed Files
-                Write-Host "Downloading Needed Files..."
-                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "./Microsoft.VCLibs.x64.14.00.Desktop.appx"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "./Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "./b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                 Write-Host "Downloading Needed Files..."
+                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
 
                 #Installing Packages
                 Write-Host "Installing Packages..."
-                Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
-                Add-AppxProvisionedPackage -Online -PackagePath ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath ".\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
                 Write-Host "winget Installed (Reboot might be required before winget will work)"
 
                 #Sleep for 5 seconds to maximize chance that winget will work without reboot
@@ -453,9 +457,9 @@ $WPFinstall.Add_Click({
 
                 #Removing no longer needed Files
                 Write-Host "Removing no longer needed Files..."
-                Remove-Item -Path ".\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                Remove-Item -Path ".\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                Remove-Item -Path ".\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+                Remove-Item -Path "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                Remove-Item -Path "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                Remove-Item -Path "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
                 Write-Host "Removed Files that are no longer needed"
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
@@ -540,7 +544,9 @@ $WPFInstallUpgrade.Add_Click({
 $WPFdesktop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
         $WPFEssTweaksHome.IsChecked = $true
@@ -551,17 +557,19 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $true
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $true
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFlaptop.Add_Click({
 
         $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
         $WPFEssTweaksHome.IsChecked = $true
@@ -572,17 +580,19 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $true
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $true
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $true
     })
 
 $WPFminimal.Add_Click({
     
         $WPFEssTweaksAH.IsChecked = $false
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
         $WPFEssTweaksHome.IsChecked = $true
@@ -593,11 +603,11 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksStorage.IsChecked = $false
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
         $WPFMiscTweaksLapNum.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
     })
 
 $WPFtweaksbutton.Add_Click({
@@ -610,15 +620,30 @@ $WPFtweaksbutton.Add_Click({
             $WPFEssTweaksAH.IsChecked = $false
         }
 
+        If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
+            Write-Host "Delete Temp Files"
+            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
+            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+            $WPFEssTweaksDeleteTempFiles.IsChecked = $false
+            Write-Host "================================="
+            Write-Host "--- !!!!ERRORS ARE NORMAL!!!! ---"
+            Write-Host "--- Cleaned following folders:---"
+            Write-Host "--- C:\Windows\Temp           ---"
+            Write-Host "---"$env:TEMP"---"
+            Write-Host "================================="
+
+        }
+
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
             If (!(Test-Path "HKCU:\System\GameConfigStore")) {
                 New-Item -Path "HKCU:\System\GameConfigStore" -Force
             }
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Type DWord -Value 0 -Force
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 0 -Force
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type DWord -Value 0 -Force
-            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0 -Force
-
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehavior" -Type DWord -Value 2
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
             $WPFEssTweaksDVR.IsChecked = $false
         }
         If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
@@ -646,13 +671,20 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 0
             $WPFEssTweaksLoc.IsChecked = $false
         }
-        If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
-            Write-Host "Running O&O Shutup with Recommended Settings"
-            curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
-            curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
-            ./OOSU10.exe ooshutup10.cfg /quiet
-            $WPFEssTweaksOO.IsChecked = $false
+        If ( $WPFMiscTweaksDisableTPMCheck.IsChecked -eq $true ) {
+            Write-Host "Disabling TPM Check..."
+                If (!(Test-Path "HKLM:\SYSTEM\Setup\MoSetup")) {
+                New-Item -Path "HKLM:\SYSTEM\Setup\MoSetup" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
+            $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
         }
+        If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
+            Write-Host "Running Disk Cleanup on Drive C:..."
+            cmd /c cleanmgr.exe /d C: /VERYLOWDISK
+            $WPFEssTweaksDiskCleanup.IsChecked = $false
+        }
+        
         If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
             Write-Host "Disabling UAC..."
             # This below is the pussy mode which can break some apps. Please. Leave this on 1.
@@ -663,6 +695,13 @@ $WPFtweaksbutton.Add_Click({
             # It will just not bother u anymore
 
             $WPFMiscTweaksDisableUAC.IsChecked = $false
+        }
+        If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
+            Write-Host "Running O&O Shutup with Recommended Settings"
+            curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
+            curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
+            ./OOSU10.exe ooshutup10.cfg /quiet
+            $WPFEssTweaksOO.IsChecked = $false
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
             Write-Host "Creating Restore Point in case something bad happens"
@@ -870,13 +909,15 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Changing default Explorer view to This PC..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
     
+            ## Enable Long Paths
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Type DWORD -Value 1
+
             Write-Host "Hiding 3D Objects icon from This PC..."
             Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue  
         
             ## Performance Tweaks and More Telemetry
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 10
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 10
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillAppTimeout" -Type DWord -Value 5000
@@ -891,7 +932,13 @@ $WPFtweaksbutton.Add_Click({
 
             # Network Tweaks
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "IRPStackSize" -Type DWord -Value 20
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 4294967295
 
+            # Gaming Tweaks
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "GPU Priority" -Type DWord -Value 8
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Priority" -Type DWord -Value 6
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
+        
             # Group svchost.exe processes
             $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force

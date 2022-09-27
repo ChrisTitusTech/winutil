@@ -1,5 +1,8 @@
 {
   "install": {
+    "Installlibreoffice": {
+      "winget": "TheDocumentFoundation.LibreOffice"
+    },
     "Installadobe": {
       "winget": "Adobe.Acrobat.Reader.64-bit"
     },
