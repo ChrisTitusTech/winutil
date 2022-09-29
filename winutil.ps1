@@ -248,6 +248,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("VideoLAN.VLC")
             $WPFInstallvlc.IsChecked = $false
         }
+        If ( $WPFInstallkdenlive.IsChecked -eq $true ) {
+            $wingetinstall.Add("KDE.Kdenlive")
+            $WPFInstallkdenlive.IsChecked = $false
+        }
         If ( $WPFInstallvscode.IsChecked -eq $true ) { 
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
