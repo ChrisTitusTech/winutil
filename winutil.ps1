@@ -236,6 +236,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
         }
+        If ( $WPFInstallidm.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Tonec.InternetDownloadManager")
+            $WPFInstallidm.IsChecked = $false
+        }
         If ( $WPFInstallalacritty.IsChecked -eq $true ) { 
             $wingetinstall.Add("Alacritty.Alacritty")
             $WPFInstallalacritty.IsChecked = $false
