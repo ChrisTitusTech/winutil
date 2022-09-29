@@ -36,6 +36,9 @@
     "Installchrome": {
       "winget": "Google.Chrome"
     },
+    "Installtor": {
+      "winget": "TorProject.TorBrowser"
+    },
     "Installchromium": {
       "winget": "eloston.ungoogled-chromium"
     },
