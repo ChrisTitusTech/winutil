@@ -422,6 +422,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
         }
+        If ( $WPFInstallviber.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Viber.Viber")
+            $WPFInstallviber.IsChecked = $false
+        }
         If ( $WPFInstalltwinkletray.IsChecked -eq $true ) {
             $wingetinstall.Add("xanderfrangos.twinkletray")
             $WPFInstalltwinkletray.IsChecked = $false
