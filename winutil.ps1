@@ -406,6 +406,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
             $WPFInstallvivaldi.IsChecked = $false
         }                              
+        If ( $WPFInstalloperagx.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Opera.OperaGX")
+            $WPFInstalloperagx.IsChecked = $false
+        }                              
         If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) { 
             $wingetinstall.Add("VB-Audio.Voicemeeter")
             $WPFInstallvoicemeeter.IsChecked = $false

@@ -210,6 +210,9 @@
     "Installvivaldi": {
       "winget": "VivaldiTechnologies.Vivaldi"
     },
+    "Installoperagx": {
+      "winget": "Opera.OperaGX"
+    },
     "Installvlc": {
       "winget": "VideoLAN.VLC"
     },

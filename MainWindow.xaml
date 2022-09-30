@@ -36,6 +36,7 @@
 							<CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
 							<CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
 							<CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
+							<CheckBox Name="Installoperagx" Content="Opera GX" Margin="5,0"/>
 
 							<Label Content="Communications" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
