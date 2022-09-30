@@ -115,6 +115,7 @@
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
 							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
 							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
+							<CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
 							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>

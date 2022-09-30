@@ -306,6 +306,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("TechPowerUp.GPU-Z")
             $WPFInstallgpuz.IsChecked = $false
         }                 
+        If ( $WPFInstallglaryutilities.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Glarysoft.GlaryUtilities")
+            $WPFInstallglaryutilities.IsChecked = $false
+        }                 
         If ( $WPFInstallgreenshot.IsChecked -eq $true ) { 
             $wingetinstall.Add("Greenshot.Greenshot")
             $WPFInstallgreenshot.IsChecked = $false
