@@ -213,6 +213,9 @@
     "Installvlc": {
       "winget": "VideoLAN.VLC"
     },
+    "Installkdenlive": {
+      "winget": "KDE.Kdenlive"
+    },
     "Installvoicemeeter": {
       "winget": "VB-Audio.Voicemeeter"
     },
