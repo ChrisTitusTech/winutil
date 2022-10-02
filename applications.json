@@ -201,6 +201,9 @@
     "Installterminal": {
       "winget": "Microsoft.WindowsTerminal"
     },
+    "Installidm": {
+      "winget": "Tonec.InternetDownloadManager"
+    },
     "Installtreesize": {
       "winget": "JAMSoftware.TreeSize.Free"
     },
