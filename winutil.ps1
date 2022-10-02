@@ -5,8 +5,8 @@
     Version 0.0.1
 #>
 
-# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
+$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+# $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -586,6 +586,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $true
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -609,6 +610,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $true
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
@@ -632,6 +634,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $false
         $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -736,6 +739,17 @@ $WPFtweaksbutton.Add_Click({
 
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
+ 
+        If ( $WPFWPFMiscTweaksDisableNotifications.IsChecked -eq $true) {
+            Write-Host "Disabling Notifications and Action Center..."
+
+            New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Explorer" -force
+            New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -PropertyType "DWord" -Value 1
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -PropertyType "DWord" -Value 0 -force
+                   
+            $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        }
+
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             Write-Host "Running O&O Shutup with Recommended Settings"
             curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
@@ -1333,6 +1347,9 @@ $WPFundoall.Add_Click({
         Write-Host "Restoring Clipboard History..."
         Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
+        Write-Host "Enabling Notifications and Action Center"
+        Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
+        Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
         Write-Host "Done - Reverted to Stock Settings"
 
         #Enable Gamebar Presence Writer
