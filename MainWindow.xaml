@@ -44,6 +44,7 @@
 							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
 							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
 							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
+							<CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
 							<CheckBox Name="Installteams" Content="Microsoft Teams" Margin="5,0"/>
 							<CheckBox Name="Installzoom" Content="Zoom Video Conference" Margin="5,0"/>
 							

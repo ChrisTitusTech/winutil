@@ -243,6 +243,9 @@
     "Installzoom": {
       "winget": "Zoom.Zoom"
     },
+    "Installviber": {
+      "winget": "Viber.Viber"
+    },
     "Installtwinkletray": {
       "winget": "xanderfrangos.twinkletray"
     }
