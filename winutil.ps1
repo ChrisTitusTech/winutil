@@ -139,6 +139,10 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Google.Chrome")
             $WPFInstallchrome.IsChecked = $false
         }
+        If ( $WPFInstalltor.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TorProject.TorBrowser")
+            $WPFInstalltor.IsChecked = $false
+        }
         If ( $WPFInstalldiscord.IsChecked -eq $true ) { 
             $wingetinstall.Add("Discord.Discord")
             $WPFInstalldiscord.IsChecked = $false
