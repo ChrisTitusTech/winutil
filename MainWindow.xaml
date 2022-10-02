@@ -180,6 +180,7 @@
 							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0"/>
+							<CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
 
