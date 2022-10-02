@@ -417,7 +417,11 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallwindirstat.IsChecked -eq $true ) { 
             $wingetinstall.Add("WinDirStat.WinDirStat")
             $WPFInstallwindirstat.IsChecked = $false
-        }           
+        }  
+        If ( $WPFInstallwiztree.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AntibodySoftware.WizTree")
+            $WPFInstallwiztree.IsChecked = $false
+        }          
         If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
             $wingetinstall.Add("WiresharkFoundation.Wireshark")
             $WPFInstallwireshark.IsChecked = $false

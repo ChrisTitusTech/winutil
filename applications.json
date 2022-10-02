@@ -228,6 +228,9 @@
     "Installwindirstat": {
       "winget": "WinDirStat.WinDirStat"
     },
+    "Installwiztree": {
+      "winget": "AntibodySoftware.WizTree"
+    },
     "Installwinscp": {
       "winget": "WinSCP.WinSCP"
     },
