@@ -81,6 +81,9 @@
     "Installgpuz": {
       "winget": "TechPowerUp.GPU-Z"
     },
+    "Installglaryutilities": {
+      "winget": "Glarysoft.GlaryUtilities"
+    },
     "Installgreenshot": {
       "winget": "Greenshot.Greenshot"
     },
