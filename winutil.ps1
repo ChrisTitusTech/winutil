@@ -574,6 +574,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
@@ -598,6 +599,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
@@ -622,6 +624,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksAH.IsChecked = $false
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
@@ -1075,9 +1078,8 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
             Write-Host "Setting BIOS time to UTC..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $WPFMiscTweaksUTC.IsChecked
+            $WPFMiscTweaksUTC.IsChecked = $false
         }
-
         If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
             Write-Host "Adjusting visual effects for performance..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
@@ -1093,7 +1095,11 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Adjusted visual effects for performance"
             $WPFMiscTweaksDisplay.IsChecked = $false
         }
-
+        If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
+            Write-Host "Removing Microsoft Edge..."
+            iwr -useb https://raw.githubusercontent.com/padsalatushal/Edge-Removal/main/Edge_Removal.bat | iex
+            $WPFEssTweaksRemoveEdge.IsChecked = $false
+        }
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
             $Bloatware = @(
                 #Unnecessary Windows 10 AppX Apps
