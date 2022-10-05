@@ -174,7 +174,9 @@
 							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0"/>
 							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0"/>
-
+							<Label Content="Dark Theme" />
+							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
+							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
