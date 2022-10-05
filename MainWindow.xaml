@@ -190,7 +190,8 @@
 							<CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
-
+							<CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0"/>
+							
 							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
 							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
 						</StackPanel>
