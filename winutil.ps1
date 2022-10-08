@@ -706,7 +706,6 @@ $WPFtweaksbutton.Add_Click({
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 0
             $WPFEssTweaksHiber.IsChecked = $false
-
         }
         If ( $WPFEssTweaksHome.IsChecked -eq $true ) {
             $WPFEssTweaksHome.IsChecked = $false
@@ -745,7 +744,6 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
             # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
             # It will just not bother u anymore
-
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
  
@@ -1108,6 +1106,7 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Removing Cortana..."
             Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
             $WPFEssTweaksRemoveCortana.IsChecked = $false
+        }
         If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
             Write-Host "Removing Microsoft Edge..."
             iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | iex
