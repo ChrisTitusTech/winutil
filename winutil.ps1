@@ -679,7 +679,6 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "--- C:\Windows\Temp           ---"
             Write-Host "---"$env:TEMP"---"
             Write-Host "================================="
-
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
@@ -735,7 +734,6 @@ $WPFtweaksbutton.Add_Click({
             cmd /c cleanmgr.exe /d C: /VERYLOWDISK
             $WPFEssTweaksDiskCleanup.IsChecked = $false
         }
-        
         If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
             Write-Host "Disabling UAC..."
             # This below is the pussy mode which can break some apps. Please. Leave this on 1.
