@@ -969,6 +969,13 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Hiding 3D Objects icon from This PC..."
             Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue  
         
+            # Apply Google's DNS to all connections to improve name resolution timing
+            Write-Host "Apply Google's DNS to all connections..."
+            $DC = "8.8.8.8"
+            $Internet = "8.8.4.4"
+            $dns = "$DC", "$Internet"
+            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
+            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
             ## Performance Tweaks and More Telemetry
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0
