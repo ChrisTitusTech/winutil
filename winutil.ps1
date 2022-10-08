@@ -574,6 +574,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
         $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
@@ -600,6 +601,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
         $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
@@ -626,6 +628,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksAH.IsChecked = $false
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
         $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
@@ -1101,6 +1104,10 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Adjusted visual effects for performance"
             $WPFMiscTweaksDisplay.IsChecked = $false
         }
+        If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
+            Write-Host "Removing Cortana..."
+            Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
+            $WPFEssTweaksRemoveCortana.IsChecked = $false
         If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
             Write-Host "Removing Microsoft Edge..."
             iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | iex
