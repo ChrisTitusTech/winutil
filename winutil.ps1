@@ -586,7 +586,8 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $true
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -610,7 +611,8 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $true
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
@@ -634,7 +636,8 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $false
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -764,16 +767,19 @@ $WPFtweaksbutton.Add_Click({
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
  
-        If ( $WPFWPFMiscTweaksDisableNotifications.IsChecked -eq $true) {
+        If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
             Write-Host "Disabling Notifications and Action Center..."
-
             New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Explorer" -force
             New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -PropertyType "DWord" -Value 1
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -PropertyType "DWord" -Value 0 -force
-                   
-            $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+            $WPFMiscTweaksDisableNotifications.IsChecked = $false
         }
-
+        
+        If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
+            Write-Host "Setting Classic Right-Click Menu..."
+            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""       
+            $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             Write-Host "Running O&O Shutup with Recommended Settings"
             curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
@@ -1374,6 +1380,8 @@ $WPFundoall.Add_Click({
         Write-Host "Enabling Notifications and Action Center"
         Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
         Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
+        Write-Host "Restoring Default Right Click Menu Layout"
+        Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
         Write-Host "Done - Reverted to Stock Settings"
 
         #Enable Gamebar Presence Writer
