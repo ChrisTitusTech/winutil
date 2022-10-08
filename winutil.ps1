@@ -641,6 +641,30 @@ $WPFminimal.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $false
     })
 
+$WPFvm.Add_Click({
+    
+    $WPFEssTweaksAH.IsChecked = $true
+    $WPFEssTweaksDeleteTempFiles.IsChecked = $true
+    $WPFEssTweaksDeBloat.IsChecked = $true
+    $WPFEssTweaksDiskCleanup.IsChecked = $true
+    $WPFEssTweaksDVR.IsChecked = $true
+    $WPFEssTweaksHiber.IsChecked = $true
+    $WPFEssTweaksHome.IsChecked = $true
+    $WPFEssTweaksLoc.IsChecked = $true
+    $WPFEssTweaksOO.IsChecked = $true
+    $WPFEssTweaksRP.IsChecked = $true
+    $WPFEssTweaksServices.IsChecked = $true
+    $WPFEssTweaksStorage.IsChecked = $true
+    $WPFEssTweaksTele.IsChecked = $true
+    $WPFEssTweaksWifi.IsChecked = $true
+    $WPFMiscTweaksDisableUAC.IsChecked = $false
+    $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+    $WPFMiscTweaksPower.IsChecked = $true
+    $WPFMiscTweaksNum.IsChecked = $true
+    $WPFMiscTweaksLapPower.IsChecked = $false
+    $WPFMiscTweaksLapNum.IsChecked = $false
+    })
+
 $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
