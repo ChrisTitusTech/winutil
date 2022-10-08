@@ -575,6 +575,7 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
@@ -587,7 +588,8 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $true
         $WPFMiscTweaksNum.IsChecked = $true
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -600,6 +602,7 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
@@ -612,7 +615,8 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $true
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $true
         $WPFMiscTweaksLapNum.IsChecked = $true
         $WPFMiscTweaksPower.IsChecked = $false
@@ -625,6 +629,7 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
         $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
@@ -637,7 +642,8 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksTele.IsChecked = $true
         $WPFEssTweaksWifi.IsChecked = $false
         $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
         $WPFMiscTweaksPower.IsChecked = $false
         $WPFMiscTweaksNum.IsChecked = $false
         $WPFMiscTweaksLapPower.IsChecked = $false
@@ -743,16 +749,19 @@ $WPFtweaksbutton.Add_Click({
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
  
-        If ( $WPFWPFMiscTweaksDisableNotifications.IsChecked -eq $true) {
+        If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
             Write-Host "Disabling Notifications and Action Center..."
-
             New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Explorer" -force
             New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -PropertyType "DWord" -Value 1
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -PropertyType "DWord" -Value 0 -force
-                   
-            $WPFWPFMiscTweaksDisableNotifications.IsChecked = $false
+            $WPFMiscTweaksDisableNotifications.IsChecked = $false
         }
-
+        
+        If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
+            Write-Host "Setting Classic Right-Click Menu..."
+            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""       
+            $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             Write-Host "Running O&O Shutup with Recommended Settings"
             curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
@@ -1078,9 +1087,8 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
             Write-Host "Setting BIOS time to UTC..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $WPFMiscTweaksUTC.IsChecked
+            $WPFMiscTweaksUTC.IsChecked = $false
         }
-
         If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
             Write-Host "Adjusting visual effects for performance..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
@@ -1100,6 +1108,10 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Removing Cortana..."
             Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
             $WPFEssTweaksRemoveCortana.IsChecked = $false
+        If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
+            Write-Host "Removing Microsoft Edge..."
+            iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | iex
+            $WPFEssTweaksRemoveEdge.IsChecked = $false
         }
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
             $Bloatware = @(
@@ -1226,6 +1238,22 @@ $WPFtweaksbutton.Add_Click({
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     })
+
+$WPFEnableDarkMode.Add_Click({
+    Write-Host "Enabling Dark Mode"
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+    Write-Host "Enabled"
+    }
+)
+    
+$WPFDisableDarkMode.Add_Click({
+    Write-Host "Disabling Dark Mode"
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+    Write-Host "Disabled"
+    }
+)
 #===========================================================================
 # Undo All
 #===========================================================================
@@ -1357,6 +1385,8 @@ $WPFundoall.Add_Click({
         Write-Host "Enabling Notifications and Action Center"
         Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
         Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
+        Write-Host "Restoring Default Right Click Menu Layout"
+        Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
         Write-Host "Done - Reverted to Stock Settings"
 
         #Enable Gamebar Presence Writer
