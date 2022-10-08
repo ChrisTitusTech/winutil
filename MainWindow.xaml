@@ -36,6 +36,7 @@
 							<CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
 							<CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
 							<CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
+							<CheckBox Name="Installtor" Content="Tor Browser" Margin="5,0"/>
 
 							<Label Content="Communications" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
@@ -44,6 +45,7 @@
 							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
 							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
 							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
+							<CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
 							<CheckBox Name="Installteams" Content="Microsoft Teams" Margin="5,0"/>
 							<CheckBox Name="Installzoom" Content="Zoom Video Conference" Margin="5,0"/>
 							
@@ -85,7 +87,8 @@
 							<CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
 							<CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
 							<CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
-
+						    <CheckBox Name="Installsimplewall" Content="SimpleWall" Margin="5,0"/>
+							
 							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
 							<CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
@@ -102,6 +105,7 @@
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
 							<CheckBox Name="Installspotify" Content="Spotify" Margin="5,0"/>
 							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
+							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
 							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
 						</StackPanel>
@@ -115,6 +119,7 @@
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
 							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
 							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
+							<CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
 							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
@@ -127,7 +132,9 @@
 							<CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
 							<CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
 							<CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
+							<CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+							<CheckBox Name="Installidm" Content="Internet Download Manager" Margin="5,0"/>
 							<CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
@@ -160,13 +167,16 @@
 							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
 							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"/>
+							<CheckBox Name="EssTweaksDiskCleanup" Content="Delete Temporary Files" Margin="5,0"/>
 							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0"/>
 							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0"/>
 							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0"/>
 							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0"/>
 							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0"/>
-
+							<Label Content="Dark Theme" />
+							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
+							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
@@ -179,8 +189,12 @@
 							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
 							<CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0"/>
+							<CheckBox Name="MiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0"/>
+							<CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0"/>
 							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
-
+							<CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0"/>
+							<CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0"/>
+							<CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"/>
 							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
 							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
 						</StackPanel>
