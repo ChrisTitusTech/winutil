@@ -9,3 +9,10 @@ winutil.pdb
 *.zip
 package.psd1
 /.idea/
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/winutil/FileContentIndex/eb340bad-4fa2-4d04-a61a-74ed6a04cdd9.vsidx
+.vs/winutil/FileContentIndex/read.lock
+.vs/winutil/v17/.suo
+/out/

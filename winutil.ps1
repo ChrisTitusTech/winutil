@@ -5,8 +5,8 @@
     Version 0.0.1
 #>
 
-#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
+$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+#$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -34,7 +34,7 @@ catch {
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
  
 Function Get-FormVariables {
-    If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
+    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
     
 
     write-host ""                                                                                                                             
@@ -454,7 +454,46 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("xanderfrangos.twinkletray")
             $WPFInstalltwinkletray.IsChecked = $false
         }
-
+        If ( $WPFInstallshell.IsChecked -eq $true ) {
+            $wingetinstall.Add("Nilesoft.Shell")
+            $WPFInstallshell.IsChecked = $false
+        }
+        If ( $WPFInstallklite.IsChecked -eq $true ) {
+            $wingetinstall.Add("CodecGuide.K-LiteCodecPack.Standard")
+            $WPFInstallklite.IsChecked = $false
+        }
+        If ( $WPFInstallsandboxie.IsChecked -eq $true ) {
+            $wingetinstall.Add("Sandboxie.Plus")
+            $WPFInstallsandboxie.IsChecked = $false
+        }
+        If ( $WPFInstallprocesslasso.IsChecked -eq $true ) {
+            $wingetinstall.Add("BitSum.ProcessLasso")
+            $WPFInstallprocesslasso.IsChecked = $false
+        }
+        If ( $WPFInstallwinmerge.IsChecked -eq $true ) {
+            $wingetinstall.Add("WinMerge.WinMerge")
+            $WPFInstallwinmerge.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet3.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.3_1")
+            $WPFInstalldotnet3.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet5.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.5")
+            $WPFInstalldotnet5.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet6.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.6")
+            $WPFInstalldotnet6.IsChecked = $false
+        }
+        If ( $WPFInstallvc2015_64.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x64")
+            $WPFInstallvc2015_64.IsChecked = $false
+        }
+        If ( $WPFInstallvc2015_32.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x86")
+            $WPFInstallvc2015_32.IsChecked = $false
+        }
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
         if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
