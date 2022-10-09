@@ -9,7 +9,7 @@ Launch Command:
 ```
 iwr -useb https://christitus.com/win | iex
 ```
-Or shorter
+Or shorter Thanks to [#144](/../../issues/144)
 ```
 irm christitus.com/win | iex
 ```
