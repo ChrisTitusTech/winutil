@@ -516,7 +516,7 @@ $WPFinstall.Add_Click({
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
         foreach ( $node in $wingetinstall ) {
             try {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -Wait -WindowStyle Maximized
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -NoNewWindow
                 $wingetResult.Add("$node`n")
             }
             catch [System.InvalidOperationException] {
@@ -550,7 +550,7 @@ $WPFinstall.Add_Click({
 $WPFInstallUpgrade.Add_Click({
         $isUpgradeSuccess = $false
         try {
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Maximized
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -NoNewWindow
             $isUpgradeSuccess = $true
         }
         catch [System.InvalidOperationException] {
@@ -574,6 +574,8 @@ $WPFdesktop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $true
@@ -599,6 +601,8 @@ $WPFlaptop.Add_Click({
         $WPFEssTweaksAH.IsChecked = $true
         $WPFEssTweaksDeleteTempFiles.IsChecked = $true
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $true
         $WPFEssTweaksHiber.IsChecked = $false
@@ -624,6 +628,8 @@ $WPFminimal.Add_Click({
         $WPFEssTweaksAH.IsChecked = $false
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
         $WPFEssTweaksDiskCleanup.IsChecked = $false
         $WPFEssTweaksDVR.IsChecked = $false
         $WPFEssTweaksHiber.IsChecked = $false
@@ -697,7 +703,6 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "--- C:\Windows\Temp           ---"
             Write-Host "---"$env:TEMP"---"
             Write-Host "================================="
-
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
@@ -724,7 +729,6 @@ $WPFtweaksbutton.Add_Click({
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 0
             $WPFEssTweaksHiber.IsChecked = $false
-
         }
         If ( $WPFEssTweaksHome.IsChecked -eq $true ) {
             $WPFEssTweaksHome.IsChecked = $false
@@ -754,7 +758,6 @@ $WPFtweaksbutton.Add_Click({
             cmd /c cleanmgr.exe /d C: /VERYLOWDISK
             $WPFEssTweaksDiskCleanup.IsChecked = $false
         }
-        
         If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
             Write-Host "Disabling UAC..."
             # This below is the pussy mode which can break some apps. Please. Leave this on 1.
@@ -763,7 +766,6 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
             # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
             # It will just not bother u anymore
-
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
  
@@ -1105,9 +1107,8 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
             Write-Host "Setting BIOS time to UTC..."
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
-            $WPFMiscTweaksUTC.IsChecked
+            $WPFMiscTweaksUTC.IsChecked = $false
         }
-
         If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
             Write-Host "Adjusting visual effects for performance..."
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
@@ -1123,7 +1124,16 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Adjusted visual effects for performance"
             $WPFMiscTweaksDisplay.IsChecked = $false
         }
-
+        If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
+            Write-Host "Removing Cortana..."
+            Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
+            $WPFEssTweaksRemoveCortana.IsChecked = $false
+        }
+        If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
+            Write-Host "Removing Microsoft Edge..."
+            iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | iex
+            $WPFEssTweaksRemoveEdge.IsChecked = $false
+        }
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
             $Bloatware = @(
                 #Unnecessary Windows 10 AppX Apps
@@ -1249,6 +1259,22 @@ $WPFtweaksbutton.Add_Click({
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     })
+
+$WPFEnableDarkMode.Add_Click({
+    Write-Host "Enabling Dark Mode"
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+    Write-Host "Enabled"
+    }
+)
+    
+$WPFDisableDarkMode.Add_Click({
+    Write-Host "Disabling Dark Mode"
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+    Write-Host "Disabled"
+    }
+)
 #===========================================================================
 # Undo All
 #===========================================================================
