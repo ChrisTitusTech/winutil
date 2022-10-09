@@ -6,28 +6,38 @@
         xmlns:local="clr-namespace:WinUtility"
         mc:Ignorable="d"
         Background="#777777"
-        Title="Chris Titus Tech's Windows Utility" Height="533" Width="786">
-	<Viewbox Stretch="Uniform">
+		WindowStartupLocation="CenterScreen"
+        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
+	<Border Name="dummy" Grid.Column="0" Grid.Row="0">
+	<Viewbox Stretch="Uniform" VerticalAlignment="Top">
 		<Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
+			<Grid.RowDefinitions>
+				<RowDefinition Height=".1*"/>
+				<RowDefinition Height=".9*"/>
+			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="3*"/>
-				<ColumnDefinition Width="7*"/>
+				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0">
-				<Image Height="200" Width="200" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-				<Button Content="Install" VerticalAlignment="Top" Height="40" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
-				<Button Content="Tweaks" VerticalAlignment="Top" Height="40" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
-				<Button Content="Config" VerticalAlignment="Top" Height="40" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
-				<Button Content="Updates" VerticalAlignment="Top" Height="40" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
-			</StackPanel>
-			<TabControl Grid.Column="1" Padding="-1" Name="TabNav" SelectedIndex="0">
-				<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
+				<DockPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
+				<Image Height="50" Width="100" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
+				<Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
+				<Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
+				<Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
+				<Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
+			</DockPanel>
+			<TabControl Grid.Row="1" Padding="-1" Name="TabNav" Background="#222222">
+					<TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
 					<Grid Background="#222222">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
 							<Label Content="Browsers" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installbrave" Content="Brave" Margin="5,0"/>
@@ -37,7 +47,7 @@
 							<CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
 							<CheckBox Name="Installtor" Content="Tor Browser" Margin="5,0"/>
 							<CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
-							
+
 
 							<Label Content="Communications" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
@@ -49,8 +59,8 @@
 							<CheckBox Name="Installteams" Content="Teams" Margin="5,0"/>
 							<CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
 							<CheckBox Name="Installzoom" Content="Zoom" Margin="5,0"/>
-
-
+						</StackPanel>
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
 							<Label Content="Development" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
 							<CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
@@ -68,7 +78,7 @@
 							<CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
 
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
 
 							<Label Content="Document" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
@@ -91,6 +101,17 @@
 							<CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
 							<CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
 
+							</StackPanel>
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="3" Margin="10">
+							<Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
+							<CheckBox Name="Installdotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
+							<CheckBox Name="Installdotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
+							<CheckBox Name="Installdotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
+							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
+							<CheckBox Name="Installvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
+							<CheckBox Name="Installvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
+							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+
 							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
 							<CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
@@ -110,17 +131,9 @@
 							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
 							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
-							<Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
-							<CheckBox Name="Installdotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
-							<CheckBox Name="Installdotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
-							<CheckBox Name="Installdotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
-							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
-							<CheckBox Name="Installvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
-							<CheckBox Name="Installvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
-							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="4" Margin="10">
 							<Label Content="Utilities" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
 							<CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
@@ -157,14 +170,14 @@
 				<TabItem Header="Tweaks" Visibility="Collapsed" Name="Tab2">
 					<Grid Background="#333333">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
 						<Grid.RowDefinitions>
-							<RowDefinition Height="1*"/>
-							<RowDefinition Height="6*"/>
+							<RowDefinition Height=".10*"/>
+							<RowDefinition Height=".90*"/>
 						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
 							<Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
 							<Button Name="desktop" Content="Desktop" Margin="7"/>
 							<Button Name="laptop" Content="Laptop" Margin="7"/>
@@ -215,8 +228,8 @@
 				<TabItem Header="Config" Visibility="Collapsed" Name="Tab3">
 					<Grid Background="#444444">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
 							<Label Content="Features" FontSize="16"/>
@@ -244,21 +257,21 @@
 				</TabItem>
 				<TabItem Header="Updates" Visibility="Collapsed" Name="Tab4">
 					<Grid Background="#555555">
-						<Grid.RowDefinitions>
-							<RowDefinition/>
-							<RowDefinition/>
-							<RowDefinition/>
-						</Grid.RowDefinitions>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Margin="10,5">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
 
 							<TextBlock Text="This is the default settings that come with Windows. No modifications are made and will remove any custom windows update settings." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Margin="10,5">
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
 							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in business environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Margin="10,5">
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
 							<TextBlock Text="This completely disables ALL Windows Updates and is NOT RECOMMENDED. You system will be easier to hack and infect without security updates. However, it can be suitable if you use your system for a select purpose and do not actively browse the internet." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10"/>
 						</StackPanel>
@@ -268,4 +281,5 @@
 			</TabControl>
 		</Grid>
 	</Viewbox>
+	</Border>
 </Window>
