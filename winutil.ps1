@@ -468,7 +468,7 @@ $WPFinstall.Add_Click({
                 Write-Host "Running Alternative Installer for LTSC/Server Editions"
 
                 #Download Needed Files
-                 Write-Host "Downloading Needed Files..."
+                Write-Host "Downloading Needed Files..."
                 Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
                 Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
                 Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
@@ -560,7 +560,7 @@ $WPFInstallUpgrade.Add_Click({
             Write-Error $_.Exception
         }
         $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $Messageboxbody = if($isUpgradeSuccess) {"Upgrade Done"} else {"Upgrade was not succesful"}
+        $Messageboxbody = if ($isUpgradeSuccess) { "Upgrade Done" } else { "Upgrade was not succesful" }
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
@@ -693,7 +693,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
 
             #Disabling Gamebar Presence Writer, which causes stutter in games
-            PowerRun.exe /SW:0 Powershell.exe -command {Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 0}
+            PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 0 }
 
             $WPFEssTweaksDVR.IsChecked = $false
         }
@@ -723,7 +723,7 @@ $WPFtweaksbutton.Add_Click({
         }
         If ( $WPFMiscTweaksDisableTPMCheck.IsChecked -eq $true ) {
             Write-Host "Disabling TPM Check..."
-                If (!(Test-Path "HKLM:\SYSTEM\Setup\MoSetup")) {
+            If (!(Test-Path "HKLM:\SYSTEM\Setup\MoSetup")) {
                 New-Item -Path "HKLM:\SYSTEM\Setup\MoSetup" -Force | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
@@ -1166,42 +1166,85 @@ $WPFtweaksbutton.Add_Click({
 
                 #Sponsored Windows 10 AppX Apps
                 #Add sponsored/featured apps to remove in the "*AppName*" format
-                "*EclipseManager*"
-                "*ActiproSoftwareLLC*"
-                "*AdobeSystemsIncorporated.AdobePhotoshopExpress*"
-                "*Duolingo-LearnLanguagesforFree*"
-                "*PandoraMediaInc*"
-                "*CandyCrush*"
-                "*BubbleWitch3Saga*"
-                "*Wunderlist*"
-                "*Flipboard*"
-                "*Twitter*"
-                "*Facebook*"
-                "*Royal Revolt*"
-                "*Sway*"
-                "*Speed Test*"
-                "*Dolby*"
-                "*Viber*"
-                "*ACGMediaPlayer*"
-                "*Netflix*"
-                "*OneCalendar*"
-                "*LinkedInforWindows*"
-                "*HiddenCityMysteryofShadows*"
-                "*Hulu*"
-                "*HiddenCity*"
-                "*AdobePhotoshopExpress*"
-                "*HotspotShieldFreeVPN*"
+                "EclipseManager"
+                "ActiproSoftwareLLC"
+                "AdobeSystemsIncorporated.AdobePhotoshopExpress"
+                "Duolingo-LearnLanguagesforFree"
+                "PandoraMediaInc"
+                "CandyCrush"
+                "BubbleWitch3Saga"
+                "Wunderlist"
+                "Flipboard"
+                "Twitter"
+                "Facebook"
+                "Royal Revolt"
+                "Sway"
+                "Speed Test"
+                "Dolby"
+                "Viber"
+                "ACGMediaPlayer"
+                "Netflix"
+                "OneCalendar"
+                "LinkedInforWindows"
+                "HiddenCityMysteryofShadows"
+                "Hulu"
+                "HiddenCity"
+                "AdobePhotoshopExpress"
+                "HotspotShieldFreeVPN"
 
                 #Optional: Typically not removed but you can if you need to
-                "*Microsoft.Advertising.Xaml*"
-                #"*Microsoft.MSPaint*"
-                #"*Microsoft.MicrosoftStickyNotes*"
-                #"*Microsoft.Windows.Photos*"
-                #"*Microsoft.WindowsCalculator*"
-                #"*Microsoft.WindowsStore*"
+                "Microsoft.Advertising.Xaml"
+                #"Microsoft.MSPaint"
+                #"Microsoft.MicrosoftStickyNotes"
+                #"Microsoft.Windows.Photos"
+                #"Microsoft.WindowsCalculator"
+                #"Microsoft.WindowsStore"
+
+                # HPBloatware Packages
+                "HPJumpStarts"
+                "HPPCHardwareDiagnosticsWindows"
+                "HPPowerManager"
+                "HPPrivacySettings"
+                "HPSupportAssistant"
+                "HPSureShieldAI"
+                "HPSystemInformation"
+                "HPQuickDrop"
+                "HPWorkWell"
+                "myHP"
+                "HPDesktopSupportUtilities"
+                "HPQuickTouch"
+                "HPEasyClean"
+                "HPSystemInformation"
             )
 
             Write-Host "Removing Bloatware"
+
+            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($Bloatware -contains $_.Name) }
+            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($Bloatware -contains $_.DisplayName) }
+
+            # Remove appx provisioned packages - AppxProvisionedPackage
+            ForEach ($ProvPackage in $ProvisionedPackages) {
+                Write-Host -Object "Attempting to remove provisioned package: [$($ProvPackage.DisplayName)]..."
+                Try {
+                    $Null = Remove-AppxProvisionedPackage -PackageName $ProvPackage.PackageName -Online -ErrorAction Stop
+                    Write-Host -Object "Successfully removed provisioned package: [$($ProvPackage.DisplayName)]"
+                }
+                Catch {
+                    Write-Warning -Message "Failed to remove provisioned package: [$($ProvPackage.DisplayName)]"
+                }
+            }
+
+            # Remove appx packages - AppxPackage
+            ForEach ($AppxPackage in $InstalledPackages) {                                                    
+                Write-Host -Object "Attempting to remove Appx package: [$($AppxPackage.Name)]..."
+                Try {
+                    $Null = Remove-AppxPackage -Package $AppxPackage.PackageFullName -AllUsers -ErrorAction Stop
+                    Write-Host -Object "Successfully removed Appx package: [$($AppxPackage.Name)]"
+                }
+                Catch {
+                    Write-Warning -Message "Failed to remove Appx package: [$($AppxPackage.Name)]"
+                }
+            }
 
             foreach ($Bloat in $Bloatware) {
                 Get-AppxPackage -Name $Bloat | Remove-AppxPackage
@@ -1210,20 +1253,59 @@ $WPFtweaksbutton.Add_Click({
             }
 
             Write-Host "Finished Removing Bloatware Apps"
+
+
+            
+            Write-Host "Removing Bloatware Programs"
+            # Remove installed programs
+            $InstalledPrograms = Get-Package | Where-Object { $UninstallPrograms -contains $_.Name }
+            $InstalledPrograms | ForEach-Object {
+
+                Write-Host -Object "Attempting to uninstall: [$($_.Name)]..."
+
+                Try {
+                    $Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction Stop
+                    Write-Host -Object "Successfully uninstalled: [$($_.Name)]"
+                }
+                Catch {
+                    Write-Warning -Message "Failed to uninstall: [$($_.Name)]"
+                }
+            }
+
+            # Fallback attempt 1 to remove HP Wolf Security using msiexec
+            Try {
+                MsiExec /x "{0E2E04B0-9EDD-11EB-B38C-10604B96B11E}" /qn /norestart
+                Write-Host -Object "Fallback to MSI uninistall for HP Wolf Security initiated"
+            }
+            Catch {
+                Write-Warning -Object "Failed to uninstall HP Wolf Security using MSI - Error message: $($_.Exception.Message)"
+            }
+
+            # Fallback attempt 2 to remove HP Wolf Security using msiexec
+            Try {
+                MsiExec /x "{4DA839F0-72CF-11EC-B247-3863BB3CB5A8}" /qn /norestart
+                Write-Host -Object "Fallback to MSI uninistall for HP Wolf 2 Security initiated"
+            }
+            Catch {
+                Write-Warning -Object  "Failed to uninstall HP Wolf Security 2 using MSI - Error message: $($_.Exception.Message)"
+            }
             $WPFEssTweaksDeBloat.IsChecked = $false
         }
         Write-Host "Doing Security checks for Administrator Account and Group Policy"
-        if(($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1){
+        if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
             net user administrator /active:no
         }
-    
-        if(!(((Get-ComputerInfo).WindowsEditionId).IndexOf('Core') -eq -1) -or !(((Get-ComputerInfo).WindowsEditionId).IndexOf('Home') -eq -1)){ # Not sure if home edition is Core or Home
+        
+        if (!(((Get-ComputerInfo).WindowsEditionId).IndexOf('Core') -eq -1) -or !(((Get-ComputerInfo).WindowsEditionId).IndexOf('Home') -eq -1)) {
+            # Not sure if home edition is Core or Home
             Write-Host "Enabling gpedit.msc...Group Policy for Home Users"
             Get-ChildItem @(
                 "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package*.mum",
                 "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package*.mum"
             ) | ForEach-Object { dism.exe /online /norestart /add-package:"$_" }
         }
+        Write-Host "Finished Removing Bloatware Programs"
+
         Write-Host "================================="
         Write-Host "--     Tweaks are Finished    ---"
         Write-Host "================================="
@@ -1237,18 +1319,18 @@ $WPFtweaksbutton.Add_Click({
     })
 
 $WPFEnableDarkMode.Add_Click({
-    Write-Host "Enabling Dark Mode"
-    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-    Set-ItemProperty $Theme AppsUseLightTheme -Value 0
-    Write-Host "Enabled"
+        Write-Host "Enabling Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+        Write-Host "Enabled"
     }
 )
     
 $WPFDisableDarkMode.Add_Click({
-    Write-Host "Disabling Dark Mode"
-    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-    Set-ItemProperty $Theme AppsUseLightTheme -Value 1
-    Write-Host "Disabled"
+        Write-Host "Disabling Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+        Write-Host "Disabled"
     }
 )
 #===========================================================================
@@ -1387,7 +1469,7 @@ $WPFundoall.Add_Click({
         Write-Host "Done - Reverted to Stock Settings"
 
         #Enable Gamebar Presence Writer
-        PowerRun.exe /SW:0 Powershell.exe -command {Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 1}
+        PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 1 }
 
         Write-Host "Essential Undo Completed"
 
@@ -1632,31 +1714,31 @@ $WPFFixesUpdate.Add_Click({
     })
 
 $WPFUpdatesdisable.Add_Click({
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
+        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
     
-    $services = @(
-        "BITS"
-        "wuauserv"
-    )
+        $services = @(
+            "BITS"
+            "wuauserv"
+        )
 
-    foreach ($service in $services) {
-        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+        foreach ($service in $services) {
+            # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
 
-        Write-Host "Setting $service StartupType to Disabled"
-        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-    }
-    Write-Host "================================="
-    Write-Host "---  Updates ARE DISABLED     ---"
-    Write-Host "================================="
-})
+            Write-Host "Setting $service StartupType to Disabled"
+            Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+        }
+        Write-Host "================================="
+        Write-Host "---  Updates ARE DISABLED     ---"
+        Write-Host "================================="
+    })
 $WPFUpdatessecurity.Add_Click({
         Write-Host "Disabling driver offering through Windows Update..."
         If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
