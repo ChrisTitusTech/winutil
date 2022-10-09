@@ -9,6 +9,10 @@ Launch Command:
 ```
 iwr -useb https://christitus.com/win | iex
 ```
+Or shorter
+```
+irm christitus.com/win | iex
+```
 
 EXE Wrapper for $5 @ https://www.cttstore.com/windows-toolbox
 
