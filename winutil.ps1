@@ -5,8 +5,8 @@
     Version 0.0.1
 #>
 
-$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-# $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
+#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -31,7 +31,7 @@ catch {
 # Store Form Objects In PowerShell
 #===========================================================================
  
-$xaml.SelectNodes("//*[@Name]") | % { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
  
 Function Get-FormVariables {
     If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
@@ -516,7 +516,7 @@ $WPFinstall.Add_Click({
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
         foreach ( $node in $wingetinstall ) {
             try {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -NoNewWindow
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
             }
             catch [System.InvalidOperationException] {
@@ -527,7 +527,7 @@ $WPFinstall.Add_Click({
             }
         }
         $wingetResult.ToArray()
-        $wingetResult | % { $_ } | Out-Host
+        $wingetResult | ForEach-Object { $_ } | Out-Host
 
         # Popup after finished
         $ButtonType = [System.Windows.MessageBoxButton]::OK
@@ -550,7 +550,7 @@ $WPFinstall.Add_Click({
 $WPFInstallUpgrade.Add_Click({
         $isUpgradeSuccess = $false
         try {
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -NoNewWindow
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Normal
             $isUpgradeSuccess = $true
         }
         catch [System.InvalidOperationException] {
@@ -1131,7 +1131,7 @@ $WPFtweaksbutton.Add_Click({
         }
         If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
             Write-Host "Removing Microsoft Edge..."
-            iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | iex
+            Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | Invoke-Expression
             $WPFEssTweaksRemoveEdge.IsChecked = $false
         }
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
@@ -1237,7 +1237,7 @@ $WPFtweaksbutton.Add_Click({
             $WPFEssTweaksDeBloat.IsChecked = $false
         }
         Write-Host "Doing Security checks for Administrator Account and Group Policy"
-        if(($(Get-WMIObject -class Win32_ComputerSystem | select username).username).IndexOf('Administrator') -eq -1){
+        if(($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1){
             net user administrator /active:no
         }
     
