@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Background="#777777"
         Title="Chris Titus Tech's Windows Utility" Height="533" Width="786">
-	<Viewbox>
+	<Viewbox Stretch="Uniform">
 		<Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="3*"/>
