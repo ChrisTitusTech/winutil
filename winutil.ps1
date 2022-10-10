@@ -1531,6 +1531,11 @@ $WPFundoall.Add_Click({
         Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
         Write-Host "Restoring Default Right Click Menu Layout"
         Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
+
+        Write-Host "Reset News and Interests"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 1
+        # Remove "News and Interest" from taskbar
+        Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
         Write-Host "Done - Reverted to Stock Settings"
 
         #Enable Gamebar Presence Writer
