@@ -601,6 +601,8 @@ $WPFinstall.Add_Click({
             try {
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
+                Start-Sleep -s 3
+                Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
             }
             catch [System.InvalidOperationException] {
                 Write-Warning "Allow Yes on User Access Control to Install"
@@ -611,7 +613,7 @@ $WPFinstall.Add_Click({
         }
         $wingetResult.ToArray()
         $wingetResult | ForEach-Object { $_ } | Out-Host
-
+        
         # Popup after finished
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         if ($wingetResult -ne "") {
