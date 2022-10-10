@@ -52,6 +52,7 @@
 							<Label Content="Communications" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
 							<CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
+							<CheckBox Name="Installjami" Content="Jami" Margin="5,0"/>
 							<CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
 							<CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
 							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
@@ -63,6 +64,7 @@
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
 							<Label Content="Development" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
+							<CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
 							<CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
 							<CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
 							<CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
@@ -82,9 +84,13 @@
 
 							<Label Content="Document" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
+							<CheckBox Name="Installfoxpdf" Content="Foxit PDF" Margin="5,0"/>
+							<CheckBox Name="Installjoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
 							<CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
 							<CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
 							<CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
+							<CheckBox Name="Installonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+							<CheckBox Name="Installopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
 							<CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
 							<CheckBox Name="Installwinmerge" Content="WinMerge" Margin="5,0"/>
 
@@ -97,6 +103,7 @@
 							<CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
 							<CheckBox Name="Installmremoteng" Content="mRemoteNG" Margin="5,0"/>
 							<CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
+							<CheckBox Name="Installrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
 							<CheckBox Name="Installsimplewall" Content="SimpleWall" Margin="5,0"/>
 							<CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
 							<CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
@@ -115,6 +122,7 @@
 							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
 							<CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
 							<CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
+							<CheckBox Name="Installcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
 							<CheckBox Name="Installeartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
 							<CheckBox Name="Installflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
 							<CheckBox Name="Installfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
@@ -123,13 +131,13 @@
 							<CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
 							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
 							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
+							<CheckBox Name="Installitunes" Content="iTunes" Margin="5,0"/>
+							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>							
 							<CheckBox Name="Installklite" Content="K-Lite Codec Standard" Margin="5,0"/>
 							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-							<CheckBox Name="Installspotify" Content="Spotify" Margin="5,0"/>
 							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
-							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
 							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 						</StackPanel>
 
@@ -143,10 +151,12 @@
 							<CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
 							<CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
+							<CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
 							<CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
 							<CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
 							<CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
 							<CheckBox Name="Installidm" Content="Internet Download Manager" Margin="5,0"/>
+							<CheckBox Name="Installjdownloader" Content="J Download Manager" Margin="5,0"/>
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
 							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>

@@ -163,8 +163,11 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("GIMP.GIMP")
             $WPFInstallgimp.IsChecked = $false
         }
-        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
+        If ( $WPFInstallgit.IsChecked -eq $true ) { 
             $wingetinstall.Add("Git.Git")
+            $WPFInstallgithubdesktop.IsChecked = $false
+        }
+        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
             $wingetinstall.Add("GitHub.GitHubDesktop")
             $WPFInstallgithubdesktop.IsChecked = $false
         }
@@ -454,6 +457,7 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("xanderfrangos.twinkletray")
             $WPFInstalltwinkletray.IsChecked = $false
         }
+        # Fall 2022 Additions
         If ( $WPFInstallshell.IsChecked -eq $true ) {
             $wingetinstall.Add("Nilesoft.Shell")
             $WPFInstallshell.IsChecked = $false
@@ -493,6 +497,46 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallvc2015_32.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x86")
             $WPFInstallvc2015_32.IsChecked = $false
+        }
+        If ( $WPFInstallfoxpdf.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Foxit.PhantomPDF")
+            $WPFInstallfoxpdf.IsChecked = $false
+        }
+        If ( $WPFInstallonlyoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("ONLYOFFICE.DesktopEditors")
+            $WPFInstallonlyoffice.IsChecked = $false
+        }
+        If ( $WPFInstallflux.IsChecked -eq $true ) { 
+            $wingetinstall.Add("flux.flux")
+            $WPFInstallflux.IsChecked = $false
+        }
+        If ( $WPFInstallitunes.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Apple.iTunes")
+            $WPFInstallitunes.IsChecked = $false
+        }
+        If ( $WPFInstallcider.IsChecked -eq $true ) { 
+            $wingetinstall.Add("CiderCollective.Cider")
+            $WPFInstallcider.IsChecked = $false
+        }
+        If ( $WPFInstalljoplin.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Joplin.Joplin")
+            $WPFInstalljoplin.IsChecked = $false
+        }
+        If ( $WPFInstallopenoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Apache.OpenOffice")
+            $WPFInstallopenoffice.IsChecked = $false
+        }
+        If ( $WPFInstallruskdesk.IsChecked -eq $true ) { 
+            $wingetinstall.Add("RustDesk.RustDesk")
+            $WPFInstallruskdesk.IsChecked = $false
+        }
+        If ( $WPFInstalljami.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SFLinux.Jami")
+            $WPFInstalljami.IsChecked = $false
+        }
+        If ( $WPFInstalljdownloader.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AppWork.JDownloader")
+            $WPFInstalljdownloader.IsChecked = $false
         }
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
