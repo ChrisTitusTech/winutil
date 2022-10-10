@@ -185,7 +185,8 @@
 						</Grid.ColumnDefinitions>
 						<Grid.RowDefinitions>
 							<RowDefinition Height=".10*"/>
-							<RowDefinition Height=".90*"/>
+							<RowDefinition Height=".10*"/>
+							<RowDefinition Height=".80*"/>
 						</Grid.RowDefinitions>
 						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
 							<Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
@@ -193,43 +194,48 @@
 							<Button Name="laptop" Content="Laptop" Margin="7"/>
 							<Button Name="minimal" Content="Minimal" Margin="7"/>
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
+						<StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+							<TextBlock Padding="10">
+							Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+							 <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else! 
+							</TextBlock>
+						</StackPanel>
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="0" Margin="10,5">
 							<Label FontSize="16" Content="Essential Tweaks"/>
-							<CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0"/>
-							<CheckBox Name="EssTweaksOO" Content="Run O and O Shutup" Margin="5,0"/>
-
-							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0"/>
-							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0"/>
-							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0"/>
-							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0"/>
-							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0"/>
+							<CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
+							<CheckBox Name="EssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+							<CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spys heavily on you when using the Edge browser."/>
+							<CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scaned wifi networks and your current geo location."/>
+							<CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
+							<CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
+							<CheckBox Name="EssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
+							<CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
+							<CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn't have this, it was awful."/>
+							<CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense is supposed to delete temp files automatically, but often runs at wierd times and mostly doesn't do much. Although when it was introduced in Win 10 (1809 Version) it deleted people's documents... So there is that."/>
+							<CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves whats in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation."/>
+							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
+							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 							<Label Content="Dark Theme" />
 							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
 							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
 
 						</StackPanel>
-						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
+						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
 							<Label FontSize="16" Content="Misc. Tweaks"/>
-							<CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0"/>
+							<CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
+							<CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
+							<CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and send you back to the past... or it simply turns numlock on at startup"/>
+							<CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
 							<CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0"/>
-							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0"/>
-							<CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0"/>
-							<CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0"/>
-							<CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"/>
+							<CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
+							<CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
+							<CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
+							<CheckBox Name="MiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0" ToolTip="Disables all Notifications"/>
+							<CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
+							<CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+							<CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
+							<CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+							<CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
 							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
 							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
 						</StackPanel>
@@ -273,17 +279,18 @@
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
-
-							<TextBlock Text="This is the default settings that come with Windows. No modifications are made and will remove any custom windows update settings." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
+							<TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
-							<TextBlock Text="This is my recommended setting I use on all computers. It will delay feature updates by 2 years and will install security updates 4 days after release. These are the settings I use in business environments." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 							<Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
+							<TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.</TextBlock>
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
-							<TextBlock Text="This completely disables ALL Windows Updates and is NOT RECOMMENDED. You system will be easier to hack and infect without security updates. However, it can be suitable if you use your system for a select purpose and do not actively browse the internet." Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-							<Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10"/>
+							<Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10,10,10,10"/>
+							<TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
+							<TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
+
 						</StackPanel>
 
 					</Grid>
