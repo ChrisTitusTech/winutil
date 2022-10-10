@@ -884,7 +884,7 @@ $WPFtweaksbutton.Add_Click({
                 #"FrameServer"                                 # Windows Camera Frame Server (Allows multiple clients to access video frames from camera devices)
                 "gupdate"                                      # Google Update
                 "gupdatem"                                     # Another Google Update Service
-                "iphlpsvc"                                     # ipv6(Most websites use ipv4 instead)
+                #"iphlpsvc"                                     # ipv6(Most websites use ipv4 instead) - Needed for Xbox Live
                 "lfsvc"                                        # Geolocation Service
                 #"LicenseManager"                              # Disable LicenseManager (Windows Store may not work properly)
                 "lmhosts"                                      # TCP/IP NetBIOS Helper
@@ -1618,7 +1618,10 @@ $WPFPanelDISM.Add_Click({
         Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
         Read-Host '`nPress Enter to Continue'" -verb runas
     })
-
+$WPFPanelAutologin.Add_Click({
+        curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+        cmd /c autologin.exe
+    })
 $WPFPanelcontrol.Add_Click({
         cmd /c control
     })
