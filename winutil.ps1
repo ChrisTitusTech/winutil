@@ -1114,6 +1114,11 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Stopping and disabling Diagnostics Tracking Service..."
             Stop-Service "DiagTrack"
             Set-Service "DiagTrack" -StartupType Disabled
+            Write-Host "Doing Security checks for Administrator Account and Group Policy"
+            if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
+                net user administrator /active:no
+            }
+        
             $WPFEssTweaksTele.IsChecked = $false
         }
         If ( $WPFEssTweaksWifi.IsChecked -eq $true ) {
@@ -1196,56 +1201,57 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
             $Bloatware = @(
                 #Unnecessary Windows 10 AppX Apps
-                "Microsoft.3DBuilder"
-                "Microsoft.Microsoft3DViewer"
-                "Microsoft.AppConnector"
-                "Microsoft.BingFinance"
-                "Microsoft.BingNews"
-                "Microsoft.BingSports"
-                "Microsoft.BingTranslator"
-                "Microsoft.BingWeather"
-                "Microsoft.BingFoodAndDrink"
-                "Microsoft.BingHealthAndFitness"
-                "Microsoft.BingTravel"
-                "Microsoft.MinecraftUWP"
-                "Microsoft.GamingServices"
-                # "Microsoft.WindowsReadingList"
-                "Microsoft.GetHelp"
-                "Microsoft.Getstarted"
-                "Microsoft.Messaging"
-                "Microsoft.Microsoft3DViewer"
-                "Microsoft.MicrosoftSolitaireCollection"
-                "Microsoft.NetworkSpeedTest"
-                "Microsoft.News"
-                "Microsoft.Office.Lens"
-                "Microsoft.Office.Sway"
-                "Microsoft.Office.OneNote"
-                "Microsoft.OneConnect"
-                "Microsoft.People"
-                "Microsoft.Print3D"
-                "Microsoft.SkypeApp"
-                "Microsoft.Wallet"
-                "Microsoft.Whiteboard"
-                "Microsoft.WindowsAlarms"
-                "microsoft.windowscommunicationsapps"
-                "Microsoft.WindowsFeedbackHub"
-                "Microsoft.WindowsMaps"
-                "Microsoft.WindowsPhone"
-                "Microsoft.WindowsSoundRecorder"
-                "Microsoft.XboxApp"
-                "Microsoft.ConnectivityStore"
-                "Microsoft.CommsPhone"
-                "Microsoft.ScreenSketch"
-                "Microsoft.Xbox.TCUI"
-                "Microsoft.XboxGameOverlay"
-                "Microsoft.XboxGameCallableUI"
-                "Microsoft.XboxSpeechToTextOverlay"
-                "Microsoft.MixedReality.Portal"
-                "Microsoft.ZuneMusic"
-                "Microsoft.ZuneVideo"
-                #"Microsoft.YourPhone"
-                "Microsoft.Getstarted"
-                "Microsoft.MicrosoftOfficeHub"
+                "3DBuilder"
+                "Microsoft3DViewer"
+                "AppConnector"
+                "BingFinance"
+                "BingNews"
+                "BingSports"
+                "BingTranslator"
+                "BingWeather"
+                "BingFoodAndDrink"
+                "BingHealthAndFitness"
+                "BingTravel"
+                "MinecraftUWP"
+                "GamingServices"
+                # "WindowsReadingList"
+                "GetHelp"
+                "Getstarted"
+                "Messaging"
+                "Microsoft3DViewer"
+                "MicrosoftSolitaireCollection"
+                "NetworkSpeedTest"
+                "News"
+                "Lens"
+                "Sway"
+                "OneNote"
+                "OneConnect"
+                "People"
+                "Print3D"
+                "SkypeApp"
+                "Todos"
+                "Wallet"
+                "Whiteboard"
+                "WindowsAlarms"
+                "windowscommunicationsapps"
+                "WindowsFeedbackHub"
+                "WindowsMaps"
+                "WindowsPhone"
+                "WindowsSoundRecorder"
+                "XboxApp"
+                "ConnectivityStore"
+                "CommsPhone"
+                "ScreenSketch"
+                "TCUI"
+                "XboxGameOverlay"
+                "XboxGameCallableUI"
+                "XboxSpeechToTextOverlay"
+                "MixedReality.Portal"
+                "ZuneMusic"
+                "ZuneVideo"
+                #"YourPhone"
+                "Getstarted"
+                "MicrosoftOfficeHub"
 
                 #Sponsored Windows 10 AppX Apps
                 #Add sponsored/featured apps to remove in the "*AppName*" format
@@ -1276,12 +1282,12 @@ $WPFtweaksbutton.Add_Click({
                 "HotspotShieldFreeVPN"
 
                 #Optional: Typically not removed but you can if you need to
-                "Microsoft.Advertising.Xaml"
-                #"Microsoft.MSPaint"
-                #"Microsoft.MicrosoftStickyNotes"
-                #"Microsoft.Windows.Photos"
-                #"Microsoft.WindowsCalculator"
-                #"Microsoft.WindowsStore"
+                "Advertising"
+                #"MSPaint"
+                #"MicrosoftStickyNotes"
+                #"Windows.Photos"
+                #"WindowsCalculator"
+                #"WindowsStore"
 
                 # HPBloatware Packages
                 "HPJumpStarts"
@@ -1300,45 +1306,52 @@ $WPFtweaksbutton.Add_Click({
                 "HPSystemInformation"
             )
 
+            ## Teams Removal
+            # Remove Teams Machine-Wide Installer
+            Write-Host "Removing Teams Machine-wide Installer" -ForegroundColor Yellow
+            $MachineWide = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq "Teams Machine-Wide Installer" }
+            $MachineWide.Uninstall()
+            # Remove Teams for Current Users
+            $localAppData = "$($env:LOCALAPPDATA)\Microsoft\Teams"
+            $programData = "$($env:ProgramData)\$($env:USERNAME)\Microsoft\Teams"
+            If (Test-Path "$($localAppData)\Current\Teams.exe") {
+                unInstallTeams($localAppData)
+            }
+            elseif (Test-Path "$($programData)\Current\Teams.exe") {
+                unInstallTeams($programData)
+            }
+            else {
+                Write-Warning "Teams installation not found"
+            }
+            # Get all Users
+            $Users = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
+            # Process all the Users
+            $Users | ForEach-Object {
+                Write-Host "Process user: $($_.Name)" -ForegroundColor Yellow
+                #Locate installation folder
+                $localAppData = "$($ENV:SystemDrive)\Users\$($_.Name)\AppData\Local\Microsoft\Teams"
+                $programData = "$($env:ProgramData)\$($_.Name)\Microsoft\Teams"
+                If (Test-Path "$($localAppData)\Current\Teams.exe") {
+                    unInstallTeams($localAppData)
+                }
+                elseif (Test-Path "$($programData)\Current\Teams.exe") {
+                    unInstallTeams($programData)
+                }
+                else {
+                    Write-Warning "Teams installation not found for user $($_.Name)"
+                }
+            }
+            cmd /c winget uninstall -h "Microsoft Teams"
+
             Write-Host "Removing Bloatware"
 
-            $InstalledPackages = Get-AppxPackage -AllUsers | Where-Object { ($Bloatware -contains $_.Name) }
-            $ProvisionedPackages = Get-AppxProvisionedPackage -Online | Where-Object { ($Bloatware -contains $_.DisplayName) }
-
-            # Remove appx provisioned packages - AppxProvisionedPackage
-            ForEach ($ProvPackage in $ProvisionedPackages) {
-                Write-Host -Object "Attempting to remove provisioned package: [$($ProvPackage.DisplayName)]..."
-                Try {
-                    $Null = Remove-AppxProvisionedPackage -PackageName $ProvPackage.PackageName -Online -ErrorAction Stop
-                    Write-Host -Object "Successfully removed provisioned package: [$($ProvPackage.DisplayName)]"
-                }
-                Catch {
-                    Write-Warning -Message "Failed to remove provisioned package: [$($ProvPackage.DisplayName)]"
-                }
-            }
-
-            # Remove appx packages - AppxPackage
-            ForEach ($AppxPackage in $InstalledPackages) {                                                    
-                Write-Host -Object "Attempting to remove Appx package: [$($AppxPackage.Name)]..."
-                Try {
-                    $Null = Remove-AppxPackage -Package $AppxPackage.PackageFullName -AllUsers -ErrorAction Stop
-                    Write-Host -Object "Successfully removed Appx package: [$($AppxPackage.Name)]"
-                }
-                Catch {
-                    Write-Warning -Message "Failed to remove Appx package: [$($AppxPackage.Name)]"
-                }
-            }
-
             foreach ($Bloat in $Bloatware) {
-                Get-AppxPackage -Name $Bloat | Remove-AppxPackage
-                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+                Get-AppxPackage "*$Bloat*" | Remove-AppxPackage
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Bloat*" | Remove-AppxProvisionedPackage -Online
                 Write-Host "Trying to remove $Bloat."
             }
 
             Write-Host "Finished Removing Bloatware Apps"
-
-
-            
             Write-Host "Removing Bloatware Programs"
             # Remove installed programs
             $InstalledPrograms = Get-Package | Where-Object { $UninstallPrograms -contains $_.Name }
@@ -1354,40 +1367,9 @@ $WPFtweaksbutton.Add_Click({
                     Write-Warning -Message "Failed to uninstall: [$($_.Name)]"
                 }
             }
-
-            # Fallback attempt 1 to remove HP Wolf Security using msiexec
-            Try {
-                MsiExec /x "{0E2E04B0-9EDD-11EB-B38C-10604B96B11E}" /qn /norestart
-                Write-Host -Object "Fallback to MSI uninistall for HP Wolf Security initiated"
-            }
-            Catch {
-                Write-Warning -Object "Failed to uninstall HP Wolf Security using MSI - Error message: $($_.Exception.Message)"
-            }
-
-            # Fallback attempt 2 to remove HP Wolf Security using msiexec
-            Try {
-                MsiExec /x "{4DA839F0-72CF-11EC-B247-3863BB3CB5A8}" /qn /norestart
-                Write-Host -Object "Fallback to MSI uninistall for HP Wolf 2 Security initiated"
-            }
-            Catch {
-                Write-Warning -Object  "Failed to uninstall HP Wolf Security 2 using MSI - Error message: $($_.Exception.Message)"
-            }
+            Write-Host "Finished Removing Bloatware Programs"
             $WPFEssTweaksDeBloat.IsChecked = $false
         }
-        Write-Host "Doing Security checks for Administrator Account and Group Policy"
-        if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
-            net user administrator /active:no
-        }
-        
-        if (!(((Get-ComputerInfo).WindowsEditionId).IndexOf('Core') -eq -1) -or !(((Get-ComputerInfo).WindowsEditionId).IndexOf('Home') -eq -1)) {
-            # Not sure if home edition is Core or Home
-            Write-Host "Enabling gpedit.msc...Group Policy for Home Users"
-            Get-ChildItem @(
-                "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package*.mum",
-                "$env:SystemDrive\Windows\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package*.mum"
-            ) | ForEach-Object { dism.exe /online /norestart /add-package:"$_" }
-        }
-        Write-Host "Finished Removing Bloatware Programs"
 
         Write-Host "================================="
         Write-Host "--     Tweaks are Finished    ---"
