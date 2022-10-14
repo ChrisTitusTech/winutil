@@ -158,6 +158,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     #===========================================================================
 
     function switchtab {
+
+        <#
+        
+            .DESCRIPTION
+            Sole purpose of this fuction reduce duplicated code for switching between tabs. 
+        
+        #>
+
         Param ($button)
         $x = [int]($button -replace "Tab","" -replace "BT","") - 1
 
@@ -169,6 +177,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     Function Tweak-Buttons {
+
+        <#
+        
+            .DESCRIPTION
+            Meant to make settings presets easier in the tweaks tab. Will pull the data from config/preset.json
+        
+        #>
+
         Param ($button)
         $preset = $sync.preset.$button
 
