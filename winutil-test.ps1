@@ -191,6 +191,21 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     #===========================================================================
 
     $sync.WriteLogs = {
+
+        <#
+        
+            .DESCRIPTION
+            Simple function to write logs to a temp directory.
+
+            .EXAMPLE
+
+            $Level = "INFO"
+            $Message = "This is a test message!"
+            $LogPath = "$ENV:TEMP\winutil.log"
+            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message,$LogPath)
+        
+        #>
+
         [cmdletbinding()]
         param(
             $Level = "Info", 
@@ -216,41 +231,72 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     # Install Tab
     #===========================================================================
 
+    <#
+
+        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
+
+        TODO: Error Handling with winget. Currently it does not handle errors as expected.
+    
+    #>
+
     $Sync.GUIInstallPrograms = {
+
+        <#
+
+            .DESCRIPTION
+            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
+
+            Input data will look like below and link with the name of the check box. This will then look to the config/applications.json file to find
+            the winget install commands for the selected applications.
+
+            Installadvancedip,Installbitwarden
+
+            .EXAMPLE
+
+            Invoke-command $sync.GUIInstallPrograms -ArgumentList "Installadvancedip,Installbitwarden"
+
+        #>
+
         Param ($programstoinstall)
         $programstoinstall = $programstoinstall -split ","
 
-        if($programstoinstall -eq $null){
-            [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
-            return
-        }
+        #Check if any check boxes have been checked and if a job is already running
 
-        $sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $sync.install.Content},"Normal")
-        If($sync.installcheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
-            return
-        }
+            if($programstoinstall -eq $null){
+                [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
+                return
+            }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
-        $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
+            $sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $sync.install.Content},"Normal")
+            If($sync.installcheck -like "Running"){
+                [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
+                return
+            }
 
-        if($programstoinstall -eq "Upgrade"){
-            $winget = ",Upgrade"
-        }
-        else{
-            foreach ($program in $programstoinstall){
-                $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                    $winget += ",$_"
+            $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
+            $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
+
+        #Section to see if winget will upgrade all installs or which winget commands to run from  config/applications.json
+
+            if($programstoinstall -eq "Upgrade"){
+                $winget = ",Upgrade"
+            }
+            else{
+                foreach ($program in $programstoinstall){
+                    $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                        $winget += ",$_"
+                    }
                 }
             }
-        }
 
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "$($winget.substring(1))"
-            Verbose = $true
-        }
-        Invoke-Runspace @params
+        #Invoke a runspace so that the GUI does not lock up
+
+            $params = @{
+                ScriptBlock = $sync.ScriptsInstallPrograms
+                ArgumentList = "$($winget.substring(1))"
+                Verbose = $true
+            }
+            Invoke-Runspace @params
 
     }
 
@@ -280,6 +326,35 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     #>
 
     $sync.ScriptsInstallPrograms = {
+
+        <#
+
+            .DESCRIPTION
+            This scriptblock will detect if winget is installed and if not attempt to install it. Once ready it will then either upgrade any installs or attempt to install any applications provided.
+
+            .EXAMPLE
+
+            $params = @{
+                ScriptBlock = $sync.ScriptsInstallPrograms
+                ArgumentList = "git.git,WinDirStat.WinDirStat"
+                Verbose = $true
+            }
+            VerbosePreference = "Continue"
+            Invoke-Command @params
+
+        .EXAMPLE
+
+            $params = @{
+                ScriptBlock = $sync.ScriptsInstallPrograms
+                ArgumentList = "Upgrade"
+                Verbose = $true
+            }
+
+            VerbosePreference = "Continue"
+            Invoke-Command @params
+
+        #>
+
         Param ($programstoinstall)
         $programstoinstall = $programstoinstall -split ","
 
@@ -362,11 +437,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             if($programstoinstall -eq "Upgrade"){
                 $Message = "Attempting to upgrade packages"
                 $ErrorMessage = "Failed to upgrade packages"
+                $SuccessMessage = "Upgardes have completed"
                 $ArgumentList = "upgrade --all"
             }
             else{
                 $Message = "$($program) was selected to be installed."
                 $ErrorMessage = "$($program) failed to installed."
+                $SuccessMessage = "$($program) has been installed"
                 $ArgumentList = "install -e --accept-source-agreements --accept-package-agreements --silent $($program)"
             }
 
@@ -374,7 +451,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 Write-Logs -Level INFO -Message "$Message" -LogPath $sync.logfile
                 Write-Host ""
 
-                Start-Process -FilePath winget -ArgumentList $ArgumentList -NoNewWindow -ErrorAction Stop -Wait
+                $installs = Start-Process -FilePath winget -ArgumentList $ArgumentList -ErrorAction Stop -Wait -PassThru -NoNewWindow
             }
             catch {
                 Write-Logs -Level FAILURE -Message $ErrorMessage -LogPath $sync.logfile
@@ -382,7 +459,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             }
         }
 
-        Write-Logs -Level INFO -Message "Installs haved completed" -LogPath $sync.logfile
+        Write-Logs -Level INFO -Message "Installs have completed" -LogPath $sync.logfile
         if($sync){
             $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
             $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
