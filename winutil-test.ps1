@@ -300,31 +300,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     }
 
-    <#
-
-        Running $sync.ScriptsInstallPrograms in CLI format
-
-        Make sure to set
-        VerbosePreference = "Continue"
-
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "git.git,WinDirStat.WinDirStat"
-            Verbose = $true
-        }
-
-        To upgrade
-
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "Upgrade"
-            Verbose = $true
-        }
-
-        Invoke-Command @params
-
-    #>
-
     $sync.ScriptsInstallPrograms = {
 
         <#
