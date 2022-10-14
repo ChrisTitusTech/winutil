@@ -100,8 +100,16 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     function Invoke-Button {
+
+        <#
+        
+            .DESCRIPTION
+            Meant to make creating buttons easier. The above section will assign this function and pass the name of the button
+            This way you can dictate what each button does from this function. 
+        
+        #>
+
         Param ([string]$Button) 
-        #[System.Windows.MessageBox]::Show("$button",'Button Value',"OK","Info")
         Switch -Wildcard ($Button){
 
             "*Tab*BT*" {switchtab $Button}
@@ -126,6 +134,22 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     function uncheckall {
+
+        <#
+        
+            .DESCRIPTION
+            Function is meant to find all checkboxes that are checked on the specefic tab and input them into a script.
+
+            Outputed data will be the names of the checkboxes comma seperated. 
+
+            "Installadvancedip,Installbitwarden"
+
+            .EXAMPLE
+
+            uncheckall "Install"
+        
+        #>
+
         param($group)
         $sync.keys | Where-Object {$_ -like "*$($group)?*" `
                                 -and $_ -notlike "$($group)Install" `
@@ -141,6 +165,24 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     function Invoke-Runspace {
+
+        <#
+        
+            .DESCRIPTION
+            Simple function to make it easier to invoke a runspace from inside the script. 
+
+            .EXAMPLE
+
+            $params = @{
+                ScriptBlock = $sync.ScriptsInstallPrograms
+                ArgumentList = "Installadvancedip,Installbitwarden"
+                Verbose = $true
+            }
+
+            Invoke-Runspace @params
+        
+        #>
+
         [CmdletBinding()]
         Param (
             $ScriptBlock,
