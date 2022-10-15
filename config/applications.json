@@ -228,64 +228,64 @@
     "Installlibreoffice": {
       "winget": "TheDocumentFoundation.LibreOffice"
     },
-    "WPFInstallshell": {
+    "Installshell": {
       "winget": "Nilesoft.Shell"
     },
-    "WPFInstallklite": {
+    "Installklite": {
       "winget": "CodecGuide.K-LiteCodecPack.Standard"
     },
-    "WPFInstallsandboxie": {
+    "Installsandboxie": {
       "winget": "Sandboxie.Plus"
     },
-    "WPFInstallprocesslasso": {
+    "Installprocesslasso": {
       "winget": "BitSum.ProcessLasso"
     },
-    "WPFInstallwinmerge": {
+    "Installwinmerge": {
       "winget": "WinMerge.WinMerge"
     },
-    "WPFInstalldotnet3": {
+    "Installdotnet3": {
       "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
     },
-    "WPFInstalldotnet5": {
+    "Installdotnet5": {
       "winget": "Microsoft.DotNet.DesktopRuntime.5"
     },
-    "WPFInstalldotnet6": {
+    "Installdotnet6": {
       "winget": "Microsoft.DotNet.DesktopRuntime.6"
     },
-    "WPFInstallvc2015_64": {
+    "Installvc2015_64": {
       "winget": "Microsoft.VC++2015-2022Redist-x64"
     },
-    "WPFInstallvc2015_32": {
+    "Installvc2015_32": {
       "winget": "Microsoft.VC++2015-2022Redist-x86"
     },
-    "WPFInstallfoxpdf": {
+    "Installfoxpdf": {
       "winget": "Foxit.PhantomPDF"
     },
-    "WPFInstallonlyoffice": {
+    "Installonlyoffice": {
       "winget": "ONLYOFFICE.DesktopEditors"
     },
-    "WPFInstallflux": {
+    "Installflux": {
       "winget": "flux.flux"
     },
-    "WPFInstallitunes": {
+    "Installitunes": {
       "winget": "Apple.iTunes"
     },
-    "WPFInstallcider": {
+    "Installcider": {
       "winget": "CiderCollective.Cider"
     },
-    "WPFInstalljoplin": {
+    "Installjoplin": {
       "winget": "Joplin.Joplin"
     },
-    "WPFInstallopenoffice": {
+    "Installopenoffice": {
       "winget": "Apache.OpenOffice"
     },
-    "WPFInstallruskdesk": {
+    "Installruskdesk": {
       "winget": "RustDesk.RustDesk"
     },
-    "WPFInstalljami": {
+    "Installjami": {
       "winget": "SFLinux.Jami"
     },
-    "WPFInstalljdownloader": {
+    "Installjdownloader": {
       "winget": "AppWork.JDownloader"
     }        
   }
