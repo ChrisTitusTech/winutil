@@ -227,6 +227,66 @@
     },
     "Installlibreoffice": {
       "winget": "TheDocumentFoundation.LibreOffice"
-    }      
+    },
+    "WPFInstallshell": {
+      "winget": "Nilesoft.Shell"
+    },
+    "WPFInstallklite": {
+      "winget": "CodecGuide.K-LiteCodecPack.Standard"
+    },
+    "WPFInstallsandboxie": {
+      "winget": "Sandboxie.Plus"
+    },
+    "WPFInstallprocesslasso": {
+      "winget": "BitSum.ProcessLasso"
+    },
+    "WPFInstallwinmerge": {
+      "winget": "WinMerge.WinMerge"
+    },
+    "WPFInstalldotnet3": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
+    },
+    "WPFInstalldotnet5": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.5"
+    },
+    "WPFInstalldotnet6": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.6"
+    },
+    "WPFInstallvc2015_64": {
+      "winget": "Microsoft.VC++2015-2022Redist-x64"
+    },
+    "WPFInstallvc2015_32": {
+      "winget": "Microsoft.VC++2015-2022Redist-x86"
+    },
+    "WPFInstallfoxpdf": {
+      "winget": "Foxit.PhantomPDF"
+    },
+    "WPFInstallonlyoffice": {
+      "winget": "ONLYOFFICE.DesktopEditors"
+    },
+    "WPFInstallflux": {
+      "winget": "flux.flux"
+    },
+    "WPFInstallitunes": {
+      "winget": "Apple.iTunes"
+    },
+    "WPFInstallcider": {
+      "winget": "CiderCollective.Cider"
+    },
+    "WPFInstalljoplin": {
+      "winget": "Joplin.Joplin"
+    },
+    "WPFInstallopenoffice": {
+      "winget": "Apache.OpenOffice"
+    },
+    "WPFInstallruskdesk": {
+      "winget": "RustDesk.RustDesk"
+    },
+    "WPFInstalljami": {
+      "winget": "SFLinux.Jami"
+    },
+    "WPFInstalljdownloader": {
+      "winget": "AppWork.JDownloader"
+    }        
   }
 }
