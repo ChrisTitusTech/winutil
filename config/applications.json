@@ -279,7 +279,7 @@
     "Installopenoffice": {
       "winget": "Apache.OpenOffice"
     },
-    "Installruskdesk": {
+    "Installrustdesk": {
       "winget": "RustDesk.RustDesk"
     },
     "Installjami": {

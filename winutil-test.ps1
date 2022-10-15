@@ -188,6 +188,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                 $sync["$psitem"].IsChecked = $false
             }
         }
+        
         if($output){Write-Output $output.Substring(1)}
     }
 
@@ -367,12 +368,21 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             }
             else{
                 foreach ($program in $programstoinstall){
+
                     $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                        $winget += ",$psitem"
+                        if($psitem){
+                            $winget += ",$psitem"
+                        }Else{
+                            Invoke-command $sync.WriteLogs -ArgumentList ("INFO","$Program Not found") 
+                        }
                     }
                 }
             }
             
+            if($winget -eq $null){
+                [System.Windows.MessageBox]::Show("No found applications to install",'Nothing to do',"OK","Info")
+                return
+            }            
 
         #Invoke a runspace so that the GUI does not lock up
 
@@ -510,7 +520,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             try {
                 Write-Logs -Level INFO -Message "$Message" -LogPath $sync.logfile
                 Write-Host ""
-
+                
                 $installs = Start-Process -FilePath winget -ArgumentList $ArgumentList -ErrorAction Stop -Wait -PassThru -NoNewWindow
             }
             catch {
