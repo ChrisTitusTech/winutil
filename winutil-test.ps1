@@ -729,10 +729,22 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         
         if($sync){
             $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
+            [System.Windows.MessageBox]::Show("All modifications have finished",'Tweaks are done!',"OK","Info")
         }
     }
 
     $Sync.GUIUndoTweaks = {
+
+        <#
+
+            .DESCRIPTION
+            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another tweak task. 
+
+            .EXAMPLE
+
+            Invoke-command $sync.GUIUndoTweaks
+
+        #>
         
         If($sync.undoall.Content -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
@@ -746,6 +758,21 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
     $sync.ScriptUndoTweaks = {
         
+        <#
+
+            .DESCRIPTION
+            This scriptblock will undo all modifications from this script. 
+
+            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
+
+            .EXAMPLE
+
+            VerbosePreference = "Continue"
+            Invoke-Command -ScriptBlock $sync.ScriptUndoTweaks
+        #>
+
+        $ErrorActionPreference = "SilentlyContinue"
+
         function Write-Logs {
             param($Level, $Message, $LogPath)
             Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
@@ -760,10 +787,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 #registry reset
                 Foreach ($registries in $($tweak.value.registry)){
                     foreach($registry in $registries){
-                        Try{
-                            Write-Logs -Level INFO -Message "Setting $("$($registry.path)\$($registry.name)") to $($registry.OriginalValue)" -LogPath $sync.logfile
-                            Set-ItemProperty -Path $registry.path -Name $registry.name -Type $registry.type -Value $registry.OriginalValue
-                        }Catch{Write-Logs -Level ERROR -Message "$("$($registry.path)\$($registry.name)") was not set" -LogPath $sync.logfile}
+                        Write-Logs -Level INFO -Message "Setting $("$($registry.path)\$($registry.name)") to $($registry.OriginalValue)" -LogPath $sync.logfile
+                        Set-ItemProperty -Path $registry.path -Name $registry.name -Type $registry.type -Value $registry.OriginalValue
                     }
                 }
                 Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) registries" -LogPath $sync.logfile
@@ -771,15 +796,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 #Services modification 
                 Foreach ($services in $($tweak.value.service)){
                     foreach($service in $services) {
-                        Try{
-                            Stop-Service "$($service.name)" -ErrorVariable serviceerror -ErrorAction stop
-                            Set-Service "$($service.name)" -StartupType $($service.OriginalType) -ErrorVariable serviceerror -ErrorAction stop
-                            Write-Logs -Level INFO -Message "Service $($service.name) set to  $($service.OriginalType)" -LogPath $sync.logfile
-                        }Catch{
-                            if($serviceerror -like "*Cannot find any service with service name*"){
-                                Write-Logs -Level INFO -Message "Service $($service.name) not found" -LogPath $sync.logfile
-                            }else{Write-Logs -Level ERROR -Message "Unable to modify Service $($service.name)" -LogPath $sync.logfile}
-                        }
+                        Stop-Service "$($service.name)"
+                        Set-Service "$($service.name)" -StartupType $($service.OriginalType)
+                        Write-Logs -Level INFO -Message "Service $($service.name) set to  $($service.OriginalType)" -LogPath $sync.logfile
                     }
                 }
                 Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Services" -LogPath $sync.logfile
@@ -787,15 +806,13 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 #Scheduled Tasks Modification
                 Foreach ($ScheduledTasks in $($tweak.value.ScheduledTask)){
                     foreach($ScheduledTask in $ScheduledTasks) {
-                        Try{
-                            if($($ScheduledTask.OriginalState) -eq "Disabled"){
-                                Disable-ScheduledTask -TaskName "$($ScheduledTask.name)" -ErrorAction Stop | Out-Null
-                            }
-                            if($($ScheduledTask.OriginalState) -eq "Enabled"){
-                                Enable-TaskName "$($ScheduledTask.name)" -ErrorAction Stop | Out-Null
-                            }
-                            Write-Logs -Level INFO -Message "Scheduled Task $($ScheduledTask.name) set to  $($ScheduledTask.OriginalState)" -LogPath $sync.logfile
-                        }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($ScheduledTask.name) set to  $($ScheduledTask.OriginalState)" -LogPath $sync.logfile}
+                        if($($ScheduledTask.OriginalState) -eq "Disabled"){
+                            Disable-ScheduledTask -TaskName "$($ScheduledTask.name)" | Out-Null
+                        }
+                        if($($ScheduledTask.OriginalState) -eq "Enabled"){
+                            Enable-TaskName "$($ScheduledTask.name)"  | Out-Null
+                        }
+                        Write-Logs -Level INFO -Message "Scheduled Task $($ScheduledTask.name) set to  $($ScheduledTask.OriginalState)" -LogPath $sync.logfile
                     }
                 }
                 Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Scheduled Tasks" -LogPath $sync.logfile                  
