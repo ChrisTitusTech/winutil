@@ -18,12 +18,6 @@
     Add-Type -AssemblyName PresentationFramework
     [System.Windows.Forms.Application]::EnableVisualStyles()
 
-    #Test for admin credentials
-    #if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    #    [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-    #    Return
-    #}
-
     #List of config files to import
     $configs = (
         "applications", 
@@ -33,11 +27,30 @@
         "updates"
     )
 
+    #Test for admin credentials
+    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        $IsAdmin = $false
+    }
+
     #To use local files run $env:environment = "dev" before starting the ps1 file
     if($env:environment -eq "dev"){
+
+        if($IsAdmin -eq $false){
+            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+            return
+        }
+        
         $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
     }
-    if($env:environment -eq "exe"){$confirm = "yes"}
+    if($env:environment -eq "exe"){
+        
+        if($IsAdmin -eq $false){
+            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+            return
+        }
+        
+        $confirm = "yes"
+    }
     if($confirm -eq "yes"){
         $inputXML = Get-Content "MainWindow.xaml"
         $configs | ForEach-Object {
@@ -51,6 +64,12 @@
             $branch = $env:branch
         }
         Else {$branch = "main"}
+
+        if($IsAdmin -eq $false){
+            Write-Output "This application needs to be run as an administrator. Attempting relaunch"
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+            break
+        }
 
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
         $configs | ForEach-Object {
