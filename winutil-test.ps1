@@ -547,6 +547,26 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     $Sync.ScriptTweaks = {
+
+        <#
+
+            .DESCRIPTION
+            This scriptblock will run a series of modifications included in the config/tweaks.json file. 
+
+            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
+
+            .EXAMPLE
+
+            $params = @{
+                ScriptBlock = $sync.ScriptsInstallPrograms
+                ArgumentList = "EssTweaksTele,EssTweaksServices"
+                Verbose = $true
+            }
+            VerbosePreference = "Continue"
+            Invoke-Command @params
+
+        #>
+
         Param($Tweakstorun)
         $Tweakstorun = $Tweakstorun -split ","
 
