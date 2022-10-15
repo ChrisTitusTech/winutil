@@ -1,5 +1,5 @@
 <#
-.NOTES
+.NOTES$ENV:TEMP
    Author      : @DeveloperDurp
    GitHub      : https://github.com/DeveloperDurp
    Version 0.0.1
@@ -8,6 +8,10 @@
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
     $sync.logfile = "$env:TEMP\winutil.log"
+    
+    $sync.taskrunning = $false
+    $sync.taskmessage = "There is currently a task running. Please try again once previous task is complete."
+    $sync.tasktitle = "Task in progress"
 
     $VerbosePreference = "Continue"
 
@@ -169,6 +173,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
         #>
 
         param($group)
+
+        if ($sync.taskrunning -eq $true){
+            return
+        }
+
         $sync.keys | Where-Object {$psitem -like "*$($group)?*" `
                                 -and $psitem -notlike "$($group)Install" `
                                 -and $psitem -notlike "*GUI*" `
@@ -179,7 +188,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                 $sync["$psitem"].IsChecked = $false
             }
         }
-        Write-Output $output.Substring(1)
+        if($output){Write-Output $output.Substring(1)}
     }
 
     function Invoke-Runspace {
@@ -334,25 +343,24 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
         #>
 
         Param ($programstoinstall)
-        $programstoinstall = $programstoinstall -split ","
 
-        #Check if any check boxes have been checked and if a job is already running
+        #Check if any check boxes have been checked and if a task is currently running
 
-            if($programstoinstall -eq $null){
+            if ($sync.taskrunning -eq $true){
+                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
+                return
+            }
+
+            if($programstoinstall -notlike "*install*"){
                 [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
                 return
             }
 
-            $sync.form.Dispatcher.Invoke([action]{$sync.installcheck = $sync.install.Content},"Normal")
-            If($sync.installcheck -like "Running"){
-                [System.Windows.MessageBox]::Show("Task is currently running",'Installs are in progress',"OK","Info")
-                return
-            }
-
-            $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Running"},"Normal")
-            $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Running"},"Normal")
+            $sync.taskrunning = $true
 
         #Section to see if winget will upgrade all installs or which winget commands to run from  config/applications.json
+        
+            $programstoinstall = $programstoinstall -split ","
 
             if($programstoinstall -eq "Upgrade"){
                 $winget = ",Upgrade"
@@ -364,6 +372,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                     }
                 }
             }
+            
 
         #Invoke a runspace so that the GUI does not lock up
 
@@ -512,8 +521,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
         Write-Logs -Level INFO -Message "Installs have completed" -LogPath $sync.logfile
         if($sync){
-            $sync.Form.Dispatcher.Invoke([action]{$sync.install.Content = "Start Install"},"Normal")
-            $sync.Form.Dispatcher.Invoke([action]{$sync.InstallUpgrade.Content = "Upgrade Installs"},"Normal")
+            $sync.taskrunning = $false
+            [System.Windows.MessageBox]::Show("All applications have been installed",'Installs are done!',"OK","Info")
         }
     }
 
@@ -540,27 +549,29 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
         #>
 
         Param($Tweakstorun)
-        $Tweakstorun = $Tweakstorun -split ","
 
-        if($Tweakstorun -eq $null){
-            [System.Windows.MessageBox]::Show("Please check the tweaks you wish to run",'Nothing to do',"OK","Info")
-            return
-        }
+        #Check if any check boxes have been checked and if a task is currently running
 
-        $sync.form.Dispatcher.Invoke([action]{$sync.tweakcheck = $sync.tweaksbutton.Content},"Normal")
-        If($sync.tweakcheck -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
-            return
-        }
+            if ($sync.taskrunning -eq $true){
+                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
+                return
+            }
 
-        $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Running"},"Normal")
+            if($Tweakstorun -notlike "*Tweaks*"){
+                [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
+                return
+            }
 
-        $params = @{
-            ScriptBlock = $sync.ScriptTweaks
-            ArgumentList = ("$Tweakstorun")
-        }
-        
-        Invoke-Runspace @params
+            $sync.taskrunning = $true
+
+        #Invoke a runspace so that the GUI does not lock up
+
+            $params = @{
+                ScriptBlock = $sync.ScriptTweaks
+                ArgumentList = ("$Tweakstorun")
+            }
+            
+            Invoke-Runspace @params
     
     }
 
@@ -741,12 +752,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
             }
         }
-            
-
+        
         Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
         
         if($sync){
-            $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
+            $sync.taskrunning = $false
             [System.Windows.MessageBox]::Show("All modifications have finished",'Tweaks are done!',"OK","Info")
         }
     }
@@ -763,15 +773,19 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             Invoke-command $sync.GUIUndoTweaks
 
         #>
-        
-        If($sync.undoall.Content -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
-            return
-        }
 
-        $sync.undoall.Content = "Running"
+        #Check if any check boxes have been checked and if a task is currently running
 
-        Invoke-Runspace $sync.ScriptUndoTweaks
+            if ($sync.taskrunning -eq $true){
+                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
+                return
+            }
+
+            $sync.taskrunning = $true
+
+        #Invoke a runspace so that the GUI does not lock up            
+
+            Invoke-Runspace $sync.ScriptUndoTweaks
     }
 
     $sync.ScriptUndoTweaks = {
@@ -905,25 +919,28 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
         
         param ($featuretoinstall)
 
-        if($featuretoinstall -eq $null){
-            [System.Windows.MessageBox]::Show("Please check the features you wish to run",'Nothing to do',"OK","Info")
-            return
-        }
+        #Check if any check boxes have been checked and if a task is currently running 
 
-        $sync.form.Dispatcher.Invoke([action]{$sync.featurecheck = $sync.FeatureInstall.Content},"Normal")
-        If($sync.FeatureInstall.Content -like "Running"){
-            [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
-            return
-        }
+            if ($sync.taskrunning -eq $true){
+                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
+                return
+            }
 
-        $sync.FeatureInstall.Content = "Running"
+            if($featuretoinstall -notlike "*Features*"){
+                [System.Windows.MessageBox]::Show("Please check the features you wish to install",'Nothing to do',"OK","Info")
+                return
+            }
 
-        $params = @{
-            ScriptBlock = $sync.ScriptFeatureInstall
-            ArgumentList = ("$featuretoinstall")
-        }
-        
-        Invoke-Runspace @params
+            $sync.taskrunning = $true
+
+        #Invoke a runspace so that the GUI does not lock up  
+            
+            $params = @{
+                ScriptBlock = $sync.ScriptFeatureInstall
+                ArgumentList = ("$featuretoinstall")
+            }
+            
+            Invoke-Runspace @params
 
     }
 
