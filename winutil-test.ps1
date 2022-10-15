@@ -623,6 +623,10 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
         $AppxToModify = $Tweakstorun | ForEach-Object {
             $sync.tweaks.$psitem.appx
         }
+    
+        $ScriptsToRun = $Tweakstorun | ForEach-Object {
+            $sync.tweaks.$psitem.InvokeScript
+        }
 
         if($RegistryToModify){
             Write-Logs -Level INFO -Message "Starting Registry Modification" -LogPath $sync.logfile
@@ -686,17 +690,27 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             Write-Logs -Level INFO -Message "Finished uninstalling Appx" -LogPath $sync.logfile
         }
 
+        if($ScriptsToRun){
+            Write-Logs -Level INFO -Message "Running Scripts" -LogPath $sync.logfile
+
+            $ScriptsToRun | ForEach-Object {
+                $Scriptblock = [scriptblock]::Create($psitem)
+            }
+    
+            Write-Logs -Level INFO -Message "Finished Scripts" -LogPath $sync.logfile
+        }
+
         #Legacy tweaks not converted to json
         #old code that didn't work inside json file cleanly. Will investigate ways to get around this
 
         Foreach($tweak in $tweakstorun){
 
-            if ($tweak -eq "EssTweaksOO"){
-                Import-Module BitsTransfer
-                Start-BitsTransfer -Source "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -Destination ooshutup10.cfg
-                Start-BitsTransfer -Source "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -Destination OOSU10.exe
-                ./OOSU10.exe ooshutup10.cfg /quiet
-            }        
+            #if ($tweak -eq "EssTweaksOO"){
+            #    Import-Module BitsTransfer
+            #    Start-BitsTransfer -Source "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -Destination ooshutup10.cfg
+            #    Start-BitsTransfer -Source "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -Destination OOSU10.exe
+            #    ./OOSU10.exe ooshutup10.cfg /quiet
+            #}        
             if ($tweak -eq "EssTweaksRP"){
                 Enable-ComputerRestore -Drive "C:\"
                 Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
