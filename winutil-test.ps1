@@ -1346,3 +1346,8 @@ write-host "====Chris Titus Tech====="
 write-host "=====Windows Toolbox====="
 
 $sync["Form"].ShowDialog() | out-null
+
+$runspace.close()
+
+Write-Output "Thank you for using winutil!"
+
