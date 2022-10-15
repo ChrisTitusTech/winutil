@@ -910,6 +910,26 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     }
 
     $sync.ScriptFeatureInstall = {
+
+        <#
+
+            .DESCRIPTION
+            This scriptblock will install the selected features from the config/features.json file. 
+
+            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
+
+            .EXAMPLE
+
+            $params = @{
+                ScriptBlock = $sync.ScriptFeatureInstall
+                ArgumentList = "Featureshyperv,Featureslegacymedia"
+                Verbose = $true
+            }
+            VerbosePreference = "Continue"
+            Invoke-Command @params
+
+        #>
+
         param ($featuretoinstall)
 
         $featuretoinstall = $featuretoinstall -split ","
@@ -924,7 +944,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             $sync.feature.$feature | ForEach-Object {
                 Try{
                     Write-Logs -Level INFO -Message "Installing Windows Feature $psitem" -LogPath $sync.logfile
-                    Enable-WindowsOptionalFeature -Online -FeatureName "$psitem" -All -ErrorAction Stop
+                    Enable-WindowsOptionalFeature -Online -FeatureName "$psitem" -All -NoRestart
                     Write-output $psitem
                 }Catch{Write-Logs -Level ERROR -Message "Failed to install $psitem" -LogPath $sync.logfile}
 
@@ -1349,5 +1369,5 @@ $sync["Form"].ShowDialog() | out-null
 
 $runspace.close()
 
-Write-Output "Thank you for using winutil!"
+Write-Host "Thank you for using winutil!"
 
