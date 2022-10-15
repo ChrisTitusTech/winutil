@@ -72,7 +72,7 @@
 
         $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
         $configs | ForEach-Object {
-            $sync["$_"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$_.json"
+            $sync["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$psitem.json"
         }
     }
         
@@ -97,7 +97,7 @@
 # Store Form Objects In PowerShell
 #===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sync["Form"].FindName($_.Name)}
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
  
 #region Functions
 
@@ -108,8 +108,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     #Gives every button the invoke-button function
     $sync.keys | ForEach-Object {
         if($sync.$psitem){
-            if($($sync["$_"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-                $sync["$_"].Add_Click({
+            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+                $sync["$psitem"].Add_Click({
                     [System.Object]$Sender = $args[0]
                     Invoke-Button $Sender.name
                 })
@@ -169,14 +169,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         #>
 
         param($group)
-        $sync.keys | Where-Object {$_ -like "*$($group)?*" `
-                                -and $_ -notlike "$($group)Install" `
-                                -and $_ -notlike "*GUI*" `
-                                -and $_ -notlike "*Script*"
+        $sync.keys | Where-Object {$psitem -like "*$($group)?*" `
+                                -and $psitem -notlike "$($group)Install" `
+                                -and $psitem -notlike "*GUI*" `
+                                -and $psitem -notlike "*Script*"
                             } | ForEach-Object {
-            if ($sync["$_"].IsChecked -eq $true){
-                $output += ",$_"
-                $sync["$_"].IsChecked = $false
+            if ($sync["$psitem"].IsChecked -eq $true){
+                $output += ",$psitem"
+                $sync["$psitem"].IsChecked = $false
             }
         }
         Write-Output $output.Substring(1)
@@ -231,8 +231,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         0..3 | ForEach-Object {
             
-            if ($x -eq $_){$sync["TabNav"].Items[$_].IsSelected = $true}
-            else{$sync["TabNav"].Items[$_].IsSelected = $false}
+            if ($x -eq $psitem){$sync["TabNav"].Items[$psitem].IsSelected = $true}
+            else{$sync["TabNav"].Items[$psitem].IsSelected = $false}
         }
     }
 
@@ -248,9 +248,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Param ($button)
         $preset = $sync.preset.$button
 
-        $sync.keys | Where-Object {$_ -like "*tweaks?*" -and $_ -notlike "tweaksbutton"} | ForEach-Object {
-            if ($preset -contains $_ ){$sync["$_"].IsChecked = $True}
-            Else{$sync["$_"].IsChecked = $false} 
+        $sync.keys | Where-Object {$psitem -like "*tweaks?*" -and $psitem -notlike "tweaksbutton"} | ForEach-Object {
+            if ($preset -contains $psitem ){$sync["$psitem"].IsChecked = $True}
+            Else{$sync["$psitem"].IsChecked = $false} 
         }
     }
 
@@ -360,7 +360,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             else{
                 foreach ($program in $programstoinstall){
                     $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                        $winget += ",$_"
+                        $winget += ",$psitem"
                     }
                 }
             }
@@ -1001,9 +1001,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $ErrorActionPreference = 'Stop'
         trap {
             Write-Host
-            Write-Host "ERROR: $_"
-            Write-Host (($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$','ERROR: $1')
-            Write-Host (($_.Exception.ToString() -split '\r?\n') -replace '^(.*)$','ERROR EXCEPTION: $1')
+            Write-Host "ERROR: $psitem"
+            Write-Host (($psitem.ScriptStackTrace -split '\r?\n') -replace '^(.*)$','ERROR: $1')
+            Write-Host (($psitem.Exception.ToString() -split '\r?\n') -replace '^(.*)$','ERROR EXCEPTION: $1')
             Write-Host
             Write-Host 'Sleeping for 60m to give you time to look around the virtual machine before self-destruction...'
             Start-Sleep -Seconds (60*60)
@@ -1017,7 +1017,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         function New-Directory($path) {
             $p, $components = $path -split '[\\/]'
             $components | ForEach-Object {
-                $p = "$p\$_"
+                $p = "$p\$psitem"
                 if (!(Test-Path $p)) {
                     New-Item -ItemType Directory $p | Out-Null
                 }
@@ -1212,9 +1212,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $ErrorActionPreference = 'Stop'
         trap {
             Write-Host
-            Write-Host "ERROR: $_"
-            Write-Host (($_.ScriptStackTrace -split '\r?\n') -replace '^(.*)$','ERROR: $1')
-            Write-Host (($_.Exception.ToString() -split '\r?\n') -replace '^(.*)$','ERROR EXCEPTION: $1')
+            Write-Host "ERROR: $psitem"
+            Write-Host (($psitem.ScriptStackTrace -split '\r?\n') -replace '^(.*)$','ERROR: $1')
+            Write-Host (($psitem.Exception.ToString() -split '\r?\n') -replace '^(.*)$','ERROR EXCEPTION: $1')
             Write-Host
             Write-Host 'Sleeping for 60m to give you time to look around the virtual machine before self-destruction...'
             Start-Sleep -Seconds (60*60)
@@ -1228,7 +1228,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         function New-Directory($path) {
             $p, $components = $path -split '[\\/]'
             $components | ForEach-Object {
-                $p = "$p\$_"
+                $p = "$p\$psitem"
                 if (!(Test-Path $p)) {
                     New-Item -ItemType Directory $p | Out-Null
                 }
