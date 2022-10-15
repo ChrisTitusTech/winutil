@@ -511,7 +511,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
 
             Input data will look like below and link with the name of the check box. This will then look to the config/applications.json file to find
-            the winget install commands for the selected applications.
+            the modifications for the selected task.
 
             EssTweaksDeBloat,MiscTweaksUTC
 
@@ -868,29 +868,52 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
     #===========================================================================
 
     $Sync.GUIFeatures = {
-        Param($featuretoinstall)
         
-        if($featuretoinstall -notlike "*feature*"){
+        <#
+
+            .DESCRIPTION
+            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
+
+            Input data will look like below and link with the name of the check box. This will then look to the config/features.json file to find
+            the install commands for the selected features.
+
+            Featureshyperv,Featureslegacymedia
+
+            .EXAMPLE
+
+            Invoke-command $sync.GUIInstallPrograms -ArgumentList "Featureshyperv,Featureslegacymedia"
+
+        #>
+        
+        param ($featuretoinstall)
+
+        if($featuretoinstall -eq $null){
             [System.Windows.MessageBox]::Show("Please check the features you wish to run",'Nothing to do',"OK","Info")
             return
         }
 
-        #$sync.form.Dispatcher.Invoke([action]{$sync.featurecheck = $sync.FeatureInstall.Content},"Normal")
+        $sync.form.Dispatcher.Invoke([action]{$sync.featurecheck = $sync.FeatureInstall.Content},"Normal")
         If($sync.FeatureInstall.Content -like "Running"){
             [System.Windows.MessageBox]::Show("Task is currently running",'Tweaks are in progress',"OK","Info")
             return
         }
 
         $sync.FeatureInstall.Content = "Running"
-        [System.Windows.MessageBox]::Show("$featuretoinstall",'Tweaks are in progress',"OK","Info")
-        Invoke-Runspace $sync.ScriptInstallFeatures $featuretoinstall
+
+        $params = @{
+            ScriptBlock = $sync.ScriptFeatureInstall
+            ArgumentList = ("$featuretoinstall")
+        }
+        
+        Invoke-Runspace @params
+
     }
 
     $sync.ScriptFeatureInstall = {
         param ($featuretoinstall)
-        if ($featuretoinstall -like "*,*"){$featuretoinstall = $featuretoinstall -split ","}
-        else {$featuretoinstall = $featuretoinstall -split " "}
-        [System.Windows.MessageBox]::Show("$featuretoinstall",'Tweaks are in progress',"OK","Info")
+
+        $featuretoinstall = $featuretoinstall -split ","
+
         function Write-Logs {
             param($Level, $Message, $LogPath)
             Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
@@ -917,58 +940,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
         
     }
-
-        <# TODO Make sure this works in a runspace/elevated shell
-
-        If ( $Featuresdotnet.IsChecked -eq $true ) {
-            Enable-WindowsOptionalFeature -Online -FeatureName "NetFx4-AdvSrvs" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All
-        }
-        If ( $Featureshyperv.IsChecked -eq $true ) {
-            Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Tools-All" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-PowerShell" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Hypervisor" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Services" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All
-            cmd /c bcdedit /set hypervisorschedulertype classic
-            Write-Host "HyperV is now installed and configured. Please Reboot before using."
-        } 
-        If ( $Featureslegacymedia.IsChecked -eq $true ) {
-            Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "DirectPlay" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "LegacyComponents" -All
-        }
-        If ( $Featurewsl.IsChecked -eq $true ) {
-            Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All
-            Write-Host "WSL is now installed and configured. Please Reboot before using."
-        }
-        If ( $Featurenfs.IsChecked -eq $true ) {
-            Enable-WindowsOptionalFeature -Online -FeatureName "ServicesForNFS-ClientOnly" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "ClientForNFS-Infrastructure" -All
-            Enable-WindowsOptionalFeature -Online -FeatureName "NFS-Administration" -All
-            nfsadmin client stop
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousUID" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
-            nfsadmin client start
-            nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-            Write-Host "NFS is now setup for user based NFS mounts"
-        }
-
-        
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "All features are now installed"
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-        
-        [System.Windows.MessageBox]::Show($Messageboxbody,$MessageboxTitle,$ButtonType,$MessageIcon)
-
-        $sync.Form.Dispatcher.Invoke([action]{$sync.FeatureInstall.Content = "Install Features"},"Normal")
-    }#>
 
     #===========================================================================
     # Tab 4 - Updates Buttons
