@@ -593,6 +593,24 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
 
         Write-Logs -Level INFO -Message "Finished setting registry" -LogPath $sync.logfile
+
+        Write-Logs -Level INFO -Message "Starting Services Modification" -LogPath $sync.logfile
+
+        $ServicesToModify | ForEach-Object {
+            Try{
+                Stop-Service "$($psitem.name)" -ErrorVariable serviceerror -ErrorAction stop
+                Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType) -ErrorVariable serviceerror -ErrorAction stop
+                Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
+            }Catch{
+                if($serviceerror -like "*Cannot find any service with service name*"){
+                    Write-Logs -Level INFO -Message "Service $($psitem.name) not found" -LogPath $sync.logfile
+                }else{Write-Logs -Level ERROR -Message "Unable to modify Service $($psitem.name)" -LogPath $sync.logfile}
+            }
+        }
+
+        Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
+
+        Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
         
         if($sync){
             $sync.Form.Dispatcher.Invoke([action]{$sync.tweaksbutton.Content = "Run Tweaks"},"Normal")
