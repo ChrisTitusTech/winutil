@@ -550,6 +550,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         Param($Tweakstorun)
         $Tweakstorun = $Tweakstorun -split ","
 
+        $ErrorActionPreference = "SilentlyContinue"
+
         function Write-Logs {
             param($Level, $Message, $LogPath)
             Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
@@ -573,11 +575,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
             $sync.tweaks.$psitem.appx
         }
 
-        Write-Logs -Level INFO -Message "Starting Registry Modification" -LogPath $sync.logfile
+        
+        if($RegistryToModify){
+            Write-Logs -Level INFO -Message "Starting Registry Modification" -LogPath $sync.logfile
 
-        $RegistryToModify | ForEach-Object {
-            try{
-                
+            $RegistryToModify | ForEach-Object {
                 if(!(Test-Path $psitem.path)){
                     $Step = "create"
                     Write-Logs -Level INFO -Message "$($psitem.path) did not exist. Creating" -LogPath $sync.logfile
@@ -587,43 +589,54 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
                 $step = "set"
                 Write-Logs -Level INFO -Message "Setting $("$($psitem.path)\$($psitem.name)") to $($psitem.value)" -LogPath $sync.logfile
                 Set-ItemProperty -Path $psitem.path -Name $psitem.name -Type $psitem.type -Value $psitem.value
-
-            }Catch{Write-Logs -Level ERROR -Message "$($psitem.path) Failed to $step" -LogPath $sync.logfile}
-        }
-
-        Write-Logs -Level INFO -Message "Finished setting registry" -LogPath $sync.logfile
-
-        Write-Logs -Level INFO -Message "Starting Services Modification" -LogPath $sync.logfile
-
-        $ServicesToModify | ForEach-Object {
-            Try{
-                Stop-Service "$($psitem.name)" 
-                Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
-                Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
-            }Catch{
-                if($serviceerror -like "*Cannot find any service with service name*"){
-                    Write-Logs -Level INFO -Message "Service $($psitem.name) not found" -LogPath $sync.logfile
-                }else{Write-Logs -Level ERROR -Message "Unable to modify Service $($psitem.name)" -LogPath $sync.logfile}
             }
+
+            Write-Logs -Level INFO -Message "Finished setting registry" -LogPath $sync.logfile
         }
 
-        Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
+        if($ServicesToModify){
+            Write-Logs -Level INFO -Message "Starting Services Modification" -LogPath $sync.logfile
 
-        Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
+            $ServicesToModify | ForEach-Object {
+                    Stop-Service "$($psitem.name)" 
+                    Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
+                    Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
+            }
+    
+            Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
+        }
+        
+        if($ScheduledTaskToModify){
+            Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
 
-        $ScheduledTaskToModify | ForEach-Object {
-            Try{
-                if($($psitem.State) -eq "Disabled"){
-                    Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
-                }
-                if($($psitem.State) -eq "Enabled"){
-                    Enable-TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
-                }
-                Write-Logs -Level INFO -Message "Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile
-            }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile}
+            $ScheduledTaskToModify | ForEach-Object {
+                Try{
+                    if($($psitem.State) -eq "Disabled"){
+                        Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
+                    }
+                    if($($psitem.State) -eq "Enabled"){
+                        Enable-TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
+                    }
+                    Write-Logs -Level INFO -Message "Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile
+                }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile}
+            }
+    
+            Write-Logs -Level INFO -Message "Finished setting ScheduledTasks" -LogPath $sync.logfile
         }
 
-        Write-Logs -Level INFO -Message "Finished setting ScheduledTasks" -LogPath $sync.logfile
+        if($AppxToModify){
+            Write-Logs -Level INFO -Message "Starting Appx Modification" -LogPath $sync.logfile
+
+            $AppxToModify | ForEach-Object {
+                Try{
+                    Get-AppxPackage -Name $psitem| Remove-AppxPackage -ErrorAction Stop
+                    Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $psitem | Remove-AppxProvisionedPackage -ErrorAction stop -Online
+                    Write-Logs -Level INFO -Message "Uninstalled $psitem" -LogPath $sync.logfile
+                }Catch{Write-Logs -Level ERROR -Message "Failed to uninstall $psitem" -LogPath $sync.logfile }
+            }
+    
+            Write-Logs -Level INFO -Message "Finished uninstalling Appx" -LogPath $sync.logfile
+        }
 
         Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
         
