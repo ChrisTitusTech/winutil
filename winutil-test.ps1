@@ -439,15 +439,15 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                         #Download Needed Files
                         $step = "Downloading the required files"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$($sync.tempfolder)/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$($sync.tempfolder)/b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$ENV:TEMP/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
+                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$ENV:TEMP/b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
         
                         #Installing Packages
                         $step = "Installing Packages"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Add-AppxProvisionedPackage -Online -PackagePath "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense -ErrorAction Stop
-                        Add-AppxProvisionedPackage -Online -PackagePath "$($sync.tempfolder)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$($sync.tempfolder)\b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
+                        Add-AppxProvisionedPackage -Online -PackagePath "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense -ErrorAction Stop
+                        Add-AppxProvisionedPackage -Online -PackagePath "$ENV:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$ENV:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
                         
                         #Sleep for 5 seconds to maximize chance that winget will work without reboot
                         Start-Sleep -s 5
@@ -455,9 +455,9 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                         #Removing no longer needed Files
                         $step = "Removing Files"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Remove-Item -Path "$($sync.tempfolder)\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                        Remove-Item -Path "$($sync.tempfolder)\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                        Remove-Item -Path "$($sync.tempfolder)\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+                        Remove-Item -Path "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                        Remove-Item -Path "$ENV:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                        Remove-Item -Path "$ENV:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
 
                         $step = "WinGet Sucessfully installed"
                         Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
