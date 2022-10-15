@@ -578,12 +578,11 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         $RegistryToModify | ForEach-Object {
             try{
                 
-                #Seems this causes a lockup if the path does not exist
-                #if(!(Test-Path $psitem.path)){
-                #    $Step = "create"
-                #    Write-Logs -Level INFO -Message "$($psitem.path) did not exist. Creating" -LogPath $sync.logfile
-                #    #New-Item -Path $psitem.path -ErrorAction stop -Force | Out-Null
-                #}
+                if(!(Test-Path $psitem.path)){
+                    $Step = "create"
+                    Write-Logs -Level INFO -Message "$($psitem.path) did not exist. Creating" -LogPath $sync.logfile
+                    New-Item -Path $psitem.path -Force | Out-Null
+                }
 
                 $step = "set"
                 Write-Logs -Level INFO -Message "Setting $("$($psitem.path)\$($psitem.name)") to $($psitem.value)" -LogPath $sync.logfile
@@ -598,8 +597,8 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
 
         $ServicesToModify | ForEach-Object {
             Try{
-                Stop-Service "$($psitem.name)" -ErrorVariable serviceerror -ErrorAction stop
-                Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType) -ErrorVariable serviceerror -ErrorAction stop
+                Stop-Service "$($psitem.name)" 
+                Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
                 Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
             }Catch{
                 if($serviceerror -like "*Cannot find any service with service name*"){
@@ -609,6 +608,22 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         }
 
         Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
+
+        Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
+
+        $ScheduledTaskToModify | ForEach-Object {
+            Try{
+                if($($psitem.State) -eq "Disabled"){
+                    Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
+                }
+                if($($psitem.State) -eq "Enabled"){
+                    Enable-TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
+                }
+                Write-Logs -Level INFO -Message "Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile
+            }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile}
+        }
+
+        Write-Logs -Level INFO -Message "Finished setting ScheduledTasks" -LogPath $sync.logfile
 
         Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
         
