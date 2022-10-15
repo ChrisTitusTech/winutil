@@ -7,8 +7,7 @@
 
 #region Variables
     $sync = [Hashtable]::Synchronized(@{})
-    $sync.tempfolder = "$env:userprofile\AppData\Local\Temp"
-    $sync.logfile = "$($sync.tempfolder)\winutil.log"
+    $sync.logfile = "$env:TEMP\winutil.log"
 
     $VerbosePreference = "Continue"
 
@@ -287,7 +286,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($_.Name)")"] = $sy
         param(
             $Level = "Info", 
             $Message, 
-            $LogPath = "$env:userprofile\AppData\Local\Temp\winutil.log"
+            $LogPath = "$env:TEMP\winutil.log"
         )
 
         $date = get-date
