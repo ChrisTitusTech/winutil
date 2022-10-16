@@ -18,8 +18,6 @@
 
 #endregion Variables
  
-
- 
 #region Functions
 
     #===========================================================================
@@ -31,9 +29,10 @@
         <#
         
             .DESCRIPTION
-            Meant to make creating buttons easier. The above section will assign this function and pass the name of the button
+            Meant to make creating buttons easier. There is a section below in the gui that will assign this function to every button.
             This way you can dictate what each button does from this function. 
         
+            Input will be the name of the button that is clicked. 
         #>
         
         Param ([string]$Button) 
