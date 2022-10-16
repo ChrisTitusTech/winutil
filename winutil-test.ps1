@@ -14,111 +14,17 @@
     $sync.tasktitle = "Task in progress"
 
     $VerbosePreference = "Continue"
-
-    #WinForms dependancies 
-    [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName PresentationFramework
-    [System.Windows.Forms.Application]::EnableVisualStyles()
-
-    #List of config files to import
-    $configs = (
-        "applications", 
-        "tweaks",
-        "preset", 
-        "feature"
-    )
-
-    #Test for admin credentials
-    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        $IsAdmin = $false
-    }
-
-    #To use local files run $env:environment = "dev" before starting the ps1 file
-    if($env:environment -eq "dev"){
-
-        if($IsAdmin -eq $false){
-            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-            return
-        }
-        
-        $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
-    }
-    if($env:environment -eq "exe"){
-        
-        if($IsAdmin -eq $false){
-            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-            return
-        }
-        
-        $confirm = "yes"
-    }
-    if($confirm -eq "yes"){
-        $inputXML = Get-Content "MainWindow.xaml"
-        $configs | ForEach-Object {
-            $sync["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-        }        
-    }
-    else{
-
-        #Select the working branch
-        if($env:branch){
-            $branch = $env:branch
-        }
-        Else {$branch = "main"}
-
-        if($IsAdmin -eq $false){
-            Write-Output "This application needs to be run as an administrator. Attempting relaunch"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
-            break
-        }
-
-        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
-        $configs | ForEach-Object {
-            $sync["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$psitem.json"
-        }
-    }
-        
-    $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
-    [xml]$XAML = $inputXML
-    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
-    
-    try{$sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
-    catch [System.Management.Automation.MethodInvocationException] {
-        Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-        write-host $error[0].Exception.Message -ForegroundColor Red
-        if ($error[0].Exception.Message -like "*button*"){
-            write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
-    }
-    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="ðŸ˜€" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
-        Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
-    }
+    if(!$env:args){$gui = $true}
 
 #endregion Variables
  
-#===========================================================================
-# Store Form Objects In PowerShell
-#===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
  
 #region Functions
 
     #===========================================================================
     # Button clicks
     #===========================================================================
-    
-    #Gives every button the invoke-button function
-    $sync.keys | ForEach-Object {
-        if($sync.$psitem){
-            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-Button $Sender.name
-                })
-            }
-        }
-    }
 
     function Invoke-Button {
 
@@ -404,7 +310,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             $params = @{
                 ScriptBlock = $sync.ScriptsInstallPrograms
                 ArgumentList = "git.git,WinDirStat.WinDirStat"
-                Verbose = $true
             }
             VerbosePreference = "Continue"
             Invoke-Command @params
@@ -414,7 +319,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             $params = @{
                 ScriptBlock = $sync.ScriptsInstallPrograms
                 ArgumentList = "Upgrade"
-                Verbose = $true
             }
 
             VerbosePreference = "Continue"
@@ -1349,6 +1253,66 @@ $runspace.SessionStateProxy.SetVariable("sync", $sync)
 #Get ComputerInfo in the background
 Invoke-Runspace -ScriptBlock {$sync.ComputerInfo = Get-ComputerInfo} | Out-Null
 
+#region form
+
+    #WinForms dependancies 
+    [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName PresentationFramework
+    [System.Windows.Forms.Application]::EnableVisualStyles()
+
+    #List of config files to import
+    $configs = (
+        "applications", 
+        "tweaks",
+        "preset", 
+        "feature"
+    )
+
+    #Test for admin credentials
+    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        $IsAdmin = $false
+    }
+
+    #To use local files run $env:environment = "dev" before starting the ps1 file
+    if($env:environment -eq "dev"){
+
+        if($IsAdmin -eq $false){
+            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
+            return
+        }
+        
+        $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
+    }
+
+    if($confirm -eq "yes"){
+        $inputXML = Get-Content "MainWindow.xaml"
+        $configs | ForEach-Object {
+            $sync["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+        }        
+    }
+    else{
+
+        #Select the working branch
+        if($env:branch){
+            $branch = $env:branch
+        }
+        Else {$branch = "main"}
+
+        if($IsAdmin -eq $false){
+            Write-Output "This application needs to be run as an administrator. Attempting relaunch"
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+            break
+        }
+
+        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
+        $configs | ForEach-Object {
+            $sync["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$psitem.json"
+        }
+    }
+
+#endregion form    
+
 write-host ""                                                                                                                             
 write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
 write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
@@ -1370,9 +1334,64 @@ write-host ""
 write-host "====Chris Titus Tech====="
 write-host "=====Windows Toolbox====="
 
-$sync["Form"].ShowDialog() | out-null
+if($gui -eq $true){
+    $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
+    [xml]$XAML = $inputXML
+    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+    
+    try{$sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
+    catch [System.Management.Automation.MethodInvocationException] {
+        Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+        write-host $error[0].Exception.Message -ForegroundColor Red
+        if ($error[0].Exception.Message -like "*button*"){
+            write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
+    }
+    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="ðŸ˜€" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+        Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    }
 
-$runspace.close()
+    # Store Form Objects In PowerShell
+    $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+
+    #Gives every button the invoke-button function
+    $sync.keys | ForEach-Object {
+        if($sync.$psitem){
+            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+                $sync["$psitem"].Add_Click({
+                    [System.Object]$Sender = $args[0]
+                    Invoke-Button $Sender.name
+                })
+            }
+        }
+    }
+
+    $sync["Form"].ShowDialog() | out-null
+}
+
+If($env:args){
+    Write-Verbose "Arguments Detected, Running Args"
+    If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
+    If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
+    If($env:args -match '\bPanelControl\b'){cmd /c control}
+    If($env:args -match '\bPanelNetwork\b'){cmd /c ncpa.cpl}
+    If($env:args -match '\bPanelPower\b'){cmd /c powercfg.cpl}
+    If($env:args -match '\bPanelSound\b'){cmd /c mmsys.cpl}
+    If($env:args -match '\bPanelSystem\b'){cmd /c sysdm.cpl}
+    If($env:args -match '\bPanelUser\b'){cmd /c "control userpasswords2"}
+    If($env:args -match '\bDefaultUpdates\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatesdefault"}
+    If($env:args -match '\bDisableUpdates\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatesdisable"}
+    If($env:args -match '\bEnableSecurity\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatessecurity"}
+    If($env:args -match '\bQuitAfter\b'){Break}
+    If($env:args -match '\bInstall\b'){
+        $ProgramstoInstall = (($env:args-split " " | Where-Object {$_ -like "install*"} ) -split ":")[1]
+        Write-Verbose "Installing $ProgramstoInstall."
+        Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "$ProgramstoInstall"
+    }
+    If($env:args -match '\bTweaks\b'){
+        $Tweakstorun = (($env:args-split " " | Where-Object {$_ -like "Tweaks*"} ) -split ":")[1]
+        Write-Verbose "Running the following tweaks $Tweakstorun."
+        Invoke-command $sync.ScriptTweaks -ArgumentList "$Tweakstorun"
+    }
+}
 
 Write-Host "Thank you for using winutil!"
-
