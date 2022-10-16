@@ -86,3 +86,60 @@ $jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
 
 $jsonfile | ConvertTo-Json | Out-File ./config/feature.json
+
+<#
+    preset.json
+    -----------------
+    This file holds all check boxes you wish to check when clicking a preset button in the tweaks section.
+
+    The structure of the json is as follows
+
+{
+    "Name of Button": [
+        "Array of",
+        "checkboxes to check"
+    ]
+}
+
+Example:
+{
+    "laptop": [
+        "EssTweaksAH",
+        "EssTweaksDVR",
+        "EssTweaksHome",
+        "EssTweaksLoc",
+        "EssTweaksOO",
+        "EssTweaksRP",
+        "EssTweaksServices",
+        "EssTweaksStorage",
+        "EssTweaksTele",
+        "EssTweaksWifi",
+        "MiscTweaksLapPower",
+        "MiscTweaksLapNum"
+    ],
+    "minimal": [
+        "EssTweaksHome",
+        "EssTweaksOO",
+        "EssTweaksRP",
+        "EssTweaksServices",
+        "EssTweaksTele"
+    ]
+}    
+#>
+
+#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+
+$NameofButton = "minimal"
+$commands = @(
+    "EssTweaksHome",
+    "EssTweaksOO",
+    "EssTweaksRP",
+    "EssTweaksServices",
+    "EssTweaksTele"
+)
+
+$jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
+
+Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
+
+$jsonfile | ConvertTo-Json | Out-File ./config/preset.json
