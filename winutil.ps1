@@ -259,8 +259,6 @@
                 return
             }
 
-            $sync.taskrunning = $true
-
         #Section to see if winget will upgrade all installs or which winget commands to run from  config/applications.json
         
             $programstoinstall = $programstoinstall -split ","
@@ -286,7 +284,10 @@
                 return
             }            
 
+            
         #Invoke a runspace so that the GUI does not lock up
+
+            $sync.taskrunning = $true
 
             $params = @{
                 ScriptBlock = $sync.ScriptsInstallPrograms
