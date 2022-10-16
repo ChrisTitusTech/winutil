@@ -42,7 +42,6 @@ $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
 #remove if already exists
 if($jsonfile.install.$NameofButton){
     $jsonfile.install.psobject.Properties.remove($NameofButton)
-
 }
 
 Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "Winget" -Value $WingetCommand
@@ -90,7 +89,6 @@ $jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
 #remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
-
 }
 
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
@@ -149,7 +147,6 @@ $jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
 #remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
-
 }
 
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
@@ -322,7 +319,6 @@ $jsonfile = Get-Content ./config/tweaks.json | ConvertFrom-Json
 #remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
-
 }
 
 if($Registry){Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "registry" -Value $Registry}
