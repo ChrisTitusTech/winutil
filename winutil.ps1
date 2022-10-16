@@ -5,8 +5,8 @@
     Version 0.0.1
 #>
 
-#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
+$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+#$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -550,44 +550,105 @@ $WPFinstall.Add_Click({
             Write-Host "Winget Already Installed"
         }
         else {
-            if (((((Get-ComputerInfo).OSName.IndexOf("LTSC")) -ne -1) -or ((Get-ComputerInfo).OSName.IndexOf("Server") -ne -1)) -and (((Get-ComputerInfo).WindowsVersion) -ge "1809")) {
-                #Checks if Windows edition is LTSC/Server 2019+
-                #Manually Installing Winget
-                Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-                #Download Needed Files
-                Write-Host "Downloading Needed Files..."
-                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
-
-                #Installing Packages
-                Write-Host "Installing Packages..."
-                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
-                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
-                Write-Host "winget Installed (Reboot might be required before winget will work)"
-
-                #Sleep for 5 seconds to maximize chance that winget will work without reboot
-                Write-Host "Pausing for 5 seconds to maximize chance that winget will work without reboot"
-                Start-Sleep -s 5
-
-                #Removing no longer needed Files
-                Write-Host "Removing no longer needed Files..."
-                Remove-Item -Path "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                Remove-Item -Path "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                Remove-Item -Path "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
-                Write-Host "Removed Files that are no longer needed"
-            }
-            elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
+            if (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
                 #Checks if Windows Version is too old for winget
                 Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
             }
             else {
-                #Installing Winget from the Microsoft Store
-                Write-Host "Winget not found, installing it now."
-                Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-                $nid = (Get-Process AppInstaller).Id
-                Wait-Process -Id $nid
+                function getNewestLink($match) {
+                    $uri = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+                    Write-Verbose "[$((Get-Date).TimeofDay)] Getting information from $uri"
+                    $get = Invoke-RestMethod -uri $uri -Method Get -ErrorAction stop
+                    Write-Verbose "[$((Get-Date).TimeofDay)] getting latest release"
+                    $data = $get[0].assets | Where-Object name -Match $match
+                    return $data.browser_download_url
+                }
+                
+                $wingetUrl = getNewestLink("msixbundle")
+                $wingetLicenseUrl = getNewestLink("License1.xml")
+                
+                function section($text) {
+                    <#
+                        .SYNOPSIS
+                        Prints a section divider for easy reading of the output.
+                 
+                        .DESCRIPTION
+                        Prints a section divider for easy reading of the output.
+                    #>
+                    Write-Output "###################################"
+                    Write-Output "# $text"
+                    Write-Output "###################################"
+                }
+                
+                # Add AppxPackage and silently continue on error
+                function AAP($pkg) {
+                    <#
+                        .SYNOPSIS
+                        Adds an AppxPackage to the system.
+                 
+                        .DESCRIPTION
+                        Adds an AppxPackage to the system.
+                    #>
+                    Add-AppxPackage $pkg -ErrorAction SilentlyContinue
+                }
+                
+                # Download XAML nupkg and extract appx file
+                section("Downloading Xaml nupkg file... (19000000ish bytes)")
+                $url = "https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.1"
+                $nupkgFolder = "Microsoft.UI.Xaml.2.7.1.nupkg"
+                $zipFile = "Microsoft.UI.Xaml.2.7.1.nupkg.zip"
+                Invoke-WebRequest -Uri $url -OutFile $zipFile
+                section("Extracting appx file from nupkg file...")
+                Expand-Archive $zipFile
+                
+                # Determine architecture
+                if ([Environment]::Is64BitOperatingSystem) {
+                    section("64-bit OS detected")
+                
+                    # Install x64 VCLibs
+                    section("Downloading & installing x64 VCLibs... (21000000ish bytes)")
+                    AAP("https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx")
+                
+                    # Install x64 XAML
+                    section("Installing x64 XAML...")
+                    AAP("Microsoft.UI.Xaml.2.7.1.nupkg\tools\AppX\x64\Release\Microsoft.UI.Xaml.2.7.appx")
+                } else {
+                    section("32-bit OS detected")
+                
+                    # Install x86 VCLibs
+                    section("Downloading & installing x86 VCLibs... (21000000ish bytes)")
+                    AAP("https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx")
+                
+                    # Install x86 XAML
+                    section("Installing x86 XAML...")
+                    AAP("Microsoft.UI.Xaml.2.7.1.nupkg\tools\AppX\x86\Release\Microsoft.UI.Xaml.2.7.appx")
+                }
+                
+                # Finally, install winget
+                section("Downloading winget... (21000000ish bytes)")
+                $wingetPath = "winget.msixbundle"
+                Invoke-WebRequest -Uri $wingetUrl -OutFile $wingetPath
+                $wingetLicensePath = "license1.xml"
+                Invoke-WebRequest -Uri $wingetLicenseUrl -OutFile $wingetLicensePath
+                section("Installing winget...")
+                Add-AppxProvisionedPackage -Online -PackagePath $wingetPath -LicensePath $wingetLicensePath -ErrorAction SilentlyContinue
+                
+                # Adding WindowsApps directory to PATH variable for current user
+                section("Adding WindowsApps directory to PATH variable for current user...")
+                $path = [Environment]::GetEnvironmentVariable("PATH", "User")
+                $path = $path + ";" + [IO.Path]::Combine([Environment]::GetEnvironmentVariable("LOCALAPPDATA"), "Microsoft", "WindowsApps")
+                [Environment]::SetEnvironmentVariable("PATH", $path, "User")
+                
+                # Cleanup
+                section("Cleaning up...")
+                Remove-Item $zipFile
+                Remove-Item $nupkgFolder -Recurse
+                Remove-Item $wingetPath
+                Remove-Item $wingetLicensePath
+                
+                # Finished
+                section("Installation complete!")
+                section("Please restart your computer to complete the installation.")
                 Write-Host "Winget Installed"
             }
         }
