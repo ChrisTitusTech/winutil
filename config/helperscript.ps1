@@ -10,10 +10,23 @@
     The structure of the json is as follows
 
 {
-"install": {
-    "Name of Button": {
-    "winget": "Winget command"
+    "install": {
+        "Name of Button": {
+        "winget": "Winget command"
     },
+}
+
+Example:
+
+{
+    "install": {
+        "Installadobe": {
+            "winget": "Adobe.Acrobat.Reader.64-bit"
+        },
+        "Installadvancedip": {
+            "winget": "Famatech.AdvancedIPScanner"
+        }
+    }
 }
 
 #>
@@ -31,3 +44,45 @@ Add-Member -InputObject $jsonfile.install -MemberType NoteProperty -Name $Nameof
 
 $jsonfile | ConvertTo-Json | Out-File ./config/applications.json
 
+<#
+    feature.json
+    -----------------
+    This file holds all the windows commands to install specefic features (IE Hyper-v)
+
+    The structure of the json is as follows
+
+{
+    "Name of Button": [
+        "Array of",
+        "commands"
+    ]
+}
+
+Example:
+{
+    "Featurewsl": [
+        "VirtualMachinePlatform",
+        "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "Featurenfs": [
+        "ServicesForNFS-ClientOnly",
+        "ClientForNFS-Infrastructure",
+        "NFS-Administration"
+    ]
+}    
+#>
+
+#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+
+$NameofButton = "Featurenfs"
+$commands = @(
+    "ServicesForNFS-ClientOnly",
+    "ClientForNFS-Infrastructure",
+    "NFS-Administration"
+)
+
+$jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
+
+Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
+
+$jsonfile | ConvertTo-Json | Out-File ./config/feature.json
