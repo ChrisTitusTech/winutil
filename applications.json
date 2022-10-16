@@ -42,6 +42,9 @@
     "Installchromium": {
       "winget": "eloston.ungoogled-chromium"
     },
+    "Installclassicopenshell": {
+      "winget": "Open-Shell.Open-Shell-Menu"
+    },
     "Installcpuz": {
       "winget": "CPUID.CPU-Z"
     },
@@ -50,6 +53,9 @@
     },
     "Installeartrumpet": {
       "winget": "File-New-Project.EarTrumpet"
+    },
+    "Installeaorigin": {
+      "winget": "ElectronicArts.EADesktop"
     },
     "Installepicgames": {
       "winget": "EpicGames.EpicGamesLauncher"
@@ -183,8 +189,8 @@
     "Installslack": {
       "winget": "SlackTechnologies.Slack"
     },
-    "Installspotify": {
-      "winget": "Spotify.Spotify"
+    "Installsqlmanagementstudio": {
+      "winget": "Microsoft.SQLServerManagementStudio"
     },
     "Installsteam": {
       "winget": "Valve.Steam"
@@ -213,6 +219,9 @@
     "Installttaskbar": {
       "winget": "TranslucentTB.TranslucentTB"
     },
+    "Installtelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
     "Installvisualstudio": {
       "winget": "Microsoft.VisualStudio.2022.Community"
     },
@@ -224,6 +233,12 @@
     },
     "Installkdenlive": {
       "winget": "KDE.Kdenlive"
+    },
+    "Installkodi": {
+      "winget": "XBMCFoundation.Kodi"
+    },
+    "Installkrita": {
+      "winget": "KDE.Krita"
     },
     "Installvoicemeeter": {
       "winget": "VB-Audio.Voicemeeter"

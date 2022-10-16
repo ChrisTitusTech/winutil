@@ -5,8 +5,8 @@
     Version 0.0.1
 #>
 
-#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
+$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+#$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -396,11 +396,7 @@ $WPFinstall.Add_Click({
         If ( $WPFInstallslack.IsChecked -eq $true ) { 
             $wingetinstall.Add("SlackTechnologies.Slack")
             $WPFInstallslack.IsChecked = $false
-        }                
-        If ( $WPFInstallspotify.IsChecked -eq $true ) { 
-            $wingetinstall.Add("Spotify.Spotify")
-            $WPFInstallspotify.IsChecked = $false
-        }              
+        }                       
         If ( $WPFInstallsteam.IsChecked -eq $true ) { 
             $wingetinstall.Add("Valve.Steam")
             $WPFInstallsteam.IsChecked = $false
@@ -538,6 +534,39 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("AppWork.JDownloader")
             $WPFInstalljdownloader.IsChecked = $false
         }
+        If ( $WPFInstallbluestacks.IsChecked -eq $true ) {
+            $wingetinstall.Add("BlueStack.BlueStacks")
+            $WPFInstallbluestacks.IsChecked = $false
+        }
+        If ( $WPFInstallkrita.IsChecked -eq $true) {
+            $wingetinstall.Add("KDE.Krita")
+            $WPFInstallkrita.isChecked = $false
+        }
+        If ( $WPFInstallkodi.IsChecked -eq $true) {
+            $wingetinstall.Add("XBMCFoundation.Kodi")
+            $WPFInstallkodi.isChecked = $false
+        }
+        if ( $WPFInstalltelegram.isChecked -eq $true) {
+            $wingetinstall.Add("Telegram.TelegramDesktop")
+            $WPFInstalltelegram.isChecked = $false
+        }
+        If ( $WPFInstalleaorigin.IsChecked -eq $true) {
+            $wingetinstall.Add("ElectronicArts.EADesktop")
+            $WPFInstalleaorigin.isChecked = $false
+        }
+        if ( $WPFInstallclassicopenshell.isChecked -eq $true) {
+            $wingetinstall.Add("Open-Shell.Open-Shell-Menu")
+            $WPFInstallclassicopenshell.isChecked = $false
+        }
+        if ( $WPFInstallsqlmanagementstudio.isChecked -eq $true) {
+            $wingetinstall.Add("Microsoft.SQLServerManagementStudio")
+            $WPFInstallsqlmanagementstudio.isChecked = $false
+        }
+        If ( $WPFInstallstrawberry.IsChecked -eq $true) {
+            $wingetinstall.Add("StrawberryMusicPlayer.Strawberry")
+            $WPFInstallstrawberry.isChecked = $false
+        }
+
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
         if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {

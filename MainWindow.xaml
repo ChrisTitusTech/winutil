@@ -58,6 +58,7 @@
 							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
 							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
 							<CheckBox Name="Installteams" Content="Teams" Margin="5,0"/>
+							<CheckBox Name="Installtelegram" Content="Telegram" Margin="5,0"/>
 							<CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
 							<CheckBox Name="Installzoom" Content="Zoom" Margin="5,0"/>
 						</StackPanel>
@@ -95,6 +96,7 @@
 							<CheckBox Name="Installwinmerge" Content="WinMerge" Margin="5,0"/>
 
 							<Label Content="Games" FontSize="16" Margin="5,0"/>
+							<CheckBox Name="Installeaorigin" Content="EA Origin" Margin="5,0"/>
 							<CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
 							<CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
 							<CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
@@ -117,6 +119,7 @@
 							<CheckBox Name="Installpowertoys" Content="Microsoft Powertoys" Margin="5,0"/>
 							<CheckBox Name="Installvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
 							<CheckBox Name="Installvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
+							<CheckBox Name="Installsqlmanagementstudio" Content="SQL Management Studio" Margin="5,0"/>
 							<CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
 
 							<Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
@@ -132,11 +135,14 @@
 							<CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
 							<CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
 							<CheckBox Name="Installitunes" Content="iTunes" Margin="5,0"/>
-							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>							
+							<CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>		
 							<CheckBox Name="Installklite" Content="K-Lite Codec Standard" Margin="5,0"/>
+							<CheckBox Name="Installkodi" Content="Kodi (Media Player)" Margin="5,0"/>
+							<CheckBox Name="Installkrita" Content="Krita (Painting Program)" Margin="5,0"/>				
 							<CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
 							<CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
+							<CheckBox Name="Installstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
 							<CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
 							<CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 						</StackPanel>
@@ -160,6 +166,7 @@
 							<CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
 							<CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
 							<CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
+							<CheckBox Name="Installclassicopenshell" Content="Classic Open Shell" Margin="5,0"/>
 							<CheckBox Name="Installprocesslasso" Content="Process Lasso" Margin="5,0"/>
 							<CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
 							<CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
