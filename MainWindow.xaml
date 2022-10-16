@@ -58,6 +58,7 @@
 							<CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
 							<CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
 							<CheckBox Name="Installteams" Content="Teams" Margin="5,0"/>
+							<CheckBox Name="Installtelegram" Content="Telegram" Margin="5,0"/>
 							<CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
 							<CheckBox Name="Installzoom" Content="Zoom" Margin="5,0"/>
 						</StackPanel>

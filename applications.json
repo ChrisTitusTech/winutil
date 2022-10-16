@@ -201,6 +201,9 @@
     "Installteamviewer": {
       "winget": "TeamViewer.TeamViewer"
     },
+    "Installtelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
     "Installterminal": {
       "winget": "Microsoft.WindowsTerminal"
     },

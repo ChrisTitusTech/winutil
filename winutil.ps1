@@ -538,6 +538,17 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("AppWork.JDownloader")
             $WPFInstalljdownloader.IsChecked = $false
         }
+<<<<<<< Updated upstream
+=======
+        If ( $WPFInstallbluestacks.IsChecked -eq $true ) {
+            $wingetinstall.Add("BlueStack.BlueStacks")
+            $WPFInstallbluestacks.IsChecked = $false
+        }
+        If ( $WPFInstalltelegram.IsChecked -eq $true ) {
+            $wingetinstall.Add("Telegram.TelegramDesktop")
+            $WPFInstalltelegram.IsChecked = $false
+        }
+>>>>>>> Stashed changes
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
         if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
