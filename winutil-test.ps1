@@ -961,7 +961,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
         Write-Logs -Level INFO -Message "Finished Installing features" -LogPath $sync.logfile
 
-        if($sync.FeatureInstall){
+        if($sync["Form"]){
             $sync.taskrunning = $false
             [System.Windows.MessageBox]::Show("Features have been installed",'Installs are done!',"OK","Info")
         }
@@ -1039,12 +1039,297 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
             param($Level, $Message, $LogPath)
             Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
         }
+        if($updatestoconfigure -eq "Updatesdefault"){
+            # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1 reversed! 
+            Set-StrictMode -Version Latest
+            $ProgressPreference = 'SilentlyContinue'
+            $ErrorActionPreference = 'Stop'
+            trap {
+                Write-Logs -Level "ERROR" -LogPath $sync.logfile -Message $psitem
+                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Sleeping for 60m to give you time to look around the virtual machine before self-destruction..."
+            }
 
+            # disable automatic updates.
+            # XXX this does not seem to work anymore.
+            # see How to configure automatic updates by using Group Policy or registry settings
+            #     at https://support.microsoft.com/en-us/help/328010
+            function New-Directory($path) {
+                $p, $components = $path -split '[\\/]'
+                $components | ForEach-Object {
+                    $p = "$p\$psitem"
+                    if (!(Test-Path $p)) {
+                        New-Item -ItemType Directory $p | Out-Null
+                    }
+                }
+                $null
+            }
+            $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
+            New-Directory $auPath 
+            # set NoAutoUpdate.
+            # 0: Automatic Updates is enabled (default).
+            # 1: Automatic Updates is disabled.
+            New-ItemProperty `
+                -Path $auPath `
+                -Name NoAutoUpdate `
+                -Value 0 `
+                -PropertyType DWORD `
+                -Force `
+                | Out-Null
+            # set AUOptions.
+            # 1: Keep my computer up to date has been disabled in Automatic Updates.
+            # 2: Notify of download and installation.
+            # 3: Automatically download and notify of installation.
+            # 4: Automatically download and scheduled installation.
+            New-ItemProperty `
+                -Path $auPath `
+                -Name AUOptions `
+                -Value 3 `
+                -PropertyType DWORD `
+                -Force `
+                | Out-Null
 
-        $Scriptblock = [scriptblock]::Create($psitem)
-        #Invoke-Command -ScriptBlock $Scriptblock
-        Start-Process $PSHOME\powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait
-        
+            # disable Windows Update Delivery Optimization.
+            # NB this applies to Windows 10.
+            # 0: Disabled
+            # 1: PCs on my local network
+            # 3: PCs on my local network, and PCs on the Internet
+            $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
+            if (Test-Path $deliveryOptimizationPath) {
+                New-ItemProperty `
+                    -Path $deliveryOptimizationPath `
+                    -Name DODownloadMode `
+                    -Value 0 `
+                    -PropertyType DWORD `
+                    -Force `
+                    | Out-Null
+            }
+            # Service tweaks for Windows Update
+
+            $services = @(
+                "BITS"
+                "wuauserv"
+            )
+
+            foreach ($service in $services) {
+                # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+
+                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Setting $service StartupType to Automatic"
+                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+            }
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling driver offering through Windows Update..."
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling Windows Update automatic restart..."
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabled driver offering through Windows Update"
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
+
+            ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "1. Stopping Windows Update Services..." 
+            Stop-Service -Name BITS 
+            Stop-Service -Name wuauserv 
+            Stop-Service -Name appidsvc 
+            Stop-Service -Name cryptsvc 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "2. Remove QMGR Data file..." 
+            Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "3. Renaming the Software Distribution and CatRoot Folder..." 
+            Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue 
+            Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "4. Removing old Windows Update log..." 
+            Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "5. Resetting the Windows Update Services to defualt settings..." 
+            "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
+            "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
+
+            Set-Location $env:systemroot\system32 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "6. Registering some DLLs..." 
+            regsvr32.exe /s atl.dll 
+            regsvr32.exe /s urlmon.dll 
+            regsvr32.exe /s mshtml.dll 
+            regsvr32.exe /s shdocvw.dll 
+            regsvr32.exe /s browseui.dll 
+            regsvr32.exe /s jscript.dll 
+            regsvr32.exe /s vbscript.dll 
+            regsvr32.exe /s scrrun.dll 
+            regsvr32.exe /s msxml.dll 
+            regsvr32.exe /s msxml3.dll 
+            regsvr32.exe /s msxml6.dll 
+            regsvr32.exe /s actxprxy.dll 
+            regsvr32.exe /s softpub.dll 
+            regsvr32.exe /s wintrust.dll 
+            regsvr32.exe /s dssenh.dll 
+            regsvr32.exe /s rsaenh.dll 
+            regsvr32.exe /s gpkcsp.dll 
+            regsvr32.exe /s sccbase.dll 
+            regsvr32.exe /s slbcsp.dll 
+            regsvr32.exe /s cryptdlg.dll 
+            regsvr32.exe /s oleaut32.dll 
+            regsvr32.exe /s ole32.dll 
+            regsvr32.exe /s shell32.dll 
+            regsvr32.exe /s initpki.dll 
+            regsvr32.exe /s wuapi.dll 
+            regsvr32.exe /s wuaueng.dll 
+            regsvr32.exe /s wuaueng1.dll 
+            regsvr32.exe /s wucltui.dll 
+            regsvr32.exe /s wups.dll 
+            regsvr32.exe /s wups2.dll 
+            regsvr32.exe /s wuweb.dll 
+            regsvr32.exe /s qmgr.dll 
+            regsvr32.exe /s qmgrprxy.dll 
+            regsvr32.exe /s wucltux.dll 
+            regsvr32.exe /s muweb.dll 
+            regsvr32.exe /s wuwebv.dll 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "7) Removing WSUS client settings..." 
+            #Fix to stop runspace from locking up if values not found
+            start-process powershell.exe -Verb RunAs -ArgumentList "-c `"
+                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v AccountDomainSid /f
+                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v PingID /f
+                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v SusClientId /f`"
+            "
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "8) Resetting the WinSock..." 
+            netsh winsock reset 
+            netsh winhttp reset proxy 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "9) Delete all BITS jobs..." 
+            Get-BitsTransfer | Remove-BitsTransfer 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "10) Attempting to install the Windows Update Agent..." 
+            if([System.Environment]::Is64BitOperatingSystem){ 
+                wusa Windows8-RT-KB2937636-x64 /quiet
+            } 
+            else{ 
+                wusa Windows8-RT-KB2937636-x86 /quiet
+            } 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "11) Starting Windows Update Services..." 
+            Start-Service -Name BITS 
+            Start-Service -Name wuauserv 
+            Start-Service -Name appidsvc 
+            Start-Service -Name cryptsvc 
+
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "12) Forcing discovery..." 
+            wuauclt /resetauthorization /detectnow 
+        }
+        if($updatestoconfigure -eq "Updatesdisable"){
+            # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1
+            Set-StrictMode -Version Latest
+            $ProgressPreference = 'SilentlyContinue'
+            $ErrorActionPreference = 'Stop'
+            trap {
+                Write-Logs -Level "ERROR" -LogPath $sync.logfile -Message $psitem
+                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Sleeping for 60m to give you time to look around the virtual machine before self-destruction..."
+            }
+
+            # disable automatic updates.
+            # XXX this does not seem to work anymore.
+            # see How to configure automatic updates by using Group Policy or registry settings
+            #     at https://support.microsoft.com/en-us/help/328010
+            function New-Directory($path) {
+                $p, $components = $path -split '[\\/]'
+                $components | ForEach-Object {
+                    $p = "$p\$_"
+                    If (!(Test-Path $p)) {
+                        New-Item -ItemType Directory $p | Out-Null
+                    }
+                }
+                $null
+            }
+            $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
+            New-Directory $auPath 
+            # set NoAutoUpdate.
+            # 0: Automatic Updates is enabled (default).
+            # 1: Automatic Updates is disabled.
+            New-ItemProperty `
+                -Path $auPath `
+                -Name NoAutoUpdate `
+                -Value 1 `
+                -PropertyType DWORD `
+                -Force `
+            | Out-Null
+            # set AUOptions.
+            # 1: Keep my computer up to date has been disabled in Automatic Updates.
+            # 2: Notify of download and installation.
+            # 3: Automatically download and notify of installation.
+            # 4: Automatically download and scheduled installation.
+            New-ItemProperty `
+                -Path $auPath `
+                -Name AUOptions `
+                -Value 1 `
+                -PropertyType DWORD `
+                -Force `
+            | Out-Null
+
+            # disable Windows Update Delivery Optimization.
+            # NB this applies to Windows 10.
+            # 0: Disabled
+            # 1: PCs on my local network
+            # 3: PCs on my local network, and PCs on the Internet
+            $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
+            If (Test-Path $deliveryOptimizationPath) {
+                New-ItemProperty `
+                    -Path $deliveryOptimizationPath `
+                    -Name DODownloadMode `
+                    -Value 0 `
+                    -PropertyType DWORD `
+                    -Force `
+                | Out-Null
+            }
+            # Service tweaks for Windows Update
+
+            $services = @(
+                "BITS"
+                "wuauserv"
+            )
+
+            foreach ($service in $services) {
+                # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+
+                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Setting $service StartupType to Disabled"
+                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+            }
+        }    
+        if($updatestoconfigure -eq "Updatessecurity"){
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabling driver offering through Windows Update..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabling Windows Update automatic restart..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
+            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabled driver offering through Windows Update"
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
+        }    
+
+        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Process complete. Please reboot your computer."
 
         if($sync["Form"]){
             $sync.taskrunning = $false
