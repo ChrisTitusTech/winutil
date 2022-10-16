@@ -33,11 +33,17 @@ Example:
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
-$NameofButton = "Installadobe"
-$WingetCommand = "Adobe.Acrobat.Reader.64-bit"
+$NameofButton = ""
+$WingetCommand = ""
 
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
+
+#remove if already exists
+if($jsonfile.install.$NameofButton){
+    $jsonfile.install.psobject.Properties.remove($NameofButton)
+
+}
 
 Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "Winget" -Value $WingetCommand
 Add-Member -InputObject $jsonfile.install -MemberType NoteProperty -Name $NameofButton -Value $ButtonToAdd
@@ -74,14 +80,18 @@ Example:
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
-$NameofButton = "Featurenfs"
+$NameofButton = ""
 $commands = @(
-    "ServicesForNFS-ClientOnly",
-    "ClientForNFS-Infrastructure",
-    "NFS-Administration"
+
 )
 
 $jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
+
+#remove if already exists
+if($jsonfile.$NameofButton){
+    $jsonfile.psobject.Properties.remove($NameofButton)
+
+}
 
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
 
@@ -129,16 +139,18 @@ Example:
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
-$NameofButton = "minimal"
+$NameofButton = ""
 $commands = @(
-    "EssTweaksHome",
-    "EssTweaksOO",
-    "EssTweaksRP",
-    "EssTweaksServices",
-    "EssTweaksTele"
+    
 )
 
 $jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
+
+#remove if already exists
+if($jsonfile.$NameofButton){
+    $jsonfile.psobject.Properties.remove($NameofButton)
+
+}
 
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
 
@@ -261,7 +273,7 @@ Example:
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 #Make sure to uncomment the sections you which to add.
 
-$NameofButton = "EssTweaksTele1"
+$NameofButton = ""
 
 #$Registry = @(
 #    #to add more repeat this seperated by a comma
@@ -306,6 +318,12 @@ $NameofButton = "EssTweaksTele1"
 
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/tweaks.json | ConvertFrom-Json
+
+#remove if already exists
+if($jsonfile.$NameofButton){
+    $jsonfile.psobject.Properties.remove($NameofButton)
+
+}
 
 if($Registry){Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "registry" -Value $Registry}
 if($Service){Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "service" -Value $Service}
