@@ -542,6 +542,7 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("BlueStack.BlueStacks")
             $WPFInstallbluestacks.IsChecked = $false
         }
+
         # Check if winget is installed
         Write-Host "Checking if Winget is Installed..."
         if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
