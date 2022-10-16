@@ -373,7 +373,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
                         if($psitem){
                             $winget += ",$psitem"
                         }Else{
-                            Invoke-command $sync.WriteLogs -ArgumentList ("INFO","$Program Not found") 
+                            Invoke-command $sync.WriteLogs -ArgumentList ("WARNING","$Program Not found") 
                         }
                     }
                 }
@@ -539,6 +539,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
     #===========================================================================
     # Tab 2 - Tweaks Buttons
     #===========================================================================
+
+    <#
+
+        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
+
+        TODO: Error Handling as Try blocks and -erroraction stop causes runspace to lock up
+    
+    #>
 
     $Sync.GUITweaks = {
 
@@ -856,6 +864,14 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
     #===========================================================================
     # Tab 3 - Config Buttons
     #===========================================================================
+
+    <#
+
+        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
+
+        TODO: Error Handling as Try blocks and -erroraction stop causes runspace to lock up
+    
+    #>
 
     $Sync.GUIFeatures = {
         
