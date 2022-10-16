@@ -27,6 +27,9 @@
     "Installbitwarden": {
       "winget": "Bitwarden.Bitwarden"
     },
+    "Installbluestacks": {
+      "winget": "BlueStack.BlueStacks"
+    },
     "Installblender": {
       "winget": "BlenderFoundation.Blender"
     },
