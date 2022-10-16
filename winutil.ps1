@@ -1,5 +1,5 @@
 <#
-.NOTES$ENV:TEMP
+.NOTES
    Author      : @DeveloperDurp
    GitHub      : https://github.com/DeveloperDurp
    Version 0.0.1
@@ -1367,6 +1367,43 @@ if($gui -eq $true){
 
     $sync["Form"].ShowDialog() | out-null
 }
+
+<#
+    How to run Arguments
+
+    First step is to set the $env:args variable with the setups you wish to do. To do multiple items put a " " space between each command. 
+    For commands that require input seperate the command with a semicolon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
+
+    Supported arguments:
+
+        InstallUpgrade
+        UndoTweaks
+        PanelControl
+        PanelNetwork
+        PanelPower
+        PanelSound
+        PanelSystem
+        PanelUser
+        DefaultUpdates
+        DisableUpdates
+        EnableSecurity
+        QuitAfter
+        Install:value1,values2,...
+            - Values should be the same values you would use for winget
+        Tweaks:value1,values2,...
+            - Values should be what you find inside the tweaks.json file
+
+    Example usage: 
+      
+        $env:args = "Install:git.git,WinDirStat.WinDirStat "; iwr -useb https://christitus.com/win | iex
+
+        $env:args = "Tweaks:EssTweaksLoc,EssTweaksServices"; iwr -useb https://christitus.com/win | iex
+
+        $env:args = "DefaultUpdates"; iwr -useb https://christitus.com/win | iex
+
+        $env:args = "Install:git.git,WinDirStat.WinDirStat Tweaks:EssTweaksLoc,EssTweaksServices DefaultUpdates"; iwr -useb https://christitus.com/win | iex
+
+#>
 
 If($env:args){
     Write-Verbose "Arguments Detected, Running Args"
