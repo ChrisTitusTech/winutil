@@ -8,6 +8,20 @@
 $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 #$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
+Add-Type -AssemblyName PresentationFramework
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (!$currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    $msgBoxInput = [System.Windows.MessageBox]::Show("You must run this program as an administrator to make changes.", "Confirm Read-Only", "OKCancel", "Error")
+    switch ($msgBoxInput) {
+        "OK" {
+            ## Continue
+        }
+        "Cancel" {
+            Exit 0
+        }
+    }
+}
+
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
