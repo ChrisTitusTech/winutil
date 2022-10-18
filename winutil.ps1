@@ -569,9 +569,12 @@
             Write-Logs -Level INFO -Message "Starting Services Modification" -LogPath $sync.logfile
 
             $ServicesToModify | ForEach-Object {
-                    Stop-Service "$($psitem.name)" 
-                    Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
-                    Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
+                    $service = Get-Service -Name W32Time -ErrorAction SilentlyContinue
+                    if ($service.Length -gt 0) {
+                        Stop-Service "$($psitem.name)" 
+                        Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
+                        Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
+                    }
             }
     
             Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
