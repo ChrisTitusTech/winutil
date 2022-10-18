@@ -1,0 +1,1105 @@
+{
+  "EssTweaksAH": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "EnableActivityFeed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "PublishUserActivities",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "UploadUserActivities",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksDVR": {
+    "registry": [
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_EFSEFeatureFlags",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksHiber": {
+    "registry": [
+      {
+        "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksHome": {
+    "service": [
+      {
+        "Name": "HomeGroupListener",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "HomeGroupProvider",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
+  "EssTweaksLoc": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
+        "Name": "Value",
+        "Type": "String",
+        "Value": "Deny",
+        "OriginalValue": "Allow"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
+        "Name": "SensorPermissionState",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
+        "Name": "Status",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\Maps",
+        "Name": "AutoUpdateEnabled",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksServices": {
+    "service": [
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "diagnosticshub.standardcollector.service"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "DiagTrack"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "DPS"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "dmwappushservice"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "lfsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MapsBroker"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "NetTcpPortSharing"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RemoteAccess"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RemoteRegistry"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SharedAccess"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "TrkWks"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WMPNetworkSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WSearch"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XblAuthManager"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XblGameSave"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XboxNetApiSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XboxGipSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "ndu"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WerSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "Fax"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "fhsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "gupdate"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "gupdatem"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "stisvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "AJRouter"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MSDTC"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WpcMonSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PhoneSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PrintNotify"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PcaSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WPDBusEnum"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "seclogon"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SysMain"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "lmhosts"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "wisvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "FontCache"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RetailDemo"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "ALG"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SCardSvr"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "EntAppSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BthAvctpSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "Browser"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BthAvctpSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "iphlpsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "edgeupdate"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MicrosoftEdgeElevationService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "edgeupdatem"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SEMgrSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PerfHost"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BcastDVRUserService_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "CaptureService_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "cbdhsvc_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WpnService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RtkBtManServ"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "QWAVE"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPAppHelperCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPDiagsCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPNetworkCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPSysInfoCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HpTouchpointAnalyticsService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HvHost"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmickvpexchange"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicguestinterface"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicshutdown"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicheartbeat"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicvmsession"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicrdv"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmictimesync"
+      }
+    ]
+  },
+  "EssTweaksTele": {
+    "ScheduledTask": [
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      }
+    ],
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "type": "Dword",
+        "value": 0,
+        "name": "AllowTelemetry",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "1",
+        "name": "AllowTelemetry",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "ContentDeliveryAllowed",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "OemPreInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "PreInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "PreInstalledAppsEverEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SilentInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338387Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338388Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338389Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-353698Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SystemPaneSuggestionsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "name": "DisableWindowsConsumerFeatures",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "OriginalValue": "0",
+        "name": "NumberOfSIUFInPeriod",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "0",
+        "name": "DoNotShowFeedbackNotifications",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "name": "DisableTailoredExperiencesWithDiagnosticData",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "OriginalValue": "0",
+        "name": "DisabledByGroupPolicy",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "OriginalValue": "0",
+        "name": "Disabled",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "OriginalValue": "1",
+        "name": "DODownloadMode",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+        "OriginalValue": "1",
+        "name": "fAllowToGetHelp",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+        "OriginalValue": "0",
+        "name": "EnthusiastMode",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
+        "OriginalValue": "1",
+        "name": "PeopleBand",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "LaunchTo",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "OriginalValue": "1",
+        "name": "SearchOrderConfig",
+        "value": "00000000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "name": "SystemResponsiveness",
+        "value": "0000000a",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "name": "NetworkThrottlingIndex",
+        "value": "0000000a",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
+        "OriginalValue": "1",
+        "name": "WaitToKillServiceTimeout",
+        "value": "2000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "MenuShowDelay",
+        "value": "0",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "WaitToKillAppTimeout",
+        "value": "5000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "HungAppTimeout",
+        "value": "4000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "AutoEndTasks",
+        "value": "1",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "LowLevelHooksTimeout",
+        "value": "00001000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "WaitToKillServiceTimeout",
+        "value": "00002000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+        "OriginalValue": "1",
+        "name": "ClearPageFileAtShutdown",
+        "value": "00000001",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
+        "OriginalValue": "1",
+        "name": "Start",
+        "value": "00000004",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseHoverTime",
+        "value": "00000010",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+        "OriginalValue": "1",
+        "name": "IRPStackSize",
+        "value": "20",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "OriginalValue": "1",
+        "name": "EnableFeeds",
+        "value": "0",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+        "OriginalValue": "1",
+        "name": "ShellFeedsTaskbarViewMode",
+        "value": "2",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "1",
+        "name": "HideSCAMeetNow",
+        "value": "1",
+        "type": "Dword"
+      }
+    ],
+    "service": [
+      {
+        "Name": "DiagTrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "dmwappushservice",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SysMain",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      }
+    ],
+    "InvokeScript": [
+      "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
+            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+            Do {
+                Start-Sleep -Milliseconds 100
+                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
+            } Until ($preferences)
+            Stop-Process $taskmgr
+            $preferences.Preferences[28] = 0
+            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
+        }
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue  
+
+        # Group svchost.exe processes
+        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+
+        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
+        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
+            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
+        }
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null"
+    ]
+  },
+  "EssTweaksWifi": {
+    "registry": [
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "MiscTweaksLapPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000000",
+        "OriginalValue": "00000001"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000001",
+        "OriginalValue": "0000000"
+      }
+    ]
+  },
+  "MiscTweaksPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000001",
+        "OriginalValue": "00000000"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000000",
+        "OriginalValue": "00000001"
+      }
+    ]
+  },
+  "MiscTweaksExt": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "MiscTweaksUTC": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+        "Name": "RealTimeIsUniversal",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ]
+  },
+  "MiscTweaksDisplay": {
+    "registry": [
+      {
+        "path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "DragFullWindows",
+        "value": "0",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "MenuShowDelay",
+        "value": "200",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "OriginalValue": "1",
+        "name": "MinAnimate",
+        "value": "0",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Keyboard",
+        "OriginalValue": "1",
+        "name": "KeyboardDelay",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ListviewAlphaSelect",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ListviewShadow",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarAnimations",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "OriginalValue": "1",
+        "name": "VisualFXSetting",
+        "value": "3",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "OriginalValue": "1",
+        "name": "EnableAeroPeek",
+        "value": "0",
+        "type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ]
+  },
+  "EssTweaksDeBloat": {
+    "appx": [
+      "Microsoft.Microsoft3DViewer",
+      "Microsoft.AppConnector",
+      "Microsoft.BingFinance",
+      "Microsoft.BingNews",
+      "Microsoft.BingSports",
+      "Microsoft.BingTranslator",
+      "Microsoft.BingWeather",
+      "Microsoft.BingFoodAndDrink",
+      "Microsoft.BingHealthAndFitness",
+      "Microsoft.BingTravel",
+      "Microsoft.MinecraftUWP",
+      "Microsoft.GamingServices",
+      "Microsoft.GetHelp",
+      "Microsoft.Getstarted",
+      "Microsoft.Messaging",
+      "Microsoft.Microsoft3DViewer",
+      "Microsoft.MicrosoftSolitaireCollection",
+      "Microsoft.NetworkSpeedTest",
+      "Microsoft.News",
+      "Microsoft.Office.Lens",
+      "Microsoft.Office.Sway",
+      "Microsoft.Office.OneNote",
+      "Microsoft.OneConnect",
+      "Microsoft.People",
+      "Microsoft.Print3D",
+      "Microsoft.SkypeApp",
+      "Microsoft.Wallet",
+      "Microsoft.Whiteboard",
+      "Microsoft.WindowsAlarms",
+      "microsoft.windowscommunicationsapps",
+      "Microsoft.WindowsFeedbackHub",
+      "Microsoft.WindowsMaps",
+      "Microsoft.WindowsPhone",
+      "Microsoft.WindowsSoundRecorder",
+      "Microsoft.XboxApp",
+      "Microsoft.ConnectivityStore",
+      "Microsoft.CommsPhone",
+      "Microsoft.ScreenSketch",
+      "Microsoft.Xbox.TCUI",
+      "Microsoft.XboxGameOverlay",
+      "Microsoft.XboxGameCallableUI",
+      "Microsoft.XboxSpeechToTextOverlay",
+      "Microsoft.MixedReality.Portal",
+      "Microsoft.XboxIdentityProvider",
+      "Microsoft.ZuneMusic",
+      "Microsoft.ZuneVideo",
+      "Microsoft.Getstarted",
+      "Microsoft.MicrosoftOfficeHub",
+      "*EclipseManager*",
+      "*ActiproSoftwareLLC*",
+      "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
+      "*Duolingo-LearnLanguagesforFree*",
+      "*PandoraMediaInc*",
+      "*CandyCrush*",
+      "*BubbleWitch3Saga*",
+      "*Wunderlist*",
+      "*Flipboard*",
+      "*Twitter*",
+      "*Facebook*",
+      "*Royal Revolt*",
+      "*Sway*",
+      "*Speed Test*",
+      "*Dolby*",
+      "*Viber*",
+      "*ACGMediaPlayer*",
+      "*Netflix*",
+      "*OneCalendar*",
+      "*LinkedInforWindows*",
+      "*HiddenCityMysteryofShadows*",
+      "*Hulu*",
+      "*HiddenCity*",
+      "*AdobePhotoshopExpress*",
+      "*HotspotShieldFreeVPN*",
+      "*Microsoft.Advertising.Xaml*"
+    ]
+  },
+  "EssTweaksOO": {
+    "InvokeScript": [
+      "Import-Module BitsTransfer
+      Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
+      Start-BitsTransfer -Source \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -Destination C:\\Windows\\Temp\\OOSU10.exe
+      C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
+    ]
+  },
+  "EssTweaksRP": {
+    "InvokeScript": [
+      "Enable-ComputerRestore -Drive \"C:\\\"
+      Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
+    ]
+  },
+  "EssTweaksStorage": {
+    "InvokeScript": [
+      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ]
+  },
+  "MiscTweaksLapNum": {
+    "InvokeScript": [
+      "If (!(Test-Path \"HKU:\")) {
+        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+       }
+       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 0"
+    ]
+  },
+  "MiscTweaksNum": {
+    "InvokeScript": [
+      "If (!(Test-Path \"HKU:\")) {
+        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+       }
+       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 2"
+    ]
+  }
+}

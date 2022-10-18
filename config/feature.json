@@ -1,0 +1,31 @@
+{
+  "Featuresdotnet": [
+    "NetFx4-AdvSrvs",
+    "NetFx3"
+  ],
+  "Featureshyperv": [
+    "HypervisorPlatform",
+    "Microsoft-Hyper-V-All",
+    "Microsoft-Hyper-V",
+    "Microsoft-Hyper-V-Tools-All",
+    "Microsoft-Hyper-V-Management-PowerShell",
+    "Microsoft-Hyper-V-Hypervisor",
+    "Microsoft-Hyper-V-Services",
+    "Microsoft-Hyper-V-Management-Clients"
+  ],
+  "Featureslegacymedia": [
+    "WindowsMediaPlayer",
+    "MediaPlayback",
+    "DirectPlay",
+    "LegacyComponents"
+  ],
+  "Featurewsl": [
+    "VirtualMachinePlatform",
+    "Microsoft-Windows-Subsystem-Linux"
+  ],
+  "Featurenfs": [
+    "ServicesForNFS-ClientOnly",
+    "ClientForNFS-Infrastructure",
+    "NFS-Administration"
+  ]
+}
