@@ -584,6 +584,8 @@ Version 0.1
             Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
 
             $ScheduledTaskToModify | ForEach-Object {
+						Get-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction SilentlyContinue -OutVariable checktask
+							if ($checktask) {
                 Try{
                     if($($psitem.State) -eq "Disabled"){
                         Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
@@ -593,7 +595,8 @@ Version 0.1
                     }
                     Write-Logs -Level INFO -Message "Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile
                 }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile}
-            }
+							}
+						}
     
             Write-Logs -Level INFO -Message "Finished setting ScheduledTasks" -LogPath $sync.logfile
         }

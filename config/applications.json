@@ -25,7 +25,7 @@
       "winget": "BlenderFoundation.Blender"
     },
     "Installbrave": {
-      "winget": "BraveSoftware.BraveBrowser"
+      "winget": "Brave.Brave"
     },
     "Installchrome": {
       "winget": "Google.Chrome"
