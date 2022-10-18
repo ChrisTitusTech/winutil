@@ -726,13 +726,6 @@
       {
         "Path": "HKLM:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "name": "HungAppTimeout",
-        "value": "4000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
         "name": "AutoEndTasks",
         "value": "1",
         "type": "Dword"
@@ -753,9 +746,9 @@
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "OriginalValue": "1",
+        "OriginalValue": "0",
         "name": "ClearPageFileAtShutdown",
-        "value": "00000001",
+        "value": "00000000",
         "type": "Dword"
       },
       {
