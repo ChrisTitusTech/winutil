@@ -1,8 +1,8 @@
 <#
 .NOTES
-   Author      : @DeveloperDurp
-   GitHub      : https://github.com/DeveloperDurp
-   Version 0.0.1
+Author              : @ChrisTitusTech   
+Runspace Author     : @DeveloperDurp
+Version 0.1
 #>
 
 #region Variables
