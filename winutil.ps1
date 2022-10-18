@@ -584,7 +584,8 @@ Version 0.1
             Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
 
             $ScheduledTaskToModify | ForEach-Object {
-							if ($(Get-ScheduledTask | where{$_.TaskName -eq "$($psitem.name)"}).Length -gt 0) {
+						$checktask = Get-ScheduledTask | where{$_.TaskName -eq "$($psitem.name)"}
+							if ($checktask.Length -gt 0) {
                 Try{
                     if($($psitem.State) -eq "Disabled"){
                         Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
