@@ -1,1445 +1,1858 @@
 <#
 .NOTES
-Author              : @ChrisTitusTech   
-Runspace Author     : @DeveloperDurp
-Version 0.1
+   Author      : Chris Titus @christitustech
+   GitHub      : https://github.com/ChrisTitusTech
+    Version 0.0.1
 #>
 
-#region Variables
-    $sync = [Hashtable]::Synchronized(@{})
-    $sync.logfile = "$env:TEMP\winutil.log"
-    
-    $sync.taskrunning = $false
-    $sync.taskmessage = "There is currently a task running. Please try again once previous task is complete."
-    $sync.tasktitle = "Task in progress"
+#$inputXML = Get-Content "MainWindow.xaml" #uncomment for development
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/MainWindow.xaml") #uncomment for Production
 
-    $VerbosePreference = "Continue"
-    if(!$env:args){$gui = $true}
-
-#endregion Variables
+$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+[xml]$XAML = $inputXML
+#Read XAML
  
-#region Functions
-
-    #===========================================================================
-    # Button clicks
-    #===========================================================================
-
-    function Invoke-Button {
-
-        <#
-        
-            .DESCRIPTION
-            Meant to make creating buttons easier. There is a section below in the gui that will assign this function to every button.
-            This way you can dictate what each button does from this function. 
-        
-            Input will be the name of the button that is clicked. 
-        #>
-        
-        Param ([string]$Button) 
-        Switch -Wildcard ($Button){
-
-            "*Tab*BT*" {switchtab $Button}
-            "*InstallUpgrade*" {Invoke-command $sync.GUIInstallPrograms -ArgumentList "Upgrade"}
-            "*desktop*" {Tweak-Buttons $Button}
-            "*laptop*" {Tweak-Buttons $Button}
-            "*minimal*" {Tweak-Buttons $Button}
-            "*undoall*" {Invoke-command $Sync.GUIUndoTweaks}
-            "install" {Invoke-command $sync.GUIInstallPrograms -ArgumentList "$(uncheckall "Install")"}
-            "tweaksbutton" {Invoke-command $Sync.GUITweaks -ArgumentList "$(uncheckall "tweaks")"}
-            "FeatureInstall" {Invoke-command $Sync.GUIFeatures -ArgumentList "$(uncheckall "feature")"}
-            "Panelcontrol" {cmd /c control}
-            "Panelnetwork" {cmd /c ncpa.cpl}
-            "Panelpower" {cmd /c powercfg.cpl}
-            "Panelsound" {cmd /c mmsys.cpl}
-            "Panelsystem" {cmd /c sysdm.cpl}
-            "Paneluser" {cmd /c "control userpasswords2"}
-            "Updates*" {Invoke-command $sync.GUIUpdates -ArgumentList "$button"}
-        }
+$reader = (New-Object System.Xml.XmlNodeReader $xaml) 
+try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
+catch [System.Management.Automation.MethodInvocationException] {
+    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+    write-host $error[0].Exception.Message -ForegroundColor Red
+    If ($error[0].Exception.Message -like "*button*") {
+        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
     }
-
-    function uncheckall {
-
-        <#
-        
-            .DESCRIPTION
-            Function is meant to find all checkboxes that are checked on the specefic tab and input them into a script.
-
-            Outputed data will be the names of the checkboxes comma seperated. 
-
-            "Installadvancedip,Installbitwarden"
-
-            .EXAMPLE
-
-            uncheckall "Install"
-        
-        #>
-
-        param($group)
-
-        if ($sync.taskrunning -eq $true){
-            return
-        }
-
-        $sync.keys | Where-Object {$psitem -like "*$($group)?*" `
-                                -and $psitem -notlike "$($group)Install" `
-                                -and $psitem -notlike "*GUI*" `
-                                -and $psitem -notlike "*Script*"
-                            } | ForEach-Object {
-            if ($sync["$psitem"].IsChecked -eq $true){
-                $output += ",$psitem"
-                $sync["$psitem"].IsChecked = $false
-            }
-        }
-        
-        if($output){Write-Output $output.Substring(1)}
-    }
-
-    function Invoke-Runspace {
-
-        <#
-        
-            .DESCRIPTION
-            Simple function to make it easier to invoke a runspace from inside the script. 
-
-            .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptsInstallPrograms
-                ArgumentList = "Installadvancedip,Installbitwarden"
-                Verbose = $true
-            }
-
-            Invoke-Runspace @params
-        
-        #>
-
-        [CmdletBinding()]
-        Param (
-            $ScriptBlock,
-            $ArgumentList
-        ) 
-
-        $Script = [PowerShell]::Create().AddScript($ScriptBlock).AddArgument($ArgumentList)
-
-        $Script.Runspace = $runspace
-        $Script.BeginInvoke()
-    }
-
-    #===========================================================================
-    # Navigation Controls
-    #===========================================================================
-
-    function switchtab {
-
-        <#
-        
-            .DESCRIPTION
-            Sole purpose of this fuction reduce duplicated code for switching between tabs. 
-        
-        #>
-
-        Param ($button)
-        $x = [int]($button -replace "Tab","" -replace "BT","") - 1
-
-        0..3 | ForEach-Object {
-            
-            if ($x -eq $psitem){$sync["TabNav"].Items[$psitem].IsSelected = $true}
-            else{$sync["TabNav"].Items[$psitem].IsSelected = $false}
-        }
-    }
-
-    Function Tweak-Buttons {
-
-        <#
-        
-            .DESCRIPTION
-            Meant to make settings presets easier in the tweaks tab. Will pull the data from config/preset.json
-        
-        #>
-
-        Param ($button)
-        $preset = $sync.preset.$button
-
-        $sync.keys | Where-Object {$psitem -like "*tweaks?*" -and $psitem -notlike "tweaksbutton"} | ForEach-Object {
-            if ($preset -contains $psitem ){$sync["$psitem"].IsChecked = $True}
-            Else{$sync["$psitem"].IsChecked = $false} 
-        }
-    }
-
-#endregion Functions
-
+}
+catch {
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+}
+ 
 #===========================================================================
-# Scritps to be ran inside a runspace
+# Store Form Objects In PowerShell
 #===========================================================================
-
-#region Scripts
-
-    #===========================================================================
-    # Generic Scripts
-    #===========================================================================
-
-    $sync.WriteLogs = {
-
-        <#
-        
-            .DESCRIPTION
-            Simple function to write logs to a temp directory.
-
-            .EXAMPLE
-
-            $Level = "INFO"
-            $Message = "This is a test message!"
-            $LogPath = "$ENV:TEMP\winutil.log"
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message,$LogPath)
-        
-        #>
-
-        [cmdletbinding()]
-        param(
-            $Level = "Info", 
-            $Message, 
-            $LogPath = "$env:TEMP\winutil.log"
-        )
-
-        $date = get-date
-        $delimiter = '|'
-        write-output "$date $delimiter $Level $delimiter $message" |  out-file -Append -Encoding ascii -FilePath $LogPath
-        if($Level -eq "ERROR" -or $Level -eq "FAILURE"){
-            write-Error "$date $delimiter $Level $delimiter $message"
-            return
-        }
-        if($Level -eq "Warning"){
-            Write-Warning "$date $delimiter $Level $delimiter $message"
-            return
-        }
-        Write-Verbose "$date $delimiter $Level $delimiter $message"
-    }
-
-    #===========================================================================
-    # Install Tab
-    #===========================================================================
-
-    <#
-
-        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
-
-        TODO: Error Handling with winget. Currently it does not handle errors as expected.
+ 
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+ 
+Function Get-FormVariables {
+    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
     
-    #>
 
-    $Sync.GUIInstallPrograms = {
+    write-host ""                                                                                                                             
+    write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
+    write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
+    write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
+    write-host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
+    write-host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C                     T:::::T                T:::::T        "
+    write-host "C:::::C       CCCCCC        T:::::T                T:::::T        "
+    write-host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
+    write-host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
+    write-host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+    write-host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
+    write-host ""
+    write-host "====Chris Titus Tech====="
+    write-host "=====Windows Toolbox====="
+                           
+ 
+    #====DEBUG GUI Elements====
 
-        <#
+    #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
+    #get-variable WPF*
+}
+ 
+Get-FormVariables
 
-            .DESCRIPTION
-            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
+#===========================================================================
+# Global Variables
+#===========================================================================
+$AppTitle = "Chris Titus Tech's Windows Utility"
 
-            Input data will look like below and link with the name of the check box. This will then look to the config/applications.json file to find
-            the winget install commands for the selected applications.
 
-            Installadvancedip,Installbitwarden
+#===========================================================================
+# Navigation Controls
+#===========================================================================
 
-            .EXAMPLE
+$WPFTab1BT.Add_Click({
+        $WPFTabNav.Items[0].IsSelected = $true
+        $WPFTabNav.Items[1].IsSelected = $false
+        $WPFTabNav.Items[2].IsSelected = $false
+        $WPFTabNav.Items[3].IsSelected = $false
+    })
+$WPFTab2BT.Add_Click({
+        $WPFTabNav.Items[0].IsSelected = $false
+        $WPFTabNav.Items[1].IsSelected = $true
+        $WPFTabNav.Items[2].IsSelected = $false
+        $WPFTabNav.Items[3].IsSelected = $false
+    })
+$WPFTab3BT.Add_Click({
+        $WPFTabNav.Items[0].IsSelected = $false
+        $WPFTabNav.Items[1].IsSelected = $false
+        $WPFTabNav.Items[2].IsSelected = $true
+        $WPFTabNav.Items[3].IsSelected = $false
+    })
+$WPFTab4BT.Add_Click({
+        $WPFTabNav.Items[0].IsSelected = $false
+        $WPFTabNav.Items[1].IsSelected = $false
+        $WPFTabNav.Items[2].IsSelected = $false
+        $WPFTabNav.Items[3].IsSelected = $true
+    })
 
-            Invoke-command $sync.GUIInstallPrograms -ArgumentList "Installadvancedip,Installbitwarden"
-
-        #>
-
-        Param ($programstoinstall)
-
-        #Check if any check boxes have been checked and if a task is currently running
-
-            if ($sync.taskrunning -eq $true){
-                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
-                return
-            }
-
-            if($programstoinstall -notlike "*install*"){
-                [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
-                return
-            }
-
-        #Section to see if winget will upgrade all installs or which winget commands to run from  config/applications.json
-        
-            $programstoinstall = $programstoinstall -split ","
-
-            if($programstoinstall -eq "Upgrade"){
-                $winget = ",Upgrade"
-            }
-            else{
-                foreach ($program in $programstoinstall){
-
-                    $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
-                        if($psitem){
-                            $winget += ",$psitem"
-                        }Else{
-                            Invoke-command $sync.WriteLogs -ArgumentList ("WARNING","$Program Not found") 
-                        }
-                    }
-                }
-            }
-            
-            if($winget -eq $null){
-                [System.Windows.MessageBox]::Show("No found applications to install",'Nothing to do',"OK","Info")
-                return
-            }            
-
-            
-        #Invoke a runspace so that the GUI does not lock up
-
-            $sync.taskrunning = $true
-
-            $params = @{
-                ScriptBlock = $sync.ScriptsInstallPrograms
-                ArgumentList = "$($winget.substring(1))"
-                Verbose = $true
-            }
-            Invoke-Runspace @params
-
-    }
-
-    $sync.ScriptsInstallPrograms = {
-
-        <#
-
-            .DESCRIPTION
-            This scriptblock will detect if winget is installed and if not attempt to install it. Once ready it will then either upgrade any installs or attempt to install any applications provided.
-
-            .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptsInstallPrograms
-                ArgumentList = "git.git,WinDirStat.WinDirStat"
-            }
-            VerbosePreference = "Continue"
-            Invoke-Command @params
-
-        .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptsInstallPrograms
-                ArgumentList = "Upgrade"
-            }
-
-            VerbosePreference = "Continue"
-            Invoke-Command @params
-
-        #>
-
-        Param ($programstoinstall)
-        $programstoinstall = $programstoinstall -split ","
-
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message,$LogPath)
+#===========================================================================
+# Tab 1 - Install
+#===========================================================================
+$WPFinstall.Add_Click({
+        $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
+        If ( $WPFInstalllibreoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TheDocumentFoundation.LibreOffice")
+            $WPFInstalllibreoffice.IsChecked = $false
         }
+        If ( $WPFInstalladobe.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Adobe.Acrobat.Reader.64-bit")
+            $WPFInstalladobe.IsChecked = $false
+        }
+        If ( $WPFInstalladvancedip.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Famatech.AdvancedIPScanner")
+            $WPFInstalladvancedip.IsChecked = $false
+        }
+        If ( $WPFInstallatom.IsChecked -eq $true ) { 
+            $wingetinstall.Add("GitHub.Atom")
+            $WPFInstallatom.IsChecked = $false
+        }
+        If ( $WPFInstallaudacity.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Audacity.Audacity")
+            $WPFInstallaudacity.IsChecked = $false
+        }
+        If ( $WPFInstallautohotkey.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Lexikos.AutoHotkey")
+            $WPFInstallautohotkey.IsChecked = $false
+        }  
+        If ( $WPFInstallbrave.IsChecked -eq $true ) { 
+            $wingetinstall.Add("BraveSoftware.BraveBrowser")
+            $WPFInstallbrave.IsChecked = $false
+        }
+        If ( $WPFInstallchrome.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Google.Chrome")
+            $WPFInstallchrome.IsChecked = $false
+        }
+        If ( $WPFInstalltor.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TorProject.TorBrowser")
+            $WPFInstalltor.IsChecked = $false
+        }
+        If ( $WPFInstalldiscord.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Discord.Discord")
+            $WPFInstalldiscord.IsChecked = $false
+        }
+        If ( $WPFInstallesearch.IsChecked -eq $true ) { 
+            $wingetinstall.Add("voidtools.Everything --source winget")
+            $WPFInstallesearch.IsChecked = $false
+        }
+        If ( $WPFInstalletcher.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Balena.Etcher")
+            $WPFInstalletcher.IsChecked = $false
+        }
+        If ( $WPFInstallfirefox.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Mozilla.Firefox")
+            $WPFInstallfirefox.IsChecked = $false
+        }
+        If ( $WPFInstallgimp.IsChecked -eq $true ) { 
+            $wingetinstall.Add("GIMP.GIMP")
+            $WPFInstallgimp.IsChecked = $false
+        }
+        If ( $WPFInstallgit.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Git.Git")
+            $WPFInstallgithubdesktop.IsChecked = $false
+        }
+        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
+            $wingetinstall.Add("GitHub.GitHubDesktop")
+            $WPFInstallgithubdesktop.IsChecked = $false
+        }
+        If ( $WPFInstallimageglass.IsChecked -eq $true ) { 
+            $wingetinstall.Add("DuongDieuPhap.ImageGlass")
+            $WPFInstallimageglass.IsChecked = $false
+        }
+        If ( $WPFInstalljava8.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AdoptOpenJDK.OpenJDK.8")
+            $WPFInstalljava8.IsChecked = $false
+        }
+        If ( $WPFInstalljava16.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AdoptOpenJDK.OpenJDK.16")
+            $WPFInstalljava16.IsChecked = $false
+        }
+        If ( $WPFInstalljava18.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Oracle.JDK.18")
+            $WPFInstalljava18.IsChecked = $false
+        }
+        If ( $WPFInstalljetbrains.IsChecked -eq $true ) { 
+            $wingetinstall.Add("JetBrains.Toolbox")
+            $WPFInstalljetbrains.IsChecked = $false
+        }
+        If ( $WPFInstallmpc.IsChecked -eq $true ) { 
+            $wingetinstall.Add("clsid2.mpc-hc")
+            $WPFInstallmpc.IsChecked = $false
+        }
+        If ( $WPFInstallnodejs.IsChecked -eq $true ) { 
+            $wingetinstall.Add("OpenJS.NodeJS")
+            $WPFInstallnodejs.IsChecked = $false
+        }
+        If ( $WPFInstallnodejslts.IsChecked -eq $true ) { 
+            $wingetinstall.Add("OpenJS.NodeJS.LTS")
+            $WPFInstallnodejslts.IsChecked = $false
+        }
+        If ( $WPFInstallnotepadplus.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Notepad++.Notepad++")
+            $WPFInstallnotepadplus.IsChecked = $false
+        }
+        If ( $WPFInstallpowertoys.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Microsoft.PowerToys")
+            $WPFInstallpowertoys.IsChecked = $false
+        }
+        If ( $WPFInstallputty.IsChecked -eq $true ) { 
+            $wingetinstall.Add("PuTTY.PuTTY")
+            $WPFInstallputty.IsChecked = $false
+        }
+        If ( $WPFInstallpython3.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Python.Python.3")
+            $WPFInstallpython3.IsChecked = $false
+        }
+        If ( $WPFInstallrustlang.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Rustlang.Rust.MSVC")
+            $WPFInstallrustlang.IsChecked = $false
+        }
+        If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
+            $wingetinstall.Add("7zip.7zip")
+            $WPFInstallsevenzip.IsChecked = $false
+        }
+        If ( $WPFInstallsharex.IsChecked -eq $true ) { 
+            $wingetinstall.Add("ShareX.ShareX")
+            $WPFInstallsharex.IsChecked = $false
+        }
+        If ( $WPFInstallsublime.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SublimeHQ.SublimeText.4")
+            $WPFInstallsublime.IsChecked = $false
+        }
+        If ( $WPFInstallsumatra.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SumatraPDF.SumatraPDF")
+            $WPFInstallsumatra.IsChecked = $false
+        }
+        If ( $WPFInstallterminal.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Microsoft.WindowsTerminal")
+            $WPFInstallterminal.IsChecked = $false
+        }
+        If ( $WPFInstallidm.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Tonec.InternetDownloadManager")
+            $WPFInstallidm.IsChecked = $false
+        }
+        If ( $WPFInstallalacritty.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Alacritty.Alacritty")
+            $WPFInstallalacritty.IsChecked = $false
+        }
+        If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
+            $wingetinstall.Add("9PF4KZ2VN4W9")
+            $WPFInstallttaskbar.IsChecked = $false
+        }
+        If ( $WPFInstallvlc.IsChecked -eq $true ) { 
+            $wingetinstall.Add("VideoLAN.VLC")
+            $WPFInstallvlc.IsChecked = $false
+        }
+        If ( $WPFInstallkdenlive.IsChecked -eq $true ) {
+            $wingetinstall.Add("KDE.Kdenlive")
+            $WPFInstallkdenlive.IsChecked = $false
+        }
+        If ( $WPFInstallvscode.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Git.Git")
+            $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
+            $WPFInstallvscode.IsChecked = $false
+        }
+        If ( $WPFInstallvscodium.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Git.Git")
+            $wingetinstall.Add("VSCodium.VSCodium")
+            $WPFInstallvscodium.IsChecked = $false
+        }
+        If ( $WPFInstallwinscp.IsChecked -eq $true ) { 
+            $wingetinstall.Add("WinSCP.WinSCP")
+            $WPFInstallputty.IsChecked = $false
+        }
+        If ( $WPFInstallanydesk.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
+            $WPFInstallanydesk.IsChecked = $false
+        }
+        If ( $WPFInstallbitwarden.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Bitwarden.Bitwarden")
+            $WPFInstallbitwarden.IsChecked = $false
+        }        
+        If ( $WPFInstallblender.IsChecked -eq $true ) { 
+            $wingetinstall.Add("BlenderFoundation.Blender")
+            $WPFInstallblender.IsChecked = $false
+        }                    
+        If ( $WPFInstallchromium.IsChecked -eq $true ) { 
+            $wingetinstall.Add("eloston.ungoogled-chromium")
+            $WPFInstallchromium.IsChecked = $false
+        }             
+        If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
+            $wingetinstall.Add("CPUID.CPU-Z")
+            $WPFInstallcpuz.IsChecked = $false
+        }                            
+        If ( $WPFInstalleartrumpet.IsChecked -eq $true ) { 
+            $wingetinstall.Add("File-New-Project.EarTrumpet")
+            $WPFInstalleartrumpet.IsChecked = $false
+        }           
+        If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
+            $wingetinstall.Add("EpicGames.EpicGamesLauncher")
+            $WPFInstallepicgames.IsChecked = $false
+        }                                      
+        If ( $WPFInstallflameshot.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Flameshot.Flameshot")
+            $WPFInstallflameshot.IsChecked = $false
+        }            
+        If ( $WPFInstallfoobar.IsChecked -eq $true ) { 
+            $wingetinstall.Add("PeterPawlowski.foobar2000")
+            $WPFInstallfoobar.IsChecked = $false
+        }                     
+        If ( $WPFInstallgog.IsChecked -eq $true ) { 
+            $wingetinstall.Add("GOG.Galaxy")
+            $WPFInstallgog.IsChecked = $false
+        }                  
+        If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TechPowerUp.GPU-Z")
+            $WPFInstallgpuz.IsChecked = $false
+        }                 
+        If ( $WPFInstallglaryutilities.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Glarysoft.GlaryUtilities")
+            $WPFInstallglaryutilities.IsChecked = $false
+        }                 
+        If ( $WPFInstallgreenshot.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Greenshot.Greenshot")
+            $WPFInstallgreenshot.IsChecked = $false
+        }            
+        If ( $WPFInstallhandbrake.IsChecked -eq $true ) { 
+            $wingetinstall.Add("HandBrake.HandBrake")
+            $WPFInstallhandbrake.IsChecked = $false
+        }      
+        If ( $WPFInstallhexchat.IsChecked -eq $true ) { 
+            $wingetinstall.Add("HexChat.HexChat")
+            $WPFInstallhexchat.IsChecked = $false
+        }       
+        If ( $WPFInstallhwinfo.IsChecked -eq $true ) { 
+            $wingetinstall.Add("REALiX.HWiNFO")
+            $WPFInstallhwinfo.IsChecked = $false
+        }                       
+        If ( $WPFInstallinkscape.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Inkscape.Inkscape")
+            $WPFInstallinkscape.IsChecked = $false
+        }             
+        If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
+            $wingetinstall.Add("KeePassXCTeam.KeePassXC")
+            $WPFInstallkeepass.IsChecked = $false
+        }              
+        If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
+            $wingetinstall.Add("LibreWolf.LibreWolf")
+            $WPFInstalllibrewolf.IsChecked = $false
+        }            
+        If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Malwarebytes.Malwarebytes")
+            $WPFInstallmalwarebytes.IsChecked = $false
+        }          
+        If ( $WPFInstallmatrix.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Element.Element")
+            $WPFInstallmatrix.IsChecked = $false
+        } 
+        If ( $WPFInstallmremoteng.IsChecked -eq $true ) { 
+            $wingetinstall.Add("mRemoteNG.mRemoteNG")
+            $WPFInstallmremoteng.IsChecked = $false
+        }                    
+        If ( $WPFInstallnvclean.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TechPowerUp.NVCleanstall")
+            $WPFInstallnvclean.IsChecked = $false
+        }              
+        If ( $WPFInstallobs.IsChecked -eq $true ) { 
+            $wingetinstall.Add("OBSProject.OBSStudio")
+            $WPFInstallobs.IsChecked = $false
+        }                  
+        If ( $WPFInstallobsidian.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Obsidian.Obsidian")
+            $WPFInstallobsidian.IsChecked = $false
+        }                           
+        If ( $WPFInstallrevo.IsChecked -eq $true ) { 
+            $wingetinstall.Add("RevoUninstaller.RevoUninstaller")
+            $WPFInstallrevo.IsChecked = $false
+        }                 
+        If ( $WPFInstallrufus.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Rufus.Rufus")
+            $WPFInstallrufus.IsChecked = $false
+        }   
+        If ( $WPFInstallsignal.IsChecked -eq $true ) { 
+            $wingetinstall.Add("OpenWhisperSystems.Signal")
+            $WPFInstallsignal.IsChecked = $false
+        }
+        If ( $WPFInstallskype.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Microsoft.Skype")
+            $WPFInstallskype.IsChecked = $false
+        }                               
+        If ( $WPFInstallslack.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SlackTechnologies.Slack")
+            $WPFInstallslack.IsChecked = $false
+        }                
+        If ( $WPFInstallspotify.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Spotify.Spotify")
+            $WPFInstallspotify.IsChecked = $false
+        }              
+        If ( $WPFInstallsteam.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Valve.Steam")
+            $WPFInstallsteam.IsChecked = $false
+        }                             
+        If ( $WPFInstallteamviewer.IsChecked -eq $true ) { 
+            $wingetinstall.Add("TeamViewer.TeamViewer")
+            $WPFInstallteamviewer.IsChecked = $false
+        }
+        If ( $WPFInstallteams.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Microsoft.Teams")
+            $WPFInstallteams.IsChecked = $false
+        }                        
+        If ( $WPFInstalltreesize.IsChecked -eq $true ) { 
+            $wingetinstall.Add("JAMSoftware.TreeSize.Free")
+            $WPFInstalltreesize.IsChecked = $false
+        }                         
+        If ( $WPFInstallvisualstudio.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Microsoft.VisualStudio.2022.Community")
+            $WPFInstallvisualstudio.IsChecked = $false
+        }         
+        If ( $WPFInstallvivaldi.IsChecked -eq $true ) { 
+            $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
+            $WPFInstallvivaldi.IsChecked = $false
+        }                              
+        If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) { 
+            $wingetinstall.Add("VB-Audio.Voicemeeter")
+            $WPFInstallvoicemeeter.IsChecked = $false
+        }                    
+        If ( $WPFInstallwindirstat.IsChecked -eq $true ) { 
+            $wingetinstall.Add("WinDirStat.WinDirStat")
+            $WPFInstallwindirstat.IsChecked = $false
+        }  
+        If ( $WPFInstallwiztree.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AntibodySoftware.WizTree")
+            $WPFInstallwiztree.IsChecked = $false
+        }          
+        If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
+            $wingetinstall.Add("WiresharkFoundation.Wireshark")
+            $WPFInstallwireshark.IsChecked = $false
+        } 
+        If ( $WPFInstallsimplewall.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Henry++.simplewall")
+            $WPFInstallsimplewall.IsChecked = $false
+        }             
+        If ( $WPFInstallzoom.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Zoom.Zoom")
+            $WPFInstallzoom.IsChecked = $false
+        }
+        If ( $WPFInstallviber.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Viber.Viber")
+            $WPFInstallviber.IsChecked = $false
+        }
+        If ( $WPFInstalltwinkletray.IsChecked -eq $true ) {
+            $wingetinstall.Add("xanderfrangos.twinkletray")
+            $WPFInstalltwinkletray.IsChecked = $false
+        }
+        # Fall 2022 Additions
+        If ( $WPFInstallshell.IsChecked -eq $true ) {
+            $wingetinstall.Add("Nilesoft.Shell")
+            $WPFInstallshell.IsChecked = $false
+        }
+        If ( $WPFInstallklite.IsChecked -eq $true ) {
+            $wingetinstall.Add("CodecGuide.K-LiteCodecPack.Standard")
+            $WPFInstallklite.IsChecked = $false
+        }
+        If ( $WPFInstallsandboxie.IsChecked -eq $true ) {
+            $wingetinstall.Add("Sandboxie.Plus")
+            $WPFInstallsandboxie.IsChecked = $false
+        }
+        If ( $WPFInstallprocesslasso.IsChecked -eq $true ) {
+            $wingetinstall.Add("BitSum.ProcessLasso")
+            $WPFInstallprocesslasso.IsChecked = $false
+        }
+        If ( $WPFInstallwinmerge.IsChecked -eq $true ) {
+            $wingetinstall.Add("WinMerge.WinMerge")
+            $WPFInstallwinmerge.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet3.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.3_1")
+            $WPFInstalldotnet3.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet5.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.5")
+            $WPFInstalldotnet5.IsChecked = $false
+        }
+        If ( $WPFInstalldotnet6.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.DotNet.DesktopRuntime.6")
+            $WPFInstalldotnet6.IsChecked = $false
+        }
+        If ( $WPFInstallvc2015_64.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x64")
+            $WPFInstallvc2015_64.IsChecked = $false
+        }
+        If ( $WPFInstallvc2015_32.IsChecked -eq $true ) {
+            $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x86")
+            $WPFInstallvc2015_32.IsChecked = $false
+        }
+        If ( $WPFInstallfoxpdf.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Foxit.PhantomPDF")
+            $WPFInstallfoxpdf.IsChecked = $false
+        }
+        If ( $WPFInstallonlyoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("ONLYOFFICE.DesktopEditors")
+            $WPFInstallonlyoffice.IsChecked = $false
+        }
+        If ( $WPFInstallflux.IsChecked -eq $true ) { 
+            $wingetinstall.Add("flux.flux")
+            $WPFInstallflux.IsChecked = $false
+        }
+        If ( $WPFInstallitunes.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Apple.iTunes")
+            $WPFInstallitunes.IsChecked = $false
+        }
+        If ( $WPFInstallcider.IsChecked -eq $true ) { 
+            $wingetinstall.Add("CiderCollective.Cider")
+            $WPFInstallcider.IsChecked = $false
+        }
+        If ( $WPFInstalljoplin.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Joplin.Joplin")
+            $WPFInstalljoplin.IsChecked = $false
+        }
+        If ( $WPFInstallopenoffice.IsChecked -eq $true ) { 
+            $wingetinstall.Add("Apache.OpenOffice")
+            $WPFInstallopenoffice.IsChecked = $false
+        }
+        If ( $WPFInstallruskdesk.IsChecked -eq $true ) { 
+            $wingetinstall.Add("RustDesk.RustDesk")
+            $WPFInstallruskdesk.IsChecked = $false
+        }
+        If ( $WPFInstalljami.IsChecked -eq $true ) { 
+            $wingetinstall.Add("SFLinux.Jami")
+            $WPFInstalljami.IsChecked = $false
+        }
+        If ( $WPFInstalljdownloader.IsChecked -eq $true ) { 
+            $wingetinstall.Add("AppWork.JDownloader")
+            $WPFInstalljdownloader.IsChecked = $false
+        }
+        # Check if winget is installed
+        Write-Host "Checking if Winget is Installed..."
+        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+            #Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Already Installed"
+        }
+        else {
+            if (((((Get-ComputerInfo).OSName.IndexOf("LTSC")) -ne -1) -or ((Get-ComputerInfo).OSName.IndexOf("Server") -ne -1)) -and (((Get-ComputerInfo).WindowsVersion) -ge "1809")) {
+                #Checks if Windows edition is LTSC/Server 2019+
+                #Manually Installing Winget
+                Write-Host "Running Alternative Installer for LTSC/Server Editions"
 
-        #region Check for WinGet and install if not present
+                #Download Needed Files
+                Write-Host "Downloading Needed Files..."
+                Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+                Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
 
-            if (Test-Path $env:userprofile\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-                #Checks if winget executable exists and if the Windows Version is 1809 or higher
-                Write-Logs -Level INFO -Message "WinGet was detected" -LogPath $sync.logfile
+                #Installing Packages
+                Write-Host "Installing Packages..."
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense
+                Add-AppxProvisionedPackage -Online -PackagePath "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml"
+                Write-Host "winget Installed (Reboot might be required before winget will work)"
+
+                #Sleep for 5 seconds to maximize chance that winget will work without reboot
+                Write-Host "Pausing for 5 seconds to maximize chance that winget will work without reboot"
+                Start-Sleep -s 5
+
+                #Removing no longer needed Files
+                Write-Host "Removing no longer needed Files..."
+                Remove-Item -Path "$env:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
+                Remove-Item -Path "$env:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
+                Remove-Item -Path "$env:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
+                Write-Host "Removed Files that are no longer needed"
+            }
+            elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
+                #Checks if Windows Version is too old for winget
+                Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
             }
             else {
-
-                if (($sync.ComputerInfo.WindowsVersion) -lt "1809") {
-                    #Checks if Windows Version is too old for winget
-                    Write-Logs -Level Warning -Message "Winget is not supported on this version of Windows (Pre-1809). Stopping installs" -LogPath $sync.logfile
-                    return
-                }
-
-                Write-Logs -Level INFO -Message "WinGet was not detected" -LogPath $sync.logfile
-
-                if (((($sync.ComputerInfo.OSName.IndexOf("LTSC")) -ne -1) -or ($sync.ComputerInfo.OSName.IndexOf("Server") -ne -1)) -and (($sync.ComputerInfo.WindowsVersion) -ge "1809")) {
-                    Try{
-                        #Checks if Windows edition is LTSC/Server 2019+
-                        #Manually Installing Winget
-                        Write-Logs -Level INFO -Message "LTSC/Server Edition detected. Running Alternative Installer" -LogPath $sync.logfile
-        
-                        #Download Needed Files
-                        $step = "Downloading the required files"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$ENV:TEMP/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -ErrorAction Stop
-                        Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.2.10271/b0a0692da1034339b76dce1c298a1e42_License1.xml" -Destination "$ENV:TEMP/b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
-        
-                        #Installing Packages
-                        $step = "Installing Packages"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Add-AppxProvisionedPackage -Online -PackagePath "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -SkipLicense -ErrorAction Stop
-                        Add-AppxProvisionedPackage -Online -PackagePath "$ENV:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -LicensePath "$ENV:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -ErrorAction Stop
-                        
-                        #Sleep for 5 seconds to maximize chance that winget will work without reboot
-                        Start-Sleep -s 5
-        
-                        #Removing no longer needed Files
-                        $step = "Removing Files"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Remove-Item -Path "$ENV:TEMP\Microsoft.VCLibs.x64.14.00.Desktop.appx" -Force
-                        Remove-Item -Path "$ENV:TEMP\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Force
-                        Remove-Item -Path "$ENV:TEMP\b0a0692da1034339b76dce1c298a1e42_License1.xml" -Force
-
-                        $step = "WinGet Sucessfully installed"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-
-                    }Catch{Write-Logs -Level FAILURE -Message "WinGet Install failed at $step" -LogPath $sync.logfile}
-                }
-                else {
-                    Try{
-                        #Installing Winget from the Microsoft Store                       
-                        $step = "Installing WinGet"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                        Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-                        $nid = (Get-Process AppInstaller).Id
-                        Wait-Process -Id $nid
-
-                        $step = "Winget Installed"
-                        Write-Logs -Level INFO -Message $step -LogPath $sync.logfile
-                    }Catch{Write-Logs -Level FAILURE -Message "WinGet Install failed at $step" -LogPath $sync.logfile}
-                }
-                Write-Logs -Level INFO -Message "WinGet has been installed" -LogPath $sync.logfile
-                Start-Sleep -Seconds 15
+                #Installing Winget from the Microsoft Store
+                Write-Host "Winget not found, installing it now."
+                Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+                $nid = (Get-Process AppInstaller).Id
+                Wait-Process -Id $nid
+                Write-Host "Winget Installed"
             }
+        }
 
-        #endregion Check for WinGet and install if not present
+        if ($wingetinstall.Count -eq 0) {
+            $WarningMsg = "Please select the program(s) to install"
+            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+            return
+        }
 
-        $results = @()
-        foreach ($program in $programstoinstall){
-            if($programstoinstall -eq "Upgrade"){
-                $Message = "Attempting to upgrade packages"
-                $ErrorMessage = "Failed to upgrade packages"
-                $SuccessMessage = "Upgardes have completed"
-                $ArgumentList = "upgrade --all"
-            }
-            else{
-                $Message = "$($program) was selected to be installed."
-                $ErrorMessage = "$($program) failed to installed."
-                $SuccessMessage = "$($program) has been installed"
-                $ArgumentList = "install -e --accept-source-agreements --accept-package-agreements --silent $($program)"
-            }
-
+        # Install all winget programs in new window
+        $wingetinstall.ToArray()
+        # Define Output variable
+        $wingetResult = New-Object System.Collections.Generic.List[System.Object]
+        foreach ( $node in $wingetinstall ) {
             try {
-                Write-Logs -Level INFO -Message "$Message" -LogPath $sync.logfile
-                Write-Host ""
-                
-                $installs = Start-Process -FilePath winget -ArgumentList $ArgumentList -ErrorAction Stop -Wait -PassThru -NoNewWindow
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
+                $wingetResult.Add("$node`n")
+                Start-Sleep -s 3
+                Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
+            }
+            catch [System.InvalidOperationException] {
+                Write-Warning "Allow Yes on User Access Control to Install"
             }
             catch {
-                Write-Logs -Level FAILURE -Message $ErrorMessage -LogPath $sync.logfile
-                $results += $program
+                Write-Error $_.Exception
             }
         }
-
-        Write-Logs -Level INFO -Message "Installs have completed" -LogPath $sync.logfile
-        if($sync["Form"]){
-            $sync.taskrunning = $false
-            [System.Windows.MessageBox]::Show("All applications have been installed",'Installs are done!',"OK","Info")
+        $wingetResult.ToArray()
+        $wingetResult | ForEach-Object { $_ } | Out-Host
+        
+        # Popup after finished
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        if ($wingetResult -ne "") {
+            $Messageboxbody = "Installed Programs `n$($wingetResult)"
         }
-    }
+        else {
+            $Messageboxbody = "No Program(s) are installed"
+        }
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    #===========================================================================
-    # Tab 2 - Tweaks Buttons
-    #===========================================================================
+        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
 
-    <#
+        Write-Host "================================="
+        Write-Host "---  Installs are Finished    ---"
+        Write-Host "================================="
 
-        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
+    })
 
-        TODO: Error Handling as Try blocks and -erroraction stop causes runspace to lock up
+$WPFInstallUpgrade.Add_Click({
+        $isUpgradeSuccess = $false
+        try {
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Normal
+            $isUpgradeSuccess = $true
+        }
+        catch [System.InvalidOperationException] {
+            Write-Warning "Allow Yes on User Access Control to Upgrade"
+        }
+        catch {
+            Write-Error $_.Exception
+        }
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $Messageboxbody = if ($isUpgradeSuccess) { "Upgrade Done" } else { "Upgrade was not succesful" }
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
+    })
+
+#===========================================================================
+# Tab 2 - Tweak Buttons
+#===========================================================================
+$WPFdesktop.Add_Click({
+
+        $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
+        $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
+        $WPFEssTweaksDVR.IsChecked = $true
+        $WPFEssTweaksHiber.IsChecked = $true
+        $WPFEssTweaksHome.IsChecked = $true
+        $WPFEssTweaksLoc.IsChecked = $true
+        $WPFEssTweaksOO.IsChecked = $true
+        $WPFEssTweaksRP.IsChecked = $true
+        $WPFEssTweaksServices.IsChecked = $true
+        $WPFEssTweaksStorage.IsChecked = $true
+        $WPFEssTweaksTele.IsChecked = $true
+        $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        $WPFMiscTweaksPower.IsChecked = $true
+        $WPFMiscTweaksNum.IsChecked = $true
+        $WPFMiscTweaksLapPower.IsChecked = $false
+        $WPFMiscTweaksLapNum.IsChecked = $false
+    })
+
+$WPFlaptop.Add_Click({
+
+        $WPFEssTweaksAH.IsChecked = $true
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
+        $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
+        $WPFEssTweaksDVR.IsChecked = $true
+        $WPFEssTweaksHiber.IsChecked = $false
+        $WPFEssTweaksHome.IsChecked = $true
+        $WPFEssTweaksLoc.IsChecked = $true
+        $WPFEssTweaksOO.IsChecked = $true
+        $WPFEssTweaksRP.IsChecked = $true
+        $WPFEssTweaksServices.IsChecked = $true
+        $WPFEssTweaksStorage.IsChecked = $true
+        $WPFEssTweaksTele.IsChecked = $true
+        $WPFEssTweaksWifi.IsChecked = $true
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        $WPFMiscTweaksLapPower.IsChecked = $true
+        $WPFMiscTweaksLapNum.IsChecked = $true
+        $WPFMiscTweaksPower.IsChecked = $false
+        $WPFMiscTweaksNum.IsChecked = $false
+    })
+
+$WPFminimal.Add_Click({
     
-    #>
+        $WPFEssTweaksAH.IsChecked = $false
+        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
+        $WPFEssTweaksDeBloat.IsChecked = $false
+        $WPFEssTweaksRemoveCortana.IsChecked = $false
+        $WPFEssTweaksRemoveEdge.IsChecked = $false
+        $WPFEssTweaksDiskCleanup.IsChecked = $false
+        $WPFEssTweaksDVR.IsChecked = $false
+        $WPFEssTweaksHiber.IsChecked = $false
+        $WPFEssTweaksHome.IsChecked = $true
+        $WPFEssTweaksLoc.IsChecked = $false
+        $WPFEssTweaksOO.IsChecked = $true
+        $WPFEssTweaksRP.IsChecked = $true
+        $WPFEssTweaksServices.IsChecked = $true
+        $WPFEssTweaksStorage.IsChecked = $false
+        $WPFEssTweaksTele.IsChecked = $true
+        $WPFEssTweaksWifi.IsChecked = $false
+        $WPFMiscTweaksDisableUAC.IsChecked = $false
+        $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        $WPFMiscTweaksPower.IsChecked = $false
+        $WPFMiscTweaksNum.IsChecked = $false
+        $WPFMiscTweaksLapPower.IsChecked = $false
+        $WPFMiscTweaksLapNum.IsChecked = $false
+    })
 
-    $Sync.GUITweaks = {
+$WPFtweaksbutton.Add_Click({
 
-        <#
+        If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
+            #Installing PowerRun to edit some restricted registry keys (Need this to disable Gamebar Presence Writer)
+            curl.exe -s "https://www.sordum.org/files/download/power-run/PowerRun.zip" -o ".\PowerRun.zip"
+            Expand-Archive -Path ".\PowerRun.zip" -DestinationPath ".\" -Force
+            Copy-Item -Path ".\PowerRun\PowerRun.exe" -Destination "$env:windir" -Force
+            Remove-Item -Path ".\PowerRun\", ".\PowerRun.zip" -Recurse
+        }
 
-            .DESCRIPTION
-            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
+        If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
+            Write-Host "Disabling Activity History..."
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
+            $WPFEssTweaksAH.IsChecked = $false
+        }
 
-            Input data will look like below and link with the name of the check box. This will then look to the config/applications.json file to find
-            the modifications for the selected task.
+        If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
+            Write-Host "Delete Temp Files"
+            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
+            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+            $WPFEssTweaksDeleteTempFiles.IsChecked = $false
+            Write-Host "================================="
+            Write-Host "--- !!!!ERRORS ARE NORMAL!!!! ---"
+            Write-Host "--- Cleaned following folders:---"
+            Write-Host "--- C:\Windows\Temp           ---"
+            Write-Host "---"$env:TEMP"---"
+            Write-Host "================================="
+        }
 
-            EssTweaksDeBloat,MiscTweaksUTC
-
-            .EXAMPLE
-
-            Invoke-command $sync.GUIInstallPrograms -ArgumentList "EssTweaksDeBloat,MiscTweaksUTC"
-
-        #>
-
-        Param($Tweakstorun)
-
-        #Check if any check boxes have been checked and if a task is currently running
-
-            if ($sync.taskrunning -eq $true){
-                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
-                return
+        If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
+            If (!(Test-Path "HKCU:\System\GameConfigStore")) {
+                New-Item -Path "HKCU:\System\GameConfigStore" -Force
             }
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_DXGIHonorFSEWindowsCompatible" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_HonorUserFSEBehaviorMode" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehavior" -Type DWord -Value 2
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
 
-            if($Tweakstorun -notlike "*Tweaks*"){
-                [System.Windows.MessageBox]::Show("Please check the applications you wish to install",'Nothing to do',"OK","Info")
-                return
+            #Disabling Gamebar Presence Writer, which causes stutter in games
+            PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 0 }
+
+            $WPFEssTweaksDVR.IsChecked = $false
+        }
+        If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
+            Write-Host "Disabling Hibernation..."
+            Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type Dword -Value 0
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" | Out-Null
             }
-
-            $sync.taskrunning = $true
-
-        #Invoke a runspace so that the GUI does not lock up
-
-            $params = @{
-                ScriptBlock = $sync.ScriptTweaks
-                ArgumentList = ("$Tweakstorun")
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 0
+            $WPFEssTweaksHiber.IsChecked = $false
+        }
+        If ( $WPFEssTweaksHome.IsChecked -eq $true ) {
+            $WPFEssTweaksHome.IsChecked = $false
+        }
+        If ( $WPFEssTweaksLoc.IsChecked -eq $true ) {
+            Write-Host "Disabling Location Tracking..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Force | Out-Null
             }
-            
-            Invoke-Runspace @params
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Deny"
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value 0
+            Write-Host "Disabling automatic Maps updates..."
+            Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 0
+            $WPFEssTweaksLoc.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableTPMCheck.IsChecked -eq $true ) {
+            Write-Host "Disabling TPM Check..."
+            If (!(Test-Path "HKLM:\SYSTEM\Setup\MoSetup")) {
+                New-Item -Path "HKLM:\SYSTEM\Setup\MoSetup" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
+            $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
+        }
+        If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
+            Write-Host "Running Disk Cleanup on Drive C:..."
+            cmd /c cleanmgr.exe /d C: /VERYLOWDISK
+            $WPFEssTweaksDiskCleanup.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
+            Write-Host "Disabling UAC..."
+            # This below is the pussy mode which can break some apps. Please. Leave this on 1.
+            # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
+            # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
+            Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
+            # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
+            # It will just not bother u anymore
+            $WPFMiscTweaksDisableUAC.IsChecked = $false
+        }
+ 
+        If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
+            Write-Host "Disabling Notifications and Action Center..."
+            New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Explorer" -force
+            New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -PropertyType "DWord" -Value 1
+            New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -PropertyType "DWord" -Value 0 -force
+            $WPFMiscTweaksDisableNotifications.IsChecked = $false
+        }
+        
+        If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
+            Write-Host "Setting Classic Right-Click Menu..."
+            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""       
+            $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        }
+        If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
+            Write-Host "Running O&O Shutup with Recommended Settings"
+            curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
+            curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
+            ./OOSU10.exe ooshutup10.cfg /quiet
+            $WPFEssTweaksOO.IsChecked = $false
+        }
+        If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
+            Write-Host "Creating Restore Point in case something bad happens"
+            Enable-ComputerRestore -Drive "$env:SystemDrive"
+            Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+            $WPFEssTweaksRP.IsChecked = $false
+        }
+        If ( $WPFEssTweaksServices.IsChecked -eq $true ) {
+            # Set Services to Manual 
+
+            $services = @(
+                "ALG"                                          # Application Layer Gateway Service(Provides support for 3rd party protocol plug-ins for Internet Connection Sharing)
+                "AJRouter"                                     # Needed for AllJoyn Router Service
+                "BcastDVRUserService_48486de"                  # GameDVR and Broadcast is used for Game Recordings and Live Broadcasts
+                #"BDESVC"                                      # Bitlocker Drive Encryption Service
+                #"BFE"                                         # Base Filtering Engine (Manages Firewall and Internet Protocol security)
+                #"BluetoothUserService_48486de"                # Bluetooth user service supports proper functionality of Bluetooth features relevant to each user session.
+                #"BrokerInfrastructure"                        # Windows Infrastructure Service (Controls which background tasks can run on the system)
+                "Browser"                                      # Let users browse and locate shared resources in neighboring computers
+                "BthAvctpSvc"                                  # AVCTP service (needed for Bluetooth Audio Devices or Wireless Headphones)
+                "CaptureService_48486de"                       # Optional screen capture functionality for applications that call the Windows.Graphics.Capture API.
+                "cbdhsvc_48486de"                              # Clipboard Service
+                "diagnosticshub.standardcollector.service"     # Microsoft (R) Diagnostics Hub Standard Collector Service
+                "DiagTrack"                                    # Diagnostics Tracking Service
+                "dmwappushservice"                             # WAP Push Message Routing Service
+                "DPS"                                          # Diagnostic Policy Service (Detects and Troubleshoots Potential Problems)
+                "edgeupdate"                                   # Edge Update Service
+                "edgeupdatem"                                  # Another Update Service
+                #"EntAppSvc"                                    # Enterprise Application Management.
+                "Fax"                                          # Fax Service
+                "fhsvc"                                        # Fax History
+                "FontCache"                                    # Windows font cache
+                #"FrameServer"                                 # Windows Camera Frame Server (Allows multiple clients to access video frames from camera devices)
+                "gupdate"                                      # Google Update
+                "gupdatem"                                     # Another Google Update Service
+                #"iphlpsvc"                                     # ipv6(Most websites use ipv4 instead) - Needed for Xbox Live
+                "lfsvc"                                        # Geolocation Service
+                #"LicenseManager"                              # Disable LicenseManager (Windows Store may not work properly)
+                "lmhosts"                                      # TCP/IP NetBIOS Helper
+                "MapsBroker"                                   # Downloaded Maps Manager
+                "MicrosoftEdgeElevationService"                # Another Edge Update Service
+                "MSDTC"                                        # Distributed Transaction Coordinator
+                "NahimicService"                               # Nahimic Service
+                #"ndu"                                          # Windows Network Data Usage Monitor (Disabling Breaks Task Manager Per-Process Network Monitoring)
+                "NetTcpPortSharing"                            # Net.Tcp Port Sharing Service
+                "PcaSvc"                                       # Program Compatibility Assistant Service
+                "PerfHost"                                     # Remote users and 64-bit processes to query performance.
+                "PhoneSvc"                                     # Phone Service(Manages the telephony state on the device)
+                #"PNRPsvc"                                     # Peer Name Resolution Protocol (Some peer-to-peer and collaborative applications, such as Remote Assistance, may not function, Discord will still work)
+                #"p2psvc"                                      # Peer Name Resolution Protocol(Enables multi-party communication using Peer-to-Peer Grouping.  If disabled, some applications, such as HomeGroup, may not function. Discord will still work)iscord will still work)
+                #"p2pimsvc"                                    # Peer Networking Identity Manager (Peer-to-Peer Grouping services may not function, and some applications, such as HomeGroup and Remote Assistance, may not function correctly. Discord will still work)
+                "PrintNotify"                                  # Windows printer notifications and extentions
+                "QWAVE"                                        # Quality Windows Audio Video Experience (audio and video might sound worse)
+                "RemoteAccess"                                 # Routing and Remote Access
+                "RemoteRegistry"                               # Remote Registry
+                "RetailDemo"                                   # Demo Mode for Store Display
+                "RtkBtManServ"                                 # Realtek Bluetooth Device Manager Service
+                "SCardSvr"                                     # Windows Smart Card Service
+                "seclogon"                                     # Secondary Logon (Disables other credentials only password will work)
+                "SEMgrSvc"                                     # Payments and NFC/SE Manager (Manages payments and Near Field Communication (NFC) based secure elements)
+                "SharedAccess"                                 # Internet Connection Sharing (ICS)
+                #"Spooler"                                     # Printing
+                "stisvc"                                       # Windows Image Acquisition (WIA)
+                #"StorSvc"                                     # StorSvc (usb external hard drive will not be reconized by windows)
+                "SysMain"                                      # Analyses System Usage and Improves Performance
+                "TrkWks"                                       # Distributed Link Tracking Client
+                #"WbioSrvc"                                    # Windows Biometric Service (required for Fingerprint reader / facial detection)
+                "WerSvc"                                       # Windows error reporting
+                "wisvc"                                        # Windows Insider program(Windows Insider will not work if Disabled)
+                #"WlanSvc"                                     # WLAN AutoConfig
+                "WMPNetworkSvc"                                # Windows Media Player Network Sharing Service
+                "WpcMonSvc"                                    # Parental Controls
+                "WPDBusEnum"                                   # Portable Device Enumerator Service
+                "WpnService"                                   # WpnService (Push Notifications may not work)
+                #"wscsvc"                                      # Windows Security Center Service
+                "WSearch"                                      # Windows Search
+                "XblAuthManager"                               # Xbox Live Auth Manager (Disabling Breaks Xbox Live Games)
+                "XblGameSave"                                  # Xbox Live Game Save Service (Disabling Breaks Xbox Live Games)
+                "XboxNetApiSvc"                                # Xbox Live Networking Service (Disabling Breaks Xbox Live Games)
+                "XboxGipSvc"                                   # Xbox Accessory Management Service
+                # Hp services
+                "HPAppHelperCap"
+                "HPDiagsCap"
+                "HPNetworkCap"
+                "HPSysInfoCap"
+                "HpTouchpointAnalyticsService"
+                # Hyper-V services
+                "HvHost"
+                "vmicguestinterface"
+                "vmicheartbeat"
+                "vmickvpexchange"
+                "vmicrdv"
+                "vmicshutdown"
+                "vmictimesync"
+                "vmicvmsession"
+                # Services that cannot be disabled
+                #"WdNisSvc"
+            )
+        
+            foreach ($service in $services) {
+                # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+        
+                Write-Host "Setting $service StartupType to Manual"
+                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Manual
+            }
+            $WPFEssTweaksServices.IsChecked = $false
+        }
+        If ( $WPFEssTweaksStorage.IsChecked -eq $true ) {
+            Write-Host "Disabling Storage Sense..."
+            Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Recurse -ErrorAction SilentlyContinue
+            $WPFEssTweaksStorage.IsChecked = $false
+        }
+        If ( $WPFEssTweaksTele.IsChecked -eq $true ) {
+            Write-Host "Disabling Telemetry..."
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Application Experience\ProgramDataUpdater" | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Autochk\Proxy" | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\Consolidator" | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip" | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector" | Out-Null
+            Write-Host "Disabling Application suggestions..."
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEverEnabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SilentInstalledAppsEnabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338388Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 0
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 1
+            Write-Host "Disabling Feedback..."
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 1
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClient" -ErrorAction SilentlyContinue | Out-Null
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload" -ErrorAction SilentlyContinue | Out-Null
+            Write-Host "Disabling Tailored Experiences..."
+            If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
+                New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 1
+            Write-Host "Disabling Advertising ID..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 1
+            Write-Host "Disabling Error reporting..."
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 1
+            Disable-ScheduledTask -TaskName "Microsoft\Windows\Windows Error Reporting\QueueReporting" | Out-Null
+            Write-Host "Restricting Windows Update P2P only to local network..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
+            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
+            Stop-Service "DiagTrack" -WarningAction SilentlyContinue
+            Set-Service "DiagTrack" -StartupType Disabled
+            Write-Host "Stopping and disabling WAP Push Service..."
+            Stop-Service "dmwappushservice" -WarningAction SilentlyContinue
+            Set-Service "dmwappushservice" -StartupType Disabled
+            Write-Host "Enabling F8 boot menu options..."
+            bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+            Write-Host "Disabling Remote Assistance..."
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance" -Name "fAllowToGetHelp" -Type DWord -Value 0
+            Write-Host "Stopping and disabling Superfetch service..."
+            Stop-Service "SysMain" -WarningAction SilentlyContinue
+            Set-Service "SysMain" -StartupType Disabled
+
+            # Task Manager Details
+            If ((get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild -lt 22557) {
+                Write-Host "Showing task manager details..."
+                $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+                Do {
+                    Start-Sleep -Milliseconds 100
+                    $preferences = Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue
+                } Until ($preferences)
+                Stop-Process $taskmgr
+                $preferences.Preferences[28] = 0
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -Type Binary -Value $preferences.Preferences
+            }
+            else { Write-Host "Task Manager patch not run in builds 22557+ due to bug" }
+
+            Write-Host "Showing file operations details..."
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 1
+            Write-Host "Hiding Task View button..."
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+            Write-Host "Hiding People icon..."
+            If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People")) {
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" | Out-Null
+            }
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 0
+
+            Write-Host "Changing default Explorer view to This PC..."
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
     
-    }
+            ## Enable Long Paths
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Type DWORD -Value 1
 
-    $Sync.ScriptTweaks = {
+            Write-Host "Hiding 3D Objects icon from This PC..."
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue  
+        
+            ## Performance Tweaks and More Telemetry
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillAppTimeout" -Type DWord -Value 5000
+            Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
+            # Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -Type DWord -Value 4000 # Note: This caused flickering
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "AutoEndTasks" -Type DWord -Value 1
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "LowLevelHooksTimeout" -Type DWord -Value 1000
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 10
 
-        <#
 
-            .DESCRIPTION
-            This scriptblock will run a series of modifications included in the config/tweaks.json file. 
+            # Network Tweaks
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "IRPStackSize" -Type DWord -Value 20
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 4294967295
 
-            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
+            # Gaming Tweaks
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "GPU Priority" -Type DWord -Value 8
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Priority" -Type DWord -Value 6
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
+        
+            # Group svchost.exe processes
+            $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
-            .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptsInstallPrograms
-                ArgumentList = "EssTweaksTele,EssTweaksServices"
-                Verbose = $true
+            Write-Host "Disable News and Interests"
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" | Out-Null
             }
-            VerbosePreference = "Continue"
-            Invoke-Command @params
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 0
+            # Remove "News and Interest" from taskbar
+            Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 2
 
-        #>
+            # remove "Meet Now" button from taskbar
 
-        Param($Tweakstorun)
-        $Tweakstorun = $Tweakstorun -split ","
+            If (!(Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer")) {
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Force | Out-Null
+            }
 
-        $ErrorActionPreference = "SilentlyContinue"
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HideSCAMeetNow" -Type DWord -Value 1
 
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
+            Write-Host "Removing AutoLogger file and restricting directory..."
+            $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
+            If (Test-Path "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl") {
+                Remove-Item "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl"
+            }
+            icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
+            Stop-Service "DiagTrack"
+            Set-Service "DiagTrack" -StartupType Disabled
+            Write-Host "Doing Security checks for Administrator Account and Group Policy"
+            if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
+                net user administrator /active:no
+            }
+        
+            $WPFEssTweaksTele.IsChecked = $false
         }
-
-        Write-Logs -Level INFO -Message "Gathering required modifications" -LogPath $sync.logfile
-
-        $RegistryToModify = $Tweakstorun | ForEach-Object {
-            $sync.tweaks.$psitem.registry
+        If ( $WPFEssTweaksWifi.IsChecked -eq $true ) {
+            Write-Host "Disabling Wi-Fi Sense..."
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 0
+            If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots")) {
+                New-Item -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Force | Out-Null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 0
+            $WPFEssTweaksWifi.IsChecked = $false
         }
-
-        $ServicesToModify = $Tweakstorun | ForEach-Object {
-            $sync.tweaks.$psitem.service
+        If ( $WPFMiscTweaksLapPower.IsChecked -eq $true ) {
+            If (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling") {
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000000
+            }
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000001
+            $WPFMiscTweaksLapPower.IsChecked = $false
         }
-
-        $ScheduledTaskToModify = $Tweakstorun | ForEach-Object {
-            $sync.tweaks.$psitem.ScheduledTask
+        If ( $WPFMiscTweaksLapNum.IsChecked -eq $true ) {
+            Write-Host "Disabling NumLock after startup..."
+            If (!(Test-Path "HKU:")) {
+                New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+            }
+            Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
+            $WPFMiscTweaksLapNum.IsChecked = $false
         }
-
-        $AppxToModify = $Tweakstorun | ForEach-Object {
-            $sync.tweaks.$psitem.appx
+        If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
+            If (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling") {
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000001
+            }
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000000
+            $WPFMiscTweaksPower.IsChecked = $false 
         }
-    
-        $ScriptsToRun = $Tweakstorun | ForEach-Object {
-            $sync.tweaks.$psitem.InvokeScript
+        If ( $WPFMiscTweaksNum.IsChecked -eq $true ) {
+            Write-Host "Enabling NumLock after startup..."
+            If (!(Test-Path "HKU:")) {
+                New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+            }
+            Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 2
+            $WPFMiscTweaksNum.IsChecked = $false
         }
+        If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
+            Write-Host "Showing known file extensions..."
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
+            $WPFMiscTweaksExt.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
+            Write-Host "Setting BIOS time to UTC..."
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
+            $WPFMiscTweaksUTC.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
+            Write-Host "Adjusting visual effects for performance..."
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 200
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144, 18, 3, 128, 16, 0, 0, 0))
+            Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
+            Write-Host "Adjusted visual effects for performance"
+            $WPFMiscTweaksDisplay.IsChecked = $false
+        }
+        If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
+            Write-Host "Removing Cortana..."
+            Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
+            $WPFEssTweaksRemoveCortana.IsChecked = $false
+        }
+        If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
+            Write-Host "Removing Microsoft Edge..."
+            Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | Invoke-Expression
+            $WPFEssTweaksRemoveEdge.IsChecked = $false
+        }
+        If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
+            $Bloatware = @(
+                #Unnecessary Windows 10 AppX Apps
+                "3DBuilder"
+                "Microsoft3DViewer"
+                "AppConnector"
+                "BingFinance"
+                "BingNews"
+                "BingSports"
+                "BingTranslator"
+                "BingWeather"
+                "BingFoodAndDrink"
+                "BingHealthAndFitness"
+                "BingTravel"
+                "MinecraftUWP"
+                "GamingServices"
+                # "WindowsReadingList"
+                "GetHelp"
+                "Getstarted"
+                "Messaging"
+                "Microsoft3DViewer"
+                "MicrosoftSolitaireCollection"
+                "NetworkSpeedTest"
+                "News"
+                "Lens"
+                "Sway"
+                "OneNote"
+                "OneConnect"
+                "People"
+                "Print3D"
+                "SkypeApp"
+                "Todos"
+                "Wallet"
+                "Whiteboard"
+                "WindowsAlarms"
+                "windowscommunicationsapps"
+                "WindowsFeedbackHub"
+                "WindowsMaps"
+                "WindowsPhone"
+                "WindowsSoundRecorder"
+                "XboxApp"
+                "ConnectivityStore"
+                "CommsPhone"
+                "ScreenSketch"
+                "TCUI"
+                "XboxGameOverlay"
+                "XboxGameCallableUI"
+                "XboxSpeechToTextOverlay"
+                "MixedReality.Portal"
+                "ZuneMusic"
+                "ZuneVideo"
+                #"YourPhone"
+                "Getstarted"
+                "MicrosoftOfficeHub"
 
-        if($RegistryToModify){
-            Write-Logs -Level INFO -Message "Starting Registry Modification" -LogPath $sync.logfile
+                #Sponsored Windows 10 AppX Apps
+                #Add sponsored/featured apps to remove in the "*AppName*" format
+                "EclipseManager"
+                "ActiproSoftwareLLC"
+                "AdobeSystemsIncorporated.AdobePhotoshopExpress"
+                "Duolingo-LearnLanguagesforFree"
+                "PandoraMediaInc"
+                "CandyCrush"
+                "BubbleWitch3Saga"
+                "Wunderlist"
+                "Flipboard"
+                "Twitter"
+                "Facebook"
+                "Royal Revolt"
+                "Sway"
+                "Speed Test"
+                "Dolby"
+                "Viber"
+                "ACGMediaPlayer"
+                "Netflix"
+                "OneCalendar"
+                "LinkedInforWindows"
+                "HiddenCityMysteryofShadows"
+                "Hulu"
+                "HiddenCity"
+                "AdobePhotoshopExpress"
+                "HotspotShieldFreeVPN"
 
-            $RegistryToModify | ForEach-Object {
-                if(!(Test-Path $psitem.path)){
-                    $Step = "create"
-                    Write-Logs -Level INFO -Message "$($psitem.path) did not exist. Creating" -LogPath $sync.logfile
-                    New-Item -Path $psitem.path -Force | Out-Null
+                #Optional: Typically not removed but you can if you need to
+                "Advertising"
+                #"MSPaint"
+                #"MicrosoftStickyNotes"
+                #"Windows.Photos"
+                #"WindowsCalculator"
+                #"WindowsStore"
+
+                # HPBloatware Packages
+                "HPJumpStarts"
+                "HPPCHardwareDiagnosticsWindows"
+                "HPPowerManager"
+                "HPPrivacySettings"
+                "HPSupportAssistant"
+                "HPSureShieldAI"
+                "HPSystemInformation"
+                "HPQuickDrop"
+                "HPWorkWell"
+                "myHP"
+                "HPDesktopSupportUtilities"
+                "HPQuickTouch"
+                "HPEasyClean"
+                "HPSystemInformation"
+            )
+
+            ## Teams Removal
+            # Remove Teams Machine-Wide Installer
+            Write-Host "Removing Teams Machine-wide Installer" -ForegroundColor Yellow
+            $MachineWide = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq "Teams Machine-Wide Installer" }
+            $MachineWide.Uninstall()
+            # Remove Teams for Current Users
+            $localAppData = "$($env:LOCALAPPDATA)\Microsoft\Teams"
+            $programData = "$($env:ProgramData)\$($env:USERNAME)\Microsoft\Teams"
+            If (Test-Path "$($localAppData)\Current\Teams.exe") {
+                unInstallTeams($localAppData)
+            }
+            elseif (Test-Path "$($programData)\Current\Teams.exe") {
+                unInstallTeams($programData)
+            }
+            else {
+                Write-Warning "Teams installation not found"
+            }
+            # Get all Users
+            $Users = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
+            # Process all the Users
+            $Users | ForEach-Object {
+                Write-Host "Process user: $($_.Name)" -ForegroundColor Yellow
+                #Locate installation folder
+                $localAppData = "$($ENV:SystemDrive)\Users\$($_.Name)\AppData\Local\Microsoft\Teams"
+                $programData = "$($env:ProgramData)\$($_.Name)\Microsoft\Teams"
+                If (Test-Path "$($localAppData)\Current\Teams.exe") {
+                    unInstallTeams($localAppData)
                 }
+                elseif (Test-Path "$($programData)\Current\Teams.exe") {
+                    unInstallTeams($programData)
+                }
+                else {
+                    Write-Warning "Teams installation not found for user $($_.Name)"
+                }
+            }
+            cmd /c winget uninstall -h "Microsoft Teams"
 
-                $step = "set"
-                Write-Logs -Level INFO -Message "Setting $("$($psitem.path)\$($psitem.name)") to $($psitem.value)" -LogPath $sync.logfile
-                Set-ItemProperty -Path $psitem.path -Name $psitem.name -Type $psitem.type -Value $psitem.value
+            Write-Host "Removing Bloatware"
+
+            foreach ($Bloat in $Bloatware) {
+                Get-AppxPackage "*$Bloat*" | Remove-AppxPackage
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Bloat*" | Remove-AppxProvisionedPackage -Online
+                Write-Host "Trying to remove $Bloat."
             }
 
-            Write-Logs -Level INFO -Message "Finished setting registry" -LogPath $sync.logfile
-        }
+            Write-Host "Finished Removing Bloatware Apps"
+            Write-Host "Removing Bloatware Programs"
+            # Remove installed programs
+            $InstalledPrograms = Get-Package | Where-Object { $UninstallPrograms -contains $_.Name }
+            $InstalledPrograms | ForEach-Object {
 
-        if($ServicesToModify){
-            Write-Logs -Level INFO -Message "Starting Services Modification" -LogPath $sync.logfile
+                Write-Host -Object "Attempting to uninstall: [$($_.Name)]..."
 
-            $ServicesToModify | ForEach-Object {
-                    $service = Get-Service -Name W32Time -ErrorAction SilentlyContinue
-                    if ($service.Length -gt 0) {
-                        Stop-Service "$($psitem.name)" 
-                        Set-Service "$($psitem.name)" -StartupType $($psitem.StartupType)
-                        Write-Logs -Level INFO -Message "Service $($psitem.name) set to  $($psitem.StartupType)" -LogPath $sync.logfile
-                    }
+                Try {
+                    $Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction Stop
+                    Write-Host -Object "Successfully uninstalled: [$($_.Name)]"
+                }
+                Catch {
+                    Write-Warning -Message "Failed to uninstall: [$($_.Name)]"
+                }
             }
-    
-            Write-Logs -Level INFO -Message "Finished setting Services" -LogPath $sync.logfile
+            Write-Host "Finished Removing Bloatware Programs"
+            $WPFEssTweaksDeBloat.IsChecked = $false
         }
+
+        Write-Host "================================="
+        Write-Host "--     Tweaks are Finished    ---"
+        Write-Host "================================="
         
-        if($ScheduledTaskToModify){
-            Write-Logs -Level INFO -Message "Starting ScheduledTask Modification" -LogPath $sync.logfile
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Tweaks are Finished "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-            $ScheduledTaskToModify | ForEach-Object {
-						Get-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction SilentlyContinue -OutVariable checktask
-							if ($checktask) {
-                Try{
-                    if($($psitem.State) -eq "Disabled"){
-                        Disable-ScheduledTask -TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
-                    }
-                    if($($psitem.State) -eq "Enabled"){
-                        Enable-TaskName "$($psitem.name)" -ErrorAction Stop | Out-Null
-                    }
-                    Write-Logs -Level INFO -Message "Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile
-                }Catch{Write-Logs -Level ERROR -Message "Unable to set Scheduled Task $($psitem.name) set to  $($psitem.State)" -LogPath $sync.logfile}
-							}
-						}
-    
-            Write-Logs -Level INFO -Message "Finished setting ScheduledTasks" -LogPath $sync.logfile
-        }
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    })
 
-        if($AppxToModify){
-            Write-Logs -Level INFO -Message "Starting Appx Modification" -LogPath $sync.logfile
-
-            $AppxToModify | ForEach-Object {
-                Try{
-                    Get-AppxPackage -Name $psitem| Remove-AppxPackage -ErrorAction Stop
-                    Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $psitem | Remove-AppxProvisionedPackage -ErrorAction stop -Online
-                    Write-Logs -Level INFO -Message "Uninstalled $psitem" -LogPath $sync.logfile
-                }Catch{Write-Logs -Level ERROR -Message "Failed to uninstall $psitem" -LogPath $sync.logfile }
-            }
-    
-            Write-Logs -Level INFO -Message "Finished uninstalling Appx" -LogPath $sync.logfile
-        }
-
-        if($ScriptsToRun){
-            Write-Logs -Level INFO -Message "Running Scripts" -LogPath $sync.logfile
-
-            $ScriptsToRun | ForEach-Object {
-                $Scriptblock = [scriptblock]::Create($psitem)
-                #Invoke-Command -ScriptBlock $Scriptblock
-                Start-Process $PSHOME\powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait
-            }
-    
-            Write-Logs -Level INFO -Message "Finished Scripts" -LogPath $sync.logfile
-        }
-				# 
-				# Fix bad tweaks made from previous versions
-				#
-				Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
-				Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
-       
-			 Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
-        
-        if($sync["Form"]){
-            $sync.taskrunning = $false
-            [System.Windows.MessageBox]::Show("All modifications have finished",'Tweaks are done!',"OK","Info")
-        }
+$WPFEnableDarkMode.Add_Click({
+        Write-Host "Enabling Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+        Write-Host "Enabled"
     }
-
-    $Sync.GUIUndoTweaks = {
-
-        <#
-
-            .DESCRIPTION
-            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another tweak task. 
-
-            .EXAMPLE
-
-            Invoke-command $sync.GUIUndoTweaks
-
-        #>
-
-        #Check if any check boxes have been checked and if a task is currently running
-
-            if ($sync.taskrunning -eq $true){
-                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
-                return
-            }
-
-            $sync.taskrunning = $true
-
-        #Invoke a runspace so that the GUI does not lock up            
-
-            Invoke-Runspace $sync.ScriptUndoTweaks
+)
+    
+$WPFDisableDarkMode.Add_Click({
+        Write-Host "Disabling Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+        Write-Host "Disabled"
     }
-
-    $sync.ScriptUndoTweaks = {
-        
-        <#
-
-            .DESCRIPTION
-            This scriptblock will undo all modifications from this script. 
-
-            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
-
-            .EXAMPLE
-
-            VerbosePreference = "Continue"
-            Invoke-Command -ScriptBlock $sync.ScriptUndoTweaks
-        #>
-
-        $ErrorActionPreference = "SilentlyContinue"
-
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
-        }
-
-        Write-Logs -Level INFO -Message "Creating Restore Point incase something bad happens" -LogPath $sync.logfile
-        Enable-ComputerRestore -Drive "C:\"
+)
+#===========================================================================
+# Undo All
+#===========================================================================
+$WPFundoall.Add_Click({
+        Write-Host "Creating Restore Point in case something bad happens"
+        Enable-ComputerRestore -Drive "$env:SystemDrive"
         Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
-        foreach ($tweak in $($sync.tweaks.psobject.properties)) {
-
-                #registry reset
-                Foreach ($registries in $($tweak.value.registry)){
-                    foreach($registry in $registries){
-                        Write-Logs -Level INFO -Message "Setting $("$($registry.path)\$($registry.name)") to $($registry.OriginalValue)" -LogPath $sync.logfile
-                        Set-ItemProperty -Path $registry.path -Name $registry.name -Type $registry.type -Value $registry.OriginalValue
-                    }
-                }
-                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) registries" -LogPath $sync.logfile
-
-                #Services modification 
-                Foreach ($services in $($tweak.value.service)){
-                    foreach($service in $services) {
-                        Stop-Service "$($service.name)"
-                        Set-Service "$($service.name)" -StartupType $($service.OriginalType)
-                        Write-Logs -Level INFO -Message "Service $($service.name) set to  $($service.OriginalType)" -LogPath $sync.logfile
-                    }
-                }
-                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Services" -LogPath $sync.logfile
-
-                #Scheduled Tasks Modification
-                Foreach ($ScheduledTasks in $($tweak.value.ScheduledTask)){
-                    foreach($ScheduledTask in $ScheduledTasks) {
-                        if($($ScheduledTask.OriginalState) -eq "Disabled"){
-                            Disable-ScheduledTask -TaskName "$($ScheduledTask.name)" | Out-Null
-                        }
-                        if($($ScheduledTask.OriginalState) -eq "Enabled"){
-                            Enable-TaskName "$($ScheduledTask.name)"  | Out-Null
-                        }
-                        Write-Logs -Level INFO -Message "Scheduled Task $($ScheduledTask.name) set to  $($ScheduledTask.OriginalState)" -LogPath $sync.logfile
-                    }
-                }
-                Write-Logs -Level INFO -Message "Finished reseting $($tweak.name) Scheduled Tasks" -LogPath $sync.logfile                  
+        Write-Host "Enabling Telemetry..."
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
+        Write-Host "Enabling Wi-Fi Sense"
+        Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 1
+        Write-Host "Enabling Application suggestions..."
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEverEnabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SilentInstalledAppsEnabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338388Enabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 1
+        If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
+            Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
         }
-
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 0
+        Write-Host "Enabling Activity History..."
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 1
+        Write-Host "Enable Location Tracking..."
+        If (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location") {
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value 1
+        Write-Host "Enabling automatic Maps updates..."
+        Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 1
+        Write-Host "Enabling Feedback..."
+        If (Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules") {
+            Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Recurse -ErrorAction SilentlyContinue
+        }
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 0
+        Write-Host "Enabling Tailored Experiences..."
+        If (Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
+            Remove-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
+        }
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 0
+        Write-Host "Disabling Advertising ID..."
+        If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo") {
+            Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Recurse -ErrorAction SilentlyContinue
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 0
+        Write-Host "Allow Error reporting..."
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 0
+        Write-Host "Allowing Diagnostics Tracking Service..."
+        Stop-Service "DiagTrack" -WarningAction SilentlyContinue
+        Set-Service "DiagTrack" -StartupType Manual
+        Write-Host "Allowing WAP Push Service..."
+        Stop-Service "dmwappushservice" -WarningAction SilentlyContinue
+        Set-Service "dmwappushservice" -StartupType Manual
+        Write-Host "Allowing Home Groups services..."
+        Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue
+        Set-Service "HomeGroupListener" -StartupType Manual
+        Stop-Service "HomeGroupProvider" -WarningAction SilentlyContinue
+        Set-Service "HomeGroupProvider" -StartupType Manual
+        Write-Host "Enabling Storage Sense..."
+        New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" | Out-Null
+        Write-Host "Allowing Superfetch service..."
+        Stop-Service "SysMain" -WarningAction SilentlyContinue
+        Set-Service "SysMain" -StartupType Manual
+        Write-Host "Setting BIOS time to Local Time instead of UTC..."
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 0
+        Write-Host "Enabling Hibernation..."
         Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 1
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -ErrorAction SilentlyContinue
-        
-        If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager")) {
+
+        Write-Host "Hiding file operations details..."
+        If (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager") {
             Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Recurse -ErrorAction SilentlyContinue
         }
-        If (!(Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules")) {
-            Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Recurse -ErrorAction SilentlyContinue
-        }
-        If (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
-            Remove-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-        }
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo")) {
-            Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Recurse -ErrorAction SilentlyContinue
-        }
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
-            Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-        }
-        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location")) {
-            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
-        }
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 0
+        Write-Host "Showing Task View button..."
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
 
-        Write-Logs -Level INFO -Message "Unrestricting AutoLogger directory" -LogPath $sync.logfile
+        Write-Host "Changing default Explorer view to Quick Access..."
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
+
+        Write-Host "Unrestricting AutoLogger directory"
         $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
         icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-        Write-Logs -Level INFO -Message "Reset Local Group Policies to Stock Defaults" -LogPath $sync.logfile        
+        Write-Host "Enabling and starting Diagnostics Tracking Service"
+        Set-Service "DiagTrack" -StartupType Automatic
+        Start-Service "DiagTrack"
+
+        Write-Host "Hiding known file extensions"
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
+
+        Write-Host "Reset Local Group Policies to Stock Defaults"
         # cmd /c secedit /configure /cfg %windir%\inf\defltbase.inf /db defltbase.sdb /verbose
         cmd /c RD /S /Q "%WinDir%\System32\GroupPolicyUsers"
         cmd /c RD /S /Q "%WinDir%\System32\GroupPolicy"
         cmd /c gpupdate /force
+        # Considered using Invoke-GPUpdate but requires module most people won't have installed
 
-        Write-Logs -Level INFO -Message "Restoring Clipboard History..." -LogPath $sync.logfile        
+        Write-Output "Adjusting visual effects for appearance..."
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158, 30, 7, 128, 18, 0, 0, 0))
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 1
+        Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
+        Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
+        Write-Host "Restoring Clipboard History..."
         Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
         Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
+        Write-Host "Enabling Notifications and Action Center"
+        Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
+        Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
+        Write-Host "Restoring Default Right Click Menu Layout"
+        Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
 
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158,30,7,128,18,0,0,0))
+        Write-Host "Reset News and Interests"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 1
+        # Remove "News and Interest" from taskbar
+        Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
+        Write-Host "Done - Reverted to Stock Settings"
 
-        if($sync["Form"]){
-            $sync.taskrunning = $false
-            [System.Windows.MessageBox]::Show("All tweaks have been removed",'Undo is done!',"OK","Info")
+        #Enable Gamebar Presence Writer
+        PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 1 }
+
+        Write-Host "Essential Undo Completed"
+
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Undo All"
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+        Write-Host "================================="
+        Write-Host "---   Undo All is Finished    ---"
+        Write-Host "================================="
+    })
+#===========================================================================
+# Tab 3 - Config Buttons
+#===========================================================================
+$WPFFeatureInstall.Add_Click({
+
+        If ( $WPFFeaturesdotnet.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "NetFx4-AdvSrvs" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -NoRestart
         }
-    }
+        If ( $WPFFeatureshyperv.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Tools-All" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-PowerShell" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Hypervisor" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Services" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All -NoRestart
+            cmd /c bcdedit /set hypervisorschedulertype classic
+            Write-Host "HyperV is now installed and configured. Please Reboot before using."
+        } 
+        If ( $WPFFeatureslegacymedia.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "DirectPlay" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "LegacyComponents" -All -NoRestart
+        }
+        If ( $WPFFeaturewsl.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All -NoRestart
+            Write-Host "WSL is now installed and configured. Please Reboot before using."
+        }
+        If ( $WPFFeaturenfs.IsChecked -eq $true ) {
+            Enable-WindowsOptionalFeature -Online -FeatureName "ServicesForNFS-ClientOnly" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "ClientForNFS-Infrastructure" -All -NoRestart
+            Enable-WindowsOptionalFeature -Online -FeatureName "NFS-Administration" -All -NoRestart
+            nfsadmin client stop
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousUID" -Type DWord -Value 0
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
+            nfsadmin client start
+            nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
+            Write-Host "NFS is now setup for user based NFS mounts"
+        }
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "All features are now installed "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    #===========================================================================
-    # Tab 3 - Config Buttons
-    #===========================================================================
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
-    <#
+        Write-Host "================================="
+        Write-Host "---  Features are Installed   ---"
+        Write-Host "================================="
+    })
 
-        This section is working as expected and logs output to console and $ENV:Temp\winutil.log
+$WPFPanelDISM.Add_Click({
+        Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan; 
+        Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
+        Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+        Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
+        Read-Host '`nPress Enter to Continue'" -verb runas
+    })
+$WPFPanelAutologin.Add_Click({
+        curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+        cmd /c autologin.exe
+    })
+$WPFPanelcontrol.Add_Click({
+        cmd /c control
+    })
+$WPFPanelnetwork.Add_Click({
+        cmd /c ncpa.cpl
+    })
+$WPFPanelpower.Add_Click({
+        cmd /c powercfg.cpl
+    })
+$WPFPanelsound.Add_Click({
+        cmd /c mmsys.cpl
+    })
+$WPFPanelsystem.Add_Click({
+        cmd /c sysdm.cpl
+    })
+$WPFPaneluser.Add_Click({
+        cmd /c "control userpasswords2"
+    })
+#===========================================================================
+# Tab 4 - Updates Buttons
+#===========================================================================
 
-        TODO: Error Handling as Try blocks and -erroraction stop causes runspace to lock up
+$WPFUpdatesdefault.Add_Click({
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
+        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
+        
+        $services = @(
+            "BITS"
+            "wuauserv"
+        )
+
+        foreach ($service in $services) {
+            # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+
+            Write-Host "Setting $service StartupType to Automatic"
+            Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+        }
+        Write-Host "Enabling driver offering through Windows Update..."
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+        Write-Host "Enabling Windows Update automatic restart..."
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+        Write-Host "Enabled driver offering through Windows Update"
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
+        Write-Host "================================="
+        Write-Host "---  Updates Set to Default   ---"
+        Write-Host "================================="
+    })
+
+$WPFFixesUpdate.Add_Click({
+        ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
+        Write-Host "1. Stopping Windows Update Services..." 
+        Stop-Service -Name BITS 
+        Stop-Service -Name wuauserv 
+        Stop-Service -Name appidsvc 
+        Stop-Service -Name cryptsvc 
     
-    #>
-
-    $Sync.GUIFeatures = {
-        
-        <#
-
-            .DESCRIPTION
-            This Scriptblock is meant to be ran from inside the GUI and will prevent the user from starting another install task. 
-
-            Input data will look like below and link with the name of the check box. This will then look to the config/features.json file to find
-            the install commands for the selected features.
-
-            Featureshyperv,Featureslegacymedia
-
-            .EXAMPLE
-
-            Invoke-command $sync.GUIInstallPrograms -ArgumentList "Featureshyperv,Featureslegacymedia"
-
-        #>
-        
-        param ($featuretoinstall)
-
-        #Check if any check boxes have been checked and if a task is currently running 
-
-            if ($sync.taskrunning -eq $true){
-                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
-                return
-            }
-
-            if($featuretoinstall -notlike "*Features*"){
-                [System.Windows.MessageBox]::Show("Please check the features you wish to install",'Nothing to do',"OK","Info")
-                return
-            }
-
-            $sync.taskrunning = $true
-
-        #Invoke a runspace so that the GUI does not lock up  
-            
-            $params = @{
-                ScriptBlock = $sync.ScriptFeatureInstall
-                ArgumentList = ("$featuretoinstall")
-            }
-            
-            Invoke-Runspace @params
-
-    }
-
-    $sync.ScriptFeatureInstall = {
-
-        <#
-
-            .DESCRIPTION
-            This scriptblock will install the selected features from the config/features.json file. 
-
-            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
-
-            .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptFeatureInstall
-                ArgumentList = "Featureshyperv,Featureslegacymedia"
-                Verbose = $true
-            }
-            VerbosePreference = "Continue"
-            Invoke-Command @params
-
-        #>
-
-        param ($featuretoinstall)
-
-        $featuretoinstall = $featuretoinstall -split ","
-
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
-        }
-        
-        Foreach ($feature in $featuretoinstall){
-
-            $sync.feature.$feature | ForEach-Object {
-                Try{
-                    Write-Logs -Level INFO -Message "Installing Windows Feature $psitem" -LogPath $sync.logfile
-                    Enable-WindowsOptionalFeature -Online -FeatureName "$psitem" -All -NoRestart
-                    Write-output $psitem
-                }Catch{Write-Logs -Level ERROR -Message "Failed to install $psitem" -LogPath $sync.logfile}
-
-            }
-
-        }
-
-        Write-Logs -Level INFO -Message "Finished Installing features" -LogPath $sync.logfile
-
-        if($sync["Form"]){
-            $sync.taskrunning = $false
-            [System.Windows.MessageBox]::Show("Features have been installed",'Installs are done!',"OK","Info")
-        }
-        
-    }
-
-    #===========================================================================
-    # Tab 4 - Updates Buttons
-    #===========================================================================
+        Write-Host "2. Remove QMGR Data file..." 
+        Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
     
-    $Sync.GUIUpdates = {
-        
-        <#
-
-            .DESCRIPTION
-
-            Current Options
-
-            "Updatesdefault" 
-            "Updatesdisable" 
-            "Updatessecurity"
-
-            .EXAMPLE
-
-            Invoke-command $sync.GUIUpdates -ArgumentList "Updatesdefault"
-
-        #>
-        
-        param ($updatestoconfigure)
-
-        #Check if any check boxes have been checked and if a task is currently running 
-
-            if ($sync.taskrunning -eq $true){
-                [System.Windows.MessageBox]::Show($sync.taskmessage,$sync.tasktitle,"OK","Info")
-                return
-            }
-
-            $sync.taskrunning = $true
-
-        #Invoke a runspace so that the GUI does not lock up  
-            
-            $params = @{
-                ScriptBlock = $sync.ScriptUpdates
-                ArgumentList = ("$updatestoconfigure")
-            }
-            
-            Invoke-Runspace @params
-
-    }
-
-    $sync.ScriptUpdates = {
-
-        <#
-
-            .DESCRIPTION
-            This scriptblock will install the selected features from the config/features.json file. 
-
-            TODO: Figure out error handling as any errors in this runspace will crash the powershell session.
-
-            .EXAMPLE
-
-            $params = @{
-                ScriptBlock = $sync.ScriptFeatureInstall
-                ArgumentList = "Featureshyperv,Featureslegacymedia"
-                Verbose = $true
-            }
-            VerbosePreference = "Continue"
-            Invoke-Command @params
-
-        #>
-
-        param ($updatestoconfigure)
-
-        function Write-Logs {
-            param($Level, $Message, $LogPath)
-            Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
-        }
-        if($updatestoconfigure -eq "Updatesdefault"){
-            # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1 reversed! 
-            Set-StrictMode -Version Latest
-            $ProgressPreference = 'SilentlyContinue'
-            $ErrorActionPreference = 'Stop'
-            trap {
-                Write-Logs -Level "ERROR" -LogPath $sync.logfile -Message $psitem
-                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Sleeping for 60m to give you time to look around the virtual machine before self-destruction..."
-            }
-
-            # disable automatic updates.
-            # XXX this does not seem to work anymore.
-            # see How to configure automatic updates by using Group Policy or registry settings
-            #     at https://support.microsoft.com/en-us/help/328010
-            function New-Directory($path) {
-                $p, $components = $path -split '[\\/]'
-                $components | ForEach-Object {
-                    $p = "$p\$psitem"
-                    if (!(Test-Path $p)) {
-                        New-Item -ItemType Directory $p | Out-Null
-                    }
-                }
-                $null
-            }
-            $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
-            New-Directory $auPath 
-            # set NoAutoUpdate.
-            # 0: Automatic Updates is enabled (default).
-            # 1: Automatic Updates is disabled.
-            New-ItemProperty `
-                -Path $auPath `
-                -Name NoAutoUpdate `
-                -Value 0 `
-                -PropertyType DWORD `
-                -Force `
-                | Out-Null
-            # set AUOptions.
-            # 1: Keep my computer up to date has been disabled in Automatic Updates.
-            # 2: Notify of download and installation.
-            # 3: Automatically download and notify of installation.
-            # 4: Automatically download and scheduled installation.
-            New-ItemProperty `
-                -Path $auPath `
-                -Name AUOptions `
-                -Value 3 `
-                -PropertyType DWORD `
-                -Force `
-                | Out-Null
-
-            # disable Windows Update Delivery Optimization.
-            # NB this applies to Windows 10.
-            # 0: Disabled
-            # 1: PCs on my local network
-            # 3: PCs on my local network, and PCs on the Internet
-            $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-            if (Test-Path $deliveryOptimizationPath) {
-                New-ItemProperty `
-                    -Path $deliveryOptimizationPath `
-                    -Name DODownloadMode `
-                    -Value 0 `
-                    -PropertyType DWORD `
-                    -Force `
-                    | Out-Null
-            }
-            # Service tweaks for Windows Update
-
-            $services = @(
-                "BITS"
-                "wuauserv"
-            )
-
-            foreach ($service in $services) {
-                # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
-
-                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Setting $service StartupType to Automatic"
-                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
-            }
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling driver offering through Windows Update..."
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling Windows Update automatic restart..."
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabled driver offering through Windows Update"
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
-
-            ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "1. Stopping Windows Update Services..." 
-            Stop-Service -Name BITS 
-            Stop-Service -Name wuauserv 
-            Stop-Service -Name appidsvc 
-            Stop-Service -Name cryptsvc 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "2. Remove QMGR Data file..." 
-            Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "3. Renaming the Software Distribution and CatRoot Folder..." 
-            Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue 
-            Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "4. Removing old Windows Update log..." 
-            Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "5. Resetting the Windows Update Services to defualt settings..." 
-            "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-            "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-
-            Set-Location $env:systemroot\system32 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "6. Registering some DLLs..." 
-            regsvr32.exe /s atl.dll 
-            regsvr32.exe /s urlmon.dll 
-            regsvr32.exe /s mshtml.dll 
-            regsvr32.exe /s shdocvw.dll 
-            regsvr32.exe /s browseui.dll 
-            regsvr32.exe /s jscript.dll 
-            regsvr32.exe /s vbscript.dll 
-            regsvr32.exe /s scrrun.dll 
-            regsvr32.exe /s msxml.dll 
-            regsvr32.exe /s msxml3.dll 
-            regsvr32.exe /s msxml6.dll 
-            regsvr32.exe /s actxprxy.dll 
-            regsvr32.exe /s softpub.dll 
-            regsvr32.exe /s wintrust.dll 
-            regsvr32.exe /s dssenh.dll 
-            regsvr32.exe /s rsaenh.dll 
-            regsvr32.exe /s gpkcsp.dll 
-            regsvr32.exe /s sccbase.dll 
-            regsvr32.exe /s slbcsp.dll 
-            regsvr32.exe /s cryptdlg.dll 
-            regsvr32.exe /s oleaut32.dll 
-            regsvr32.exe /s ole32.dll 
-            regsvr32.exe /s shell32.dll 
-            regsvr32.exe /s initpki.dll 
-            regsvr32.exe /s wuapi.dll 
-            regsvr32.exe /s wuaueng.dll 
-            regsvr32.exe /s wuaueng1.dll 
-            regsvr32.exe /s wucltui.dll 
-            regsvr32.exe /s wups.dll 
-            regsvr32.exe /s wups2.dll 
-            regsvr32.exe /s wuweb.dll 
-            regsvr32.exe /s qmgr.dll 
-            regsvr32.exe /s qmgrprxy.dll 
-            regsvr32.exe /s wucltux.dll 
-            regsvr32.exe /s muweb.dll 
-            regsvr32.exe /s wuwebv.dll 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "7) Removing WSUS client settings..." 
-            #Fix to stop runspace from locking up if values not found
-            start-process powershell.exe -Verb RunAs -ArgumentList "-c `"
-                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v AccountDomainSid /f
-                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v PingID /f
-                REG DELETE `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate`" /v SusClientId /f`"
-            "
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "8) Resetting the WinSock..." 
-            netsh winsock reset 
-            netsh winhttp reset proxy 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "9) Delete all BITS jobs..." 
-            Get-BitsTransfer | Remove-BitsTransfer 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "10) Attempting to install the Windows Update Agent..." 
-            if([System.Environment]::Is64BitOperatingSystem){ 
-                wusa Windows8-RT-KB2937636-x64 /quiet
-            } 
-            else{ 
-                wusa Windows8-RT-KB2937636-x86 /quiet
-            } 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "11) Starting Windows Update Services..." 
-            Start-Service -Name BITS 
-            Start-Service -Name wuauserv 
-            Start-Service -Name appidsvc 
-            Start-Service -Name cryptsvc 
-
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "12) Forcing discovery..." 
-            wuauclt /resetauthorization /detectnow 
-        }
-        if($updatestoconfigure -eq "Updatesdisable"){
-            # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1
-            Set-StrictMode -Version Latest
-            $ProgressPreference = 'SilentlyContinue'
-            $ErrorActionPreference = 'Stop'
-            trap {
-                Write-Logs -Level "ERROR" -LogPath $sync.logfile -Message $psitem
-                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Sleeping for 60m to give you time to look around the virtual machine before self-destruction..."
-            }
-
-            # disable automatic updates.
-            # XXX this does not seem to work anymore.
-            # see How to configure automatic updates by using Group Policy or registry settings
-            #     at https://support.microsoft.com/en-us/help/328010
-            function New-Directory($path) {
-                $p, $components = $path -split '[\\/]'
-                $components | ForEach-Object {
-                    $p = "$p\$_"
-                    If (!(Test-Path $p)) {
-                        New-Item -ItemType Directory $p | Out-Null
-                    }
-                }
-                $null
-            }
-            $auPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
-            New-Directory $auPath 
-            # set NoAutoUpdate.
-            # 0: Automatic Updates is enabled (default).
-            # 1: Automatic Updates is disabled.
-            New-ItemProperty `
-                -Path $auPath `
-                -Name NoAutoUpdate `
-                -Value 1 `
-                -PropertyType DWORD `
-                -Force `
-            | Out-Null
-            # set AUOptions.
-            # 1: Keep my computer up to date has been disabled in Automatic Updates.
-            # 2: Notify of download and installation.
-            # 3: Automatically download and notify of installation.
-            # 4: Automatically download and scheduled installation.
-            New-ItemProperty `
-                -Path $auPath `
-                -Name AUOptions `
-                -Value 1 `
-                -PropertyType DWORD `
-                -Force `
-            | Out-Null
-
-            # disable Windows Update Delivery Optimization.
-            # NB this applies to Windows 10.
-            # 0: Disabled
-            # 1: PCs on my local network
-            # 3: PCs on my local network, and PCs on the Internet
-            $deliveryOptimizationPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
-            If (Test-Path $deliveryOptimizationPath) {
-                New-ItemProperty `
-                    -Path $deliveryOptimizationPath `
-                    -Name DODownloadMode `
-                    -Value 0 `
-                    -PropertyType DWORD `
-                    -Force `
-                | Out-Null
-            }
-            # Service tweaks for Windows Update
-
-            $services = @(
-                "BITS"
-                "wuauserv"
-            )
-
-            foreach ($service in $services) {
-                # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
-
-                Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Setting $service StartupType to Disabled"
-                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-            }
-        }    
-        if($updatestoconfigure -eq "Updatessecurity"){
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabling driver offering through Windows Update..."
-            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
-                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
-            }
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
-            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
-                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
-            }
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
-            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
-                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
-            }
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabling Windows Update automatic restart..."
-            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-            }
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
-            Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Disabled driver offering through Windows Update"
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
-        }    
-
-        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Process complete. Please reboot your computer."
-
-        if($sync["Form"]){
-            $sync.taskrunning = $false
-            [System.Windows.MessageBox]::Show("Updates have been configured",'Configuration is done!',"OK","Info")
-        }
-        
-    }
-
-#endregion Scripts
-
-$runspace = [RunspaceFactory]::CreateRunspace()
-$runspace.ApartmentState = "STA"
-$runspace.ThreadOptions = "ReuseThread"
-$runspace.Open()
-$runspace.SessionStateProxy.SetVariable("sync", $sync)
-
-#Get ComputerInfo in the background
-Invoke-Runspace -ScriptBlock {$sync.ComputerInfo = Get-ComputerInfo} | Out-Null
-
-#region form
-
-    #WinForms dependancies 
-    [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-    Add-Type -AssemblyName System.Windows.Forms
-    Add-Type -AssemblyName PresentationFramework
-    [System.Windows.Forms.Application]::EnableVisualStyles()
-
-    #List of config files to import
-    $configs = (
-        "applications", 
-        "tweaks",
-        "preset", 
-        "feature"
-    )
-
-    #Test for admin credentials
-    if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        $IsAdmin = $false
-    }
-
-    #To use local files run $env:environment = "dev" before starting the ps1 file
-    if($env:environment -eq "dev"){
-
-        if($IsAdmin -eq $false){
-            [System.Windows.MessageBox]::Show("This application needs to be run as Admin",'Administrative privileges required',"OK","Info")
-            return
-        }
-        
-        $confirm = [System.Windows.MessageBox]::Show('$ENV:Evnronment is set to dev. Do you wish to load the dev environment?','Dev Environment tag detected',"YesNo","Info")
-    }
-
-    if($confirm -eq "yes"){
-        $inputXML = Get-Content "MainWindow.xaml"
-        $configs | ForEach-Object {
-            $sync["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-        }        
-    }
-    else{
-
-        #Select the working branch
-        if($env:branch){
-            $branch = $env:branch
-        }
-        Else {$branch = "main"}
-
-        if($IsAdmin -eq $false){
-            Write-Output "This application needs to be run as an administrator. Attempting relaunch"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
-            break
-        }
-
-        $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/MainWindow.xaml")
-        $configs | ForEach-Object {
-            $sync["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$branch/config/$psitem.json"
-        }
-    }
-
-#endregion form    
-
-write-host ""                                                                                                                             
-write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
-write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
-write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
-write-host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
-write-host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C                     T:::::T                T:::::T        "
-write-host "C:::::C       CCCCCC        T:::::T                T:::::T        "
-write-host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
-write-host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-write-host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
-write-host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
-write-host ""
-write-host "====Chris Titus Tech====="
-write-host "=====Windows Toolbox====="
-
-if($gui -eq $true){
-    $inputXML = $inputXML -replace 'mc:Ignorable="d"','' -replace "x:N",'N' -replace '^<Win.*', '<Window'
-    [xml]$XAML = $inputXML
-    $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+        Write-Host "3. Renaming the Software Distribution and CatRoot Folder..." 
+        Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue 
+        Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue 
     
-    try{$sync["Form"]=[Windows.Markup.XamlReader]::Load( $reader )}
-    catch [System.Management.Automation.MethodInvocationException] {
-        Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-        write-host $error[0].Exception.Message -ForegroundColor Red
-        if ($error[0].Exception.Message -like "*button*"){
-            write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"}
-    }
-    catch{#if it broke some other way <img draggable="false" role="img" class="emoji" alt="ðŸ˜€" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
-        Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
-    }
-
-    # Store Form Objects In PowerShell
-    $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
-
-    #Gives every button the invoke-button function
-    $sync.keys | ForEach-Object {
-        if($sync.$psitem){
-            if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-                $sync["$psitem"].Add_Click({
-                    [System.Object]$Sender = $args[0]
-                    Invoke-Button $Sender.name
-                })
-            }
+        Write-Host "4. Removing old Windows Update log..." 
+        Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
+    
+        Write-Host "5. Resetting the Windows Update Services to defualt settings..." 
+        "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
+        "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
+        Set-Location $env:systemroot\system32 
+    
+        Write-Host "6. Registering some DLLs..." 
+        regsvr32.exe /s atl.dll 
+        regsvr32.exe /s urlmon.dll 
+        regsvr32.exe /s mshtml.dll 
+        regsvr32.exe /s shdocvw.dll 
+        regsvr32.exe /s browseui.dll 
+        regsvr32.exe /s jscript.dll 
+        regsvr32.exe /s vbscript.dll 
+        regsvr32.exe /s scrrun.dll 
+        regsvr32.exe /s msxml.dll 
+        regsvr32.exe /s msxml3.dll 
+        regsvr32.exe /s msxml6.dll 
+        regsvr32.exe /s actxprxy.dll 
+        regsvr32.exe /s softpub.dll 
+        regsvr32.exe /s wintrust.dll 
+        regsvr32.exe /s dssenh.dll 
+        regsvr32.exe /s rsaenh.dll 
+        regsvr32.exe /s gpkcsp.dll 
+        regsvr32.exe /s sccbase.dll 
+        regsvr32.exe /s slbcsp.dll 
+        regsvr32.exe /s cryptdlg.dll 
+        regsvr32.exe /s oleaut32.dll 
+        regsvr32.exe /s ole32.dll 
+        regsvr32.exe /s shell32.dll 
+        regsvr32.exe /s initpki.dll 
+        regsvr32.exe /s wuapi.dll 
+        regsvr32.exe /s wuaueng.dll 
+        regsvr32.exe /s wuaueng1.dll 
+        regsvr32.exe /s wucltui.dll 
+        regsvr32.exe /s wups.dll 
+        regsvr32.exe /s wups2.dll 
+        regsvr32.exe /s wuweb.dll 
+        regsvr32.exe /s qmgr.dll 
+        regsvr32.exe /s qmgrprxy.dll 
+        regsvr32.exe /s wucltux.dll 
+        regsvr32.exe /s muweb.dll 
+        regsvr32.exe /s wuwebv.dll 
+    
+        Write-Host "7) Removing WSUS client settings..." 
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f 
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f 
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f 
+    
+        Write-Host "8) Resetting the WinSock..." 
+        netsh winsock reset 
+        netsh winhttp reset proxy 
+        netsh int ip reset
+    
+        Write-Host "9) Delete all BITS jobs..." 
+        Get-BitsTransfer | Remove-BitsTransfer 
+    
+        Write-Host "10) Attempting to install the Windows Update Agent..." 
+        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) { 
+            wusa Windows8-RT-KB2937636-x64 /quiet 
         }
-    }
+        else { 
+            wusa Windows8-RT-KB2937636-x86 /quiet 
+        } 
+    
+        Write-Host "11) Starting Windows Update Services..." 
+        Start-Service -Name BITS 
+        Start-Service -Name wuauserv 
+        Start-Service -Name appidsvc 
+        Start-Service -Name cryptsvc 
+    
+        Write-Host "12) Forcing discovery..." 
+        wuauclt /resetauthorization /detectnow 
+    
+        Write-Host "Process complete. Please reboot your computer."
 
-    $sync["Form"].ShowDialog() | out-null
-}
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Reset Windows Update "
+        $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-<#
-    How to run Arguments
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        Write-Host "================================="
+        Write-Host "-- Reset ALL Updates to Factory -"
+        Write-Host "================================="
+    })
 
-    First step is to set the $env:args variable with the setups you wish to do. To do multiple items put a " " space between each command. 
-    For commands that require input seperate the command with a semicolon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
+$WPFUpdatesdisable.Add_Click({
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
+        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
+    
+        $services = @(
+            "BITS"
+            "wuauserv"
+        )
 
-    Supported arguments:
+        foreach ($service in $services) {
+            # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
 
-        InstallUpgrade
-        UndoTweaks
-        PanelControl
-        PanelNetwork
-        PanelPower
-        PanelSound
-        PanelSystem
-        PanelUser
-        DefaultUpdates
-        DisableUpdates
-        EnableSecurity
-        QuitAfter
-        Install:value1,values2,...
-            - Values should be the same values you would use for winget
-        Tweaks:value1,values2,...
-            - Values should be what you find inside the tweaks.json file
+            Write-Host "Setting $service StartupType to Disabled"
+            Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+        }
+        Write-Host "================================="
+        Write-Host "---  Updates ARE DISABLED     ---"
+        Write-Host "================================="
+    })
+$WPFUpdatessecurity.Add_Click({
+        Write-Host "Disabling driver offering through Windows Update..."
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
+        Write-Host "Disabling Windows Update automatic restart..."
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
+        Write-Host "Disabled driver offering through Windows Update"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
+    
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Set Security Updates"
+        $Messageboxbody = ("Recommended Update settings loaded")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    Example usage: 
-      
-        $env:args = "Install:git.git,WinDirStat.WinDirStat "; iwr -useb https://christitus.com/win | iex
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+        Write-Host "================================="
+        Write-Host "-- Updates Set to Recommended ---"
+        Write-Host "================================="
+    })
 
-        $env:args = "Tweaks:EssTweaksLoc,EssTweaksServices"; iwr -useb https://christitus.com/win | iex
-
-        $env:args = "DefaultUpdates"; iwr -useb https://christitus.com/win | iex
-
-        $env:args = "Install:git.git,WinDirStat.WinDirStat Tweaks:EssTweaksLoc,EssTweaksServices DefaultUpdates"; iwr -useb https://christitus.com/win | iex
-
-#>
-
-If($env:args){
-    Write-Verbose "Arguments Detected, Running Args"
-    If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
-    If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
-    If($env:args -match '\bPanelControl\b'){cmd /c control}
-    If($env:args -match '\bPanelNetwork\b'){cmd /c ncpa.cpl}
-    If($env:args -match '\bPanelPower\b'){cmd /c powercfg.cpl}
-    If($env:args -match '\bPanelSound\b'){cmd /c mmsys.cpl}
-    If($env:args -match '\bPanelSystem\b'){cmd /c sysdm.cpl}
-    If($env:args -match '\bPanelUser\b'){cmd /c "control userpasswords2"}
-    If($env:args -match '\bDefaultUpdates\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatesdefault"}
-    If($env:args -match '\bDisableUpdates\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatesdisable"}
-    If($env:args -match '\bEnableSecurity\b'){Invoke-command $sync.ScriptUpdates -ArgumentList "Updatessecurity"}
-    If($env:args -match '\bQuitAfter\b'){Break}
-    If($env:args -match '\bInstall\b'){
-        $ProgramstoInstall = (($env:args-split " " | Where-Object {$_ -like "install*"} ) -split ":")[1]
-        Write-Verbose "Installing $ProgramstoInstall."
-        Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "$ProgramstoInstall"
-    }
-    If($env:args -match '\bTweaks\b'){
-        $Tweakstorun = (($env:args-split " " | Where-Object {$_ -like "Tweaks*"} ) -split ":")[1]
-        Write-Verbose "Running the following tweaks $Tweakstorun."
-        Invoke-command $sync.ScriptTweaks -ArgumentList "$Tweakstorun"
-    }
-}
-
-Write-Host "Thank you for using winutil!"
+#===========================================================================
+# Shows the form
+#===========================================================================
+$Form.ShowDialog() | out-null
