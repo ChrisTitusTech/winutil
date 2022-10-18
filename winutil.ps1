@@ -620,8 +620,13 @@
     
             Write-Logs -Level INFO -Message "Finished Scripts" -LogPath $sync.logfile
         }
-
-        Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
+				# 
+				# Fix bad tweaks made from previous versions
+				#
+				Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
+				Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
+       
+			 Write-Logs -Level INFO -Message "Tweaks finished" -LogPath $sync.logfile
         
         if($sync["Form"]){
             $sync.taskrunning = $false
