@@ -844,9 +844,11 @@ $WPFtweaksbutton.Add_Click({
             $WPFMiscTweaksRightClickMenu.IsChecked = $false
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
-            Write-Host "Running O&O Shutup with Recommended Settings"
-            curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
-            curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
+            If (!(Test-Path .\ooshutup10.cfg)) {
+                Write-Host "Running O&O Shutup with Recommended Settings"
+                curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
+                curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
+            }
             ./OOSU10.exe ooshutup10.cfg /quiet
             $WPFEssTweaksOO.IsChecked = $false
         }
