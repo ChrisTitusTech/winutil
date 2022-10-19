@@ -1,3 +1,6 @@
+#for CI/CD
+$BranchToUse = 'main'
+
 <#
 .NOTES
     Author              : @ChrisTitusTech   
@@ -283,8 +286,7 @@ $Sync.GUIInstallPrograms = {
         if($winget -eq $null){
             [System.Windows.MessageBox]::Show("No found applications to install",'Nothing to do',"OK","Info")
             return
-        }            
-
+        }           
         
     #Invoke a runspace so that the GUI does not lock up
 
@@ -302,7 +304,6 @@ $Sync.GUIInstallPrograms = {
 $sync.ScriptsInstallPrograms = {
 
     <#
-
         .DESCRIPTION
         This scriptblock will detect if winget is installed and if not attempt to install it. Once ready it will then either upgrade any installs or attempt to install any applications provided.
 
@@ -1304,7 +1305,8 @@ else{
     if($env:branch){
         $branch = $env:branch
     }
-    Else {$branch = "main"}
+    
+    Else {$branch = $BranchToUse}
 
     if($IsAdmin -eq $false){
         Write-Output "This application needs to be run as an administrator. Attempting relaunch"
