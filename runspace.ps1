@@ -1307,7 +1307,7 @@ else{
     if($env:branch){
         $branch = $env:branch
     }
-    Else {$branch = $branchtouse}
+    Else {$branch = $BranchToUse}
 
     if($IsAdmin -eq $false){
         Write-Output "This application needs to be run as an administrator. Attempting relaunch"
