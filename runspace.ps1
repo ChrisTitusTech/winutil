@@ -1,5 +1,5 @@
 #for CI/CD
-$branchtouse = "$GITHUB_BASE_REF"
+$branchToUse = 'testing'
 
 <#
 .NOTES
