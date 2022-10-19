@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
     - name: Create local changes
       run: |
-        sed -i '/$branchtouse = /c\$branchtouse = "${{ github.GITHUB_BASE_REF }}"' runspace.ps1
+        sed -i '/$branchtouse = /c\$branchtouse = "$GITHUB_BASE_REF"' runspace.ps1
     - name: Commit & Push changes
       uses: actions-js/push@master
       with:
