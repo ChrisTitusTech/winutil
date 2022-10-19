@@ -1,5 +1,5 @@
 #for CI/CD
-$branchtouse = ""
+$branchtouse = "$GITHUB_BASE_REF"
 
 <#
 .NOTES
