@@ -22,7 +22,7 @@ If you are having TLS 1.2 Issues or You cannot find or resolve `christitus.com/w
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1')
 ```
 
-EXE Wrapper for $5 @ https://www.cttstore.com/windows-toolbox
+EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
 ## Overview
 
