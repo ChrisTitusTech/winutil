@@ -1,3 +1,6 @@
+#for CI/CD
+$branchtouse = "wrong"
+
 <#
 .NOTES
     Author              : @ChrisTitusTech   
@@ -1304,7 +1307,7 @@ else{
     if($env:branch){
         $branch = $env:branch
     }
-    Else {$branch = "main"}
+    Else {$branch = $branchtouse}
 
     if($IsAdmin -eq $false){
         Write-Output "This application needs to be run as an administrator. Attempting relaunch"
