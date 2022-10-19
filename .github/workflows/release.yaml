@@ -2,7 +2,6 @@ name: Update Branch
 
 on:
   push:
-    branches: [ main ]
 
 jobs:
   build:
