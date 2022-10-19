@@ -1,5 +1,5 @@
 #for CI/CD
-$branchtouse = "wrong"
+$branchtouse = ""
 
 <#
 .NOTES
