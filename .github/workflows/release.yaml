@@ -1,23 +1,19 @@
-name: Docker Image CI
+name: Update Branch
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+        ref: ${{ github.head_ref }}
     - name: Create local changes
       run: |
-        sed -i "/\$BranchToUse = /c\$branchToUse = '$GITHUB_BASE_REF'" runspace.ps1
-    - name: Commit & Push changes
-      uses: actions-js/push@master
+        sed -i "/\$BranchToUse = /c\$branchToUse = '${{ github.head_ref }}'" runspace.ps1
+    - uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        commit_message: Update Branch in script
