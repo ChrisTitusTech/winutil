@@ -42,7 +42,7 @@ function Invoke-Button {
     Param ([string]$Button) 
 
     #Use this to get the name of the button
-    [System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
     Switch -Wildcard ($Button){
 
