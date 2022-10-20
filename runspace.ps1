@@ -226,7 +226,7 @@ $Sync.AutologinInstall = {
 
     # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
     Invoke-WebRequest "https://live.sysinternals.com/Autologon.exe" -OutFile $env:TEMP\autologin.exe
-    Start-Process -FilePath powershell.exe -Verb runas -ArgumentList "-c $ENV:Temp\autologin.exe"
+    Start-Process -FilePath powershell.exe -Verb runas -ArgumentList "-c $ENV:Temp\autologin.exe" -WindowStyle Hidden
 
 }
 
