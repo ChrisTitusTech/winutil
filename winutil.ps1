@@ -57,120 +57,10 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.N
     return $OpenFileDialog.filename
 }
 
-$programs = @("Installlibreoffice", 
-"Installadobe", 
-"Installadvancedip", 
-"Installatom", 
-"Installaudacity", 
-"Installautohotkey", 
-"Installbrave", 
-"Installchrome", 
-"Installtor", 
-"Installdiscord", 
-"Installesearch", 
-"Installetcher", 
-"Installfirefox", 
-"Installgimp", 
-"Installgit", 
-"Installgithubdesktop", 
-"Installimageglass", 
-"Installjava8", 
-"Installjava16", 
-"Installjava18", 
-"Installjetbrains", 
-"Installmpc", 
-"Installnodejs", 
-"Installnodejslts", 
-"Installnotepadplus", 
-"Installpowertoys", 
-"Installputty", 
-"Installpython3", 
-"Installrustlang", 
-"Installsevenzip", 
-"Installsharex", 
-"Installsublime", 
-"Installsumatra", 
-"Installterminal", 
-"Installidm", 
-"Installalacritty", 
-"Installttaskbar", 
-"Installvlc", 
-"Installkdenlive", 
-"Installvscode", 
-"Installvscodium", 
-"Installwinscp", 
-"Installanydesk", 
-"Installbitwarden", 
-"Installblender", 
-"Installchromium", 
-"Installcpuz", 
-"Installeartrumpet", 
-"Installepicgames", 
-"Installflameshot", 
-"Installfoobar", 
-"Installgog", 
-"Installgpuz", 
-"Installglaryutilities", 
-"Installgreenshot", 
-"Installhandbrake", 
-"Installhexchat", 
-"Installhwinfo", 
-"Installinkscape", 
-"Installkeepass", 
-"Installlibrewolf", 
-"Installmalwarebytes", 
-"Installmatrix", 
-"Installmremoteng", 
-"Installnvclean", 
-"Installobs", 
-"Installobsidian", 
-"Installrevo", 
-"Installrufus", 
-"Installsignal", 
-"Installskype", 
-"Installslack", 
-"Installspotify", 
-"Installsteam", 
-"Installteamviewer", 
-"Installteams", 
-"Installtreesize", 
-"Installvisualstudio", 
-"Installvivaldi", 
-"Installvoicemeeter", 
-"Installwindirstat", 
-"Installwiztree", 
-"Installwireshark", 
-"Installsimplewall", 
-"Installzoom", 
-"Installviber", 
-"Installtwinkletray", 
-"Installshell", 
-"Installklite", 
-"Installsandboxie", 
-"Installprocesslasso", 
-"Installwinmerge", 
-"Installdotnet3", 
-"Installdotnet5", 
-"Installdotnet6", 
-"Installvc2015_64", 
-"Installvc2015_32", 
-"Installfoxpdf", 
-"Installonlyoffice", 
-"Installflux", 
-"Installitunes", 
-"Installcider", 
-"Installjoplin", 
-"Installopenoffice", 
-"Installruskdesk", 
-"Installjami", 
-"Installjdownloader"
-)
+#write-host (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/applications.json")
 
-
-
-#$programs[0].Checkbox = Write-Host (Get-EnvVar -Name ($programs[0].Checkbox)).IsChecked
-#$Form.FindName("Installatom") | Out-File "ki.txt"
-
+$programs = Get-Content "C:\Users\Dream\Downloads\winutil-main\config\applications.json" -Raw | ConvertFrom-Json  
+#(new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/applications.json") | ConvertFrom-Json
 
 Function Get-FormVariables {
     #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
@@ -248,20 +138,18 @@ $WPFTab4BT.Add_Click({
 function getInstallList(){
     $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
     
-    Foreach($item in $programs){
-        If($Form.FindName($item).IsChecked){
-            $wingetinstall.Add($Form.FindName($item).Tag)
+    Foreach($item in $programs.install){
+        If($Form.FindName($item.name).IsChecked){
+            $wingetinstall.Add($item.winget)
         }
     }
-
+    write-host $wingetinstall
     return $wingetinstall
 }
 
 function uncheckAllProgram(){
-    Foreach($item in $programs){
-        If($Form.FindName($item).IsChecked){
-            $Form.FindName($item).IsChecked = $False
-        }
+    Foreach($item in $programs.install){
+        $Form.FindName($item.name).IsChecked = $False
     }
 }
 
@@ -272,10 +160,11 @@ function LoadInstallList(){
 
     if ($list -ne "") 
     {
-        Foreach($loadItem in $list){
-            Foreach($item in $programs){
-                If($Form.FindName($item).Tag -eq $loadItem){
-                    $Form.FindName($item).IsChecked = $True
+        
+        Foreach($item in $programs.install){
+            Foreach($loadItem in $list){
+                If($item.winget -eq $loadItem){
+                    $Form.FindName($item.name).IsChecked = $True
                 }
             }
         }
@@ -409,7 +298,7 @@ $WPFSaveButton.Add_Click({
     if ($SaveFile -ne "") 
     {
         write-host "File saved: $SaveFile" 
-        $wingetinstall = getInstallList | Out-File $SaveFile
+        getInstallList | Out-File $SaveFile
     } else {
         write-host "No File was chosen"
     }
@@ -417,7 +306,6 @@ $WPFSaveButton.Add_Click({
 
 $WPFLoadButton.Add_Click({
     LoadInstallList
-
 })
 
 
