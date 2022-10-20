@@ -1,0 +1,19 @@
+name: Update Branch
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Create local changes
+      run: |
+        sed -i "/\$BranchToUse = /c\$BranchToUse = '$GITHUB_REF_NAME'" $GITHUB_WORKSPACE/runspace.ps1
+        cat $GITHUB_WORKSPACE/runspace.ps1
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Update Branch in script
