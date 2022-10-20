@@ -59,7 +59,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.N
 
 #write-host (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/applications.json")
 
-$programs = Get-Content "C:\Users\Dream\Downloads\winutil-main\config\applications.json" -Raw | ConvertFrom-Json  
+$programs = Get-Content "config\applications.json" -Raw | ConvertFrom-Json  
 #(new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/applications.json") | ConvertFrom-Json
 
 Function Get-FormVariables {
