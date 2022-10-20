@@ -59,6 +59,8 @@ function Invoke-Button {
         "Paneluser" {cmd /c "control userpasswords2"}
         "Updates*" {Invoke-command $sync.GUIUpdates -ArgumentList "$button"}
         "*AutoLogin" {Invoke-Runspace $Sync.AutologinInstall}
+        "*DisableDarkMode" {Invoke-Runspace $Sync.DarkModeToggle -ArgumentList "$False"}
+        "*EnableDarkMode" {Invoke-Runspace $Sync.DarkModeToggle -ArgumentList "$True"}
     }
 }
 
@@ -227,6 +229,22 @@ $Sync.AutologinInstall = {
     # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
     Invoke-WebRequest "https://live.sysinternals.com/Autologon.exe" -OutFile $env:TEMP\autologin.exe
     Start-Process -FilePath powershell.exe -Verb runas -ArgumentList "-c $ENV:Temp\autologin.exe" -WindowStyle Hidden
+
+}
+
+$Sync.DarkModeToggle = {
+    param($enabled)
+
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+
+    if($enabled -eq $True){
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+        Invoke-command $sync.WriteLogs -ArgumentList ("INFO","Dark Mode has been enabled",$sync.logfile)
+    }
+    if($enabled -eq $False){
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+        Invoke-command $sync.WriteLogs -ArgumentList ("INFO","Dark Mode has been disabled",$sync.logfile)
+    }
 
 }
 
