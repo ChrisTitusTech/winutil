@@ -1,7 +1,7 @@
-$global:application = get-content ../config/applications.json | ConvertFrom-Json 
-$global:preset = get-content ../config/preset.json | ConvertFrom-Json 
-$global:feature = get-content ../config/feature.json | ConvertFrom-Json 
-$global:tweaks = get-content ../config/tweaks.json | ConvertFrom-Json 
+$global:application = get-content ./config/applications.json | ConvertFrom-Json 
+$global:preset = get-content ./config/preset.json | ConvertFrom-Json 
+$global:feature = get-content ./config/feature.json | ConvertFrom-Json 
+$global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
 
 Describe "Json Files" {
     Context "Application installs" {
