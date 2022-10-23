@@ -1,15 +1,15 @@
 name: Pester
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
     runs-on: windows-latest
     steps:
-      #- name: Check out repository code
-      #  uses: actions/checkout@v3
-      #  with:
-      #    ref: ${{ github.head_ref }}
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: pester_tests
         id: pester_tests
         uses: zyborg/pester-tests-report@v1
