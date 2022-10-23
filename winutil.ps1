@@ -1305,7 +1305,7 @@ $WPFtweaksbutton.Add_Click({
                 "HPSystemInformation"
             )
 
-            ## Teams Removal
+            ## Teams Removal - Source: https://github.com/asheroto/UninstallTeams
             function getUninstallString($match) {
                 return (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like "*$match*" }).UninstallString
             }
@@ -1348,8 +1348,8 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Removing Bloatware"
 
             foreach ($Bloat in $Bloatware) {
-                Get-AppxPackage "*$Bloat*" | Remove-AppxPackage
-                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Bloat*" | Remove-AppxProvisionedPackage -Online
+                Get-AppxPackage "*$Bloat*" | Remove-AppxPackage -ErrorAction SilentlyContinue
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Bloat*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
                 Write-Host "Trying to remove $Bloat."
             }
 
@@ -1362,7 +1362,7 @@ $WPFtweaksbutton.Add_Click({
                 Write-Host -Object "Attempting to uninstall: [$($_.Name)]..."
 
                 Try {
-                    $Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction Stop
+                    $Null = $_ | Uninstall-Package -AllVersions -Force -ErrorAction SilentlyContinue
                     Write-Host -Object "Successfully uninstalled: [$($_.Name)]"
                 }
                 Catch {
