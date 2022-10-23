@@ -189,7 +189,17 @@ $WPFinstall.Add_Click({
             Write-Host "Winget Already Installed"
         }
         else {
-            if (((((Get-ComputerInfo).OSName.IndexOf("LTSC")) -ne -1) -or ((Get-ComputerInfo).OSName.IndexOf("Server") -ne -1)) -and (((Get-ComputerInfo).WindowsVersion) -ge "1809")) {
+            #Gets the computer's information
+            $ComputerInfo = Get-ComputerInfo
+
+            #Gets the Windows Edition
+            $OSName = if ($ComputerInfo.OSName) {
+                $ComputerInfo.OSName
+            }else {
+                $ComputerInfo.WindowsProductName
+            }
+
+            if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
                 #Checks if Windows edition is LTSC/Server 2019+
                 #Manually Installing Winget
                 Write-Host "Running Alternative Installer for LTSC/Server Editions"
