@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'change-dns'
+$BranchToUse = 'main-test'
 
 <#
 .NOTES
