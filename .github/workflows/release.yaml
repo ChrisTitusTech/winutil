@@ -7,6 +7,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: pester_tests
         id: pester_tests
         uses: zyborg/pester-tests-report@v1
@@ -16,7 +20,6 @@ jobs:
       - name: dump test results
         shell: pwsh
         run: |
-          ls pester
           Write-Host 'Total Tests Executed...:  ${{ steps.pester_tests.outputs.total_count }}'
           Write-Host 'Total Tests PASSED.....:  ${{ steps.pester_tests.outputs.passed_count }}'
           Write-Host 'Total Tests FAILED.....:  ${{ steps.pester_tests.outputs.failed_count }}'
