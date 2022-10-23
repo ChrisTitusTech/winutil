@@ -100,7 +100,10 @@
       "name": "Installgreenshot",
       "winget": "Greenshot.Greenshot"
     },
-    {
+    "Installglaryutilities": {
+      "winget": "Glarysoft.GlaryUtilities"
+    },
+    "Installhandbrake": {
       "name": "Installhandbrake",
       "winget": "HandBrake.HandBrake"
     },

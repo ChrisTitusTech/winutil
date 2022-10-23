@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'main-test'
+$BranchToUse = 'fix-glary-install'
 
 <#
 .NOTES
