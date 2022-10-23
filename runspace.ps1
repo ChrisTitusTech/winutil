@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'add-missing-programs'
+$BranchToUse = 'main-test'
 
 <#
 .NOTES
