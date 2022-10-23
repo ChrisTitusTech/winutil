@@ -7,20 +7,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: test module
-        id: test_module
+      - name: pester_tests
+        id: pester_tests
         uses: zyborg/pester-tests-report@v1
         with:
-          exclude_tags: skip_ci
-          report_name: module_tests
-          report_title: Pester Tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: dump test results
         shell: pwsh
         run: |
-          Write-Host 'Total Tests Executed...:  ${{ steps.test_module.outputs.total_count }}'
-          Write-Host 'Total Tests PASSED.....:  ${{ steps.test_module.outputs.passed_count }}'
-          Write-Host 'Total Tests FAILED.....:  ${{ steps.test_module.outputs.failed_count }}'
+          Write-Host 'Total Tests Executed...:  ${{ steps.pester_tests.outputs.total_count }}'
+          Write-Host 'Total Tests PASSED.....:  ${{ steps.pester_tests.outputs.passed_count }}'
+          Write-Host 'Total Tests FAILED.....:  ${{ steps.pester_tests.outputs.failed_count }}'
   build:
     runs-on: ubuntu-latest
     steps:
