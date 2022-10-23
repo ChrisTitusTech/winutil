@@ -238,6 +238,14 @@
 							<CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
 							<CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
 							<CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
+							<Label Content="DNS" />
+							<ComboBox Name="changedns"  Height = "20" Width = "100" HorizontalAlignment = "Left" > 
+								<ComboBoxItem IsSelected="True" Content = "Default"/> 
+								<ComboBoxItem Content = "Google"/> 
+								<ComboBoxItem Content = "Cloud Flare"/> 
+								<ComboBoxItem Content = "Level3"/> 
+								<ComboBoxItem Content = "Open DNS"/> 
+							</ComboBox> 
 							<Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
 							<Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
 						</StackPanel>
