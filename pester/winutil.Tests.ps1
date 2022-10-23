@@ -52,3 +52,26 @@ Describe "Json Files" {
         }
     } 
 }
+
+$global:inputXML = get-content MainWindow.xaml
+$global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+[xml]$global:XAML = $global:inputXML
+
+ 
+$global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
+#$global:Form = import-clixml MainWindow.xaml
+#$global:Form = [Windows.Markup.XamlReader]::Load( $global:reader )
+#$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+
+
+Describe "XML File" {
+    Context "XML" {
+        It "Imports with no errors" {
+            $global:XAML | should -Not -BeNullOrEmpty
+        }
+        It "Title should be Chris Titus Tech's Windows Utility" {
+            $global:XAML.window.Title | should -Be "Chris Titus Tech's Windows Utility"
+        }
+    } 
+
+}
