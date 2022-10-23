@@ -7,26 +7,30 @@
 
     #>
 
-    $Global:GUITabCount = 4
-    $Global:GUIFeatureCount = 6
-
 #endregion Configurable Variables
 
 #region Load Variables needed for testing
 
+    #Config Files
     $global:application = get-content ./config/applications.json | ConvertFrom-Json 
     $global:preset = get-content ./config/preset.json | ConvertFrom-Json 
     $global:feature = get-content ./config/feature.json | ConvertFrom-Json 
     $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+
+    #GUI
     $global:sync = [Hashtable]::Synchronized(@{})
     $global:inputXML = get-content MainWindow.xaml
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
     [xml]$global:XAML = $global:inputXML
-
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
     $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
     $global:sync["Form"] = [Windows.Markup.XamlReader]::Load( $global:reader )
     $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+
+    #Variables to compare GUI to config files
+    $Global:GUIFeatureCount = ($global:feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUITabCount = ($global:sync["TabNav"].Items.name).count
+    $Global:GUIApplicationCount = ($global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
 #endregion Load Variables needed for testing 
 
@@ -107,11 +111,19 @@ Describe "GUI" {
             $global:sync["Form"].title | should -Be $global:XAML.window.Title
         }
         It "Tabs should be $Global:GUITabCount" {
-            ($global:sync.keys | Where-Object {$psitem -like "tab?"}).count | should -Be $Global:GUITabCount
+            ($global:sync.keys | Where-Object {$psitem -like "Tab?"}).count | should -Be $Global:GUITabCount
         }
-        It "Tabs should be $Global:GUIFeatureCount" {
-            ($global:sync.keys | Where-Object {$psitem -like "*feature*"}).count | should -Be $Global:GUIFeatureCount
+        It "Features should be $Global:GUIFeatureCount" {
+            ($global:sync.keys | Where-Object {$psitem -like "*feature*" -and $psitem -notlike "FeatureInstall"}).count | should -Be $Global:GUIFeatureCount
         }
-
+        It "Applications should be $Global:GUIApplicationCount" {
+            ($global:sync.keys | Where-Object {
+                $psitem -like "*Install*" -and 
+                $psitem -notlike "Install" -and
+                $psitem -notlike "InstallUpgrade" -and
+                $psitem -notlike "featureInstall"
+            }).count | should -Be $Global:GUIApplicationCount
+        }
+ 
     } 
 }
