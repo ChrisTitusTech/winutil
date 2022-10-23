@@ -35,6 +35,10 @@
     $Global:GUIApplicationCount = ($global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
     $Global:GUITweaksCount = ($global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
+    #dotsource original script to pull in all variables and ensure no errors
+    $script = Get-Content .\winutil.ps1
+    $output = $script[0..($script.count - 2)] | Out-File .\pester.ps1    
+
 #endregion Load Variables needed for testing 
 
 #===========================================================================
@@ -167,4 +171,33 @@ Describe "GUI" {
             }).count | should -Be $Global:GUITweaksCount
         }
     } 
+}
+
+#===========================================================================
+# Tests - GUI
+#===========================================================================
+
+Describe "GUI Functions" {
+
+    It "GUI should load with no errors" {
+        . .\pester.ps1 
+        $WPFTab1BT | should -Not -BeNullOrEmpty
+        $WPFundoall | should -Not -BeNullOrEmpty
+        $WPFPanelDISM | should -Not -BeNullOrEmpty
+        $WPFPanelAutologin | should -Not -BeNullOrEmpty
+        $WPFUpdatesdefault | should -Not -BeNullOrEmpty
+        $WPFFixesUpdate | should -Not -BeNullOrEmpty
+        $WPFUpdatesdisable | should -Not -BeNullOrEmpty
+        $WPFUpdatessecurity | should -Not -BeNullOrEmpty
+        $WPFFeatureInstall | should -Not -BeNullOrEmpty
+        $WPFundoall | should -Not -BeNullOrEmpty
+        $WPFDisableDarkMode | should -Not -BeNullOrEmpty
+        $WPFEnableDarkMode | should -Not -BeNullOrEmpty
+        $WPFtweaksbutton | should -Not -BeNullOrEmpty
+        $WPFminimal | should -Not -BeNullOrEmpty
+        $WPFlaptop | should -Not -BeNullOrEmpty
+        $WPFdesktop | should -Not -BeNullOrEmpty
+        $WPFInstallUpgrade | should -Not -BeNullOrEmpty
+        $WPFinstall | should -Not -BeNullOrEmpty
+    }
 }
