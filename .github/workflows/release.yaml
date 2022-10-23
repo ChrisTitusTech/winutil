@@ -16,7 +16,7 @@ jobs:
         uses: zyborg/pester-tests-report@v1
         with:
           include_paths: pester
-          report_name: Winutil_Tests_<datetime>
+          report_name: Winutil_Tests
           report_title: Winutil_Tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: dump test results
