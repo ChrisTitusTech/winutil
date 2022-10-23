@@ -168,9 +168,6 @@
     "Installslack": {
       "winget": "SlackTechnologies.Slack"
     },
-    "Installspotify": {
-      "winget": "Spotify.Spotify"
-    },
     "Installsteam": {
       "winget": "Valve.Steam"
     },
@@ -287,6 +284,39 @@
     },
     "Installjdownloader": {
       "winget": "AppWork.JDownloader"
-    }        
+    },
+    "Installsimplewall": {
+      "Winget": "Henry++.simplewall"
+    },
+    "Installrustlang": {
+      "Winget": "Rustlang.Rust.MSVC"
+    },
+    "Installalacritty": {
+      "Winget": "Alacritty.Alacritty"
+    },
+    "Installkdenlive": {
+      "Winget": "KDE.Kdenlive"
+    },
+    "Installglaryutilities": {
+      "Winget": "Glarysoft.GlaryUtilities"
+    },
+    "Installtwinkletray": {
+      "Winget": "xanderfrangos.twinkletray"
+    },
+    "Installidm": {
+      "Winget": "Tonec.InternetDownloadManager"
+    },
+    "Installviber": {
+      "Winget": "Viber.Viber"
+    },
+    "Installgit": {
+      "Winget": "Git.Git"
+    },
+    "Installwiztree": {
+      "Winget": "AntibodySoftware.WizTree"
+    },
+    "Installtor": {
+      "Winget": "TorProject.TorBrowser"
+    }
   }
 }
