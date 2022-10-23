@@ -1,4 +1,4 @@
-﻿<Window x:Class="WinUtility.MainWindow"
+<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -173,6 +173,8 @@
 							<CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
 							<Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 							<Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
+                            <Button Name="SaveButton" Background="AliceBlue"  Content="Save" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
+                            <Button Name="LoadButton" Background="AliceBlue"  Content="Load" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
 
 						</StackPanel>
 					</Grid>
