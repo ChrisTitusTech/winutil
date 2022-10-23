@@ -758,12 +758,11 @@ $WPFtweaksbutton.Add_Click({
             Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
             Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
             $WPFEssTweaksDeleteTempFiles.IsChecked = $false
-            Write-Host "================================="
-            Write-Host "--- !!!!ERRORS ARE NORMAL!!!! ---"
-            Write-Host "--- Cleaned following folders:---"
-            Write-Host "--- C:\Windows\Temp           ---"
-            Write-Host "---"$env:TEMP"---"
-            Write-Host "================================="
+            Write-Host "======================================="
+            Write-Host "--- Cleaned following folders:"
+            Write-Host "--- C:\Windows\Temp"
+            Write-Host "--- "$env:TEMP
+            Write-Host "======================================="
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
