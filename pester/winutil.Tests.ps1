@@ -3,7 +3,7 @@ $global:preset = get-content ../config/preset.json | ConvertFrom-Json
 $global:feature = get-content ../config/feature.json | ConvertFrom-Json 
 $global:tweaks = get-content ../config/tweaks.json | ConvertFrom-Json 
 
-Describe "Appliactions" {
+Describe "Json Files" {
     Context "Application installs" {
         It "Imports with no errors" {
             $global:application | should -Not -BeNullOrEmpty
@@ -14,9 +14,7 @@ Describe "Appliactions" {
             $winget.winget | should -Not -BeNullOrEmpty
         }
     } 
-}
 
-Describe "Preset" {
     Context "Preset" {
         It "Imports with no errors" {
             $global:preset | should -Not -BeNullOrEmpty
@@ -27,9 +25,7 @@ Describe "Preset" {
             $preset.Value | should -BeLike "*Tweaks*"
         }
     } 
-}
 
-Describe "feature" {
     Context "feature" {
         It "Imports with no errors" {
             $global:feature | should -Not -BeNullOrEmpty
@@ -40,9 +36,7 @@ Describe "feature" {
             $feature.Value | should -Not -BeNullOrEmpty
         }
     } 
-}
-
-Describe "tweaks" {
+    
     Context "tweaks" {
         It "Imports with no errors" {
             $global:tweaks | should -Not -BeNullOrEmpty
