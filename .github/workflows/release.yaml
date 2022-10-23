@@ -19,6 +19,7 @@ jobs:
           report_name: Winutil_Tests
           report_title: Winutil_Tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          tests_fail_step: true
       - name: dump test results
         shell: pwsh
         run: |
