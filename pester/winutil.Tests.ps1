@@ -1,7 +1,38 @@
-$global:application = get-content ./config/applications.json | ConvertFrom-Json 
-$global:preset = get-content ./config/preset.json | ConvertFrom-Json 
-$global:feature = get-content ./config/feature.json | ConvertFrom-Json 
-$global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+#region Configurable Variables
+
+    <#
+        .NOTES
+        Use this section to configure testing variables. IE if the number of tabs change in the GUI update that variable here.
+        All variables need to be global to be passed between contexts
+
+    #>
+
+    $Global:GUITabCount = 4
+    $Global:GUIFeatureCount = 6
+
+#endregion Configurable Variables
+
+#region Load Variables needed for testing
+
+    $global:application = get-content ./config/applications.json | ConvertFrom-Json 
+    $global:preset = get-content ./config/preset.json | ConvertFrom-Json 
+    $global:feature = get-content ./config/feature.json | ConvertFrom-Json 
+    $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+    $global:sync = [Hashtable]::Synchronized(@{})
+    $global:inputXML = get-content MainWindow.xaml
+    $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+    [xml]$global:XAML = $global:inputXML
+
+    [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+    $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
+    $global:sync["Form"] = [Windows.Markup.XamlReader]::Load( $global:reader )
+    $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+
+#endregion Load Variables needed for testing 
+
+#===========================================================================
+# Tests - Json
+#===========================================================================
 
 Describe "Json Files" {
     Context "Application installs" {
@@ -53,18 +84,12 @@ Describe "Json Files" {
     } 
 }
 
-$global:inputXML = get-content MainWindow.xaml
-$global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
-[xml]$global:XAML = $global:inputXML
+#===========================================================================
+# Tests - GUI
+#===========================================================================
 
- 
-$global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
-#$global:Form = import-clixml MainWindow.xaml
-#$global:Form = [Windows.Markup.XamlReader]::Load( $global:reader )
-#$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+Describe "GUI" {
 
-
-Describe "XML File" {
     Context "XML" {
         It "Imports with no errors" {
             $global:XAML | should -Not -BeNullOrEmpty
@@ -72,6 +97,21 @@ Describe "XML File" {
         It "Title should be Chris Titus Tech's Windows Utility" {
             $global:XAML.window.Title | should -Be "Chris Titus Tech's Windows Utility"
         }
-    } 
+    }
 
+    Context "Form" {
+        It "Imports with no errors" {
+            $global:sync["Form"] | should -Not -BeNullOrEmpty
+        }
+        It "Title should match XML" {
+            $global:sync["Form"].title | should -Be $global:XAML.window.Title
+        }
+        It "Tabs should be $Global:GUITabCount" {
+            ($global:sync.keys | Where-Object {$psitem -like "tab?"}).count | should -Be $Global:GUITabCount
+        }
+        It "Tabs should be $Global:GUIFeatureCount" {
+            ($global:sync.keys | Where-Object {$psitem -like "*feature*"}).count | should -Be $Global:GUIFeatureCount
+        }
+
+    } 
 }
