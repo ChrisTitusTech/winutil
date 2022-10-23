@@ -7,6 +7,8 @@
 
     #>
 
+    $global:FormName = "Chris Titus Tech's Windows Utility"
+
 #endregion Configurable Variables
 
 #region Load Variables needed for testing
@@ -31,6 +33,7 @@
     $Global:GUIFeatureCount = ($global:feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
     $Global:GUITabCount = ($global:sync["TabNav"].Items.name).count
     $Global:GUIApplicationCount = ($global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUITweaksCount = ($global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
 #endregion Load Variables needed for testing 
 
@@ -98,8 +101,8 @@ Describe "GUI" {
         It "Imports with no errors" {
             $global:XAML | should -Not -BeNullOrEmpty
         }
-        It "Title should be Chris Titus Tech's Windows Utility" {
-            $global:XAML.window.Title | should -Be "Chris Titus Tech's Windows Utility"
+        It "Title should be $global:FormName" {
+            $global:XAML.window.Title | should -Be $global:FormName
         }
     }
 
@@ -114,7 +117,10 @@ Describe "GUI" {
             ($global:sync.keys | Where-Object {$psitem -like "Tab?"}).count | should -Be $Global:GUITabCount
         }
         It "Features should be $Global:GUIFeatureCount" {
-            ($global:sync.keys | Where-Object {$psitem -like "*feature*" -and $psitem -notlike "FeatureInstall"}).count | should -Be $Global:GUIFeatureCount
+            ($global:sync.keys | Where-Object {
+                $psitem -like "*feature*" -and 
+                $psitem -notlike "FeatureInstall"
+            }).count | should -Be $Global:GUIFeatureCount
         }
         It "Applications should be $Global:GUIApplicationCount" {
             ($global:sync.keys | Where-Object {
@@ -124,6 +130,11 @@ Describe "GUI" {
                 $psitem -notlike "featureInstall"
             }).count | should -Be $Global:GUIApplicationCount
         }
- 
+        It "Tweaks should be $Global:GUITweaksCount" {
+            ($global:sync.keys | Where-Object {
+                $psitem -like "*tweaks*" -and 
+                $psitem -notlike "tweaksbutton" 
+            }).count | should -Be $Global:GUITweaksCount
+        }
     } 
 }
