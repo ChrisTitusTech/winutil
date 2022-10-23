@@ -1306,42 +1306,45 @@ $WPFtweaksbutton.Add_Click({
             )
 
             ## Teams Removal
-            # Remove Teams Machine-Wide Installer
-            Write-Host "Removing Teams Machine-wide Installer" -ForegroundColor Yellow
-            $MachineWide = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq "Teams Machine-Wide Installer" }
-            $MachineWide.Uninstall()
-            # Remove Teams for Current Users
-            $localAppData = "$($env:LOCALAPPDATA)\Microsoft\Teams"
-            $programData = "$($env:ProgramData)\$($env:USERNAME)\Microsoft\Teams"
-            If (Test-Path "$($localAppData)\Current\Teams.exe") {
-                unInstallTeams($localAppData)
+            function getUninstallString($match) {
+                return (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like "*$match*" }).UninstallString
             }
-            elseif (Test-Path "$($programData)\Current\Teams.exe") {
-                unInstallTeams($programData)
+            
+            $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+            $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+            
+            Write-Output "Stopping Teams process..."
+            Stop-Process -Name "*teams*" -Force -ErrorAction SilentlyContinue
+        
+            Write-Output "Uninstalling Teams from AppData\Microsoft\Teams"
+            if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+                # Uninstall app
+                $proc = Start-Process $TeamsUpdateExePath "-uninstall -s" -PassThru
+                $proc.WaitForExit()
             }
-            else {
-                Write-Warning "Teams installation not found"
+        
+            Write-Output "Removing Teams AppxPackage..."
+            Get-AppxPackage "*Teams*" | Remove-AppxPackage -ErrorAction SilentlyContinue
+            Get-AppxPackage "*Teams*" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+        
+            Write-Output "Deleting Teams directory"
+            if ([System.IO.Directory]::Exists($TeamsPath)) {
+                Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
             }
-            # Get all Users
-            $Users = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
-            # Process all the Users
-            $Users | ForEach-Object {
-                Write-Host "Process user: $($_.Name)" -ForegroundColor Yellow
-                #Locate installation folder
-                $localAppData = "$($ENV:SystemDrive)\Users\$($_.Name)\AppData\Local\Microsoft\Teams"
-                $programData = "$($env:ProgramData)\$($_.Name)\Microsoft\Teams"
-                If (Test-Path "$($localAppData)\Current\Teams.exe") {
-                    unInstallTeams($localAppData)
-                }
-                elseif (Test-Path "$($programData)\Current\Teams.exe") {
-                    unInstallTeams($programData)
-                }
-                else {
-                    Write-Warning "Teams installation not found for user $($_.Name)"
-                }
+        
+            Write-Output "Deleting Teams uninstall registry key"
+            # Uninstall from Uninstall registry key UninstallString
+            $us = getUninstallString("Teams");
+            if ($us.Length -gt 0) {
+                $us = ($us.Replace("/I", "/uninstall ") + " /quiet").Replace("  ", " ")
+                $FilePath = ($us.Substring(0, $us.IndexOf(".exe") + 4).Trim())
+                $ProcessArgs = ($us.Substring($us.IndexOf(".exe") + 5).Trim().replace("  ", " "))
+                $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+                $proc.WaitForExit()
             }
-            cmd /c winget uninstall -h "Microsoft Teams"
-
+            
+            Write-Output "Restart computer to complete teams uninstall"
+            
             Write-Host "Removing Bloatware"
 
             foreach ($Bloat in $Bloatware) {
