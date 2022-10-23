@@ -1,0 +1,24 @@
+name: Pester
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: pester_tests
+        id: pester_tests
+        uses: zyborg/pester-tests-report@v1
+        with:
+          include_paths: pester
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: dump test results
+        shell: pwsh
+        run: |
+          Write-Host 'Total Tests Executed...:  ${{ steps.pester_tests.outputs.total_count }}'
+          Write-Host 'Total Tests PASSED.....:  ${{ steps.pester_tests.outputs.passed_count }}'
+          Write-Host 'Total Tests FAILED.....:  ${{ steps.pester_tests.outputs.failed_count }}'
