@@ -1,319 +1,387 @@
 {
-  "install": {
-      "Installadobe": {
-          "winget": "Adobe.Acrobat.Reader.64-bit"
-      },
-      "Installadvancedip": {
-          "winget": "Famatech.AdvancedIPScanner"
-      },
-      "Installanydesk": {
-          "winget": "AnyDeskSoftwareGmbH.AnyDesk"
-      },
-      "Installatom": {
-          "winget": "GitHub.Atom"
-      },
-      "Installaudacity": {
-          "winget": "Audacity.Audacity"
-      },
-      "Installautohotkey": {
-          "winget": "Lexikos.AutoHotkey"
-      },
-      "Installbitwarden": {
-          "winget": "Bitwarden.Bitwarden"
-      },
-      "Installblender": {
-          "winget": "BlenderFoundation.Blender"
-      },
-      "Installbrave": {
-          "winget": "Brave.Brave"
-      },
-      "Installchrome": {
-          "winget": "Google.Chrome"
-      },
-      "Installchromium": {
-          "winget": "eloston.ungoogled-chromium"
-      },
-      "Installcpuz": {
-          "winget": "CPUID.CPU-Z"
-      },
-      "Installdiscord": {
-          "winget": "Discord.Discord"
-      },
-      "Installeartrumpet": {
-          "winget": "File-New-Project.EarTrumpet"
-      },
-      "Installepicgames": {
-          "winget": "EpicGames.EpicGamesLauncher"
-      },
-      "Installesearch": {
-          "winget": "voidtools.Everything"
-      },
-      "Installetcher": {
-          "winget": "Balena.Etcher"
-      },
-      "Installfirefox": {
-          "winget": "Mozilla.Firefox"
-      },
-      "Installflameshot": {
-          "winget": "Flameshot.Flameshot"
-      },
-      "Installfoobar": {
-          "winget": "PeterPawlowski.foobar2000"
-      },
-      "Installgimp": {
-          "winget": "GIMP.GIMP"
-      },
-      "Installgithubdesktop": {
-          "winget": "Git.Git;GitHub.GitHubDesktop"
-      },
-      "Installgog": {
-          "winget": "GOG.Galaxy"
-      },
-      "Installgpuz": {
-          "winget": "TechPowerUp.GPU-Z"
-      },
-      "Installgreenshot": {
-          "winget": "Greenshot.Greenshot"
-      },
-      "Installhandbrake": {
-          "winget": "HandBrake.HandBrake"
-      },
-      "Installhexchat": {
-          "winget": "HexChat.HexChat"
-      },
-      "Installhwinfo": {
-          "winget": "REALiX.HWiNFO"
-      },
-      "Installimageglass": {
-          "winget": "DuongDieuPhap.ImageGlass"
-      },
-      "Installinkscape": {
-          "winget": "Inkscape.Inkscape"
-      },
-      "Installjava16": {
-          "winget": "AdoptOpenJDK.OpenJDK.16"
-      },
-      "Installjava18": {
-          "winget": "Oracle.JDK.18"
-      },
-      "Installjava8": {
-          "winget": "AdoptOpenJDK.OpenJDK.8"
-      },
-      "Installjetbrains": {
-          "winget": "JetBrains.Toolbox"
-      },
-      "Installkeepass": {
-          "winget": "KeePassXCTeam.KeePassXC"
-      },
-      "Installlibrewolf": {
-          "winget": "LibreWolf.LibreWolf"
-      },
-      "Installmalwarebytes": {
-          "winget": "Malwarebytes.Malwarebytes"
-      },
-      "Installmatrix": {
-          "winget": "Element.Element"
-      },
-      "Installmpc": {
-          "winget": "clsid2.mpc-hc"
-      },
-      "Installmremoteng": {
-          "winget": "mRemoteNG.mRemoteNG"
-      },
-      "Installnodejs": {
-          "winget": "OpenJS.NodeJS"
-      },
-      "Installnodejslts": {
-          "winget": "OpenJS.NodeJS.LTS"
-      },
-      "Installnotepadplus": {
-          "winget": "Notepad++.Notepad++"
-      },
-      "Installnvclean": {
-          "winget": "TechPowerUp.NVCleanstall"
-      },
-      "Installobs": {
-          "winget": "OBSProject.OBSStudio"
-      },
-      "Installobsidian": {
-          "winget": "Obsidian.Obsidian"
-      },
-      "Installpowertoys": {
-          "winget": "Microsoft.PowerToys"
-      },
-      "Installputty": {
-          "winget": "PuTTY.PuTTY"
-      },
-      "Installpython3": {
-          "winget": "Python.Python.3"
-      },
-      "Installrevo": {
-          "winget": "RevoUninstaller.RevoUninstaller"
-      },
-      "Installrufus": {
-          "winget": "Rufus.Rufus"
-      },
-      "Installsevenzip": {
-          "winget": "7zip.7zip"
-      },
-      "Installsharex": {
-          "winget": "ShareX.ShareX"
-      },
-      "Installsignal": {
-          "winget": "OpenWhisperSystems.Signal"
-      },
-      "Installskype": {
-          "winget": "Microsoft.Skype"
-      },
-      "Installslack": {
-          "winget": "SlackTechnologies.Slack"
-      },
-      "Installspotify": {
-          "winget": "Spotify.Spotify"
-      },
-      "Installsteam": {
-          "winget": "Valve.Steam"
-      },
-      "Installsublime": {
-          "winget": "SublimeHQ.SublimeText.4"
-      },
-      "Installsumatra": {
-          "winget": "SumatraPDF.SumatraPDF"
-      },
-      "Installteams": {
-          "winget": "Microsoft.Teams"
-      },
-      "Installteamviewer": {
-          "winget": "TeamViewer.TeamViewer"
-      },
-      "Installterminal": {
-          "winget": "Microsoft.WindowsTerminal"
-      },
-      "Installtreesize": {
-          "winget": "JAMSoftware.TreeSize.Free"
-      },
-      "Installttaskbar": {
-          "winget": "TranslucentTB.TranslucentTB"
-      },
-      "Installvisualstudio": {
-          "winget": "Microsoft.VisualStudio.2022.Community"
-      },
-      "Installvivaldi": {
-          "winget": "VivaldiTechnologies.Vivaldi"
-      },
-      "Installvlc": {
-          "winget": "VideoLAN.VLC"
-      },
-      "Installvoicemeeter": {
-          "winget": "VB-Audio.Voicemeeter"
-      },
-      "Installvscode": {
-          "winget": "Git.Git;Microsoft.VisualStudioCode"
-      },
-      "Installvscodium": {
-          "winget": "Git.Git;VSCodium.VSCodium"
-      },
-      "Installwindirstat": {
-          "winget": "WinDirStat.WinDirStat"
-      },
-      "Installscp": {
-          "winget": "WinSCP.WinSCP"
-      },
-      "Installwireshark": {
-          "winget": "WiresharkFoundation.Wireshark"
-      },
-      "Installzoom": {
-          "winget": "Zoom.Zoom"
-      },
-      "Installlibreoffice": {
-          "winget": "TheDocumentFoundation.LibreOffice"
-      },
-      "Installshell": {
-          "winget": "Nilesoft.Shell"
-      },
-      "Installklite": {
-          "winget": "CodecGuide.K-LiteCodecPack.Standard"
-      },
-      "Installsandboxie": {
-          "winget": "Sandboxie.Plus"
-      },
-      "Installprocesslasso": {
-          "winget": "BitSum.ProcessLasso"
-      },
-      "Installwinmerge": {
-          "winget": "WinMerge.WinMerge"
-      },
-      "Installdotnet3": {
-          "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
-      },
-      "Installdotnet5": {
-          "winget": "Microsoft.DotNet.DesktopRuntime.5"
-      },
-      "Installdotnet6": {
-          "winget": "Microsoft.DotNet.DesktopRuntime.6"
-      },
-      "Installvc2015_64": {
-          "winget": "Microsoft.VC++2015-2022Redist-x64"
-      },
-      "Installvc2015_32": {
-          "winget": "Microsoft.VC++2015-2022Redist-x86"
-      },
-      "Installfoxpdf": {
-          "winget": "Foxit.PhantomPDF"
-      },
-      "Installonlyoffice": {
-          "winget": "ONLYOFFICE.DesktopEditors"
-      },
-      "Installflux": {
-          "winget": "flux.flux"
-      },
-      "Installitunes": {
-          "winget": "Apple.iTunes"
-      },
-      "Installcider": {
-          "winget": "CiderCollective.Cider"
-      },
-      "Installjoplin": {
-          "winget": "Joplin.Joplin"
-      },
-      "Installopenoffice": {
-          "winget": "Apache.OpenOffice"
-      },
-      "Installrustdesk": {
-          "winget": "RustDesk.RustDesk"
-      },
-      "Installjami": {
-          "winget": "SFLinux.Jami"
-      },
-      "Installjdownloader": {
-          "winget": "AppWork.JDownloader"
-      },
-      "Installtor": {
-          "Winget": "TorProject.TorBrowser"
-      },
-      "Installviber": {
-          "Winget": "Viber.Viber"
-      },
-      "Installrustlang": {
-          "Winget": "Rustlang.Rust.MSVC"
-      },
-      "Installsimplewall": {
-          "Winget": "Henry++.simplewall"
-      },
-      "Installkdenlive": {
-          "Winget": "KDE.Kdenlive"
-      },
-      "Installalacritty": {
-          "Winget": "Alacritty.Alacritty"
-      },
-      "Installidm": {
-          "Winget": "Tonec.InternetDownloadManager"
-      },
-      "Installtwinkletray": {
-          "Winget": "xanderfrangos.twinkletray"
-      },
-      "Installwiztree": {
-          "Winget": "AntibodySoftware.WizTree"
-      }
-  }
+  "install": [
+    {
+      "name": "Installadobe",
+      "winget": "Adobe.Acrobat.Reader.64-bit"
+    },
+    {
+      "name": "Installadvancedip",
+      "winget": "Famatech.AdvancedIPScanner"
+    },
+    {
+      "name": "Installanydesk",
+      "winget": "AnyDeskSoftwareGmbH.AnyDesk"
+    },
+    {
+      "name": "Installatom",
+      "winget": "GitHub.Atom"
+    },
+    {
+      "name": "Installaudacity",
+      "winget": "Audacity.Audacity"
+    },
+    {
+      "name": "Installautohotkey",
+      "winget": "Lexikos.AutoHotkey"
+    },
+    {
+      "name": "Installbitwarden",
+      "winget": "Bitwarden.Bitwarden"
+    },
+    {
+      "name": "Installblender",
+      "winget": "BlenderFoundation.Blender"
+    },
+    {
+      "name": "Installbrave",
+      "winget": "Brave.Brave"
+    },
+    {
+      "name": "Installchrome",
+      "winget": "Google.Chrome"
+    },
+    {
+      "name": "Installchromium",
+      "winget": "eloston.ungoogled-chromium"
+    },
+    {
+      "name": "Installcpuz",
+      "winget": "CPUID.CPU-Z"
+    },
+    {
+      "name": "Installdiscord",
+      "winget": "Discord.Discord"
+    },
+    {
+      "name": "Installeartrumpet",
+      "winget": "File-New-Project.EarTrumpet"
+    },
+    {
+      "name": "Installepicgames",
+      "winget": "EpicGames.EpicGamesLauncher"
+    },
+    {
+      "name": "Installesearch",
+      "winget": "voidtools.Everything"
+    },
+    {
+      "name": "Installetcher",
+      "winget": "Balena.Etcher"
+    },
+    {
+      "name": "Installfirefox",
+      "winget": "Mozilla.Firefox"
+    },
+    {
+      "name": "Installflameshot",
+      "winget": "Flameshot.Flameshot"
+    },
+    {
+      "name": "Installfoobar",
+      "winget": "PeterPawlowski.foobar2000"
+    },
+    {
+      "name": "Installgimp",
+      "winget": "GIMP.GIMP"
+    },
+    {
+      "name": "Installgithubdesktop",
+      "winget": "Git.Git;GitHub.GitHubDesktop"
+    },
+    {
+      "name": "Installgog",
+      "winget": "GOG.Galaxy"
+    },
+    {
+      "name": "Installgpuz",
+      "winget": "TechPowerUp.GPU-Z"
+    },
+    {
+      "name": "Installgreenshot",
+      "winget": "Greenshot.Greenshot"
+    },
+    "Installglaryutilities": {
+      "winget": "Glarysoft.GlaryUtilities"
+    },
+    "Installhandbrake": {
+      "name": "Installhandbrake",
+      "winget": "HandBrake.HandBrake"
+    },
+    {
+      "name": "Installhexchat",
+      "winget": "HexChat.HexChat"
+    },
+    {
+      "name": "Installhwinfo",
+      "winget": "REALiX.HWiNFO"
+    },
+    {
+      "name": "Installimageglass",
+      "winget": "DuongDieuPhap.ImageGlass"
+    },
+    {
+      "name": "Installinkscape",
+      "winget": "Inkscape.Inkscape"
+    },
+    {
+      "name": "Installjava16",
+      "winget": "AdoptOpenJDK.OpenJDK.16"
+    },
+    {
+      "name": "Installjava18",
+      "winget": "Oracle.JDK.18"
+    },
+    {
+      "name": "Installjava8",
+      "winget": "AdoptOpenJDK.OpenJDK.8"
+    },
+    {
+      "name": "Installjetbrains",
+      "winget": "JetBrains.Toolbox"
+    },
+    {
+      "name": "Installkeepass",
+      "winget": "KeePassXCTeam.KeePassXC"
+    },
+    {
+      "name": "Installlibrewolf",
+      "winget": "LibreWolf.LibreWolf"
+    },
+    {
+      "name": "Installmalwarebytes",
+      "winget": "Malwarebytes.Malwarebytes"
+    },
+    {
+      "name": "Installmatrix",
+      "winget": "Element.Element"
+    },
+    {
+      "name": "Installmpc",
+      "winget": "clsid2.mpc-hc"
+    },
+    {
+      "name": "Installmremoteng",
+      "winget": "mRemoteNG.mRemoteNG"
+    },
+    {
+      "name": "Installnodejs",
+      "winget": "OpenJS.NodeJS"
+    },
+    {
+      "name": "Installnodejslts",
+      "winget": "OpenJS.NodeJS.LTS"
+    },
+    {
+      "name": "Installnotepadplus",
+      "winget": "Notepad++.Notepad++"
+    },
+    {
+      "name": "Installnvclean",
+      "winget": "TechPowerUp.NVCleanstall"
+    },
+    {
+      "name": "Installobs",
+      "winget": "OBSProject.OBSStudio"
+    },
+    {
+      "name": "Installobsidian",
+      "winget": "Obsidian.Obsidian"
+    },
+    {
+      "name": "Installpowertoys",
+      "winget": "Microsoft.PowerToys"
+    },
+    {
+      "name": "Installputty",
+      "winget": "PuTTY.PuTTY"
+    },
+    {
+      "name": "Installpython3",
+      "winget": "Python.Python.3"
+    },
+    {
+      "name": "Installrevo",
+      "winget": "RevoUninstaller.RevoUninstaller"
+    },
+    {
+      "name": "Installrufus",
+      "winget": "Rufus.Rufus"
+    },
+    {
+      "name": "Installsevenzip",
+      "winget": "7zip.7zip"
+    },
+    {
+      "name": "Installsharex",
+      "winget": "ShareX.ShareX"
+    },
+    {
+      "name": "Installsignal",
+      "winget": "OpenWhisperSystems.Signal"
+    },
+    {
+      "name": "Installskype",
+      "winget": "Microsoft.Skype"
+    },
+    {
+      "name": "Installslack",
+      "winget": "SlackTechnologies.Slack"
+    },
+    {
+      "name": "Installsteam",
+      "winget": "Valve.Steam"
+    },
+    {
+      "name": "Installsublime",
+      "winget": "SublimeHQ.SublimeText.4"
+    },
+    {
+      "name": "Installsumatra",
+      "winget": "SumatraPDF.SumatraPDF"
+    },
+    {
+      "name": "Installteams",
+      "winget": "Microsoft.Teams"
+    },
+    {
+      "name": "Installteamviewer",
+      "winget": "TeamViewer.TeamViewer"
+    },
+    {
+      "name": "Installterminal",
+      "winget": "Microsoft.WindowsTerminal"
+    },
+    {
+      "name": "Installtreesize",
+      "winget": "JAMSoftware.TreeSize.Free"
+    },
+    {
+      "name": "Installttaskbar",
+      "winget": "TranslucentTB.TranslucentTB"
+    },
+    {
+      "name": "Installvisualstudio",
+      "winget": "Microsoft.VisualStudio.2022.Community"
+    },
+    {
+      "name": "Installvivaldi",
+      "winget": "VivaldiTechnologies.Vivaldi"
+    },
+    {
+      "name": "Installvlc",
+      "winget": "VideoLAN.VLC"
+    },
+    {
+      "name": "Installvoicemeeter",
+      "winget": "VB-Audio.Voicemeeter"
+    },
+    {
+      "name": "Installvscode",
+      "winget": "Git.Git;Microsoft.VisualStudioCode"
+    },
+    {
+      "name": "Installvscodium",
+      "winget": "Git.Git;VSCodium.VSCodium"
+    },
+    {
+      "name": "Installwindirstat",
+      "winget": "WinDirStat.WinDirStat"
+    },
+    {
+      "name": "Installscp",
+      "winget": "WinSCP.WinSCP"
+    },
+    {
+      "name": "Installwireshark",
+      "winget": "WiresharkFoundation.Wireshark"
+    },
+    {
+      "name": "Installzoom",
+      "winget": "Zoom.Zoom"
+    },
+    {
+      "name": "Installlibreoffice",
+      "winget": "TheDocumentFoundation.LibreOffice"
+    },
+    {
+      "name": "Installshell",
+      "winget": "Nilesoft.Shell"
+    },
+    {
+      "name": "Installklite",
+      "winget": "CodecGuide.K-LiteCodecPack.Standard"
+    },
+    {
+      "name": "Installsandboxie",
+      "winget": "Sandboxie.Plus"
+    },
+    {
+      "name": "Installprocesslasso",
+      "winget": "BitSum.ProcessLasso"
+    },
+    {
+      "name": "Installwinmerge",
+      "winget": "WinMerge.WinMerge"
+    },
+    {
+      "name": "Installdotnet3",
+      "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
+    },
+    {
+      "name": "Installdotnet5",
+      "winget": "Microsoft.DotNet.DesktopRuntime.5"
+    },
+    {
+      "name": "Installdotnet6",
+      "winget": "Microsoft.DotNet.DesktopRuntime.6"
+    },
+    {
+      "name": "Installvc2015_64",
+      "winget": "Microsoft.VC++2015-2022Redist-x64"
+    },
+    {
+      "name": "Installvc2015_32",
+      "winget": "Microsoft.VC++2015-2022Redist-x86"
+    },
+    {
+      "name": "Installfoxpdf",
+      "winget": "Foxit.PhantomPDF"
+    },
+    {
+      "name": "Installonlyoffice",
+      "winget": "ONLYOFFICE.DesktopEditors"
+    },
+    {
+      "name": "Installflux",
+      "winget": "flux.flux"
+    },
+    {
+      "name": "Installitunes",
+      "winget": "Apple.iTunes"
+    },
+    {
+      "name": "Installcider",
+      "winget": "CiderCollective.Cider"
+    },
+    {
+      "name": "Installjoplin",
+      "winget": "Joplin.Joplin"
+    },
+    {
+      "name": "Installopenoffice",
+      "winget": "Apache.OpenOffice"
+    },
+    {
+      "name": "Installrustdesk",
+      "winget": "RustDesk.RustDesk"
+    },
+    {
+      "name": "Installjami",
+      "winget": "SFLinux.Jami"
+    },
+    {
+      "name": "Installjdownloader",
+      "winget": "AppWork.JDownloader"
+    }
+  ]
 }
