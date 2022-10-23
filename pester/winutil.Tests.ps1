@@ -13,27 +13,35 @@
 
 #region Load Variables needed for testing
 
+
     #Config Files
-    $global:application = get-content ./config/applications.json | ConvertFrom-Json 
-    $global:preset = get-content ./config/preset.json | ConvertFrom-Json 
-    $global:feature = get-content ./config/feature.json | ConvertFrom-Json 
-    $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+
+    $global:configs = @{}
+
+    (
+        "applications", 
+        "tweaks",
+        "preset", 
+        "feature"
+    ) | ForEach-Object {
+        $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+    }
+
 
     #GUI
-    $global:sync = [Hashtable]::Synchronized(@{})
     $global:inputXML = get-content MainWindow.xaml
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
     [xml]$global:XAML = $global:inputXML
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
     $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
-    $global:sync["Form"] = [Windows.Markup.XamlReader]::Load( $global:reader )
-    $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+    $global:Form  = [Windows.Markup.XamlReader]::Load( $global:reader )
+    $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "Global:WPF$($_.Name)" -Value $global:Form.FindName($_.Name) -Scope global }
 
     #Variables to compare GUI to config files
-    $Global:GUIFeatureCount = ($global:feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITabCount = ($global:sync["TabNav"].Items.name).count
-    $Global:GUIApplicationCount = ($global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITweaksCount = ($global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUIFeatureCount = ( $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUITabCount = (Get-Variable | Where-Object {$_.name -like "*WPFTab?"}).count
+    $Global:GUIApplicationCount = ($global:configs.application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUITweaksCount = ($global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
