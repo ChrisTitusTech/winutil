@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'feature/tweaks'
+$BranchToUse = 'test'
 
 <#
 .NOTES
