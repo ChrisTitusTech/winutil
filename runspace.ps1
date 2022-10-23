@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'feature/pipelinebranch'
+$BranchToUse = 'main-test'
 
 <#
 .NOTES
