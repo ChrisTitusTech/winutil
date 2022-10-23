@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'feature/pester'
+$BranchToUse = 'feature/applications'
 
 <#
 .NOTES
