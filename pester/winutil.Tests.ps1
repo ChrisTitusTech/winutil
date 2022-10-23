@@ -88,6 +88,36 @@ Describe "Json Files" {
             $tweaks.Value.Appx | should -Not -BeNullOrEmpty
             $tweaks.Value.InvokeScript | should -Not -BeNullOrEmpty
         }
+        It "Original Values should be set" {
+            $tweaks = $global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+
+            Foreach($tweak in $tweaks){
+                if($tweak.value.registry){
+
+                    $values = $tweak.value | Select-Object -ExpandProperty registry
+
+                    Foreach ($value in $values){
+                        $value.OriginalValue | should -Not -BeNullOrEmpty
+                    }  
+                }
+                if($tweak.value.Service){
+
+                    $values = $tweak.value | Select-Object -ExpandProperty Service
+
+                    Foreach ($value in $values){
+                        $value.OriginalType | should -Not -BeNullOrEmpty
+                    }  
+                }
+                if($tweak.value.ScheduledTask){
+
+                    $values = $tweak.value | Select-Object -ExpandProperty ScheduledTask
+
+                    Foreach ($value in $values){
+                        $value.OriginalState | should -Not -BeNullOrEmpty
+                    }  
+                }
+            }
+        }
     } 
 }
 
