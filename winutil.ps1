@@ -755,8 +755,8 @@ $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
             Write-Host "Delete Temp Files"
-            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse
-            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
             $WPFEssTweaksDeleteTempFiles.IsChecked = $false
             Write-Host "================================="
             Write-Host "--- !!!!ERRORS ARE NORMAL!!!! ---"
@@ -775,6 +775,9 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_EFSEFeatureFlags" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_Enabled" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\System\GameConfigStore" -Name "GameDVR_FSEBehavior" -Type DWord -Value 2
+            If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Force
+            }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
 
             #Disabling Gamebar Presence Writer, which causes stutter in games
@@ -954,7 +957,7 @@ $WPFtweaksbutton.Add_Click({
                 # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
         
                 Write-Host "Setting $service StartupType to Manual"
-                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Manual
+                Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Manual -ErrorAction SilentlyContinue
             }
             $WPFEssTweaksServices.IsChecked = $false
         }
