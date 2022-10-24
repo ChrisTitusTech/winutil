@@ -312,7 +312,7 @@ $Sync.GUIInstallPrograms = {
         else{
             foreach ($program in $programstoinstall){
 
-                $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                $($sync.applications.install.$("WPF" + $program).winget) -split ";" | ForEach-Object {
                     if($psitem){
                         $winget += ",$psitem"
                     }Else{
@@ -1492,6 +1492,15 @@ Example usage:
 
 If($env:args){
 Write-Verbose "Arguments Detected, Running Args"
+
+#Ensure Computer Info is populated before continuing
+$x = 1
+do{
+    Start-Sleep -Seconds 1
+    $x++
+}until($sync.ComputerInfo -or $x -eq 5)
+if($x -eq 5){Invoke-command $sync.WriteLogs -ArgumentList ("WARINING","Failed to pull computer info after 5 seconds, this cause cause some scripts to fail.", $sync.logfile)}
+
 If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
 If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
 If($env:args -match '\bPanelControl\b'){cmd /c control}
