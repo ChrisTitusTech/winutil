@@ -1494,12 +1494,12 @@ If($env:args){
 Write-Verbose "Arguments Detected, Running Args"
 
 #Ensure Computer Info is populated before continuing
-$x = 1
+$x = 0
 do{
     Start-Sleep -Seconds 1
     $x++
-}until($sync.ComputerInfo -or $x -eq 5)
-if($x -eq 5){Invoke-command $sync.WriteLogs -ArgumentList ("WARINING","Failed to pull computer info after 5 seconds, this cause cause some scripts to fail.", $sync.logfile)}
+}until($sync.ComputerInfo -or $x -eq 10)
+if($x -eq 5){Invoke-command $sync.WriteLogs -ArgumentList ("WARINING","Failed to pull computer info after 5 seconds, this can cause some scripts to fail.", $sync.logfile)}
 
 If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
 If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
