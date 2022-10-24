@@ -1457,7 +1457,7 @@ $sync["Form"].ShowDialog() | out-null
 How to run Arguments
 
 First step is to set the $env:args variable with the setups you wish to do. To do multiple items put a " " space between each command. 
-For commands that require input seperate the command with a semicolon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
+For commands that require input seperate the command with a colon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
 
 Supported arguments:
 
