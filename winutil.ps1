@@ -274,9 +274,9 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("VSCodium.VSCodium")
             $WPFInstallvscodium.IsChecked = $false
         }
-        If ( $WPFInstallwinscp.IsChecked -eq $true ) { 
+        If ( $WPFInstallscp.IsChecked -eq $true ) { 
             $wingetinstall.Add("WinSCP.WinSCP")
-            $WPFInstallputty.IsChecked = $false
+            $WPFInstallscp.IsChecked = $false
         }
         If ( $WPFInstallanydesk.IsChecked -eq $true ) { 
             $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
@@ -527,9 +527,9 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Apache.OpenOffice")
             $WPFInstallopenoffice.IsChecked = $false
         }
-        If ( $WPFInstallruskdesk.IsChecked -eq $true ) { 
+        If ( $WPFInstallrustdesk.IsChecked -eq $true ) { 
             $wingetinstall.Add("RustDesk.RustDesk")
-            $WPFInstallruskdesk.IsChecked = $false
+            $WPFInstallrustdesk.IsChecked = $false
         }
         If ( $WPFInstalljami.IsChecked -eq $true ) { 
             $wingetinstall.Add("SFLinux.Jami")
