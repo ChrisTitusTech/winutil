@@ -20,10 +20,10 @@ Example:
 
 {
     "install": {
-        "Installadobe": {
+        "WPFInstalladobe": {
             "winget": "Adobe.Acrobat.Reader.64-bit"
         },
-        "Installadvancedip": {
+        "WPFInstalladvancedip": {
             "winget": "Famatech.AdvancedIPScanner"
         }
     }
@@ -32,8 +32,9 @@ Example:
 #>
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+#------Do not delete WPF------
 
-$NameofButton = ""
+$NameofButton = "WPF" + ""
 $WingetCommand = ""
 
 $ButtonToAdd = New-Object psobject
