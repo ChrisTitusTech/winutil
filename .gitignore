@@ -9,3 +9,4 @@ winutil.pdb
 *.zip
 .vs/
 *.psd*
+pester.ps1
