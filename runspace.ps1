@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'test'
+$BranchToUse = 'feature/UpdateRunspace'
 
 <#
 .NOTES
@@ -312,7 +312,7 @@ $Sync.GUIInstallPrograms = {
         else{
             foreach ($program in $programstoinstall){
 
-                $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                $($sync.applications.install.$("WPF" + $program).winget) -split ";" | ForEach-Object {
                     if($psitem){
                         $winget += ",$psitem"
                     }Else{
@@ -1457,7 +1457,7 @@ if($gui -eq $true){
 How to run Arguments
 
 First step is to set the $env:args variable with the setups you wish to do. To do multiple items put a " " space between each command. 
-For commands that require input seperate the command with a semicolon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
+For commands that require input seperate the command with a colon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
 
 Supported arguments:
 
@@ -1492,6 +1492,15 @@ Example usage:
 
 If($env:args){
 Write-Verbose "Arguments Detected, Running Args"
+
+#Ensure Computer Info is populated before continuing
+$x = 0
+do{
+    Start-Sleep -Seconds 1
+    $x++
+}until($sync.ComputerInfo -or $x -eq 10)
+if($x -eq 5){Invoke-command $sync.WriteLogs -ArgumentList ("WARINING","Failed to pull computer info after 5 seconds, this can cause some scripts to fail.", $sync.logfile)}
+
 If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
 If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
 If($env:args -match '\bPanelControl\b'){cmd /c control}
