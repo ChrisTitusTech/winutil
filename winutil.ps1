@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'test-1'
+$BranchToUse = 'test'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
