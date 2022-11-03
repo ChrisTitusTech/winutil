@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'feature/UpdateRunspace'
+$BranchToUse = 'test'
 
 <#
 .NOTES
