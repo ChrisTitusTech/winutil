@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'feature/applications'
+$BranchToUse = 'test'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
