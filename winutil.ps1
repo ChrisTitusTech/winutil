@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'test'
+$BranchToUse = 'test-1'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
@@ -156,7 +156,6 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 
 $WPFinstall.Add_Click({
-
         $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
 
         # Check if winget is installed

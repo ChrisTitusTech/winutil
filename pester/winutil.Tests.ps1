@@ -13,7 +13,6 @@
 
 #region Load Variables needed for testing
 
-
     #Config Files
 
     $global:configs = @{}
@@ -129,7 +128,13 @@ Describe "Config Files" {
             }
         }
     } 
+}
 
+#===========================================================================
+# Tests - GUI
+#===========================================================================
+
+Describe "GUI" {
     Context "XML" {
         It "Imports with no errors" {
             $global:XAML | should -Not -BeNullOrEmpty
@@ -185,6 +190,7 @@ Describe "GUI Functions" {
         $WPFInstallUpgrade | should -Not -BeNullOrEmpty
         $WPFinstall | should -Not -BeNullOrEmpty
     }
+
 
     It "Get-CheckBoxes Install should return data" {
         . .\pester.ps1 
