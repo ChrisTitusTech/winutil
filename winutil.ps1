@@ -6,7 +6,7 @@ $BranchToUse = 'test'
    GitHub      : https://github.com/ChrisTitusTech
     Version 0.0.1
 #>
-
+# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 #Load config files to hashtable
@@ -457,6 +457,38 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Setting Classic Right-Click Menu..."
             New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""       
             $WPFMiscTweaksRightClickMenu.IsChecked = $false
+        }
+        If ( $WPFchangedns.text -eq 'Google' ) { 
+            Write-Host "Setting DNS to Google for all connections..."
+            $DC = "8.8.8.8"
+            $Internet = "8.8.4.4"
+            $dns = "$DC", "$Internet"
+            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
+            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+        }
+        If ( $WPFchangedns.text -eq 'Cloud Flare' ) { 
+            Write-Host "Setting DNS to Cloud Flare for all connections..."
+            $DC = "1.1.1.1"
+            $Internet = "1.0.0.1"
+            $dns = "$DC", "$Internet"
+            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
+            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+        }
+        If ( $WPFchangedns.text -eq 'Level3' ) { 
+            Write-Host "Setting DNS to Level3 for all connections..."
+            $DC = "4.2.2.2"
+            $Internet = "4.2.2.4"
+            $dns = "$DC", "$Internet"
+            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
+            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+        }
+        If ( $WPFchangedns.text -eq 'Open DNS' ) { 
+            Write-Host "Setting DNS to Open DNS for all connections..."
+            $DC = "208.67.222.222"
+            $Internet = "208.67.220.220"
+            $dns = "$DC", "$Internet"
+            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
+            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             If (!(Test-Path .\ooshutup10.cfg)) {
