@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'hotfix/fixapplications'
+$BranchToUse = 'main'
 
 <#
 .NOTES
