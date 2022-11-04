@@ -7,7 +7,7 @@ $BranchToUse = 'main'
     Version 0.0.1
 #>
 
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/lavavex/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -63,7 +63,7 @@ Function Get-FormVariables {
     #====DEBUG GUI Elements====
 
     #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
-    get-variable WPF*
+    #get-variable WPF*
 }
  
 Get-FormVariables
