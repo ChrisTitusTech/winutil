@@ -63,7 +63,7 @@ Function Get-FormVariables {
     #====DEBUG GUI Elements====
 
     #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
-    #get-variable WPF*
+    get-variable WPF*
 }
  
 Get-FormVariables
