@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'patch-1'
+$BranchToUse = 'main'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
@@ -7,7 +7,7 @@ $BranchToUse = 'patch-1'
     Version 0.0.1
 #>
 
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/lavavex/winutil/patch-1/MainWindow.xaml") #uncomment for Production
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/lavavex/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -1392,7 +1392,23 @@ $WPFEnableDarkMode.Add_Click({
         Write-Host "Enabled"
     }
 )
+
+$WPFEnableDarkModeSystem.Add_Click({
+        Write-Host "Enabling System Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme SystemUseLightTheme -Value 0
+        Write-Host "Enabled"
+    }
+)
     
+$WPFDisableDarkModeSystem.Add_Click({
+        Write-Host "Disabling System Dark Mode"
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty $Theme SystemUseLightTheme -Value 1
+        Write-Host "Disabled"
+    }
+)
+
 $WPFDisableDarkMode.Add_Click({
         Write-Host "Disabling Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
