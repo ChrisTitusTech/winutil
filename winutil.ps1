@@ -1396,7 +1396,7 @@ $WPFEnableDarkMode.Add_Click({
 $WPFEnableDarkModeSystem.Add_Click({
         Write-Host "Enabling System Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme SystemUseLightTheme -Value 0
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value 0
         Write-Host "Enabled"
     }
 )
@@ -1404,7 +1404,7 @@ $WPFEnableDarkModeSystem.Add_Click({
 $WPFDisableDarkModeSystem.Add_Click({
         Write-Host "Disabling System Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme SystemUseLightTheme -Value 1
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value 1
         Write-Host "Disabled"
     }
 )
