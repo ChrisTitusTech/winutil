@@ -838,6 +838,20 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Adjusted visual effects for performance"
             $WPFMiscTweaksDisplay.IsChecked = $false
         }
+        If ( $WPFMiscTweaksDisableMouseAcceleration.IsChecked -eq $true ) {
+            Write-Host "Disabling mouse acceleration..."
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 0
+            $WPFMiscTweaksDisableMouseAcceleration.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksEnableMouseAcceleration.IsChecked -eq $true ) {
+            Write-Host "Enabling mouse acceleration..."
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 1
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 6
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 10
+            $WPFMiscTweaksEnableMouseAcceleration.IsChecked = $false
+        }
         If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
             Write-Host "Removing Cortana..."
             Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
