@@ -216,8 +216,8 @@
 							<CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
 							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 							<Label Content="Dark Theme" />
-							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable Apps Dark Mode" Margin="60,0" />
-							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable Apps Dark Mode" Margin="60,0"/>
+							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
+							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
 
 						</StackPanel>
 						<StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
