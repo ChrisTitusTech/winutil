@@ -213,7 +213,7 @@ $WPFinstall.Add_Click({
             try {
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
-                Start-Sleep -s 3
+                Start-Sleep -s 6
                 Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
             }
             catch [System.InvalidOperationException] {
@@ -1049,19 +1049,21 @@ $WPFtweaksbutton.Add_Click({
 
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     })
-
+    
 $WPFEnableDarkMode.Add_Click({
         Write-Host "Enabling Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value 0
         Write-Host "Enabled"
     }
 )
-    
+
 $WPFDisableDarkMode.Add_Click({
         Write-Host "Disabling Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value 1
         Write-Host "Disabled"
     }
 )
