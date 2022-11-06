@@ -213,7 +213,7 @@ $WPFinstall.Add_Click({
             try {
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
-                Start-Sleep -s 3
+                Start-Sleep -s 6
                 Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
             }
             catch [System.InvalidOperationException] {
