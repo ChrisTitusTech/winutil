@@ -217,8 +217,6 @@
 							<CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 							<Label Content="Dark Theme" />
 							<Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable Apps Dark Mode" Margin="60,0" />
-							<Button Name="EnableDarkModeSystem" Background="AliceBlue" Content="Enable System Dark Mode" Margin="60,0" />
-							<Button Name="DisableDarkModeSystem" Background="AliceBlue" Content="Disable System Dark Mode" Margin="60,0"/>
 							<Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable Apps Dark Mode" Margin="60,0"/>
 
 						</StackPanel>
