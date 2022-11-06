@@ -1135,6 +1135,56 @@
     # It will just not bother u anymore"
     ]
   },
+  "MiscTweaksDisableMouseAcceleration":  {
+    "registry":  [
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "1",
+          "name":  "MouseSpeed",
+          "value":  "0",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "6",
+          "name":  "MouseThreshold1",
+          "value":  "0",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "10",
+          "name":  "MouseThreshold2",
+          "value":  "0",
+          "type":  "String"
+      }
+    ]
+  },
+  "MiscTweaksEnableMouseAcceleration":  {
+    "registry":  [
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "1",
+          "name":  "MouseSpeed",
+          "value":  "1",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "6",
+          "name":  "MouseThreshold1",
+          "value":  "6",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "10",
+          "name":  "MouseThreshold2",
+          "value":  "10",
+          "type":  "String"
+      }
+    ]
+  },
   "EssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
