@@ -1055,6 +1055,8 @@ $WPFAddUltPerf.Add_Click({
         powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
         powercfg /setactive e9a42b02-d5df-448d-aa00-03f14749eb61
         Write-Host "Profile added and enabled"
+     }
+)
     
 $WPFEnableDarkMode.Add_Click({
         Write-Host "Enabling Dark Mode"
