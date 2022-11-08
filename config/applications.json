@@ -94,10 +94,19 @@
       "winget": "AdoptOpenJDK.OpenJDK.16"
     },
     "WPFInstalljava18": {
-      "winget": "Oracle.JDK.18"
+      "winget": "EclipseAdoptium.Temurin.18.JRE"
     },
     "WPFInstalljava8": {
-      "winget": "AdoptOpenJDK.OpenJDK.8"
+      "winget": "EclipseAdoptium.Temurin.8.JRE"
+    },
+    "WPFInstalljava19": {
+      "winget": "EclipseAdoptium.Temurin.19.JRE"
+    },
+    "WPFInstalljava17": {
+      "winget": "EclipseAdoptium.Temurin.17.JRE"
+    },
+    "WPFInstalljava11": {
+      "winget": "EclipseAdoptium.Temurin.11.JRE"
     },
     "WPFInstalljetbrains": {
       "winget": "JetBrains.Toolbox"
@@ -317,6 +326,57 @@
     },
     "WPFInstalltor": {
       "Winget": "TorProject.TorBrowser"
+    },
+    "WPFInstallkrita": {
+      "winget": "KDE.Krita"
+    },
+    "WPFInstallnglide": {
+      "winget": "ZeusSoftware.nGlide"
+    },
+    "WPFInstallkodi": {
+      "winget": "XBMCFoundation.Kodi"
+    },
+    "WPFInstalltelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
+    "WPFInstallunity": {
+      "winget": "UnityTechnologies.UnityHub"
+    },
+    "WPFInstallqbittorrent": {
+      "winget": "qBittorrent.qBittorrent"
+    },
+    "WPFInstallorigin": {
+      "winget": "ElectronicArts.EADesktop"
+    },
+    "WPFInstallopenshell": {
+      "winget": "Open-Shell.Open-Shell-Menu"
+    },
+    "WPFInstallbluestacks": {
+      "winget": "BlueStack.BlueStacks"
+    },
+    "WPFInstallstrawberry": {
+      "winget": "StrawberryMusicPlayer.Strawberry"
+    },
+    "WPFInstallsqlstudio": {
+      "winget": "Microsoft.SQLServerManagementStudio"
+    },
+    "WPFInstallwaterfox": {
+      "winget": "Waterfox.Waterfox"
+    },
+    "WPFInstallpowershell": {
+      "winget": "Microsoft.PowerShell"
+    },
+    "WPFInstallprocessmonitor": {
+      "winget": "Microsoft.Sysinternals.ProcessMonitor"
+    },
+    "WPFInstallonedrive": {
+      "winget": "Microsoft.OneDrive"
+    },
+    "WPFInstalledge": {
+      "winget": "Microsoft.Edge"
+    },
+    "WPFInstallnuget": {
+      "winget": "Microsoft.NuGet"
     }
   }
 }
