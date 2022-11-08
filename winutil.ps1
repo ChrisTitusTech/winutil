@@ -182,7 +182,7 @@ $WPFinstall.Add_Click({
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
                 
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/asheroto/winget-installer/master/winget-install.ps1 | iex | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex | Out-Host" -WindowStyle Normal
                 
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
@@ -213,7 +213,7 @@ $WPFinstall.Add_Click({
             try {
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
-                Start-Sleep -s 3
+                Start-Sleep -s 6
                 Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
             }
             catch [System.InvalidOperationException] {
@@ -716,7 +716,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type DWord -Value 1
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "AutoEndTasks" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 10
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 400
             
             ## Timeout Tweaks cause flickering on Windows now
             Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillAppTimeout" -ErrorAction SilentlyContinue
@@ -837,6 +837,20 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 0
             Write-Host "Adjusted visual effects for performance"
             $WPFMiscTweaksDisplay.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksDisableMouseAcceleration.IsChecked -eq $true ) {
+            Write-Host "Disabling mouse acceleration..."
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 0
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 0
+            $WPFMiscTweaksDisableMouseAcceleration.IsChecked = $false
+        }
+        If ( $WPFMiscTweaksEnableMouseAcceleration.IsChecked -eq $true ) {
+            Write-Host "Enabling mouse acceleration..."
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 1
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 6
+            Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 10
+            $WPFMiscTweaksEnableMouseAcceleration.IsChecked = $false
         }
         If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
             Write-Host "Removing Cortana..."
