@@ -1053,8 +1053,16 @@ $WPFtweaksbutton.Add_Click({
 $WPFAddUltPerf.Add_Click({
         Write-Host "Adding Ultimate Performance Profile"
         powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-        powercfg /setactive e9a42b02-d5df-448d-aa00-03f14749eb61
+        powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61
         Write-Host "Profile added and enabled"
+     }
+)
+
+$WPFRemoveUltPerf.Add_Click({
+        Write-Host "Removing Ultimate Performance Profile"
+        powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
+        powercfg -delete e9a42b02-d5df-448d-aa00-03f14749eb61
+        Write-Host "Profile Removed and Balanced plan Enabled"
      }
 )
     
