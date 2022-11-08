@@ -7,7 +7,7 @@ $BranchToUse = 'test'
     Version 0.0.1
 #>
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
+$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/lavavex/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 #Load config files to hashtable
 $configs = @{}
