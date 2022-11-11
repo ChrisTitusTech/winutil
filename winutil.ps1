@@ -1,4 +1,4 @@
-#for CI/CD
+﻿#for CI/CD
 $BranchToUse = 'main'
 <#
 .NOTES
@@ -13,8 +13,8 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
- 
-$reader = (New-Object System.Xml.XmlNodeReader $xaml) 
+
+$reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
@@ -27,18 +27,18 @@ catch {
     # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
- 
+
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
- 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
- 
-Function Get-FormVariables {
-    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
-    
 
-    write-host ""                                                                                                                             
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+
+Function Get-FormVariable {
+    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
+
+
+    write-host ""
     write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
     write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
     write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
@@ -58,14 +58,14 @@ Function Get-FormVariables {
     write-host ""
     write-host "====Chris Titus Tech====="
     write-host "=====Windows Toolbox====="
-                           
- 
+
+
     #====DEBUG GUI Elements====
 
     #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
     #get-variable WPF*
 }
- 
+
 Get-FormVariables
 
 #===========================================================================
@@ -108,155 +108,155 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 $WPFinstall.Add_Click({
         $wingetinstall = New-Object System.Collections.Generic.List[System.Object]
-        If ( $WPFInstalllibreoffice.IsChecked -eq $true ) { 
+        If ( $WPFInstalllibreoffice.IsChecked -eq $true ) {
             $wingetinstall.Add("TheDocumentFoundation.LibreOffice")
             $WPFInstalllibreoffice.IsChecked = $false
         }
-        If ( $WPFInstalladobe.IsChecked -eq $true ) { 
+        If ( $WPFInstalladobe.IsChecked -eq $true ) {
             $wingetinstall.Add("Adobe.Acrobat.Reader.64-bit")
             $WPFInstalladobe.IsChecked = $false
         }
-        If ( $WPFInstalladvancedip.IsChecked -eq $true ) { 
+        If ( $WPFInstalladvancedip.IsChecked -eq $true ) {
             $wingetinstall.Add("Famatech.AdvancedIPScanner")
             $WPFInstalladvancedip.IsChecked = $false
         }
-        If ( $WPFInstallatom.IsChecked -eq $true ) { 
+        If ( $WPFInstallatom.IsChecked -eq $true ) {
             $wingetinstall.Add("GitHub.Atom")
             $WPFInstallatom.IsChecked = $false
         }
-        If ( $WPFInstallaudacity.IsChecked -eq $true ) { 
+        If ( $WPFInstallaudacity.IsChecked -eq $true ) {
             $wingetinstall.Add("Audacity.Audacity")
             $WPFInstallaudacity.IsChecked = $false
         }
-        If ( $WPFInstallautohotkey.IsChecked -eq $true ) { 
+        If ( $WPFInstallautohotkey.IsChecked -eq $true ) {
             $wingetinstall.Add("Lexikos.AutoHotkey")
             $WPFInstallautohotkey.IsChecked = $false
-        }  
-        If ( $WPFInstallbrave.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallbrave.IsChecked -eq $true ) {
             $wingetinstall.Add("Brave.Brave")
             $WPFInstallbrave.IsChecked = $false
         }
-        If ( $WPFInstallchrome.IsChecked -eq $true ) { 
+        If ( $WPFInstallchrome.IsChecked -eq $true ) {
             $wingetinstall.Add("Google.Chrome")
             $WPFInstallchrome.IsChecked = $false
         }
-        If ( $WPFInstalltor.IsChecked -eq $true ) { 
+        If ( $WPFInstalltor.IsChecked -eq $true ) {
             $wingetinstall.Add("TorProject.TorBrowser")
             $WPFInstalltor.IsChecked = $false
         }
-        If ( $WPFInstalldiscord.IsChecked -eq $true ) { 
+        If ( $WPFInstalldiscord.IsChecked -eq $true ) {
             $wingetinstall.Add("Discord.Discord")
             $WPFInstalldiscord.IsChecked = $false
         }
-        If ( $WPFInstallesearch.IsChecked -eq $true ) { 
+        If ( $WPFInstallesearch.IsChecked -eq $true ) {
             $wingetinstall.Add("voidtools.Everything --source winget")
             $WPFInstallesearch.IsChecked = $false
         }
-        If ( $WPFInstalletcher.IsChecked -eq $true ) { 
+        If ( $WPFInstalletcher.IsChecked -eq $true ) {
             $wingetinstall.Add("Balena.Etcher")
             $WPFInstalletcher.IsChecked = $false
         }
-        If ( $WPFInstallfirefox.IsChecked -eq $true ) { 
+        If ( $WPFInstallfirefox.IsChecked -eq $true ) {
             $wingetinstall.Add("Mozilla.Firefox")
             $WPFInstallfirefox.IsChecked = $false
         }
-        If ( $WPFInstallgimp.IsChecked -eq $true ) { 
+        If ( $WPFInstallgimp.IsChecked -eq $true ) {
             $wingetinstall.Add("GIMP.GIMP")
             $WPFInstallgimp.IsChecked = $false
         }
-        If ( $WPFInstallgit.IsChecked -eq $true ) { 
+        If ( $WPFInstallgit.IsChecked -eq $true ) {
             $wingetinstall.Add("Git.Git")
             $WPFInstallgithubdesktop.IsChecked = $false
         }
-        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) { 
+        If ( $WPFInstallgithubdesktop.IsChecked -eq $true ) {
             $wingetinstall.Add("GitHub.GitHubDesktop")
             $WPFInstallgithubdesktop.IsChecked = $false
         }
-        If ( $WPFInstallimageglass.IsChecked -eq $true ) { 
+        If ( $WPFInstallimageglass.IsChecked -eq $true ) {
             $wingetinstall.Add("DuongDieuPhap.ImageGlass")
             $WPFInstallimageglass.IsChecked = $false
         }
-        If ( $WPFInstalljava8.IsChecked -eq $true ) { 
+        If ( $WPFInstalljava8.IsChecked -eq $true ) {
             $wingetinstall.Add("AdoptOpenJDK.OpenJDK.8")
             $WPFInstalljava8.IsChecked = $false
         }
-        If ( $WPFInstalljava16.IsChecked -eq $true ) { 
+        If ( $WPFInstalljava16.IsChecked -eq $true ) {
             $wingetinstall.Add("AdoptOpenJDK.OpenJDK.16")
             $WPFInstalljava16.IsChecked = $false
         }
-        If ( $WPFInstalljava18.IsChecked -eq $true ) { 
+        If ( $WPFInstalljava18.IsChecked -eq $true ) {
             $wingetinstall.Add("Oracle.JDK.18")
             $WPFInstalljava18.IsChecked = $false
         }
-        If ( $WPFInstalljetbrains.IsChecked -eq $true ) { 
+        If ( $WPFInstalljetbrains.IsChecked -eq $true ) {
             $wingetinstall.Add("JetBrains.Toolbox")
             $WPFInstalljetbrains.IsChecked = $false
         }
-        If ( $WPFInstallmpc.IsChecked -eq $true ) { 
+        If ( $WPFInstallmpc.IsChecked -eq $true ) {
             $wingetinstall.Add("clsid2.mpc-hc")
             $WPFInstallmpc.IsChecked = $false
         }
-        If ( $WPFInstallnodejs.IsChecked -eq $true ) { 
+        If ( $WPFInstallnodejs.IsChecked -eq $true ) {
             $wingetinstall.Add("OpenJS.NodeJS")
             $WPFInstallnodejs.IsChecked = $false
         }
-        If ( $WPFInstallnodejslts.IsChecked -eq $true ) { 
+        If ( $WPFInstallnodejslts.IsChecked -eq $true ) {
             $wingetinstall.Add("OpenJS.NodeJS.LTS")
             $WPFInstallnodejslts.IsChecked = $false
         }
-        If ( $WPFInstallnotepadplus.IsChecked -eq $true ) { 
+        If ( $WPFInstallnotepadplus.IsChecked -eq $true ) {
             $wingetinstall.Add("Notepad++.Notepad++")
             $WPFInstallnotepadplus.IsChecked = $false
         }
-        If ( $WPFInstallpowertoys.IsChecked -eq $true ) { 
+        If ( $WPFInstallpowertoys.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.PowerToys")
             $WPFInstallpowertoys.IsChecked = $false
         }
-        If ( $WPFInstallputty.IsChecked -eq $true ) { 
+        If ( $WPFInstallputty.IsChecked -eq $true ) {
             $wingetinstall.Add("PuTTY.PuTTY")
             $WPFInstallputty.IsChecked = $false
         }
-        If ( $WPFInstallpython3.IsChecked -eq $true ) { 
+        If ( $WPFInstallpython3.IsChecked -eq $true ) {
             $wingetinstall.Add("Python.Python.3")
             $WPFInstallpython3.IsChecked = $false
         }
-        If ( $WPFInstallrustlang.IsChecked -eq $true ) { 
+        If ( $WPFInstallrustlang.IsChecked -eq $true ) {
             $wingetinstall.Add("Rustlang.Rust.MSVC")
             $WPFInstallrustlang.IsChecked = $false
         }
-        If ( $WPFInstallsevenzip.IsChecked -eq $true ) { 
+        If ( $WPFInstallsevenzip.IsChecked -eq $true ) {
             $wingetinstall.Add("7zip.7zip")
             $WPFInstallsevenzip.IsChecked = $false
         }
-        If ( $WPFInstallsharex.IsChecked -eq $true ) { 
+        If ( $WPFInstallsharex.IsChecked -eq $true ) {
             $wingetinstall.Add("ShareX.ShareX")
             $WPFInstallsharex.IsChecked = $false
         }
-        If ( $WPFInstallsublime.IsChecked -eq $true ) { 
+        If ( $WPFInstallsublime.IsChecked -eq $true ) {
             $wingetinstall.Add("SublimeHQ.SublimeText.4")
             $WPFInstallsublime.IsChecked = $false
         }
-        If ( $WPFInstallsumatra.IsChecked -eq $true ) { 
+        If ( $WPFInstallsumatra.IsChecked -eq $true ) {
             $wingetinstall.Add("SumatraPDF.SumatraPDF")
             $WPFInstallsumatra.IsChecked = $false
         }
-        If ( $WPFInstallterminal.IsChecked -eq $true ) { 
+        If ( $WPFInstallterminal.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.WindowsTerminal")
             $WPFInstallterminal.IsChecked = $false
         }
-        If ( $WPFInstallidm.IsChecked -eq $true ) { 
+        If ( $WPFInstallidm.IsChecked -eq $true ) {
             $wingetinstall.Add("Tonec.InternetDownloadManager")
             $WPFInstallidm.IsChecked = $false
         }
-        If ( $WPFInstallalacritty.IsChecked -eq $true ) { 
+        If ( $WPFInstallalacritty.IsChecked -eq $true ) {
             $wingetinstall.Add("Alacritty.Alacritty")
             $WPFInstallalacritty.IsChecked = $false
         }
-        If ( $WPFInstallttaskbar.IsChecked -eq $true ) { 
+        If ( $WPFInstallttaskbar.IsChecked -eq $true ) {
             $wingetinstall.Add("9PF4KZ2VN4W9")
             $WPFInstallttaskbar.IsChecked = $false
         }
-        If ( $WPFInstallvlc.IsChecked -eq $true ) { 
+        If ( $WPFInstallvlc.IsChecked -eq $true ) {
             $wingetinstall.Add("VideoLAN.VLC")
             $WPFInstallvlc.IsChecked = $false
         }
@@ -264,193 +264,193 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("KDE.Kdenlive")
             $WPFInstallkdenlive.IsChecked = $false
         }
-        If ( $WPFInstallvscode.IsChecked -eq $true ) { 
+        If ( $WPFInstallvscode.IsChecked -eq $true ) {
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("Microsoft.VisualStudioCode --source winget")
             $WPFInstallvscode.IsChecked = $false
         }
-        If ( $WPFInstallvscodium.IsChecked -eq $true ) { 
+        If ( $WPFInstallvscodium.IsChecked -eq $true ) {
             $wingetinstall.Add("Git.Git")
             $wingetinstall.Add("VSCodium.VSCodium")
             $WPFInstallvscodium.IsChecked = $false
         }
-        If ( $WPFInstallscp.IsChecked -eq $true ) { 
+        If ( $WPFInstallscp.IsChecked -eq $true ) {
             $wingetinstall.Add("WinSCP.WinSCP")
             $WPFInstallscp.IsChecked = $false
         }
-        If ( $WPFInstallanydesk.IsChecked -eq $true ) { 
+        If ( $WPFInstallanydesk.IsChecked -eq $true ) {
             $wingetinstall.Add("AnyDeskSoftwareGmbH.AnyDesk")
             $WPFInstallanydesk.IsChecked = $false
         }
-        If ( $WPFInstallbitwarden.IsChecked -eq $true ) { 
+        If ( $WPFInstallbitwarden.IsChecked -eq $true ) {
             $wingetinstall.Add("Bitwarden.Bitwarden")
             $WPFInstallbitwarden.IsChecked = $false
-        }        
-        If ( $WPFInstallblender.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallblender.IsChecked -eq $true ) {
             $wingetinstall.Add("BlenderFoundation.Blender")
             $WPFInstallblender.IsChecked = $false
-        }                    
-        If ( $WPFInstallchromium.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallchromium.IsChecked -eq $true ) {
             $wingetinstall.Add("eloston.ungoogled-chromium")
             $WPFInstallchromium.IsChecked = $false
-        }             
-        If ( $WPFInstallcpuz.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallcpuz.IsChecked -eq $true ) {
             $wingetinstall.Add("CPUID.CPU-Z")
             $WPFInstallcpuz.IsChecked = $false
-        }                            
-        If ( $WPFInstalleartrumpet.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstalleartrumpet.IsChecked -eq $true ) {
             $wingetinstall.Add("File-New-Project.EarTrumpet")
             $WPFInstalleartrumpet.IsChecked = $false
-        }           
-        If ( $WPFInstallepicgames.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallepicgames.IsChecked -eq $true ) {
             $wingetinstall.Add("EpicGames.EpicGamesLauncher")
             $WPFInstallepicgames.IsChecked = $false
-        }                                      
-        If ( $WPFInstallflameshot.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallflameshot.IsChecked -eq $true ) {
             $wingetinstall.Add("Flameshot.Flameshot")
             $WPFInstallflameshot.IsChecked = $false
-        }            
-        If ( $WPFInstallfoobar.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallfoobar.IsChecked -eq $true ) {
             $wingetinstall.Add("PeterPawlowski.foobar2000")
             $WPFInstallfoobar.IsChecked = $false
-        }                     
-        If ( $WPFInstallgog.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallgog.IsChecked -eq $true ) {
             $wingetinstall.Add("GOG.Galaxy")
             $WPFInstallgog.IsChecked = $false
-        }                  
-        If ( $WPFInstallgpuz.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallgpuz.IsChecked -eq $true ) {
             $wingetinstall.Add("TechPowerUp.GPU-Z")
             $WPFInstallgpuz.IsChecked = $false
-        }                 
-        If ( $WPFInstallglaryutilities.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallglaryutilities.IsChecked -eq $true ) {
             $wingetinstall.Add("Glarysoft.GlaryUtilities")
             $WPFInstallglaryutilities.IsChecked = $false
-        }                 
-        If ( $WPFInstallgreenshot.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallgreenshot.IsChecked -eq $true ) {
             $wingetinstall.Add("Greenshot.Greenshot")
             $WPFInstallgreenshot.IsChecked = $false
-        }            
-        If ( $WPFInstallhandbrake.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallhandbrake.IsChecked -eq $true ) {
             $wingetinstall.Add("HandBrake.HandBrake")
             $WPFInstallhandbrake.IsChecked = $false
-        }      
-        If ( $WPFInstallhexchat.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallhexchat.IsChecked -eq $true ) {
             $wingetinstall.Add("HexChat.HexChat")
             $WPFInstallhexchat.IsChecked = $false
-        }       
-        If ( $WPFInstallhwinfo.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallhwinfo.IsChecked -eq $true ) {
             $wingetinstall.Add("REALiX.HWiNFO")
             $WPFInstallhwinfo.IsChecked = $false
-        }                       
-        If ( $WPFInstallinkscape.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallinkscape.IsChecked -eq $true ) {
             $wingetinstall.Add("Inkscape.Inkscape")
             $WPFInstallinkscape.IsChecked = $false
-        }             
-        If ( $WPFInstallkeepass.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallkeepass.IsChecked -eq $true ) {
             $wingetinstall.Add("KeePassXCTeam.KeePassXC")
             $WPFInstallkeepass.IsChecked = $false
-        }              
-        If ( $WPFInstalllibrewolf.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstalllibrewolf.IsChecked -eq $true ) {
             $wingetinstall.Add("LibreWolf.LibreWolf")
             $WPFInstalllibrewolf.IsChecked = $false
-        }            
-        If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallmalwarebytes.IsChecked -eq $true ) {
             $wingetinstall.Add("Malwarebytes.Malwarebytes")
             $WPFInstallmalwarebytes.IsChecked = $false
-        }          
-        If ( $WPFInstallmatrix.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallmatrix.IsChecked -eq $true ) {
             $wingetinstall.Add("Element.Element")
             $WPFInstallmatrix.IsChecked = $false
-        } 
-        If ( $WPFInstallmremoteng.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallmremoteng.IsChecked -eq $true ) {
             $wingetinstall.Add("mRemoteNG.mRemoteNG")
             $WPFInstallmremoteng.IsChecked = $false
-        }                    
-        If ( $WPFInstallnvclean.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallnvclean.IsChecked -eq $true ) {
             $wingetinstall.Add("TechPowerUp.NVCleanstall")
             $WPFInstallnvclean.IsChecked = $false
-        }              
-        If ( $WPFInstallobs.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallobs.IsChecked -eq $true ) {
             $wingetinstall.Add("OBSProject.OBSStudio")
             $WPFInstallobs.IsChecked = $false
-        }                  
-        If ( $WPFInstallobsidian.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallobsidian.IsChecked -eq $true ) {
             $wingetinstall.Add("Obsidian.Obsidian")
             $WPFInstallobsidian.IsChecked = $false
-        }                           
-        If ( $WPFInstallrevo.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallrevo.IsChecked -eq $true ) {
             $wingetinstall.Add("RevoUninstaller.RevoUninstaller")
             $WPFInstallrevo.IsChecked = $false
-        }                 
-        If ( $WPFInstallrufus.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallrufus.IsChecked -eq $true ) {
             $wingetinstall.Add("Rufus.Rufus")
             $WPFInstallrufus.IsChecked = $false
-        }   
-        If ( $WPFInstallsignal.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallsignal.IsChecked -eq $true ) {
             $wingetinstall.Add("OpenWhisperSystems.Signal")
             $WPFInstallsignal.IsChecked = $false
         }
-        If ( $WPFInstallskype.IsChecked -eq $true ) { 
+        If ( $WPFInstallskype.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.Skype")
             $WPFInstallskype.IsChecked = $false
-        }                               
-        If ( $WPFInstallslack.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallslack.IsChecked -eq $true ) {
             $wingetinstall.Add("SlackTechnologies.Slack")
             $WPFInstallslack.IsChecked = $false
-        }                
-        If ( $WPFInstallspotify.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallspotify.IsChecked -eq $true ) {
             $wingetinstall.Add("Spotify.Spotify")
             $WPFInstallspotify.IsChecked = $false
-        }              
-        If ( $WPFInstallsteam.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallsteam.IsChecked -eq $true ) {
             $wingetinstall.Add("Valve.Steam")
             $WPFInstallsteam.IsChecked = $false
-        }                             
-        If ( $WPFInstallteamviewer.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallteamviewer.IsChecked -eq $true ) {
             $wingetinstall.Add("TeamViewer.TeamViewer")
             $WPFInstallteamviewer.IsChecked = $false
         }
-        If ( $WPFInstallteams.IsChecked -eq $true ) { 
+        If ( $WPFInstallteams.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.Teams")
             $WPFInstallteams.IsChecked = $false
-        }                        
-        If ( $WPFInstalltreesize.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstalltreesize.IsChecked -eq $true ) {
             $wingetinstall.Add("JAMSoftware.TreeSize.Free")
             $WPFInstalltreesize.IsChecked = $false
-        }                         
-        If ( $WPFInstallvisualstudio.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallvisualstudio.IsChecked -eq $true ) {
             $wingetinstall.Add("Microsoft.VisualStudio.2022.Community")
             $WPFInstallvisualstudio.IsChecked = $false
-        }         
-        If ( $WPFInstallvivaldi.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallvivaldi.IsChecked -eq $true ) {
             $wingetinstall.Add("VivaldiTechnologies.Vivaldi")
             $WPFInstallvivaldi.IsChecked = $false
-        }                              
-        If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallvoicemeeter.IsChecked -eq $true ) {
             $wingetinstall.Add("VB-Audio.Voicemeeter")
             $WPFInstallvoicemeeter.IsChecked = $false
-        }                    
-        If ( $WPFInstallwindirstat.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallwindirstat.IsChecked -eq $true ) {
             $wingetinstall.Add("WinDirStat.WinDirStat")
             $WPFInstallwindirstat.IsChecked = $false
-        }  
-        If ( $WPFInstallwiztree.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallwiztree.IsChecked -eq $true ) {
             $wingetinstall.Add("AntibodySoftware.WizTree")
             $WPFInstallwiztree.IsChecked = $false
-        }          
-        If ( $WPFInstallwireshark.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallwireshark.IsChecked -eq $true ) {
             $wingetinstall.Add("WiresharkFoundation.Wireshark")
             $WPFInstallwireshark.IsChecked = $false
-        } 
-        If ( $WPFInstallsimplewall.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallsimplewall.IsChecked -eq $true ) {
             $wingetinstall.Add("Henry++.simplewall")
             $WPFInstallsimplewall.IsChecked = $false
-        }             
-        If ( $WPFInstallzoom.IsChecked -eq $true ) { 
+        }
+        If ( $WPFInstallzoom.IsChecked -eq $true ) {
             $wingetinstall.Add("Zoom.Zoom")
             $WPFInstallzoom.IsChecked = $false
         }
-        If ( $WPFInstallviber.IsChecked -eq $true ) { 
+        If ( $WPFInstallviber.IsChecked -eq $true ) {
             $wingetinstall.Add("Viber.Viber")
             $WPFInstallviber.IsChecked = $false
         }
@@ -499,43 +499,43 @@ $WPFinstall.Add_Click({
             $wingetinstall.Add("Microsoft.VC++2015-2022Redist-x86")
             $WPFInstallvc2015_32.IsChecked = $false
         }
-        If ( $WPFInstallfoxpdf.IsChecked -eq $true ) { 
+        If ( $WPFInstallfoxpdf.IsChecked -eq $true ) {
             $wingetinstall.Add("Foxit.PhantomPDF")
             $WPFInstallfoxpdf.IsChecked = $false
         }
-        If ( $WPFInstallonlyoffice.IsChecked -eq $true ) { 
+        If ( $WPFInstallonlyoffice.IsChecked -eq $true ) {
             $wingetinstall.Add("ONLYOFFICE.DesktopEditors")
             $WPFInstallonlyoffice.IsChecked = $false
         }
-        If ( $WPFInstallflux.IsChecked -eq $true ) { 
+        If ( $WPFInstallflux.IsChecked -eq $true ) {
             $wingetinstall.Add("flux.flux")
             $WPFInstallflux.IsChecked = $false
         }
-        If ( $WPFInstallitunes.IsChecked -eq $true ) { 
+        If ( $WPFInstallitunes.IsChecked -eq $true ) {
             $wingetinstall.Add("Apple.iTunes")
             $WPFInstallitunes.IsChecked = $false
         }
-        If ( $WPFInstallcider.IsChecked -eq $true ) { 
+        If ( $WPFInstallcider.IsChecked -eq $true ) {
             $wingetinstall.Add("CiderCollective.Cider")
             $WPFInstallcider.IsChecked = $false
         }
-        If ( $WPFInstalljoplin.IsChecked -eq $true ) { 
+        If ( $WPFInstalljoplin.IsChecked -eq $true ) {
             $wingetinstall.Add("Joplin.Joplin")
             $WPFInstalljoplin.IsChecked = $false
         }
-        If ( $WPFInstallopenoffice.IsChecked -eq $true ) { 
+        If ( $WPFInstallopenoffice.IsChecked -eq $true ) {
             $wingetinstall.Add("Apache.OpenOffice")
             $WPFInstallopenoffice.IsChecked = $false
         }
-        If ( $WPFInstallrustdesk.IsChecked -eq $true ) { 
+        If ( $WPFInstallrustdesk.IsChecked -eq $true ) {
             $wingetinstall.Add("RustDesk.RustDesk")
             $WPFInstallrustdesk.IsChecked = $false
         }
-        If ( $WPFInstalljami.IsChecked -eq $true ) { 
+        If ( $WPFInstalljami.IsChecked -eq $true ) {
             $wingetinstall.Add("SFLinux.Jami")
             $WPFInstalljami.IsChecked = $false
         }
-        If ( $WPFInstalljdownloader.IsChecked -eq $true ) { 
+        If ( $WPFInstalljdownloader.IsChecked -eq $true ) {
             $wingetinstall.Add("AppWork.JDownloader")
             $WPFInstalljdownloader.IsChecked = $false
         }
@@ -557,14 +557,14 @@ $WPFinstall.Add_Click({
             }
 
             if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-                
+
                 Write-Host "Running Alternative Installer for LTSC/Server Editions"
 
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
-                
+
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/asheroto/winget-installer/master/winget-install.ps1 | iex | Out-Host" -WindowStyle Normal
-                
+
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
                 #Checks if Windows Version is too old for winget
@@ -606,7 +606,7 @@ $WPFinstall.Add_Click({
         }
         $wingetResult.ToArray()
         $wingetResult | ForEach-Object { $_ } | Out-Host
-        
+
         # Popup after finished
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         if ($wingetResult -ne "") {
@@ -702,7 +702,7 @@ $WPFlaptop.Add_Click({
     })
 
 $WPFminimal.Add_Click({
-    
+
         $WPFEssTweaksAH.IsChecked = $false
         $WPFEssTweaksDeleteTempFiles.IsChecked = $false
         $WPFEssTweaksDeBloat.IsChecked = $false
@@ -824,7 +824,7 @@ $WPFtweaksbutton.Add_Click({
             # It will just not bother u anymore
             $WPFMiscTweaksDisableUAC.IsChecked = $false
         }
- 
+
         If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
             Write-Host "Disabling Notifications and Action Center..."
             New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows" -Name "Explorer" -force
@@ -832,10 +832,10 @@ $WPFtweaksbutton.Add_Click({
             New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -PropertyType "DWord" -Value 0 -force
             $WPFMiscTweaksDisableNotifications.IsChecked = $false
         }
-        
+
         If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
             Write-Host "Setting Classic Right-Click Menu..."
-            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""       
+            New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Name "InprocServer32" -force -value ""
             $WPFMiscTweaksRightClickMenu.IsChecked = $false
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
@@ -854,7 +854,7 @@ $WPFtweaksbutton.Add_Click({
             $WPFEssTweaksRP.IsChecked = $false
         }
         If ( $WPFEssTweaksServices.IsChecked -eq $true ) {
-            # Set Services to Manual 
+            # Set Services to Manual
 
             $services = @(
                 "ALG"                                          # Application Layer Gateway Service(Provides support for 3rd party protocol plug-ins for Internet Connection Sharing)
@@ -944,10 +944,10 @@ $WPFtweaksbutton.Add_Click({
                 # Services that cannot be disabled
                 #"WdNisSvc"
             )
-        
+
             foreach ($service in $services) {
                 # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
-        
+
                 Write-Host "Setting $service StartupType to Manual"
                 Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Manual -ErrorAction SilentlyContinue
             }
@@ -1052,13 +1052,13 @@ $WPFtweaksbutton.Add_Click({
 
             Write-Host "Changing default Explorer view to This PC..."
             Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
-    
+
             ## Enable Long Paths
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Type DWORD -Value 1
 
             Write-Host "Hiding 3D Objects icon from This PC..."
-            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue  
-        
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+
             ## Performance Tweaks and More Telemetry
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" -Name "SearchOrderConfig" -Type DWord -Value 0
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0
@@ -1066,7 +1066,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "AutoEndTasks" -Type DWord -Value 1
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
             Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 10
-            
+
             ## Timeout Tweaks cause flickering on Windows now
             Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillAppTimeout" -ErrorAction SilentlyContinue
             Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
@@ -1082,7 +1082,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "GPU Priority" -Type DWord -Value 8
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Priority" -Type DWord -Value 6
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
-        
+
             # Group svchost.exe processes
             $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
@@ -1117,7 +1117,7 @@ $WPFtweaksbutton.Add_Click({
             if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
                 net user administrator /active:no
             }
-        
+
             $WPFEssTweaksTele.IsChecked = $false
         }
         If ( $WPFEssTweaksWifi.IsChecked -eq $true ) {
@@ -1152,7 +1152,7 @@ $WPFtweaksbutton.Add_Click({
                 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000001
             }
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000000
-            $WPFMiscTweaksPower.IsChecked = $false 
+            $WPFMiscTweaksPower.IsChecked = $false
         }
         If ( $WPFMiscTweaksNum.IsChecked -eq $true ) {
             Write-Host "Enabling NumLock after startup..."
@@ -1309,29 +1309,29 @@ $WPFtweaksbutton.Add_Click({
             function getUninstallString($match) {
                 return (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like "*$match*" }).UninstallString
             }
-            
+
             $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
             $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
-            
+
             Write-Output "Stopping Teams process..."
             Stop-Process -Name "*teams*" -Force -ErrorAction SilentlyContinue
-        
+
             Write-Output "Uninstalling Teams from AppData\Microsoft\Teams"
             if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
                 # Uninstall app
                 $proc = Start-Process $TeamsUpdateExePath "-uninstall -s" -PassThru
                 $proc.WaitForExit()
             }
-        
+
             Write-Output "Removing Teams AppxPackage..."
             Get-AppxPackage "*Teams*" | Remove-AppxPackage -ErrorAction SilentlyContinue
             Get-AppxPackage "*Teams*" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
-        
+
             Write-Output "Deleting Teams directory"
             if ([System.IO.Directory]::Exists($TeamsPath)) {
                 Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
             }
-        
+
             Write-Output "Deleting Teams uninstall registry key"
             # Uninstall from Uninstall registry key UninstallString
             $us = getUninstallString("Teams");
@@ -1342,9 +1342,9 @@ $WPFtweaksbutton.Add_Click({
                 $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
                 $proc.WaitForExit()
             }
-            
+
             Write-Output "Restart computer to complete teams uninstall"
-            
+
             Write-Host "Removing Bloatware"
 
             foreach ($Bloat in $Bloatware) {
@@ -1376,7 +1376,7 @@ $WPFtweaksbutton.Add_Click({
         Write-Host "================================="
         Write-Host "--     Tweaks are Finished    ---"
         Write-Host "================================="
-        
+
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "Tweaks are Finished "
         $Messageboxbody = ("Done")
@@ -1392,7 +1392,7 @@ $WPFEnableDarkMode.Add_Click({
         Write-Host "Enabled"
     }
 )
-    
+
 $WPFDisableDarkMode.Add_Click({
         Write-Host "Disabling Dark Mode"
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
@@ -1576,7 +1576,7 @@ $WPFFeatureInstall.Add_Click({
             Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All -NoRestart
             cmd /c bcdedit /set hypervisorschedulertype classic
             Write-Host "HyperV is now installed and configured. Please Reboot before using."
-        } 
+        }
         If ( $WPFFeatureslegacymedia.IsChecked -eq $true ) {
             Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All -NoRestart
             Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All -NoRestart
@@ -1612,10 +1612,10 @@ $WPFFeatureInstall.Add_Click({
     })
 
 $WPFPanelDISM.Add_Click({
-        Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan; 
+        Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan;
         Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
-        Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
-        Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
+        Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth;
+        Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow;
         Read-Host '`nPress Enter to Continue'" -verb runas
     })
 $WPFPanelAutologin.Add_Click({
@@ -1654,7 +1654,7 @@ $WPFUpdatesdefault.Add_Click({
             New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
         }
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
-        
+
         $services = @(
             "BITS"
             "wuauserv"
@@ -1686,95 +1686,95 @@ $WPFUpdatesdefault.Add_Click({
 
 $WPFFixesUpdate.Add_Click({
         ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
-        Write-Host "1. Stopping Windows Update Services..." 
-        Stop-Service -Name BITS 
-        Stop-Service -Name wuauserv 
-        Stop-Service -Name appidsvc 
-        Stop-Service -Name cryptsvc 
-    
-        Write-Host "2. Remove QMGR Data file..." 
-        Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue 
-    
-        Write-Host "3. Renaming the Software Distribution and CatRoot Folder..." 
-        Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue 
-        Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue 
-    
-        Write-Host "4. Removing old Windows Update log..." 
-        Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue 
-    
-        Write-Host "5. Resetting the Windows Update Services to defualt settings..." 
-        "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-        "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" 
-        Set-Location $env:systemroot\system32 
-    
-        Write-Host "6. Registering some DLLs..." 
-        regsvr32.exe /s atl.dll 
-        regsvr32.exe /s urlmon.dll 
-        regsvr32.exe /s mshtml.dll 
-        regsvr32.exe /s shdocvw.dll 
-        regsvr32.exe /s browseui.dll 
-        regsvr32.exe /s jscript.dll 
-        regsvr32.exe /s vbscript.dll 
-        regsvr32.exe /s scrrun.dll 
-        regsvr32.exe /s msxml.dll 
-        regsvr32.exe /s msxml3.dll 
-        regsvr32.exe /s msxml6.dll 
-        regsvr32.exe /s actxprxy.dll 
-        regsvr32.exe /s softpub.dll 
-        regsvr32.exe /s wintrust.dll 
-        regsvr32.exe /s dssenh.dll 
-        regsvr32.exe /s rsaenh.dll 
-        regsvr32.exe /s gpkcsp.dll 
-        regsvr32.exe /s sccbase.dll 
-        regsvr32.exe /s slbcsp.dll 
-        regsvr32.exe /s cryptdlg.dll 
-        regsvr32.exe /s oleaut32.dll 
-        regsvr32.exe /s ole32.dll 
-        regsvr32.exe /s shell32.dll 
-        regsvr32.exe /s initpki.dll 
-        regsvr32.exe /s wuapi.dll 
-        regsvr32.exe /s wuaueng.dll 
-        regsvr32.exe /s wuaueng1.dll 
-        regsvr32.exe /s wucltui.dll 
-        regsvr32.exe /s wups.dll 
-        regsvr32.exe /s wups2.dll 
-        regsvr32.exe /s wuweb.dll 
-        regsvr32.exe /s qmgr.dll 
-        regsvr32.exe /s qmgrprxy.dll 
-        regsvr32.exe /s wucltux.dll 
-        regsvr32.exe /s muweb.dll 
-        regsvr32.exe /s wuwebv.dll 
-    
-        Write-Host "7) Removing WSUS client settings..." 
-        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f 
-        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f 
-        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f 
-    
-        Write-Host "8) Resetting the WinSock..." 
-        netsh winsock reset 
-        netsh winhttp reset proxy 
+        Write-Host "1. Stopping Windows Update Services..."
+        Stop-Service -Name BITS
+        Stop-Service -Name wuauserv
+        Stop-Service -Name appidsvc
+        Stop-Service -Name cryptsvc
+
+        Write-Host "2. Remove QMGR Data file..."
+        Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue
+
+        Write-Host "3. Renaming the Software Distribution and CatRoot Folder..."
+        Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue
+        Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
+
+        Write-Host "4. Removing old Windows Update log..."
+        Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
+
+        Write-Host "5. Resetting the Windows Update Services to defualt settings..."
+        "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+        "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+        Set-Location $env:systemroot\system32
+
+        Write-Host "6. Registering some DLLs..."
+        regsvr32.exe /s atl.dll
+        regsvr32.exe /s urlmon.dll
+        regsvr32.exe /s mshtml.dll
+        regsvr32.exe /s shdocvw.dll
+        regsvr32.exe /s browseui.dll
+        regsvr32.exe /s jscript.dll
+        regsvr32.exe /s vbscript.dll
+        regsvr32.exe /s scrrun.dll
+        regsvr32.exe /s msxml.dll
+        regsvr32.exe /s msxml3.dll
+        regsvr32.exe /s msxml6.dll
+        regsvr32.exe /s actxprxy.dll
+        regsvr32.exe /s softpub.dll
+        regsvr32.exe /s wintrust.dll
+        regsvr32.exe /s dssenh.dll
+        regsvr32.exe /s rsaenh.dll
+        regsvr32.exe /s gpkcsp.dll
+        regsvr32.exe /s sccbase.dll
+        regsvr32.exe /s slbcsp.dll
+        regsvr32.exe /s cryptdlg.dll
+        regsvr32.exe /s oleaut32.dll
+        regsvr32.exe /s ole32.dll
+        regsvr32.exe /s shell32.dll
+        regsvr32.exe /s initpki.dll
+        regsvr32.exe /s wuapi.dll
+        regsvr32.exe /s wuaueng.dll
+        regsvr32.exe /s wuaueng1.dll
+        regsvr32.exe /s wucltui.dll
+        regsvr32.exe /s wups.dll
+        regsvr32.exe /s wups2.dll
+        regsvr32.exe /s wuweb.dll
+        regsvr32.exe /s qmgr.dll
+        regsvr32.exe /s qmgrprxy.dll
+        regsvr32.exe /s wucltux.dll
+        regsvr32.exe /s muweb.dll
+        regsvr32.exe /s wuwebv.dll
+
+        Write-Host "7) Removing WSUS client settings..."
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f
+        REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f
+
+        Write-Host "8) Resetting the WinSock..."
+        netsh winsock reset
+        netsh winhttp reset proxy
         netsh int ip reset
-    
-        Write-Host "9) Delete all BITS jobs..." 
-        Get-BitsTransfer | Remove-BitsTransfer 
-    
-        Write-Host "10) Attempting to install the Windows Update Agent..." 
-        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) { 
-            wusa Windows8-RT-KB2937636-x64 /quiet 
+
+        Write-Host "9) Delete all BITS jobs..."
+        Get-BitsTransfer | Remove-BitsTransfer
+
+        Write-Host "10) Attempting to install the Windows Update Agent..."
+        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) {
+            wusa Windows8-RT-KB2937636-x64 /quiet
         }
-        else { 
-            wusa Windows8-RT-KB2937636-x86 /quiet 
-        } 
-    
-        Write-Host "11) Starting Windows Update Services..." 
-        Start-Service -Name BITS 
-        Start-Service -Name wuauserv 
-        Start-Service -Name appidsvc 
-        Start-Service -Name cryptsvc 
-    
-        Write-Host "12) Forcing discovery..." 
-        wuauclt /resetauthorization /detectnow 
-    
+        else {
+            wusa Windows8-RT-KB2937636-x86 /quiet
+        }
+
+        Write-Host "11) Starting Windows Update Services..."
+        Start-Service -Name BITS
+        Start-Service -Name wuauserv
+        Start-Service -Name appidsvc
+        Start-Service -Name cryptsvc
+
+        Write-Host "12) Forcing discovery..."
+        wuauclt /resetauthorization /detectnow
+
         Write-Host "Process complete. Please reboot your computer."
 
         $ButtonType = [System.Windows.MessageBoxButton]::OK
@@ -1798,7 +1798,7 @@ $WPFUpdatesdisable.Add_Click({
             New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
         }
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
-    
+
         $services = @(
             "BITS"
             "wuauserv"
@@ -1840,7 +1840,7 @@ $WPFUpdatessecurity.Add_Click({
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
-    
+
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "Set Security Updates"
         $Messageboxbody = ("Recommended Update settings loaded")

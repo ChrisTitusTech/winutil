@@ -1,4 +1,4 @@
-#region Configurable Variables
+﻿#region Configurable Variables
 
     <#
         .NOTES
@@ -14,10 +14,10 @@
 #region Load Variables needed for testing
 
     #Config Files
-    $global:application = get-content ./config/applications.json | ConvertFrom-Json 
-    $global:preset = get-content ./config/preset.json | ConvertFrom-Json 
-    $global:feature = get-content ./config/feature.json | ConvertFrom-Json 
-    $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+    $global:application = get-content ./config/applications.json | ConvertFrom-Json
+    $global:preset = get-content ./config/preset.json | ConvertFrom-Json
+    $global:feature = get-content ./config/feature.json | ConvertFrom-Json
+    $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json
 
     #GUI
     $global:sync = [Hashtable]::Synchronized(@{})
@@ -25,7 +25,7 @@
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
     [xml]$global:XAML = $global:inputXML
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-    $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
+    $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml)
     $global:sync["Form"] = [Windows.Markup.XamlReader]::Load( $global:reader )
     $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
@@ -37,9 +37,9 @@
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $output = $script[0..($script.count - 2)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 2)] | Out-File .\pester.ps1
 
-#endregion Load Variables needed for testing 
+#endregion Load Variables needed for testing
 
 #===========================================================================
 # Tests - Json
@@ -55,7 +55,7 @@ Describe "Json Files" {
             $winget.name | should -BeLike "*Install*"
             $winget.winget | should -Not -BeNullOrEmpty
         }
-    } 
+    }
 
     Context "Preset" {
         It "Imports with no errors" {
@@ -66,7 +66,7 @@ Describe "Json Files" {
             $preset.name | should -Not -BeNullOrEmpty
             $preset.Value | should -BeLike "*Tweaks*"
         }
-    } 
+    }
 
     Context "feature" {
         It "Imports with no errors" {
@@ -77,8 +77,8 @@ Describe "Json Files" {
             $feature.name | should -BeLike "*Feature*"
             $feature.Value | should -Not -BeNullOrEmpty
         }
-    } 
-    
+    }
+
     Context "tweaks" {
         It "Imports with no errors" {
             $global:tweaks | should -Not -BeNullOrEmpty
@@ -102,7 +102,7 @@ Describe "Json Files" {
 
                     Foreach ($value in $values){
                         $value.OriginalValue | should -Not -BeNullOrEmpty
-                    }  
+                    }
                 }
                 if($tweak.value.Service){
 
@@ -110,7 +110,7 @@ Describe "Json Files" {
 
                     Foreach ($value in $values){
                         $value.OriginalType | should -Not -BeNullOrEmpty
-                    }  
+                    }
                 }
                 if($tweak.value.ScheduledTask){
 
@@ -118,11 +118,11 @@ Describe "Json Files" {
 
                     Foreach ($value in $values){
                         $value.OriginalState | should -Not -BeNullOrEmpty
-                    }  
+                    }
                 }
             }
         }
-    } 
+    }
 }
 
 #===========================================================================
@@ -152,13 +152,13 @@ Describe "GUI" {
         }
         It "Features should be $Global:GUIFeatureCount" {
             ($global:sync.keys | Where-Object {
-                $psitem -like "*feature*" -and 
+                $psitem -like "*feature*" -and
                 $psitem -notlike "FeatureInstall"
             }).count | should -Be $Global:GUIFeatureCount
         }
         It "Applications should be $Global:GUIApplicationCount" {
             ($global:sync.keys | Where-Object {
-                $psitem -like "*Install*" -and 
+                $psitem -like "*Install*" -and
                 $psitem -notlike "Install" -and
                 $psitem -notlike "InstallUpgrade" -and
                 $psitem -notlike "featureInstall"
@@ -166,11 +166,11 @@ Describe "GUI" {
         }
         It "Tweaks should be $Global:GUITweaksCount" {
             ($global:sync.keys | Where-Object {
-                $psitem -like "*tweaks*" -and 
-                $psitem -notlike "tweaksbutton" 
+                $psitem -like "*tweaks*" -and
+                $psitem -notlike "tweaksbutton"
             }).count | should -Be $Global:GUITweaksCount
         }
-    } 
+    }
 }
 
 #===========================================================================
@@ -180,7 +180,7 @@ Describe "GUI" {
 Describe "GUI Functions" {
 
     It "GUI should load with no errors" {
-        . .\pester.ps1 
+        . .\pester.ps1
         $WPFTab1BT | should -Not -BeNullOrEmpty
         $WPFundoall | should -Not -BeNullOrEmpty
         $WPFPanelDISM | should -Not -BeNullOrEmpty

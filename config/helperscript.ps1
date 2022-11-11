@@ -1,4 +1,4 @@
-#This file is meant to assist in building out the json files inside this folder.
+﻿#This file is meant to assist in building out the json files inside this folder.
 
 <#
     Applications.json
@@ -74,7 +74,7 @@ Example:
         "ClientForNFS-Infrastructure",
         "NFS-Administration"
     ]
-}    
+
 #>
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
@@ -132,14 +132,14 @@ Example:
         "EssTweaksServices",
         "EssTweaksTele"
     ]
-}    
+
 #>
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofButton = ""
 $commands = @(
-    
+
 )
 
 $jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
@@ -167,21 +167,21 @@ $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
                 "Path":  "Path in registry",
                 "Name":  "Name of Registry key",
                 "Type": "Item type",
-                "Value":  "Value to modify", 
+                "Value":  "Value to modify",
                 "OriginalValue": "value to reset"
             }
         ],
         "service" : [
             {
                 "Name":  "Name of service",
-                "StartupType":  "Startup type to set", 
+                "StartupType":  "Startup type to set",
                 "OriginalType": "Startup type to reset"
             }
         ],
         "ScheduledTask" : [
             {
                 "Name":  "Path to scheduled task",
-                "State":  "State to set", 
+                "State":  "State to set",
                 "OriginalState": "State to reset"
             }
         ],
@@ -192,10 +192,10 @@ $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
         "InvokeScript": [
             "Script to make modifications not possible with the above types
             Special care needs to be taken here as converting from json to a scriptblock
-            can cause weird issues. Please look at the example below to get an idea of how things should work"                 
+            can cause weird issues. Please look at the example below to get an idea of how things should work"
         ],
         "UndoScript": [
-            "Same as above however is meant to undo what you did above"                 
+            "Same as above however is meant to undo what you did above"
         ]
     }
 }
@@ -209,14 +209,14 @@ Example:
                 "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                 "Name":  "EnableActivityFeed",
                 "Type": "DWord",
-                "Value":  "0", 
+                "Value":  "0",
                 "OriginalValue": "1"
             },
             {
                 "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                 "Name":  "PublishUserActivities",
                 "Type": "DWord",
-                "Value":  "0", 
+                "Value":  "0",
                 "OriginalValue": "1"
             }
         ]
@@ -225,12 +225,12 @@ Example:
         "service" : [
             {
                 "Name":  "HomeGroupListener",
-                "StartupType":  "Manual", 
+                "StartupType":  "Manual",
                 "OriginalType": "Automatic"
             },
             {
                 "Name":  "HomeGroupProvider",
-                "StartupType":  "Manual", 
+                "StartupType":  "Manual",
                 "OriginalType": "Automatic"
             }
         ]
@@ -239,12 +239,12 @@ Example:
         "ScheduledTask" : [
             {
                 "Name":  "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
-                "State":  "Disabled", 
+                "State":  "Disabled",
                 "OriginalState": "Enabled"
-            },                    
+            },
             {
                 "Name":  "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
-                "State":  "Disabled", 
+                "State":  "Disabled",
                 "OriginalState": "Enabled"
             }
         ]
@@ -260,7 +260,7 @@ Example:
             "Import-Module BitsTransfer
             Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
             Start-BitsTransfer -Source \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -Destination C:\\Windows\\Temp\\OOSU10.exe
-            C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"                 
+            C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
         ]
     }
 }
@@ -306,11 +306,11 @@ $NameofButton = ""
 #)
 
 #$InvokeScript = @(
-#    "" 
+#    ""
 #)
 
 #$UndoScript = @(
-#    "" 
+#    ""
 #)
 
 $ButtonToAdd = New-Object psobject
