@@ -236,6 +236,9 @@
                                 <Label Content="Dark Theme" />
                                 <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
                                 <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
+                                <Label Content="Performance Plans" />
+                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" Margin="20,10,20,0"/>
+                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" Margin="20,10,20,0"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
