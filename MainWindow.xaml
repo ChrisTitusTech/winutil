@@ -237,8 +237,8 @@
                                 <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
                                 <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
                                 <Label Content="Performance Plans" />
-                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" Margin="20,10,20,0"/>
-                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" Margin="20,10,20,0"/>
+                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" Margin="60,0"/>
+                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" Margin="60,5"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
@@ -257,8 +257,8 @@
                                 <CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
                                 <CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="20,10,20,0"/>
-                                <Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="20,5"/>
+                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="60,0"/>
+                                <Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="60,5"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
