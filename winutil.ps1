@@ -381,12 +381,6 @@ $WPFtweaksbutton.Add_Click({
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
-             #Installing PowerRun to edit some restricted registry keys (Need this to disable Gamebar Presence Writer)
-             curl.exe -s "https://www.sordum.org/files/download/power-run/PowerRun.zip" -o "PowerRun.zip"
-             Expand-Archive -Path ".\PowerRun.zip" -DestinationPath ".\" -Force
-             Copy-Item -Path ".\PowerRun\PowerRun.exe" -Destination "$env:windir" -Force
-             Remove-Item -Path ".\PowerRun\", ".\PowerRun.zip" -Recurse
-
             If (!(Test-Path "HKCU:\System\GameConfigStore")) {
                 New-Item -Path "HKCU:\System\GameConfigStore" -Force
             }
@@ -399,10 +393,6 @@ $WPFtweaksbutton.Add_Click({
                 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Force
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR" -Name "AllowGameDVR" -Type DWord -Value 0
-
-            #Disabling Gamebar Presence Writer, which causes stutter in games
-            PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 0 }
-
             $WPFEssTweaksDVR.IsChecked = $false
         }
 
@@ -1230,9 +1220,6 @@ $WPFundoall.Add_Click({
         # Remove "News and Interest" from taskbar
         Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
         Write-Host "Done - Reverted to Stock Settings"
-
-        #Enable Gamebar Presence Writer
-        PowerRun.exe /SW:0 Powershell.exe -command { Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter" -Name "ActivationType" -Type DWord -Value 1 }
 
         Write-Host "Essential Undo Completed"
 
