@@ -1,322 +1,382 @@
 {
-  "install": {
-    "Installadobe": {
+  "Install": {
+    "WPFInstalladobe": {
       "winget": "Adobe.Acrobat.Reader.64-bit"
     },
-    "Installadvancedip": {
+    "WPFInstalladvancedip": {
       "winget": "Famatech.AdvancedIPScanner"
     },
-    "Installanydesk": {
+    "WPFInstallanydesk": {
       "winget": "AnyDeskSoftwareGmbH.AnyDesk"
     },
-    "Installatom": {
+    "WPFInstallatom": {
       "winget": "GitHub.Atom"
     },
-    "Installaudacity": {
+    "WPFInstallaudacity": {
       "winget": "Audacity.Audacity"
     },
-    "Installautohotkey": {
+    "WPFInstallautohotkey": {
       "winget": "Lexikos.AutoHotkey"
     },
-    "Installbitwarden": {
+    "WPFInstallbitwarden": {
       "winget": "Bitwarden.Bitwarden"
     },
-    "Installblender": {
+    "WPFInstallblender": {
       "winget": "BlenderFoundation.Blender"
     },
-    "Installbrave": {
+    "WPFInstallbrave": {
       "winget": "Brave.Brave"
     },
-    "Installchrome": {
+    "WPFInstallchrome": {
       "winget": "Google.Chrome"
     },
-    "Installchromium": {
+    "WPFInstallchromium": {
       "winget": "eloston.ungoogled-chromium"
     },
-    "Installcpuz": {
+    "WPFInstallcpuz": {
       "winget": "CPUID.CPU-Z"
     },
-    "Installdiscord": {
+    "WPFInstalldiscord": {
       "winget": "Discord.Discord"
     },
-    "Installeartrumpet": {
+    "WPFInstalleartrumpet": {
       "winget": "File-New-Project.EarTrumpet"
     },
-    "Installepicgames": {
+    "WPFInstallepicgames": {
       "winget": "EpicGames.EpicGamesLauncher"
     },
-    "Installesearch": {
+    "WPFInstallesearch": {
       "winget": "voidtools.Everything"
     },
-    "Installetcher": {
+    "WPFInstalletcher": {
       "winget": "Balena.Etcher"
     },
-    "Installfirefox": {
+    "WPFInstallfirefox": {
       "winget": "Mozilla.Firefox"
     },
-    "Installflameshot": {
+    "WPFInstallflameshot": {
       "winget": "Flameshot.Flameshot"
     },
-    "Installfoobar": {
+    "WPFInstallfoobar": {
       "winget": "PeterPawlowski.foobar2000"
     },
-    "Installgimp": {
+    "WPFInstallgimp": {
       "winget": "GIMP.GIMP"
     },
-    "Installgithubdesktop": {
+    "WPFInstallgithubdesktop": {
       "winget": "Git.Git;GitHub.GitHubDesktop"
     },
-    "Installgog": {
+    "WPFInstallgog": {
       "winget": "GOG.Galaxy"
     },
-    "Installgpuz": {
+    "WPFInstallgpuz": {
       "winget": "TechPowerUp.GPU-Z"
     },
-    "Installgreenshot": {
+    "WPFInstallgreenshot": {
       "winget": "Greenshot.Greenshot"
     },
-    "Installhandbrake": {
+    "WPFInstallhandbrake": {
       "winget": "HandBrake.HandBrake"
     },
-    "Installhexchat": {
+    "WPFInstallhexchat": {
       "winget": "HexChat.HexChat"
     },
-    "Installhwinfo": {
+    "WPFInstallhwinfo": {
       "winget": "REALiX.HWiNFO"
     },
-    "Installimageglass": {
+    "WPFInstallimageglass": {
       "winget": "DuongDieuPhap.ImageGlass"
     },
-    "Installinkscape": {
+    "WPFInstallinkscape": {
       "winget": "Inkscape.Inkscape"
     },
-    "Installjava16": {
+    "WPFInstalljava16": {
       "winget": "AdoptOpenJDK.OpenJDK.16"
     },
-    "Installjava18": {
-      "winget": "Oracle.JDK.18"
+    "WPFInstalljava18": {
+      "winget": "EclipseAdoptium.Temurin.18.JRE"
     },
-    "Installjava8": {
-      "winget": "AdoptOpenJDK.OpenJDK.8"
+    "WPFInstalljava8": {
+      "winget": "EclipseAdoptium.Temurin.8.JRE"
     },
-    "Installjetbrains": {
+    "WPFInstalljava19": {
+      "winget": "EclipseAdoptium.Temurin.19.JRE"
+    },
+    "WPFInstalljava17": {
+      "winget": "EclipseAdoptium.Temurin.17.JRE"
+    },
+    "WPFInstalljava11": {
+      "winget": "EclipseAdoptium.Temurin.11.JRE"
+    },
+    "WPFInstalljetbrains": {
       "winget": "JetBrains.Toolbox"
     },
-    "Installkeepass": {
+    "WPFInstallkeepass": {
       "winget": "KeePassXCTeam.KeePassXC"
     },
-    "Installlibrewolf": {
+    "WPFInstalllibrewolf": {
       "winget": "LibreWolf.LibreWolf"
     },
-    "Installmalwarebytes": {
+    "WPFInstallmalwarebytes": {
       "winget": "Malwarebytes.Malwarebytes"
     },
-    "Installmatrix": {
+    "WPFInstallmatrix": {
       "winget": "Element.Element"
     },
-    "Installmpc": {
+    "WPFInstallmpc": {
       "winget": "clsid2.mpc-hc"
     },
-    "Installmremoteng": {
+    "WPFInstallmremoteng": {
       "winget": "mRemoteNG.mRemoteNG"
     },
-    "Installnodejs": {
+    "WPFInstallnodejs": {
       "winget": "OpenJS.NodeJS"
     },
-    "Installnodejslts": {
+    "WPFInstallnodejslts": {
       "winget": "OpenJS.NodeJS.LTS"
     },
-    "Installnotepadplus": {
+    "WPFInstallnotepadplus": {
       "winget": "Notepad++.Notepad++"
     },
-    "Installnvclean": {
+    "WPFInstallnvclean": {
       "winget": "TechPowerUp.NVCleanstall"
     },
-    "Installobs": {
+    "WPFInstallobs": {
       "winget": "OBSProject.OBSStudio"
     },
-    "Installobsidian": {
+    "WPFInstallobsidian": {
       "winget": "Obsidian.Obsidian"
     },
-    "Installpowertoys": {
+    "WPFInstallpowertoys": {
       "winget": "Microsoft.PowerToys"
     },
-    "Installputty": {
+    "WPFInstallputty": {
       "winget": "PuTTY.PuTTY"
     },
-    "Installpython3": {
+    "WPFInstallpython3": {
       "winget": "Python.Python.3"
     },
-    "Installrevo": {
-      "winget": "RevoUninstaller.RevoUninstaller"
+    "WPFInstallrevo": {
+      "winget": "RevoUnWPFInstaller.RevoUnWPFInstaller"
     },
-    "Installrufus": {
+    "WPFInstallrufus": {
       "winget": "Rufus.Rufus"
     },
-    "Installsevenzip": {
+    "WPFInstallsevenzip": {
       "winget": "7zip.7zip"
     },
-    "Installsharex": {
+    "WPFInstallsharex": {
       "winget": "ShareX.ShareX"
     },
-    "Installsignal": {
+    "WPFInstallsignal": {
       "winget": "OpenWhisperSystems.Signal"
     },
-    "Installskype": {
+    "WPFInstallskype": {
       "winget": "Microsoft.Skype"
     },
-    "Installslack": {
+    "WPFInstallslack": {
       "winget": "SlackTechnologies.Slack"
     },
-    "Installsteam": {
+    "WPFInstallsteam": {
       "winget": "Valve.Steam"
     },
-    "Installsublime": {
+    "WPFInstallsublime": {
       "winget": "SublimeHQ.SublimeText.4"
     },
-    "Installsumatra": {
+    "WPFInstallsumatra": {
       "winget": "SumatraPDF.SumatraPDF"
     },
-    "Installteams": {
+    "WPFInstallteams": {
       "winget": "Microsoft.Teams"
     },
-    "Installteamviewer": {
+    "WPFInstallteamviewer": {
       "winget": "TeamViewer.TeamViewer"
     },
-    "Installterminal": {
+    "WPFInstallterminal": {
       "winget": "Microsoft.WindowsTerminal"
     },
-    "Installtreesize": {
+    "WPFInstalltreesize": {
       "winget": "JAMSoftware.TreeSize.Free"
     },
-    "Installttaskbar": {
+    "WPFInstallttaskbar": {
       "winget": "TranslucentTB.TranslucentTB"
     },
-    "Installvisualstudio": {
+    "WPFInstallvisualstudio": {
       "winget": "Microsoft.VisualStudio.2022.Community"
     },
-    "Installvivaldi": {
+    "WPFInstallvivaldi": {
       "winget": "VivaldiTechnologies.Vivaldi"
     },
-    "Installvlc": {
+    "WPFInstallvlc": {
       "winget": "VideoLAN.VLC"
     },
-    "Installvoicemeeter": {
+    "WPFInstallvoicemeeter": {
       "winget": "VB-Audio.Voicemeeter"
     },
-    "Installvscode": {
+    "WPFInstallvscode": {
       "winget": "Git.Git;Microsoft.VisualStudioCode"
     },
-    "Installvscodium": {
+    "WPFInstallvscodium": {
       "winget": "Git.Git;VSCodium.VSCodium"
     },
-    "Installwindirstat": {
+    "WPFInstallwindirstat": {
       "winget": "WinDirStat.WinDirStat"
     },
-    "Installscp": {
+    "WPFInstallscp": {
       "winget": "WinSCP.WinSCP"
     },
-    "Installwireshark": {
+    "WPFInstallwireshark": {
       "winget": "WiresharkFoundation.Wireshark"
     },
-    "Installzoom": {
+    "WPFInstallzoom": {
       "winget": "Zoom.Zoom"
     },
-    "Installlibreoffice": {
+    "WPFInstalllibreoffice": {
       "winget": "TheDocumentFoundation.LibreOffice"
     },
-    "Installshell": {
+    "WPFInstallshell": {
       "winget": "Nilesoft.Shell"
     },
-    "Installklite": {
+    "WPFInstallklite": {
       "winget": "CodecGuide.K-LiteCodecPack.Standard"
     },
-    "Installsandboxie": {
+    "WPFInstallsandboxie": {
       "winget": "Sandboxie.Plus"
     },
-    "Installprocesslasso": {
+    "WPFInstallprocesslasso": {
       "winget": "BitSum.ProcessLasso"
     },
-    "Installwinmerge": {
+    "WPFInstallwinmerge": {
       "winget": "WinMerge.WinMerge"
     },
-    "Installdotnet3": {
+    "WPFInstalldotnet3": {
       "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
     },
-    "Installdotnet5": {
+    "WPFInstalldotnet5": {
       "winget": "Microsoft.DotNet.DesktopRuntime.5"
     },
-    "Installdotnet6": {
+    "WPFInstalldotnet6": {
       "winget": "Microsoft.DotNet.DesktopRuntime.6"
     },
-    "Installvc2015_64": {
+    "WPFInstallvc2015_64": {
       "winget": "Microsoft.VC++2015-2022Redist-x64"
     },
-    "Installvc2015_32": {
+    "WPFInstallvc2015_32": {
       "winget": "Microsoft.VC++2015-2022Redist-x86"
     },
-    "Installfoxpdf": {
+    "WPFInstallfoxpdf": {
       "winget": "Foxit.PhantomPDF"
     },
-    "Installonlyoffice": {
+    "WPFInstallonlyoffice": {
       "winget": "ONLYOFFICE.DesktopEditors"
     },
-    "Installflux": {
+    "WPFInstallflux": {
       "winget": "flux.flux"
     },
-    "Installitunes": {
+    "WPFInstallitunes": {
       "winget": "Apple.iTunes"
     },
-    "Installcider": {
+    "WPFInstallcider": {
       "winget": "CiderCollective.Cider"
     },
-    "Installjoplin": {
+    "WPFInstalljoplin": {
       "winget": "Joplin.Joplin"
     },
-    "Installopenoffice": {
+    "WPFInstallopenoffice": {
       "winget": "Apache.OpenOffice"
     },
-    "Installrustdesk": {
+    "WPFInstallrustdesk": {
       "winget": "RustDesk.RustDesk"
     },
-    "Installjami": {
+    "WPFInstalljami": {
       "winget": "SFLinux.Jami"
     },
-    "Installjdownloader": {
+    "WPFInstalljdownloader": {
       "winget": "AppWork.JDownloader"
     },
-    "Installsimplewall": {
+    "WPFInstallsimplewall": {
       "Winget": "Henry++.simplewall"
     },
-    "Installrustlang": {
+    "WPFInstallrustlang": {
       "Winget": "Rustlang.Rust.MSVC"
     },
-    "Installalacritty": {
+    "WPFInstallalacritty": {
       "Winget": "Alacritty.Alacritty"
     },
-    "Installkdenlive": {
+    "WPFInstallkdenlive": {
       "Winget": "KDE.Kdenlive"
     },
-    "Installglaryutilities": {
+    "WPFInstallglaryutilities": {
       "Winget": "Glarysoft.GlaryUtilities"
     },
-    "Installtwinkletray": {
+    "WPFInstalltwinkletray": {
       "Winget": "xanderfrangos.twinkletray"
     },
-    "Installidm": {
+    "WPFInstallidm": {
       "Winget": "Tonec.InternetDownloadManager"
     },
-    "Installviber": {
+    "WPFInstallviber": {
       "Winget": "Viber.Viber"
     },
-    "Installgit": {
+    "WPFInstallgit": {
       "Winget": "Git.Git"
     },
-    "Installwiztree": {
+    "WPFInstallwiztree": {
       "Winget": "AntibodySoftware.WizTree"
     },
-    "Installtor": {
+    "WPFInstalltor": {
       "Winget": "TorProject.TorBrowser"
+    },
+    "WPFInstallkrita": {
+      "winget": "KDE.Krita"
+    },
+    "WPFInstallnglide": {
+      "winget": "ZeusSoftware.nGlide"
+    },
+    "WPFInstallkodi": {
+      "winget": "XBMCFoundation.Kodi"
+    },
+    "WPFInstalltelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
+    "WPFInstallunity": {
+      "winget": "UnityTechnologies.UnityHub"
+    },
+    "WPFInstallqbittorrent": {
+      "winget": "qBittorrent.qBittorrent"
+    },
+    "WPFInstallorigin": {
+      "winget": "ElectronicArts.EADesktop"
+    },
+    "WPFInstallopenshell": {
+      "winget": "Open-Shell.Open-Shell-Menu"
+    },
+    "WPFInstallbluestacks": {
+      "winget": "BlueStack.BlueStacks"
+    },
+    "WPFInstallstrawberry": {
+      "winget": "StrawberryMusicPlayer.Strawberry"
+    },
+    "WPFInstallsqlstudio": {
+      "winget": "Microsoft.SQLServerManagementStudio"
+    },
+    "WPFInstallwaterfox": {
+      "winget": "Waterfox.Waterfox"
+    },
+    "WPFInstallpowershell": {
+      "winget": "Microsoft.PowerShell"
+    },
+    "WPFInstallprocessmonitor": {
+      "winget": "Microsoft.Sysinternals.ProcessMonitor"
+    },
+    "WPFInstallonedrive": {
+      "winget": "Microsoft.OneDrive"
+    },
+    "WPFInstalledge": {
+      "winget": "Microsoft.Edge"
+    },
+    "WPFInstallnuget": {
+      "winget": "Microsoft.NuGet"
     }
   }
 }

@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'main'
+$BranchToUse = 'test'
 
 <#
 .NOTES
@@ -40,6 +40,10 @@ function Invoke-Button {
     #>
     
     Param ([string]$Button) 
+
+    #Use this to get the name of the button
+    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+
     Switch -Wildcard ($Button){
 
         "*Tab*BT*" {switchtab $Button}
@@ -58,6 +62,17 @@ function Invoke-Button {
         "Panelsystem" {cmd /c sysdm.cpl}
         "Paneluser" {cmd /c "control userpasswords2"}
         "Updates*" {Invoke-command $sync.GUIUpdates -ArgumentList "$button"}
+        "FixesUpdate" {Invoke-command $sync.GUIUpdates -ArgumentList "$button"}
+        "*AutoLogin" {Invoke-Runspace $Sync.AutologinInstall}
+        "DisableDarkMode" {Invoke-Runspace $Sync.DarkModeToggle -ArgumentList "$False"}
+        "EnableDarkMode" {Invoke-Runspace $Sync.DarkModeToggle -ArgumentList "$True"}
+        "PanelDISM" {
+            Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan; 
+            Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
+            Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth; 
+            Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow; 
+            Read-Host '`nPress Enter to Continue'" -verb runas
+        }
     }
 }
 
@@ -219,6 +234,30 @@ $sync.WriteLogs = {
     Write-Verbose "$date $delimiter $Level $delimiter $message"
 }
 
+$Sync.AutologinInstall = {
+
+    # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+    Invoke-WebRequest "https://live.sysinternals.com/Autologon.exe" -OutFile $env:TEMP\autologin.exe
+    Start-Process -FilePath powershell.exe -Verb runas -ArgumentList "-c $ENV:Temp\autologin.exe" -WindowStyle Hidden
+
+}
+
+$Sync.DarkModeToggle = {
+    param($enabled)
+
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+
+    if($enabled -eq $True){
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
+        Invoke-command $sync.WriteLogs -ArgumentList ("INFO","Dark Mode has been enabled",$sync.logfile)
+    }
+    if($enabled -eq $False){
+        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
+        Invoke-command $sync.WriteLogs -ArgumentList ("INFO","Dark Mode has been disabled",$sync.logfile)
+    }
+
+}
+
 #===========================================================================
 # Install Tab
 #===========================================================================
@@ -273,7 +312,7 @@ $Sync.GUIInstallPrograms = {
         else{
             foreach ($program in $programstoinstall){
 
-                $($sync.applications.install.$program.winget) -split ";" | ForEach-Object {
+                $($sync.applications.install.$("WPF" + $program).winget) -split ";" | ForEach-Object {
                     if($psitem){
                         $winget += ",$psitem"
                     }Else{
@@ -951,7 +990,7 @@ $sync.ScriptUpdates = {
         param($Level, $Message, $LogPath)
         Invoke-command $sync.WriteLogs -ArgumentList ($Level,$Message, $LogPath)
     }
-    if($updatestoconfigure -eq "Updatesdefault"){
+    if($updatestoconfigure -eq "FixesUpdate"){
         # Source: https://github.com/rgl/windows-vagrant/blob/master/disable-windows-updates.ps1 reversed! 
         Set-StrictMode -Version Latest
         $ProgressPreference = 'SilentlyContinue'
@@ -1240,6 +1279,43 @@ $sync.ScriptUpdates = {
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
     }    
+    if($updatestoconfigure -eq "Updatesdefault"){
+        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
+        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+        }
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
+        
+        $services = @(
+            "BITS"
+            "wuauserv"
+        )
+
+        foreach ($service in $services) {
+            # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+
+            Write-Host "Setting $service StartupType to Automatic"
+            Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+        }
+        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling driver offering through Windows Update..."
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabling Windows Update automatic restart..."
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Enabled driver offering through Windows Update"
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
+        Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Updates set to default"
+    }    
 
     Write-Logs -Level "INFO" -LogPath $sync.logfile -Message "Process complete. Please reboot your computer."
 
@@ -1381,7 +1457,7 @@ if($gui -eq $true){
 How to run Arguments
 
 First step is to set the $env:args variable with the setups you wish to do. To do multiple items put a " " space between each command. 
-For commands that require input seperate the command with a semicolon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
+For commands that require input seperate the command with a colon ":" and provide the values to pass to that argument seperated by a comma ",". (IE: Install:git.git,windirstat.windirstat)
 
 Supported arguments:
 
@@ -1416,6 +1492,15 @@ Example usage:
 
 If($env:args){
 Write-Verbose "Arguments Detected, Running Args"
+
+#Ensure Computer Info is populated before continuing
+$x = 0
+do{
+    Start-Sleep -Seconds 1
+    $x++
+}until($sync.ComputerInfo -or $x -eq 10)
+if($x -eq 5){Invoke-command $sync.WriteLogs -ArgumentList ("WARINING","Failed to pull computer info after 5 seconds, this can cause some scripts to fail.", $sync.logfile)}
+
 If($env:args -match '\bInstallUpgrade\b'){Invoke-command $sync.ScriptsInstallPrograms -ArgumentList "Upgrade"}
 If($env:args -match '\bUndoTweaks\b'){Invoke-command $sync.ScriptUndoTweaks}
 If($env:args -match '\bPanelControl\b'){cmd /c control}

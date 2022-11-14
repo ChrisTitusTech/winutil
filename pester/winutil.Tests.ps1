@@ -14,44 +14,48 @@
 #region Load Variables needed for testing
 
     #Config Files
-    $global:application = get-content ./config/applications.json | ConvertFrom-Json 
-    $global:preset = get-content ./config/preset.json | ConvertFrom-Json 
-    $global:feature = get-content ./config/feature.json | ConvertFrom-Json 
-    $global:tweaks = get-content ./config/tweaks.json | ConvertFrom-Json 
+    $global:configs = @{}
+
+    (
+        "applications", 
+        "tweaks",
+        "preset", 
+        "feature"
+    ) | ForEach-Object {
+        $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+    }
 
     #GUI
-    $global:sync = [Hashtable]::Synchronized(@{})
     $global:inputXML = get-content MainWindow.xaml
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
     [xml]$global:XAML = $global:inputXML
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
     $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
-    $global:sync["Form"] = [Windows.Markup.XamlReader]::Load( $global:reader )
-    $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+    $global:Form  = [Windows.Markup.XamlReader]::Load( $global:reader )
+    $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "Global:WPF$($_.Name)" -Value $global:Form.FindName($_.Name) -Scope global }
 
     #Variables to compare GUI to config files
-    $Global:GUIFeatureCount = ($global:feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITabCount = ($global:sync["TabNav"].Items.name).count
-    $Global:GUIApplicationCount = ($global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITweaksCount = ($global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUIFeatureCount = ( $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUIApplicationCount = ($global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
+    $Global:GUITweaksCount = ($global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $output = $script[0..($script.count - 2)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 3)] | Out-File .\pester.ps1    
 
 #endregion Load Variables needed for testing 
 
 #===========================================================================
-# Tests - Json
+# Tests - Config Files
 #===========================================================================
 
-Describe "Json Files" {
+Describe "Config Files" {
     Context "Application installs" {
         It "Imports with no errors" {
-            $global:application | should -Not -BeNullOrEmpty
+            $global:configs.Applications | should -Not -BeNullOrEmpty
         }
         It "Json should be in correct format" {
-            $winget = $global:application.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+            $winget = $global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
             $winget.name | should -BeLike "*Install*"
             $winget.winget | should -Not -BeNullOrEmpty
         }
@@ -59,10 +63,10 @@ Describe "Json Files" {
 
     Context "Preset" {
         It "Imports with no errors" {
-            $global:preset | should -Not -BeNullOrEmpty
+            $global:configs.preset | should -Not -BeNullOrEmpty
         }
         It "Json should be in correct format" {
-            $preset = $global:preset.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+            $preset = $global:configs.preset.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
             $preset.name | should -Not -BeNullOrEmpty
             $preset.Value | should -BeLike "*Tweaks*"
         }
@@ -70,10 +74,10 @@ Describe "Json Files" {
 
     Context "feature" {
         It "Imports with no errors" {
-            $global:feature | should -Not -BeNullOrEmpty
+            $global:configs.feature | should -Not -BeNullOrEmpty
         }
         It "Json should be in correct format" {
-            $feature = $global:feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+            $feature = $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
             $feature.name | should -BeLike "*Feature*"
             $feature.Value | should -Not -BeNullOrEmpty
         }
@@ -81,10 +85,10 @@ Describe "Json Files" {
     
     Context "tweaks" {
         It "Imports with no errors" {
-            $global:tweaks | should -Not -BeNullOrEmpty
+            $global:configs.tweaks | should -Not -BeNullOrEmpty
         }
         It "Json should be in correct format" {
-            $tweaks = $global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+            $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
             $tweaks.name | should -BeLike "*Tweaks*"
             $tweaks.Value.registry | should -Not -BeNullOrEmpty
             $tweaks.Value.Service | should -Not -BeNullOrEmpty
@@ -93,7 +97,7 @@ Describe "Json Files" {
             $tweaks.Value.InvokeScript | should -Not -BeNullOrEmpty
         }
         It "Original Values should be set" {
-            $tweaks = $global:tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
+            $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
 
             Foreach($tweak in $tweaks){
                 if($tweak.value.registry){
@@ -130,7 +134,6 @@ Describe "Json Files" {
 #===========================================================================
 
 Describe "GUI" {
-
     Context "XML" {
         It "Imports with no errors" {
             $global:XAML | should -Not -BeNullOrEmpty
@@ -142,33 +145,19 @@ Describe "GUI" {
 
     Context "Form" {
         It "Imports with no errors" {
-            $global:sync["Form"] | should -Not -BeNullOrEmpty
+            $global:Form | should -Not -BeNullOrEmpty
         }
         It "Title should match XML" {
-            $global:sync["Form"].title | should -Be $global:XAML.window.Title
-        }
-        It "Tabs should be $Global:GUITabCount" {
-            ($global:sync.keys | Where-Object {$psitem -like "Tab?"}).count | should -Be $Global:GUITabCount
+            $global:Form.title | should -Be $global:XAML.window.Title
         }
         It "Features should be $Global:GUIFeatureCount" {
-            ($global:sync.keys | Where-Object {
-                $psitem -like "*feature*" -and 
-                $psitem -notlike "FeatureInstall"
-            }).count | should -Be $Global:GUIFeatureCount
+            (get-variable | Where-Object {$psitem.name -like "*feature*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIFeatureCount
         }
         It "Applications should be $Global:GUIApplicationCount" {
-            ($global:sync.keys | Where-Object {
-                $psitem -like "*Install*" -and 
-                $psitem -notlike "Install" -and
-                $psitem -notlike "InstallUpgrade" -and
-                $psitem -notlike "featureInstall"
-            }).count | should -Be $Global:GUIApplicationCount
+            (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIApplicationCount
         }
         It "Tweaks should be $Global:GUITweaksCount" {
-            ($global:sync.keys | Where-Object {
-                $psitem -like "*tweaks*" -and 
-                $psitem -notlike "tweaksbutton" 
-            }).count | should -Be $Global:GUITweaksCount
+            (get-variable | Where-Object {$psitem.name -like "*tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUITweaksCount
         }
     } 
 }
@@ -199,5 +188,13 @@ Describe "GUI Functions" {
         $WPFdesktop | should -Not -BeNullOrEmpty
         $WPFInstallUpgrade | should -Not -BeNullOrEmpty
         $WPFinstall | should -Not -BeNullOrEmpty
+    }
+
+    It "Get-CheckBoxes Install should return data" {
+        . .\pester.ps1 
+
+        $WPFInstallvc2015_32.ischecked = $true
+        (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
+        $WPFInstallvc2015_32.ischecked | should -be $false
     }
 }
