@@ -189,8 +189,8 @@
                                 <CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
-                                <Button Name="install" Background="AliceBlue" Content="Start Install" Margin="20,5,20,5" ToolTip="Install all checked programs"/>
-                                <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="20,5,20,5" ToolTip="Upgrade All Existing Programs on System"/>
+                                <Button Name="install" Background="AliceBlue" Content="Start Install" Margin="30,0" ToolTip="Install all checked programs"/>
+                                <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" Margin="30,5" ToolTip="Upgrade All Existing Programs on System"/>
 
                             </StackPanel>
                         </Grid>
@@ -234,11 +234,11 @@
                                 <CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
                                 <CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
                                 <Label Content="Dark Theme" />
-                                <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="60,0" />
-                                <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="60,0"/>
+                                <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" Margin="80,0" />
+                                <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" Margin="80,0"/>
                                 <Label Content="Performance Plans" />
-                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" Margin="60,0"/>
-                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" Margin="60,5"/>
+                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" Margin="80,0"/>
+                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" Margin="80,0"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
@@ -257,8 +257,8 @@
                                 <CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
                                 <CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="60,0"/>
-                                <Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="60,5"/>
+                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks" Margin="80,0"/>
+                                <Button Name="undoall" Background="AliceBlue" Content="Undo All Tweaks" Margin="80,0"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -275,20 +275,20 @@
                                 <CheckBox Name="Featureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                                 <CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
                                 <CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
-                                <Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
+                                <Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="140,5" Padding="10"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="PanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" Margin="20,5,20,0" Padding="10"/>
-                                <Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
-                                <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" Margin="20,5,20,0" Padding="10"/>
+                                <Button Name="PanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" Margin="140,5" Padding="10"/>
+                                <Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="140,5" Padding="10"/>
+                                <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" Margin="140,5" Padding="10"/>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
-                                <Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" Margin="20,5,20,5" Padding="10"/>
-                                <Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" Margin="20,0,20,5" Padding="10"/>
-                                <Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" Margin="20,0,20,5" Padding="10"/>
-                                <Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" Margin="20,0,20,5" Padding="10"/>
-                                <Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" Margin="20,0,20,5" Padding="10"/>
-                                <Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" Margin="20,0,20,5" Padding="10"/>
+                                <Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" Margin="140,5" Padding="10"/>
+                                <Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" Margin="140,5" Padding="10"/>
+                                <Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" Margin="140,5" Padding="10"/>
+                                <Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" Margin="140,5" Padding="10"/>
+                                <Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" Margin="140,5" Padding="10"/>
+                                <Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" Margin="140,5" Padding="10"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
