@@ -14,7 +14,6 @@
 #region Load Variables needed for testing
 
     #Config Files
-
     $global:configs = @{}
 
     (
@@ -191,7 +190,6 @@ Describe "GUI Functions" {
         $WPFinstall | should -Not -BeNullOrEmpty
     }
 
-
     It "Get-CheckBoxes Install should return data" {
         . .\pester.ps1 
 
@@ -199,5 +197,4 @@ Describe "GUI Functions" {
         (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
         $WPFInstallvc2015_32.ischecked | should -be $false
     }
-
 }

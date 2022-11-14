@@ -130,7 +130,6 @@
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="3" Margin="10">
-
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
                                 <CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
@@ -156,7 +155,6 @@
                                 <CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
                             </StackPanel>
-
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
