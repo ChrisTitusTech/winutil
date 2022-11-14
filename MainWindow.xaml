@@ -277,9 +277,9 @@
                                 <CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                                 <Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" Margin="20,5,20,0" Padding="10"/>
                                 <Label Content="Fixes" FontSize="16"/>
+                                <Button Name="PanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" Margin="20,5,20,0" Padding="10"/>
                                 <Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" Margin="20,5,20,0" Padding="10"/>
                                 <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" Margin="20,5,20,0" Padding="10"/>
-
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>

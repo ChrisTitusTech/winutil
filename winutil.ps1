@@ -9,6 +9,17 @@ $BranchToUse = 'test'
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
+# Choco install 
+$testchoco = powershell choco -v
+if(-not($testchoco)){
+    Write-Output "Seems Chocolatey is not installed, installing now"
+    Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    powershell choco feature enable -n allowGlobalConfirmation
+}
+else{
+    Write-Output "Chocolatey Version $testchoco is already installed"
+}
+
 #Load config files to hashtable
 $configs = @{}
 
@@ -349,14 +360,6 @@ $WPFminimal.Add_Click({
 
 $WPFtweaksbutton.Add_Click({
 
-        If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
-            #Installing PowerRun to edit some restricted registry keys (Need this to disable Gamebar Presence Writer)
-            curl.exe -s "https://www.sordum.org/files/download/power-run/PowerRun.zip" -o ".\PowerRun.zip"
-            Expand-Archive -Path ".\PowerRun.zip" -DestinationPath ".\" -Force
-            Copy-Item -Path ".\PowerRun\PowerRun.exe" -Destination "$env:windir" -Force
-            Remove-Item -Path ".\PowerRun\", ".\PowerRun.zip" -Recurse
-        }
-
         If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
             Write-Host "Disabling Activity History..."
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
@@ -378,6 +381,12 @@ $WPFtweaksbutton.Add_Click({
         }
 
         If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
+             #Installing PowerRun to edit some restricted registry keys (Need this to disable Gamebar Presence Writer)
+             curl.exe -s "https://www.sordum.org/files/download/power-run/PowerRun.zip" -o "PowerRun.zip"
+             Expand-Archive -Path ".\PowerRun.zip" -DestinationPath ".\" -Force
+             Copy-Item -Path ".\PowerRun\PowerRun.exe" -Destination "$env:windir" -Force
+             Remove-Item -Path ".\PowerRun\", ".\PowerRun.zip" -Recurse
+
             If (!(Test-Path "HKCU:\System\GameConfigStore")) {
                 New-Item -Path "HKCU:\System\GameConfigStore" -Force
             }
@@ -396,6 +405,7 @@ $WPFtweaksbutton.Add_Click({
 
             $WPFEssTweaksDVR.IsChecked = $false
         }
+
         If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
             Write-Host "Disabling Hibernation..."
             Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernateEnabled" -Type Dword -Value 0
@@ -476,7 +486,7 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFchangedns.text -eq 'Level3' ) { 
             Write-Host "Setting DNS to Level3 for all connections..."
             $DC = "4.2.2.2"
-            $Internet = "4.2.2.4"
+            $Internet = "4.2.2.1"
             $dns = "$DC", "$Internet"
             $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
             $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
@@ -492,8 +502,8 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             If (!(Test-Path .\ooshutup10.cfg)) {
                 Write-Host "Running O&O Shutup with Recommended Settings"
-                curl.exe -ss "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
-                curl.exe -ss "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
+                curl.exe -s "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
+                curl.exe -s "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             }
             ./OOSU10.exe ooshutup10.cfg /quiet
             $WPFEssTweaksOO.IsChecked = $false
