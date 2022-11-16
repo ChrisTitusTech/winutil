@@ -153,12 +153,17 @@ Describe "GUI" {
         It "Features should be $Global:GUIFeatureCount" {
             (get-variable | Where-Object {$psitem.name -like "*feature*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIFeatureCount
         }
-        It "Applications should be $Global:GUIApplicationCount" {
-            (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIApplicationCount
+        It "Applications config should contain an application for each GUI checkbox" {
+
+            $GUIApplications = (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).name -replace 'Global:',''
+            $ConfigApplications = ($global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).name
+
+            Compare-Object -ReferenceObject $GUIApplications -DifferenceObject $ConfigApplications | Where-Object {$_.SideIndicator -eq "<="} | Select-Object -ExpandProperty InputObject | should -BeNullOrEmpty -Because "Config is missing applications"
         }
-        It "Tweaks should be $Global:GUITweaksCount" {
-            (get-variable | Where-Object {$psitem.name -like "*tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUITweaksCount
-        }
+        #Remocing because winutil doesn't use tweaks config yet
+        #It "Tweaks should be $Global:GUITweaksCount" {
+        #    (get-variable | Where-Object {$psitem.name -like "*tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUITweaksCount
+        #}
     } 
 }
 
