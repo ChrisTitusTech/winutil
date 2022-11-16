@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'main'
+$BranchToUse = 'feature/updatepester'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
