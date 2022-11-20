@@ -201,16 +201,3 @@ Describe "GUI Functions" {
         $WPFInstallvc2015_32.ischecked | should -be $false
     }
 }
-
-#===========================================================================
-# Tests - Winget Install
-#===========================================================================
-
-Describe "GUI Functions" {
-    BeforeEach -Scriptblock {. ./winget.ps1}
-
-    It "PSGallery should be trusted" {
-        Get-PSRepository PSGallery | Select-Object -ExpandProperty -InstallationPolicy | Should -Be "Trusted"
-    }
-    
-}
