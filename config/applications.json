@@ -25,7 +25,7 @@
       "winget": "BlenderFoundation.Blender"
     },
     "WPFInstallbrave": {
-      "winget": "Brave.Brave"
+      "blah": "blah"
     },
     "WPFInstallchrome": {
       "winget": "Google.Chrome"
@@ -40,7 +40,6 @@
       "winget": "Discord.Discord"
     },
     "WPFInstalleartrumpet": {
-      "winget": "File-New-Project.EarTrumpet"
     },
     "WPFInstallepicgames": {
       "winget": "EpicGames.EpicGamesLauncher"

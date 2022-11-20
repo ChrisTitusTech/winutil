@@ -14,16 +14,6 @@
 #region Load Variables needed for testing
 
     #Config Files
-    $global:configs = @{}
-
-    (
-        "applications", 
-        "tweaks",
-        "preset", 
-        "feature"
-    ) | ForEach-Object {
-        $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-    }
 
     #GUI
     $global:inputXML = get-content MainWindow.xaml
@@ -50,83 +40,27 @@
 #===========================================================================
 
 Describe "Config Files" {
+    BeforeEach {
+        $configs = @{}
+
+        (
+            "applications"
+        ) | ForEach-Object {
+            $configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+        }
+    }
     Context "Application installs" {
         It "Imports with no errors" {
-            $global:configs.Applications | should -Not -BeNullOrEmpty
+            $configs.Applications | should -Not -BeNullOrEmpty
         }
-        It "Json should be in correct format" {
-            $winget = $global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-            $winget.name | should -BeLike "*Install*"
-            $winget.winget | should -Not -BeNullOrEmpty
+        $configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
+            $TestCase = @{ name = $psitem.name }
+            It "$($psitem.name) should include Winget Install" -TestCases $TestCase{
+                param($name)
+                $null -eq $configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
+            } 
         }
     } 
-
-   # Context "Preset" {
-   #     It "Imports with no errors" {
-   #         $global:configs.preset | should -Not -BeNullOrEmpty
-   #     }
-   #     It "Json should be in correct format" {
-   #         $preset = $global:configs.preset.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-   #         $preset.name | should -Not -BeNullOrEmpty
-   #         $preset.Value | should -BeLike "*Tweaks*"
-   #     }
-   # } 
-
-   # Context "feature" {
-   #     It "Imports with no errors" {
-   #         $global:configs.feature | should -Not -BeNullOrEmpty
-   #     }
-   #     It "Json should be in correct format" {
-   #         $feature = $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-   #         $feature.name | should -BeLike "*Feature*"
-   #         $feature.Value | should -Not -BeNullOrEmpty
-   #     }
-   # } 
-    
-   # Context "tweaks" {
-   #     It "Imports with no errors" {
-   #         $global:configs.tweaks | should -Not -BeNullOrEmpty
-   #     }
-   #     It "Json should be in correct format" {
-   #         $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-   #         $tweaks.name | should -BeLike "*Tweaks*"
-   #         $tweaks.Value.registry | should -Not -BeNullOrEmpty
-   #         $tweaks.Value.Service | should -Not -BeNullOrEmpty
-   #         $tweaks.Value.ScheduledTask | should -Not -BeNullOrEmpty
-   #         $tweaks.Value.Appx | should -Not -BeNullOrEmpty
-   #         $tweaks.Value.InvokeScript | should -Not -BeNullOrEmpty
-   #     }
-   #     It "Original Values should be set" {
-   #         $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-
-   #         Foreach($tweak in $tweaks){
-   #             if($tweak.value.registry){
-
-   #                 $values = $tweak.value | Select-Object -ExpandProperty registry
-
-   #                 Foreach ($value in $values){
-   #                     $value.OriginalValue | should -Not -BeNullOrEmpty
-   #                 }  
-   #             }
-   #             if($tweak.value.Service){
-
-   #                 $values = $tweak.value | Select-Object -ExpandProperty Service
-
-   #                 Foreach ($value in $values){
-   #                     $value.OriginalType | should -Not -BeNullOrEmpty
-   #                 }  
-   #             }
-   #             if($tweak.value.ScheduledTask){
-
-   #                 $values = $tweak.value | Select-Object -ExpandProperty ScheduledTask
-
-   #                 Foreach ($value in $values){
-   #                     $value.OriginalState | should -Not -BeNullOrEmpty
-   #                 }  
-   #             }
-   #         }
-   #     }
-   # } 
 }
 
 #===========================================================================
@@ -160,15 +94,11 @@ Describe "GUI" {
 
             Compare-Object -ReferenceObject $GUIApplications -DifferenceObject $ConfigApplications | Where-Object {$_.SideIndicator -eq "<="} | Select-Object -ExpandProperty InputObject | should -BeNullOrEmpty -Because "Config is missing applications"
         }
-
-        #It "Tweaks should be $Global:GUITweaksCount" {
-        #    (get-variable | Where-Object {$psitem.name -like "*tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUITweaksCount
-        #}
     } 
 }
 
 #===========================================================================
-# Tests - GUI
+# Tests - GUI Functions
 #===========================================================================
 
 Describe "GUI Functions" {
