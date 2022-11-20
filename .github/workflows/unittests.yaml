@@ -16,10 +16,9 @@ jobs:
         uses: zyborg/pester-tests-report@v1
         with:
           include_paths: pester
-          report_name: Winutil_Tests
-          report_title: Winutil_Tests
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tests_fail_step: true
+          skip_check_run: true
       - name: dump test results
         shell: pwsh
         run: |
