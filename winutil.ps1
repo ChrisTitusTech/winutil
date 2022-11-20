@@ -9,7 +9,7 @@ $BranchToUse = '386/RequireAdmin'
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "This application needs to be run as an administrator. Attempting relaunch"
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winutil.ps1 | iex"
     break
 }
 
