@@ -21,6 +21,7 @@
     ) | ForEach-Object {
         $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
     }
+
     #GUI
     $global:inputXML = get-content MainWindow.xaml
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -29,11 +30,6 @@
     $global:reader = (New-Object System.Xml.XmlNodeReader $global:xaml) 
     $global:Form  = [Windows.Markup.XamlReader]::Load( $global:reader )
     $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "Global:WPF$($_.Name)" -Value $global:Form.FindName($_.Name) -Scope global }
-
-    #Variables to compare GUI to config files
-    $Global:GUIFeatureCount = ( $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUIApplicationCount = ($global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITweaksCount = ($global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
@@ -57,11 +53,19 @@ Describe "Config Files" {
                 $null -eq $global:configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
             } 
         }
+        (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).name -replace 'Global:','' | ForEach-Object {
+
+            $TestCase = @{ name = $psitem }
+            It "$($psitem) should include application.json " -TestCases $TestCase{
+                param($name)
+                $null -eq $global:configs.applications.install.$name | should -Befalse -because "$name Does not have entry in applications.json"
+            } 
+        }
     } 
 }
 
 #===========================================================================
-# Tests - GUI
+# Tests - GUI 
 #===========================================================================
 
 Describe "GUI" {
@@ -80,13 +84,6 @@ Describe "GUI" {
         }
         It "Title should match XML" {
             $global:Form.title | should -Be $global:XAML.window.Title
-        }
-        It "Applications config should contain an application for each GUI checkbox" {
-
-            $GUIApplications = (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).name -replace 'Global:',''
-            $ConfigApplications = ($global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).name
-
-            Compare-Object -ReferenceObject $GUIApplications -DifferenceObject $ConfigApplications | Where-Object {$_.SideIndicator -eq "<="} | Select-Object -ExpandProperty InputObject | should -BeNullOrEmpty -Because "Config is missing applications"
         }
     } 
 }
