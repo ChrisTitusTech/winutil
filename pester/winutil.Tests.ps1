@@ -172,9 +172,9 @@ Describe "GUI" {
 #===========================================================================
 
 Describe "GUI Functions" {
+    BeforeEach -Scriptblock {. ./pester.ps1}
 
     It "GUI should load with no errors" {
-        . .\pester.ps1 
         $WPFTab1BT | should -Not -BeNullOrEmpty
         $WPFundoall | should -Not -BeNullOrEmpty
         $WPFPanelDISM | should -Not -BeNullOrEmpty
@@ -196,10 +196,21 @@ Describe "GUI Functions" {
     }
 
     It "Get-CheckBoxes Install should return data" {
-        . .\pester.ps1 
-
         $WPFInstallvc2015_32.ischecked = $true
         (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
         $WPFInstallvc2015_32.ischecked | should -be $false
     }
+}
+
+#===========================================================================
+# Tests - Winget Install
+#===========================================================================
+
+Describe "GUI Functions" {
+    BeforeEach -Scriptblock {. ./winget.ps1}
+
+    It "PSGallery should be trusted" {
+        Get-PSRepository PSGallery | Select-Object -ExpandProperty -InstallationPolicy | Should -Be "Trusted"
+    }
+    
 }
