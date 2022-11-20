@@ -14,7 +14,13 @@
 #region Load Variables needed for testing
 
     #Config Files
+    $global:configs = @{}
 
+    (
+        "applications"
+    ) | ForEach-Object {
+        $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+    }
     #GUI
     $global:inputXML = get-content MainWindow.xaml
     $global:inputXML = $global:inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -40,24 +46,15 @@
 #===========================================================================
 
 Describe "Config Files" {
-    BeforeEach {
-        $configs = @{}
-
-        (
-            "applications"
-        ) | ForEach-Object {
-            $configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-        }
-    }
     Context "Application installs" {
         It "Imports with no errors" {
-            $configs.Applications | should -Not -BeNullOrEmpty
+            $global:configs.Applications | should -Not -BeNullOrEmpty
         }
-        $configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
+        $global:configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
             $TestCase = @{ name = $psitem.name }
             It "$($psitem.name) should include Winget Install" -TestCases $TestCase{
                 param($name)
-                $null -eq $configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
+                $null -eq $global:configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
             } 
         }
     } 
