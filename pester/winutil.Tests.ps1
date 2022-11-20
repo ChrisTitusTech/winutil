@@ -38,14 +38,16 @@
 #endregion Load Variables needed for testing 
 
 #===========================================================================
-# Tests - Config Files
+# Tests - Application Installs
 #===========================================================================
 
-Describe "Config Files" {
+Describe "Application Installs" {
     Context "Application installs" {
         It "Imports with no errors" {
             $global:configs.Applications | should -Not -BeNullOrEmpty
         }
+    }
+    Context "Winget Install" {
         $global:configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
             $TestCase = @{ name = $psitem.name }
             It "$($psitem.name) should include Winget Install" -TestCases $TestCase{
@@ -53,6 +55,8 @@ Describe "Config Files" {
                 $null -eq $global:configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
             } 
         }
+    }
+    Context "GUI Applications Checkbox" {
         (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).name -replace 'Global:','' | ForEach-Object {
 
             $TestCase = @{ name = $psitem }
