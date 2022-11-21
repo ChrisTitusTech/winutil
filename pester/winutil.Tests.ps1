@@ -130,6 +130,18 @@ Describe "Config Files" {
 }
 
 #===========================================================================
+# Tests - Tweak Presets
+#===========================================================================
+
+Describe "Tweak Presets" {
+    Context "Json Import" {
+        It "Imports with no errors" {
+            $global:configs.preset | should -Not -BeNullOrEmpty
+        }
+    }
+}
+
+#===========================================================================
 # Tests - GUI
 #===========================================================================
 
@@ -190,11 +202,24 @@ Describe "GUI Functions" {
         $WPFinstall | should -Not -BeNullOrEmpty
     }
 
-    It "Get-CheckBoxes Install should return data" {
-        . .\pester.ps1 
+    Context "Get-CheckBoxes" {
+        It "Get-CheckBoxes Install should return data" {
+            . .\pester.ps1 
 
-        $WPFInstallvc2015_32.ischecked = $true
-        (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
-        $WPFInstallvc2015_32.ischecked | should -be $false
+            $WPFInstallvc2015_32.ischecked = $true
+            (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
+            $WPFInstallvc2015_32.ischecked | should -be $false
+        }
+    }
+
+    Context "Set-Presets" {
+        $global:configs.preset | Get-Member -MemberType NoteProperty | ForEach-Object {
+            $TestCase = @{ name = $psitem.name }
+            It "preset $($psitem.name) should modify the correct values" -TestCases $TestCase {
+                param($name)
+                Set-Presets $name
+                get-variable $global:configs.preset.$name | Select-Object -ExpandProperty value | Select-Object -ExpandProperty ischecked | Where-Object {$psitem -eq $false} | should -BeNullOrEmpty
+            }
+        }
     }
 }
