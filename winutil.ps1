@@ -118,13 +118,16 @@ Function Get-CheckBoxes {
     if($Group -eq "WPFInstall"){
         Foreach ($CheckBox in $CheckBoxes){
             if($checkbox.value.ischecked -eq $true){
-                $output.Add("$($configs.applications.install.$($checkbox.name).winget)")
+                $configs.applications.install.$($checkbox.name).winget -split ";" | ForEach-Object {
+                    $output.Add($psitem)
+                }
+                
                 $checkbox.value.ischecked = $false
             }
         }
     }
-
-    Write-Output $Output
+    
+    Write-Output $($Output | Select-Object -Unique)
 }
 
 #===========================================================================
