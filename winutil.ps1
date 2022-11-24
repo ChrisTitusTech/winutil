@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'hotfix/applications'
+$BranchToUse = 'main'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
@@ -117,12 +117,12 @@ Function Get-CheckBoxes {
 
     if($Group -eq "WPFInstall"){
         Foreach ($CheckBox in $CheckBoxes){
-            if($checkbox.value.ischecked -eq $true){
-                $configs.applications.install.$($checkbox.name).winget -split ";" | ForEach-Object {
-                    $output.Add($psitem)
+            if($CheckBox.value.ischecked -eq $true){
+                $Configs.applications.install.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                    $Output.Add($psitem)
                 }
                 
-                $checkbox.value.ischecked = $false
+                $CheckBox.value.ischecked = $false
             }
         }
     }
