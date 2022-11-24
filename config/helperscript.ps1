@@ -138,7 +138,7 @@ Example:
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
-$NameofButton = ""
+$NameofButton = "WPF" + ""
 $commands = @(
     
 )
