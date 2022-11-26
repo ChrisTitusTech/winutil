@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'main'
+$BranchToUse = 'feature/simplelogging'
 
 <#
 .NOTES
