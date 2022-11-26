@@ -1,4 +1,4 @@
-$XAML = (Get-Content .\MainWindow.xaml -Encoding utf8 -Raw) -replace "'",""
+$XAML = (Get-Content .\MainWindow.xaml -Raw) -replace "'",""
 $configs = @{}
 (
     "applications", 
@@ -21,4 +21,4 @@ $winutil = Get-Content ./scripts/main.ps1 -Encoding utf8 -Raw
 $form
 $functions
 $winutil
-"@ | Out-File winutil.ps1 -Encoding utf8 -Force
+"@ | Out-File winutil.ps1 -Force
