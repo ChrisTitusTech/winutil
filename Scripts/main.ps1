@@ -4,8 +4,6 @@
    GitHub      : https://github.com/ChrisTitusTech
     Version 0.0.1
 #>
-# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-#$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 # Choco install 
 $testchoco = powershell choco -v
@@ -16,113 +14,6 @@ if(-not($testchoco)){
 }
 else{
     Write-Output "Chocolatey Version $testchoco is already installed"
-}
-
-#Load config files to hashtable
-#$configs = @{}
-#
-#(
-#    "applications", 
-#    "tweaks",
-#    "preset", 
-#    "feature"
-#) | ForEach-Object {
-#    #$configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-#    $configs["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json"
-#}
-
-
-$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
-[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-[xml]$XAML = $inputXML
-#Read XAML
- 
-$reader = (New-Object System.Xml.XmlNodeReader $xaml) 
-try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
-catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-    write-host $error[0].Exception.Message -ForegroundColor Red
-    If ($error[0].Exception.Message -like "*button*") {
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
-    }
-}
-catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
-}
- 
-#===========================================================================
-# Store Form Objects In PowerShell
-#===========================================================================
- 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
-
-#===========================================================================
-# Functions
-#===========================================================================
- 
-Function Get-FormVariables {
-    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
-    
-
-    write-host ""                                                                                                                             
-    write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
-    write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
-    write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
-    write-host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
-    write-host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C       CCCCCC        T:::::T                T:::::T        "
-    write-host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
-    write-host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-    write-host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
-    write-host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
-    write-host ""
-    write-host "====Chris Titus Tech====="
-    write-host "=====Windows Toolbox====="
-                           
- 
-    #====DEBUG GUI Elements====
-
-    #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
-    #get-variable WPF*
-}
-
-Function Get-CheckBoxes {
-
-    <#
-    
-        .DESCRIPTION
-        Function is meant to find all checkboxes that are checked on the specefic tab and input them into a script.
-
-        Outputed data will be the names of the checkboxes that were checked        
-
-        .EXAMPLE
-
-        Get-CheckBoxes "WPFInstall"
-    
-    #>
-
-    Param($Group)
-
-    $CheckBoxes = get-variable | Where-Object {$psitem.name -like "$Group*" -and $psitem.value.GetType().name -eq "CheckBox"}
-    $Output = New-Object System.Collections.Generic.List[System.Object]
-
-    if($Group -eq "WPFInstall"){
-        Foreach ($CheckBox in $CheckBoxes){
-            if($checkbox.value.ischecked -eq $true){
-                $output.Add("$($applications.install.$($checkbox.name).winget)")
-                $checkbox.value.ischecked = $false
-            }
-        }
-    }
-
-    Write-Output $Output
 }
 
 #===========================================================================
