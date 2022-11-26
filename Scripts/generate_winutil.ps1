@@ -21,4 +21,4 @@ $winutil = Get-Content ./scripts/main.ps1 -Encoding utf8 -Raw
 $form
 $functions
 $winutil
-"@ | Out-File winutil.ps1
+"@ | Out-File winutil.ps1 -Encoding utf8 -Force
