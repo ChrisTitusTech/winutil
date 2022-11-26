@@ -1,3 +1,1988 @@
+
+$inputXML = '<Window x:Class="WinUtility.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinUtility"
+        mc:Ignorable="d"
+        Background="#777777"
+        WindowStartupLocation="CenterScreen"
+        Title="Chris Titus Techs Windows Utility" Height="800" Width="1200">
+    <Border Name="dummy" Grid.Column="0" Grid.Row="0">
+        <Viewbox Stretch="Uniform" VerticalAlignment="Top">
+            <Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=".1*"/>
+                    <RowDefinition Height=".9*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <DockPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
+                    <Image Height="50" Width="100" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
+                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
+                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
+                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
+                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
+                </DockPanel>
+                <TabControl Grid.Row="1" Padding="-1" Name="TabNav" Background="#222222">
+                    <TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
+                        <Grid Background="#222222">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
+                                <Label Content="Browsers" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installbrave" Content="Brave" Margin="5,0"/>
+                                <CheckBox Name="Installchrome" Content="Chrome" Margin="5,0"/>
+                                <CheckBox Name="Installchromium" Content="Chromium" Margin="5,0"/>
+                                <CheckBox Name="Installedge" Content="Edge" Margin="5,0"/>
+                                <CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
+                                <CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
+                                <CheckBox Name="Installtor" Content="Tor Browser" Margin="5,0"/>
+                                <CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
+                                <CheckBox Name="Installwaterfox" Content="Waterfox" Margin="5,0"/>
+
+                                <Label Content="Communications" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
+                                <CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
+                                <CheckBox Name="Installjami" Content="Jami" Margin="5,0"/>
+                                <CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
+                                <CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
+                                <CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
+                                <CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
+                                <CheckBox Name="Installteams" Content="Teams" Margin="5,0"/>
+                                <CheckBox Name="Installtelegram" Content="Telegram" Margin="5,0"/>
+                                <CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
+                                <CheckBox Name="Installzoom" Content="Zoom" Margin="5,0"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
+                                <Label Content="Development" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
+                                <CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
+                                <CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
+                                <CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
+                                <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
+                                <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
+                                <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="Installunity" Content="Unity Game Engine" Margin="5,0"/>
+                                <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
+                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
+
+                                <Label Content="Document" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
+                                <CheckBox Name="Installfoxpdf" Content="Foxit PDF" Margin="5,0"/>
+                                <CheckBox Name="Installjoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
+                                <CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
+                                <CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
+                                <CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
+                                <CheckBox Name="Installonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                                <CheckBox Name="Installopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                                <CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
+                                <CheckBox Name="Installwinmerge" Content="WinMerge" Margin="5,0"/>
+
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
+
+
+                                <Label Content="Games" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installbluestacks" Content="Bluestacks" Margin="5,0"/>
+                                <CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
+                                <CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
+                                <CheckBox Name="Installorigin" Content="Origin" Margin="5,0"/>
+                                <CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
+
+                                <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="Installmremoteng" Content="mRemoteNG" Margin="5,0"/>
+                                <CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
+                                <CheckBox Name="Installrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
+                                <CheckBox Name="Installsimplewall" Content="SimpleWall" Margin="5,0"/>
+                                <CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
+                                <CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
+
+                                <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installdotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
+                                <CheckBox Name="Installdotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
+                                <CheckBox Name="Installdotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
+                                <CheckBox Name="Installnuget" Content="Nuget" Margin="5,0"/>
+                                <CheckBox Name="Installonedrive" Content="OneDrive" Margin="5,0"/>
+                                <CheckBox Name="Installpowershell" Content="PowerShell" Margin="5,0"/>
+                                <CheckBox Name="Installpowertoys" Content="Powertoys" Margin="5,0"/>
+                                <CheckBox Name="Installprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
+                                <CheckBox Name="Installvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
+                                <CheckBox Name="Installvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
+                                <CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+
+
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="3" Margin="10">
+                                <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
+                                <CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
+                                <CheckBox Name="Installcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
+                                <CheckBox Name="Installeartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
+                                <CheckBox Name="Installflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="Installfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="Installgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="Installgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
+                                <CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
+                                <CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
+                                <CheckBox Name="Installitunes" Content="iTunes" Margin="5,0"/>
+                                <CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
+                                <CheckBox Name="Installkodi" Content="Kodi Media Center" Margin="5,0"/>
+                                <CheckBox Name="Installklite" Content="K-Lite Codec Standard" Margin="5,0"/>
+                                <CheckBox Name="Installkrita" Content="Krita (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
+                                <CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
+                                <CheckBox Name="Installnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
+                                <CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="Installstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
+                                <CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="4" Margin="10">
+                                <Label Content="Utilities" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
+                                <CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
+                                <CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
+                                <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
+                                <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
+                                <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
+                                <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
+                                <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
+                                <CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
+                                <CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
+                                <CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
+                                <CheckBox Name="Installidm" Content="Internet Download Manager" Margin="5,0"/>
+                                <CheckBox Name="Installjdownloader" Content="J Download Manager" Margin="5,0"/>
+                                <CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
+                                <CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
+                                <CheckBox Name="Installopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="Installprocesslasso" Content="Process Lasso" Margin="5,0"/>
+                                <CheckBox Name="Installqbittorrent" Content="qBittorrent" Margin="5,0"/>
+                                <CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
+                                <CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
+                                <CheckBox Name="Installsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
+                                <CheckBox Name="Installshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
+                                <CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
+                                <CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
+                                <CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
+                                <CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
+                                <CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
+                                <CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
+                                <Button Name="install" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
+                                <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
+
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Tweaks" Visibility="Collapsed" Name="Tab2">
+                        <Grid Background="#333333">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height=".10*"/>
+                                <RowDefinition Height=".10*"/>
+                                <RowDefinition Height=".80*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+                                <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
+                                <Button Name="desktop" Content="Desktop" Margin="7"/>
+                                <Button Name="laptop" Content="Laptop" Margin="7"/>
+                                <Button Name="minimal" Content="Minimal" Margin="7"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+                                <TextBlock Padding="10">
+                                    Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+                                    <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="0" Margin="10,5">
+                                <Label FontSize="16" Content="Essential Tweaks"/>
+                                <CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
+                                <CheckBox Name="EssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+                                <CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spys heavily on you when using the Edge browser."/>
+                                <CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scaned wifi networks and your current geo location."/>
+                                <CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
+                                <CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
+                                <CheckBox Name="EssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
+                                <CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
+                                <CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesnt have this, it was awful."/>
+                                <CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense is supposed to delete temp files automatically, but often runs at wierd times and mostly doesnt do much. Although when it was introduced in Win 10 (1809 Version) it deleted peoples documents... So there is that."/>
+                                <CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves whats in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Dont be like Bob. Bob likes hibernation."/>
+                                <CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. Ive never met someone that likes it, but its there for the XBOX crowd."/>
+                                <CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that dont need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                                <Label Content="Dark Theme" />
+                                <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Label Content="Performance Plans" />
+                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
+                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
+
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="2" Grid.Column="1" Margin="10,5">
+                                <Label FontSize="16" Content="Misc. Tweaks"/>
+                                <CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
+                                <CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
+                                <CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and send you back to the past... or it simply turns numlock on at startup"/>
+                                <CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
+                                <CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
+                                <CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
+                                <CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
+                                <CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
+                                <CheckBox Name="MiscTweaksDisableNotifications" Content="Disable Notification" Margin="5,0" ToolTip="Disables all Notifications"/>
+                                <CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
+                                <CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+                                <CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
+                                <CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+                                <CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
+                                <Label Content="DNS" />
+							    <ComboBox Name="changedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
+								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
+								    <ComboBoxItem Content = "Google"/> 
+								    <ComboBoxItem Content = "Cloud Flare"/> 
+								    <ComboBoxItem Content = "Level3"/> 
+								    <ComboBoxItem Content = "Open DNS"/> 
+							    </ComboBox> 
+                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="undoall" Background="AliceBlue" Content="Undo Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Config" Visibility="Collapsed" Name="Tab3">
+                        <Grid Background="#444444">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
+                                <Label Content="Features" FontSize="16"/>
+                                <CheckBox Name="Featuresdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
+                                <CheckBox Name="Featureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
+                                <CheckBox Name="Featureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
+                                <CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
+                                <CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
+                                <Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
+                                <Label Content="Fixes" FontSize="16"/>
+                                <Button Name="PanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
+                                <Label Content="Legacy Windows Panels" FontSize="16"/>
+                                <Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Updates" Visibility="Collapsed" Name="Tab4">
+                        <Grid Background="#555555">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
+                                <Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
+                                <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
+                                <Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
+                                <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and dont break other systems. You dont want to go without these for ANY extended periods of time.</TextBlock>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
+                                <Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10,10,10,10"/>
+                                <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
+                                <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
+
+                            </StackPanel>
+
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Viewbox>
+    </Border>
+</Window>
+'
+$preset = '{
+  "desktop": [
+    "EssTweaksAH",
+    "EssTweaksDVR",
+    "EssTweaksHiber",
+    "EssTweaksHome",
+    "EssTweaksLoc",
+    "EssTweaksOO",
+    "EssTweaksRP",
+    "EssTweaksServices",
+    "EssTweaksStorage",
+    "EssTweaksTele",
+    "EssTweaksWifi",
+    "MiscTweaksPower",
+    "MiscTweaksNum"
+  ],
+  "laptop": [
+    "EssTweaksAH",
+    "EssTweaksDVR",
+    "EssTweaksHome",
+    "EssTweaksLoc",
+    "EssTweaksOO",
+    "EssTweaksRP",
+    "EssTweaksServices",
+    "EssTweaksStorage",
+    "EssTweaksTele",
+    "EssTweaksWifi",
+    "MiscTweaksLapPower",
+    "MiscTweaksLapNum"
+  ],
+  "minimal": [
+    "EssTweaksHome",
+    "EssTweaksOO",
+    "EssTweaksRP",
+    "EssTweaksServices",
+    "EssTweaksTele"
+  ]
+}
+' | convertfrom-json
+$tweaks = '{
+  "EssTweaksAH": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "EnableActivityFeed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "PublishUserActivities",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "UploadUserActivities",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksDVR": {
+    "registry": [
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_EFSEFeatureFlags",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Type": "Hex",
+        "Value": "00000000",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksHiber": {
+    "registry": [
+      {
+        "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksHome": {
+    "service": [
+      {
+        "Name": "HomeGroupListener",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "HomeGroupProvider",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
+  "EssTweaksLoc": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
+        "Name": "Value",
+        "Type": "String",
+        "Value": "Deny",
+        "OriginalValue": "Allow"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
+        "Name": "SensorPermissionState",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
+        "Name": "Status",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\Maps",
+        "Name": "AutoUpdateEnabled",
+        "Type": "Dword",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "EssTweaksServices": {
+    "service": [
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "diagnosticshub.standardcollector.service"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "DiagTrack"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "DPS"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "dmwappushservice"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "lfsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MapsBroker"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "NetTcpPortSharing"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RemoteAccess"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RemoteRegistry"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SharedAccess"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "TrkWks"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WMPNetworkSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WSearch"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XblAuthManager"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XblGameSave"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XboxNetApiSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "XboxGipSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "ndu"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WerSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "Fax"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "fhsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "gupdate"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "gupdatem"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "stisvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "AJRouter"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MSDTC"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WpcMonSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PhoneSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PrintNotify"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PcaSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WPDBusEnum"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "seclogon"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SysMain"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "lmhosts"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "wisvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "FontCache"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RetailDemo"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "ALG"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SCardSvr"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "EntAppSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BthAvctpSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "Browser"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BthAvctpSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "iphlpsvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "edgeupdate"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "MicrosoftEdgeElevationService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "edgeupdatem"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "SEMgrSvc"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "PerfHost"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "BcastDVRUserService_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "CaptureService_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "cbdhsvc_48486de"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "WpnService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "RtkBtManServ"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "QWAVE"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPAppHelperCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPDiagsCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPNetworkCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HPSysInfoCap"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HpTouchpointAnalyticsService"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "HvHost"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmickvpexchange"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicguestinterface"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicshutdown"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicheartbeat"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicvmsession"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmicrdv"
+      },
+      {
+        "StartupType": "Manual",
+        "OriginalType": "Automatic",
+        "Name": "vmictimesync"
+      }
+    ]
+  },
+  "EssTweaksTele": {
+    "ScheduledTask": [
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      }
+    ],
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "type": "Dword",
+        "value": 0,
+        "name": "AllowTelemetry",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "1",
+        "name": "AllowTelemetry",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "ContentDeliveryAllowed",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "OemPreInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "PreInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "PreInstalledAppsEverEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SilentInstalledAppsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338387Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338388Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-338389Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SubscribedContent-353698Enabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "name": "SystemPaneSuggestionsEnabled",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "name": "DisableWindowsConsumerFeatures",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "OriginalValue": "0",
+        "name": "NumberOfSIUFInPeriod",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "0",
+        "name": "DoNotShowFeedbackNotifications",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "name": "DisableTailoredExperiencesWithDiagnosticData",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "OriginalValue": "0",
+        "name": "DisabledByGroupPolicy",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "OriginalValue": "0",
+        "name": "Disabled",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "OriginalValue": "1",
+        "name": "DODownloadMode",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+        "OriginalValue": "1",
+        "name": "fAllowToGetHelp",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+        "OriginalValue": "0",
+        "name": "EnthusiastMode",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
+        "OriginalValue": "1",
+        "name": "PeopleBand",
+        "value": 0,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "LaunchTo",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "OriginalValue": "1",
+        "name": "SearchOrderConfig",
+        "value": "00000000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "name": "SystemResponsiveness",
+        "value": "0000000a",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "name": "NetworkThrottlingIndex",
+        "value": "0000000a",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
+        "OriginalValue": "1",
+        "name": "WaitToKillServiceTimeout",
+        "value": "2000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "MenuShowDelay",
+        "value": "0",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "WaitToKillAppTimeout",
+        "value": "5000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "AutoEndTasks",
+        "value": "1",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "LowLevelHooksTimeout",
+        "value": "00001000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "WaitToKillServiceTimeout",
+        "value": "00002000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+        "OriginalValue": "0",
+        "name": "ClearPageFileAtShutdown",
+        "value": "00000000",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
+        "OriginalValue": "1",
+        "name": "Start",
+        "value": "00000004",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseHoverTime",
+        "value": "00000010",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+        "OriginalValue": "1",
+        "name": "IRPStackSize",
+        "value": "20",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "OriginalValue": "1",
+        "name": "EnableFeeds",
+        "value": "0",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+        "OriginalValue": "1",
+        "name": "ShellFeedsTaskbarViewMode",
+        "value": "2",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "1",
+        "name": "HideSCAMeetNow",
+        "value": "1",
+        "type": "Dword"
+      }
+    ],
+    "service": [
+      {
+        "Name": "DiagTrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "dmwappushservice",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SysMain",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      }
+    ],
+    "InvokeScript": [
+      "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
+            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+            Do {
+                Start-Sleep -Milliseconds 100
+                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
+            } Until ($preferences)
+            Stop-Process $taskmgr
+            $preferences.Preferences[28] = 0
+            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
+        }
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue  
+
+        # Group svchost.exe processes
+        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+
+        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
+        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
+            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
+        }
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null"
+    ]
+  },
+  "EssTweaksWifi": {
+    "registry": [
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "MiscTweaksLapPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000000",
+        "OriginalValue": "00000001"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000001",
+        "OriginalValue": "0000000"
+      }
+    ]
+  },
+  "MiscTweaksPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000001",
+        "OriginalValue": "00000000"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000000",
+        "OriginalValue": "00000001"
+      }
+    ]
+  },
+  "MiscTweaksExt": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "MiscTweaksUTC": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+        "Name": "RealTimeIsUniversal",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ]
+  },
+  "MiscTweaksDisplay": {
+    "registry": [
+      {
+        "path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "DragFullWindows",
+        "value": "0",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "name": "MenuShowDelay",
+        "value": "200",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "OriginalValue": "1",
+        "name": "MinAnimate",
+        "value": "0",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Keyboard",
+        "OriginalValue": "1",
+        "name": "KeyboardDelay",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ListviewAlphaSelect",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ListviewShadow",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarAnimations",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "OriginalValue": "1",
+        "name": "VisualFXSetting",
+        "value": "3",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "OriginalValue": "1",
+        "name": "EnableAeroPeek",
+        "value": "0",
+        "type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ]
+  },
+  "EssTweaksDeBloat": {
+    "appx": [
+      "Microsoft.Microsoft3DViewer",
+      "Microsoft.AppConnector",
+      "Microsoft.BingFinance",
+      "Microsoft.BingNews",
+      "Microsoft.BingSports",
+      "Microsoft.BingTranslator",
+      "Microsoft.BingWeather",
+      "Microsoft.BingFoodAndDrink",
+      "Microsoft.BingHealthAndFitness",
+      "Microsoft.BingTravel",
+      "Microsoft.MinecraftUWP",
+      "Microsoft.GamingServices",
+      "Microsoft.GetHelp",
+      "Microsoft.Getstarted",
+      "Microsoft.Messaging",
+      "Microsoft.Microsoft3DViewer",
+      "Microsoft.MicrosoftSolitaireCollection",
+      "Microsoft.NetworkSpeedTest",
+      "Microsoft.News",
+      "Microsoft.Office.Lens",
+      "Microsoft.Office.Sway",
+      "Microsoft.Office.OneNote",
+      "Microsoft.OneConnect",
+      "Microsoft.People",
+      "Microsoft.Print3D",
+      "Microsoft.SkypeApp",
+      "Microsoft.Wallet",
+      "Microsoft.Whiteboard",
+      "Microsoft.WindowsAlarms",
+      "microsoft.windowscommunicationsapps",
+      "Microsoft.WindowsFeedbackHub",
+      "Microsoft.WindowsMaps",
+      "Microsoft.WindowsPhone",
+      "Microsoft.WindowsSoundRecorder",
+      "Microsoft.XboxApp",
+      "Microsoft.ConnectivityStore",
+      "Microsoft.CommsPhone",
+      "Microsoft.ScreenSketch",
+      "Microsoft.Xbox.TCUI",
+      "Microsoft.XboxGameOverlay",
+      "Microsoft.XboxGameCallableUI",
+      "Microsoft.XboxSpeechToTextOverlay",
+      "Microsoft.MixedReality.Portal",
+      "Microsoft.XboxIdentityProvider",
+      "Microsoft.ZuneMusic",
+      "Microsoft.ZuneVideo",
+      "Microsoft.Getstarted",
+      "Microsoft.MicrosoftOfficeHub",
+      "*EclipseManager*",
+      "*ActiproSoftwareLLC*",
+      "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
+      "*Duolingo-LearnLanguagesforFree*",
+      "*PandoraMediaInc*",
+      "*CandyCrush*",
+      "*BubbleWitch3Saga*",
+      "*Wunderlist*",
+      "*Flipboard*",
+      "*Twitter*",
+      "*Facebook*",
+      "*Royal Revolt*",
+      "*Sway*",
+      "*Speed Test*",
+      "*Dolby*",
+      "*Viber*",
+      "*ACGMediaPlayer*",
+      "*Netflix*",
+      "*OneCalendar*",
+      "*LinkedInforWindows*",
+      "*HiddenCityMysteryofShadows*",
+      "*Hulu*",
+      "*HiddenCity*",
+      "*AdobePhotoshopExpress*",
+      "*HotspotShieldFreeVPN*",
+      "*Microsoft.Advertising.Xaml*"
+    ]
+  },
+  "EssTweaksOO": {
+    "InvokeScript": [
+      "Import-Module BitsTransfer
+      Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
+      Start-BitsTransfer -Source \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -Destination C:\\Windows\\Temp\\OOSU10.exe
+      C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
+    ]
+  },
+  "EssTweaksRP": {
+    "InvokeScript": [
+      "Enable-ComputerRestore -Drive \"C:\\\"
+      Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
+    ]
+  },
+  "EssTweaksStorage": {
+    "InvokeScript": [
+      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ]
+  },
+  "MiscTweaksLapNum": {
+    "InvokeScript": [
+      "If (!(Test-Path \"HKU:\")) {
+        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+       }
+       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 0"
+    ]
+  },
+  "MiscTweaksNum": {
+    "InvokeScript": [
+      "If (!(Test-Path \"HKU:\")) {
+        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+       }
+       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 2"
+    ]
+  },
+  "EssTweaksRemoveEdge": {
+    "InvokeScript": [
+      "Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | Invoke-Expression"
+    ]
+  },
+  "MiscTweaksDisableNotifications": {
+    "InvokeScript": [
+      "New-Item -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\" -Name \"Explorer\" -force
+    New-ItemProperty -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer\" -Name \"DisableNotificationCenter\" -PropertyType \"DWord\" -Value 1
+    New-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications\" -Name \"ToastEnabled\" -PropertyType \"DWord\" -Value 0 -force"
+    ]
+  },
+  "MiscTweaksRightClickMenu": {
+    "InvokeScript": [
+      "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
+    ]
+  },
+  "EssTweaksDiskCleanup": {
+    "InvokeScript": [
+      "cleanmgr.exe /d C: /VERYLOWDISK"
+    ]
+  },
+  "MiscTweaksDisableTPMCheck": {
+    "InvokeScript": [
+      "If (!(Test-Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\")) {
+        New-Item -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Force | Out-Null
+    }
+    Set-ItemProperty -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Name \"AllowUpgradesWithUnsupportedTPM\" -Type DWord -Value 1"
+    ]
+  },
+  "MiscTweaksDisableUAC": {
+    "InvokeScript": [
+      "# This below is the pussy mode which can break some apps. Please. Leave this on 1.
+    # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
+    # Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\" -Name \"EnableLUA\" -Type DWord -Value 0
+    Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
+    # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
+    # It will just not bother u anymore"
+    ]
+  },
+  "MiscTweaksDisableMouseAcceleration":  {
+    "registry":  [
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "1",
+          "name":  "MouseSpeed",
+          "value":  "0",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "6",
+          "name":  "MouseThreshold1",
+          "value":  "0",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "10",
+          "name":  "MouseThreshold2",
+          "value":  "0",
+          "type":  "String"
+      }
+    ]
+  },
+  "MiscTweaksEnableMouseAcceleration":  {
+    "registry":  [
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "1",
+          "name":  "MouseSpeed",
+          "value":  "1",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "6",
+          "name":  "MouseThreshold1",
+          "value":  "6",
+          "type":  "String"
+      },
+      {
+          "path":  "HKCU:\\Control Panel\\Mouse",
+          "OriginalValue":  "10",
+          "name":  "MouseThreshold2",
+          "value":  "10",
+          "type":  "String"
+      }
+    ]
+  },
+  "EssTweaksDeleteTempFiles": {
+    "InvokeScript": [
+      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
+    ]
+  },
+  "EssTweaksRemoveCortana": {
+    "InvokeScript": [
+      "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ]
+  }
+}
+' | convertfrom-json
+$applications = '{
+  "Install": {
+    "WPFInstalladobe": {
+      "winget": "Adobe.Acrobat.Reader.64-bit"
+    },
+    "WPFInstalladvancedip": {
+      "winget": "Famatech.AdvancedIPScanner"
+    },
+    "WPFInstallanydesk": {
+      "winget": "AnyDeskSoftwareGmbH.AnyDesk"
+    },
+    "WPFInstallatom": {
+      "winget": "GitHub.Atom"
+    },
+    "WPFInstallaudacity": {
+      "winget": "Audacity.Audacity"
+    },
+    "WPFInstallautohotkey": {
+      "winget": "Lexikos.AutoHotkey"
+    },
+    "WPFInstallbitwarden": {
+      "winget": "Bitwarden.Bitwarden"
+    },
+    "WPFInstallblender": {
+      "winget": "BlenderFoundation.Blender"
+    },
+    "WPFInstallbrave": {
+      "winget": "Brave.Brave"
+    },
+    "WPFInstallchrome": {
+      "winget": "Google.Chrome"
+    },
+    "WPFInstallchromium": {
+      "winget": "eloston.ungoogled-chromium"
+    },
+    "WPFInstallcpuz": {
+      "winget": "CPUID.CPU-Z"
+    },
+    "WPFInstalldiscord": {
+      "winget": "Discord.Discord"
+    },
+    "WPFInstalleartrumpet": {
+      "winget": "File-New-Project.EarTrumpet"
+    },
+    "WPFInstallepicgames": {
+      "winget": "EpicGames.EpicGamesLauncher"
+    },
+    "WPFInstallesearch": {
+      "winget": "voidtools.Everything"
+    },
+    "WPFInstalletcher": {
+      "winget": "Balena.Etcher"
+    },
+    "WPFInstallfirefox": {
+      "winget": "Mozilla.Firefox"
+    },
+    "WPFInstallflameshot": {
+      "winget": "Flameshot.Flameshot"
+    },
+    "WPFInstallfoobar": {
+      "winget": "PeterPawlowski.foobar2000"
+    },
+    "WPFInstallgimp": {
+      "winget": "GIMP.GIMP"
+    },
+    "WPFInstallgithubdesktop": {
+      "winget": "Git.Git;GitHub.GitHubDesktop"
+    },
+    "WPFInstallgog": {
+      "winget": "GOG.Galaxy"
+    },
+    "WPFInstallgpuz": {
+      "winget": "TechPowerUp.GPU-Z"
+    },
+    "WPFInstallgreenshot": {
+      "winget": "Greenshot.Greenshot"
+    },
+    "WPFInstallhandbrake": {
+      "winget": "HandBrake.HandBrake"
+    },
+    "WPFInstallhexchat": {
+      "winget": "HexChat.HexChat"
+    },
+    "WPFInstallhwinfo": {
+      "winget": "REALiX.HWiNFO"
+    },
+    "WPFInstallimageglass": {
+      "winget": "DuongDieuPhap.ImageGlass"
+    },
+    "WPFInstallinkscape": {
+      "winget": "Inkscape.Inkscape"
+    },
+    "WPFInstalljava16": {
+      "winget": "AdoptOpenJDK.OpenJDK.16"
+    },
+    "WPFInstalljava18": {
+      "winget": "EclipseAdoptium.Temurin.18.JRE"
+    },
+    "WPFInstalljava8": {
+      "winget": "EclipseAdoptium.Temurin.8.JRE"
+    },
+    "WPFInstalljava19": {
+      "winget": "EclipseAdoptium.Temurin.19.JRE"
+    },
+    "WPFInstalljava17": {
+      "winget": "EclipseAdoptium.Temurin.17.JRE"
+    },
+    "WPFInstalljava11": {
+      "winget": "EclipseAdoptium.Temurin.11.JRE"
+    },
+    "WPFInstalljetbrains": {
+      "winget": "JetBrains.Toolbox"
+    },
+    "WPFInstallkeepass": {
+      "winget": "KeePassXCTeam.KeePassXC"
+    },
+    "WPFInstalllibrewolf": {
+      "winget": "LibreWolf.LibreWolf"
+    },
+    "WPFInstallmalwarebytes": {
+      "winget": "Malwarebytes.Malwarebytes"
+    },
+    "WPFInstallmatrix": {
+      "winget": "Element.Element"
+    },
+    "WPFInstallmpc": {
+      "winget": "clsid2.mpc-hc"
+    },
+    "WPFInstallmremoteng": {
+      "winget": "mRemoteNG.mRemoteNG"
+    },
+    "WPFInstallnodejs": {
+      "winget": "OpenJS.NodeJS"
+    },
+    "WPFInstallnodejslts": {
+      "winget": "OpenJS.NodeJS.LTS"
+    },
+    "WPFInstallnotepadplus": {
+      "winget": "Notepad++.Notepad++"
+    },
+    "WPFInstallnvclean": {
+      "winget": "TechPowerUp.NVCleanstall"
+    },
+    "WPFInstallobs": {
+      "winget": "OBSProject.OBSStudio"
+    },
+    "WPFInstallobsidian": {
+      "winget": "Obsidian.Obsidian"
+    },
+    "WPFInstallpowertoys": {
+      "winget": "Microsoft.PowerToys"
+    },
+    "WPFInstallputty": {
+      "winget": "PuTTY.PuTTY"
+    },
+    "WPFInstallpython3": {
+      "winget": "Python.Python.3"
+    },
+    "WPFInstallrevo": {
+      "winget": "RevoUnWPFInstaller.RevoUnWPFInstaller"
+    },
+    "WPFInstallrufus": {
+      "winget": "Rufus.Rufus"
+    },
+    "WPFInstallsevenzip": {
+      "winget": "7zip.7zip"
+    },
+    "WPFInstallsharex": {
+      "winget": "ShareX.ShareX"
+    },
+    "WPFInstallsignal": {
+      "winget": "OpenWhisperSystems.Signal"
+    },
+    "WPFInstallskype": {
+      "winget": "Microsoft.Skype"
+    },
+    "WPFInstallslack": {
+      "winget": "SlackTechnologies.Slack"
+    },
+    "WPFInstallsteam": {
+      "winget": "Valve.Steam"
+    },
+    "WPFInstallsublime": {
+      "winget": "SublimeHQ.SublimeText.4"
+    },
+    "WPFInstallsumatra": {
+      "winget": "SumatraPDF.SumatraPDF"
+    },
+    "WPFInstallteams": {
+      "winget": "Microsoft.Teams"
+    },
+    "WPFInstallteamviewer": {
+      "winget": "TeamViewer.TeamViewer"
+    },
+    "WPFInstallterminal": {
+      "winget": "Microsoft.WindowsTerminal"
+    },
+    "WPFInstalltreesize": {
+      "winget": "JAMSoftware.TreeSize.Free"
+    },
+    "WPFInstallttaskbar": {
+      "winget": "TranslucentTB.TranslucentTB"
+    },
+    "WPFInstallvisualstudio": {
+      "winget": "Microsoft.VisualStudio.2022.Community"
+    },
+    "WPFInstallvivaldi": {
+      "winget": "VivaldiTechnologies.Vivaldi"
+    },
+    "WPFInstallvlc": {
+      "winget": "VideoLAN.VLC"
+    },
+    "WPFInstallvoicemeeter": {
+      "winget": "VB-Audio.Voicemeeter"
+    },
+    "WPFInstallvscode": {
+      "winget": "Git.Git;Microsoft.VisualStudioCode"
+    },
+    "WPFInstallvscodium": {
+      "winget": "Git.Git;VSCodium.VSCodium"
+    },
+    "WPFInstallwindirstat": {
+      "winget": "WinDirStat.WinDirStat"
+    },
+    "WPFInstallscp": {
+      "winget": "WinSCP.WinSCP"
+    },
+    "WPFInstallwireshark": {
+      "winget": "WiresharkFoundation.Wireshark"
+    },
+    "WPFInstallzoom": {
+      "winget": "Zoom.Zoom"
+    },
+    "WPFInstalllibreoffice": {
+      "winget": "TheDocumentFoundation.LibreOffice"
+    },
+    "WPFInstallshell": {
+      "winget": "Nilesoft.Shell"
+    },
+    "WPFInstallklite": {
+      "winget": "CodecGuide.K-LiteCodecPack.Standard"
+    },
+    "WPFInstallsandboxie": {
+      "winget": "Sandboxie.Plus"
+    },
+    "WPFInstallprocesslasso": {
+      "winget": "BitSum.ProcessLasso"
+    },
+    "WPFInstallwinmerge": {
+      "winget": "WinMerge.WinMerge"
+    },
+    "WPFInstalldotnet3": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
+    },
+    "WPFInstalldotnet5": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.5"
+    },
+    "WPFInstalldotnet6": {
+      "winget": "Microsoft.DotNet.DesktopRuntime.6"
+    },
+    "WPFInstallvc2015_64": {
+      "winget": "Microsoft.VC++2015-2022Redist-x64"
+    },
+    "WPFInstallvc2015_32": {
+      "winget": "Microsoft.VC++2015-2022Redist-x86"
+    },
+    "WPFInstallfoxpdf": {
+      "winget": "Foxit.PhantomPDF"
+    },
+    "WPFInstallonlyoffice": {
+      "winget": "ONLYOFFICE.DesktopEditors"
+    },
+    "WPFInstallflux": {
+      "winget": "flux.flux"
+    },
+    "WPFInstallitunes": {
+      "winget": "Apple.iTunes"
+    },
+    "WPFInstallcider": {
+      "winget": "CiderCollective.Cider"
+    },
+    "WPFInstalljoplin": {
+      "winget": "Joplin.Joplin"
+    },
+    "WPFInstallopenoffice": {
+      "winget": "Apache.OpenOffice"
+    },
+    "WPFInstallrustdesk": {
+      "winget": "RustDesk.RustDesk"
+    },
+    "WPFInstalljami": {
+      "winget": "SFLinux.Jami"
+    },
+    "WPFInstalljdownloader": {
+      "winget": "AppWork.JDownloader"
+    },
+    "WPFInstallsimplewall": {
+      "Winget": "Henry++.simplewall"
+    },
+    "WPFInstallrustlang": {
+      "Winget": "Rustlang.Rust.MSVC"
+    },
+    "WPFInstallalacritty": {
+      "Winget": "Alacritty.Alacritty"
+    },
+    "WPFInstallkdenlive": {
+      "Winget": "KDE.Kdenlive"
+    },
+    "WPFInstallglaryutilities": {
+      "Winget": "Glarysoft.GlaryUtilities"
+    },
+    "WPFInstalltwinkletray": {
+      "Winget": "xanderfrangos.twinkletray"
+    },
+    "WPFInstallidm": {
+      "Winget": "Tonec.InternetDownloadManager"
+    },
+    "WPFInstallviber": {
+      "Winget": "Viber.Viber"
+    },
+    "WPFInstallgit": {
+      "Winget": "Git.Git"
+    },
+    "WPFInstallwiztree": {
+      "Winget": "AntibodySoftware.WizTree"
+    },
+    "WPFInstalltor": {
+      "Winget": "TorProject.TorBrowser"
+    },
+    "WPFInstallkrita": {
+      "winget": "KDE.Krita"
+    },
+    "WPFInstallnglide": {
+      "winget": "ZeusSoftware.nGlide"
+    },
+    "WPFInstallkodi": {
+      "winget": "XBMCFoundation.Kodi"
+    },
+    "WPFInstalltelegram": {
+      "winget": "Telegram.TelegramDesktop"
+    },
+    "WPFInstallunity": {
+      "winget": "UnityTechnologies.UnityHub"
+    },
+    "WPFInstallqbittorrent": {
+      "winget": "qBittorrent.qBittorrent"
+    },
+    "WPFInstallorigin": {
+      "winget": "ElectronicArts.EADesktop"
+    },
+    "WPFInstallopenshell": {
+      "winget": "Open-Shell.Open-Shell-Menu"
+    },
+    "WPFInstallbluestacks": {
+      "winget": "BlueStack.BlueStacks"
+    },
+    "WPFInstallstrawberry": {
+      "winget": "StrawberryMusicPlayer.Strawberry"
+    },
+    "WPFInstallsqlstudio": {
+      "winget": "Microsoft.SQLServerManagementStudio"
+    },
+    "WPFInstallwaterfox": {
+      "winget": "Waterfox.Waterfox"
+    },
+    "WPFInstallpowershell": {
+      "winget": "Microsoft.PowerShell"
+    },
+    "WPFInstallprocessmonitor": {
+      "winget": "Microsoft.Sysinternals.ProcessMonitor"
+    },
+    "WPFInstallonedrive": {
+      "winget": "Microsoft.OneDrive"
+    },
+    "WPFInstalledge": {
+      "winget": "Microsoft.Edge"
+    },
+    "WPFInstallnuget": {
+      "winget": "Microsoft.NuGet"
+    }
+  }
+}
+' | convertfrom-json
+$feature = '{
+  "Featuresdotnet": [
+    "NetFx4-AdvSrvs",
+    "NetFx3"
+  ],
+  "Featureshyperv": [
+    "HypervisorPlatform",
+    "Microsoft-Hyper-V-All",
+    "Microsoft-Hyper-V",
+    "Microsoft-Hyper-V-Tools-All",
+    "Microsoft-Hyper-V-Management-PowerShell",
+    "Microsoft-Hyper-V-Hypervisor",
+    "Microsoft-Hyper-V-Services",
+    "Microsoft-Hyper-V-Management-Clients"
+  ],
+  "Featureslegacymedia": [
+    "WindowsMediaPlayer",
+    "MediaPlayback",
+    "DirectPlay",
+    "LegacyComponents"
+  ],
+  "Featurewsl": [
+    "VirtualMachinePlatform",
+    "Microsoft-Windows-Subsystem-Linux"
+  ],
+  "Featurenfs": [
+    "ServicesForNFS-ClientOnly",
+    "ClientForNFS-Infrastructure",
+    "NFS-Administration"
+  ]
+}
+' | convertfrom-json
 <#
 .NOTES
    Author      : Chris Titus @christitustech
@@ -1533,3 +3518,5 @@ $WPFUpdatessecurity.Add_Click({
 #===========================================================================
 Get-FormVariables
 $Form.ShowDialog() | out-null
+
+
