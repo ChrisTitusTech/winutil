@@ -208,7 +208,7 @@
     "choco": "python"
   },
   "WPFInstallrevo": {
-    "winget": "RevoUnWPFInstaller.RevoUnWPFInstaller",
+    "winget": "RevoUnInstaller.RevoUnInstaller",
     "choco": "revo-uninstaller"
   },
   "WPFInstallrufus": {
