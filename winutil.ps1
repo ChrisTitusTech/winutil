@@ -9,9 +9,10 @@ $BranchToUse = 'test'
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
-# Choco install 
+# Get Chocolatey Version
 $testchoco = powershell choco -v
 
+# If the command errored, then Chocolatey is not installed
 if(!(($testchoco -join "").IndexOf("CommandNotFoundException") -eq -1)){
     Write-Output "Seems Chocolatey is not installed, installing now"
     Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
