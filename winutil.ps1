@@ -12,7 +12,7 @@ $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercon
 # Choco install 
 $testchoco = powershell choco -v
 
-if($testchoco.IndexOf("CommandNotFoundException") -eq -1){
+if(!(($testchoco -join "").IndexOf("CommandNotFoundException") -eq -1)){
     Write-Output "Seems Chocolatey is not installed, installing now"
     Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     powershell choco feature enable -n allowGlobalConfirmation
