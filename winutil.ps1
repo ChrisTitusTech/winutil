@@ -1063,24 +1063,35 @@ $WPFRemoveUltPerf.Add_Click({
         Write-Host "Profile Removed"
      }
 )
-    
-$WPFEnableDarkMode.Add_Click({
-        Write-Host "Enabling Dark Mode"
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
-        Set-ItemProperty $Theme SystemUsesLightTheme -Value 0
-        Write-Host "Enabled"
+
+function Get-AppsUseLightTheme{
+    return (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+}
+
+function Get-SystemUsesLightTheme{
+    return (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+}
+
+$WPFToggleDarkMode.IsChecked = $(If ($(Get-AppsUseLightTheme) -eq 0 -And $(Get-SystemUsesLightTheme) -eq 0) {$true} Else {$false})
+
+$WPFToggleDarkMode.Add_Click({    
+    $EnableDarkMode = $WPFToggleDarkMode.IsChecked
+    $DarkMoveValue = $(If ( $EnableDarkMode ) {0} Else {1})
+    Write-Host $(If ( $EnableDarkMode ) {"Enabling Dark Mode"} Else {"Disabling Dark Mode"})
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    If ($DarkMoveValue -ne $(Get-AppsUseLightTheme))
+    {
+        Set-ItemProperty $Theme AppsUseLightTheme -Value $DarkMoveValue
+    }
+    If ($DarkMoveValue -ne $(Get-SystemUsesLightTheme))
+    {
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Write-Host $(If ( $EnableDarkMode ) {"Enabled"} Else {"Disabled"})
+
     }
 )
 
-$WPFDisableDarkMode.Add_Click({
-        Write-Host "Disabling Dark Mode"
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
-        Set-ItemProperty $Theme SystemUsesLightTheme -Value 1
-        Write-Host "Disabled"
-    }
-)
 #===========================================================================
 # Undo All
 #===========================================================================
