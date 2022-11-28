@@ -17,7 +17,7 @@
                             <Grid>
                                 <Border Width="45" 
                                         Height="20"
-                                        Background="LightBlue" 
+                                        Background="#555555" 
                                         CornerRadius="10" 
                                         Margin="5,0"
                                 />
