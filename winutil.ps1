@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'hotfix/applications'
+$BranchToUse = 'main'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
