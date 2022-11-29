@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = '420/removeadmin'
+$BranchToUse = 'test'
 
 <#
 .NOTES
