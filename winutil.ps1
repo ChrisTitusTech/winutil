@@ -217,7 +217,7 @@ $WPFinstall.Add_Click({
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
                 
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
                 
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
