@@ -3,16 +3,17 @@
 <#
     Applications.json
     -----------------
-    This file holds all the winget commands to install the applications.
-    It also has the ablity to expact to other frameworks (IE Choco).
-    You can also add multiple winget commands by seperating them with ;
+    This file holds all the install commands to install the applications.
+    This file has the ability to expect multiple frameworks per checkbox.
+    You can also add multiple install commands by seperating them with ;
 
     The structure of the json is as follows
 
 {
     "install": {
         "Name of Button": {
-        "winget": "Winget command"
+            "winget": "Winget command"
+            "choco": "Chocolatey command"
     },
 }
 
@@ -22,9 +23,11 @@ Example:
     "install": {
         "WPFInstalladobe": {
             "winget": "Adobe.Acrobat.Reader.64-bit"
+            "choco": "adobereader"
         },
         "WPFInstalladvancedip": {
             "winget": "Famatech.AdvancedIPScanner"
+            "choco": "advanced-ip-scanner"
         }
     }
 }
@@ -36,6 +39,7 @@ Example:
 
 $NameofButton = "WPF" + ""
 $WingetCommand = ""
+$ChocoCommand = ""
 
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
@@ -46,6 +50,7 @@ if($jsonfile.install.$NameofButton){
 }
 
 Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "Winget" -Value $WingetCommand
+Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "choco" -Value $ChocoCommand
 Add-Member -InputObject $jsonfile.install -MemberType NoteProperty -Name $NameofButton -Value $ButtonToAdd
 
 $jsonfile | ConvertTo-Json | Out-File ./config/applications.json
@@ -138,7 +143,7 @@ Example:
 
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
-$NameofButton = ""
+$NameofButton = "WPF" + ""
 $commands = @(
     
 )

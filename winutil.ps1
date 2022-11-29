@@ -1,23 +1,25 @@
 #for CI/CD
-$BranchToUse = '420/removeadmin'
+$BranchToUse = 'test'
+
 <#
 .NOTES
    Author      : Chris Titus @christitustech
    GitHub      : https://github.com/ChrisTitusTech
     Version 0.0.1
 #>
+
+Start-Transcript $ENV:TEMP\Winutil.log -Append
+
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
-# Choco install 
-$testchoco = powershell choco -v
-if(-not($testchoco)){
+# Check if chocolatey is installed and get its version
+if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
+    Write-Output "Chocolatey Version $chocoVersion is already installed"
+}else {
     Write-Output "Seems Chocolatey is not installed, installing now"
     Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     powershell choco feature enable -n allowGlobalConfirmation
-}
-else{
-    Write-Output "Chocolatey Version $testchoco is already installed"
 }
 
 #Load config files to hashtable
@@ -127,6 +129,30 @@ Function Get-CheckBoxes {
     Write-Output $Output
 }
 
+function Set-Presets {
+    <#
+    
+        .DESCRIPTION
+        Meant to make settings presets easier in the tweaks tab. Will pull the data from config/preset.json
+    
+    #>
+
+    param($preset)
+    $CheckBoxesToCheck = $configs.preset.$preset
+
+    #Uncheck all 
+    get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
+        if ($psitem.value.gettype().name -eq "CheckBox"){
+            $CheckBox = Get-Variable $psitem.Name 
+            if ($CheckBoxesToCheck -contains $CheckBox.name){
+                $checkbox.value.ischecked = $true
+            }
+            else{$checkbox.value.ischecked = $false}
+        }    
+    }
+
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -193,7 +219,7 @@ $WPFinstall.Add_Click({
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
                 
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
                 
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
@@ -222,7 +248,7 @@ $WPFinstall.Add_Click({
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
         foreach ( $node in $wingetinstall ) {
             try {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command Start-Transcript $ENV:TEMP\winget-$node.log -Append; winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
                 Start-Sleep -s 6
                 Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
@@ -278,85 +304,16 @@ $WPFInstallUpgrade.Add_Click({
 # Tab 2 - Tweak Buttons
 #===========================================================================
 $WPFdesktop.Add_Click({
-
-        $WPFEssTweaksAH.IsChecked = $true
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $true
-        $WPFEssTweaksHiber.IsChecked = $true
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $true
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $true
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $true
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksPower.IsChecked = $true
-        $WPFMiscTweaksNum.IsChecked = $true
-        $WPFMiscTweaksLapPower.IsChecked = $false
-        $WPFMiscTweaksLapNum.IsChecked = $false
-    })
+    Set-Presets "Desktop"
+})
 
 $WPFlaptop.Add_Click({
-
-        $WPFEssTweaksAH.IsChecked = $true
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $true
-        $WPFEssTweaksHiber.IsChecked = $false
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $true
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $true
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $true
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksLapPower.IsChecked = $true
-        $WPFMiscTweaksLapNum.IsChecked = $true
-        $WPFMiscTweaksPower.IsChecked = $false
-        $WPFMiscTweaksNum.IsChecked = $false
-    })
+    Set-Presets "laptop"
+})
 
 $WPFminimal.Add_Click({
-    
-        $WPFEssTweaksAH.IsChecked = $false
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $false
-        $WPFEssTweaksHiber.IsChecked = $false
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $false
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $false
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksPower.IsChecked = $false
-        $WPFMiscTweaksNum.IsChecked = $false
-        $WPFMiscTweaksLapPower.IsChecked = $false
-        $WPFMiscTweaksLapNum.IsChecked = $false
-    })
+    Set-Presets "minimal"   
+})
 
 $WPFtweaksbutton.Add_Click({
 
@@ -462,32 +419,32 @@ $WPFtweaksbutton.Add_Click({
             $DC = "8.8.8.8"
             $Internet = "8.8.4.4"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Cloud Flare' ) { 
             Write-Host "Setting DNS to Cloud Flare for all connections..."
             $DC = "1.1.1.1"
             $Internet = "1.0.0.1"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Level3' ) { 
             Write-Host "Setting DNS to Level3 for all connections..."
             $DC = "4.2.2.2"
             $Internet = "4.2.2.1"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Open DNS' ) { 
             Write-Host "Setting DNS to Open DNS for all connections..."
             $DC = "208.67.222.222"
             $Internet = "208.67.220.220"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             If (!(Test-Path .\ooshutup10.cfg)) {
@@ -735,7 +692,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
         
             # Group svchost.exe processes
-            $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+            $ram = (Get-CimInstance -ClassName "Win32_PhysicalMemory" | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
             Write-Host "Disable News and Interests"
@@ -764,6 +721,11 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Stopping and disabling Diagnostics Tracking Service..."
             Stop-Service "DiagTrack"
             Set-Service "DiagTrack" -StartupType Disabled
+
+            Write-Host "Doing Security checks for Administrator Account and Group Policy"
+            if (([System.Security.Principal.WindowsIdentity]::GetCurrent().Name).IndexOf('Administrator') -eq -1) {
+                net user administrator /active:no
+            }
         
             $WPFEssTweaksTele.IsChecked = $false
         }
@@ -1059,24 +1021,35 @@ $WPFRemoveUltPerf.Add_Click({
         Write-Host "Profile Removed"
      }
 )
-    
-$WPFEnableDarkMode.Add_Click({
-        Write-Host "Enabling Dark Mode"
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme AppsUseLightTheme -Value 0
-        Set-ItemProperty $Theme SystemUsesLightTheme -Value 0
-        Write-Host "Enabled"
+
+function Get-AppsUseLightTheme{
+    return (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+}
+
+function Get-SystemUsesLightTheme{
+    return (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+}
+
+$WPFToggleDarkMode.IsChecked = $(If ($(Get-AppsUseLightTheme) -eq 0 -And $(Get-SystemUsesLightTheme) -eq 0) {$true} Else {$false})
+
+$WPFToggleDarkMode.Add_Click({    
+    $EnableDarkMode = $WPFToggleDarkMode.IsChecked
+    $DarkMoveValue = $(If ( $EnableDarkMode ) {0} Else {1})
+    Write-Host $(If ( $EnableDarkMode ) {"Enabling Dark Mode"} Else {"Disabling Dark Mode"})
+    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    If ($DarkMoveValue -ne $(Get-AppsUseLightTheme))
+    {
+        Set-ItemProperty $Theme AppsUseLightTheme -Value $DarkMoveValue
+    }
+    If ($DarkMoveValue -ne $(Get-SystemUsesLightTheme))
+    {
+        Set-ItemProperty $Theme SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Write-Host $(If ( $EnableDarkMode ) {"Enabled"} Else {"Disabled"})
+
     }
 )
 
-$WPFDisableDarkMode.Add_Click({
-        Write-Host "Disabling Dark Mode"
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty $Theme AppsUseLightTheme -Value 1
-        Set-ItemProperty $Theme SystemUsesLightTheme -Value 1
-        Write-Host "Disabled"
-    }
-)
 #===========================================================================
 # Undo All
 #===========================================================================
@@ -1433,7 +1406,7 @@ $WPFFixesUpdate.Add_Click({
         Get-BitsTransfer | Remove-BitsTransfer 
     
         Write-Host "10) Attempting to install the Windows Update Agent..." 
-        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) { 
+        If ([System.Environment]::Is64BitOperatingSystem) { 
             wusa Windows8-RT-KB2937636-x64 /quiet 
         }
         else { 
@@ -1531,3 +1504,4 @@ $WPFUpdatessecurity.Add_Click({
 #===========================================================================
 Get-FormVariables
 $Form.ShowDialog() | out-null
+Stop-Transcript
