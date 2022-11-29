@@ -13,15 +13,13 @@ Start-Transcript $ENV:TEMP\Winutil.log -Append
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
-# Choco install 
-$testchoco = powershell choco -v
-if(-not($testchoco)){
+# Check if chocolatey is installed and get its version
+if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
+    Write-Output "Chocolatey Version $chocoVersion is already installed"
+}else {
     Write-Output "Seems Chocolatey is not installed, installing now"
     Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     powershell choco feature enable -n allowGlobalConfirmation
-}
-else{
-    Write-Output "Chocolatey Version $testchoco is already installed"
 }
 
 #Load config files to hashtable
