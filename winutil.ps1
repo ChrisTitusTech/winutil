@@ -1,5 +1,6 @@
 #for CI/CD
-$BranchToUse = 'feature/simplelogging'
+$BranchToUse = 'test'
+
 <#
 .NOTES
    Author      : Chris Titus @christitustech
@@ -130,6 +131,30 @@ Function Get-CheckBoxes {
     Write-Output $Output
 }
 
+function Set-Presets {
+    <#
+    
+        .DESCRIPTION
+        Meant to make settings presets easier in the tweaks tab. Will pull the data from config/preset.json
+    
+    #>
+
+    param($preset)
+    $CheckBoxesToCheck = $configs.preset.$preset
+
+    #Uncheck all 
+    get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
+        if ($psitem.value.gettype().name -eq "CheckBox"){
+            $CheckBox = Get-Variable $psitem.Name 
+            if ($CheckBoxesToCheck -contains $CheckBox.name){
+                $checkbox.value.ischecked = $true
+            }
+            else{$checkbox.value.ischecked = $false}
+        }    
+    }
+
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -196,7 +221,7 @@ $WPFinstall.Add_Click({
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
                 
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
                 
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
@@ -281,85 +306,16 @@ $WPFInstallUpgrade.Add_Click({
 # Tab 2 - Tweak Buttons
 #===========================================================================
 $WPFdesktop.Add_Click({
-
-        $WPFEssTweaksAH.IsChecked = $true
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $true
-        $WPFEssTweaksHiber.IsChecked = $true
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $true
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $true
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $true
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksPower.IsChecked = $true
-        $WPFMiscTweaksNum.IsChecked = $true
-        $WPFMiscTweaksLapPower.IsChecked = $false
-        $WPFMiscTweaksLapNum.IsChecked = $false
-    })
+    Set-Presets "Desktop"
+})
 
 $WPFlaptop.Add_Click({
-
-        $WPFEssTweaksAH.IsChecked = $true
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $true
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $true
-        $WPFEssTweaksHiber.IsChecked = $false
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $true
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $true
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $true
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksLapPower.IsChecked = $true
-        $WPFMiscTweaksLapNum.IsChecked = $true
-        $WPFMiscTweaksPower.IsChecked = $false
-        $WPFMiscTweaksNum.IsChecked = $false
-    })
+    Set-Presets "laptop"
+})
 
 $WPFminimal.Add_Click({
-    
-        $WPFEssTweaksAH.IsChecked = $false
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
-        $WPFEssTweaksDeBloat.IsChecked = $false
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-        $WPFEssTweaksDVR.IsChecked = $false
-        $WPFEssTweaksHiber.IsChecked = $false
-        $WPFEssTweaksHome.IsChecked = $true
-        $WPFEssTweaksLoc.IsChecked = $false
-        $WPFEssTweaksOO.IsChecked = $true
-        $WPFEssTweaksRP.IsChecked = $true
-        $WPFEssTweaksServices.IsChecked = $true
-        $WPFEssTweaksStorage.IsChecked = $false
-        $WPFEssTweaksTele.IsChecked = $true
-        $WPFEssTweaksWifi.IsChecked = $false
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-        $WPFMiscTweaksPower.IsChecked = $false
-        $WPFMiscTweaksNum.IsChecked = $false
-        $WPFMiscTweaksLapPower.IsChecked = $false
-        $WPFMiscTweaksLapNum.IsChecked = $false
-    })
+    Set-Presets "minimal"   
+})
 
 $WPFtweaksbutton.Add_Click({
 
