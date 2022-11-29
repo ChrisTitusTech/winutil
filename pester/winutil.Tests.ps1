@@ -17,10 +17,7 @@
     $global:configs = @{}
 
     (
-        "applications", 
-        "tweaks",
-        "preset", 
-        "feature"
+        "applications"
     ) | ForEach-Object {
         $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
     }
@@ -34,99 +31,54 @@
     $global:Form  = [Windows.Markup.XamlReader]::Load( $global:reader )
     $global:xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "Global:WPF$($_.Name)" -Value $global:Form.FindName($_.Name) -Scope global }
 
-    #Variables to compare GUI to config files
-    $Global:GUIFeatureCount = ( $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUIApplicationCount = ($global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-    $Global:GUITweaksCount = ($global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"}).count
-
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $output = $script[0..($script.count - 3)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 4)] | Out-File .\pester.ps1    
+
 
 #endregion Load Variables needed for testing 
 
 #===========================================================================
-# Tests - Config Files
+# Tests - Application Installs
 #===========================================================================
 
-Describe "Config Files" {
+Describe "Application Installs" {
     Context "Application installs" {
         It "Imports with no errors" {
             $global:configs.Applications | should -Not -BeNullOrEmpty
         }
-        It "Json should be in correct format" {
-            $winget = $global:configs.applications.install.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-            $winget.name | should -BeLike "*Install*"
-            $winget.winget | should -Not -BeNullOrEmpty
+    }
+    Context "Winget Install" {
+        $global:configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
+            $TestCase = @{ name = $psitem.name }
+            It "$($psitem.name) should include Winget Install" -TestCases $TestCase{
+                param($name)
+                $null -eq $global:configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
+            } 
+        }
+    }
+    Context "GUI Applications Checkbox" {
+        (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).name -replace 'Global:','' | ForEach-Object {
+
+            $TestCase = @{ name = $psitem }
+            It "$($psitem) should include application.json " -TestCases $TestCase{
+                param($name)
+                $null -eq $global:configs.applications.install.$name | should -Befalse -because "$name Does not have entry in applications.json"
+            } 
         }
     } 
+}
 
-    Context "Preset" {
+#===========================================================================
+# Tests - Tweak Presets
+#===========================================================================
+
+Describe "Tweak Presets" {
+    Context "Json Import" {
         It "Imports with no errors" {
             $global:configs.preset | should -Not -BeNullOrEmpty
         }
-        It "Json should be in correct format" {
-            $preset = $global:configs.preset.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-            $preset.name | should -Not -BeNullOrEmpty
-            $preset.Value | should -BeLike "*Tweaks*"
-        }
-    } 
-
-    Context "feature" {
-        It "Imports with no errors" {
-            $global:configs.feature | should -Not -BeNullOrEmpty
-        }
-        It "Json should be in correct format" {
-            $feature = $global:configs.feature.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-            $feature.name | should -BeLike "*Feature*"
-            $feature.Value | should -Not -BeNullOrEmpty
-        }
-    } 
-    
-    Context "tweaks" {
-        It "Imports with no errors" {
-            $global:configs.tweaks | should -Not -BeNullOrEmpty
-        }
-        It "Json should be in correct format" {
-            $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-            $tweaks.name | should -BeLike "*Tweaks*"
-            $tweaks.Value.registry | should -Not -BeNullOrEmpty
-            $tweaks.Value.Service | should -Not -BeNullOrEmpty
-            $tweaks.Value.ScheduledTask | should -Not -BeNullOrEmpty
-            $tweaks.Value.Appx | should -Not -BeNullOrEmpty
-            $tweaks.Value.InvokeScript | should -Not -BeNullOrEmpty
-        }
-        It "Original Values should be set" {
-            $tweaks = $global:configs.tweaks.psobject.members | Where-Object {$psitem.MemberType -eq "NoteProperty"} | Select-Object Name,Value
-
-            Foreach($tweak in $tweaks){
-                if($tweak.value.registry){
-
-                    $values = $tweak.value | Select-Object -ExpandProperty registry
-
-                    Foreach ($value in $values){
-                        $value.OriginalValue | should -Not -BeNullOrEmpty
-                    }  
-                }
-                if($tweak.value.Service){
-
-                    $values = $tweak.value | Select-Object -ExpandProperty Service
-
-                    Foreach ($value in $values){
-                        $value.OriginalType | should -Not -BeNullOrEmpty
-                    }  
-                }
-                if($tweak.value.ScheduledTask){
-
-                    $values = $tweak.value | Select-Object -ExpandProperty ScheduledTask
-
-                    Foreach ($value in $values){
-                        $value.OriginalState | should -Not -BeNullOrEmpty
-                    }  
-                }
-            }
-        }
-    } 
+    }
 }
 
 #===========================================================================
@@ -150,26 +102,17 @@ Describe "GUI" {
         It "Title should match XML" {
             $global:Form.title | should -Be $global:XAML.window.Title
         }
-        It "Features should be $Global:GUIFeatureCount" {
-            (get-variable | Where-Object {$psitem.name -like "*feature*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIFeatureCount
-        }
-        It "Applications should be $Global:GUIApplicationCount" {
-            (get-variable | Where-Object {$psitem.name -like "*install*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUIApplicationCount
-        }
-        It "Tweaks should be $Global:GUITweaksCount" {
-            (get-variable | Where-Object {$psitem.name -like "*tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}).count | should -Be $Global:GUITweaksCount
-        }
     } 
 }
 
 #===========================================================================
-# Tests - GUI
+# Tests - GUI Functions
 #===========================================================================
 
 Describe "GUI Functions" {
+    BeforeEach -Scriptblock {. ./pester.ps1}
 
     It "GUI should load with no errors" {
-        . .\pester.ps1 
         $WPFTab1BT | should -Not -BeNullOrEmpty
         $WPFundoall | should -Not -BeNullOrEmpty
         $WPFPanelDISM | should -Not -BeNullOrEmpty
@@ -190,11 +133,24 @@ Describe "GUI Functions" {
         $WPFinstall | should -Not -BeNullOrEmpty
     }
 
-    It "Get-CheckBoxes Install should return data" {
-        . .\pester.ps1 
+    Context "Get-CheckBoxes" {
+        It "Get-CheckBoxes Install should return data" {
+            . .\pester.ps1 
 
-        $WPFInstallvc2015_32.ischecked = $true
-        (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
-        $WPFInstallvc2015_32.ischecked | should -be $false
+            $WPFInstallvc2015_32.ischecked = $true
+            (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
+            $WPFInstallvc2015_32.ischecked | should -be $false
+        }
+    }
+
+    Context "Set-Presets" {
+        $global:configs.preset | Get-Member -MemberType NoteProperty | ForEach-Object {
+            $TestCase = @{ name = $psitem.name }
+            It "preset $($psitem.name) should modify the correct values" -TestCases $TestCase {
+                param($name)
+                Set-Presets $name
+                get-variable $global:configs.preset.$name | Select-Object -ExpandProperty value | Select-Object -ExpandProperty ischecked | Where-Object {$psitem -eq $false} | should -BeNullOrEmpty
+            }
+        }
     }
 }
