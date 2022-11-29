@@ -1,7 +1,6 @@
 #for CI/CD
 $BranchToUse = '386/RequireAdmin'
 
-
 <#
 .NOTES
     Author              : @ChrisTitusTech   
