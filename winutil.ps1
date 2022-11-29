@@ -1,5 +1,4 @@
 #for CI/CD
-
 $BranchToUse = 'test'
 
 <#
@@ -9,11 +8,7 @@ $BranchToUse = 'test'
     Version 0.0.1
 #>
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "This application needs to be run as an administrator. Attempting relaunch"
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winutil.ps1 | iex"
-    break
-}
+Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
@@ -255,7 +250,7 @@ $WPFinstall.Add_Click({
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
         foreach ( $node in $wingetinstall ) {
             try {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command Start-Transcript $ENV:TEMP\winget-$node.log -Append; winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
                 Start-Sleep -s 6
                 Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
@@ -1499,3 +1494,4 @@ $WPFUpdatessecurity.Add_Click({
 #===========================================================================
 Get-FormVariables
 $Form.ShowDialog() | out-null
+Stop-Transcript

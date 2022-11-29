@@ -33,7 +33,8 @@
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $script[0..($script.count - 3)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 4)] | Out-File .\pester.ps1    
+
 
 #endregion Load Variables needed for testing 
 
