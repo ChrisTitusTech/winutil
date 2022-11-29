@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'test'
+$BranchToUse = 'main'
 
 <#
 .NOTES
@@ -119,14 +119,17 @@ Function Get-CheckBoxes {
 
     if($Group -eq "WPFInstall"){
         Foreach ($CheckBox in $CheckBoxes){
-            if($checkbox.value.ischecked -eq $true){
-                $output.Add("$($configs.applications.install.$($checkbox.name).winget)")
-                $checkbox.value.ischecked = $false
+            if($CheckBox.value.ischecked -eq $true){
+                $Configs.applications.install.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                    $Output.Add($psitem)
+                }
+                
+                $CheckBox.value.ischecked = $false
             }
         }
     }
-
-    Write-Output $Output
+    
+    Write-Output $($Output | Select-Object -Unique)
 }
 
 function Set-Presets {

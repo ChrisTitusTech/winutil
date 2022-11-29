@@ -137,10 +137,27 @@ Describe "GUI Functions" {
         It "Get-CheckBoxes Install should return data" {
             . .\pester.ps1 
 
-            $WPFInstallvc2015_32.ischecked = $true
-            (Get-CheckBoxes -Group WPFInstall) | should -Not -BeNullOrEmpty
-            $WPFInstallvc2015_32.ischecked | should -be $false
+        $TestCheckBoxes = @(
+            "WPFInstallvc2015_32"
+            "WPFInstallvscode"
+            "WPFInstallgit"
+        )
+        
+        $OutputResult = New-Object System.Collections.Generic.List[System.Object]
+        $TestCheckBoxes | ForEach-Object {
+
+            $global:configs.applications.Install.$psitem.winget -split ";" | ForEach-Object {
+                $OutputResult.Add($psitem)
+            }
         }
+        $OutputResult = Sort-Object -InputObject $OutputResult
+
+        $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked = $true}
+        $Output = Get-CheckBoxes -Group WPFInstall | Sort-Object
+        $Output | should -Not -BeNullOrEmpty -Because "Output did not containe applications to install"
+        $Output | Should -Not -Be $OutputResult -Because "Output contains duplicate values"
+        $Output | Should -Be $($OutputResult | Select-Object -Unique | Sort-Object) -Because "Output doesn't match"
+        $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked | should -be $false}
     }
 
     Context "Set-Presets" {
