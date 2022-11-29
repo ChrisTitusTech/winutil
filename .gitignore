@@ -10,3 +10,6 @@ winutil.pdb
 .vs/
 *.psd*
 pester.ps1
+Microsoft.UI.Xaml*
+winget.msixbundle
+license1.xml
