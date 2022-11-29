@@ -421,32 +421,32 @@ $WPFtweaksbutton.Add_Click({
             $DC = "8.8.8.8"
             $Internet = "8.8.4.4"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Cloud Flare' ) { 
             Write-Host "Setting DNS to Cloud Flare for all connections..."
             $DC = "1.1.1.1"
             $Internet = "1.0.0.1"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Level3' ) { 
             Write-Host "Setting DNS to Level3 for all connections..."
             $DC = "4.2.2.2"
             $Internet = "4.2.2.1"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFchangedns.text -eq 'Open DNS' ) { 
             Write-Host "Setting DNS to Open DNS for all connections..."
             $DC = "208.67.222.222"
             $Internet = "208.67.220.220"
             $dns = "$DC", "$Internet"
-            $Interface = Get-WmiObject Win32_NetworkAdapterConfiguration 
-            $Interface.SetDNSServerSearchOrder($dns)  | Out-Null
+            $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
+            $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             If (!(Test-Path .\ooshutup10.cfg)) {
@@ -694,7 +694,7 @@ $WPFtweaksbutton.Add_Click({
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Name "Scheduling Category" -Type String -Value "High"
         
             # Group svchost.exe processes
-            $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+            $ram = (Get-CimInstance -ClassName "Win32_PhysicalMemory" | Measure-Object -Property Capacity -Sum).Sum / 1kb
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
 
             Write-Host "Disable News and Interests"
@@ -724,7 +724,7 @@ $WPFtweaksbutton.Add_Click({
             Stop-Service "DiagTrack"
             Set-Service "DiagTrack" -StartupType Disabled
             Write-Host "Doing Security checks for Administrator Account and Group Policy"
-            if (($(Get-WMIObject -class Win32_ComputerSystem | Select-Object username).username).IndexOf('Administrator') -eq -1) {
+            if (([System.Security.Principal.WindowsIdentity]::GetCurrent().Name).IndexOf('Administrator') -eq -1) {
                 net user administrator /active:no
             }
         
@@ -1407,7 +1407,7 @@ $WPFFixesUpdate.Add_Click({
         Get-BitsTransfer | Remove-BitsTransfer 
     
         Write-Host "10) Attempting to install the Windows Update Agent..." 
-        If (!((wmic OS get OSArchitecture | Out-String).IndexOf("64") -eq -1)) { 
+        If ([System.Environment]::Is64BitOperatingSystem) { 
             wusa Windows8-RT-KB2937636-x64 /quiet 
         }
         else { 
