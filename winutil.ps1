@@ -721,6 +721,7 @@ $WPFtweaksbutton.Add_Click({
             Write-Host "Stopping and disabling Diagnostics Tracking Service..."
             Stop-Service "DiagTrack"
             Set-Service "DiagTrack" -StartupType Disabled
+
             Write-Host "Doing Security checks for Administrator Account and Group Policy"
             if (([System.Security.Principal.WindowsIdentity]::GetCurrent().Name).IndexOf('Administrator') -eq -1) {
                 net user administrator /active:no
