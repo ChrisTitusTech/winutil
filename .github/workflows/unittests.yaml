@@ -1,6 +1,7 @@
-name: Pester
+name: Unit Tests
 
-on: [push]
+on:
+  push: 
 
 jobs:
   test:
@@ -16,6 +17,8 @@ jobs:
         with:
           include_paths: pester
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          tests_fail_step: true
+          skip_check_run: true
       - name: dump test results
         shell: pwsh
         run: |
