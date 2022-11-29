@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = '386/RequireAdmin'
+$BranchToUse = 'test'
 <#
 .NOTES
    Author      : Chris Titus @christitustech
