@@ -8,6 +8,78 @@
         Background="#777777"
         WindowStartupLocation="CenterScreen"
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
+    <Window.Resources>
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel>
+                            <Grid>
+                                <Border Width="45" 
+                                        Height="20"
+                                        Background="#555555" 
+                                        CornerRadius="10" 
+                                        Margin="5,0"
+                                />
+                                <Border Name="ToggleSwitchButton"
+                                        Width="25" 
+                                        Height="25"
+                                        Background="Black" 
+                                        CornerRadius="12.5" 
+                                        HorizontalAlignment="Left"
+                                />
+                                <ContentPresenter Name="ToggleSwitchContent"
+                                                  Margin="10,0,0,0"
+                                                  Content="{TemplateBinding Content}"
+                                                  VerticalAlignment="Center"
+                                />
+                            </Grid>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Trigger.ExitActions>
+                                    <RemoveStoryboard BeginStoryboardName="ToggleSwitchLeft" />
+                                    <BeginStoryboard x:Name="ToggleSwitchRight">
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                    Storyboard.TargetName="ToggleSwitchButton"
+                                                    Duration="0:0:0:0"
+                                                    From="0,0,0,0"
+                                                    To="28,0,0,0">
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                                <Setter TargetName="ToggleSwitchButton"
+                                        Property="Background"
+                                        Value="#fff9f4f4"
+                                />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Trigger.ExitActions>
+                                    <RemoveStoryboard BeginStoryboardName="ToggleSwitchRight" />
+                                    <BeginStoryboard x:Name="ToggleSwitchLeft">
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                    Storyboard.TargetName="ToggleSwitchButton"
+                                                    Duration="0:0:0:0"
+                                                    From="28,0,0,0"
+                                                    To="0,0,0,0">
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                                <Setter TargetName="ToggleSwitchButton"
+                                        Property="Background"
+                                        Value="#ff060600"
+                                />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Border Name="dummy" Grid.Column="0" Grid.Row="0">
         <Viewbox Stretch="Uniform" VerticalAlignment="Top">
             <Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
@@ -232,9 +304,12 @@
                                 <CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
                                 <CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
                                 <Label Content="Dark Theme" />
-                                <Button Name="EnableDarkMode" Background="AliceBlue" Content="Enable" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Button Name="DisableDarkMode" Background="AliceBlue" Content="Disable" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Label Content="Performance Plans" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Off" />
+                                    <CheckBox Name="ToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="On" />
+                                </StackPanel>
+							<Label Content="Performance Plans" />
                                 <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
                                 <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
 
