@@ -467,12 +467,23 @@ $WPFtweaksbutton.Add_Click({
             $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
+            # Begin download of OOShutUp10 asynchrounously
+            $OOSU = [System.Net.WebClient]::new().DownloadFileTaskAsync("https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe", "..\Temp\OOSU10.exe")
+
+            # Check if a custom config file has been supplied
             If (!(Test-Path .\ooshutup10.cfg)) {
                 Write-Host "Running O&O Shutup with Recommended Settings"
-                curl.exe -s "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
-                curl.exe -s "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
-            }
+                # Download OOShutUp10 config file from GitHub
+                [System.Net.WebClient]::new().DownloadFile("https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg", "..\Temp\ooshutup10.cfg")
+            } else {
+                Write-Host "Running O&O Shutup with Custom Settings"
+            } 
+
+            # Get the task and wait for it to complete
+            $OOSU.GetAwaiter().GetResult()
+            # Run OOShutUp10 with the config file
             ./OOSU10.exe ooshutup10.cfg /quiet
+
             $WPFEssTweaksOO.IsChecked = $false
         }
         If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
