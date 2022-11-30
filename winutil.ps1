@@ -9,22 +9,38 @@ $BranchToUse = 'main'
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
+#===========================================================================
+# Asynchronous Web Requests
+#===========================================================================
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
+# Download MainWindow.xaml file
+$inputXML = [System.Net.WebClient]::new().DownloadStringTaskAsync("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
+
+# Create config hashtable
+$configs = @{}
+
+# Download config files and add to hashtable
+(
+    "applications", 
+    "tweaks",
+    "preset", 
+    "feature"
+) | ForEach-Object {
+    $configs["$psitem"] = [System.Net.WebClient]::new().DownloadStringTaskAsync("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json")
+}
+
 
 # Check if chocolatey is installed and get its version
 if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
     Write-Output "Chocolatey Version $chocoVersion is already installed"
 }else {
     Write-Output "Seems Chocolatey is not installed, installing now"
-    Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ([System.Net.WebClient]::new().DownloadString('https://chocolatey.org/install.ps1'))
     powershell choco feature enable -n allowGlobalConfirmation
 }
 
-#Load config files to hashtable
-$configs = @{}
-
+# Load config files to hashtable
 (
     "applications",
     "tweaks",
@@ -32,16 +48,17 @@ $configs = @{}
     "feature"
 ) | ForEach-Object {
     #$configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-    $configs["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json"
+    $configs["$psitem"] = ConvertFrom-Json ($configs["$psitem"].GetAwaiter().GetResult())
 }
 
 
-$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+# Wait for the async call to finish, then get and process the received XML
+$inputXML = $inputXML.GetAwaiter().GetResult() -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
-
-$reader = (New-Object System.Xml.XmlNodeReader $xaml)
+ 
+$reader = [System.Xml.XmlNodeReader]::new($XAML)
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
@@ -221,9 +238,9 @@ $WPFinstall.Add_Click({
 
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
-
+                
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
-
+                
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
                 #Checks if Windows Version is too old for winget
@@ -815,7 +832,7 @@ $WPFtweaksbutton.Add_Click({
         }
         If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
             Write-Host "Removing Microsoft Edge..."
-            Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/Edge_Removal.bat | Invoke-Expression
+            [System.Net.WebClient]::new().DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/Edge_Removal.bat") | Invoke-Expression
             $WPFEssTweaksRemoveEdge.IsChecked = $false
         }
         If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
