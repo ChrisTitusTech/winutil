@@ -120,7 +120,7 @@ Function Get-CheckBoxes {
     if($Group -eq "WPFInstall"){
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
-                $Configs.applications.install.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                $Configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
                 
