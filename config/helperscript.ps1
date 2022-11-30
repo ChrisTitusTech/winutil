@@ -10,25 +10,22 @@
     The structure of the json is as follows
 
 {
-    "install": {
-        "Name of Button": {
-            "winget": "Winget command"
-            "choco": "Chocolatey command"
+    "Name of Button": {
+        "winget": "Winget command"
+        "choco": "Chocolatey command"
     },
 }
 
 Example:
 
 {
-    "install": {
-        "WPFInstalladobe": {
-            "winget": "Adobe.Acrobat.Reader.64-bit"
-            "choco": "adobereader"
-        },
-        "WPFInstalladvancedip": {
-            "winget": "Famatech.AdvancedIPScanner"
-            "choco": "advanced-ip-scanner"
-        }
+    "WPFInstalladobe": {
+        "winget": "Adobe.Acrobat.Reader.64-bit"
+        "choco": "adobereader"
+    },
+    "WPFInstalladvancedip": {
+        "winget": "Famatech.AdvancedIPScanner"
+        "choco": "advanced-ip-scanner"
     }
 }
 
@@ -45,8 +42,8 @@ $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
 
 #remove if already exists
-if($jsonfile.install.$NameofButton){
-    $jsonfile.install.psobject.Properties.remove($NameofButton)
+if($jsonfile.$NameofButton){
+    $jsonfile.psobject.Properties.remove($NameofButton)
 }
 
 Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "Winget" -Value $WingetCommand
