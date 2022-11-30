@@ -32,7 +32,7 @@ $configs = @{}
 
 
 # Check if chocolatey is installed and get its version
-if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
+if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo("$env:ChocolateyInstall\choco.exe").ProductVersion)) {
     Write-Output "Chocolatey Version $chocoVersion is already installed"
 }else {
     Write-Output "Seems Chocolatey is not installed, installing now"
