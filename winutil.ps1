@@ -249,12 +249,18 @@ $WPFinstall.Add_Click({
         #$wingetinstall.ToArray()
         # Define Output variable
         $wingetResult = New-Object System.Collections.Generic.List[System.Object]
+        $x = 0
+        $count = $wingetinstall.Count
+
+        Write-Progress -Activity "Installing Applications" -Status "Starting" -PercentComplete 0
+
         foreach ( $node in $wingetinstall ) {
+
+            Write-Progress -Activity "Installing Applications" -Status "Installing $Node $($x + 1) of $count" -PercentComplete $($x/$count*100)
+
             try {
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command Start-Transcript $ENV:TEMP\winget-$node.log -Append; winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
                 $wingetResult.Add("$node`n")
-                Start-Sleep -s 6
-                Wait-Process winget -Timeout 90 -ErrorAction SilentlyContinue
+                Start-Process powershell.exe -Wait -Verb RunAs -ArgumentList "-command Start-Transcript $ENV:TEMP\winget-$node.log -Append; winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
             }
             catch [System.InvalidOperationException] {
                 Write-Warning "Allow Yes on User Access Control to Install"
@@ -262,9 +268,13 @@ $WPFinstall.Add_Click({
             catch {
                 Write-Error $_.Exception
             }
+
+            $x++
         }
         $wingetResult.ToArray()
         $wingetResult | ForEach-Object { $_ } | Out-Host
+        
+        Write-Progress -Activity "Installing Applications" -Status "Finished" -Completed
 
         # Popup after finished
         $ButtonType = [System.Windows.MessageBoxButton]::OK
