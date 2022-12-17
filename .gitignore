@@ -1,15 +1,38 @@
+### VSCode ###
 
-ooshutup10.cfg
-OOSU10.exe
+# Configuration folder
+.vscode/
+
+### Visual Studio ###
+
+# Visual Studio user-specific files
+.vs/
+
+winutil.pdb
+
+### Windows ###
+
+# Folder config file
+[Dd]esktop.ini
+
+# Executables and Configs
 *.exe
+winget.msixbundle
+pester.ps1
+*.psd*
+ooshutup10.cfg
+winutil.exe.config
+Microsoft.UI.Xaml*
+license1.xml
+
+# Libraries
 System.Management.Automation.dll
 Microsoft.PowerShell.ConsoleHost.dll
-winutil.exe.config
-winutil.pdb
+
+# Compressed files
 *.zip
-.vs/
-*.psd*
-pester.ps1
-Microsoft.UI.Xaml*
-winget.msixbundle
-license1.xml
+
+### MacOS ###
+
+# General
+.DS_Store
