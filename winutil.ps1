@@ -435,8 +435,8 @@ $WPFtweaksbutton.Add_Click({
             $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
             $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
         }
-        If ( $WPFchangedns.text -eq 'Cloud Flare' ) {
-            Write-Host "Setting DNS to Cloud Flare for all connections..."
+        If ( $WPFchangedns.text -eq 'Cloudflare' ) {
+            Write-Host "Setting DNS to Cloudflare for all connections..."
             $DC = "1.1.1.1"
             $Internet = "1.0.0.1"
             $dns = "$DC", "$Internet"

@@ -334,7 +334,7 @@
 							    <ComboBox Name="changedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
 								    <ComboBoxItem Content = "Google"/> 
-								    <ComboBoxItem Content = "Cloud Flare"/> 
+								    <ComboBoxItem Content = "Cloudflare"/> 
 								    <ComboBoxItem Content = "Level3"/> 
 								    <ComboBoxItem Content = "Open DNS"/> 
 							    </ComboBox> 
