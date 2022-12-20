@@ -160,6 +160,31 @@ function Set-Presets {
 
 }
 
+function Switch-Tab {
+
+    <#
+    
+        .DESCRIPTION
+        Sole purpose of this fuction reduce duplicated code for switching between tabs. 
+    
+    #>
+
+    Param ($ClickedTab)
+    $Tabs = Get-Variable WPFTab?BT
+    $TabNav = Get-Variable WPFTabNav
+    $x = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
+
+    0..($Tabs.Count -1 ) | ForEach-Object {
+        
+        if ($x -eq $psitem){
+            $TabNav.value.Items[$psitem].IsSelected = $true
+        }
+        else{
+            $TabNav.value.Items[$psitem].IsSelected = $false
+        }
+    }
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -171,28 +196,16 @@ $AppTitle = "Chris Titus Tech's Windows Utility"
 #===========================================================================
 
 $WPFTab1BT.Add_Click({
-        $WPFTabNav.Items[0].IsSelected = $true
-        $WPFTabNav.Items[1].IsSelected = $false
-        $WPFTabNav.Items[2].IsSelected = $false
-        $WPFTabNav.Items[3].IsSelected = $false
+        Switch-Tab "WPFTab1BT"
     })
 $WPFTab2BT.Add_Click({
-        $WPFTabNav.Items[0].IsSelected = $false
-        $WPFTabNav.Items[1].IsSelected = $true
-        $WPFTabNav.Items[2].IsSelected = $false
-        $WPFTabNav.Items[3].IsSelected = $false
+        Switch-Tab "WPFTab2BT"
     })
 $WPFTab3BT.Add_Click({
-        $WPFTabNav.Items[0].IsSelected = $false
-        $WPFTabNav.Items[1].IsSelected = $false
-        $WPFTabNav.Items[2].IsSelected = $true
-        $WPFTabNav.Items[3].IsSelected = $false
+        Switch-Tab "WPFTab3BT"
     })
 $WPFTab4BT.Add_Click({
-        $WPFTabNav.Items[0].IsSelected = $false
-        $WPFTabNav.Items[1].IsSelected = $false
-        $WPFTabNav.Items[2].IsSelected = $false
-        $WPFTabNav.Items[3].IsSelected = $true
+        Switch-Tab "WPFTab4BT"
     })
 
 #===========================================================================
