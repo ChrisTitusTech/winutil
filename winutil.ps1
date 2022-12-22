@@ -735,10 +735,6 @@ $WPFtweaksbutton.Add_Click({
             }
             icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
 
-            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
-            Stop-Service "DiagTrack"
-            Set-Service "DiagTrack" -StartupType Disabled
-
             $WPFEssTweaksTele.IsChecked = $false
         }
         If ( $WPFEssTweaksWifi.IsChecked -eq $true ) {
