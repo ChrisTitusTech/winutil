@@ -634,9 +634,6 @@ $WPFtweaksbutton.Add_Click({
                 New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" | Out-Null
             }
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
-            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
-            Stop-Service "DiagTrack" -WarningAction SilentlyContinue
-            Set-Service "DiagTrack" -StartupType Disabled
             Write-Host "Stopping and disabling WAP Push Service..."
             Stop-Service "dmwappushservice" -WarningAction SilentlyContinue
             Set-Service "dmwappushservice" -StartupType Disabled
@@ -728,16 +725,16 @@ $WPFtweaksbutton.Add_Click({
 
             Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "HideSCAMeetNow" -Type DWord -Value 1
 
+            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
+            Stop-Service "DiagTrack" -WarningAction SilentlyContinue
+            Set-Service "DiagTrack" -StartupType Disabled
+
             Write-Host "Removing AutoLogger file and restricting directory..."
             $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
             If (Test-Path "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl") {
                 Remove-Item "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl"
             }
             icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-            Write-Host "Stopping and disabling Diagnostics Tracking Service..."
-            Stop-Service "DiagTrack"
-            Set-Service "DiagTrack" -StartupType Disabled
 
             $WPFEssTweaksTele.IsChecked = $false
         }
