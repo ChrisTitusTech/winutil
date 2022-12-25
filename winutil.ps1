@@ -185,6 +185,67 @@ function Switch-Tab {
     }
 }
 
+function Get-InstallerProcess {
+    <#
+    
+        .DESCRIPTION
+        Meant to check for running processes and will return a boolean response
+    
+    #>
+    $Process = Get-Process powershell
+
+    if ($Process.Parent.Id -contains $([System.Diagnostics.Process]::GetCurrentProcess().Id)){
+        return $True      
+    }
+    return $false
+}
+
+Function Install-ProgramWinget {
+
+    <#
+    
+        .DESCRIPTION
+        This will install programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
+
+        Note the triple quotes are required and time you need a " in a normal script block.
+    
+    #>
+
+    param($ProgramsToInstall,$InstallProcess)
+
+    if(Get-InstallerProcess){
+        $msg = "Another process is currently running"
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    [ScriptBlock]$wingetinstall = {
+        param($ProgramsToInstall)
+        $x = 0
+        $count = $($ProgramsToInstall -split """,""").Count
+
+        Write-Progress -Activity """Installing Applications""" -Status """Starting""" -PercentComplete 0
+    
+        Write-Output """`n`n`n`n`n`n"""
+        
+        Start-Transcript $ENV:TEMP\winget.log -Append
+    
+        Foreach ($Program in $($ProgramsToInstall -split """,""")){
+    
+            Write-Progress -Activity """Installing Applications""" -Status """Installing $Program $($x + 1) of $count""" -PercentComplete $($x/$count*100)
+            Start-Process -FilePath winget -ArgumentList """install -e --accept-source-agreements --accept-package-agreements --silent $Program""" -NoNewWindow -Wait;
+            $X++
+        }
+
+        Write-Progress -Activity """Installing Applications""" -Status """Finished""" -Completed
+        Write-Output """`n`nAll Programs have been installed"""
+        Pause
+    }
+
+    Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'"
+
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -263,52 +324,13 @@ $WPFinstall.Add_Click({
         }
 
         # Install all winget programs in new window
-        #$wingetinstall.ToArray()
-        # Define Output variable
-        $wingetResult = New-Object System.Collections.Generic.List[System.Object]
-        $x = 0
-        $count = $wingetinstall.Count
 
-        Write-Progress -Activity "Installing Applications" -Status "Starting" -PercentComplete 0
+        Install-ProgramWinget -ProgramsToInstall $WingetInstall  
 
-        foreach ( $node in $wingetinstall ) {
-
-            Write-Progress -Activity "Installing Applications" -Status "Installing $Node $($x + 1) of $count" -PercentComplete $($x/$count*100)
-
-            try {
-                $wingetResult.Add("$node`n")
-                Start-Process powershell.exe -Wait -Verb RunAs -ArgumentList "-command Start-Transcript $ENV:TEMP\winget-$node.log -Append; winget install -e --accept-source-agreements --accept-package-agreements --silent $node | Out-Host" -WindowStyle Normal
-            }
-            catch [System.InvalidOperationException] {
-                Write-Warning "Allow Yes on User Access Control to Install"
-            }
-            catch {
-                Write-Error $_.Exception
-            }
-
-            $x++
-        }
-        $wingetResult.ToArray()
-        $wingetResult | ForEach-Object { $_ } | Out-Host
-        
-        Write-Progress -Activity "Installing Applications" -Status "Finished" -Completed
-
-        # Popup after finished
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        if ($wingetResult -ne "") {
-            $Messageboxbody = "Installed Programs `n$($wingetResult)"
-        }
-        else {
-            $Messageboxbody = "No Program(s) are installed"
-        }
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
-
-        Write-Host "================================="
-        Write-Host "---  Installs are Finished    ---"
-        Write-Host "================================="
-
+        Write-Host "==========================================="
+        Write-Host "--          Installs started            ---"
+        Write-Host "-- You can close this window if desired ---"
+        Write-Host "==========================================="
     })
 
 $WPFInstallUpgrade.Add_Click({
