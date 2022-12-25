@@ -22,9 +22,9 @@ $configs = @{}
 
 # Download config files and add to hashtable
 (
-    "applications", 
+    "applications",
     "tweaks",
-    "preset", 
+    "preset",
     "feature"
 ) | ForEach-Object {
     $configs["$psitem"] = [System.Net.WebClient]::new().DownloadStringTaskAsync("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json")
@@ -57,7 +57,7 @@ $inputXML = $inputXML.GetAwaiter().GetResult() -replace 'mc:Ignorable="d"', '' -
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
- 
+
 $reader = [System.Xml.XmlNodeReader]::new($XAML)
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
@@ -238,9 +238,9 @@ $WPFinstall.Add_Click({
 
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
-                
+
                 Start-Process powershell.exe -Verb RunAs -ArgumentList "-command [System.Net.WebClient]::new().DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1') | iex | Out-Host" -WindowStyle Normal
-                
+
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
                 #Checks if Windows Version is too old for winget
@@ -477,7 +477,7 @@ $WPFtweaksbutton.Add_Click({
                 [System.Net.WebClient]::new().DownloadFile("https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg", "..\Temp\ooshutup10.cfg")
             } else {
                 Write-Host "Running O&O Shutup with Custom Settings"
-            } 
+            }
 
             # Get the task and wait for it to complete
             $OOSU.GetAwaiter().GetResult()
