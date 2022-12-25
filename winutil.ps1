@@ -207,7 +207,7 @@ Function Install-ProgramWinget {
         .DESCRIPTION
         This will install programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
 
-        Note the triple quotes are required and time you need a " in a normal script block.
+        Note the triple quotes are required any time you need a " in a normal script block.
     
     #>
 
