@@ -211,7 +211,7 @@ Function Install-ProgramWinget {
     
     #>
 
-    param($ProgramsToInstall,$InstallProcess)
+    param($ProgramsToInstall)
 
     if(Get-InstallerProcess){
         $msg = "Another process is currently running"
