@@ -192,10 +192,14 @@ function Get-InstallerProcess {
         Meant to check for running processes and will return a boolean response
     
     #>
-    $Process = Get-Process powershell
 
-    if ($Process.Parent.Id -contains $([System.Diagnostics.Process]::GetCurrentProcess().Id)){
-        return $True      
+    param($Process)
+
+    if ($Null -eq $Process){
+        return $false
+    }
+    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue){
+        return $true
     }
     return $false
 }
@@ -213,14 +217,11 @@ Function Install-ProgramWinget {
 
     param($ProgramsToInstall)
 
-    if(Get-InstallerProcess){
-        $msg = "Another process is currently running"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
     [ScriptBlock]$wingetinstall = {
         param($ProgramsToInstall)
+
+        $host.ui.RawUI.WindowTitle = “Winget Install”
+
         $x = 0
         $count = $($ProgramsToInstall -split """,""").Count
 
@@ -242,7 +243,7 @@ Function Install-ProgramWinget {
         Pause
     }
 
-    Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'"
+    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
 
@@ -274,48 +275,55 @@ $WPFTab4BT.Add_Click({
 #===========================================================================
 
 $WPFinstall.Add_Click({
-        $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
 
-        # Check if winget is installed
-        Write-Host "Checking if Winget is Installed..."
-        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-            #Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Already Installed"
+    if(Get-InstallerProcess -Process $global:WinGetInstall){
+        $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
+
+    # Check if winget is installed
+    Write-Host "Checking if Winget is Installed..."
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+        #Checks if winget executable exists and if the Windows Version is 1809 or higher
+        Write-Host "Winget Already Installed"
+    }
+    else {
+        #Gets the computer's information
+        $ComputerInfo = Get-ComputerInfo
+
+        #Gets the Windows Edition
+        $OSName = if ($ComputerInfo.OSName) {
+            $ComputerInfo.OSName
+        }else {
+            $ComputerInfo.WindowsProductName
+        }
+
+        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
+
+            Write-Host "Running Alternative Installer for LTSC/Server Editions"
+
+            # Switching to winget-install from PSGallery from asheroto
+            # Source: https://github.com/asheroto/winget-installer
+
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+
+        }
+        elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
+            #Checks if Windows Version is too old for winget
+            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
         }
         else {
-            #Gets the computer's information
-            $ComputerInfo = Get-ComputerInfo
-
-            #Gets the Windows Edition
-            $OSName = if ($ComputerInfo.OSName) {
-                $ComputerInfo.OSName
-            }else {
-                $ComputerInfo.WindowsProductName
-            }
-
-            if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-
-                Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-                # Switching to winget-install from PSGallery from asheroto
-                # Source: https://github.com/asheroto/winget-installer
-
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
-
-            }
-            elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
-                #Checks if Windows Version is too old for winget
-                Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-            }
-            else {
-                #Installing Winget from the Microsoft Store
-                Write-Host "Winget not found, installing it now."
-                Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-                $nid = (Get-Process AppInstaller).Id
-                Wait-Process -Id $nid
-                Write-Host "Winget Installed"
-            }
+            #Installing Winget from the Microsoft Store
+            Write-Host "Winget not found, installing it now."
+            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+            $nid = (Get-Process AppInstaller).Id
+            Wait-Process -Id $nid
+            Write-Host "Winget Installed"
         }
+    }
 
         if ($wingetinstall.Count -eq 0) {
             $WarningMsg = "Please select the program(s) to install"
