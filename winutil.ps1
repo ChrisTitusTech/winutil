@@ -220,7 +220,7 @@ Function Install-ProgramWinget {
     [ScriptBlock]$wingetinstall = {
         param($ProgramsToInstall)
 
-        $host.ui.RawUI.WindowTitle = “Winget Install”
+        $host.ui.RawUI.WindowTitle = “""Winget Install“""
 
         $x = 0
         $count = $($ProgramsToInstall -split """,""").Count
