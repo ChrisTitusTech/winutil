@@ -257,6 +257,35 @@ Function Install-ProgramWinget {
 
 }
 
+Function Update-ProgramWinget {
+
+    <#
+    
+        .DESCRIPTION
+        This will update programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
+    
+    #>
+
+    [ScriptBlock]$wingetinstall = {
+
+        $host.ui.RawUI.WindowTitle = """Winget Install"""
+
+        winget upgrade --all
+
+        Pause
+    }
+
+    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
+
+}
+
+function Test-Winget {
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+        return $true
+    }
+    return $false
+}
+
 function Install-Winget {
 
     <#
@@ -267,13 +296,13 @@ function Install-Winget {
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."
-        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+        if (Test-Winget) {
             #Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
         }
         else {
             #Gets the computer's information
-            $ComputerInfo = Get-ComputerInfo
+            $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
     
             #Gets the Windows Edition
             $OSName = if ($ComputerInfo.OSName) {
@@ -289,7 +318,7 @@ function Install-Winget {
                 # Switching to winget-install from PSGallery from asheroto
                 # Source: https://github.com/asheroto/winget-installer
     
-                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
     
             }
             elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
@@ -302,6 +331,11 @@ function Install-Winget {
                 Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
                 $nid = (Get-Process AppInstaller).Id
                 Wait-Process -Id $nid
+
+                if(!(Test-Winget)){
+                    break
+                }
+
                 Write-Host "Winget Installed"
             }
         }
@@ -376,23 +410,26 @@ $WPFinstall.Add_Click({
 })
 
 $WPFInstallUpgrade.Add_Click({
-        $isUpgradeSuccess = $false
-        try {
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Normal
-            $isUpgradeSuccess = $true
-        }
-        catch [System.InvalidOperationException] {
-            Write-Warning "Allow Yes on User Access Control to Upgrade"
-        }
-        catch {
-            Write-Error $_.Exception
-        }
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $Messageboxbody = if ($isUpgradeSuccess) { "Upgrade Done" } else { "Upgrade was not succesful" }
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    if(!(Test-Winget)){
+        Write-Host "==========================================="
+        Write-Host "--       Winget is not installed        ---"
+        Write-Host "==========================================="
+        return
+    }
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
-    })
+    if(Get-InstallerProcess -Process $global:WinGetInstall){
+        $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    Update-ProgramWinget
+
+    Write-Host "==========================================="
+    Write-Host "--           Updates started            ---"
+    Write-Host "-- You can close this window if desired ---"
+    Write-Host "==========================================="
+})
 
 #===========================================================================
 # Tab 2 - Tweak Buttons
