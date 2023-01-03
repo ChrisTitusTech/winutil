@@ -362,7 +362,6 @@ function Install-Winget {
 }
 
 function Install-Choco {
-
     try{
         Write-Output "Checking if Chocolatey is Installed..."
 
@@ -375,7 +374,7 @@ function Install-Choco {
         #Let user decide if he wants to install Chocolatey
         $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
         if ($confirmation -eq 'y') {
-            Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
             powershell choco feature enable -n allowGlobalConfirmation
         }
     }
@@ -446,11 +445,7 @@ $WPFinstall.Add_Click({
         Write-Output "--      Winget failed to install        ---"
         Write-Output "==========================================="
     }
-    Catch [ChocoFailedInstall]{
-        Write-Output "==========================================="
-        Write-Output "--       Choco failed to install        ---"
-        Write-Output "==========================================="
-    }
+
 })
 
 $WPFInstallUpgrade.Add_Click({
@@ -1670,7 +1665,14 @@ $WPFUpdatessecurity.Add_Click({
 # Shows the form
 #===========================================================================
 Get-FormVariables
-Install-Choco
+try{
+    Install-Choco
+}
+Catch [ChocoFailedInstall]{
+    Write-Output "==========================================="
+    Write-Output "--    Chocolatey failed to install      ---"
+    Write-Output "==========================================="
+}
 
 $Form.ShowDialog() | out-null
 Stop-Transcript
