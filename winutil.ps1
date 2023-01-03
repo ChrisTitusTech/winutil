@@ -8,6 +8,16 @@ $BranchToUse = 'main'
     Version 0.0.1
 #>
 
+#region exception classes
+
+    class WingetFailedInstall : Exception {
+        [string] $additionalData
+
+        WingetFailedInstall($Message) : base($Message) {}
+    }
+
+#endregion exception classes
+
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
@@ -247,6 +257,61 @@ Function Install-ProgramWinget {
 
 }
 
+function Install-Winget {
+
+    <#
+    
+        .DESCRIPTION
+        Function is meant to ensure winget is installed 
+    
+    #>
+    Try{
+        Write-Host "Checking if Winget is Installed..."
+        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+            #Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Already Installed"
+        }
+        else {
+            #Gets the computer's information
+            $ComputerInfo = Get-ComputerInfo
+    
+            #Gets the Windows Edition
+            $OSName = if ($ComputerInfo.OSName) {
+                $ComputerInfo.OSName
+            }else {
+                $ComputerInfo.WindowsProductName
+            }
+    
+            if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
+    
+                Write-Host "Running Alternative Installer for LTSC/Server Editions"
+    
+                # Switching to winget-install from PSGallery from asheroto
+                # Source: https://github.com/asheroto/winget-installer
+    
+                Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
+    
+            }
+            elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
+                #Checks if Windows Version is too old for winget
+                Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+            }
+            else {
+                #Installing Winget from the Microsoft Store
+                Write-Host "Winget not found, installing it now."
+                Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+                $nid = (Get-Process AppInstaller).Id
+                Wait-Process -Id $nid
+                Write-Host "Winget Installed"
+            }
+        }
+    }
+    Catch{
+        throw [WingetFailedInstall]::new('Failed to install')
+    }
+
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -276,70 +341,39 @@ $WPFTab4BT.Add_Click({
 
 $WPFinstall.Add_Click({
 
+    $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
+
+    if ($wingetinstall.Count -eq 0) {
+        $WarningMsg = "Please select the program(s) to install"
+        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
     if(Get-InstallerProcess -Process $global:WinGetInstall){
         $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
+    try{
 
-    # Check if winget is installed
-    Write-Host "Checking if Winget is Installed..."
-    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        #Checks if winget executable exists and if the Windows Version is 1809 or higher
-        Write-Host "Winget Already Installed"
-    }
-    else {
-        #Gets the computer's information
-        $ComputerInfo = Get-ComputerInfo
-
-        #Gets the Windows Edition
-        $OSName = if ($ComputerInfo.OSName) {
-            $ComputerInfo.OSName
-        }else {
-            $ComputerInfo.WindowsProductName
-        }
-
-        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-
-            Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-            # Switching to winget-install from PSGallery from asheroto
-            # Source: https://github.com/asheroto/winget-installer
-
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
-
-        }
-        elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
-            #Checks if Windows Version is too old for winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-        }
-        else {
-            #Installing Winget from the Microsoft Store
-            Write-Host "Winget not found, installing it now."
-            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-            $nid = (Get-Process AppInstaller).Id
-            Wait-Process -Id $nid
-            Write-Host "Winget Installed"
-        }
-    }
-
-        if ($wingetinstall.Count -eq 0) {
-            $WarningMsg = "Please select the program(s) to install"
-            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-            return
-        }
+        # Ensure winget is installed
+        Install-Winget
 
         # Install all winget programs in new window
-
         Install-ProgramWinget -ProgramsToInstall $WingetInstall  
 
         Write-Host "==========================================="
         Write-Host "--          Installs started            ---"
         Write-Host "-- You can close this window if desired ---"
         Write-Host "==========================================="
-    })
+    }
+    Catch [WingetFailedInstall]{
+        Write-Host "==========================================="
+        Write-Host "--      Winget failed to install        ---"
+        Write-Host "==========================================="
+    }
+})
 
 $WPFInstallUpgrade.Add_Click({
         $isUpgradeSuccess = $false
