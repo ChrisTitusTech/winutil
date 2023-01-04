@@ -15,6 +15,7 @@ $BranchToUse = 'test-12-2022'
 
         WingetFailedInstall($Message) : base($Message) {}
     }
+    
     class ChocoFailedInstall : Exception {
         [string] $additionalData
 
@@ -27,23 +28,10 @@ Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
+$sync.BranchToUse = $BranchToUse
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
-
-#Load config files to hashtable
-$sync.configs = @{}
-
-(
-    "applications",
-    "tweaks",
-    "preset",
-    "feature"
-) | ForEach-Object {
-    #$sync.configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-    $sync.configs["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json"
-}
-
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -309,8 +297,6 @@ function Install-Winget {
         Write-Host "Checking if Winget is Installed..."
         if (Test-PackageManager -winget) {
             #Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-host $sync.ComputerInfo
-            Write-host $sync.configs
             Write-Host "Winget Already Installed"
             return
         }
@@ -1721,8 +1707,30 @@ $runspace.ThreadOptions = "ReuseThread"
 $runspace.Open()
 $runspace.SessionStateProxy.SetVariable("sync", $sync)
 
-#Get ComputerInfo in the background
-Invoke-Runspace -ScriptBlock {$sync.ComputerInfo = Get-ComputerInfo} | Out-Null
+#Load information in the background
+Invoke-Runspace -ScriptBlock {
+    $sync.ConfigLoaded = $False
+
+    $sync.configs = @{}
+    $ConfigsToLoad = @(
+        "applications",
+        "tweaks",
+        "preset",
+        "feature"
+    )
+
+    $ConfigsToLoad | ForEach-Object {
+        $sync.configs["$psitem"] = [System.Net.WebClient]::new().DownloadStringTaskAsync("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$($Sync.BranchToUse)/config/$psitem.json")
+    }
+
+    $sync.ComputerInfo = Get-ComputerInfo
+
+    $ConfigsToLoad | ForEach-Object {
+        $sync.configs["$psitem"] = ConvertFrom-Json ($sync.configs["$psitem"].GetAwaiter().GetResult())
+    }
+    
+    $sync.ConfigLoaded = $True
+} | Out-Null
 
 $Form.ShowDialog() | out-null
 Stop-Transcript
