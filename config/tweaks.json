@@ -1,5 +1,5 @@
 {
-  "EssTweaksAH": {
+  "WPFEssTweaksAH": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -24,7 +24,7 @@
       }
     ]
   },
-  "EssTweaksDVR": {
+  "WPFEssTweaksDVR": {
     "registry": [
       {
         "Path": "HKLM:\\System\\GameConfigStore",
@@ -56,7 +56,7 @@
       }
     ]
   },
-  "EssTweaksHiber": {
+  "WPFEssTweaksHiber": {
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -74,7 +74,7 @@
       }
     ]
   },
-  "EssTweaksHome": {
+  "WPFEssTweaksHome": {
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -88,7 +88,7 @@
       }
     ]
   },
-  "EssTweaksLoc": {
+  "WPFEssTweaksLoc": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -120,7 +120,7 @@
       }
     ]
   },
-  "EssTweaksServices": {
+  "WPFEssTweaksServices": {
     "service": [
       {
         "StartupType": "Manual",
@@ -464,7 +464,7 @@
       }
     ]
   },
-  "EssTweaksTele": {
+  "WPFEssTweaksTele": {
     "ScheduledTask": [
       {
         "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
@@ -836,7 +836,7 @@
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null"
     ]
   },
-  "EssTweaksWifi": {
+  "WPFEssTweaksWifi": {
     "registry": [
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
@@ -854,7 +854,7 @@
       }
     ]
   },
-  "MiscTweaksLapPower": {
+  "WPFMiscTweaksLapPower": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
@@ -872,7 +872,7 @@
       }
     ]
   },
-  "MiscTweaksPower": {
+  "WPFMiscTweaksPower": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
@@ -890,7 +890,7 @@
       }
     ]
   },
-  "MiscTweaksExt": {
+  "WPFMiscTweaksExt": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -901,7 +901,7 @@
       }
     ]
   },
-  "MiscTweaksUTC": {
+  "WPFMiscTweaksUTC": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -912,7 +912,7 @@
       }
     ]
   },
-  "MiscTweaksDisplay": {
+  "WPFMiscTweaksDisplay": {
     "registry": [
       {
         "path": "HKCU:\\Control Panel\\Desktop",
@@ -982,7 +982,7 @@
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
     ]
   },
-  "EssTweaksDeBloat": {
+  "WPFEssTweaksDeBloat": {
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -1060,7 +1060,7 @@
       "*Microsoft.Advertising.Xaml*"
     ]
   },
-  "EssTweaksOO": {
+  "WPFEssTweaksOO": {
     "InvokeScript": [
       "Import-Module BitsTransfer
       Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
@@ -1068,18 +1068,18 @@
       C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
     ]
   },
-  "EssTweaksRP": {
+  "WPFEssTweaksRP": {
     "InvokeScript": [
       "Enable-ComputerRestore -Drive \"C:\\\"
       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
     ]
   },
-  "EssTweaksStorage": {
+  "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
     ]
   },
-  "MiscTweaksLapNum": {
+  "WPFMiscTweaksLapNum": {
     "InvokeScript": [
       "If (!(Test-Path \"HKU:\")) {
         New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
@@ -1087,7 +1087,7 @@
        Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 0"
     ]
   },
-  "MiscTweaksNum": {
+  "WPFMiscTweaksNum": {
     "InvokeScript": [
       "If (!(Test-Path \"HKU:\")) {
         New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
@@ -1095,29 +1095,29 @@
        Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 2"
     ]
   },
-  "EssTweaksRemoveEdge": {
+  "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
       "Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | Invoke-Expression"
     ]
   },
-  "MiscTweaksDisableNotifications": {
+  "WPFMiscTweaksDisableNotifications": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\" -Name \"Explorer\" -force
     New-ItemProperty -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer\" -Name \"DisableNotificationCenter\" -PropertyType \"DWord\" -Value 1
     New-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications\" -Name \"ToastEnabled\" -PropertyType \"DWord\" -Value 0 -force"
     ]
   },
-  "MiscTweaksRightClickMenu": {
+  "WPFMiscTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ]
   },
-  "EssTweaksDiskCleanup": {
+  "WPFEssTweaksDiskCleanup": {
     "InvokeScript": [
       "cleanmgr.exe /d C: /VERYLOWDISK"
     ]
   },
-  "MiscTweaksDisableTPMCheck": {
+  "WPFMiscTweaksDisableTPMCheck": {
     "InvokeScript": [
       "If (!(Test-Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\")) {
         New-Item -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Force | Out-Null
@@ -1125,7 +1125,7 @@
     Set-ItemProperty -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Name \"AllowUpgradesWithUnsupportedTPM\" -Type DWord -Value 1"
     ]
   },
-  "MiscTweaksDisableUAC": {
+  "WPFMiscTweaksDisableUAC": {
     "InvokeScript": [
       "# This below is the pussy mode which can break some apps. Please. Leave this on 1.
     # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
@@ -1135,7 +1135,7 @@
     # It will just not bother u anymore"
     ]
   },
-  "MiscTweaksDisableMouseAcceleration":  {
+  "WPFMiscTweaksDisableMouseAcceleration":  {
     "registry":  [
       {
           "path":  "HKCU:\\Control Panel\\Mouse",
@@ -1160,7 +1160,7 @@
       }
     ]
   },
-  "MiscTweaksEnableMouseAcceleration":  {
+  "WPFMiscTweaksEnableMouseAcceleration":  {
     "registry":  [
       {
           "path":  "HKCU:\\Control Panel\\Mouse",
@@ -1185,13 +1185,13 @@
       }
     ]
   },
-  "EssTweaksDeleteTempFiles": {
+  "WPFEssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
-  "EssTweaksRemoveCortana": {
+  "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
     ]
