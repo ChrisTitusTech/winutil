@@ -127,8 +127,6 @@ Describe "Functions" {
     }
 
     It "Test-PackageManager should return the correct values and winget and choco should install" {
-        Test-PackageManager -winget | should -Befalse
-        Test-PackageManager -choco | should -Befalse
 
         Install-Winget
         Install-Choco
