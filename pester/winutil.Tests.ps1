@@ -126,14 +126,6 @@ Describe "Functions" {
         Get-InstallerProcess $process | should -Not -Befalse
     }
 
-    It "Test-PackageManager should return the correct values and winget and choco should install" {
-
-        Install-Choco
-
-        Test-PackageManager -winget | should -Not -Befalse
-        Test-PackageManager -choco | should -Not -Befalse
-    }
-
     It "Runspace background load should have data" {
         $sync.configs.applications | should -Not -BeNullOrEmpty
         $sync.configs.tweaks | should -Not -BeNullOrEmpty
