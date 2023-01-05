@@ -1689,17 +1689,8 @@ $WPFUpdatessecurity.Add_Click({
     })
 
 #===========================================================================
-# Shows the form
+# Setup runspace and background config
 #===========================================================================
-Get-FormVariables
-try{
-    Install-Choco
-}
-Catch [ChocoFailedInstall]{
-    Write-Host "==========================================="
-    Write-Host "--    Chocolatey failed to install      ---"
-    Write-Host "==========================================="
-}
 
 $runspace = [RunspaceFactory]::CreateRunspace()
 $runspace.ApartmentState = "STA"
@@ -1731,6 +1722,21 @@ Invoke-Runspace -ScriptBlock {
     
     $sync.ConfigLoaded = $True
 } | Out-Null
+
+#===========================================================================
+# Shows the form
+#===========================================================================
+
+Get-FormVariables
+
+try{
+    Install-Choco
+}
+Catch [ChocoFailedInstall]{
+    Write-Host "==========================================="
+    Write-Host "--    Chocolatey failed to install      ---"
+    Write-Host "==========================================="
+}
 
 $Form.ShowDialog() | out-null
 Stop-Transcript
