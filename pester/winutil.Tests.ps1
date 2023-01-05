@@ -107,14 +107,57 @@ Describe "GUI" {
 }
 
 #===========================================================================
+# Tests - Functions
+#===========================================================================
+
+Describe "Functions" {
+    BeforeEach -Scriptblock {
+        . ./pester.ps1
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
+            start-sleep -Milliseconds 100
+            $x ++
+        }
+    }
+
+    It "Get-InstallerProcess should return the correct values" {
+        Get-InstallerProcess | should -Befalse
+        $process = Start-Process powershell.exe -ArgumentList "-c start-sleep 5" -PassThru 
+        Get-InstallerProcess $process | should -Not -Befalse
+    }
+
+    It "Test-PackageManager should return the correct values and winget and choco should install" {
+        Test-PackageManager -winget | should -Befalse
+        Test-PackageManager -choco | should -Befalse
+
+        Install-Winget
+        Install-Choco
+
+        Test-PackageManager -winget | should -Not -Befalse
+        Test-PackageManager -choco | should -Not -Befalse
+    }
+
+    It "Runspace background load should have data" {
+        $sync.configs.applications | should -Not -BeNullOrEmpty
+        $sync.configs.tweaks | should -Not -BeNullOrEmpty
+        $sync.configs.preset | should -Not -BeNullOrEmpty
+        $sync.configs.feature | should -Not -BeNullOrEmpty
+        $sync.ComputerInfo | should -Not -BeNullOrEmpty
+    }
+
+}
+
+#===========================================================================
 # Tests - GUI Functions
 #===========================================================================
 
 Describe "GUI Functions" {
     BeforeEach -Scriptblock {
         . ./pester.ps1
-        while($sync.ConfigLoaded -ne $True){
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
             start-sleep -Milliseconds 100
+            $x ++
         }
     }
 
