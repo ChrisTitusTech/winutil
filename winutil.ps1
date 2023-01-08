@@ -453,8 +453,8 @@ $WPFtweaksbutton.Add_Click({
             If (!(Test-Path .\ooshutup10.cfg)) {
                 Write-Host "Running O&O Shutup with Recommended Settings"
                 curl.exe -s "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -o ooshutup10.cfg
-                curl.exe -s "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             }
+            curl.exe -s "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             ./OOSU10.exe ooshutup10.cfg /quiet
             $WPFEssTweaksOO.IsChecked = $false
         }
@@ -1146,7 +1146,7 @@ $WPFundoall.Add_Click({
         Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
 
         Write-Host "Changing default Explorer view to Quick Access..."
-        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 1
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 0
 
         Write-Host "Unrestricting AutoLogger directory"
         $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
