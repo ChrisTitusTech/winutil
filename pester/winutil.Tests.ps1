@@ -34,7 +34,7 @@
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $output = $script[0..($script.count - 4)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 14)] | Out-File .\pester.ps1    
 
 
 #endregion Load Variables needed for testing 
@@ -107,11 +107,48 @@ Describe "GUI" {
 }
 
 #===========================================================================
+# Tests - Functions
+#===========================================================================
+
+Describe "Functions" {
+    BeforeEach -Scriptblock {
+        . ./pester.ps1
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
+            start-sleep -Milliseconds 100
+            $x ++
+        }
+    }
+
+    It "Get-InstallerProcess should return the correct values" {
+        Get-InstallerProcess | should -Befalse
+        $process = Start-Process powershell.exe -ArgumentList "-c start-sleep 5" -PassThru 
+        Get-InstallerProcess $process | should -Not -Befalse
+    }
+
+    It "Runspace background load should have data" {
+        $sync.configs.applications | should -Not -BeNullOrEmpty
+        $sync.configs.tweaks | should -Not -BeNullOrEmpty
+        $sync.configs.preset | should -Not -BeNullOrEmpty
+        $sync.configs.feature | should -Not -BeNullOrEmpty
+        $sync.ComputerInfo | should -Not -BeNullOrEmpty
+    }
+
+}
+
+#===========================================================================
 # Tests - GUI Functions
 #===========================================================================
 
 Describe "GUI Functions" {
-    BeforeEach -Scriptblock {. ./pester.ps1}
+    BeforeEach -Scriptblock {
+        . ./pester.ps1
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
+            start-sleep -Milliseconds 100
+            $x ++
+        }
+    }
 
     It "GUI should load with no errors" {
         $WPFTab1BT | should -Not -BeNullOrEmpty

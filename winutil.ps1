@@ -1,5 +1,5 @@
 #for CI/CD
-$BranchToUse = 'main'
+$BranchToUse = 'test-12-2022'
 
 <#
 .NOTES
@@ -8,37 +8,30 @@ $BranchToUse = 'main'
     Version 0.0.1
 #>
 
+#region exception classes
+
+    class WingetFailedInstall : Exception {
+        [string] $additionalData
+
+        WingetFailedInstall($Message) : base($Message) {}
+    }
+    
+    class ChocoFailedInstall : Exception {
+        [string] $additionalData
+
+        ChocoFailedInstall($Message) : base($Message) {}
+    }
+
+#endregion exception classes
+
 Start-Transcript $ENV:TEMP\Winutil.log -Append
+
+# variable to sync between runspaces
+$sync = [Hashtable]::Synchronized(@{})
+$sync.BranchToUse = $BranchToUse
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
-
-# Check if chocolatey is installed and get its version
-if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
-    Write-Output "Chocolatey Version $chocoVersion is already installed"
-}else {
-    Write-Output "Seems Chocolatey is not installed, installing now?"
-    #Let user decide if he wants to install Chocolatey
-    $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
-      if ($confirmation -eq 'y') {
-          Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-          powershell choco feature enable -n allowGlobalConfirmation
-      }
-}
-
-#Load config files to hashtable
-$configs = @{}
-
-(
-    "applications",
-    "tweaks",
-    "preset",
-    "feature"
-) | ForEach-Object {
-    #$configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
-    $configs["$psitem"] = Invoke-RestMethod "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/config/$psitem.json"
-}
-
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -49,7 +42,7 @@ $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-    write-host $error[0].Exception.Message -ForegroundColor Red
+    Write-Host $error[0].Exception.Message -ForegroundColor Red
     If ($error[0].Exception.Message -like "*button*") {
         write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
     }
@@ -70,34 +63,34 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.N
 #===========================================================================
 
 Function Get-FormVariables {
-    #If ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
+    #If ($global:ReadmeDisplay -ne $true) { Write-Host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
 
 
-    write-host ""
-    write-host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
-    write-host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
-    write-host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
-    write-host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
-    write-host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C                     T:::::T                T:::::T        "
-    write-host "C:::::C       CCCCCC        T:::::T                T:::::T        "
-    write-host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
-    write-host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-    write-host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
-    write-host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
-    write-host ""
-    write-host "====Chris Titus Tech====="
-    write-host "=====Windows Toolbox====="
+    Write-Host ""
+    Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
+    Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
+    Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
+    Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
+    Write-Host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
+    Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
+    Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
+    Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+    Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
+    Write-Host ""
+    Write-Host "====Chris Titus Tech====="
+    Write-Host "=====Windows Toolbox====="
 
 
     #====DEBUG GUI Elements====
 
-    #write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
+    #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
     #get-variable WPF*
 }
 
@@ -124,7 +117,7 @@ Function Get-CheckBoxes {
     if($Group -eq "WPFInstall"){
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
-                $Configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                $sync.configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
 
@@ -145,7 +138,7 @@ function Set-Presets {
     #>
 
     param($preset)
-    $CheckBoxesToCheck = $configs.preset.$preset
+    $CheckBoxesToCheck = $sync.configs.preset.$preset
 
     #Uncheck all
     get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
@@ -227,7 +220,7 @@ Function Install-ProgramWinget {
 
         Write-Progress -Activity """Installing Applications""" -Status """Starting""" -PercentComplete 0
     
-        Write-Output """`n`n`n`n`n`n"""
+        Write-Host """`n`n`n`n`n`n"""
         
         Start-Transcript $ENV:TEMP\winget.log -Append
     
@@ -239,12 +232,183 @@ Function Install-ProgramWinget {
         }
 
         Write-Progress -Activity """Installing Applications""" -Status """Finished""" -Completed
-        Write-Output """`n`nAll Programs have been installed"""
+        Write-Host """`n`nAll Programs have been installed"""
         Pause
     }
 
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
+}
+
+Function Update-ProgramWinget {
+
+    <#
+    
+        .DESCRIPTION
+        This will update programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
+    
+    #>
+
+    [ScriptBlock]$wingetinstall = {
+
+        $host.ui.RawUI.WindowTitle = """Winget Install"""
+
+        Start-Transcript $ENV:TEMP\winget-update.log -Append
+        winget upgrade --all
+
+        Pause
+    }
+
+    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
+
+}
+
+function Test-PackageManager {
+    Param(
+        [System.Management.Automation.SwitchParameter]$winget,
+        [System.Management.Automation.SwitchParameter]$choco
+    )
+
+    if($winget){
+        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+            return $true
+        }
+    }
+
+    if($choco){
+        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)){
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Install-Winget {
+
+    <#
+    
+        .DESCRIPTION
+        Function is meant to ensure winget is installed 
+    
+    #>
+
+    Try{
+        Write-Host "Checking if Winget is Installed..."
+        if (Test-PackageManager -winget) {
+            #Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Already Installed"
+            return
+        }
+
+        #Gets the computer's information
+        if ($null -eq $sync.ComputerInfo){
+            $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
+        }
+        Else {
+            $ComputerInfo = $sync.ComputerInfo
+        }
+
+        if (($ComputerInfo.WindowsVersion) -lt "1809") {
+            #Checks if Windows Version is too old for winget
+            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+            return
+        }
+
+        #Gets the Windows Edition
+        $OSName = if ($ComputerInfo.OSName) {
+            $ComputerInfo.OSName
+        }else {
+            $ComputerInfo.WindowsProductName
+        }
+
+        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
+
+            Write-Host "Running Alternative Installer for LTSC/Server Editions"
+
+            # Switching to winget-install from PSGallery from asheroto
+            # Source: https://github.com/asheroto/winget-installer
+
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
+
+            if(!(Test-PackageManager -winget)){
+                break
+            }
+        }
+
+        else {
+            #Installing Winget from the Microsoft Store
+            Write-Host "Winget not found, installing it now."
+            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+            $nid = (Get-Process AppInstaller).Id
+            Wait-Process -Id $nid
+
+            if(!(Test-PackageManager -winget)){
+                break
+            }
+        }
+        Write-Host "Winget Installed"
+    }
+    Catch{
+        throw [WingetFailedInstall]::new('Failed to install')
+    }
+
+    # Check if chocolatey is installed and get its version
+
+}
+
+function Install-Choco {
+    try{
+        Write-Host "Checking if Chocolatey is Installed..."
+
+        if((Test-PackageManager -choco)){
+            Write-Host "Chocolatey Already Installed"
+            return
+        }
+    
+        Write-Host "Seems Chocolatey is not installed, installing now?"
+        #Let user decide if he wants to install Chocolatey
+        $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
+        if ($confirmation -eq 'y') {
+            Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
+            powershell choco feature enable -n allowGlobalConfirmation
+        }
+    }
+    Catch{
+        throw [ChocoFailedInstall]::new('Failed to install')
+    }
+
+}
+
+function Invoke-Runspace {
+
+    <#
+    
+        .DESCRIPTION
+        Simple function to make it easier to invoke a runspace from inside the script. 
+
+        .EXAMPLE
+
+        $params = @{
+            ScriptBlock = $sync.ScriptsInstallPrograms
+            ArgumentList = "Installadvancedip,Installbitwarden"
+            Verbose = $true
+        }
+
+        Invoke-Runspace @params
+    
+    #>
+
+    [CmdletBinding()]
+    Param (
+        $ScriptBlock,
+        $ArgumentList
+    ) 
+
+    $Script = [PowerShell]::Create().AddScript($ScriptBlock).AddArgument($ArgumentList)
+
+    $Script.Runspace = $runspace
+    $Script.BeginInvoke()
 }
 
 #===========================================================================
@@ -276,89 +440,62 @@ $WPFTab4BT.Add_Click({
 
 $WPFinstall.Add_Click({
 
+    $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
+
+    if ($wingetinstall.Count -eq 0) {
+        $WarningMsg = "Please select the program(s) to install"
+        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
     if(Get-InstallerProcess -Process $global:WinGetInstall){
         $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = Get-CheckBoxes -Group "WPFInstall"
+    try{
 
-    # Check if winget is installed
-    Write-Host "Checking if Winget is Installed..."
-    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-        #Checks if winget executable exists and if the Windows Version is 1809 or higher
-        Write-Host "Winget Already Installed"
-    }
-    else {
-        #Gets the computer's information
-        $ComputerInfo = Get-ComputerInfo
-
-        #Gets the Windows Edition
-        $OSName = if ($ComputerInfo.OSName) {
-            $ComputerInfo.OSName
-        }else {
-            $ComputerInfo.WindowsProductName
-        }
-
-        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-
-            Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-            # Switching to winget-install from PSGallery from asheroto
-            # Source: https://github.com/asheroto/winget-installer
-
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal
-
-        }
-        elseif (((Get-ComputerInfo).WindowsVersion) -lt "1809") {
-            #Checks if Windows Version is too old for winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-        }
-        else {
-            #Installing Winget from the Microsoft Store
-            Write-Host "Winget not found, installing it now."
-            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-            $nid = (Get-Process AppInstaller).Id
-            Wait-Process -Id $nid
-            Write-Host "Winget Installed"
-        }
-    }
-
-        if ($wingetinstall.Count -eq 0) {
-            $WarningMsg = "Please select the program(s) to install"
-            [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-            return
-        }
+        # Ensure winget is installed
+        Install-Winget
 
         # Install all winget programs in new window
-
         Install-ProgramWinget -ProgramsToInstall $WingetInstall  
 
         Write-Host "==========================================="
         Write-Host "--          Installs started            ---"
         Write-Host "-- You can close this window if desired ---"
         Write-Host "==========================================="
-    })
+    }
+    Catch [WingetFailedInstall]{
+        Write-Host "==========================================="
+        Write-Host "--      Winget failed to install        ---"
+        Write-Host "==========================================="
+    }
+
+})
 
 $WPFInstallUpgrade.Add_Click({
-        $isUpgradeSuccess = $false
-        try {
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command winget upgrade --all  | Out-Host" -Wait -WindowStyle Normal
-            $isUpgradeSuccess = $true
-        }
-        catch [System.InvalidOperationException] {
-            Write-Warning "Allow Yes on User Access Control to Upgrade"
-        }
-        catch {
-            Write-Error $_.Exception
-        }
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $Messageboxbody = if ($isUpgradeSuccess) { "Upgrade Done" } else { "Upgrade was not succesful" }
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    if(!(Test-PackageManager -winget)){
+        Write-Host "==========================================="
+        Write-Host "--       Winget is not installed        ---"
+        Write-Host "==========================================="
+        return
+    }
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $AppTitle, $ButtonType, $MessageIcon)
-    })
+    if(Get-InstallerProcess -Process $global:WinGetInstall){
+        $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    Update-ProgramWinget
+
+    Write-Host "==========================================="
+    Write-Host "--           Updates started            ---"
+    Write-Host "-- You can close this window if desired ---"
+    Write-Host "==========================================="
+})
 
 #===========================================================================
 # Tab 2 - Tweak Buttons
@@ -988,26 +1125,26 @@ $WPFtweaksbutton.Add_Click({
             $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
             $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
 
-            Write-Output "Stopping Teams process..."
+            Write-Host "Stopping Teams process..."
             Stop-Process -Name "*teams*" -Force -ErrorAction SilentlyContinue
 
-            Write-Output "Uninstalling Teams from AppData\Microsoft\Teams"
+            Write-Host "Uninstalling Teams from AppData\Microsoft\Teams"
             if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
                 # Uninstall app
                 $proc = Start-Process $TeamsUpdateExePath "-uninstall -s" -PassThru
                 $proc.WaitForExit()
             }
 
-            Write-Output "Removing Teams AppxPackage..."
+            Write-Host "Removing Teams AppxPackage..."
             Get-AppxPackage "*Teams*" | Remove-AppxPackage -ErrorAction SilentlyContinue
             Get-AppxPackage "*Teams*" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
-            Write-Output "Deleting Teams directory"
+            Write-Host "Deleting Teams directory"
             if ([System.IO.Directory]::Exists($TeamsPath)) {
                 Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
             }
 
-            Write-Output "Deleting Teams uninstall registry key"
+            Write-Host "Deleting Teams uninstall registry key"
             # Uninstall from Uninstall registry key UninstallString
             $us = getUninstallString("Teams");
             if ($us.Length -gt 0) {
@@ -1018,7 +1155,7 @@ $WPFtweaksbutton.Add_Click({
                 $proc.WaitForExit()
             }
 
-            Write-Output "Restart computer to complete teams uninstall"
+            Write-Host "Restart computer to complete teams uninstall"
 
             Write-Host "Removing Bloatware"
 
@@ -1215,7 +1352,7 @@ $WPFundoall.Add_Click({
         cmd /c gpupdate /force
         # Considered using Invoke-GPUpdate but requires module most people won't have installed
 
-        Write-Output "Adjusting visual effects for appearance..."
+        Write-Host "Adjusting visual effects for appearance..."
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158, 30, 7, 128, 18, 0, 0, 0))
@@ -1552,8 +1689,54 @@ $WPFUpdatessecurity.Add_Click({
     })
 
 #===========================================================================
+# Setup runspace and background config
+#===========================================================================
+
+$runspace = [RunspaceFactory]::CreateRunspace()
+$runspace.ApartmentState = "STA"
+$runspace.ThreadOptions = "ReuseThread"
+$runspace.Open()
+$runspace.SessionStateProxy.SetVariable("sync", $sync)
+
+#Load information in the background
+Invoke-Runspace -ScriptBlock {
+    $sync.ConfigLoaded = $False
+
+    $sync.configs = @{}
+    $ConfigsToLoad = @(
+        "applications",
+        "tweaks",
+        "preset",
+        "feature"
+    )
+
+    $ConfigsToLoad | ForEach-Object {
+        $sync.configs["$psitem"] = [System.Net.WebClient]::new().DownloadStringTaskAsync("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$($Sync.BranchToUse)/config/$psitem.json")
+    }
+
+    $sync.ComputerInfo = Get-ComputerInfo
+
+    $ConfigsToLoad | ForEach-Object {
+        $sync.configs["$psitem"] = ConvertFrom-Json ($sync.configs["$psitem"].GetAwaiter().GetResult())
+    }
+    
+    $sync.ConfigLoaded = $True
+} | Out-Null
+
+#===========================================================================
 # Shows the form
 #===========================================================================
+
 Get-FormVariables
+
+try{
+    Install-Choco
+}
+Catch [ChocoFailedInstall]{
+    Write-Host "==========================================="
+    Write-Host "--    Chocolatey failed to install      ---"
+    Write-Host "==========================================="
+}
+
 $Form.ShowDialog() | out-null
 Stop-Transcript
