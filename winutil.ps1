@@ -411,6 +411,46 @@ function Invoke-Runspace {
     $Script.BeginInvoke()
 }
 
+function Invoke-WinTweaks {
+    param($CheckBox)
+
+    if($sync.configs.tweaks.$CheckBox.registry){
+
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+
+            Set-Registry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value
+
+        }
+    }
+}
+
+function Set-Registry {
+    param (
+        $Name,
+        $Path,
+        $Type,
+        $Value
+    )
+    If (!(Test-Path $Path)) {
+        New-Item -Path $Path -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+    
+    Try{
+        Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
+        Write-Host "Set $Path\$Name to $Value"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -516,9 +556,7 @@ $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
             Write-Host "Disabling Activity History..."
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 0
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 0
+            Invoke-WinTweaks "WPFEssTweaksAH"
             $WPFEssTweaksAH.IsChecked = $false
         }
 
