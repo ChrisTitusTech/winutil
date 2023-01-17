@@ -24,38 +24,6 @@
       }
     ]
   },
-  "WPFEssTweaksDVR": {
-    "registry": [
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_EFSEFeatureFlags",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_Enabled",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFEssTweaksHiber": {
     "registry": [
       {
@@ -1135,53 +1103,53 @@
     # It will just not bother u anymore"
     ]
   },
-  "WPFMiscTweaksDisableMouseAcceleration":  {
-    "registry":  [
+  "WPFMiscTweaksDisableMouseAcceleration": {
+    "registry": [
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "1",
-          "name":  "MouseSpeed",
-          "value":  "0",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseSpeed",
+        "value": "0",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "6",
-          "name":  "MouseThreshold1",
-          "value":  "0",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "6",
+        "name": "MouseThreshold1",
+        "value": "0",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "10",
-          "name":  "MouseThreshold2",
-          "value":  "0",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "10",
+        "name": "MouseThreshold2",
+        "value": "0",
+        "type": "String"
       }
     ]
   },
-  "WPFMiscTweaksEnableMouseAcceleration":  {
-    "registry":  [
+  "WPFMiscTweaksEnableMouseAcceleration": {
+    "registry": [
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "1",
-          "name":  "MouseSpeed",
-          "value":  "1",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseSpeed",
+        "value": "1",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "6",
-          "name":  "MouseThreshold1",
-          "value":  "6",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "6",
+        "name": "MouseThreshold1",
+        "value": "6",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "10",
-          "name":  "MouseThreshold2",
-          "value":  "10",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "10",
+        "name": "MouseThreshold2",
+        "value": "10",
+        "type": "String"
       }
     ]
   },
@@ -1194,6 +1162,52 @@
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ]
+  },
+  "WPFEssTweaksDVR": {
+    "registry": [
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_FSEBehavior",
+        "Value": "2",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_EFSEFeatureFlags",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
+        "Name": "AllowGameDVR",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
     ]
   }
 }
