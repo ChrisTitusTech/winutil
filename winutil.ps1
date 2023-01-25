@@ -957,7 +957,7 @@ $WPFtweaksbutton.Add_Click({
             If (!(Test-Path "HKU:")) {
                 New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
             }
-            Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 2
+            Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 80000002
             $WPFMiscTweaksNum.IsChecked = $false
         }
         If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
