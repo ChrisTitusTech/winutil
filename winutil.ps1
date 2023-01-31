@@ -499,7 +499,7 @@ function Invoke-WinUtilScript {
         Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait -ErrorAction Stop
     }
     Catch{
-        Write-Warning "Unable Run script for $name due to unhandled exception"
+        Write-Warning "Unable to run script for $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace 
     }
 }
