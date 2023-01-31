@@ -642,7 +642,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
         Write-Host "Running Disk Cleanup on Drive C:..."
-        cmd /c cleanmgr.exe /d C: /VERYLOWDISK
+        Invoke-WinTweaks WPFEssTweaksDiskCleanup
         $WPFEssTweaksDiskCleanup.IsChecked = $false
     }
     If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
