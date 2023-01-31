@@ -422,6 +422,14 @@ function Invoke-WinTweaks {
 
         }
     }
+    if($sync.configs.tweaks.$CheckBox.InvokeScript){
+
+        $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
+
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait
+        }
+    }
 }
 
 function Set-Registry {
@@ -552,6 +560,8 @@ $WPFminimal.Add_Click({
     Set-Presets "minimal"
 })
 
+
+
 $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
@@ -562,8 +572,7 @@ $WPFtweaksbutton.Add_Click({
 
         If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
             Write-Host "Delete Temp Files"
-            Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
-            Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+            Invoke-WinTweaks WPFEssTweaksDeleteTempFiles
             $WPFEssTweaksDeleteTempFiles.IsChecked = $false
             Write-Host "======================================="
             Write-Host "--- Cleaned following folders:"
@@ -1749,6 +1758,11 @@ Invoke-Runspace -ScriptBlock {
     $ConfigsToLoad | ForEach-Object {
         $sync.configs["$psitem"] = ConvertFrom-Json ($sync.configs["$psitem"].GetAwaiter().GetResult())
     }
+
+    #Uncomment to force local files
+    #$ConfigsToLoad | ForEach-Object {
+    #    $sync.configs["$psitem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+    #} 
     
     $sync.ConfigLoaded = $True
 } | Out-Null
