@@ -28,14 +28,14 @@
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Name": "HibernateEnabled",
         "Type": "Dword",
         "Value": "0",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Name": "ShowHibernateOption",
         "Type": "Dword",
         "Value": "0",
         "OriginalValue": "1"
