@@ -418,7 +418,7 @@ function Invoke-WinTweaks {
 
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
 
-            Set-Registry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value 
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value 
 
         }
     }
@@ -430,9 +430,16 @@ function Invoke-WinTweaks {
             Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait
         }
     }
+    if($sync.configs.tweaks.$CheckBox.service){
+
+        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+
+            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.StartupType
+        }
+    }
 }
 
-function Set-Registry {
+function Set-WinUtilRegistry {
     param (
         $Name,
         $Path,
@@ -452,6 +459,30 @@ function Set-Registry {
     }
     Catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+
+Function Set-WinUtilService {
+    param (
+        $Name,
+        $StartupType
+    )
+    Try{
+        Set-Service -Name $Name -StartupType $StartupType -ErrorAction Stop
+    }
+    Catch [System.Exception]{
+        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or 
+           $psitem.Exception.Message -like "*was not found on computer*"){
+            Write-Host "Service $name was not Found"
+        }
+        Else{
+            Write-Warning "Unable to set $Name due to unhandled exception"
+            Write-Warning $psitem.Exception.Message
+        }
     }
     Catch{
         Write-Warning "Unable to set $Name due to unhandled exception"
@@ -595,6 +626,7 @@ $WPFtweaksbutton.Add_Click({
         $WPFEssTweaksHiber.IsChecked = $false
     }
     If ( $WPFEssTweaksHome.IsChecked -eq $true ) {
+        Invoke-WinTweaks WPFEssTweaksHome
         $WPFEssTweaksHome.IsChecked = $false
     }
     If ( $WPFEssTweaksLoc.IsChecked -eq $true ) {
