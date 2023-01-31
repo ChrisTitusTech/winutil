@@ -1086,11 +1086,14 @@
     ]
   },
   "WPFMiscTweaksDisableTPMCheck": {
-    "InvokeScript": [
-      "If (!(Test-Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\")) {
-        New-Item -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Force | Out-Null
-    }
-    Set-ItemProperty -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Name \"AllowUpgradesWithUnsupportedTPM\" -Type DWord -Value 1"
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
+        "Name": "AllowUpgradesWithUnsupportedTPM",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
     ]
   },
   "WPFMiscTweaksDisableUAC": {

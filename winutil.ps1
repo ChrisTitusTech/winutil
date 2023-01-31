@@ -637,10 +637,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksDisableTPMCheck.IsChecked -eq $true ) {
         Write-Host "Disabling TPM Check..."
-        If (!(Test-Path "HKLM:\SYSTEM\Setup\MoSetup")) {
-            New-Item -Path "HKLM:\SYSTEM\Setup\MoSetup" -Force | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SYSTEM\Setup\MoSetup" -Name "AllowUpgradesWithUnsupportedTPM" -Type DWord -Value 1
+        Invoke-WinTweaks WPFMiscTweaksDisableTPMCheck
         $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
     }
     If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
