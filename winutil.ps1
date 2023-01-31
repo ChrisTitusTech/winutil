@@ -419,7 +419,6 @@ function Invoke-WinTweaks {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
 
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value 
-
         }
     }
     if($sync.configs.tweaks.$CheckBox.InvokeScript){
@@ -427,7 +426,7 @@ function Invoke-WinTweaks {
         $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
 
             $Scriptblock = [scriptblock]::Create($psitem)
-            Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
     if($sync.configs.tweaks.$CheckBox.service){
@@ -487,6 +486,21 @@ Function Set-WinUtilService {
     Catch{
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
+    }
+}
+
+function Invoke-WinUtilScript {
+    param (
+        $Name,
+        [scriptblock]$scriptblock
+    )
+
+    Try{
+        Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait -ErrorAction Stop
+    }
+    Catch{
+        Write-Warning "Unable Run script for $name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace 
     }
 }
 
