@@ -821,7 +821,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
         Write-Host "Removing Cortana..."
-        Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage
+        Invoke-WinTweaks WPFEssTweaksRemoveCortana
         $WPFEssTweaksRemoveCortana.IsChecked = $false
     }
     If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
