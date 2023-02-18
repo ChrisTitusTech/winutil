@@ -712,7 +712,8 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFEssTweaksStorage.IsChecked -eq $true ) {
         Write-Host "Disabling Storage Sense..."
-        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Recurse -ErrorAction SilentlyContinue
+        Invoke-WinTweaks WPFEssTweaksStorage
+        #Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Recurse -ErrorAction SilentlyContinue
         $WPFEssTweaksStorage.IsChecked = $false
     }
     If ( $WPFEssTweaksTele.IsChecked -eq $true ) {
