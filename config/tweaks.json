@@ -1038,8 +1038,8 @@
   },
   "WPFEssTweaksRP": {
     "InvokeScript": [
-      "Enable-ComputerRestore -Drive \"C:\\\"
-      Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
+      "Enable-ComputerRestore -Drive \"$env:SystemDrive\"
+       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
     ]
   },
   "WPFEssTweaksStorage": {
