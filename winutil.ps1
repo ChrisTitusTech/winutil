@@ -791,10 +791,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksNum.IsChecked -eq $true ) {
         Write-Host "Enabling NumLock after startup..."
-        If (!(Test-Path "HKU:")) {
-            New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-        }
-        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 80000002
+        Invoke-WinTweaks WPFMiscTweaksNum
         $WPFMiscTweaksNum.IsChecked = $false
     }
     If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
