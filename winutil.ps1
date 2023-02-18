@@ -29,6 +29,7 @@ Start-Transcript $ENV:TEMP\Winutil.log -Append
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.BranchToUse = $BranchToUse
+$sync.PSScriptRoot = $PSScriptRoot
 
 # $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
 $inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
@@ -413,26 +414,19 @@ function Invoke-Runspace {
 
 function Invoke-WinTweaks {
     param($CheckBox)
-
     if($sync.configs.tweaks.$CheckBox.registry){
-
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value 
         }
     }
     if($sync.configs.tweaks.$CheckBox.InvokeScript){
-
         $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
-
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
     if($sync.configs.tweaks.$CheckBox.service){
-
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.StartupType
         }
     }
@@ -661,12 +655,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
         Write-Host "Disabling UAC..."
-        # This below is the pussy mode which can break some apps. Please. Leave this on 1.
-        # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
-        # Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Type DWord -Value 0
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
-        # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
-        # It will just not bother u anymore
+        Invoke-WinTweaks WPFMiscTweaksDisableUAC
         $WPFMiscTweaksDisableUAC.IsChecked = $false
     }
 
@@ -1029,7 +1018,7 @@ $WPFtweaksbutton.Add_Click({
         If (!(Test-Path "HKU:")) {
             New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
         }
-        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 2
+        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 80000002
         $WPFMiscTweaksNum.IsChecked = $false
     }
     If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
@@ -1794,7 +1783,7 @@ Invoke-Runspace -ScriptBlock {
 
     #Uncomment to force local files
     $ConfigsToLoad | ForEach-Object {
-        $sync.configs["$psitem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
+        $sync.configs["$psitem"] = Get-Content "$($sync.PSScriptRoot)\config\$PSItem.json" | ConvertFrom-Json
     } 
     
     $sync.ConfigLoaded = $True
@@ -1803,7 +1792,6 @@ Invoke-Runspace -ScriptBlock {
 #===========================================================================
 # Shows the form
 #===========================================================================
-
 Get-FormVariables
 
 try{
