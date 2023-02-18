@@ -1059,12 +1059,15 @@
     ]
   },
   "WPFMiscTweaksLapNum": {
-    "InvokeScript": [
-      "If (!(Test-Path \"HKU:\")) {
-        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-       }
-       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 0"
-    ]
+    "Registry": [
+    {
+      "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+      "OriginalValue": "1",
+      "name": "InitialKeyboardIndicators",
+      "value": "0",
+      "type": "DWord"
+    }
+  ]
   },
   "WPFMiscTweaksNum": {
     "InvokeScript": [

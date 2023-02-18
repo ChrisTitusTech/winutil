@@ -446,7 +446,9 @@ function Set-WinUtilRegistry {
         $Value
     )
 
-    Try{
+    Try{      
+        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+
         If (!(Test-Path $Path)) {
             Write-Host "$Path was not found, Creating..."
             New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
@@ -779,10 +781,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksLapNum.IsChecked -eq $true ) {
         Write-Host "Disabling NumLock after startup..."
-        If (!(Test-Path "HKU:")) {
-            New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-        }
-        Set-ItemProperty -Path "HKU:\.DEFAULT\Control Panel\Keyboard" -Name "InitialKeyboardIndicators" -Type DWord -Value 0
+        Invoke-WinTweaks WPFMiscTweaksLapNum
         $WPFMiscTweaksLapNum.IsChecked = $false
     }
     If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
