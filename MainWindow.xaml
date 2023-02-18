@@ -343,6 +343,7 @@
                                     <ComboBoxItem Content = "Cloudflare_Malware_Adult"/> 
 								    <ComboBoxItem Content = "Level3"/> 
 								    <ComboBoxItem Content = "Open_DNS"/> 
+                                    <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
                                 <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
                                 <Button Name="undoall" Background="AliceBlue" Content="Undo Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
