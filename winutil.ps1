@@ -811,16 +811,12 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksDisableMouseAcceleration.IsChecked -eq $true ) {
         Write-Host "Disabling mouse acceleration..."
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 0
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 0
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 0
+        Invoke-WinTweaks WPFMiscTweaksDisableMouseAcceleration
         $WPFMiscTweaksDisableMouseAcceleration.IsChecked = $false
     }
     If ( $WPFMiscTweaksEnableMouseAcceleration.IsChecked -eq $true ) {
         Write-Host "Enabling mouse acceleration..."
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseSpeed" -Type String -Value 1
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold1" -Type String -Value 6
-        Set-ItemProperty -Path "HKCU:\Control Panel\Mouse" -Name "MouseThreshold2" -Type String -Value 10
+        Invoke-WinTweaks WPFMiscTweaksEnableMouseAcceleration
         $WPFMiscTweaksEnableMouseAcceleration.IsChecked = $false
     }
     If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
