@@ -796,7 +796,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
         Write-Host "Showing known file extensions..."
-        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 0
+        Invoke-WinTweaks WPFMiscTweaksExt
         $WPFMiscTweaksExt.IsChecked = $false
     }
     If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
