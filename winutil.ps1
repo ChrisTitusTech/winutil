@@ -801,7 +801,7 @@ $WPFtweaksbutton.Add_Click({
     }
     If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
         Write-Host "Setting BIOS time to UTC..."
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 1
+        Invoke-WinTweaks WPFMiscTweaksUTC
         $WPFMiscTweaksUTC.IsChecked = $false
     }
     If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
