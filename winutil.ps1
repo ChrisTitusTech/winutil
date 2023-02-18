@@ -785,10 +785,8 @@ $WPFtweaksbutton.Add_Click({
         $WPFMiscTweaksLapNum.IsChecked = $false
     }
     If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
-        If (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling") {
-            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling" -Name "PowerThrottlingOff" -Type DWord -Value 00000001
-        }
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Type DWord -Value 0000000
+        Write-Host "Disabling Power Throttling..."
+        Invoke-WinTweaks WPFMiscTweaksPower
         $WPFMiscTweaksPower.IsChecked = $false
     }
     If ( $WPFMiscTweaksNum.IsChecked -eq $true ) {
