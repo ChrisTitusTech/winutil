@@ -650,73 +650,52 @@
         "type": "Dword"
       },
       {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+        "OriginalValue": "0",
+        "name": "LongPathsEnabled",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
-        "value": "00000000",
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "SystemResponsiveness",
-        "value": "0000000a",
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "NetworkThrottlingIndex",
-        "value": "0000000a",
+        "value": "4294967295",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
-        "OriginalValue": "1",
-        "name": "WaitToKillServiceTimeout",
-        "value": "2000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "MenuShowDelay",
-        "value": "0",
+        "value": "1",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "WaitToKillAppTimeout",
-        "value": "5000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "AutoEndTasks",
         "value": "1",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "LowLevelHooksTimeout",
-        "value": "00001000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "WaitToKillServiceTimeout",
-        "value": "00002000",
-        "type": "Dword"
-      },
-      {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
         "OriginalValue": "0",
         "name": "ClearPageFileAtShutdown",
-        "value": "00000000",
+        "value": "0",
         "type": "Dword"
       },
       {
@@ -727,7 +706,7 @@
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "name": "MouseHoverTime",
         "value": "400",
@@ -760,6 +739,27 @@
         "name": "HideSCAMeetNow",
         "value": "1",
         "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "name": "GPU Priority",
+        "value": "8",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "name": "Priority",
+        "value": "6",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "High",
+        "name": "Scheduling Category",
+        "value": "High",
+        "type": "String"
       }
     ],
     "service": [
@@ -801,7 +801,18 @@
         If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
-        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null"
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        #Timeout Tweaks cause flickering on Windows now
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillAppTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"HungAppTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"LowLevelHooksTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+
+        $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+        "
     ]
   },
   "WPFEssTweaksWifi": {
