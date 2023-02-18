@@ -30,9 +30,10 @@ Start-Transcript $ENV:TEMP\Winutil.log -Append
 $sync = [Hashtable]::Synchronized(@{})
 $sync.BranchToUse = $BranchToUse
 $sync.PSScriptRoot = $PSScriptRoot
+if (!$sync.PSScriptRoot){$sync.PSScriptRoot = (Get-Location).Path}
 
-# $inputXML = Get-Content "MainWindow.xaml" #uncomment for development
-$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
+$inputXML = Get-Content "$($sync.PSScriptRoot)\MainWindow.xaml" #uncomment for development
+#$inputXML = (new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/MainWindow.xaml") #uncomment for Production
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -498,6 +499,29 @@ function Invoke-WinUtilScript {
     }
 }
 
+function Set-WinUtilDNS {
+    param($DNSProvider)
+    if($DNSProvider -eq "Default"){return}
+    Try{
+        $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
+        Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
+        Write-Host $($Adapters | Out-String)
+
+        Foreach ($Adapter in $Adapters){
+            if($DNSProvider -eq "DHCP"){
+                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
+            }
+            Else{
+                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
+            }
+        }
+    }
+    Catch{
+        Write-Warning "Unable to set DNS Provider due to an unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace 
+    }
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -603,6 +627,8 @@ $WPFminimal.Add_Click({
 
 $WPFtweaksbutton.Add_Click({
 
+    Set-WinUtilDNS -DNSProvider $WPFchangedns.text
+
     If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
         Write-Host "Disabling Activity History..."
         Invoke-WinTweaks "WPFEssTweaksAH"
@@ -619,7 +645,6 @@ $WPFtweaksbutton.Add_Click({
         Write-Host "--- "$env:TEMP
         Write-Host "======================================="
     }
-
     If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
 
         Write-Host "Disabling GameDVR..."
@@ -627,7 +652,6 @@ $WPFtweaksbutton.Add_Click({
 
         $WPFEssTweaksDVR.IsChecked = $false
     }
-
     If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
         Write-Host "Disabling Hibernation..."
         Invoke-WinTweaks WPFEssTweaksHiber
@@ -658,49 +682,15 @@ $WPFtweaksbutton.Add_Click({
         Invoke-WinTweaks WPFMiscTweaksDisableUAC
         $WPFMiscTweaksDisableUAC.IsChecked = $false
     }
-
     If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
         Write-Host "Disabling Notifications and Action Center..."
         Invoke-WinTweaks WPFMiscTweaksDisableNotifications
         $WPFMiscTweaksDisableNotifications.IsChecked = $false
     }
-
     If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
         Write-Host "Setting Classic Right-Click Menu..."
         Invoke-WinTweaks WPFMiscTweaksRightClickMenu
         $WPFMiscTweaksRightClickMenu.IsChecked = $false
-    }
-    If ( $WPFchangedns.text -eq 'Google' ) {
-        Write-Host "Setting DNS to Google for all connections..."
-        $DC = "8.8.8.8"
-        $Internet = "8.8.4.4"
-        $dns = "$DC", "$Internet"
-        $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-        $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-    }
-    If ( $WPFchangedns.text -eq 'Cloudflare' ) {
-        Write-Host "Setting DNS to Cloudflare for all connections..."
-        $DC = "1.1.1.1"
-        $Internet = "1.0.0.1"
-        $dns = "$DC", "$Internet"
-        $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-        $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-    }
-    If ( $WPFchangedns.text -eq 'Level3' ) {
-        Write-Host "Setting DNS to Level3 for all connections..."
-        $DC = "4.2.2.2"
-        $Internet = "4.2.2.1"
-        $dns = "$DC", "$Internet"
-        $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-        $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
-    }
-    If ( $WPFchangedns.text -eq 'Open DNS' ) {
-        Write-Host "Setting DNS to Open DNS for all connections..."
-        $DC = "208.67.222.222"
-        $Internet = "208.67.220.220"
-        $dns = "$DC", "$Internet"
-        $Interfaces = [System.Management.ManagementClass]::new("Win32_NetworkAdapterConfiguration").GetInstances()
-        $Interfaces.SetDNSServerSearchOrder($dns) | Out-Null
     }
     If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
         If (!(Test-Path .\ooshutup10.cfg)) {
@@ -1766,7 +1756,8 @@ Invoke-Runspace -ScriptBlock {
         "applications",
         "tweaks",
         "preset",
-        "feature"
+        "feature",
+        "dns"
     )
 
     $ConfigsToLoad | ForEach-Object {

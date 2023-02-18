@@ -334,10 +334,13 @@
                                 <Label Content="DNS" />
 							    <ComboBox Name="changedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
+                                    <ComboBoxItem Content = "DHCP"/> 
 								    <ComboBoxItem Content = "Google"/> 
 								    <ComboBoxItem Content = "Cloudflare"/> 
+                                    <ComboBoxItem Content = "Cloudflare_Malware"/> 
+                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/> 
 								    <ComboBoxItem Content = "Level3"/> 
-								    <ComboBoxItem Content = "Open DNS"/> 
+								    <ComboBoxItem Content = "Open_DNS"/> 
 							    </ComboBox> 
                                 <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
                                 <Button Name="undoall" Background="AliceBlue" Content="Undo Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
