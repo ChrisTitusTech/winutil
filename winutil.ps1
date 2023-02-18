@@ -375,6 +375,14 @@ function Install-Winget {
 }
 
 function Install-Choco {
+
+    <#
+    
+        .DESCRIPTION
+        Function is meant to ensure Choco is installed 
+    
+    #>
+
     try{
         Write-Host "Checking if Chocolatey is Installed..."
 
@@ -429,6 +437,13 @@ function Invoke-Runspace {
 }
 
 function Invoke-WinTweaks {
+    <#
+    
+        .DESCRIPTION
+        This function converts all the values from the tweaks.json and routes them to the appropriate function
+    
+    #>
+
     param($CheckBox)
     if($sync.configs.tweaks.$CheckBox.registry){
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
@@ -459,6 +474,16 @@ function Invoke-WinTweaks {
 }
 
 function Set-WinUtilRegistry {
+    <#
+    
+        .DESCRIPTION
+        This function will make all modifications to the registry
+
+        .EXAMPLE
+
+        Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
+    
+    #>    
     param (
         $Name,
         $Path,
@@ -490,6 +515,16 @@ function Set-WinUtilRegistry {
 }
 
 Function Set-WinUtilService {
+    <#
+    
+        .DESCRIPTION
+        This function will change the startup type of services and start/stop them as needed
+
+        .EXAMPLE
+
+        Set-WinUtilService -Name "HomeGroupListener" -StartupType "Manual"
+    
+    #>   
     param (
         $Name,
         $StartupType
@@ -524,6 +559,17 @@ Function Set-WinUtilService {
 }
 
 function Invoke-WinUtilScript {
+    <#
+    
+        .DESCRIPTION
+        This function will run a seperate powershell script. Meant for things that can't be handled with the other functions
+
+        .EXAMPLE
+
+        $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
+        Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
+    
+    #>
     param (
         $Name,
         [scriptblock]$scriptblock
@@ -539,6 +585,16 @@ function Invoke-WinUtilScript {
 }
 
 function Set-WinUtilScheduledTask {
+    <#
+    
+        .DESCRIPTION
+        This function will enable/disable the provided Scheduled Task
+
+        .EXAMPLE
+
+        Set-WinUtilScheduledTask -Name "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -State "Disabled"
+    
+    #>
     param (
         $Name,
         $State
@@ -570,6 +626,16 @@ function Set-WinUtilScheduledTask {
 }
 
 function Remove-WinUtilAPPX {
+    <#
+    
+        .DESCRIPTION
+        This function will remove any of the provided APPX names
+
+        .EXAMPLE
+
+        Remove-WinUtilAPPX -Name "Microsoft.Microsoft3DViewer"
+    
+    #>
     param (
         $Name
     )
@@ -595,6 +661,16 @@ function Remove-WinUtilAPPX {
 }
 
 function Set-WinUtilDNS {
+    <#
+    
+        .DESCRIPTION
+        This function will set the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
+
+        .EXAMPLE
+
+        Set-WinUtilDNS -DNSProvider "google"
+    
+    #>
     param($DNSProvider)
     if($DNSProvider -eq "Default"){return}
     Try{
