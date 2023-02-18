@@ -1069,10 +1069,21 @@
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
-    "InvokeScript": [
-      "New-Item -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\" -Name \"Explorer\" -force
-    New-ItemProperty -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer\" -Name \"DisableNotificationCenter\" -PropertyType \"DWord\" -Value 1
-    New-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications\" -Name \"ToastEnabled\" -PropertyType \"DWord\" -Value 0 -force"
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisableNotificationCenter",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+        "Name": "ToastEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
     ]
   },
   "WPFMiscTweaksRightClickMenu": {
