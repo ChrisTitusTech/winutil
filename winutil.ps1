@@ -118,16 +118,26 @@ Function Get-CheckBoxes {
 
     Param($Group)
 
-    $CheckBoxes = get-variable | Where-Object {$psitem.name -like "$Group*" -and $psitem.value.GetType().name -eq "CheckBox"}
+
     $Output = New-Object System.Collections.Generic.List[System.Object]
 
     if($Group -eq "WPFInstall"){
+        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPFInstall*" -and $psitem.value.GetType().name -eq "CheckBox"}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $sync.configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
-
+    
+                $CheckBox.value.ischecked = $false
+            }
+        }
+    }
+    if($Group -eq "WPFTweaks"){
+        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        Foreach ($CheckBox in $CheckBoxes){
+            if($CheckBox.value.ischecked -eq $true){
+                $Output.Add($Checkbox.Name)
                 $CheckBox.value.ischecked = $false
             }
         }
@@ -708,166 +718,14 @@ $WPFminimal.Add_Click({
     Set-Presets "minimal"
 })
 
-
-
 $WPFtweaksbutton.Add_Click({
+
+    $Tweaks = Get-CheckBoxes -Group "WPFTweaks"
 
     Set-WinUtilDNS -DNSProvider $WPFchangedns.text
 
-    If ( $WPFEssTweaksAH.IsChecked -eq $true ) {
-        Write-Host "Disabling Activity History..."
-        Invoke-WinTweaks "WPFEssTweaksAH"
-        $WPFEssTweaksAH.IsChecked = $false
-    }
-
-    If ( $WPFEssTweaksDeleteTempFiles.IsChecked -eq $true ) {
-        Write-Host "Delete Temp Files"
-        Invoke-WinTweaks WPFEssTweaksDeleteTempFiles
-        $WPFEssTweaksDeleteTempFiles.IsChecked = $false
-        Write-Host "======================================="
-        Write-Host "--- Cleaned following folders:"
-        Write-Host "--- C:\Windows\Temp"
-        Write-Host "--- "$env:TEMP
-        Write-Host "======================================="
-    }
-    If ( $WPFEssTweaksDVR.IsChecked -eq $true ) {
-
-        Write-Host "Disabling GameDVR..."
-        Invoke-WinTweaks "WPFEssTweaksDVR"
-
-        $WPFEssTweaksDVR.IsChecked = $false
-    }
-    If ( $WPFEssTweaksHiber.IsChecked -eq $true  ) {
-        Write-Host "Disabling Hibernation..."
-        Invoke-WinTweaks WPFEssTweaksHiber
-        $WPFEssTweaksHiber.IsChecked = $false
-    }
-    If ( $WPFEssTweaksHome.IsChecked -eq $true ) {
-        Invoke-WinTweaks WPFEssTweaksHome
-        $WPFEssTweaksHome.IsChecked = $false
-    }
-    If ( $WPFEssTweaksLoc.IsChecked -eq $true ) {
-        Write-Host "Disabling Location Tracking..."
-        Write-Host "Disabling automatic Maps updates..."
-        Invoke-WinTweaks WPFEssTweaksLoc
-        $WPFEssTweaksLoc.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksDisableTPMCheck.IsChecked -eq $true ) {
-        Write-Host "Disabling TPM Check..."
-        Invoke-WinTweaks WPFMiscTweaksDisableTPMCheck
-        $WPFMiscTweaksDisableTPMCheck.IsChecked = $false
-    }
-    If ( $WPFEssTweaksDiskCleanup.IsChecked -eq $true ) {
-        Write-Host "Running Disk Cleanup on Drive C:..."
-        Invoke-WinTweaks WPFEssTweaksDiskCleanup
-        $WPFEssTweaksDiskCleanup.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksDisableUAC.IsChecked -eq $true) {
-        Write-Host "Disabling UAC..."
-        Invoke-WinTweaks WPFMiscTweaksDisableUAC
-        $WPFMiscTweaksDisableUAC.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksDisableNotifications.IsChecked -eq $true ) {
-        Write-Host "Disabling Notifications and Action Center..."
-        Invoke-WinTweaks WPFMiscTweaksDisableNotifications
-        $WPFMiscTweaksDisableNotifications.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksRightClickMenu.IsChecked -eq $true ) {
-        Write-Host "Setting Classic Right-Click Menu..."
-        Invoke-WinTweaks WPFMiscTweaksRightClickMenu
-        $WPFMiscTweaksRightClickMenu.IsChecked = $false
-    }
-    If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
-        Write-Host "Running OO Shutup..."
-        Invoke-WinTweaks WPFEssTweaksOO
-        $WPFEssTweaksOO.IsChecked = $false
-    }
-    If ( $WPFEssTweaksRP.IsChecked -eq $true ) {
-        Write-Host "Creating Restore Point in case something bad happens..."
-        Invoke-WinTweaks WPFEssTweaksRP
-        $WPFEssTweaksRP.IsChecked = $false
-    }
-    If ( $WPFEssTweaksServices.IsChecked -eq $true ) {
-        Write-Host "Setting Services to Manual..."
-        Invoke-WinTweaks WPFEssTweaksServices
-
-        $WPFEssTweaksServices.IsChecked = $false
-    }
-    If ( $WPFEssTweaksStorage.IsChecked -eq $true ) {
-        Write-Host "Disabling Storage Sense..."
-        Invoke-WinTweaks WPFEssTweaksStorage
-        $WPFEssTweaksStorage.IsChecked = $false
-    }
-    If ( $WPFEssTweaksTele.IsChecked -eq $true ) {
-        Write-Host "Disabling Telemetry..."
-        Invoke-WinTweaks WPFEssTweaksTele
-
-        $WPFEssTweaksTele.IsChecked = $false
-    }
-    If ( $WPFEssTweaksWifi.IsChecked -eq $true ) {
-        Write-Host "Disabling Wi-Fi Sense..."
-        Invoke-WinTweaks WPFEssTweaksWifi
-        $WPFEssTweaksWifi.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksLapPower.IsChecked -eq $true ) {
-        Write-Host "Enabling Power Throttling..."
-        Invoke-WinTweaks WPFMiscTweaksLapPower
-        $WPFMiscTweaksLapPower.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksLapNum.IsChecked -eq $true ) {
-        Write-Host "Disabling NumLock after startup..."
-        Invoke-WinTweaks WPFMiscTweaksLapNum
-        $WPFMiscTweaksLapNum.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksPower.IsChecked -eq $true ) {
-        Write-Host "Disabling Power Throttling..."
-        Invoke-WinTweaks WPFMiscTweaksPower
-        $WPFMiscTweaksPower.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksNum.IsChecked -eq $true ) {
-        Write-Host "Enabling NumLock after startup..."
-        Invoke-WinTweaks WPFMiscTweaksNum
-        $WPFMiscTweaksNum.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksExt.IsChecked -eq $true ) {
-        Write-Host "Showing known file extensions..."
-        Invoke-WinTweaks WPFMiscTweaksExt
-        $WPFMiscTweaksExt.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksUTC.IsChecked -eq $true ) {
-        Write-Host "Setting BIOS time to UTC..."
-        Invoke-WinTweaks WPFMiscTweaksUTC
-        $WPFMiscTweaksUTC.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksDisplay.IsChecked -eq $true ) {
-        Write-Host "Adjusting visual effects for performance..."
-        Invoke-WinTweaks WPFMiscTweaksDisplay
-        $WPFMiscTweaksDisplay.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksDisableMouseAcceleration.IsChecked -eq $true ) {
-        Write-Host "Disabling mouse acceleration..."
-        Invoke-WinTweaks WPFMiscTweaksDisableMouseAcceleration
-        $WPFMiscTweaksDisableMouseAcceleration.IsChecked = $false
-    }
-    If ( $WPFMiscTweaksEnableMouseAcceleration.IsChecked -eq $true ) {
-        Write-Host "Enabling mouse acceleration..."
-        Invoke-WinTweaks WPFMiscTweaksEnableMouseAcceleration
-        $WPFMiscTweaksEnableMouseAcceleration.IsChecked = $false
-    }
-    If ( $WPFEssTweaksRemoveCortana.IsChecked -eq $true ) {
-        Write-Host "Removing Cortana..."
-        Invoke-WinTweaks WPFEssTweaksRemoveCortana
-        $WPFEssTweaksRemoveCortana.IsChecked = $false
-    }
-    If ( $WPFEssTweaksRemoveEdge.IsChecked -eq $true ) {
-        Write-Host "Removing Microsoft Edge..."
-        Invoke-WinTweaks WPFEssTweaksRemoveEdge
-        $WPFEssTweaksRemoveEdge.IsChecked = $false
-    }
-    If ( $WPFEssTweaksDeBloat.IsChecked -eq $true ) {
-        Write-Host "Debloating..."
-        Invoke-WinTweaks WPFEssTweaksDeBloat
-        $WPFEssTweaksDeBloat.IsChecked = $false
+    Foreach ($tweak in $tweaks){
+        Invoke-WinTweaks $tweak
     }
 
     Write-Host "================================="
