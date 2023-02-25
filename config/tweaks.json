@@ -24,50 +24,18 @@
       }
     ]
   },
-  "WPFEssTweaksDVR": {
-    "registry": [
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_EFSEFeatureFlags",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\System\\GameConfigStore",
-        "Name": "GameDVR_Enabled",
-        "Type": "Hex",
-        "Value": "00000000",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFEssTweaksHiber": {
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Name": "HibernateEnabled",
         "Type": "Dword",
         "Value": "0",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Name": "ShowHibernateOption",
         "Type": "Dword",
         "Value": "0",
         "OriginalValue": "1"
@@ -682,73 +650,52 @@
         "type": "Dword"
       },
       {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+        "OriginalValue": "0",
+        "name": "LongPathsEnabled",
+        "value": 1,
+        "type": "Dword"
+      },
+      {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
-        "value": "00000000",
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "SystemResponsiveness",
-        "value": "0000000a",
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "NetworkThrottlingIndex",
-        "value": "0000000a",
+        "value": "4294967295",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control",
-        "OriginalValue": "1",
-        "name": "WaitToKillServiceTimeout",
-        "value": "2000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "MenuShowDelay",
-        "value": "0",
+        "value": "1",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "WaitToKillAppTimeout",
-        "value": "5000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "AutoEndTasks",
         "value": "1",
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "LowLevelHooksTimeout",
-        "value": "00001000",
-        "type": "Dword"
-      },
-      {
-        "Path": "HKLM:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "name": "WaitToKillServiceTimeout",
-        "value": "00002000",
-        "type": "Dword"
-      },
-      {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
         "OriginalValue": "0",
         "name": "ClearPageFileAtShutdown",
-        "value": "00000000",
+        "value": "0",
         "type": "Dword"
       },
       {
@@ -759,11 +706,11 @@
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "name": "MouseHoverTime",
-        "value": "00000010",
-        "type": "Dword"
+        "value": "400",
+        "type": "String"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
@@ -792,6 +739,27 @@
         "name": "HideSCAMeetNow",
         "value": "1",
         "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "name": "GPU Priority",
+        "value": "8",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "name": "Priority",
+        "value": "6",
+        "type": "Dword"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "High",
+        "name": "Scheduling Category",
+        "value": "High",
+        "type": "String"
       }
     ],
     "service": [
@@ -833,7 +801,18 @@
         If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
-        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null"
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        #Timeout Tweaks cause flickering on Windows now
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillAppTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"HungAppTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"LowLevelHooksTimeout\" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+
+        $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+        "
     ]
   },
   "WPFEssTweaksWifi": {
@@ -1058,20 +1037,56 @@
       "*AdobePhotoshopExpress*",
       "*HotspotShieldFreeVPN*",
       "*Microsoft.Advertising.Xaml*"
+    ],
+    "InvokeScript": [
+      "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+    
+        Write-Host \"Stopping Teams process...\"
+        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
+    
+        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
+        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+            # Uninstall app
+            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
+            $proc.WaitForExit()
+        }
+    
+        Write-Host \"Removing Teams AppxPackage...\"
+        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
+        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+    
+        Write-Host \"Deleting Teams directory\"
+        if ([System.IO.Directory]::Exists($TeamsPath)) {
+            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+    
+        Write-Host \"Deleting Teams uninstall registry key\"
+        # Uninstall from Uninstall registry key UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
+        if ($us.Length -gt 0) {
+            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
+            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))
+            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+            $proc.WaitForExit()
+        }
+      "
     ]
   },
   "WPFEssTweaksOO": {
     "InvokeScript": [
-      "Import-Module BitsTransfer
-      Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
-      Start-BitsTransfer -Source \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -Destination C:\\Windows\\Temp\\OOSU10.exe
-      C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
+      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -o $ENV:temp\\ooshutup10.cfg
+       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
+       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"$ENV:temp\\ooshutup10.cfg /quiet\"
+       "
     ]
   },
   "WPFEssTweaksRP": {
     "InvokeScript": [
-      "Enable-ComputerRestore -Drive \"C:\\\"
-      Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
+      "Enable-ComputerRestore -Drive \"$env:SystemDrive\"
+       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
     ]
   },
   "WPFEssTweaksStorage": {
@@ -1080,19 +1095,25 @@
     ]
   },
   "WPFMiscTweaksLapNum": {
-    "InvokeScript": [
-      "If (!(Test-Path \"HKU:\")) {
-        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-       }
-       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 0"
+    "Registry": [
+      {
+        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "OriginalValue": "1",
+        "name": "InitialKeyboardIndicators",
+        "value": "0",
+        "type": "DWord"
+      }
     ]
   },
   "WPFMiscTweaksNum": {
-    "InvokeScript": [
-      "If (!(Test-Path \"HKU:\")) {
-        New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
-       }
-       Set-ItemProperty -Path \"HKU:\\.DEFAULT\\Control Panel\\Keyboard\" -Name \"InitialKeyboardIndicators\" -Type DWord -Value 2"
+    "Registry": [
+      {
+        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "OriginalValue": "1",
+        "name": "InitialKeyboardIndicators",
+        "value": "80000002",
+        "type": "DWord"
+      }
     ]
   },
   "WPFEssTweaksRemoveEdge": {
@@ -1101,10 +1122,21 @@
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
-    "InvokeScript": [
-      "New-Item -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\" -Name \"Explorer\" -force
-    New-ItemProperty -Path \"HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer\" -Name \"DisableNotificationCenter\" -PropertyType \"DWord\" -Value 1
-    New-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications\" -Name \"ToastEnabled\" -PropertyType \"DWord\" -Value 0 -force"
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisableNotificationCenter",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+        "Name": "ToastEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
     ]
   },
   "WPFMiscTweaksRightClickMenu": {
@@ -1118,70 +1150,74 @@
     ]
   },
   "WPFMiscTweaksDisableTPMCheck": {
-    "InvokeScript": [
-      "If (!(Test-Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\")) {
-        New-Item -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Force | Out-Null
-    }
-    Set-ItemProperty -Path \"HKLM:\\SYSTEM\\Setup\\MoSetup\" -Name \"AllowUpgradesWithUnsupportedTPM\" -Type DWord -Value 1"
-    ]
-  },
-  "WPFMiscTweaksDisableUAC": {
-    "InvokeScript": [
-      "# This below is the pussy mode which can break some apps. Please. Leave this on 1.
-    # below i will show a way to do it without breaking some Apps that check UAC. U need to be admin tho.
-    # Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\" -Name \"EnableLUA\" -Type DWord -Value 0
-    Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System -Name ConsentPromptBehaviorAdmin -Type DWord -Value 0 # Default is 5
-    # This will set the GPO Entry in Security so that Admin users elevate without any prompt while normal users still elevate and u can even leave it ennabled.
-    # It will just not bother u anymore"
-    ]
-  },
-  "WPFMiscTweaksDisableMouseAcceleration":  {
-    "registry":  [
+    "registry": [
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "1",
-          "name":  "MouseSpeed",
-          "value":  "0",
-          "type":  "String"
-      },
-      {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "6",
-          "name":  "MouseThreshold1",
-          "value":  "0",
-          "type":  "String"
-      },
-      {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "10",
-          "name":  "MouseThreshold2",
-          "value":  "0",
-          "type":  "String"
+        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
+        "Name": "AllowUpgradesWithUnsupportedTPM",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
       }
     ]
   },
-  "WPFMiscTweaksEnableMouseAcceleration":  {
-    "registry":  [
+  "WPFMiscTweaksDisableUAC": {
+    "registry": [
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "1",
-          "name":  "MouseSpeed",
-          "value":  "1",
-          "type":  "String"
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "OriginalValue": "5",
+        "name": "ConsentPromptBehaviorAdmin",
+        "value": "0",
+        "type": "DWord"
+      }
+    ]
+  },
+  "WPFMiscTweaksDisableMouseAcceleration": {
+    "registry": [
+      {
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseSpeed",
+        "value": "0",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "6",
-          "name":  "MouseThreshold1",
-          "value":  "6",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "6",
+        "name": "MouseThreshold1",
+        "value": "0",
+        "type": "String"
       },
       {
-          "path":  "HKCU:\\Control Panel\\Mouse",
-          "OriginalValue":  "10",
-          "name":  "MouseThreshold2",
-          "value":  "10",
-          "type":  "String"
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "10",
+        "name": "MouseThreshold2",
+        "value": "0",
+        "type": "String"
+      }
+    ]
+  },
+  "WPFMiscTweaksEnableMouseAcceleration": {
+    "registry": [
+      {
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "1",
+        "name": "MouseSpeed",
+        "value": "1",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "6",
+        "name": "MouseThreshold1",
+        "value": "6",
+        "type": "String"
+      },
+      {
+        "path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "10",
+        "name": "MouseThreshold2",
+        "value": "10",
+        "type": "String"
       }
     ]
   },
@@ -1194,6 +1230,52 @@
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ]
+  },
+  "WPFEssTweaksDVR": {
+    "registry": [
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_FSEBehavior",
+        "Value": "2",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_EFSEFeatureFlags",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
+        "Name": "AllowGameDVR",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
     ]
   }
 }
