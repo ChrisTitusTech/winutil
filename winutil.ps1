@@ -735,6 +735,10 @@ function Invoke-WinUtilImpex {
     $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
     $FileBrowser.Filter = "JSON Files (*.json)|*.json"
     $FileBrowser.ShowDialog() | Out-Null
+
+    if($FileBrowser.FileName -eq ""){
+        return
+    }
     
     if ($type -eq "export"){
         $jsonFile = Get-CheckBoxes WPFTweaks -unCheck $false
