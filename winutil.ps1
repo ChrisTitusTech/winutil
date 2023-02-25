@@ -31,7 +31,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.IsDev = $true
+#$sync.IsDev = $true
 $sync.BranchToUse = $BranchToUse
 $sync.PSScriptRoot = $PSScriptRoot
 if (!$sync.PSScriptRoot){$sync.PSScriptRoot = (Get-Location).Path}
