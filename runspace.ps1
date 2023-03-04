@@ -266,31 +266,52 @@ function Invoke-WinUtilTweaks {
     
     #>
 
-    param($CheckBox)
+    param(
+        $CheckBox,
+        $undo = $false
+    )
+    if($undo){
+        $Values = @{
+            Registry = "OriginalValue"
+            ScheduledTask = "OriginalState"
+            Service = "OriginalType"
+        }
+    }    
+    Else{
+        $Values = @{
+            Registry = "Value"
+            ScheduledTask = "State"
+            Service = "StartupType"
+        }
+    }
+
     if($sync.configs.tweaks.$CheckBox.registry){
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.Value 
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
-            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.State
+            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
     if($sync.configs.tweaks.$CheckBox.service){
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.StartupType
+            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.appx){
-        $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-            Remove-WinUtilAPPX -Name $psitem
+
+    if(!$undo){
+        if($sync.configs.tweaks.$CheckBox.appx){
+            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+                Remove-WinUtilAPPX -Name $psitem
+            }
         }
-    }
-    if($sync.configs.tweaks.$CheckBox.InvokeScript){
-        $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        if($sync.configs.tweaks.$CheckBox.InvokeScript){
+            $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
+                $Scriptblock = [scriptblock]::Create($psitem)
+                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            }
         }
     }
 }
@@ -1099,6 +1120,39 @@ Function Invoke-WPFUltimatePerformance {
     }
 }
 function Invoke-WPFundoall {
+
+    if($sync.ProcessRunning){
+        $msg = "Install process is currently running."
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+    
+      $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+        
+      Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
+        param($Tweaks)
+    
+        $sync.ProcessRunning = $true
+    
+        Foreach ($tweak in $tweaks){
+            Invoke-WinUtilTweaks $tweak -undo $true
+        }
+    
+        $sync.ProcessRunning = $false
+        Write-Host "=================================="
+        Write-Host "---  Undo Tweaks are Finished  ---"
+        Write-Host "=================================="
+    
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Tweaks are Finished "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+      }
+
+<#
+
     Write-Host "Creating Restore Point in case something bad happens"
     Enable-ComputerRestore -Drive "$env:SystemDrive"
     Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
@@ -1247,6 +1301,7 @@ function Invoke-WPFundoall {
     Write-Host "================================="
     Write-Host "---   Undo All is Finished    ---"
     Write-Host "================================="
+    #>
 }
 function Invoke-WPFUpdatesdefault {
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
