@@ -1,10 +1,3 @@
-<#
-.NOTES
-   Author      : Chris Titus @christitustech
-   GitHub      : https://github.com/ChrisTitusTech
-    Version 0.0.1
-#>
-
 #region exception classes
 
     class WingetFailedInstall : Exception {
@@ -89,6 +82,6 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-
+$form.title = $form.title + " " + $sync.version
 $Form.ShowDialog() | out-null
 Stop-Transcript

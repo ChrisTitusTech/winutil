@@ -12,7 +12,7 @@ Write-output '
 ################################################################################################################
 ' | Out-File ./$scriptname -Append
 
-Get-Content .\scripts\start.ps1 | Out-File ./$scriptname -Append
+(Get-Content .\scripts\start.ps1).replace('#{replaceme}',"$(get-date -format yy.MM.dd)") | Out-File ./$scriptname -Append
 
 Get-ChildItem .\functions -Recurse -File | ForEach-Object {
     Get-Content $psitem.FullName | Out-File ./$scriptname -Append

@@ -5,6 +5,16 @@
 ###                                                                                                          ###
 ################################################################################################################
 
+#Requires -RunAsAdministrator
+
+<#
+.NOTES
+    Author         : Chris Titus @christitustech
+    Runspace Author: @DeveloperDurp
+    GitHub         : https://github.com/ChrisTitusTech
+    Version        : 23.03.04
+#>
+
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 #Load DLLs
@@ -13,6 +23,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
+$sync.version = "23.03.04"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -3534,13 +3545,6 @@ $sync.configs.tweaks = '{
     ]
   }
 }' | convertfrom-json
-<#
-.NOTES
-   Author      : Chris Titus @christitustech
-   GitHub      : https://github.com/ChrisTitusTech
-    Version 0.0.1
-#>
-
 #region exception classes
 
     class WingetFailedInstall : Exception {
@@ -3625,6 +3629,6 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-
+$form.title = $form.title + " " + $sync.version
 $Form.ShowDialog() | out-null
 Stop-Transcript
