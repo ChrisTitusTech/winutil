@@ -16,7 +16,8 @@ function Invoke-WinUtilScript {
     )
 
     Try{
-        Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait -ErrorAction Stop
+        Invoke-Command $scriptblock -ErrorAction stop
+        Write-Host "Running Script for $name"
     }
     Catch{
         Write-Warning "Unable to run script for $name due to unhandled exception"

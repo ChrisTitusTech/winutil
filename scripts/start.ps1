@@ -7,3 +7,4 @@ Add-Type -AssemblyName System.Windows.Forms
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.configs = @{}
+$sync.ProcessRunning = $false

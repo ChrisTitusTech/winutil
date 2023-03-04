@@ -1,12 +1,11 @@
 function Install-WinUtilWinget {
-
+    
     <#
     
         .DESCRIPTION
         Function is meant to ensure winget is installed 
     
     #>
-
     Try{
         Write-Host "Checking if Winget is Installed..."
         if (Test-WinUtilPackageManager -winget) {
@@ -66,7 +65,4 @@ function Install-WinUtilWinget {
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
     }
-
-    # Check if chocolatey is installed and get its version
-
 }

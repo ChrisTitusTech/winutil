@@ -43,7 +43,6 @@ function Invoke-WPFRunspace {
       $initialSessionState.Commands.Add($functionEntry)
     }
 
-
     #Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
     $script:runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
 
@@ -53,9 +52,8 @@ function Invoke-WPFRunspace {
 
     #Open a RunspacePool instance.
     $script:runspace.Open()
-            
-    
-    #Add our main code to be run via $scriptRun within our RunspacePool.
+
+    #Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $script:runspace

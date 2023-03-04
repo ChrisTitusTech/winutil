@@ -14,6 +14,7 @@ Add-Type -AssemblyName System.Windows.Forms
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.configs = @{}
+$sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -137,44 +138,29 @@ Function Install-WinUtilProgramWinget {
 
     param($ProgramsToInstall)
 
-    [ScriptBlock]$wingetinstall = {
-        param($ProgramsToInstall)
+    $x = 0
+    $count = $($ProgramsToInstall -split ",").Count
 
-        $host.ui.RawUI.WindowTitle = """Winget Install"""
+    Write-Progress -Activity "Installing Applications" -Status "Starting" -PercentComplete 0
 
-        $x = 0
-        $count = $($ProgramsToInstall -split """,""").Count
-
-        Write-Progress -Activity """Installing Applications""" -Status """Starting""" -PercentComplete 0
+    Foreach ($Program in $($ProgramsToInstall -split ",")){
     
-        Write-Host """`n`n`n`n`n`n"""
-        
-        Start-Transcript $ENV:TEMP\winget.log -Append
-    
-        Foreach ($Program in $($ProgramsToInstall -split """,""")){
-    
-            Write-Progress -Activity """Installing Applications""" -Status """Installing $Program $($x + 1) of $count""" -PercentComplete $($x/$count*100)
-            Start-Process -FilePath winget -ArgumentList """install -e --accept-source-agreements --accept-package-agreements --silent $Program""" -NoNewWindow -Wait;
-            $X++
-        }
-
-        Write-Progress -Activity """Installing Applications""" -Status """Finished""" -Completed
-        Write-Host """`n`nAll Programs have been installed"""
-        Pause
+        Write-Progress -Activity "Installing Applications" -Status "Installing $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
+        Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait;
+        $X++
     }
 
-    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
+    Write-Progress -Activity "Installing Applications" -Status "Finished" -Completed
 
 }
 function Install-WinUtilWinget {
-
+    
     <#
     
         .DESCRIPTION
         Function is meant to ensure winget is installed 
     
     #>
-
     Try{
         Write-Host "Checking if Winget is Installed..."
         if (Test-WinUtilPackageManager -winget) {
@@ -234,9 +220,6 @@ function Install-WinUtilWinget {
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
     }
-
-    # Check if chocolatey is installed and get its version
-
 }
 function Invoke-WinUtilScript {
     <#
@@ -256,7 +239,8 @@ function Invoke-WinUtilScript {
     )
 
     Try{
-        Start-Process powershell.exe -Verb runas -ArgumentList "-Command  $scriptblock" -Wait -ErrorAction Stop
+        Invoke-Command $scriptblock -ErrorAction stop
+        Write-Host "Running Script for $name"
     }
     Catch{
         Write-Warning "Unable to run script for $name due to unhandled exception"
@@ -573,6 +557,7 @@ function Invoke-WPFButton {
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
+        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
 
 
@@ -839,6 +824,13 @@ function Invoke-WPFImpex {
     }
 }
 function Invoke-WPFInstall {
+
+    if($sync.ProcessRunning){
+        $msg = "Install process is currently running."
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
     $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
 
     if ($wingetinstall.Count -eq 0) {
@@ -847,29 +839,34 @@ function Invoke-WPFInstall {
         return
     }
 
-    if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
-        $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
+        param($WingetInstall)
+        try{
+            $sync.ProcessRunning = $true
 
-    try{
+            # Ensure winget is installed
+            Install-WinUtilWinget
 
-        # Ensure winget is installed
-        Install-WinUtilWinget
+            # Install all winget programs in new window
+            Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
 
-        # Install all winget programs in new window
-        Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall  
+            $ButtonType = [System.Windows.MessageBoxButton]::OK
+            $MessageboxTitle = "Installs are Finished "
+            $Messageboxbody = ("Done")
+            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+        
+            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
-        Write-Host "==========================================="
-        Write-Host "--          Installs started            ---"
-        Write-Host "-- You can close this window if desired ---"
-        Write-Host "==========================================="
-    }
-    Catch [WingetFailedInstall]{
-        Write-Host "==========================================="
-        Write-Host "--      Winget failed to install        ---"
-        Write-Host "==========================================="
+            Write-Host "==========================================="
+            Write-Host "--      Installs have finished          ---"
+            Write-Host "==========================================="
+        }
+        Catch {
+            Write-Host "==========================================="
+            Write-Host "--      Winget failed to install        ---"
+            Write-Host "==========================================="
+        }
+        $sync.ProcessRunning = $False
     }
 }
 function Invoke-WPFInstallUpgrade {
@@ -980,7 +977,6 @@ function Invoke-WPFRunspace {
       $initialSessionState.Commands.Add($functionEntry)
     }
 
-
     #Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
     $script:runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
 
@@ -990,9 +986,8 @@ function Invoke-WPFRunspace {
 
     #Open a RunspacePool instance.
     $script:runspace.Open()
-            
-    
-    #Add our main code to be run via $scriptRun within our RunspacePool.
+
+    #Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $script:runspace
@@ -1035,28 +1030,38 @@ function Invoke-WPFTab {
     }
 }
 function Invoke-WPFtweaksbutton {
-    $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
-    Set-WinUtilDNS -DNSProvider $WPFchangedns.text
-  
-    Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
-      param($Tweaks)
-  
-      Foreach ($tweak in $tweaks){
-          Invoke-WinUtilTweaks $tweak
-      }
-  
-      Write-Host "================================="
-      Write-Host "--     Tweaks are Finished    ---"
-      Write-Host "================================="
-  
-      $ButtonType = [System.Windows.MessageBoxButton]::OK
-      $MessageboxTitle = "Tweaks are Finished "
-      $Messageboxbody = ("Done")
-      $MessageIcon = [System.Windows.MessageBoxImage]::Information
-  
-      [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  if($sync.ProcessRunning){
+    $msg = "Install process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+}
+
+  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+
+  Set-WinUtilDNS -DNSProvider $WPFchangedns.text
+
+  Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
+    param($Tweaks)
+
+    $sync.ProcessRunning = $true
+
+    Foreach ($tweak in $tweaks){
+        Invoke-WinUtilTweaks $tweak
     }
+
+    $sync.ProcessRunning = $false
+    Write-Host "================================="
+    Write-Host "--     Tweaks are Finished    ---"
+    Write-Host "================================="
+
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "Tweaks are Finished "
+    $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  }
 }
 Function Invoke-WPFUltimatePerformance {
     param($State)
