@@ -1,4 +1,4 @@
-function Set-Presets {
+function Invoke-WPFPresets {
     <#
 
         .DESCRIPTION

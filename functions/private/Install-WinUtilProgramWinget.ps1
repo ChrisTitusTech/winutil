@@ -1,4 +1,4 @@
-Function Install-ProgramWinget {
+Function Install-WinUtilProgramWinget {
 
     <#
     

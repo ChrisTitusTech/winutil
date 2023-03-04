@@ -1,4 +1,4 @@
-function Get-InstallerProcess {
+function Get-WinUtilInstallerProcess {
     <#
     
         .DESCRIPTION

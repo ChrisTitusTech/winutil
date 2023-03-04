@@ -1,4 +1,4 @@
-Function Set-DarkMode {
+Function Invoke-WPFDarkMode {
     Param($DarkMoveEnabled)
     Try{
         if ($DarkMoveEnabled -eq $false){

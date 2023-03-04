@@ -1,4 +1,4 @@
-function Switch-Tab {
+function Invoke-WPFTab {
 
     <#
     

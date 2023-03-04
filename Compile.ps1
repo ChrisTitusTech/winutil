@@ -14,7 +14,7 @@ Write-output '
 
 Get-Content .\scripts\start.ps1 | Out-File ./$scriptname -Append
 
-Get-ChildItem .\functions | ForEach-Object {
+Get-ChildItem .\functions -Recurse -File | ForEach-Object {
     Get-Content $psitem.FullName | Out-File ./$scriptname -Append
 }
 

@@ -1,4 +1,4 @@
-function Install-Winget {
+function Install-WinUtilWinget {
 
     <#
     
@@ -9,7 +9,7 @@ function Install-Winget {
 
     Try{
         Write-Host "Checking if Winget is Installed..."
-        if (Test-PackageManager -winget) {
+        if (Test-WinUtilPackageManager -winget) {
             #Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
             return
@@ -45,7 +45,7 @@ function Install-Winget {
 
             Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
 
-            if(!(Test-PackageManager -winget)){
+            if(!(Test-WinUtilPackageManager -winget)){
                 break
             }
         }
@@ -57,7 +57,7 @@ function Install-Winget {
             $nid = (Get-Process AppInstaller).Id
             Wait-Process -Id $nid
 
-            if(!(Test-PackageManager -winget)){
+            if(!(Test-WinUtilPackageManager -winget)){
                 break
             }
         }

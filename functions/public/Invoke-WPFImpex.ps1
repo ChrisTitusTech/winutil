@@ -1,4 +1,4 @@
-function Invoke-WinUtilImpex {
+function Invoke-WPFImpex {
     <#
     
         .DESCRIPTION
@@ -6,7 +6,7 @@ function Invoke-WinUtilImpex {
 
         .EXAMPLE
 
-        Invoke-WinUtilImpex -type "export"
+        Invoke-WPFImpex -type "export"
     
     #>
     param($type)
@@ -27,7 +27,7 @@ function Invoke-WinUtilImpex {
     }
     
     if ($type -eq "export"){
-        $jsonFile = Get-CheckBoxes WPFTweaks -unCheck $false
+        $jsonFile = Get-WinUtilCheckBoxes WPFTweaks -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
     if ($type -eq "import"){

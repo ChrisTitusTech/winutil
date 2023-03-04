@@ -1,4 +1,4 @@
-Function Update-ProgramWinget {
+Function Update-WinUtilProgramWinget {
 
     <#
     

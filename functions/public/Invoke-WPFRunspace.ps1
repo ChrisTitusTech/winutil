@@ -1,4 +1,4 @@
-function Invoke-Runspace {
+function Invoke-WPFRunspace {
 
     <#
     
@@ -13,7 +13,7 @@ function Invoke-Runspace {
             Verbose = $true
         }
 
-        Invoke-Runspace @params
+        Invoke-WPFRunspace @params
     
     #>
 
@@ -34,7 +34,7 @@ function Invoke-Runspace {
     $InitialSessionState.Variables.Add($hashVars)
 
     #Add functions
-    $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "invoke-wintweaks"}
+    $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
     foreach ($function in $functions){
       $functionDefinition = Get-Content function:\$($function.name)
       $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition

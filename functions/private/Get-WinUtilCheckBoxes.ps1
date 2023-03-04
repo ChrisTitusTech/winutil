@@ -1,4 +1,4 @@
-Function Get-CheckBoxes {
+Function Get-WinUtilCheckBoxes {
 
     <#
 
@@ -9,7 +9,7 @@ Function Get-CheckBoxes {
 
         .EXAMPLE
 
-        Get-CheckBoxes "WPFInstall"
+        Get-WinUtilCheckBoxes "WPFInstall"
 
     #>
 

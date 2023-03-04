@@ -1,4 +1,4 @@
-Function Get-FormVariables {
+Function Invoke-WPFFormVariables {
     #If ($global:ReadmeDisplay -ne $true) { Write-Host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
 
 

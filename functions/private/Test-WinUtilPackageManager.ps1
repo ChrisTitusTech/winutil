@@ -1,4 +1,4 @@
-function Test-PackageManager {
+function Test-WinUtilPackageManager {
     Param(
         [System.Management.Automation.SwitchParameter]$winget,
         [System.Management.Automation.SwitchParameter]$choco
