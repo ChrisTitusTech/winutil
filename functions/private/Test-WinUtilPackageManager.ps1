@@ -1,4 +1,11 @@
 function Test-WinUtilPackageManager {
+    <#
+    
+        .DESCRIPTION
+        Checks for Winget or Choco depending on the paramater
+    
+    #>
+
     Param(
         [System.Management.Automation.SwitchParameter]$winget,
         [System.Management.Automation.SwitchParameter]$choco

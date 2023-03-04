@@ -1,4 +1,10 @@
 function Invoke-WPFundoall {
+    <#
+    
+        .DESCRIPTION
+        PlaceHolder
+    
+    #>
 
     if($sync.ProcessRunning){
         $msg = "Install process is currently running."

@@ -1,4 +1,10 @@
 function Invoke-WPFInstallUpgrade {
+    <#
+    
+        .DESCRIPTION
+        PlaceHolder
+    
+    #>
     if(!(Test-WinUtilPackageManager -winget)){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"

@@ -1,4 +1,12 @@
 function Invoke-WPFFixesUpdate {
+
+    <#
+    
+        .DESCRIPTION
+        PlaceHolder
+    
+    #>
+
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
     Write-Host "1. Stopping Windows Update Services..."
     Stop-Service -Name BITS

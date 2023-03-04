@@ -22,10 +22,6 @@
 
 #endregion Load Variables needed for testing 
 
-BeforeDiscovery {
-
-}
-
 #===========================================================================
 # Tests - Application Installs
 #===========================================================================
@@ -97,5 +93,23 @@ Describe "Config Files" -ForEach @(
     }
 }
 
-#$global:importedconfigs.applications.$application | gm -MemberType NoteProperty | Select-Object -ExpandProperty name
-#$configs.applications | gm -MemberType NoteProperty | Select-Object -ExpandProperty name
+
+#===========================================================================
+# Tests - Functions
+#===========================================================================
+
+Describe "Functions" -ForEach @(Get-ChildItem .\functions -Recurse -File){
+
+    BeforeEach -Scriptblock {
+        . $psitem.FullName
+    }
+    
+    Context "$($psitem.BaseName)" {
+        It "Imports with no errors" {
+            Get-ChildItem function:\$($psitem.BaseName) | should -Not -BeNullOrEmpty
+        }
+        It "Contains Description" {
+            get-help $($psitem.BaseName) -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Description | should -Not -BeNullOrEmpty
+        }
+    }
+}

@@ -1,4 +1,10 @@
 function Invoke-WPFFeatureInstall {
+        <#
+    
+        .DESCRIPTION
+        GUI Function to install Windows Features
+    
+    #>
     If ( $WPFFeaturesdotnet.IsChecked -eq $true ) {
         Enable-WindowsOptionalFeature -Online -FeatureName "NetFx4-AdvSrvs" -All -NoRestart
         Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -NoRestart
