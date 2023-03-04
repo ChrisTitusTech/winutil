@@ -32,6 +32,6 @@ function Invoke-WPFImpex {
     }
     if ($type -eq "import"){
         $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
-        Set-Presets -preset $jsonFile -imported $true
+        Invoke-WPFPresets -preset $jsonFile -imported $true
     }
 }
