@@ -120,10 +120,10 @@ Describe "Functions" {
         }
     }
 
-    It "Get-WinUtilInstallerProcess should return the correct values" {
-        Get-WinUtilInstallerProcess | should -Befalse
+    It "Get-InstallerProcess should return the correct values" {
+        Get-InstallerProcess | should -Befalse
         $process = Start-Process powershell.exe -ArgumentList "-c start-sleep 5" -PassThru 
-        Get-WinUtilInstallerProcess $process | should -Not -Befalse
+        Get-InstallerProcess $process | should -Not -Befalse
     }
 
     It "Runspace background load should have data" {
@@ -169,8 +169,8 @@ Describe "GUI Functions" {
         $WPFinstall | should -Not -BeNullOrEmpty
     }
 
-    Context "Get-WinUtilCheckBoxes" {
-        It "Get-WinUtilCheckBoxes Install should return data" {
+    Context "Get-CheckBoxes" {
+        It "Get-CheckBoxes Install should return data" {
 
             $TestCheckBoxes = @(
                 "WPFInstallvc2015_32"
@@ -188,7 +188,7 @@ Describe "GUI Functions" {
             $OutputResult = Sort-Object -InputObject $OutputResult
 
             $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked = $true}
-            $Output = Get-WinUtilCheckBoxes -Group WPFInstall | Sort-Object
+            $Output = Get-CheckBoxes -Group WPFInstall | Sort-Object
             $Output | should -Not -BeNullOrEmpty -Because "Output did not contain applications to install"
             $Output | Should -Not -Be $OutputResult -Because "Output contains duplicate values"
             $Output | Should -Be $($OutputResult | Select-Object -Unique | Sort-Object) -Because "Output doesn't match"
