@@ -332,38 +332,11 @@ function Install-Winget {
             return
         }
 
-        #Gets the Windows Edition
-        $OSName = if ($ComputerInfo.OSName) {
-            $ComputerInfo.OSName
-        }else {
-            $ComputerInfo.WindowsProductName
+        Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
+        if(!(Test-PackageManager -winget)){
+            break
         }
 
-        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-
-            Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-            # Switching to winget-install from PSGallery from asheroto
-            # Source: https://github.com/asheroto/winget-installer
-
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
-
-            if(!(Test-PackageManager -winget)){
-                break
-            }
-        }
-
-        else {
-            #Installing Winget from the Microsoft Store
-            Write-Host "Winget not found, installing it now."
-            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-            $nid = (Get-Process AppInstaller).Id
-            Wait-Process -Id $nid
-
-            if(!(Test-PackageManager -winget)){
-                break
-            }
-        }
         Write-Host "Winget Installed"
     }
     Catch{
