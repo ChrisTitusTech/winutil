@@ -796,6 +796,7 @@ $WPFminimal.Add_Click({
 
 $WPFtweaksbutton.Add_Click({
 
+
     $Tweaks = Get-CheckBoxes -Group "WPFTweaks"
 
     Set-WinUtilDNS -DNSProvider $WPFchangedns.text
