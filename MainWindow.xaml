@@ -236,6 +236,7 @@
                                 <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="Installdeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -333,7 +334,6 @@
                                 <CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="MiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="MiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="BingSearch" Content="Disable Bing Search in Start" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <Label Content="DNS" />
 							    <ComboBox Name="changedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 

@@ -804,11 +804,11 @@
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
 
         #Timeout Tweaks cause flickering on Windows now
-        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillAppTimeout\" -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"HungAppTimeout\" -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"LowLevelHooksTimeout\" -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillAppTimeout\" -ErrorAction SilentlyContinue
+        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"HungAppTimeout\" -ErrorAction SilentlyContinue
+        #Remove-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
+        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"LowLevelHooksTimeout\" -ErrorAction SilentlyContinue
+        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
 
         $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
         Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
@@ -1077,7 +1077,7 @@
   },
   "WPFEssTweaksOO": {
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -o $ENV:temp\\ooshutup10.cfg
+      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
        Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"$ENV:temp\\ooshutup10.cfg /quiet\"
        "
@@ -1275,17 +1275,6 @@
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      }
-    ]
-  },
-  "WPFBingSearch": {
-    "registry": [
-      {
-        "OriginalValue": "1",
-        "Name": "BingSearchEnabled",
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Type": "DWORD",
-        "Value": "0"
       }
     ]
   }

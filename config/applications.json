@@ -47,6 +47,10 @@
     "winget": "CPUID.CPU-Z",
     "choco": "cpu-z"
   },
+  "WPFInstalldeluge": {
+    "winget": "DelugeTeam.Deluge",
+    "choco": "deluge"
+  },
   "WPFInstalldiscord": {
     "winget": "Discord.Discord",
     "choco": "discord"
@@ -204,7 +208,7 @@
     "choco": "putty"
   },
   "WPFInstallpython3": {
-    "winget": "Python.Python.3",
+    "winget": "Python.Python.3.11",
     "choco": "python"
   },
   "WPFInstallrevo": {
