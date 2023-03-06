@@ -1277,5 +1277,16 @@
         "Type": "DWord"
       }
     ]
+  },
+  "WPFBingSearch": {
+    "registry": [
+      {
+        "OriginalValue": "1",
+        "Name": "BingSearchEnabled",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Type": "DWORD",
+        "Value": "0"
+      }
+    ]
   }
 }
