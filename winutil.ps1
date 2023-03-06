@@ -646,7 +646,7 @@ $WPFtweaksbutton.Add_Click({
         If ( $WPFEssTweaksOO.IsChecked -eq $true ) {
             If (!(Test-Path .\ooshutup10_winutil_settings.cfg)) {
                 Write-Host "Running O&O Shutup with Recommended Settings"
-                curl.exe -s "https://raw.githubusercontent.com/dennyamarojr/winutil/main/ooshutup10_winutil_settings.cfg" -o ooshutup10_winutil_settings.cfg
+                curl.exe -s "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/ooshutup10_winutil_settings.cfg" -o ooshutup10_winutil_settings.cfg
                 curl.exe -s "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -o OOSU10.exe
             }
             ./OOSU10.exe ooshutup10_winutil_settings.cfg /quiet
