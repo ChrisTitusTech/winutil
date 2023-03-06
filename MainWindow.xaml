@@ -236,6 +236,7 @@
                                 <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="Installdeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
