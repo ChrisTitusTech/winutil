@@ -26,6 +26,9 @@ $BranchToUse = 'test-12-2022'
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
+#Load DLLs
+Add-Type -AssemblyName System.Windows.Forms
+
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 #$sync.IsDev = $true
@@ -116,7 +119,10 @@ Function Get-CheckBoxes {
 
     #>
 
-    Param($Group)
+    Param(
+        $Group,
+        [boolean]$unCheck = $true
+    )
 
 
     $Output = New-Object System.Collections.Generic.List[System.Object]
@@ -128,8 +134,10 @@ Function Get-CheckBoxes {
                 $sync.configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
-    
-                $CheckBox.value.ischecked = $false
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
+                }
+                
             }
         }
     }
@@ -138,7 +146,10 @@ Function Get-CheckBoxes {
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
-                $CheckBox.value.ischecked = $false
+                
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
+                }
             }
         }
     }
@@ -154,8 +165,16 @@ function Set-Presets {
 
     #>
 
-    param($preset)
-    $CheckBoxesToCheck = $sync.configs.preset.$preset
+    param(
+        $preset,
+        [bool]$imported = $false
+    )
+    if($imported -eq $true){
+        $CheckBoxesToCheck = $preset
+    }
+    Else{
+        $CheckBoxesToCheck = $sync.configs.preset.$preset
+    }
 
     #Uncheck all
     get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
@@ -693,6 +712,44 @@ function Set-WinUtilDNS {
     }
 }
 
+function Invoke-WinUtilImpex {
+    <#
+    
+        .DESCRIPTION
+        This function handles importing and exporting of the checkboxes checked for the tweaks section
+
+        .EXAMPLE
+
+        Invoke-WinUtilImpex -type "export"
+    
+    #>
+    param($type)
+
+    if ($type -eq "export"){
+        $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
+    }
+    if ($type -eq "import"){
+        $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog 
+    }
+
+    $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+    $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+    $FileBrowser.ShowDialog() | Out-Null
+
+    if($FileBrowser.FileName -eq ""){
+        return
+    }
+    
+    if ($type -eq "export"){
+        $jsonFile = Get-CheckBoxes WPFTweaks -unCheck $false
+        $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
+    }
+    if ($type -eq "import"){
+        $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
+        Set-Presets -preset $jsonFile -imported $true
+    }
+}
+
 #===========================================================================
 # Global Variables
 #===========================================================================
@@ -792,6 +849,17 @@ $WPFlaptop.Add_Click({
 
 $WPFminimal.Add_Click({
     Set-Presets "minimal"
+})
+
+$WPFexport.Add_Click({
+    Invoke-WinUtilImpex -type "export"
+})
+
+$WPFimport.Add_Click({
+    Invoke-WinUtilImpex -type "import"
+})
+$WPFclear.Add_Click({
+    Set-Presets -preset $null -imported $true
 })
 
 $WPFtweaksbutton.Add_Click({
