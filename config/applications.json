@@ -204,7 +204,7 @@
     "choco": "putty"
   },
   "WPFInstallpython3": {
-    "winget": "Python.Python.3",
+    "winget": "Python.Python.3.11",
     "choco": "python"
   },
   "WPFInstallrevo": {
