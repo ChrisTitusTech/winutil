@@ -17,7 +17,8 @@
     $global:configs = @{}
 
     (
-        "applications"
+        "applications",
+        "preset"
     ) | ForEach-Object {
         $global:configs["$PSItem"] = Get-Content .\config\$PSItem.json | ConvertFrom-Json
     }
@@ -33,7 +34,7 @@
 
     #dotsource original script to pull in all variables and ensure no errors
     $script = Get-Content .\winutil.ps1
-    $output = $script[0..($script.count - 4)] | Out-File .\pester.ps1    
+    $output = $script[0..($script.count - 14)] | Out-File .\pester.ps1    
 
 
 #endregion Load Variables needed for testing 
@@ -49,11 +50,11 @@ Describe "Application Installs" {
         }
     }
     Context "Winget Install" {
-        $global:configs.applications.install | Get-Member -MemberType NoteProperty  | ForEach-Object {
+        $global:configs.applications | Get-Member -MemberType NoteProperty  | ForEach-Object {
             $TestCase = @{ name = $psitem.name }
             It "$($psitem.name) should include Winget Install" -TestCases $TestCase{
                 param($name)
-                $null -eq $global:configs.applications.install.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
+                $null -eq $global:configs.applications.$name.winget | should -Befalse -because "$name Did not include a Winget Install"
             } 
         }
     }
@@ -63,7 +64,7 @@ Describe "Application Installs" {
             $TestCase = @{ name = $psitem }
             It "$($psitem) should include application.json " -TestCases $TestCase{
                 param($name)
-                $null -eq $global:configs.applications.install.$name | should -Befalse -because "$name Does not have entry in applications.json"
+                $null -eq $global:configs.applications.$name | should -Befalse -because "$name Does not have entry in applications.json"
             } 
         }
     } 
@@ -106,11 +107,48 @@ Describe "GUI" {
 }
 
 #===========================================================================
+# Tests - Functions
+#===========================================================================
+
+Describe "Functions" {
+    BeforeEach -Scriptblock {
+        . ./pester.ps1
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
+            start-sleep -Milliseconds 100
+            $x ++
+        }
+    }
+
+    It "Get-InstallerProcess should return the correct values" {
+        Get-InstallerProcess | should -Befalse
+        $process = Start-Process powershell.exe -ArgumentList "-c start-sleep 5" -PassThru 
+        Get-InstallerProcess $process | should -Not -Befalse
+    }
+
+    It "Runspace background load should have data" {
+        $sync.configs.applications | should -Not -BeNullOrEmpty
+        $sync.configs.tweaks | should -Not -BeNullOrEmpty
+        $sync.configs.preset | should -Not -BeNullOrEmpty
+        $sync.configs.feature | should -Not -BeNullOrEmpty
+        $sync.ComputerInfo | should -Not -BeNullOrEmpty
+    }
+
+}
+
+#===========================================================================
 # Tests - GUI Functions
 #===========================================================================
 
 Describe "GUI Functions" {
-    BeforeEach -Scriptblock {. ./pester.ps1}
+    BeforeEach -Scriptblock {
+        . ./pester.ps1
+        $x = 0
+        while($sync.ConfigLoaded -ne $True -or $x -eq 100){
+            start-sleep -Milliseconds 100
+            $x ++
+        }
+    }
 
     It "GUI should load with no errors" {
         $WPFTab1BT | should -Not -BeNullOrEmpty
@@ -123,8 +161,6 @@ Describe "GUI Functions" {
         $WPFUpdatessecurity | should -Not -BeNullOrEmpty
         $WPFFeatureInstall | should -Not -BeNullOrEmpty
         $WPFundoall | should -Not -BeNullOrEmpty
-        $WPFDisableDarkMode | should -Not -BeNullOrEmpty
-        $WPFEnableDarkMode | should -Not -BeNullOrEmpty
         $WPFtweaksbutton | should -Not -BeNullOrEmpty
         $WPFminimal | should -Not -BeNullOrEmpty
         $WPFlaptop | should -Not -BeNullOrEmpty
@@ -135,31 +171,30 @@ Describe "GUI Functions" {
 
     Context "Get-CheckBoxes" {
         It "Get-CheckBoxes Install should return data" {
-            . .\pester.ps1 
 
-        $TestCheckBoxes = @(
-            "WPFInstallvc2015_32"
-            "WPFInstallvscode"
-            "WPFInstallgit"
-        )
-        
-        $OutputResult = New-Object System.Collections.Generic.List[System.Object]
-        $TestCheckBoxes | ForEach-Object {
+            $TestCheckBoxes = @(
+                "WPFInstallvc2015_32"
+                "WPFInstallvscode"
+                "WPFInstallgit"
+            )
+            
+            $OutputResult = New-Object System.Collections.Generic.List[System.Object]
+            $TestCheckBoxes | ForEach-Object {
 
-            $global:configs.applications.Install.$psitem.winget -split ";" | ForEach-Object {
-                $OutputResult.Add($psitem)
+                $global:configs.applications.$psitem.winget -split ";" | ForEach-Object {
+                    $OutputResult.Add($psitem)
+                }
             }
+            $OutputResult = Sort-Object -InputObject $OutputResult
+
+            $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked = $true}
+            $Output = Get-CheckBoxes -Group WPFInstall | Sort-Object
+            $Output | should -Not -BeNullOrEmpty -Because "Output did not contain applications to install"
+            $Output | Should -Not -Be $OutputResult -Because "Output contains duplicate values"
+            $Output | Should -Be $($OutputResult | Select-Object -Unique | Sort-Object) -Because "Output doesn't match"
+            $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked | should -be $false}
         }
-        $OutputResult = Sort-Object -InputObject $OutputResult
-
-        $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked = $true}
-        $Output = Get-CheckBoxes -Group WPFInstall | Sort-Object
-        $Output | should -Not -BeNullOrEmpty -Because "Output did not containe applications to install"
-        $Output | Should -Not -Be $OutputResult -Because "Output contains duplicate values"
-        $Output | Should -Be $($OutputResult | Select-Object -Unique | Sort-Object) -Because "Output doesn't match"
-        $TestCheckBoxes | ForEach-Object {(Get-Variable $PSItem).value.ischecked | should -be $false}
     }
-
     Context "Set-Presets" {
         $global:configs.preset | Get-Member -MemberType NoteProperty | ForEach-Object {
             $TestCase = @{ name = $psitem.name }
