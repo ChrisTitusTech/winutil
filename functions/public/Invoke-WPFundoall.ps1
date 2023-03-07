@@ -12,11 +12,12 @@ function Invoke-WPFundoall {
         return
     }
     
-      $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
-        
-      Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
-        param($Tweaks)
+    #$Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+    $Tweaks = get-variable | Where-Object {$psitem.name -like "WPF*Tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"} | Select-Object -ExpandProperty Name
     
+    Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
+        param($Tweaks)
+
         $sync.ProcessRunning = $true
     
         Foreach ($tweak in $tweaks){
@@ -34,7 +35,7 @@ function Invoke-WPFundoall {
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
     
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-      }
+    }
 
 <#
 
