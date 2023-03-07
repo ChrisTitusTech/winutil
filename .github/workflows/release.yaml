@@ -22,15 +22,15 @@ jobs:
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Update Branch in script
-  # build-runspace:
-  #   runs-on: windows-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #     with:
-  #       ref: ${{ github.head_ref }}
-  #   - name: Create local changes
-  #     run: |
-  #       powershell.exe -f Compile.ps1
-  #   - uses: stefanzweifel/git-auto-commit-action@v4
-  #     with:
-  #       commit_message: Compile Winutil
+  build-runspace:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Create local changes
+      run: |
+        powershell.exe -f Compile.ps1
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Compile Winutil
