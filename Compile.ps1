@@ -1,5 +1,5 @@
 $OFS = "`r`n"
-$scriptname = "runspace.ps1"
+$scriptname = "test.ps1"
 
 
 Remove-Item .\$scriptname
