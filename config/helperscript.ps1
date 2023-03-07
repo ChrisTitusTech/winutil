@@ -1,5 +1,9 @@
 #This file is meant to assist in building out the json files inside this folder.
 
+#===========================================================================
+# applications.json
+#===========================================================================
+
 <#
     Applications.json
     -----------------
@@ -10,25 +14,22 @@
     The structure of the json is as follows
 
 {
-    "install": {
-        "Name of Button": {
-            "winget": "Winget command"
-            "choco": "Chocolatey command"
+    "Name of Button": {
+        "winget": "Winget command"
+        "choco": "Chocolatey command"
     },
 }
 
 Example:
 
 {
-    "install": {
-        "WPFInstalladobe": {
-            "winget": "Adobe.Acrobat.Reader.64-bit"
-            "choco": "adobereader"
-        },
-        "WPFInstalladvancedip": {
-            "winget": "Famatech.AdvancedIPScanner"
-            "choco": "advanced-ip-scanner"
-        }
+    "WPFInstalladobe": {
+        "winget": "Adobe.Acrobat.Reader.64-bit"
+        "choco": "adobereader"
+    },
+    "WPFInstalladvancedip": {
+        "winget": "Famatech.AdvancedIPScanner"
+        "choco": "advanced-ip-scanner"
     }
 }
 
@@ -45,8 +46,8 @@ $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
 
 #remove if already exists
-if($jsonfile.install.$NameofButton){
-    $jsonfile.install.psobject.Properties.remove($NameofButton)
+if($jsonfile.$NameofButton){
+    $jsonfile.psobject.Properties.remove($NameofButton)
 }
 
 Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "Winget" -Value $WingetCommand
@@ -54,6 +55,10 @@ Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -Name "choco" -Val
 Add-Member -InputObject $jsonfile.install -MemberType NoteProperty -Name $NameofButton -Value $ButtonToAdd
 
 $jsonfile | ConvertTo-Json | Out-File ./config/applications.json
+
+#===========================================================================
+# feature.json
+#===========================================================================
 
 <#
     feature.json
@@ -100,6 +105,10 @@ if($jsonfile.$NameofButton){
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
 
 $jsonfile | ConvertTo-Json | Out-File ./config/feature.json
+
+#===========================================================================
+# preset.json
+#===========================================================================
 
 <#
     preset.json
@@ -158,6 +167,10 @@ if($jsonfile.$NameofButton){
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $commands
 
 $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
+
+#===========================================================================
+# tweaks.json
+#===========================================================================
 
 <#
     tweaks.json
@@ -276,8 +289,6 @@ Example:
 #Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 #Make sure to uncomment the sections you which to add.
 
-$NameofButton = ""
-
 #$Registry = @(
 #    #to add more repeat this seperated by a comma
 #    @{
@@ -319,6 +330,8 @@ $NameofButton = ""
 #    "" 
 #)
 
+$NameofButton = "WPF" + ""
+
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/tweaks.json | ConvertFrom-Json
 
@@ -337,3 +350,50 @@ if($UndoScript){Add-Member -InputObject $ButtonToAdd -MemberType NoteProperty -N
 Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -Value $ButtonToAdd
 
 ($jsonfile | ConvertTo-Json -Depth 5).replace('\r\n',"`r`n") | Out-File ./config/tweaks.json
+
+#===========================================================================
+# dns.json
+#===========================================================================
+
+<#
+    dns.json
+    -----------------
+    This file holds all the DNS entrees.
+
+    The structure of the json is as follows
+
+{
+    "DNS Provider": [
+        "Primary": "IP address",
+        "Secondary": "IP address"
+    ]
+}
+
+Example:
+{
+    "Cloudflare":{
+        "Primary": "1.1.1.1",
+        "Secondary": "1.0.0.1"
+    }
+}    
+#>
+
+#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+
+$NameofProvider = "" -replace " ","_"
+$IPAddress = @{
+    "Primary" = "0.0.0.0"
+    "Secondary" = "0.0.0.0"
+}
+
+$ButtonToAdd = New-Object psobject
+$jsonfile = Get-Content ./config/dns.json | ConvertFrom-Json
+
+#remove if already exists
+if($jsonfile.$NameofProvider){
+    $jsonfile.psobject.Properties.remove($NameofProvider)
+}
+
+Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofProvider -Value $IPAddress
+
+($jsonfile | ConvertTo-Json -Depth 5).replace('\r\n',"`r`n") | Out-File ./config/dns.json
