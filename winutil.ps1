@@ -1746,6 +1746,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="Installdeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -1862,7 +1863,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
                                 <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Button Name="undoall" Background="AliceBlue" Content="Undo Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="undoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
