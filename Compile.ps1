@@ -1,5 +1,5 @@
 $OFS = "`r`n"
-$scriptname = "test.ps1"
+$scriptname = "test1.ps1"
 
 
 Remove-Item .\$scriptname
