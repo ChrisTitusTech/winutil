@@ -15,8 +15,6 @@ jobs:
         ref: ${{ github.head_ref }}
     - name: Create local changes
       run: |
-        sed -i "/\$BranchToUse = /c\$BranchToUse = '$GITHUB_REF_NAME'" $GITHUB_WORKSPACE/runspace.ps1
-        grep "\$BranchToUse =" $GITHUB_WORKSPACE/runspace.ps1
         sed -i "/\$BranchToUse = /c\$BranchToUse = '$GITHUB_REF_NAME'" $GITHUB_WORKSPACE/winutil.ps1
         grep "\$BranchToUse =" $GITHUB_WORKSPACE/winutil.ps1
     - uses: stefanzweifel/git-auto-commit-action@v4
