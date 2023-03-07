@@ -1,5 +1,3 @@
-#Requires -RunAsAdministrator
-
 <#
 .NOTES
     Author         : Chris Titus @christitustech
