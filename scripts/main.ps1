@@ -53,6 +53,10 @@ foreach ($button in $buttons){
     })
 }
 
+$WPFToggleDarkMode.Add_Click({    
+  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
+})
+
 $WPFToggleDarkMode.IsChecked = Get-WinUtilDarkMode
 
 #===========================================================================
