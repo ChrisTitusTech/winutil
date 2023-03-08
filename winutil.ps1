@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.03.07
+    Version        : 23.03.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.03.07"
+$sync.version = "23.03.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -3885,6 +3885,10 @@ foreach ($button in $buttons){
         Invoke-WPFButton "WPF$($Sender.name)"
     })
 }
+
+$WPFToggleDarkMode.Add_Click({    
+  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
+})
 
 $WPFToggleDarkMode.IsChecked = Get-WinUtilDarkMode
 
