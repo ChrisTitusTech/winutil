@@ -3198,10 +3198,11 @@ $sync.configs.tweaks = '{
         "type": "Dword"
       },
       {
+        "_Comment" : "Driver searching is a function that should be left in",
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
-        "value": "0",
+        "value": "1",
         "type": "Dword"
       },
       {
@@ -3248,16 +3249,16 @@ $sync.configs.tweaks = '{
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
+        "OriginalValue": "400",
         "name": "MouseHoverTime",
         "value": "400",
         "type": "String"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "OriginalValue": "1",
+        "OriginalValue": "20",
         "name": "IRPStackSize",
-        "value": "20",
+        "value": "30",
         "type": "Dword"
       },
       {
@@ -3868,7 +3869,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 

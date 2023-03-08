@@ -708,7 +708,7 @@
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
+        "OriginalValue": "400",
         "name": "MouseHoverTime",
         "value": "400",
         "type": "String"
