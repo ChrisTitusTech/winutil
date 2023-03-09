@@ -657,10 +657,11 @@
         "type": "Dword"
       },
       {
+        "_Comment" : "Driver searching is a function that should be left in",
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
-        "value": "0",
+        "value": "1",
         "type": "Dword"
       },
       {
@@ -714,9 +715,9 @@
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "OriginalValue": "1",
+        "OriginalValue": "20",
         "name": "IRPStackSize",
-        "value": "20",
+        "value": "30",
         "type": "Dword"
       },
       {
