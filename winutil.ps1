@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.03.08
+    Version        : 23.03.21
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.03.08"
+$sync.version = "23.03.21"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -602,8 +602,7 @@ function Invoke-WPFButton {
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
-
-
+        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
     }
 }
 function Invoke-WPFControlPanel {
@@ -1103,6 +1102,39 @@ function Invoke-WPFRunspace {
         $script:runspace.Close()
         [System.GC]::Collect()
     }
+}
+function Invoke-WPFShortcut {
+    <#
+
+        .DESCRIPTION
+        Creates a shortcut
+
+    #>
+    param($ShortcutToAdd)
+
+    Switch ($ShortcutToAdd) {
+        "WinUtil" {
+            $SourceExe = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" 
+            $IRM = 'irm https://christitus.com/win | iex'
+            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
+            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            $DestinationName = "WinUtil.lnk"
+        }
+    }
+
+    $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
+    $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+    $FileBrowser.Filter = "Shortcut Files (*.lnk)|*.lnk"
+    $FileBrowser.FileName = $DestinationName
+    $FileBrowser.ShowDialog() | Out-Null
+
+    $WshShell = New-Object -comObject WScript.Shell
+    $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
+    $Shortcut.TargetPath = $SourceExe
+    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.Save()
+    
+    Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"
 }
 function Invoke-WPFTab {
 
@@ -1830,6 +1862,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 							<Label Content="Performance Plans" />
                                 <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
                                 <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
+							<Label Content="Shortcuts" />
+                                <Button Name="WinUtilShortcut" Background="AliceBlue" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
