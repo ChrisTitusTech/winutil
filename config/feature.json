@@ -1,31 +1,61 @@
 {
-  "Featuresdotnet": [
-    "NetFx4-AdvSrvs",
-    "NetFx3"
-  ],
-  "Featureshyperv": [
-    "HypervisorPlatform",
-    "Microsoft-Hyper-V-All",
-    "Microsoft-Hyper-V",
-    "Microsoft-Hyper-V-Tools-All",
-    "Microsoft-Hyper-V-Management-PowerShell",
-    "Microsoft-Hyper-V-Hypervisor",
-    "Microsoft-Hyper-V-Services",
-    "Microsoft-Hyper-V-Management-Clients"
-  ],
-  "Featureslegacymedia": [
-    "WindowsMediaPlayer",
-    "MediaPlayback",
-    "DirectPlay",
-    "LegacyComponents"
-  ],
-  "Featurewsl": [
-    "VirtualMachinePlatform",
-    "Microsoft-Windows-Subsystem-Linux"
-  ],
-  "Featurenfs": [
-    "ServicesForNFS-ClientOnly",
-    "ClientForNFS-Infrastructure",
-    "NFS-Administration"
-  ]
+  "WPFFeaturesdotnet": {
+    "feature": [
+      "NetFx4-AdvSrvs",
+      "NetFx3"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeatureshyperv": {
+    "feature": [
+      "HypervisorPlatform",
+      "Microsoft-Hyper-V-All",
+      "Microsoft-Hyper-V",
+      "Microsoft-Hyper-V-Tools-All",
+      "Microsoft-Hyper-V-Management-PowerShell",
+      "Microsoft-Hyper-V-Hypervisor",
+      "Microsoft-Hyper-V-Services",
+      "Microsoft-Hyper-V-Management-Clients"
+    ],
+    "InvokeScript": [
+      "Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /set hypervisorschedulertype classic' -Wait"
+    ]
+  },
+  "WPFFeatureslegacymedia": {
+    "feature": [
+      "WindowsMediaPlayer",
+      "MediaPlayback",
+      "DirectPlay",
+      "LegacyComponents"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeaturewsl": {
+    "feature": [
+      "VirtualMachinePlatform",
+      "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "InvokeScript": [
+      
+    ]
+  },
+  "WPFFeaturenfs": {
+    "feature": [
+      "ServicesForNFS-ClientOnly",
+      "ClientForNFS-Infrastructure",
+      "NFS-Administration"
+    ],
+    "InvokeScript": [
+      "nfsadmin client stop
+      Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousUID' -Type DWord -Value 0
+      Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousGID' -Type DWord -Value 0
+      nfsadmin client start
+      nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
+      "
+    ]
+  }
 }
