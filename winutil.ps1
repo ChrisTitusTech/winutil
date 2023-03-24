@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.03.22
+    Version        : 23.03.24
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.03.22"
+$sync.version = "23.03.24"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -61,8 +61,22 @@ Function Get-WinUtilCheckBoxes {
             }
         }
     }
+    
     if($Group -eq "WPFTweaks"){
         $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        Foreach ($CheckBox in $CheckBoxes){
+            if($CheckBox.value.ischecked -eq $true){
+                $Output.Add($Checkbox.Name)
+                
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
+                }
+            }
+        }
+    }
+
+    if($Group -eq "WPFFeature"){
+        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Feature*" -and $psitem.value.GetType().name -eq "CheckBox"}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
@@ -234,6 +248,59 @@ function Install-WinUtilWinget {
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
+    }
+}
+function Invoke-WinUtilFeatureInstall {
+    <#
+    
+        .DESCRIPTION
+        This function converts all the values from the tweaks.json and routes them to the appropriate function
+    
+    #>
+
+    param(
+        $CheckBox
+    )
+
+    $CheckBox | ForEach-Object {
+        if($sync.configs.feature.$psitem.feature){
+            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
+                Try{ 
+                    Write-Host "Installing $feature"
+                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace 
+                    }
+                }
+            } 
+        }
+        if($sync.configs.feature.$psitem.InvokeScript){
+            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
+                Try{
+                    $Scriptblock = [scriptblock]::Create($script)
+
+                    Write-Host "Running Script for $psitem"
+                    Invoke-Command $scriptblock -ErrorAction stop
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace 
+                    }
+                }
+            } 
+        }
     }
 }
 function Invoke-WinUtilScript {
@@ -663,54 +730,35 @@ function Invoke-WPFFeatureInstall {
         GUI Function to install Windows Features
     
     #>
-    If ( $WPFFeaturesdotnet.IsChecked -eq $true ) {
-        Enable-WindowsOptionalFeature -Online -FeatureName "NetFx4-AdvSrvs" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -NoRestart
-    }
-    If ( $WPFFeatureshyperv.IsChecked -eq $true ) {
-        Enable-WindowsOptionalFeature -Online -FeatureName "HypervisorPlatform" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Tools-All" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-PowerShell" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Hypervisor" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Services" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-Management-Clients" -All -NoRestart
-        cmd /c bcdedit /set hypervisorschedulertype classic
-        Write-Host "HyperV is now installed and configured. Please Reboot before using."
-    }
-    If ( $WPFFeatureslegacymedia.IsChecked -eq $true ) {
-        Enable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "MediaPlayback" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "DirectPlay" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "LegacyComponents" -All -NoRestart
-    }
-    If ( $WPFFeaturewsl.IsChecked -eq $true ) {
-        Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -All -NoRestart
-        Write-Host "WSL is now installed and configured. Please Reboot before using."
-    }
-    If ( $WPFFeaturenfs.IsChecked -eq $true ) {
-        Enable-WindowsOptionalFeature -Online -FeatureName "ServicesForNFS-ClientOnly" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "ClientForNFS-Infrastructure" -All -NoRestart
-        Enable-WindowsOptionalFeature -Online -FeatureName "NFS-Administration" -All -NoRestart
-        nfsadmin client stop
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousUID" -Type DWord -Value 0
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default" -Name "AnonymousGID" -Type DWord -Value 0
-        nfsadmin client start
-        nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-        Write-Host "NFS is now setup for user based NFS mounts"
-    }
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "All features are now installed "
-    $Messageboxbody = ("Done")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    if($sync.ProcessRunning){
+        $msg = "Install process is currently running."
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
 
-    Write-Host "================================="
-    Write-Host "---  Features are Installed   ---"
-    Write-Host "================================="
+    $Features = Get-WinUtilCheckBoxes -Group "WPFFeature"
+
+    Invoke-WPFRunspace -ArgumentList $Features -ScriptBlock {
+        param($Features)
+
+        $sync.ProcessRunning = $true
+
+        Invoke-WinUtilFeatureInstall $Features
+
+        $sync.ProcessRunning = $false
+        Write-Host "==================================="
+        Write-Host "---   Features are Installed    ---"
+        Write-Host "---  A Reboot may be required   ---"
+        Write-Host "==================================="
+    
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "All features are now installed "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    }
 }
 function Invoke-WPFFixesUpdate {
 
@@ -2517,35 +2565,65 @@ $sync.configs.dns = '{
     }
 }' | convertfrom-json
 $sync.configs.feature = '{
-  "Featuresdotnet": [
-    "NetFx4-AdvSrvs",
-    "NetFx3"
-  ],
-  "Featureshyperv": [
-    "HypervisorPlatform",
-    "Microsoft-Hyper-V-All",
-    "Microsoft-Hyper-V",
-    "Microsoft-Hyper-V-Tools-All",
-    "Microsoft-Hyper-V-Management-PowerShell",
-    "Microsoft-Hyper-V-Hypervisor",
-    "Microsoft-Hyper-V-Services",
-    "Microsoft-Hyper-V-Management-Clients"
-  ],
-  "Featureslegacymedia": [
-    "WindowsMediaPlayer",
-    "MediaPlayback",
-    "DirectPlay",
-    "LegacyComponents"
-  ],
-  "Featurewsl": [
-    "VirtualMachinePlatform",
-    "Microsoft-Windows-Subsystem-Linux"
-  ],
-  "Featurenfs": [
-    "ServicesForNFS-ClientOnly",
-    "ClientForNFS-Infrastructure",
-    "NFS-Administration"
-  ]
+  "WPFFeaturesdotnet": {
+    "feature": [
+      "NetFx4-AdvSrvs",
+      "NetFx3"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeatureshyperv": {
+    "feature": [
+      "HypervisorPlatform",
+      "Microsoft-Hyper-V-All",
+      "Microsoft-Hyper-V",
+      "Microsoft-Hyper-V-Tools-All",
+      "Microsoft-Hyper-V-Management-PowerShell",
+      "Microsoft-Hyper-V-Hypervisor",
+      "Microsoft-Hyper-V-Services",
+      "Microsoft-Hyper-V-Management-Clients"
+    ],
+    "InvokeScript": [
+      "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
+    ]
+  },
+  "WPFFeatureslegacymedia": {
+    "feature": [
+      "WindowsMediaPlayer",
+      "MediaPlayback",
+      "DirectPlay",
+      "LegacyComponents"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeaturewsl": {
+    "feature": [
+      "VirtualMachinePlatform",
+      "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "InvokeScript": [
+      
+    ]
+  },
+  "WPFFeaturenfs": {
+    "feature": [
+      "ServicesForNFS-ClientOnly",
+      "ClientForNFS-Infrastructure",
+      "NFS-Administration"
+    ],
+    "InvokeScript": [
+      "nfsadmin client stop
+      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0
+      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0
+      nfsadmin client start
+      nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
+      "
+    ]
+  }
 }' | convertfrom-json
 $sync.configs.preset = '{
   "desktop": [
