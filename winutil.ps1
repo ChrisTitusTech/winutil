@@ -124,6 +124,39 @@ function Get-WinUtilInstallerProcess {
     }
     return $false
 }
+function Get-WinUtilRegistry {
+    <#
+    
+        .DESCRIPTION
+        This function will make all modifications to the registry
+
+        .EXAMPLE
+
+        Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
+    
+    #>    
+    param (
+        $Name,
+        $Path,
+        $Type,
+        $Value
+    )
+
+    Try{      
+        $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
+
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Install-WinUtilChoco {
 
     <#
@@ -249,6 +282,52 @@ function Install-WinUtilWinget {
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
     }
+}
+Function Invoke-WinUtilCurrentSystem {
+
+    <#
+
+        .DESCRIPTION
+        Function is meant to read existing system registry and check according configuration.
+
+        Example: Is telemetry enabled? check the box.
+
+        .EXAMPLE
+
+        Get-WinUtilCheckBoxes "WPFInstall"
+
+    #>
+
+    param(
+        $CheckBox,
+        $undo = $false
+    )
+    if($undo){
+        $Values = @{
+            Registry = "OriginalValue"
+            ScheduledTask = "OriginalState"
+            Service = "OriginalType"
+        }
+    }    
+    Else{
+        $Values = @{
+            Registry = "Value"
+            ScheduledTask = "State"
+            Service = "StartupType"
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Get-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            if ($psitem.$($values.registry) -eq $syscheckvalue) {
+                $sync.configs.tweaks.$CheckBox.$($values.registry) = $true
+            }
+            else {
+                $sync.configs.tweaks.$CheckBox.$($values.registry) = $false
+            }
+        }
+    }
+
 }
 function Invoke-WinUtilFeatureInstall {
     <#
