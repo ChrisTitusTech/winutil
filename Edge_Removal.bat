@@ -1,3 +1,5 @@
+REM https://github.com/AveYo/fox/blob/main/Edge_Removal.bat is source file
+
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit /b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
