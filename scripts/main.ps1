@@ -76,6 +76,9 @@ Invoke-WPFRunspace -ScriptBlock {
 # Shows the form
 #===========================================================================
 
+Write-Host "Getting Installed Programs..."
+Invoke-WinUtilCurrentSystem -CheckBox winget
+
 Invoke-WPFFormVariables
 
 try{
@@ -87,5 +90,6 @@ Catch [ChocoFailedInstall]{
     Write-Host "==========================================="
 }
 $form.title = $form.title + " " + $sync.version
+
 $Form.ShowDialog() | out-null
 Stop-Transcript
