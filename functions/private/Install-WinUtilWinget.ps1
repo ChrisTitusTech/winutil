@@ -41,6 +41,8 @@ function Install-WinUtilWinget {
 
             # Switching to winget-install from PSGallery from asheroto
             # Source: https://github.com/asheroto/winget-installer
+            echo "a" | Install-Script -Name winget-install
+            echo "a" | winget-install
 
             Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
 
