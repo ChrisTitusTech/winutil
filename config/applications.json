@@ -518,5 +518,13 @@
   "WPFInstallwinrar": {
     "winget": "RARLab.WinRar",
     "choco": "winrar"
+  },
+  "WPFInstallneovim": {
+    "winget": "Neovim.Neovim",
+    "choco": "neovim"
+  },
+  "WPFInstallnvm": {
+    "winget": "CoreyButler.NVMforWindows",
+    "choco": "nvm"
   }
 }
