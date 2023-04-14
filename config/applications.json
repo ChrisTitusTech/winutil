@@ -507,8 +507,16 @@
     "winget": "Microsoft.Edge",
     "choco": "microsoft-edge"
   },
+  "WPFInstallubisoft": {
+    "winget": "Ubisoft.Connect",
+    "choco": "ubisoft-connect"
+  },
   "WPFInstallnuget": {
     "winget": "Microsoft.NuGet",
     "choco": "nuget.commandline"
+  },
+  "WPFInstallwinrar": {
+    "winget": "RARLab.WinRar",
+    "choco": "winrar"
   }
 }

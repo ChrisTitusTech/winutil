@@ -1858,6 +1858,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
                                 <CheckBox Name="Installorigin" Content="Origin" Margin="5,0"/>
                                 <CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
+                                <CheckBox Name="Installubisoft" Content="Ubisoft Connect" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
@@ -1942,6 +1943,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
+                                <CheckBox Name="Installwinrar" Content="WinRAR" Margin="5,0"/>
                                 <Button Name="install" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
                                 <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
 
@@ -2608,9 +2610,17 @@ $sync.configs.applications = '{
     "winget": "Microsoft.Edge",
     "choco": "microsoft-edge"
   },
+  "WPFInstallubisoft": {
+    "winget": "Ubisoft.Connect",
+    "choco": "ubisoft-connect"
+  },
   "WPFInstallnuget": {
     "winget": "Microsoft.NuGet",
     "choco": "nuget.commandline"
+  },
+  "WPFInstallwinrar": {
+    "winget": "RARLab.WinRAR",
+    "choco": "winrar"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
