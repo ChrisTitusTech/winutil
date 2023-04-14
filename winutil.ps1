@@ -1835,12 +1835,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
                                 <CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
                                 <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
+                                <CheckBox Name="Installnvm" Content="Node Version Manager" Margin="5,0"/>
                                 <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
                                 <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
                                 <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
                                 <CheckBox Name="Installunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="Installneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
 
@@ -2629,6 +2631,14 @@ $sync.configs.applications = '{
   "WPFInstallwinrar": {
     "winget": "RARLab.WinRar",
     "choco": "winrar"
+  },
+  "WPFInstallneovim": {
+    "winget": "Neovim.Neovim",
+    "choco": "neovim"
+  },
+  "WPFInstallnvm": {
+    "winget": "CoreyButler.NVMforWindows",
+    "choco": "nvm"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
