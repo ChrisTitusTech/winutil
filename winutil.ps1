@@ -3808,7 +3808,11 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      },
+      }
+    ]
+  },
+  "WPFDisableGameBar": {
+    "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
