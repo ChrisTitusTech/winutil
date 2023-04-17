@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.04.14
+    Version        : 23.04.18
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.04.14"
+$sync.version = "23.04.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -1837,6 +1837,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
                                 <CheckBox Name="Installnvm" Content="Node Version Manager" Margin="5,0"/>
                                 <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="Installpostman" Content="Postman" Margin="5,0"/>
                                 <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
                                 <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
@@ -2639,6 +2640,10 @@ $sync.configs.applications = '{
   "WPFInstallnvm": {
     "winget": "CoreyButler.NVMforWindows",
     "choco": "nvm"
+  },
+  "WPFInstallpostman": {
+    "winget": "Postman.Postman",
+    "choco": "postman"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
