@@ -44,5 +44,6 @@ function Invoke-WPFButton {
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
+        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox winget}
     }
 }

@@ -25,11 +25,11 @@ Function Invoke-WinUtilCurrentSystem {
         $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
         [Console]::OutputEncoding = $originalEncoding
 
-        get-variable | Where-Object {$psitem.name -like "WPFInstall*" -and $psitem.value.GetType().name -eq "CheckBox"} | ForEach-Object {
-            if($sync.configs.applications.$($psitem.Name).winget -in $sync.InstalledPrograms.Id){
-                $psitem.Value.ischecked = $true
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if($sync.configs.applications.$($psitem.Key).winget -in $sync.InstalledPrograms.Id){
+                Write-Output $psitem.name
             }
-
         }
     }
     if($CheckBox -eq "tweaks"){

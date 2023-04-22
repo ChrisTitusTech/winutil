@@ -17,15 +17,11 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    #Uncheck all
-    get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
-        if ($psitem.value.gettype().name -eq "CheckBox"){
-            $CheckBox = Get-Variable $psitem.Name
-            if ($CheckBoxesToCheck -contains $CheckBox.name){
-                $checkbox.value.ischecked = $true
-            }
-            else{$checkbox.value.ischecked = $false}
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
+    $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+        if ($CheckBoxesToCheck -contains $PSItem.name){
+            $sync.$($PSItem.name).ischecked = $true
         }
+        else{$sync.$($PSItem.name).ischecked = $false}
     }
-
 }
