@@ -114,10 +114,11 @@
 
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
                                 <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFinstall" Content=" Start Install " Margin="7"/>
-                                <Button Name="WPFInstallUpgrade" Content=" Upgrade Install " Margin="7"/>
+                                <Button Name="WPFinstall" Content=" Install Selection " Margin="7"/>
+                                <Button Name="WPFInstallUpgrade" Content=" Upgrade Selection " Margin="7"/>
+                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="7"/>
                                 <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
-                                <Button Name="WPFclearWinget" Content=" Clear Selected " Margin="7"/>
+                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>

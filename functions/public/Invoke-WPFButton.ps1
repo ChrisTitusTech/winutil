@@ -18,6 +18,7 @@ function Invoke-WPFButton {
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
+        "WPFuninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
         "WPFdesktop" {Invoke-WPFPresets "Desktop"}
         "WPFlaptop" {Invoke-WPFPresets "laptop"}

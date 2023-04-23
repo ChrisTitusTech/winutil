@@ -230,21 +230,30 @@ Function Install-WinUtilProgramWinget {
     
     #>
 
-    param($ProgramsToInstall)
+    param(
+        $ProgramsToInstall,
+        $manage = "Installing"
+    )
 
     $x = 0
     $count = $($ProgramsToInstall -split ",").Count
 
-    Write-Progress -Activity "Installing Applications" -Status "Starting" -PercentComplete 0
+    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
 
     Foreach ($Program in $($ProgramsToInstall -split ",")){
     
-        Write-Progress -Activity "Installing Applications" -Status "Installing $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait;
+        Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
+        if($manage -eq "Installing"){
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+        }
+        if($manage -eq "Uninstalling"){
+            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent --disable-interactivity $Program" -NoNewWindow -Wait
+        }
+        
         $X++
     }
 
-    Write-Progress -Activity "Installing Applications" -Status "Finished" -Completed
+    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
 }
 function Install-WinUtilWinget {
@@ -771,6 +780,7 @@ function Invoke-WPFButton {
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
+        "WPFuninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
         "WPFdesktop" {Invoke-WPFPresets "Desktop"}
         "WPFlaptop" {Invoke-WPFPresets "laptop"}
@@ -1637,6 +1647,64 @@ function Invoke-WPFundoall {
     Write-Host "================================="
     #>
 }
+function Invoke-WPFUnInstall {
+    <#
+    
+        .DESCRIPTION
+        PlaceHolder
+    
+    #>
+
+    if($sync.ProcessRunning){
+        $msg = "Install process is currently running."
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
+
+    if ($wingetinstall.Count -eq 0) {
+        $WarningMsg = "Please select the program(s) to install"
+        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    $ButtonType = [System.Windows.MessageBoxButton]::YesNo
+    $MessageboxTitle = "Are you sure?"
+    $Messageboxbody = ("This will install the following applications `n $WingetInstall")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+    $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+    if($confirm -eq "No"){return}
+
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
+        param($WingetInstall)
+        try{
+            $sync.ProcessRunning = $true
+
+            # Install all winget programs in new window
+            Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall -Manage "Uninstalling"
+
+            $ButtonType = [System.Windows.MessageBoxButton]::OK
+            $MessageboxTitle = "Uninstalls are Finished "
+            $Messageboxbody = ("Done")
+            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+        
+            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+            Write-Host "==========================================="
+            Write-Host "--      Uninstalls have finished          ---"
+            Write-Host "==========================================="
+        }
+        Catch {
+            Write-Host "==========================================="
+            Write-Host "--      Winget failed to install        ---"
+            Write-Host "==========================================="
+        }
+        $sync.ProcessRunning = $False
+    }
+}
 function Invoke-WPFUpdatesdefault {
     <#
     
@@ -1873,10 +1941,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
                                 <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFinstall" Content=" Start Install " Margin="7"/>
-                                <Button Name="WPFInstallUpgrade" Content=" Upgrade Install " Margin="7"/>
+                                <Button Name="WPFinstall" Content=" Install Selection " Margin="7"/>
+                                <Button Name="WPFInstallUpgrade" Content=" Upgrade Selection " Margin="7"/>
+                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="7"/>
                                 <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
-                                <Button Name="WPFclearWinget" Content=" Clear Selected " Margin="7"/>
+                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
@@ -4187,7 +4256,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
