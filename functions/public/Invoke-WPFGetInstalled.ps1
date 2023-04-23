@@ -38,7 +38,3 @@ function Invoke-WPFGetInstalled {
         $sync.ProcessRunning = $false
     }
 }
-
-
-
-

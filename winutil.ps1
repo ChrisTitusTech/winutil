@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.03.27
+    Version        : 23.04.22
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.03.27"
+$sync.version = "23.04.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -48,10 +48,11 @@ Function Get-WinUtilCheckBoxes {
     $Output = New-Object System.Collections.Generic.List[System.Object]
 
     if($Group -eq "WPFInstall"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPFInstall*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
-                $sync.configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                $sync.configs.applications.$($CheckBox.Name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
                 if ($uncheck -eq $true){
@@ -63,7 +64,8 @@ Function Get-WinUtilCheckBoxes {
     }
     
     if($Group -eq "WPFTweaks"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
@@ -76,7 +78,8 @@ Function Get-WinUtilCheckBoxes {
     }
 
     if($Group -eq "WPFFeature"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Feature*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Feature*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
@@ -156,6 +159,35 @@ function Get-WinUtilRegistry {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
+}
+function Get-WinUtilVariables {
+
+    <#
+    
+        .DESCRIPTION
+        palceholder
+    
+    #>
+    param (
+        [Parameter()]
+        [ValidateSet("CheckBox", "Button")]
+        [string]$Type
+    )
+
+    $keys = $sync.keys | Where-Object {$psitem -like "WPF*"} 
+
+    if($type){
+        $output = $keys | ForEach-Object {
+            Try{
+                if ($sync["$psitem"].GetType() -like "*$type*"){
+                    Write-Output $psitem
+                }
+            }
+            Catch{<#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>}
+        }
+        return $output        
+    }
+    return $keys
 }
 function Install-WinUtilChoco {
 
@@ -299,36 +331,52 @@ Function Invoke-WinUtilCurrentSystem {
     #>
 
     param(
-        $CheckBox,
-        $undo = $false
+        $CheckBox
     )
-    if($undo){
-        $Values = @{
-            Registry = "OriginalValue"
-            ScheduledTask = "OriginalState"
-            Service = "OriginalType"
-        }
-    }    
-    Else{
-        $Values = @{
-            Registry = "Value"
-            ScheduledTask = "State"
-            Service = "StartupType"
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Get-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-            if ($psitem.$($values.registry) -eq $syscheckvalue) {
-                $sync.configs.tweaks.$CheckBox.$($values.registry) = $true
-            }
-            else {
-                $sync.configs.tweaks.$CheckBox.$($values.registry) = $false
+
+    if ($checkbox -eq "winget"){
+
+        $originalEncoding = [Console]::OutputEncoding
+        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+        [Console]::OutputEncoding = $originalEncoding
+
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if($sync.configs.applications.$($psitem.Key).winget -in $sync.InstalledPrograms.Id){
+                Write-Output $psitem.name
             }
         }
     }
 
+    if($CheckBox -eq "tweaks"){
+
+        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+
+        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
+
+            $registryKeys = $sync.configs.tweaks.$($psitem.name).registry
+        
+            Foreach ($tweaks in $registryKeys){
+                $Values = @()
+                Foreach($tweak in $tweaks){
+        
+                    if(test-path $tweak.Path){
+                        $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                        $expectedValue = $tweak.Value
+                        if ($expectedValue -ne $actualValue){
+                            $values += $False
+                        }
+                    }
+                }
+            }
+            if($values -notcontains $false){
+                Write-Output $psitem.Name
+            }
+        }
+    }
 }
+
 function Invoke-WinUtilFeatureInstall {
     <#
     
@@ -749,6 +797,7 @@ function Invoke-WPFButton {
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
+        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
     }
 }
 function Invoke-WPFControlPanel {
@@ -987,6 +1036,46 @@ Function Invoke-WPFFormVariables {
     #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
     #get-variable WPF*
 }
+function Invoke-WPFGetInstalled {
+    <#
+
+    .DESCRIPTION
+    GUI Function to install Windows Features
+
+    #>
+    param($checkbox)
+
+    if($sync.ProcessRunning){
+        $msg = "Install process is currently running."
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+        return
+    }
+
+    if(!(Test-WinUtilPackageManager -winget)){
+        Write-Host "==========================================="
+        Write-Host "--       Winget is not installed        ---"
+        Write-Host "==========================================="
+        return
+    }
+
+    Invoke-WPFRunspace -ArgumentList $checkbox -ScriptBlock {
+        param($checkbox)
+
+        $sync.ProcessRunning = $true
+
+        Write-Host "Getting Installed Programs..."
+        $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+        
+        $sync.form.Dispatcher.invoke({
+            foreach($checkbox in $Checkboxes){
+                $sync.$checkbox.ischecked = $True
+            }
+        })
+
+        Write-Host "Done..."
+        $sync.ProcessRunning = $false
+    }
+}
 function Invoke-WPFImpex {
     <#
     
@@ -1145,17 +1234,13 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    #Uncheck all
-    get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
-        if ($psitem.value.gettype().name -eq "CheckBox"){
-            $CheckBox = Get-Variable $psitem.Name
-            if ($CheckBoxesToCheck -contains $CheckBox.name){
-                $checkbox.value.ischecked = $true
-            }
-            else{$checkbox.value.ischecked = $false}
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
+    $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+        if ($CheckBoxesToCheck -contains $PSItem.name){
+            $sync.$($PSItem.name).ischecked = $true
         }
+        else{$sync.$($PSItem.name).ischecked = $false}
     }
-
 }
 function Invoke-WPFRunspace {
 
@@ -1182,40 +1267,13 @@ function Invoke-WPFRunspace {
         $ArgumentList
     ) 
 
-    #Configure max thread count for RunspacePool.
-    $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
-
-    #Create a new session state for parsing variables ie hashtable into our runspace.
-    $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
-    $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
-
-    #Add the variable to the RunspacePool sessionstate
-    $InitialSessionState.Variables.Add($hashVars)
-
-    #Add functions
-    $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
-    foreach ($function in $functions){
-      $functionDefinition = Get-Content function:\$($function.name)
-      $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-        
-      # And add it to the iss object
-      $initialSessionState.Commands.Add($functionEntry)
-    }
-
-    #Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
-    $script:runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
-
-
     #Crate a PowerShell instance.
     $script:powershell = [powershell]::Create()
-
-    #Open a RunspacePool instance.
-    $script:runspace.Open()
 
     #Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
-    $script:powershell.RunspacePool = $script:runspace
+    $script:powershell.RunspacePool = $sync.runspace
     
     #Run our RunspacePool.
     $script:handle = $script:powershell.BeginInvoke()
@@ -1225,8 +1283,8 @@ function Invoke-WPFRunspace {
     {
         $script:powershell.EndInvoke($script:handle)
         $script:powershell.Dispose()
-        $script:runspace.Dispose()
-        $script:runspace.Close()
+        $sync.runspace.Dispose()
+        $sync.runspace.Close()
         [System.GC]::Collect()
     }
 }
@@ -1273,17 +1331,17 @@ function Invoke-WPFTab {
     #>
 
     Param ($ClickedTab)
-    $Tabs = Get-Variable WPFTab?BT
-    $TabNav = Get-Variable WPFTabNav
+    $Tabs = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTab?BT"}
+    $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
     $x = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
 
     0..($Tabs.Count -1 ) | ForEach-Object {
         
         if ($x -eq $psitem){
-            $TabNav.value.Items[$psitem].IsSelected = $true
+            $sync.$TabNav.Items[$psitem].IsSelected = $true
         }
         else{
-            $TabNav.value.Items[$psitem].IsSelected = $false
+            $sync.$TabNav.Items[$psitem].IsSelected = $false
         }
     }
 }
@@ -1303,9 +1361,9 @@ function Invoke-WPFtweaksbutton {
 
   $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
-  Set-WinUtilDNS -DNSProvider $WPFchangedns.text
+  Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $WPFchangedns.text -eq "Default"){
+  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -1702,14 +1760,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         CornerRadius="10" 
                                         Margin="5,0"
                                 />
-                                <Border Name="ToggleSwitchButton"
+                                <Border Name="WPFToggleSwitchButton"
                                         Width="25" 
                                         Height="25"
                                         Background="Black" 
                                         CornerRadius="12.5" 
                                         HorizontalAlignment="Left"
                                 />
-                                <ContentPresenter Name="ToggleSwitchContent"
+                                <ContentPresenter Name="WPFToggleSwitchContent"
                                                   Margin="10,0,0,0"
                                                   Content="{TemplateBinding Content}"
                                                   VerticalAlignment="Center"
@@ -1719,11 +1777,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="false">
                                 <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="ToggleSwitchLeft" />
-                                    <BeginStoryboard x:Name="ToggleSwitchRight">
+                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchLeft" />
+                                    <BeginStoryboard x:Name="WPFToggleSwitchRight">
                                         <Storyboard>
                                             <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    Storyboard.TargetName="ToggleSwitchButton"
+                                                    Storyboard.TargetName="WPFToggleSwitchButton"
                                                     Duration="0:0:0:0"
                                                     From="0,0,0,0"
                                                     To="28,0,0,0">
@@ -1731,18 +1789,18 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
-                                <Setter TargetName="ToggleSwitchButton"
+                                <Setter TargetName="WPFToggleSwitchButton"
                                         Property="Background"
                                         Value="#fff9f4f4"
                                 />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="true">
                                 <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="ToggleSwitchRight" />
-                                    <BeginStoryboard x:Name="ToggleSwitchLeft">
+                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchRight" />
+                                    <BeginStoryboard x:Name="WPFToggleSwitchLeft">
                                         <Storyboard>
                                             <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    Storyboard.TargetName="ToggleSwitchButton"
+                                                    Storyboard.TargetName="WPFToggleSwitchButton"
                                                     Duration="0:0:0:0"
                                                     From="28,0,0,0"
                                                     To="0,0,0,0">
@@ -1750,7 +1808,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
-                                <Setter TargetName="ToggleSwitchButton"
+                                <Setter TargetName="WPFToggleSwitchButton"
                                         Property="Background"
                                         Value="#ff060600"
                                 />
@@ -1761,9 +1819,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Name="dummy" Grid.Column="0" Grid.Row="0">
+    <Border Name="WPFdummy" Grid.Column="0" Grid.Row="0">
         <Viewbox Stretch="Uniform" VerticalAlignment="Top">
-            <Grid Background="#777777" ShowGridLines="False" Name="MainGrid">
+            <Grid Background="#777777" ShowGridLines="False" Name="WPFMainGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
                     <RowDefinition Height=".9*"/>
@@ -1772,14 +1830,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
-                    <Image Height="50" Width="100" Name="Icon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="Tab4BT"/>
+                    <Image Height="50" Width="100" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
+                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab1BT"/>
+                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab2BT"/>
+                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab3BT"/>
+                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab4BT"/>
                 </DockPanel>
-                <TabControl Grid.Row="1" Padding="-1" Name="TabNav" Background="#222222">
-                    <TabItem Header="Install" Visibility="Collapsed" Name="Tab1">
+                <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222">
+                    <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                         <Grid Background="#222222">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1793,162 +1851,163 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Grid.RowDefinitions>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installbrave" Content="Brave" Margin="5,0"/>
-                                <CheckBox Name="Installchrome" Content="Chrome" Margin="5,0"/>
-                                <CheckBox Name="Installchromium" Content="Chromium" Margin="5,0"/>
-                                <CheckBox Name="Installedge" Content="Edge" Margin="5,0"/>
-                                <CheckBox Name="Installfirefox" Content="Firefox" Margin="5,0"/>
-                                <CheckBox Name="Installlibrewolf" Content="LibreWolf" Margin="5,0"/>
-                                <CheckBox Name="Installtor" Content="Tor Browser" Margin="5,0"/>
-                                <CheckBox Name="Installvivaldi" Content="Vivaldi" Margin="5,0"/>
-                                <CheckBox Name="Installwaterfox" Content="Waterfox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
-                                <CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
-                                <CheckBox Name="Installjami" Content="Jami" Margin="5,0"/>
-                                <CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
-                                <CheckBox Name="Installsignal" Content="Signal" Margin="5,0"/>
-                                <CheckBox Name="Installskype" Content="Skype" Margin="5,0"/>
-                                <CheckBox Name="Installslack" Content="Slack" Margin="5,0"/>
-                                <CheckBox Name="Installteams" Content="Teams" Margin="5,0"/>
-                                <CheckBox Name="Installtelegram" Content="Telegram" Margin="5,0"/>
-                                <CheckBox Name="Installviber" Content="Viber" Margin="5,0"/>
-                                <CheckBox Name="Installzoom" Content="Zoom" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
-                                <CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
-                                <CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                                <CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                                <CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
-                                <CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                                <CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
-                                <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                                <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
-                                <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
-                                <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
-                                <CheckBox Name="Installunity" Content="Unity Game Engine" Margin="5,0"/>
-                                <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                                <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallatom" Content="Atom" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
 
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installadobe" Content="Adobe Reader DC" Margin="5,0"/>
-                                <CheckBox Name="Installfoxpdf" Content="Foxit PDF" Margin="5,0"/>
-                                <CheckBox Name="Installjoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
-                                <CheckBox Name="Installlibreoffice" Content="LibreOffice" Margin="5,0"/>
-                                <CheckBox Name="Installnotepadplus" Content="Notepad++" Margin="5,0"/>
-                                <CheckBox Name="Installobsidian" Content="Obsidian" Margin="5,0"/>
-                                <CheckBox Name="Installonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
-                                <CheckBox Name="Installopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
-                                <CheckBox Name="Installsumatra" Content="Sumatra PDF" Margin="5,0"/>
-                                <CheckBox Name="Installwinmerge" Content="WinMerge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
 
 
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installbluestacks" Content="Bluestacks" Margin="5,0"/>
-                                <CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-                                <CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
-                                <CheckBox Name="Installorigin" Content="Origin" Margin="5,0"/>
-                                <CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallorigin" Content="Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installadvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-                                <CheckBox Name="Installmremoteng" Content="mRemoteNG" Margin="5,0"/>
-                                <CheckBox Name="Installputty" Content="Putty" Margin="5,0"/>
-                                <CheckBox Name="Installrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
-                                <CheckBox Name="Installsimplewall" Content="SimpleWall" Margin="5,0"/>
-                                <CheckBox Name="Installscp" Content="WinSCP" Margin="5,0"/>
-                                <CheckBox Name="Installwireshark" Content="WireShark" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallscp" Content="WinSCP" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
 
                                 <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installdotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
-                                <CheckBox Name="Installdotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
-                                <CheckBox Name="Installdotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
-                                <CheckBox Name="Installnuget" Content="Nuget" Margin="5,0"/>
-                                <CheckBox Name="Installonedrive" Content="OneDrive" Margin="5,0"/>
-                                <CheckBox Name="Installpowershell" Content="PowerShell" Margin="5,0"/>
-                                <CheckBox Name="Installpowertoys" Content="Powertoys" Margin="5,0"/>
-                                <CheckBox Name="Installprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
-                                <CheckBox Name="Installvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
-                                <CheckBox Name="Installvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
-                                <CheckBox Name="Installterminal" Content="Windows Terminal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
 
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installaudacity" Content="Audacity" Margin="5,0"/>
-                                <CheckBox Name="Installblender" Content="Blender (3D Graphics)" Margin="5,0"/>
-                                <CheckBox Name="Installcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
-                                <CheckBox Name="Installeartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
-                                <CheckBox Name="Installflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
-                                <CheckBox Name="Installfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
-                                <CheckBox Name="Installgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
-                                <CheckBox Name="Installgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
-                                <CheckBox Name="Installhandbrake" Content="HandBrake" Margin="5,0"/>
-                                <CheckBox Name="Installimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
-                                <CheckBox Name="Installinkscape" Content="Inkscape" Margin="5,0"/>
-                                <CheckBox Name="Installitunes" Content="iTunes" Margin="5,0"/>
-                                <CheckBox Name="Installkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
-                                <CheckBox Name="Installkodi" Content="Kodi Media Center" Margin="5,0"/>
-                                <CheckBox Name="Installklite" Content="K-Lite Codec Standard" Margin="5,0"/>
-                                <CheckBox Name="Installkrita" Content="Krita (Image Editor)" Margin="5,0"/>
-                                <CheckBox Name="Installmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-                                <CheckBox Name="Installobs" Content="OBS Studio" Margin="5,0"/>
-                                <CheckBox Name="Installnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
-                                <CheckBox Name="Installsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-                                <CheckBox Name="Installstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
-                                <CheckBox Name="Installvlc" Content="VLC (Video Player)" Margin="5,0"/>
-                                <CheckBox Name="Installvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalleartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
-                                <CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
-                                <CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
-                                <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
-                                <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
-                                <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
-                                <CheckBox Name="Installdeluge" Content="Deluge" Margin="5,0"/>
-                                <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
-                                <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
-                                <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
-                                <CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
-                                <CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
-                                <CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
-                                <CheckBox Name="Installidm" Content="Internet Download Manager" Margin="5,0"/>
-                                <CheckBox Name="Installjdownloader" Content="J Download Manager" Margin="5,0"/>
-                                <CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
-                                <CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-                                <CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
-                                <CheckBox Name="Installopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
-                                <CheckBox Name="Installprocesslasso" Content="Process Lasso" Margin="5,0"/>
-                                <CheckBox Name="Installqbittorrent" Content="qBittorrent" Margin="5,0"/>
-                                <CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
-                                <CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
-                                <CheckBox Name="Installsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
-                                <CheckBox Name="Installshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
-                                <CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
-                                <CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-                                <CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
-                                <CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
-                                <CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
-                                <CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
-                                <Button Name="install" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
-                                <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
+                                <CheckBox Name="WPFInstallsevenzip" Content="7-Zip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
+                                <Button Name="WPFinstall" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
+                                <Button Name="WPFInstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
+                                <Button Name="WPFGetInstalled" Background="AliceBlue" Content="Get Installed" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Get installed programs"/>
 
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Tweaks" Visibility="Collapsed" Name="Tab2">
+                    <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                         <Grid Background="#333333">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1961,15 +2020,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Grid.RowDefinitions>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Margin="10">
                                 <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="desktop" Content=" Desktop " Margin="7"/>
-                                <Button Name="laptop" Content=" Laptop " Margin="7"/>
-                                <Button Name="minimal" Content=" Minimal " Margin="7"/>
-                                <Button Name="clear" Content=" Clear " Margin="7"/>
+                                <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
+                                <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
+                                <Button Name="WPFminimal" Content=" Minimal " Margin="7"/>
+                                <Button Name="WPFclear" Content=" Clear " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="import" Content=" Import " Margin="7"/>
-                                <Button Name="export" Content=" Export " Margin="7"/>
+                                <Button Name="WPFimport" Content=" Import " Margin="7"/>
+                                <Button Name="WPFexport" Content=" Export " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
                                 <TextBlock Padding="10">
@@ -1979,52 +2038,52 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
                                 <Label FontSize="16" Content="Essential Tweaks"/>
-                                <CheckBox Name="EssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
-                                <CheckBox Name="EssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                                <CheckBox Name="EssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spys heavily on you when using the Edge browser."/>
-                                <CheckBox Name="EssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scaned wifi networks and your current geo location."/>
-                                <CheckBox Name="EssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                                <CheckBox Name="EssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                                <CheckBox Name="EssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                                <CheckBox Name="EssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                                <CheckBox Name="EssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn''t have this, it was awful."/>
-                                <CheckBox Name="EssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense is supposed to delete temp files automatically, but often runs at wierd times and mostly doesn''t do much. Although when it was introduced in Win 10 (1809 Version) it deleted people''s documents... So there is that."/>
-                                <CheckBox Name="EssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves whats in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
-                                <CheckBox Name="EssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
-                                <CheckBox Name="EssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                                <CheckBox Name="WPFEssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
+                                <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+                                <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spys heavily on you when using the Edge browser."/>
+                                <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scaned wifi networks and your current geo location."/>
+                                <CheckBox Name="WPFEssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
+                                <CheckBox Name="WPFEssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
+                                <CheckBox Name="WPFEssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
+                                <CheckBox Name="WPFEssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
+                                <CheckBox Name="WPFEssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn''t have this, it was awful."/>
+                                <CheckBox Name="WPFEssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense is supposed to delete temp files automatically, but often runs at wierd times and mostly doesn''t do much. Although when it was introduced in Win 10 (1809 Version) it deleted people''s documents... So there is that."/>
+                                <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves whats in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
+                                <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
+                                <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
                                 <Label Content="Dark Theme" />
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Off" />
-                                    <CheckBox Name="ToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
                                     <Label Content="On" />
                                 </StackPanel>
 							<Label Content="Performance Plans" />
-                                <Button Name="AddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-                                <Button Name="RemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
+                                <Button Name="WPFAddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
+                                <Button Name="WPFRemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
 							<Label Content="Shortcuts" />
-                                <Button Name="WinUtilShortcut" Background="AliceBlue" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
+                                <Button Name="WPFWinUtilShortcut" Background="AliceBlue" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
-                                <CheckBox Name="MiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
-                                <CheckBox Name="MiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
-                                <CheckBox Name="MiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and send you back to the past... or it simply turns numlock on at startup"/>
-                                <CheckBox Name="MiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
-                                <CheckBox Name="MiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
-                                <CheckBox Name="MiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                                <CheckBox Name="MiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                                <CheckBox Name="MiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
-                                <CheckBox Name="MiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="MiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
-                                <CheckBox Name="EssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="EssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
-                                <CheckBox Name="EssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="MiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="MiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
-                                <CheckBox Name="MiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
+                                <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
+                                <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
+                                <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and send you back to the past... or it simply turns numlock on at startup"/>
+                                <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
+                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
+                                <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
+                                <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
+                                <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
+                                <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
+                                <CheckBox Name="WPFMiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
+                                <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
+                                <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+                                <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
+                                <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
+                                <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <Label Content="DNS" />
-							    <ComboBox Name="changedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
+							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
                                     <ComboBoxItem Content = "DHCP"/> 
 								    <ComboBoxItem Content = "Google"/> 
@@ -2035,12 +2094,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 								    <ComboBoxItem Content = "Open_DNS"/> 
                                     <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
-                                <Button Name="tweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Button Name="undoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Config" Visibility="Collapsed" Name="Tab3">
+                    <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                         <Grid Background="#444444">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -2048,29 +2107,29 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Grid.ColumnDefinitions>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
                                 <Label Content="Features" FontSize="16"/>
-                                <CheckBox Name="Featuresdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
-                                <CheckBox Name="Featureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
-                                <CheckBox Name="Featureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
-                                <CheckBox Name="Featurenfs" Content="NFS - Network File System" Margin="5,0"/>
-                                <CheckBox Name="Featurewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
-                                <Button Name="FeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
+                                <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
+                                <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
+                                <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
+                                <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
+                                <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
+                                <Button Name="WPFFeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="PanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="FixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="PanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
-                                <Button Name="Panelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="Panelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="Panelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="Panelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="Panelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="Paneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPaneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Updates" Visibility="Collapsed" Name="Tab4">
+                    <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
                         <Grid Background="#555555">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -2078,15 +2137,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
-                                <Button Name="Updatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
+                                <Button Name="WPFUpdatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
-                                <Button Name="Updatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
+                                <Button Name="WPFUpdatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.</TextBlock>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
-                                <Button Name="Updatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10,10,10,10"/>
+                                <Button Name="WPFUpdatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10,10,10,10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                                 <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 
@@ -4035,6 +4094,32 @@ $sync.configs.tweaks = '{
     ]
   }
 }' | convertfrom-json
+#Configure max thread count for RunspacePool.
+$maxthreads = [int]$env:NUMBER_OF_PROCESSORS
+
+#Create a new session state for parsing variables ie hashtable into our runspace.
+$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
+$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+
+#Add the variable to the RunspacePool sessionstate
+$InitialSessionState.Variables.Add($hashVars)
+
+#Add functions
+$functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
+foreach ($function in $functions){
+    $functionDefinition = Get-Content function:\$($function.name)
+    $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
+    
+    # And add it to the iss object
+    $initialSessionState.Commands.Add($functionEntry)
+}
+
+#Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
+$sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
+
+#Open a RunspacePool instance.
+$sync.runspace.Open()
+
 #region exception classes
 
     class WingetFailedInstall : Exception {
@@ -4063,7 +4148,7 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 #Read XAML
 
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
-try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
+try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -4072,7 +4157,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
@@ -4080,21 +4165,24 @@ catch {
 # Store Form Objects In PowerShell
 #===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-$buttons = get-variable | Where-Object {$psitem.name -like "WPF*" -and $psitem.value -ne $null -and $psitem.value.GetType().name -eq "Button"}
-foreach ($button in $buttons){
-    $button.value.Add_Click({
-        [System.Object]$Sender = $args[0]
-        Invoke-WPFButton "WPF$($Sender.name)"
-    })
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+    }
 }
 
-$WPFToggleDarkMode.Add_Click({    
+$sync["WPFToggleDarkMode"].Add_Click({    
   Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
 })
 
-$WPFToggleDarkMode.IsChecked = Get-WinUtilDarkMode
+$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
 
 #===========================================================================
 # Setup background config
@@ -4114,6 +4202,7 @@ Invoke-WPFRunspace -ScriptBlock {
 #===========================================================================
 
 Invoke-WPFFormVariables
+Invoke-WinUtilCurrentSystem -CheckBox "Tweaks"
 
 try{
     Install-WinUtilChoco
@@ -4123,6 +4212,12 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-$form.title = $form.title + " " + $sync.version
-$Form.ShowDialog() | out-null
+$sync["Form"].title = $sync["Form"].title + " " + $sync.version
+$sync["Form"].Add_Closing({
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+})
+
+$sync["Form"].ShowDialog() | out-null
 Stop-Transcript

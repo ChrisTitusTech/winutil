@@ -14,8 +14,7 @@ Function Invoke-WinUtilCurrentSystem {
     #>
 
     param(
-        $CheckBox,
-        $undo = $false
+        $CheckBox
     )
 
     if ($checkbox -eq "winget"){
@@ -32,20 +31,32 @@ Function Invoke-WinUtilCurrentSystem {
             }
         }
     }
+
     if($CheckBox -eq "tweaks"){
-        if($sync.configs.tweaks.$CheckBox.registry){
-            $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-                Get-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-                if ($psitem.$($values.registry) -eq $syscheckvalue) {
-                    $sync.configs.tweaks.$CheckBox.$($values.registry) = $true
+
+        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+
+        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
+
+            $registryKeys = $sync.configs.tweaks.$($psitem.name).registry
+        
+            Foreach ($tweaks in $registryKeys){
+                $Values = @()
+                Foreach($tweak in $tweaks){
+        
+                    if(test-path $tweak.Path){
+                        $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                        $expectedValue = $tweak.Value
+                        if ($expectedValue -ne $actualValue){
+                            $values += $False
+                        }
+                    }
                 }
-                else {
-                    $sync.configs.tweaks.$CheckBox.$($values.registry) = $false
-                }
+            }
+            if($values -notcontains $false){
+                Write-Output $psitem.Name
             }
         }
     }
-
-
 }
 
