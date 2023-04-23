@@ -775,9 +775,12 @@ function Invoke-WPFButton {
         "WPFdesktop" {Invoke-WPFPresets "Desktop"}
         "WPFlaptop" {Invoke-WPFPresets "laptop"}
         "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFexport" {Invoke-WPFImpex -type "export"}
-        "WPFimport" {Invoke-WPFImpex -type "import"}
+        "WPFexport" {Invoke-WPFImpex -type "export" -CheckBox "WPFTweaks"}
+        "WPFimport" {Invoke-WPFImpex -type "import" -CheckBox "WPFTweaks"}
+        "WPFexportWinget" {Invoke-WPFImpex -type "export" -CheckBox "WPFInstall"}
+        "WPFimportWinget" {Invoke-WPFImpex -type "import" -CheckBox "WPFInstall"}
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
+        "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
@@ -1087,7 +1090,10 @@ function Invoke-WPFImpex {
         Invoke-WPFImpex -type "export"
     
     #>
-    param($type)
+    param(
+        $type,
+        $checkbox
+    )
 
     if ($type -eq "export"){
         $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
@@ -1105,12 +1111,12 @@ function Invoke-WPFImpex {
     }
     
     if ($type -eq "export"){
-        $jsonFile = Get-WinUtilCheckBoxes WPFTweaks -unCheck $false
+        $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
     if ($type -eq "import"){
         $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
-        Invoke-WPFPresets -preset $jsonFile -imported $true
+        Invoke-WPFPresets -preset $jsonFile -imported $true -CheckBox $checkbox
     }
 }
 function Invoke-WPFInstall {
@@ -1225,8 +1231,10 @@ function Invoke-WPFPresets {
 
     param(
         $preset,
-        [bool]$imported = $false
+        [bool]$imported = $false,
+        $checkbox = "WPFTeaks"
     )
+
     if($imported -eq $true){
         $CheckBoxesToCheck = $preset
     }
@@ -1234,12 +1242,24 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
-    $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-        if ($CheckBoxesToCheck -contains $PSItem.name){
-            $sync.$($PSItem.name).ischecked = $true
+    if($checkbox -eq "WPFTeaks"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if ($CheckBoxesToCheck -contains $PSItem.name){
+                $sync.$($PSItem.name).ischecked = $true
+            }
+            else{$sync.$($PSItem.name).ischecked = $false}
         }
-        else{$sync.$($PSItem.name).ischecked = $false}
+    }
+    if($checkbox -eq "WPFInstall"){
+
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if($($sync.configs.applications.$($psitem.name).winget) -in $CheckBoxesToCheck){
+                $sync.$($PSItem.name).ischecked = $true
+            }
+            else{$sync.$($PSItem.name).ischecked = $false}
+        }
     }
 }
 function Invoke-WPFRunspace {
@@ -1847,9 +1867,23 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height=".10*"/>
+                                <RowDefinition Height=".90*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10">
+
+                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+                                <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
+                                <Button Name="WPFinstall" Content=" Start Install " Margin="7"/>
+                                <Button Name="WPFInstallUpgrade" Content=" Upgrade Install " Margin="7"/>
+                                <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
+                                <Button Name="WPFclearWinget" Content=" Clear Selected " Margin="7"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
+                                <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
+                                <Button Name="WPFimportWinget" Content=" Import " Margin="7"/>
+                                <Button Name="WPFexportWinget" Content=" Export " Margin="7"/>
+                            </StackPanel>
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
@@ -1874,7 +1908,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10">
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallatom" Content="Atom" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
@@ -1907,7 +1941,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
 
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10">
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
 
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
@@ -1941,7 +1975,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
 
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="3" Margin="10">
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
@@ -1967,7 +2001,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="4" Margin="10">
+                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsevenzip" Content="7-Zip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
@@ -2000,10 +2034,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
-                                <Button Name="WPFinstall" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
-                                <Button Name="WPFInstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
-                                <Button Name="WPFGetInstalled" Background="AliceBlue" Content="Get Installed" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Get installed programs"/>
-
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -4202,7 +4232,6 @@ Invoke-WPFRunspace -ScriptBlock {
 #===========================================================================
 
 Invoke-WPFFormVariables
-Invoke-WinUtilCurrentSystem -CheckBox "Tweaks"
 
 try{
     Install-WinUtilChoco
