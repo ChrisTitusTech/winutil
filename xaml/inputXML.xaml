@@ -185,7 +185,6 @@
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
-
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
@@ -214,7 +213,6 @@
                                 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
@@ -296,6 +294,7 @@
                                 <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
                                 <Button Name="WPFminimal" Content=" Minimal " Margin="7"/>
                                 <Button Name="WPFclear" Content=" Clear " Margin="7"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>

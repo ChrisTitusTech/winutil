@@ -35,26 +35,64 @@ Function Invoke-WinUtilCurrentSystem {
     if($CheckBox -eq "tweaks"){
 
         if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+        $ScheduledTasks = Get-ScheduledTask
 
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
-            $registryKeys = $sync.configs.tweaks.$($psitem.name).registry
+            $Config = $psitem.Name
+            #WPFEssTweaksTele
+            $registryKeys = $sync.configs.tweaks.$Config.registry
+            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
+            $serviceKeys = $sync.configs.tweaks.$Config.service
         
-            Foreach ($tweaks in $registryKeys){
+            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
                 $Values = @()
-                Foreach($tweak in $tweaks){
-        
-                    if(test-path $tweak.Path){
-                        $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                        $expectedValue = $tweak.Value
-                        if ($expectedValue -ne $actualValue){
-                            $values += $False
+
+
+                Foreach ($tweaks in $registryKeys){
+                    Foreach($tweak in $tweaks){
+            
+                        if(test-path $tweak.Path){
+                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                            $expectedValue = $tweak.Value
+                            if ($expectedValue -notlike $actualValue){
+                                $values += $False                                
+                            }
                         }
                     }
                 }
-            }
-            if($values -notcontains $false){
-                Write-Output $psitem.Name
+
+                Foreach ($tweaks in $scheduledtaskKeys){
+                    Foreach($tweak in $tweaks){
+                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
+            
+                        if($task){
+                            $actualValue = $task.State
+                            $expectedValue = $tweak.State
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                Foreach ($tweaks in $serviceKeys){
+                    Foreach($tweak in $tweaks){
+                        $Service = Get-Service -Name $tweak.Name
+            
+                        if($Service){
+                            $actualValue = $Service.StartType
+                            $expectedValue = $tweak.StartupType
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                if($values -notcontains $false){
+                    Write-Output $Config
+                }
             }
         }
     }

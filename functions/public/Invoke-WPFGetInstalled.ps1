@@ -2,7 +2,7 @@ function Invoke-WPFGetInstalled {
     <#
 
     .DESCRIPTION
-    GUI Function to install Windows Features
+    placeholder
 
     #>
     param($checkbox)
@@ -13,7 +13,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(!(Test-WinUtilPackageManager -winget)){
+    if(!(Test-WinUtilPackageManager -winget) -and $checkbox -eq "winget"){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"
         Write-Host "==========================================="
@@ -25,7 +25,13 @@ function Invoke-WPFGetInstalled {
 
         $sync.ProcessRunning = $true
 
-        Write-Host "Getting Installed Programs..."
+        if($checkbox -eq "winget"){
+            Write-Host "Getting Installed Programs..."
+        }
+        if($checkbox -eq "tweaks"){
+            Write-Host "Getting Installed Tweaks..."
+        }
+        
         $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
         
         $sync.form.Dispatcher.invoke({

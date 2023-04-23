@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.04.22
+    Version        : 23.04.23
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.04.22"
+$sync.version = "23.04.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -247,7 +247,7 @@ Function Install-WinUtilProgramWinget {
             Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent --disable-interactivity $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent $Program" -NoNewWindow -Wait
         }
         
         $X++
@@ -361,26 +361,64 @@ Function Invoke-WinUtilCurrentSystem {
     if($CheckBox -eq "tweaks"){
 
         if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+        $ScheduledTasks = Get-ScheduledTask
 
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
-            $registryKeys = $sync.configs.tweaks.$($psitem.name).registry
+            $Config = $psitem.Name
+            #WPFEssTweaksTele
+            $registryKeys = $sync.configs.tweaks.$Config.registry
+            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
+            $serviceKeys = $sync.configs.tweaks.$Config.service
         
-            Foreach ($tweaks in $registryKeys){
+            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
                 $Values = @()
-                Foreach($tweak in $tweaks){
-        
-                    if(test-path $tweak.Path){
-                        $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                        $expectedValue = $tweak.Value
-                        if ($expectedValue -ne $actualValue){
-                            $values += $False
+
+
+                Foreach ($tweaks in $registryKeys){
+                    Foreach($tweak in $tweaks){
+            
+                        if(test-path $tweak.Path){
+                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                            $expectedValue = $tweak.Value
+                            if ($expectedValue -notlike $actualValue){
+                                $values += $False                                
+                            }
                         }
                     }
                 }
-            }
-            if($values -notcontains $false){
-                Write-Output $psitem.Name
+
+                Foreach ($tweaks in $scheduledtaskKeys){
+                    Foreach($tweak in $tweaks){
+                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
+            
+                        if($task){
+                            $actualValue = $task.State
+                            $expectedValue = $tweak.State
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                Foreach ($tweaks in $serviceKeys){
+                    Foreach($tweak in $tweaks){
+                        $Service = Get-Service -Name $tweak.Name
+            
+                        if($Service){
+                            $actualValue = $Service.StartType
+                            $expectedValue = $tweak.StartupType
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                if($values -notcontains $false){
+                    Write-Output $Config
+                }
             }
         }
     }
@@ -811,6 +849,7 @@ function Invoke-WPFButton {
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
+        "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
     }
 }
 function Invoke-WPFControlPanel {
@@ -1053,7 +1092,7 @@ function Invoke-WPFGetInstalled {
     <#
 
     .DESCRIPTION
-    GUI Function to install Windows Features
+    placeholder
 
     #>
     param($checkbox)
@@ -1064,7 +1103,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(!(Test-WinUtilPackageManager -winget)){
+    if(!(Test-WinUtilPackageManager -winget) -and $checkbox -eq "winget"){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"
         Write-Host "==========================================="
@@ -1076,7 +1115,13 @@ function Invoke-WPFGetInstalled {
 
         $sync.ProcessRunning = $true
 
-        Write-Host "Getting Installed Programs..."
+        if($checkbox -eq "winget"){
+            Write-Host "Getting Installed Programs..."
+        }
+        if($checkbox -eq "tweaks"){
+            Write-Host "Getting Installed Tweaks..."
+        }
+        
         $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
         
         $sync.form.Dispatcher.invoke({
@@ -2012,7 +2057,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
-
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
@@ -2041,7 +2085,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-
 
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
@@ -2123,6 +2166,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
                                 <Button Name="WPFminimal" Content=" Minimal " Margin="7"/>
                                 <Button Name="WPFclear" Content=" Clear " Margin="7"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
@@ -3605,7 +3649,7 @@ $sync.configs.tweaks = '{
         "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
         "OriginalValue": "1",
         "name": "Start",
-        "value": "00000004",
+        "value": "4",
         "type": "Dword"
       },
       {
