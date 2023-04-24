@@ -9,7 +9,10 @@ function Invoke-WPFImpex {
         Invoke-WPFImpex -type "export"
     
     #>
-    param($type)
+    param(
+        $type,
+        $checkbox
+    )
 
     if ($type -eq "export"){
         $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
@@ -27,11 +30,11 @@ function Invoke-WPFImpex {
     }
     
     if ($type -eq "export"){
-        $jsonFile = Get-WinUtilCheckBoxes WPFTweaks -unCheck $false
+        $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
     if ($type -eq "import"){
         $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
-        Invoke-WPFPresets -preset $jsonFile -imported $true
+        Invoke-WPFPresets -preset $jsonFile -imported $true -CheckBox $checkbox
     }
 }

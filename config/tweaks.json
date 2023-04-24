@@ -703,7 +703,7 @@
         "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
         "OriginalValue": "1",
         "name": "Start",
-        "value": "00000004",
+        "value": "4",
         "type": "Dword"
       },
       {
