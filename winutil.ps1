@@ -2043,6 +2043,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
                                 <CheckBox Name="Installnvm" Content="Node Version Manager" Margin="5,0"/>
                                 <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="Installpostman" Content="Postman" Margin="5,0"/>
                                 <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
                                 <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
@@ -2844,6 +2845,10 @@ $sync.configs.applications = '{
   "WPFInstallnvm": {
     "winget": "CoreyButler.NVMforWindows",
     "choco": "nvm"
+  },
+  "WPFInstallpostman": {
+    "winget": "Postman.Postman",
+    "choco": "postman"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{

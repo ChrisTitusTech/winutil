@@ -526,5 +526,9 @@
   "WPFInstallnvm": {
     "winget": "CoreyButler.NVMforWindows",
     "choco": "nvm"
+  },
+  "WPFInstallpostman": {
+    "winget": "Postman.Postman",
+    "choco": "postman"
   }
 }
