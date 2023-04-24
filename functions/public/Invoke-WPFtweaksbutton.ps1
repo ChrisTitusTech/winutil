@@ -14,9 +14,9 @@ function Invoke-WPFtweaksbutton {
 
   $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
-  Set-WinUtilDNS -DNSProvider $WPFchangedns.text
+  Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $WPFchangedns.text -eq "Default"){
+  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return

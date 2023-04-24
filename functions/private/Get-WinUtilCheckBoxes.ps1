@@ -22,10 +22,11 @@ Function Get-WinUtilCheckBoxes {
     $Output = New-Object System.Collections.Generic.List[System.Object]
 
     if($Group -eq "WPFInstall"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPFInstall*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
-                $sync.configs.applications.$($CheckBox.name).winget -split ";" | ForEach-Object {
+                $sync.configs.applications.$($CheckBox.Name).winget -split ";" | ForEach-Object {
                     $Output.Add($psitem)
                 }
                 if ($uncheck -eq $true){
@@ -37,7 +38,8 @@ Function Get-WinUtilCheckBoxes {
     }
     
     if($Group -eq "WPFTweaks"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Tweaks*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
@@ -50,7 +52,8 @@ Function Get-WinUtilCheckBoxes {
     }
 
     if($Group -eq "WPFFeature"){
-        $CheckBoxes = get-variable | Where-Object {$psitem.name -like "WPF*Feature*" -and $psitem.value.GetType().name -eq "CheckBox"}
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Feature*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)

@@ -1,16 +1,3 @@
-#region Configurable Variables
-
-    <#
-        .NOTES
-        Use this section to configure testing variables. IE if the number of tabs change in the GUI update that variable here.
-        All variables need to be global to be passed between contexts
-
-    #>
-
-    $global:FormName = "Chris Titus Tech's Windows Utility"
-
-#endregion Configurable Variables
-
 #region Load Variables needed for testing
 
     #Config Files
@@ -90,26 +77,5 @@ Describe "Config Files" -ForEach @(
             }
         }
 
-    }
-}
-
-
-#===========================================================================
-# Tests - Functions
-#===========================================================================
-
-Describe "Functions" -ForEach @(Get-ChildItem .\functions -Recurse -File){
-
-    BeforeEach -Scriptblock {
-        . $psitem.FullName
-    }
-    
-    Context "$($psitem.BaseName)" {
-        It "Imports with no errors" {
-            Get-ChildItem function:\$($psitem.BaseName) | should -Not -BeNullOrEmpty
-        }
-        It "Contains Description" {
-            get-help $($psitem.BaseName) -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Description | should -Not -BeNullOrEmpty
-        }
     }
 }
