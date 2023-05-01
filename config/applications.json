@@ -11,10 +11,6 @@
     "winget": "AnyDeskSoftwareGmbH.AnyDesk",
     "choco": "anydesk"
   },
-  "WPFInstallatom": {
-    "winget": "GitHub.Atom",
-    "choco": "atom"
-  },
   "WPFInstallaudacity": {
     "winget": "Audacity.Audacity",
     "choco": "audacity"

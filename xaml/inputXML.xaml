@@ -152,7 +152,6 @@
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installatom" Content="Atom" Margin="5,0"/>
                                 <CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
