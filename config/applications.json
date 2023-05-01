@@ -55,6 +55,10 @@
     "winget": "Discord.Discord",
     "choco": "discord"
   },
+"WPFInstallguilded": {
+    "winget": "Guilded.Guilded",
+    "choco": "guilded"
+  },
   "WPFInstalleartrumpet": {
     "winget": "File-New-Project.EarTrumpet",
     "choco": "eartrumpet"
