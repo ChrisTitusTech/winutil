@@ -124,6 +124,7 @@
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="Installdiscord" Content="Discord" Margin="5,0"/>
+                                <CheckBox Name="Installguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="Installhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="Installjami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="Installmatrix" Content="Matrix" Margin="5,0"/>
