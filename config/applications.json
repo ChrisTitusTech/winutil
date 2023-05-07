@@ -83,6 +83,10 @@
     "winget": "PeterPawlowski.foobar2000",
     "choco": "foobar2000"
   },
+  "WPFInstallgeforcenow": {
+    "winget": "Nvidia.GeForceNow",
+    "choco": "nvidia-geforce-now"
+  },
   "WPFInstallgimp": {
     "winget": "GIMP.GIMP",
     "choco": "gimp"

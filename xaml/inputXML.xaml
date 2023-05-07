@@ -195,6 +195,7 @@
                                 <CheckBox Name="WPFInstallorigin" Content="Origin" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
