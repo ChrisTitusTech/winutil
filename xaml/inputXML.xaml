@@ -170,8 +170,7 @@
                                 <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                                 <CheckBox Name="Installneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
-
+                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/?
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
@@ -188,12 +187,12 @@
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installbluestacks" Content="Bluestacks" Margin="5,0"/>
-                                <CheckBox Name="Installepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-                                <CheckBox Name="Installgog" Content="GOG Galaxy" Margin="5,0"/>
-                                <CheckBox Name="Installorigin" Content="Origin" Margin="5,0"/>
-                                <CheckBox Name="Installsteam" Content="Steam" Margin="5,0"/>
-                                <CheckBox Name="Installubisoft" Content="Ubisoft Connect" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallorigin" Content="Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
@@ -246,40 +245,40 @@
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installsevenzip" Content="7-Zip" Margin="5,0"/>
-                                <CheckBox Name="Installalacritty" Content="Alacritty Terminal" Margin="5,0"/>
-                                <CheckBox Name="Installanydesk" Content="AnyDesk" Margin="5,0"/>
-                                <CheckBox Name="Installautohotkey" Content="AutoHotkey" Margin="5,0"/>
-                                <CheckBox Name="Installbitwarden" Content="Bitwarden" Margin="5,0"/>
-                                <CheckBox Name="Installcpuz" Content="CPU-Z" Margin="5,0"/>
-                                <CheckBox Name="Installdeluge" Content="Deluge" Margin="5,0"/>
-                                <CheckBox Name="Installetcher" Content="Etcher USB Creator" Margin="5,0"/>
-                                <CheckBox Name="Installesearch" Content="Everything Search" Margin="5,0"/>
-                                <CheckBox Name="Installflux" Content="f.lux Redshift" Margin="5,0"/>
-                                <CheckBox Name="Installgpuz" Content="GPU-Z" Margin="5,0"/>
-                                <CheckBox Name="Installglaryutilities" Content="Glary Utilities" Margin="5,0"/>
-                                <CheckBox Name="Installhwinfo" Content="HWInfo" Margin="5,0"/>
-                                <CheckBox Name="Installidm" Content="Internet Download Manager" Margin="5,0"/>
-                                <CheckBox Name="Installjdownloader" Content="J Download Manager" Margin="5,0"/>
-                                <CheckBox Name="Installkeepass" Content="KeePassXC" Margin="5,0"/>
-                                <CheckBox Name="Installmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-                                <CheckBox Name="Installnvclean" Content="NVCleanstall" Margin="5,0"/>
-                                <CheckBox Name="Installopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
-                                <CheckBox Name="Installprocesslasso" Content="Process Lasso" Margin="5,0"/>
-                                <CheckBox Name="Installqbittorrent" Content="qBittorrent" Margin="5,0"/>
-                                <CheckBox Name="Installrevo" Content="RevoUninstaller" Margin="5,0"/>
-                                <CheckBox Name="Installrufus" Content="Rufus Imager" Margin="5,0"/>
-                                <CheckBox Name="Installsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
-                                <CheckBox Name="Installshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
-                                <CheckBox Name="Installteamviewer" Content="TeamViewer" Margin="5,0"/>
-                                <CheckBox Name="Installttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-                                <CheckBox Name="Installtreesize" Content="TreeSize Free" Margin="5,0"/>
-                                <CheckBox Name="Installtwinkletray" Content="Twinkle Tray" Margin="5,0"/>
-                                <CheckBox Name="Installwindirstat" Content="WinDirStat" Margin="5,0"/>
-                                <CheckBox Name="Installwiztree" Content="WizTree" Margin="5,0"/>
-                                <CheckBox Name="Installwinrar" Content="WinRAR" Margin="5,0"/>
-                                <Button Name="install" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
-                                <Button Name="InstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
+                                <CheckBox Name="WPFInstallsevenzip" Content="7-Zip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
+                                <Button Name="WPFInstall" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
+                                <Button Name="WPFInstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
 
                             </StackPanel>
                         </Grid>
