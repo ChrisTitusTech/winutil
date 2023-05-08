@@ -2050,7 +2050,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                                 <CheckBox Name="Installneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/?
+                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
@@ -2158,9 +2158,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                                <Button Name="WPFInstall" Background="AliceBlue" Content="Start Install" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150" ToolTip="Install all checked programs"/>
-                                <Button Name="WPFInstallUpgrade" Background="AliceBlue" Content="Upgrade Installs" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="150" ToolTip="Upgrade All Existing Programs on System"/>
-
+                                
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -4339,7 +4337,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 

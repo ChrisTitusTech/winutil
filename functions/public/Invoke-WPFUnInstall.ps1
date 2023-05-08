@@ -22,7 +22,7 @@ function Invoke-WPFUnInstall {
 
     $ButtonType = [System.Windows.MessageBoxButton]::YesNo
     $MessageboxTitle = "Are you sure?"
-    $Messageboxbody = ("This will install the following applications `n $WingetInstall")
+    $Messageboxbody = ("This will uninstall the following applications `n $WingetInstall")
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
