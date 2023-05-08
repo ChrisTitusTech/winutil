@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.04
+    Version        : 23.05.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.04"
+$sync.version = "23.05.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -4251,7 +4251,11 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      },
+      }
+    ]
+  },
+  "WPFDisableGameBar": {
+    "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
