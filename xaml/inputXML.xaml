@@ -152,27 +152,25 @@
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallatom" Content="Atom" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-
+                                <CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
+                                <CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
+                                <CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
+                                <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
+                                <CheckBox Name="Installnvm" Content="Node Version Manager" Margin="5,0"/>
+                                <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="Installpostman" Content="Postman" Margin="5,0"/>
+                                <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
+                                <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
+                                <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="Installunity" Content="Unity Game Engine" Margin="5,0"/>
+                                <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="Installneovim" Content="Neovim" Margin="5,0"/>
+                                <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
+                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/?
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
