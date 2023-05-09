@@ -8,8 +8,10 @@ function Invoke-WPFPresets {
 
     param(
         $preset,
-        [bool]$imported = $false
+        [bool]$imported = $false,
+        $checkbox = "WPFTeaks"
     )
+
     if($imported -eq $true){
         $CheckBoxesToCheck = $preset
     }
@@ -17,15 +19,23 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    #Uncheck all
-    get-variable | Where-Object {$_.name -like "*tweaks*"} | ForEach-Object {
-        if ($psitem.value.gettype().name -eq "CheckBox"){
-            $CheckBox = Get-Variable $psitem.Name
-            if ($CheckBoxesToCheck -contains $CheckBox.name){
-                $checkbox.value.ischecked = $true
+    if($checkbox -eq "WPFTeaks"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if ($CheckBoxesToCheck -contains $PSItem.name){
+                $sync.$($PSItem.name).ischecked = $true
             }
-            else{$checkbox.value.ischecked = $false}
+            else{$sync.$($PSItem.name).ischecked = $false}
         }
     }
+    if($checkbox -eq "WPFInstall"){
 
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if($($sync.configs.applications.$($psitem.name).winget) -in $CheckBoxesToCheck){
+                $sync.$($PSItem.name).ischecked = $true
+            }
+            else{$sync.$($PSItem.name).ischecked = $false}
+        }
+    }
 }

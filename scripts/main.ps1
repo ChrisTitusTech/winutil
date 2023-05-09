@@ -1,3 +1,29 @@
+#Configure max thread count for RunspacePool.
+$maxthreads = [int]$env:NUMBER_OF_PROCESSORS
+
+#Create a new session state for parsing variables ie hashtable into our runspace.
+$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
+$InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+
+#Add the variable to the RunspacePool sessionstate
+$InitialSessionState.Variables.Add($hashVars)
+
+#Add functions
+$functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
+foreach ($function in $functions){
+    $functionDefinition = Get-Content function:\$($function.name)
+    $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
+    
+    # And add it to the iss object
+    $initialSessionState.Commands.Add($functionEntry)
+}
+
+#Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
+$sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
+
+#Open a RunspacePool instance.
+$sync.runspace.Open()
+
 #region exception classes
 
     class WingetFailedInstall : Exception {
@@ -26,7 +52,7 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 #Read XAML
 
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
-try { $Form = [Windows.Markup.XamlReader]::Load( $reader ) }
+try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -43,17 +69,24 @@ catch {
 # Store Form Objects In PowerShell
 #===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) }
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-$buttons = get-variable | Where-Object {$psitem.name -like "WPF*" -and $psitem.value -ne $null -and $psitem.value.GetType().name -eq "Button"}
-foreach ($button in $buttons){
-    $button.value.Add_Click({
-        [System.Object]$Sender = $args[0]
-        Invoke-WPFButton "WPF$($Sender.name)"
-    })
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+    }
 }
 
-$WPFToggleDarkMode.IsChecked = Get-WinUtilDarkMode
+$sync["WPFToggleDarkMode"].Add_Click({    
+  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
+})
+
+$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
 
 #===========================================================================
 # Setup background config
@@ -82,6 +115,12 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-$form.title = $form.title + " " + $sync.version
-$Form.ShowDialog() | out-null
+$sync["Form"].title = $sync["Form"].title + " " + $sync.version
+$sync["Form"].Add_Closing({
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+})
+
+$sync["Form"].ShowDialog() | out-null
 Stop-Transcript

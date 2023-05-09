@@ -9,20 +9,29 @@ Function Install-WinUtilProgramWinget {
     
     #>
 
-    param($ProgramsToInstall)
+    param(
+        $ProgramsToInstall,
+        $manage = "Installing"
+    )
 
     $x = 0
     $count = $($ProgramsToInstall -split ",").Count
 
-    Write-Progress -Activity "Installing Applications" -Status "Starting" -PercentComplete 0
+    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
 
     Foreach ($Program in $($ProgramsToInstall -split ",")){
     
-        Write-Progress -Activity "Installing Applications" -Status "Installing $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait;
+        Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
+        if($manage -eq "Installing"){
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+        }
+        if($manage -eq "Uninstalling"){
+            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent $Program" -NoNewWindow -Wait
+        }
+        
         $X++
     }
 
-    Write-Progress -Activity "Installing Applications" -Status "Finished" -Completed
+    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
 }

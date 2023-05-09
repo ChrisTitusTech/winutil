@@ -18,13 +18,17 @@ function Invoke-WPFButton {
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
+        "WPFuninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
         "WPFdesktop" {Invoke-WPFPresets "Desktop"}
         "WPFlaptop" {Invoke-WPFPresets "laptop"}
         "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFexport" {Invoke-WPFImpex -type "export"}
-        "WPFimport" {Invoke-WPFImpex -type "import"}
+        "WPFexport" {Invoke-WPFImpex -type "export" -CheckBox "WPFTweaks"}
+        "WPFimport" {Invoke-WPFImpex -type "import" -CheckBox "WPFTweaks"}
+        "WPFexportWinget" {Invoke-WPFImpex -type "export" -CheckBox "WPFInstall"}
+        "WPFimportWinget" {Invoke-WPFImpex -type "import" -CheckBox "WPFInstall"}
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
+        "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
@@ -43,7 +47,8 @@ function Invoke-WPFButton {
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
-
-
+        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
+        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
+        "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
     }
 }

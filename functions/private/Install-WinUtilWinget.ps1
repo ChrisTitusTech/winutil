@@ -42,6 +42,14 @@ function Install-WinUtilWinget {
             # Switching to winget-install from PSGallery from asheroto
             # Source: https://github.com/asheroto/winget-installer
 
+            #adding the code from the asheroto repo
+            Set-ExecutionPolicy RemoteSigned -force
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+            Install-Script -Name winget-install -force
+            winget-instal
+            
+            
             Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
 
             if(!(Test-WinUtilPackageManager -winget)){

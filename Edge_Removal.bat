@@ -1,10 +1,12 @@
+REM https://github.com/AveYo/fox/blob/main/Edge_Removal.bat is source file
+
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit /b
 #:: double-click to run or just copy-paste into powershell - it's a standalone hybrid script
 sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal '
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2022.10.03'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -92,7 +94,7 @@ cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.ex
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD $DIR\OpenWebSearch.cmd"" >nul"
 
 $OpenWebSearch = @$
-@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser
+@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 for /f %%E in ('"prompt $E$S& for %%e in (1) do rem"') do echo;%%E[2t 2>nul & rem AveYo: minimize prompt
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b

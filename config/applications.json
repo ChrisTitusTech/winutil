@@ -11,10 +11,6 @@
     "winget": "AnyDeskSoftwareGmbH.AnyDesk",
     "choco": "anydesk"
   },
-  "WPFInstallatom": {
-    "winget": "GitHub.Atom",
-    "choco": "atom"
-  },
   "WPFInstallaudacity": {
     "winget": "Audacity.Audacity",
     "choco": "audacity"
@@ -82,6 +78,10 @@
   "WPFInstallfoobar": {
     "winget": "PeterPawlowski.foobar2000",
     "choco": "foobar2000"
+  },
+  "WPFInstallgeforcenow": {
+    "winget": "Nvidia.GeForceNow",
+    "choco": "nvidia-geforce-now"
   },
   "WPFInstallgimp": {
     "winget": "GIMP.GIMP",
@@ -507,8 +507,28 @@
     "winget": "Microsoft.Edge",
     "choco": "microsoft-edge"
   },
+  "WPFInstallubisoft": {
+    "winget": "Ubisoft.Connect",
+    "choco": "ubisoft-connect"
+  },
   "WPFInstallnuget": {
     "winget": "Microsoft.NuGet",
     "choco": "nuget.commandline"
+  },
+  "WPFInstallwinrar": {
+    "winget": "RARLab.WinRar",
+    "choco": "winrar"
+  },
+  "WPFInstallneovim": {
+    "winget": "Neovim.Neovim",
+    "choco": "neovim"
+  },
+  "WPFInstallnvm": {
+    "winget": "CoreyButler.NVMforWindows",
+    "choco": "nvm"
+  },
+  "WPFInstallpostman": {
+    "winget": "Postman.Postman",
+    "choco": "postman"
   }
 }

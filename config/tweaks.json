@@ -91,344 +91,1317 @@
   "WPFEssTweaksServices": {
     "service": [
       {
+        "Name": "AJRouter",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "diagnosticshub.standardcollector.service"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "ALG",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "DiagTrack"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "AppIDSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "DPS"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "AppMgmt",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "dmwappushservice"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "AppReadiness",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "lfsvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "AppVClient",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "AppXSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Appinfo",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "AssignedAccessManagerSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "AudioEndpointBuilder",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AudioSrv",
+        "StartupType": "Automatic"
+      },
+      {
+        "Name": "Audiosrv",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AxInstSV",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BDESVC",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BFE",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "BITS",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "BTAGService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BcastDVRUserService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BluetoothUserService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BrokerInfrastructure",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Browser",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "BthAvctpSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "BthHFSrv",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "CDPSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CDPUserSvc_dc2a4",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "COMSysApp",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "CaptureService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "CertPropSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "ClipSVC",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "ConsentUxUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "CoreMessagingRegistrar",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "CryptSvc",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CscService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DPS",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DcomLaunch",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DcpSvc",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "DevQueryBroker",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DeviceAssociationService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DeviceInstall",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DevicePickerUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DevicesFlowUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Dhcp",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DiagTrack",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DialogBlockingService",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "DispBrokerDesktopSvc",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DisplayEnhancementService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DmEnrollmentSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Dnscache",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DoSvc",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "DsSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DsmSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "DusmSvc",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "EFS",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "EapHost",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "EntAppSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "EventLog",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "EventSystem",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "FDResPub",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Fax",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "FontCache",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "FrameServer",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "FrameServerMonitor",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "GraphicsPerfSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "HomeGroupListener",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "HomeGroupProvider",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "HvHost",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "IEEtwCollectorService",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "IKEEXT",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "InstallService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "InventorySvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "IpxlatCfgSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "KeyIso",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "KtmRm",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "LSM",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "LanmanServer",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "LanmanWorkstation",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "LicenseManager",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "LxpSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MSDTC",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MSiSCSI",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MapsBroker",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "McpManagementService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MessagingService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MicrosoftEdgeElevationService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MixedRealityOpenXRSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "MpsSvc",
+        "StartupType": "Automatic"
+      },
+      {
+        "Name": "MsKeyboardFilter",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "NPSMSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NaturalAuthentication",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NcaSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NcbService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NcdAutoSetup",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NetSetupSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NetTcpPortSharing",
+        "StartupType": "Disabled",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "Netlogon",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Netman",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NgcCtnrSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NgcSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "NlaSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "OneSyncSvc_dc2a4",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "P9RdrService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PNRPAutoReg",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PNRPsvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PcaSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "PeerDistSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PenService_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PerfHost",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PhoneSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PlugPlay",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PolicyAgent",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Power",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "PrintNotify",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "PrintWorkflowUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "ProfSvc",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "PushToInstall",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "QWAVE",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RasAuto",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RasMan",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RemoteAccess",
+        "StartupType": "Disabled",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "RemoteRegistry",
+        "StartupType": "Disabled",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "RetailDemo",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RmSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RpcEptMapper",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "RpcLocator",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "RpcSs",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SCPolicySvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SCardSvr",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SDRSVC",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SEMgrSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SENS",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SNMPTRAP",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "SNMPTrap",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SSDPSRV",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SamSs",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "ScDeviceEnum",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Schedule",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SecurityHealthService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Sense",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SensorDataService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SensorService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SensrSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SessionEnv",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SgrmBroker",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SharedAccess",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "SharedRealitySvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "ShellHWDetection",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SmsRouter",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Spooler",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SstpSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "StateRepository",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "StiSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "StorSvc",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SysMain",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "SystemEventsBroker",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "TabletInputService",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "TapiSrv",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TermService",
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TextInputManagementService",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Themes",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "TieringEngineService",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TimeBroker",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "TimeBrokerSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TokenBroker",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TrkWks",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "TroubleshootingSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "TrustedInstaller",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "MapsBroker"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "UI0Detect",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "UdkUserSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "UevAgentService",
+        "OriginalType": "Disabled"
       },
       {
+        "Name": "UmRdpService",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "NetTcpPortSharing"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "UnistoreSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "UserDataSvc_dc2a4",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "UserManager",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "UsoSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "RemoteAccess"
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "VGAuthService",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "VMTools",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "VSS",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "RemoteRegistry"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "VacSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "VaultSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "SharedAccess"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "W32Time",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "TrkWks"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WEPHOSTSVC",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WMPNetworkSvc"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "WFDSConMgrSvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WMPNetworkSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WSearch"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WManSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "WPDBusEnum",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "XblAuthManager"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "WSService",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "WSearch",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "WaaSMedicSvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WalletService",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "XblGameSave"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WarpJITSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "WbioSrvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "XboxNetApiSvc"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Wcmsvc",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "WcsPlugInService",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "WdNisSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "XboxGipSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WdiServiceHost",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "ndu"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WdiSystemHost",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WerSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WebClient",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "Fax"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "Wecsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "fhsvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WerSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "gupdate"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WiaRpc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "gupdatem"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "WinDefend",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "WinHttpAutoProxySvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "stisvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WinRM",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "AJRouter"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Winmgmt",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "WlanSvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "Wlansvc",
+        "StartupType": "Manual"
+      },
+      {
+        "Name": "WpcMonSvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "WpnService",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "MSDTC"
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "WpnUserService_dc2a4",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "WwanSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WpcMonSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "XblAuthManager",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "PhoneSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "XblGameSave",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "PrintNotify"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "XboxGipSvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "XboxNetApiSvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "PcaSvc"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "autotimesvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "bthserv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WPDBusEnum"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "camsvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "cbdhsvc_dc2a4",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "cloudidsvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "dcsvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "defragsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "seclogon"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "diagnosticshub.standardcollector.service",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "SysMain"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "diagsvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "dmwappushservice",
+        "StartupType": "Disabled",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "dot3svc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "lmhosts"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "edgeupdate",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "edgeupdatem",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "embeddedmode",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "wisvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "fdPHost",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "FontCache"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "fhsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "RetailDemo"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "gpsvc",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "hidserv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "ALG"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "icssvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "SCardSvr"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "iphlpsvc",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "lfsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "EntAppSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "lltdsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "BthAvctpSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "lmhosts",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "Browser"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "mpssvc",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "msiserver",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "BthAvctpSvc"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "netprofm",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "iphlpsvc"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "nsi",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "p2pimsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "edgeupdate"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "p2psvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "MicrosoftEdgeElevationService"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "perceptionsimulation",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "pla",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "edgeupdatem"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "seclogon",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "SEMgrSvc"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "shpamsvc",
+        "OriginalType": "Disabled"
       },
       {
+        "Name": "smphost",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "PerfHost"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "spectrum",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "sppsvc",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "ssh-agent",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "svsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "BcastDVRUserService_48486de"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "swprv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "CaptureService_48486de"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "tiledatamodelsvc",
+        "StartupType": "Automatic"
+      },
+      {
+        "Name": "tzautoupdate",
+        "OriginalType": "Disabled"
+      },
+      {
+        "Name": "uhssvc",
+        "OriginalType": "Disabled"
       },
       {
+        "Name": "upnphost",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "cbdhsvc_48486de"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vds",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "WpnService"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vm3dservice",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "vmicguestinterface",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "RtkBtManServ"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmicheartbeat",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "QWAVE"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmickvpexchange",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HPAppHelperCap"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmicrdv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HPDiagsCap"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmicshutdown",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HPNetworkCap"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmictimesync",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HPSysInfoCap"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmicvmsession",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HpTouchpointAnalyticsService"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "vmicvss",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "HvHost"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "vmvss",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "wbengine",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmickvpexchange"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "wcncsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmicguestinterface"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "webthreatdefsvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "webthreatdefusersvc_dc2a4",
+        "OriginalType": "Automatic"
       },
       {
+        "Name": "wercplsupport",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmicshutdown"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "wisvc",
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "wlidsvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmicheartbeat"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "wlpasvc",
+        "OriginalType": "Manual"
       },
       {
+        "Name": "wmiApSrv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmicvmsession"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "workfolderssvc",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmicrdv"
+        "OriginalType": "Manual"
       },
       {
+        "Name": "wscsvc",
+        "StartupType": "AutomaticDelayedStart",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "wuauserv",
         "StartupType": "Manual",
-        "OriginalType": "Automatic",
-        "Name": "vmictimesync"
+        "OriginalType": "Manual"
+      },
+      {
+        "Name": "wudfsvc",
+        "StartupType": "Manual"
       }
     ]
   },
@@ -657,10 +1630,11 @@
         "type": "Dword"
       },
       {
+        "_Comment" : "Driver searching is a function that should be left in",
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
-        "value": "0",
+        "value": "1",
         "type": "Dword"
       },
       {
@@ -702,21 +1676,21 @@
         "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
         "OriginalValue": "1",
         "name": "Start",
-        "value": "00000004",
+        "value": "4",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
+        "OriginalValue": "400",
         "name": "MouseHoverTime",
         "value": "400",
         "type": "String"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "OriginalValue": "1",
+        "OriginalValue": "20",
         "name": "IRPStackSize",
-        "value": "20",
+        "value": "30",
         "type": "Dword"
       },
       {
@@ -802,13 +1776,6 @@
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        #Timeout Tweaks cause flickering on Windows now
-        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillAppTimeout\" -ErrorAction SilentlyContinue
-        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"HungAppTimeout\" -ErrorAction SilentlyContinue
-        #Remove-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
-        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"LowLevelHooksTimeout\" -ErrorAction SilentlyContinue
-        #Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"WaitToKillServiceTimeout\" -ErrorAction SilentlyContinue
 
         $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
         Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
@@ -1077,7 +2044,7 @@
   },
   "WPFEssTweaksOO": {
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10.cfg\" -o $ENV:temp\\ooshutup10.cfg
+      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
        Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"$ENV:temp\\ooshutup10.cfg /quiet\"
        "
@@ -1268,7 +2235,11 @@
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      },
+      }
+    ]
+  },
+  "WPFDisableGameBar": {
+    "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
