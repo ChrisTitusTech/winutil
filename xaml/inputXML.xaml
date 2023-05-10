@@ -359,7 +359,7 @@
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
+							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
                                     <ComboBoxItem Content = "DHCP"/> 
 								    <ComboBoxItem Content = "Google"/> 
@@ -370,8 +370,8 @@
 								    <ComboBoxItem Content = "Open_DNS"/> 
                                     <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
-                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
+                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
