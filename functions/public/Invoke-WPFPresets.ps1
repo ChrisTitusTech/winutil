@@ -19,7 +19,7 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    if($checkbox -eq "WPFTeaks"){
+    if($checkbox -eq "WPFTweaks"){
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
             if ($CheckBoxesToCheck -contains $PSItem.name){
