@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.10
+    Version        : 23.05.11
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.10"
+$sync.version = "23.05.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -1305,7 +1305,7 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    if($checkbox -eq "WPFTeaks"){
+    if($checkbox -eq "WPFTweaks"){
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
             if ($CheckBoxesToCheck -contains $PSItem.name){
@@ -2032,25 +2032,25 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="Installgit" Content="Git" Margin="5,0"/>
-                                <CheckBox Name="Installgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="Installjava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                                <CheckBox Name="Installjava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                                <CheckBox Name="Installjava18" Content="Oracle Java 18" Margin="5,0"/>
-                                <CheckBox Name="Installjetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                                <CheckBox Name="Installnodejs" Content="NodeJS" Margin="5,0"/>
-                                <CheckBox Name="Installnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                                <CheckBox Name="Installnvm" Content="Node Version Manager" Margin="5,0"/>
-                                <CheckBox Name="Installpython3" Content="Python3" Margin="5,0"/>
-                                <CheckBox Name="Installpostman" Content="Postman" Margin="5,0"/>
-                                <CheckBox Name="Installrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="Installgolang" Content="GoLang" Margin="5,0"/>
-                                <CheckBox Name="Installsublime" Content="Sublime" Margin="5,0"/>
-                                <CheckBox Name="Installunity" Content="Unity Game Engine" Margin="5,0"/>
-                                <CheckBox Name="Installvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                                <CheckBox Name="Installneovim" Content="Neovim" Margin="5,0"/>
-                                <CheckBox Name="Installvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="Installvscodium" Content="VS Codium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
@@ -2239,7 +2239,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "150" HorizontalAlignment = "Left" Margin="5,5"> 
+							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
                                     <ComboBoxItem Content = "DHCP"/> 
 								    <ComboBoxItem Content = "Google"/> 
@@ -2250,8 +2250,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 								    <ComboBoxItem Content = "Open_DNS"/> 
                                     <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
-                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
-                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="150"/>
+                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
+                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -2528,7 +2528,7 @@ $sync.configs.applications = '{
     "choco": "python"
   },
   "WPFInstallrevo": {
-    "winget": "RevoUnInstaller.RevoUnInstaller",
+    "winget": "RevoUninstaller.RevoUninstaller",
     "choco": "revo-uninstaller"
   },
   "WPFInstallrufus": {
