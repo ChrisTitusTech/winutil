@@ -9,7 +9,7 @@ function Invoke-WPFPresets {
     param(
         $preset,
         [bool]$imported = $false,
-        $checkbox = "WPFTeaks"
+        $checkbox = "WPFTweaks"
     )
 
     if($imported -eq $true){
