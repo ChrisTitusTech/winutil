@@ -15,12 +15,30 @@ function Invoke-WinUtilScript {
         [scriptblock]$scriptblock
     )
 
-    Try{
-        Invoke-Command $scriptblock -ErrorAction stop
+    Try {
+        Invoke-Command $scriptblock -ErrorAction Stop
         Write-Host "Running Script for $name"
     }
-    Catch{
-        Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+    Catch [System.Management.Automation.CommandNotFoundException] {
+        Write-Warning "The specified command was not found."
+        Write-Warning $PSItem.Exception.message
     }
+    Catch [System.Management.Automation.RuntimeException] {
+        Write-Warning "A runtime exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "A security exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.UnauthorizedAccessException] {
+        Write-Warning "Access denied. You do not have permission to perform this operation."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch {
+        # Generic catch block to handle any other type of exception
+        Write-Warning "An unhandled exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    
 }
