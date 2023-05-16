@@ -32,7 +32,7 @@ Function Invoke-WPFUltimatePerformance {
                 Write-Host "Power scheme '$powerSchemeName' already exists."
             }           
         }
-        if($state -eq "Disabled"){
+        elseif($state -eq "Disabled"){
                 # Define the name of the power scheme you want to remove
                 $powerSchemeName = "Ultimate Performance"
 
@@ -64,15 +64,7 @@ Function Invoke-WPFUltimatePerformance {
                 }
 
             }
-            else {
-                Write-Host "Power scheme '$powerSchemeName' not found."
-            }
-        }
         
-        # $output = Invoke-Command -ScriptBlock $command
-        # if($output -like "*does not exist*"){
-        #     throw [GenericException]::new('Failed to modify profile')
-        # }
     }
     Catch{
         Write-Warning $psitem.Exception.Message
