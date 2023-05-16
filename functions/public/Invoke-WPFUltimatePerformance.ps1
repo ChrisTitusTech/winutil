@@ -24,12 +24,11 @@ Function Invoke-WPFUltimatePerformance {
 
             if ($existingPlan) {
                 # Delete the Ultimate Power Plan
-                $existingPlan.Delete()
+                [scriptblock]$command = {powercfg -delete $powerPlanGuid}
                 Write-Host "Ultimate Power Plan has been removed."
             } else {
                 Write-Host "Ultimate Power Plan not found. No action required."
             }
-            [scriptblock]$command = {powercfg -delete $guid}
         }
         
         $output = Invoke-Command -ScriptBlock $command
