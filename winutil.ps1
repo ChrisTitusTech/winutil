@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.13
+    Version        : 23.05.16
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.13"
+$sync.version = "23.05.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -502,14 +502,32 @@ function Invoke-WinUtilScript {
         [scriptblock]$scriptblock
     )
 
-    Try{
-        Invoke-Command $scriptblock -ErrorAction stop
+    Try {
         Write-Host "Running Script for $name"
+        Invoke-Command $scriptblock -ErrorAction Stop
     }
-    Catch{
+    Catch [System.Management.Automation.CommandNotFoundException] {
+        Write-Warning "The specified command was not found."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.Management.Automation.RuntimeException] {
+        Write-Warning "A runtime exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "A security exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.UnauthorizedAccessException] {
+        Write-Warning "Access denied. You do not have permission to perform this operation."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch {
+        # Generic catch block to handle any other type of exception
         Write-Warning "Unable to run script for $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace 
     }
+    
 }
 function Invoke-WinUtilTweaks {
     <#
@@ -4022,7 +4040,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Winmgmt",
-        "StartupType": "Disabled",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -5060,7 +5078,61 @@ $sync.configs.tweaks = '{
   },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
-      "Invoke-WebRequest -useb https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/Edge_Removal.bat | Invoke-Expression"
+        "      
+        # Stop Edge Task
+        Stop-Process -Name \"msedge\" -Force -ErrorAction SilentlyContinue
+
+        # Uninstall - Edge
+        $edgePath = \"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\"
+        if (Test-Path $edgePath) {
+            $edgeVersions = Get-ChildItem $edgePath -Directory
+            foreach ($version in $edgeVersions) {
+                $installerPath = Join-Path $version.FullName \"Installer\"
+                if (Test-Path $installerPath) {
+                    Set-Location -Path $installerPath | Out-Null
+                    if (Test-Path \"setup.exe\") {
+                        Write-Host \"Removing Microsoft Edge\"
+                        Start-Process -Wait -FilePath \"setup.exe\" -ArgumentList \"--uninstall --system-level --force-uninstall\"
+                    }
+                }
+            }
+        }
+
+        # Uninstall - EdgeWebView
+        $edgeWebViewPath = \"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\"
+        if (Test-Path $edgeWebViewPath) {
+            $edgeWebViewVersions = Get-ChildItem $edgeWebViewPath -Directory
+            foreach ($version in $edgeWebViewVersions) {
+                $installerPath = Join-Path $version.FullName \"Installer\"
+                if (Test-Path $installerPath) {
+                    Set-Location -Path $installerPath | Out-Null
+                    if (Test-Path \"setup.exe\") {
+                        Write-Host \"Removing EdgeWebView\"
+                        Start-Process -Wait -FilePath \"setup.exe\" -ArgumentList \"--uninstall --msedgewebview --system-level --force-uninstall\"
+                    }
+                }
+            }
+        }
+
+        # Delete Edge desktop icon, from all users
+        $users = Get-ChildItem -Path \"C:\\Users\" -Directory
+        foreach ($user in $users) {
+            $desktopPath = Join-Path -Path $user.FullName -ChildPath \"Desktop\"
+            Remove-Item -Path \"$desktopPath\\edge.lnk\" -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path \"$desktopPath\\Microsoft Edge.lnk\" -Force -ErrorAction SilentlyContinue
+        }
+
+        # Delete additional files
+        if (Test-Path \"C:\\Windows\\System32\\MicrosoftEdgeCP.exe\") {
+            $edgeFiles = Get-ChildItem -Path \"C:\\Windows\\System32\" -Filter \"MicrosoftEdge*\" -File
+            foreach ($file in $edgeFiles) {
+                $filePath = Join-Path -Path $file.Directory.FullName -ChildPath $file.Name
+                takeown.exe /F \"$filePath\" > $null
+                icacls.exe \"$filePath\" /inheritance:e /grant \"$env:UserName:(OI)(CI)F\" /T /C > $null
+                Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
+            }
+        }
+        "
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
