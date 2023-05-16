@@ -33,31 +33,36 @@ Function Invoke-WPFUltimatePerformance {
             }           
         }
         if($state -eq "Disabled"){
-            # Define the name of the power scheme you want to remove
-            $powerSchemeName = "Ultimate Performance"
+                # Define the name of the power scheme you want to remove
+                $powerSchemeName = "Ultimate Performance"
 
-            # Get all power schemes
-            $schemes = powercfg /list | Out-String -Stream
+                # Get all power schemes
+                $schemes = powercfg /list | Out-String -Stream
 
-            # Find the scheme you want to remove
-            $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+                # Find the scheme you want to remove
+                $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
 
-            # If the scheme exists, remove it
-            if ($null -ne $ultimateScheme) {
-                # Extract the GUID of the power scheme
-                $guidRegex = "\((.*?)\)"
-                if ($ultimateScheme -match $guidRegex) {
-                    $guid = $Matches[1]
-                    Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
-                    
-                    # Remove the power scheme
-                    powercfg /delete $guid
-                    
-                    Write-Host "Power scheme removed successfully."
+                # If the scheme exists, remove it
+                if ($null -ne $ultimateScheme) {
+                    # Extract the GUID of the power scheme
+                    $guid = ($ultimateScheme -split '\s+')[3]
+
+                    if($null -ne $guid){
+                        Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
+                        
+                        # Remove the power scheme
+                        powercfg /delete $guid
+                        
+                        Write-Host "Power scheme removed successfully."
+                    }
+                    else {
+                        Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
+                    }
                 }
                 else {
-                    Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
+                    Write-Host "Power scheme '$powerSchemeName' not found."
                 }
+
             }
             else {
                 Write-Host "Power scheme '$powerSchemeName' not found."
