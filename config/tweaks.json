@@ -1043,7 +1043,7 @@
       },
       {
         "Name": "Winmgmt",
-        "StartupType": "Disabled",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
