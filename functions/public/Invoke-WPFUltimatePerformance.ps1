@@ -9,32 +9,65 @@ Function Invoke-WPFUltimatePerformance {
     Try{
 
         if($state -eq "Enabled"){
-            $guid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
-            Write-Host "Adding Ultimate Performance Profile"
-            [scriptblock]$command = {powercfg -duplicatescheme $guid}
-            
+            # Define the name and GUID of the power scheme you want to add
+            $powerSchemeName = "Ultimate Performance"
+            $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
+
+            # Get all power schemes
+            $schemes = powercfg /list | Out-String -Stream
+
+            # Find the scheme you want to add
+            $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+
+            # If the scheme does not exist, add it
+            if ($null -eq $ultimateScheme) {
+                Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
+
+                # Add the power scheme
+                powercfg /duplicatescheme $powerSchemeGuid
+
+                Write-Host "Power scheme added successfully."
+            }
+            else {
+                Write-Host "Power scheme '$powerSchemeName' already exists."
+            }           
         }
         if($state -eq "Disabled"){
-            # Get the GUID of the Ultimate Power Plan
-            $ultimatePowerPlan = powercfg /list | Select-String -Pattern "Ultimate Performance" -Context 0,1 | Select-Object -First 1 -ExpandProperty Line
-            $powerPlanGuid = $ultimatePowerPlan -replace ".*\((.*)\).*", '$1'
+            # Define the name of the power scheme you want to remove
+            $powerSchemeName = "Ultimate Performance"
 
-# Check if the Ultimate Power Plan is present
-            $existingPlan = Get-WmiObject -Namespace root\cimv2\power -Class Win32_PowerPlan | Where-Object {$_.InstanceID -eq $powerPlanGuid}
+            # Get all power schemes
+            $schemes = powercfg /list | Out-String -Stream
 
-            if ($existingPlan) {
-                # Delete the Ultimate Power Plan
-                [scriptblock]$command = {powercfg -delete $powerPlanGuid}
-                Write-Host "Ultimate Power Plan has been removed."
-            } else {
-                Write-Host "Ultimate Power Plan not found. No action required."
+            # Find the scheme you want to remove
+            $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+
+            # If the scheme exists, remove it
+            if ($null -ne $ultimateScheme) {
+                # Extract the GUID of the power scheme
+                $guidRegex = "\((.*?)\)"
+                if ($ultimateScheme -match $guidRegex) {
+                    $guid = $Matches[1]
+                    Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
+                    
+                    # Remove the power scheme
+                    powercfg /delete $guid
+                    
+                    Write-Host "Power scheme removed successfully."
+                }
+                else {
+                    Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
+                }
+            }
+            else {
+                Write-Host "Power scheme '$powerSchemeName' not found."
             }
         }
         
-        $output = Invoke-Command -ScriptBlock $command
-        if($output -like "*does not exist*"){
-            throw [GenericException]::new('Failed to modify profile')
-        }
+        # $output = Invoke-Command -ScriptBlock $command
+        # if($output -like "*does not exist*"){
+        #     throw [GenericException]::new('Failed to modify profile')
+        # }
     }
     Catch{
         Write-Warning $psitem.Exception.Message
