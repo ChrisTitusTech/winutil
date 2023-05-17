@@ -392,6 +392,7 @@
                                 <Label Content="Fixes" FontSize="16"/>
                                 <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesNetwork" FontSize="14" Background="AliceBlue" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
