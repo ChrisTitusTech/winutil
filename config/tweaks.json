@@ -1922,6 +1922,9 @@
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ],
+    "UndoScript": [
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
