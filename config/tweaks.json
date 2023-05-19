@@ -2238,6 +2238,28 @@
       }
     ]
   },
+  "WPFMiscTweaksEnableVerboselogon": {
+    "registry": [
+      {
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "OriginalValue": "0",
+        "name": "VerboseStatus",
+        "value": "1",
+        "type": "DWord"
+      }
+    ]
+  },
+  "WPFMiscTweaksDisableVerboselogon": {
+    "registry": [
+      {
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "OriginalValue": "1",
+        "name": "VerboseStatus",
+        "value": "0",
+        "type": "DWord"
+      }
+    ]
+  },
   "WPFEssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
