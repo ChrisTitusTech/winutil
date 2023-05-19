@@ -2139,6 +2139,9 @@
             }
         }
         "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
