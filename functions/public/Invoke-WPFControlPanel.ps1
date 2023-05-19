@@ -19,6 +19,6 @@ function Invoke-WPFControlPanel {
         "WPFPanelpower"   { powercfg.cpl }
         "WPFPanelsound"   { mmsys.cpl }
         "WPFPanelsystem"  { sysdm.cpl }
-        "WPFPaneluser"    { control "userpasswords2" }
+        "WPFPaneluser"    { control.exe "userpasswords2" }
     }
 }
