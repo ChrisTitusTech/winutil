@@ -2310,8 +2310,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enable verbose logon messages"/>
-                                <CheckBox Name="WPFMiscTweaksDisableVerboselogon" Content="Disable Verbose logon messages" Margin="5,0" ToolTip="Disable verbose logon messages"/>
+                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
 
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
@@ -5300,17 +5299,6 @@ $sync.configs.tweaks = '{
         "OriginalValue": "0",
         "name": "VerboseStatus",
         "value": "1",
-        "type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksDisableVerboselogon": {
-    "registry": [
-      {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "1",
-        "name": "VerboseStatus",
-        "value": "0",
         "type": "DWord"
       }
     ]
