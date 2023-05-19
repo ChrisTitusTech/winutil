@@ -16,6 +16,12 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
         }
+        if($sync.configs.tweaks.$CheckBox.UndoScript){
+            $sync.configs.tweaks.$CheckBox.UndoScript | ForEach-Object {
+                $Scriptblock = [scriptblock]::Create($psitem)
+                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            }
+        }
     }    
     Else{
         $Values = @{
