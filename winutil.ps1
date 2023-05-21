@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.17
+    Version        : 23.05.21
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.17"
+$sync.version = "23.05.21"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -2143,6 +2143,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallorigin" Content="Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
@@ -2209,6 +2210,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
@@ -2228,6 +2230,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
                                 
@@ -2919,6 +2922,18 @@ $sync.configs.applications = '{
   "WPFInstallpostman": {
     "winget": "Postman.Postman",
     "choco": "postman"
+  },
+  "WPFInstallgsudo": {
+    "winget": "gerardog.gsudo",
+    "choco": "gsudo"
+  },
+  "WPFInstallwingetui": {
+    "winget": "SomePythonThings.WingetUIStore",
+    "choco": "na"
+  },
+  "WPFInstallprismlauncher": {
+    "winget": "PrismLauncher.PrismLauncher",
+    "choco": "na"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -5426,7 +5441,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
