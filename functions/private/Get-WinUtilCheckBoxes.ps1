@@ -5,7 +5,7 @@ Function Get-WinUtilCheckBoxes {
         .DESCRIPTION
         Function is meant to find all checkboxes that are checked on the specefic tab and input them into a script.
 
-        Outputed data will be the names of the checkboxes that were checked
+        Outputted data will be the names of the checkboxes that were checked
 
         .EXAMPLE
 
