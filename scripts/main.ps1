@@ -13,7 +13,7 @@ $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" 
 foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-    
+
     # And add it to the iss object
     $initialSessionState.Commands.Add($functionEntry)
 }
@@ -31,7 +31,7 @@ $sync.runspace.Open()
 
         WingetFailedInstall($Message) : base($Message) {}
     }
-    
+
     class ChocoFailedInstall : Exception {
         [string] $additionalData
 
@@ -43,7 +43,7 @@ $sync.runspace.Open()
 
         GenericException($Message) : base($Message) {}
     }
-    
+
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
@@ -82,7 +82,7 @@ $sync.keys | ForEach-Object {
     }
 }
 
-$sync["WPFToggleDarkMode"].Add_Click({    
+$sync["WPFToggleDarkMode"].Add_Click({
   Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
 })
 

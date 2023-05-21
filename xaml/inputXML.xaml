@@ -15,17 +15,17 @@
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel>
                             <Grid>
-                                <Border Width="45" 
+                                <Border Width="45"
                                         Height="20"
-                                        Background="#555555" 
-                                        CornerRadius="10" 
+                                        Background="#555555"
+                                        CornerRadius="10"
                                         Margin="5,0"
                                 />
                                 <Border Name="WPFToggleSwitchButton"
-                                        Width="25" 
+                                        Width="25"
                                         Height="25"
-                                        Background="Black" 
-                                        CornerRadius="12.5" 
+                                        Background="Black"
+                                        CornerRadius="12.5"
                                         HorizontalAlignment="Left"
                                 />
                                 <ContentPresenter Name="WPFToggleSwitchContent"
@@ -278,7 +278,7 @@
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                                
+
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -333,10 +333,10 @@
                                     <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
                                     <Label Content="On" />
                                 </StackPanel>
-							<Label Content="Performance Plans" />
+                            <Label Content="Performance Plans" />
                                 <Button Name="WPFAddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
                                 <Button Name="WPFRemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
-							<Label Content="Shortcuts" />
+                            <Label Content="Shortcuts" />
                                 <Button Name="WPFWinUtilShortcut" Background="AliceBlue" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
 
                             </StackPanel>
@@ -359,17 +359,17 @@
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
-								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
-                                    <ComboBoxItem Content = "DHCP"/> 
-								    <ComboBoxItem Content = "Google"/> 
-								    <ComboBoxItem Content = "Cloudflare"/> 
-                                    <ComboBoxItem Content = "Cloudflare_Malware"/> 
-                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/> 
-								    <ComboBoxItem Content = "Level3"/> 
-								    <ComboBoxItem Content = "Open_DNS"/> 
+                                <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
+                                    <ComboBoxItem IsSelected="True" Content = "Default"/>
+                                    <ComboBoxItem Content = "DHCP"/>
+                                    <ComboBoxItem Content = "Google"/>
+                                    <ComboBoxItem Content = "Cloudflare"/>
+                                    <ComboBoxItem Content = "Cloudflare_Malware"/>
+                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
+                                    <ComboBoxItem Content = "Level3"/>
+                                    <ComboBoxItem Content = "Open_DNS"/>
                                     <ComboBoxItem Content = "Quad9"/>
-							    </ComboBox> 
+                                </ComboBox>
                                 <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
                                 <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
                             </StackPanel>

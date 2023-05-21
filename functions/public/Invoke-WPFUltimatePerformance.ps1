@@ -1,9 +1,9 @@
 Function Invoke-WPFUltimatePerformance {
     <#
-    
+
         .DESCRIPTION
         PlaceHolder
-    
+
     #>
     param($State)
     Try{
@@ -30,7 +30,7 @@ Function Invoke-WPFUltimatePerformance {
             }
             else {
                 Write-Host "Power scheme '$powerSchemeName' already exists."
-            }           
+            }
         }
         elseif($state -eq "Disabled"){
                 # Define the name of the power scheme you want to remove
@@ -49,10 +49,10 @@ Function Invoke-WPFUltimatePerformance {
 
                     if($null -ne $guid){
                         Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
-                        
+
                         # Remove the power scheme
                         powercfg /delete $guid
-                        
+
                         Write-Host "Power scheme removed successfully."
                     }
                     else {
@@ -64,7 +64,7 @@ Function Invoke-WPFUltimatePerformance {
                 }
 
             }
-        
+
     }
     Catch{
         Write-Warning $psitem.Exception.Message

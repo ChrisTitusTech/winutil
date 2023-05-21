@@ -1,9 +1,9 @@
 function Invoke-WPFtweaksbutton {
   <#
-  
+
       .DESCRIPTION
       PlaceHolder
-  
+
   #>
 
   if($sync.ProcessRunning){

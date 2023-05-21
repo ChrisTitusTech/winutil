@@ -1,14 +1,14 @@
 Function Set-WinUtilService {
     <#
-    
+
         .DESCRIPTION
         This function will change the startup type of services and start/stop them as needed
 
         .EXAMPLE
 
         Set-WinUtilService -Name "HomeGroupListener" -StartupType "Manual"
-    
-    #>   
+
+    #>
     param (
         $Name,
         $StartupType
@@ -27,7 +27,7 @@ Function Set-WinUtilService {
         }
     }
     Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or 
+        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or
            $psitem.Exception.Message -like "*was not found on computer*"){
             Write-Warning "Service $name was not Found"
         }

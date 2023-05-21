@@ -1,10 +1,10 @@
 function Install-WinUtilWinget {
-    
+
     <#
-    
+
         .DESCRIPTION
-        Function is meant to ensure winget is installed 
-    
+        Function is meant to ensure winget is installed
+
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."
@@ -48,8 +48,8 @@ function Install-WinUtilWinget {
             Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
             Install-Script -Name winget-install -force
             winget-instal
-            
-            
+
+
             Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
 
             if(!(Test-WinUtilPackageManager -winget)){

@@ -1,10 +1,10 @@
 function Invoke-WPFFixesUpdate {
 
     <#
-    
+
         .DESCRIPTION
         PlaceHolder
-    
+
     #>
 
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.

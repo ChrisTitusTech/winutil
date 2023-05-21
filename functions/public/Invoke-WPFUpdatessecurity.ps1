@@ -1,9 +1,9 @@
 function Invoke-WPFUpdatessecurity {
     <#
-    
+
         .DESCRIPTION
         PlaceHolder
-    
+
     #>
     Write-Host "Disabling driver offering through Windows Update..."
         If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {

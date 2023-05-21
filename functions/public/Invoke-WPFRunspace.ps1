@@ -1,9 +1,9 @@
 function Invoke-WPFRunspace {
 
     <#
-    
+
         .DESCRIPTION
-        Simple function to make it easier to invoke a runspace from inside the script. 
+        Simple function to make it easier to invoke a runspace from inside the script.
 
         .EXAMPLE
 
@@ -14,14 +14,14 @@ function Invoke-WPFRunspace {
         }
 
         Invoke-WPFRunspace @params
-    
+
     #>
 
     [CmdletBinding()]
     Param (
         $ScriptBlock,
         $ArgumentList
-    ) 
+    )
 
     #Crate a PowerShell instance.
     $script:powershell = [powershell]::Create()
@@ -30,7 +30,7 @@ function Invoke-WPFRunspace {
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $sync.runspace
-    
+
     #Run our RunspacePool.
     $script:handle = $script:powershell.BeginInvoke()
 

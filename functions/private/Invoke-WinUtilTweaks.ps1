@@ -1,9 +1,9 @@
 function Invoke-WinUtilTweaks {
     <#
-    
+
         .DESCRIPTION
         This function converts all the values from the tweaks.json and routes them to the appropriate function
-    
+
     #>
 
     param(
@@ -16,7 +16,7 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
         }
-    }    
+    }
     Else{
         $Values = @{
             Registry = "Value"

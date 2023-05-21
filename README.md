@@ -1,10 +1,10 @@
 # Chris Titus Tech's Windows Utility
 
-This Utility is a compilation of windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky on any contributions to keep this project clean and efficient. 
+This Utility is a compilation of windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky on any contributions to keep this project clean and efficient.
 
 ![screen-install](screen-install.png)
 
-Requires you to launch PowerShell or Windows Terminal As ADMINISTRATOR! 
+Requires you to launch PowerShell or Windows Terminal As ADMINISTRATOR!
 
 The recommended way is to right click on the start menu and select (PowerShell As Admin *Windows 10* - Windows Terminal As Admin *Windows 11*)
 
@@ -45,7 +45,7 @@ Video and Written Article walkthrough @ <https://christitus.com/windows-tool/>
 
 ## Issues
 
-If you have any issues with the script please submit them to Issues tab here on GitHub and fill out the template so I can fix any bugs or make feature requests. 
+If you have any issues with the script please submit them to Issues tab here on GitHub and fill out the template so I can fix any bugs or make feature requests.
 
 ## Contribute Code
 
