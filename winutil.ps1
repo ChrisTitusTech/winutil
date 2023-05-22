@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.17
+    Version        : 23.05.19
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.17"
+$sync.version = "23.05.19"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -2310,6 +2310,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
+                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
@@ -5287,6 +5289,17 @@ $sync.configs.tweaks = '{
         "name": "MouseThreshold2",
         "value": "10",
         "type": "String"
+      }
+    ]
+  },
+  "WPFMiscTweaksEnableVerboselogon": {
+    "registry": [
+      {
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "OriginalValue": "0",
+        "name": "VerboseStatus",
+        "value": "1",
+        "type": "DWord"
       }
     ]
   },
