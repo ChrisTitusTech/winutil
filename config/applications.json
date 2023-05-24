@@ -530,5 +530,17 @@
   "WPFInstallpostman": {
     "winget": "Postman.Postman",
     "choco": "postman"
+  },
+  "WPFInstallgsudo": {
+    "winget": "gerardog.gsudo",
+    "choco": "gsudo"
+  },
+  "WPFInstallwingetui": {
+    "winget": "SomePythonThings.WingetUIStore",
+    "choco": "na"
+  },
+  "WPFInstallprismlauncher": {
+    "winget": "PrismLauncher.PrismLauncher",
+    "choco": "na"
   }
 }
