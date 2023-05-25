@@ -2259,6 +2259,10 @@
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {

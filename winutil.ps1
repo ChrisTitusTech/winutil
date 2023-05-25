@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.19
+    Version        : 23.05.25
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.19"
+$sync.version = "23.05.25"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -4980,6 +4980,9 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ],
+    "UndoScript": [
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
@@ -5194,6 +5197,9 @@ $sync.configs.tweaks = '{
             }
         }
         "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5311,6 +5317,10 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {
