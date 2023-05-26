@@ -530,5 +530,9 @@
   "WPFInstallpostman": {
     "winget": "Postman.Postman",
     "choco": "postman"
+  },
+  "WPFInstallwindowsfirewallcontrol": {
+    "winget": "BiniSoft.WindowsFirewallControl",
+    "choco": "na"
   }
 }
