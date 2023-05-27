@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.25
+    Version        : 23.05.27
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.25"
+$sync.version = "23.05.27"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -546,25 +546,16 @@ function Invoke-WinUtilTweaks {
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
+            ScriptType = "UndoScript"
         }
-        if($sync.configs.tweaks.$CheckBox.UndoScript){
-            $sync.configs.tweaks.$CheckBox.UndoScript | ForEach-Object {
-                $Scriptblock = [scriptblock]::Create($psitem)
-                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-            }
-        }
+
     }    
     Else{
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
             Service = "StartupType"
-        }
-    }
-
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            ScriptType = "InvokeScript"
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
@@ -577,6 +568,17 @@ function Invoke-WinUtilTweaks {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        }
+    }
 
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
@@ -584,12 +586,7 @@ function Invoke-WinUtilTweaks {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-        if($sync.configs.tweaks.$CheckBox.InvokeScript){
-            $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
-                $Scriptblock = [scriptblock]::Create($psitem)
-                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-            }
-        }
+
     }
 }
 function Remove-WinUtilAPPX {
