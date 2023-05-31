@@ -516,7 +516,7 @@
     "choco": "nuget.commandline"
   },
   "WPFInstallwinrar": {
-    "winget": "RARLab.WinRar",
+    "winget": "RARLab.WinRAR",
     "choco": "winrar"
   },
   "WPFInstallneovim": {
