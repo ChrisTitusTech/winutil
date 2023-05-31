@@ -1922,6 +1922,9 @@
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ],
+    "UndoScript": [
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
@@ -2055,6 +2058,10 @@
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ], 
+    "UndoScript": [
+      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
+      "
     ]
   },
   "WPFMiscTweaksLapNum": {
@@ -2136,6 +2143,9 @@
             }
         }
         "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -2159,6 +2169,12 @@
   "WPFMiscTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
+    ],
+    "UndoScript": [
+      "
+      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
+      Write-Host Restart Needed for change
+      "
     ]
   },
   "WPFEssTweaksDiskCleanup": {
@@ -2258,6 +2274,10 @@
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {

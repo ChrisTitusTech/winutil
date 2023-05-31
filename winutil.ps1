@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.21
+    Version        : 23.05.27
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.21"
+$sync.version = "23.05.27"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -546,19 +546,16 @@ function Invoke-WinUtilTweaks {
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
+            ScriptType = "UndoScript"
         }
+
     }    
     Else{
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
             Service = "StartupType"
-        }
-    }
-
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            ScriptType = "InvokeScript"
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
@@ -571,6 +568,17 @@ function Invoke-WinUtilTweaks {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        }
+    }
 
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
@@ -578,12 +586,7 @@ function Invoke-WinUtilTweaks {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-        if($sync.configs.tweaks.$CheckBox.InvokeScript){
-            $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
-                $Scriptblock = [scriptblock]::Create($psitem)
-                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-            }
-        }
+
     }
 }
 function Remove-WinUtilAPPX {
@@ -4991,6 +4994,9 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ],
+    "UndoScript": [
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
@@ -5124,6 +5130,10 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ], 
+    "UndoScript": [
+      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
+      "
     ]
   },
   "WPFMiscTweaksLapNum": {
@@ -5205,6 +5215,9 @@ $sync.configs.tweaks = '{
             }
         }
         "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5228,6 +5241,12 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
+    ],
+    "UndoScript": [
+      "
+      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
+      Write-Host Restart Needed for change
+      "
     ]
   },
   "WPFEssTweaksDiskCleanup": {
@@ -5327,6 +5346,10 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {
