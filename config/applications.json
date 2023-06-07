@@ -460,7 +460,7 @@
     "choco": "telegram"
   },
   "WPFInstallunity": {
-    "winget": "UnityTechnologies.UnityHub",
+    "winget": "Unity.UnityHub",
     "choco": "unityhub"
   },
   "WPFInstallqbittorrent": {
