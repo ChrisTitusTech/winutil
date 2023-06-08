@@ -2975,6 +2975,7 @@ $sync.configs.feature = '{
   "WPFFeaturesdotnet": {
     "feature": [
       "NetFx4-AdvSrvs",
+      "NetFx4Extended-ASPNET45",
       "NetFx3"
     ],
     "InvokeScript": [
