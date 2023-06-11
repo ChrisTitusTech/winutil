@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.05.27
+    Version        : 23.06.11
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.05.27"
+$sync.version = "23.06.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 Function Get-WinUtilCheckBoxes {
@@ -2109,6 +2109,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
@@ -2487,6 +2488,10 @@ $sync.configs.applications = '{
   "WPFInstallgithubdesktop": {
     "winget": "Git.Git;GitHub.GitHubDesktop",
     "choco": "git;github-desktop"
+  },
+  "WPFInstalldockerdesktop": {
+    "winget": "Docker.DockerDesktop",
+    "choco": "docker-desktop"
   },
   "WPFInstallgog": {
     "winget": "GOG.Galaxy",
@@ -5477,7 +5482,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 

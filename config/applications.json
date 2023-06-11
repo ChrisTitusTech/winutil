@@ -91,6 +91,10 @@
     "winget": "Git.Git;GitHub.GitHubDesktop",
     "choco": "git;github-desktop"
   },
+  "WPFInstalldockerdesktop": {
+    "winget": "Docker.DockerDesktop",
+    "choco": "docker-desktop"
+  },
   "WPFInstallgog": {
     "winget": "GOG.Galaxy",
     "choco": "goggalaxy"
