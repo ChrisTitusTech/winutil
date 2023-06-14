@@ -154,6 +154,7 @@
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
