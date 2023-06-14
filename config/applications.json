@@ -352,11 +352,11 @@
     "choco": "dotnet-6.0-runtime"
   },
   "WPFInstallvc2015_64": {
-    "winget": "Microsoft.VC++2015-2022Redist-x64",
+    "winget": "Microsoft.VCRedist.2015+.x64",
     "choco": "na"
   },
   "WPFInstallvc2015_32": {
-    "winget": "Microsoft.VC++2015-2022Redist-x86",
+    "winget": "Microsoft.VCRedist.2015+.x86",
     "choco": "na"
   },
   "WPFInstallfoxpdf": {
@@ -464,7 +464,7 @@
     "choco": "telegram"
   },
   "WPFInstallunity": {
-    "winget": "UnityTechnologies.UnityHub",
+    "winget": "Unity.UnityHub",
     "choco": "unityhub"
   },
   "WPFInstallqbittorrent": {
@@ -520,7 +520,7 @@
     "choco": "nuget.commandline"
   },
   "WPFInstallwinrar": {
-    "winget": "RARLab.WinRar",
+    "winget": "RARLab.WinRAR",
     "choco": "winrar"
   },
   "WPFInstallneovim": {
