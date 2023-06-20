@@ -115,6 +115,10 @@
     "winget": "REALiX.HWiNFO",
     "choco": "hwinfo"
   },
+  "WPFInstallnomacs": {
+    "winget": "nomacs.nomacs",
+    "choco": "nomacs"
+  },
   "WPFInstallimageglass": {
     "winget": "DuongDieuPhap.ImageGlass",
     "choco": "imageglass"
