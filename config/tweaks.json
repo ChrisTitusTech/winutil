@@ -2081,7 +2081,7 @@
   },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
-        "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/removedge.bat\" -o $ENV:temp\\removeedge.bat
+        "curl.exe -s \"https://raw.githubusercontent.com/ChaseKnowlden/winutil/remove-edge/removeedge.bat\" -o $ENV:temp\\removeedge.bat
         cmd.exe /c %temp%\\removeedge.bat
         "
     ]
