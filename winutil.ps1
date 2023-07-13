@@ -24,13 +24,6 @@ $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "23.07.12"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
-
-
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be ran as Administrator. Attempting to relaunch."
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
-    break
-}
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -367,12 +360,8 @@ Function Invoke-WinUtilCurrentSystem {
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = $($sync.configs.applications.$($psitem.Key).winget -split ";")
-
-            Foreach ($dependency in $dependencies) {
-                if($dependency -in $sync.InstalledPrograms.Id){
-                    Write-Output $psitem.name
-                }
+            if($sync.configs.applications.$($psitem.Key).winget -in $sync.InstalledPrograms.Id){
+                Write-Output $psitem.name
             }
         }
     }
@@ -557,16 +546,19 @@ function Invoke-WinUtilTweaks {
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
-            ScriptType = "UndoScript"
         }
-
     }    
     Else{
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
             Service = "StartupType"
-            ScriptType = "InvokeScript"
+        }
+    }
+
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
@@ -579,17 +571,6 @@ function Invoke-WinUtilTweaks {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
-    }
 
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
@@ -597,7 +578,12 @@ function Invoke-WinUtilTweaks {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-
+        if($sync.configs.tweaks.$CheckBox.InvokeScript){
+            $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
+                $Scriptblock = [scriptblock]::Create($psitem)
+                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            }
+        }
     }
 }
 function Remove-WinUtilAPPX {
@@ -789,6 +775,54 @@ Function Set-WinUtilService {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Set-WinUtilUITheme {
+    <#
+    
+        .DESCRIPTION
+        This function will set theme to the XAML file
+
+        .EXAMPLE
+
+        Set-WinUtilUITheme -inputXAML $inputXAML
+    
+    #>
+    param
+    (
+         [Parameter(Mandatory=$true, Position=0)]
+         [string] $inputXML,
+         [Parameter(Mandatory=$false, Position=1)]
+         [string] $themeName = 'matrix'
+    )
+
+    try {
+        # Convert the JSON to a PowerShell object
+        $themes = $sync.configs.themes
+        # Select the specified theme
+        $selectedTheme = $themes.$themeName
+
+        if ($selectedTheme) {
+            # Loop through all key-value pairs in the selected theme
+            foreach ($property in $selectedTheme.PSObject.Properties) {
+                $key = $property.Name
+                $value = $property.Value
+                # Add curly braces around the key
+                $formattedKey = "{$key}"
+                # Replace the key with the value in the input XML
+                $inputXML = $inputXML.Replace($formattedKey, $value)
+            }
+        }
+        else {
+            Write-Host "Theme '$themeName' not found."
+        }
+
+    }
+    catch {
+        Write-Warning "Unable to apply theme"
+        Write-Warning $psitem.Exception.StackTrace 
+    }
+
+    return $inputXML;
+}
 function Test-WinUtilPackageManager {
     <#
     
@@ -885,7 +919,6 @@ function Invoke-WPFButton {
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
-        "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
@@ -980,17 +1013,6 @@ function Invoke-WPFFeatureInstall {
     
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
-}
-function Invoke-WPFFixesNetwork {
-    <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
-    #>
-    Write-Host "Reseting Network with netsh"
-    netsh int ip reset
-    netsh winsock reset
 }
 function Invoke-WPFFixesUpdate {
 
@@ -1971,10 +1993,134 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinUtility"
         mc:Ignorable="d"
-        Background="#777777"
+        Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1200">
+    
     <Window.Resources>
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
+            <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding Background}"
+                                          BorderThickness="0"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <TextBlock Text="{TemplateBinding SelectionBoxItem}"
+                                           Foreground="{TemplateBinding Foreground}" 
+                                           Background="{TemplateBinding Background}"
+                                           />
+                            </ToggleButton>
+                            <Popup x:Name="Popup"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   Focusable="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding Foreground}"
+                                        BorderThickness="1"
+                                        CornerRadius="4">
+                                    <ScrollViewer>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="BackgroundBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{ButtonBorderThickness}"
+                                    CornerRadius="{ButtonCornerRadius}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+                             <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="Gray"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="{TemplateBinding Background}">
+                            <BulletDecorator Background="Transparent">
+                                <BulletDecorator.Bullet>
+                                    <Grid Width="16" Height="16">
+                                        <Border x:Name="Border"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                Background="{ButtonBackgroundColor}"
+                                                BorderThickness="1"
+                                                Width="14"
+                                                Height="14"
+                                                Margin="1"
+                                                SnapsToDevicePixels="True"/>
+                                        <Path x:Name="CheckMark"
+                                              Stroke="{TemplateBinding Foreground}"
+                                              StrokeThickness="2"
+                                              Data="M 0 5 L 5 10 L 12 0"
+                                              Visibility="Collapsed"/>
+                                    </Grid>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="4,0,0,0"
+                                                  HorizontalAlignment="Left"
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True"/>
+                            </BulletDecorator>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                    <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
+                                    <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                                </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                 </Setter.Value>
+            </Setter>
+        </Style>        
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="Template">
                 <Setter.Value>
@@ -2046,9 +2192,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             </Setter>
         </Style>
     </Window.Resources>
-    <Border Name="WPFdummy" Grid.Column="0" Grid.Row="0">
+    <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
         <Viewbox Stretch="Uniform" VerticalAlignment="Top">
-            <Grid Background="#777777" ShowGridLines="False" Name="WPFMainGrid">
+            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
                     <RowDefinition Height=".9*"/>
@@ -2056,12 +2202,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <DockPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
+                <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
                     <Image Height="50" Width="100" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="#222222" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="#333333" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="#444444" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="#555555" BorderThickness="0,0,0,0" FontWeight="Bold" Foreground="#ffffff" Name="WPFTab4BT"/>
+                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" 
+                        Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
+                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" 
+                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
+                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" 
+                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
+                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" 
+                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
                 </DockPanel>
                 <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
@@ -2078,7 +2228,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <RowDefinition Height=".90*"/>
                             </Grid.RowDefinitions>
 
-                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
                                 <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFinstall" Content=" Install Selection " Margin="7"/>
                                 <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="7"/>
@@ -2086,12 +2236,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
                                 <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFimportWinget" Content=" Import " Margin="7"/>
                                 <Button Name="WPFexportWinget" Content=" Export " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
@@ -2116,11 +2266,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
@@ -2151,7 +2300,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
 
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
@@ -2186,7 +2335,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
 
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
@@ -2197,6 +2346,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
@@ -2212,7 +2362,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsevenzip" Content="7-Zip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
@@ -2225,7 +2375,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
@@ -2245,7 +2394,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
                                 
@@ -2263,7 +2411,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <RowDefinition Height=".70*"/>
                                 <RowDefinition Height=".10*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Margin="10">
                                 <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
                                 <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
@@ -2271,18 +2419,18 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFclear" Content=" Clear " Margin="7"/>
                                 <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFimport" Content=" Import " Margin="7"/>
                                 <Button Name="WPFexport" Content=" Export " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
                                 <TextBlock Padding="10">
                                     Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                     <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
                                 </TextBlock>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
                                 <Label FontSize="16" Content="Essential Tweaks"/>
                                 <CheckBox Name="WPFEssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
                                 <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
@@ -2304,13 +2452,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     <Label Content="On" />
                                 </StackPanel>
 							<Label Content="Performance Plans" />
-                                <Button Name="WPFAddUltPerf" Background="AliceBlue" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-                                <Button Name="WPFRemoveUltPerf" Background="AliceBlue" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,0,0,5" Padding="20,5" Width="300"/>
+                                <Button Name="WPFAddUltPerf" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
+                                <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
 							<Label Content="Shortcuts" />
-                                <Button Name="WPFWinUtilShortcut" Background="AliceBlue" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
+                                <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
 
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
                                 <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
                                 <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
@@ -2328,8 +2476,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
-
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
@@ -2342,8 +2488,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 								    <ComboBoxItem Content = "Open_DNS"/> 
                                     <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox> 
-                                <Button Name="WPFtweaksbutton" Background="AliceBlue" Content="Run Tweaks  " HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
-                                <Button Name="WPFundoall" Background="AliceBlue" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="160"/>
+                                <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160"/>
+                                <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -2353,28 +2499,27 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
                                 <Label Content="Features" FontSize="16"/>
                                 <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"/>
                                 <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
                                 <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
-                                <Button Name="WPFFeatureInstall" FontSize="14" Background="AliceBlue" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
+                                <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesNetwork" FontSize="14" Background="AliceBlue" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
-                                <Button Name="WPFPanelcontrol" FontSize="14" Background="AliceBlue" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="WPFPanelnetwork" FontSize="14" Background="AliceBlue" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="WPFPanelpower" FontSize="14" Background="AliceBlue" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="WPFPanelsound" FontSize="14" Background="AliceBlue" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="WPFPanelsystem" FontSize="14" Background="AliceBlue" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                                <Button Name="WPFPaneluser" FontSize="14" Background="AliceBlue" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -2385,16 +2530,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
-                                <Button Name="WPFUpdatesdefault" FontSize="16" Background="AliceBlue" Content="Default (Out of Box) Settings" Margin="20,0,20,10" Padding="10"/>
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Margin="10,5">
+                                <Button Name="WPFUpdatesdefault" FontSize="16" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
-                                <Button Name="WPFUpdatessecurity" FontSize="16" Background="AliceBlue" Content="Security (Recommended) Settings" Margin="20,0,20,10" Padding="10"/>
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
+                                <Button Name="WPFUpdatessecurity" FontSize="16" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.</TextBlock>
                             </StackPanel>
-                            <StackPanel Background="#777777" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
-                                <Button Name="WPFUpdatesdisable" FontSize="16" Background="AliceBlue" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,0,20,10" Padding="10,10,10,10"/>
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="2" Margin="10,5">
+                                <Button Name="WPFUpdatesdisable" FontSize="16" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                                 <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
 
@@ -2500,10 +2645,6 @@ $sync.configs.applications = '{
     "winget": "Git.Git;GitHub.GitHubDesktop",
     "choco": "git;github-desktop"
   },
-  "WPFInstalldockerdesktop": {
-    "winget": "Docker.DockerDesktop",
-    "choco": "docker-desktop"
-  },
   "WPFInstallgog": {
     "winget": "GOG.Galaxy",
     "choco": "goggalaxy"
@@ -2527,6 +2668,10 @@ $sync.configs.applications = '{
   "WPFInstallhwinfo": {
     "winget": "REALiX.HWiNFO",
     "choco": "hwinfo"
+  },
+  "WPFInstallnomacs": {
+    "winget": "nomacs.nomacs",
+    "choco": "nomacs"
   },
   "WPFInstallimageglass": {
     "winget": "DuongDieuPhap.ImageGlass",
@@ -2761,11 +2906,11 @@ $sync.configs.applications = '{
     "choco": "dotnet-6.0-runtime"
   },
   "WPFInstallvc2015_64": {
-    "winget": "Microsoft.VCRedist.2015+.x64",
+    "winget": "Microsoft.VC++2015-2022Redist-x64",
     "choco": "na"
   },
   "WPFInstallvc2015_32": {
-    "winget": "Microsoft.VCRedist.2015+.x86",
+    "winget": "Microsoft.VC++2015-2022Redist-x86",
     "choco": "na"
   },
   "WPFInstallfoxpdf": {
@@ -2943,18 +3088,6 @@ $sync.configs.applications = '{
   "WPFInstallpostman": {
     "winget": "Postman.Postman",
     "choco": "postman"
-  },
-  "WPFInstallgsudo": {
-    "winget": "gerardog.gsudo",
-    "choco": "gsudo"
-  },
-  "WPFInstallwingetui": {
-    "winget": "SomePythonThings.WingetUIStore",
-    "choco": "na"
-  },
-  "WPFInstallprismlauncher": {
-    "winget": "PrismLauncher.PrismLauncher",
-    "choco": "na"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -3085,6 +3218,48 @@ $sync.configs.preset = '{
     "WPFEssTweaksServices",
     "WPFEssTweaksTele"
   ]
+}' | convertfrom-json
+$sync.configs.themes = '{
+    "Classic":  {
+                    "ComboBoxBackgroundColor":  "#777777",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#777777",
+                    "LabelBackgroundColor":  "#777777",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#222222",
+                    "ButtonTweaksBackgroundColor":  "#333333",
+                    "ButtonConfigBackgroundColor":  "#444444",
+                    "ButtonUpdatesBackgroundColor":  "#555555",
+                    "ButtonInstallForegroundColor":  "#FFFFFF",
+                    "ButtonBackgroundColor":  "#CACACA",
+                    "ButtonBackgroundPressedColor":  "#FFFFFF",
+                    "ButtonBackgroundMouseoverColor":  "AliceBlue",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "0",
+                    "ButtonMargin":  "0,3,0,3",
+                    "ButtonCornerRadius": "0"
+                },
+    "Matrix":  {
+                   "ComboBoxBackgroundColor":  "#000000",
+                   "LabelboxForegroundColor":  "#FFEE58",
+                   "MainForegroundColor":  "#9CCC65",
+                   "MainBackgroundColor":  "#000000",
+                   "LabelBackgroundColor":  "#000000",
+                   "ComboBoxForegroundColor":  "#FFEE58",
+                   "ButtonInstallBackgroundColor":  "#222222",
+                   "ButtonTweaksBackgroundColor":  "#333333",
+                   "ButtonConfigBackgroundColor":  "#444444",
+                   "ButtonUpdatesBackgroundColor":  "#555555",
+                   "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonBackgroundColor":  "#000000",
+                   "ButtonBackgroundPressedColor":  "#FFFFFF",
+                   "ButtonBackgroundMouseoverColor":  "#A55A64",
+                   "ButtonForegroundColor":  "#9CCC65",
+                   "ButtonBorderThickness":  "3",
+                   "ButtonMargin":  "2",
+                   "ButtonCornerRadius": "4"
+               }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
   "WPFEssTweaksAH": {
@@ -5010,9 +5185,6 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
-    ],
-    "UndoScript": [
-      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
@@ -5146,10 +5318,6 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
-    ], 
-    "UndoScript": [
-      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
-      "
     ]
   },
   "WPFMiscTweaksLapNum": {
@@ -5231,9 +5399,6 @@ $sync.configs.tweaks = '{
             }
         }
         "
-    ],
-    "UndoScript": [
-      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5257,12 +5422,6 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
-    ],
-    "UndoScript": [
-      "
-      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      Write-Host Restart Needed for change
-      "
     ]
   },
   "WPFEssTweaksDiskCleanup": {
@@ -5342,17 +5501,6 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "name": "VerboseStatus",
-        "value": "1",
-        "type": "DWord"
-      }
-    ]
-  },
   "WPFEssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
@@ -5362,10 +5510,6 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
-    ],
-    "UndoScript": [
-      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
-      "
     ]
   },
   "WPFEssTweaksDVR": {
@@ -5479,6 +5623,8 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName 'classic'
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML

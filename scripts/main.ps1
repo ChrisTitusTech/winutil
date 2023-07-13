@@ -47,6 +47,8 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName 'classic'
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
