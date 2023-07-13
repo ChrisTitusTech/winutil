@@ -475,9 +475,9 @@
     "winget": "qBittorrent.qBittorrent",
     "choco": "qbittorrent"
   },
-  "WPFInstallorigin": {
+  "WPFInstalleaapp": {
     "winget": "ElectronicArts.EADesktop",
-    "choco": "origin"
+    "choco": "ea-app"
   },
   "WPFInstallopenshell": {
     "winget": "Open-Shell.Open-Shell-Menu",
