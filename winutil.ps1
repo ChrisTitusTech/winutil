@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.07.12
+    Version        : 23.07.13
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,9 +21,16 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.07.12"
+$sync.version = "23.07.13"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
+
+
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Output "Winutil needs to be ran as Administrator. Attempting to relaunch."
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+    break
+}
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -360,8 +367,12 @@ Function Invoke-WinUtilCurrentSystem {
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            if($sync.configs.applications.$($psitem.Key).winget -in $sync.InstalledPrograms.Id){
-                Write-Output $psitem.name
+            $dependencies = $($sync.configs.applications.$($psitem.Key).winget -split ";")
+
+            Foreach ($dependency in $dependencies) {
+                if($dependency -in $sync.InstalledPrograms.Id){
+                    Write-Output $psitem.name
+                }
             }
         }
     }
@@ -546,19 +557,16 @@ function Invoke-WinUtilTweaks {
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
+            ScriptType = "UndoScript"
         }
+
     }    
     Else{
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
             Service = "StartupType"
-        }
-    }
-
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+            ScriptType = "InvokeScript"
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
@@ -571,6 +579,17 @@ function Invoke-WinUtilTweaks {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        }
+    }
 
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
@@ -578,12 +597,7 @@ function Invoke-WinUtilTweaks {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-        if($sync.configs.tweaks.$CheckBox.InvokeScript){
-            $sync.configs.tweaks.$CheckBox.InvokeScript | ForEach-Object {
-                $Scriptblock = [scriptblock]::Create($psitem)
-                Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-            }
-        }
+
     }
 }
 function Remove-WinUtilAPPX {
@@ -919,6 +933,7 @@ function Invoke-WPFButton {
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
+        "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
@@ -1013,6 +1028,17 @@ function Invoke-WPFFeatureInstall {
     
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
+}
+function Invoke-WPFFixesNetwork {
+    <#
+    
+        .DESCRIPTION
+        PlaceHolder
+    
+    #>
+    Write-Host "Reseting Network with netsh"
+    netsh int ip reset
+    netsh winsock reset
 }
 function Invoke-WPFFixesUpdate {
 
@@ -1335,7 +1361,7 @@ function Invoke-WPFPanelAutologin {
     
     #>
     curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-    cmd /c $env:temp\autologin.exe
+    cmd /c $env:temp\autologin.exe /accepteula
 }
 function Invoke-WPFPanelDISM {
     <#
@@ -2270,6 +2296,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
@@ -2375,6 +2402,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
@@ -2394,6 +2422,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
                                 
@@ -2476,6 +2505,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
+                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
 								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
@@ -2508,9 +2539,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                                 <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesNetwork" FontSize="14" Background="AliceBlue" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
@@ -2644,6 +2676,10 @@ $sync.configs.applications = '{
   "WPFInstallgithubdesktop": {
     "winget": "Git.Git;GitHub.GitHubDesktop",
     "choco": "git;github-desktop"
+  },
+  "WPFInstalldockerdesktop": {
+    "winget": "Docker.DockerDesktop",
+    "choco": "docker-desktop"
   },
   "WPFInstallgog": {
     "winget": "GOG.Galaxy",
@@ -2906,11 +2942,11 @@ $sync.configs.applications = '{
     "choco": "dotnet-6.0-runtime"
   },
   "WPFInstallvc2015_64": {
-    "winget": "Microsoft.VC++2015-2022Redist-x64",
+    "winget": "Microsoft.VCRedist.2015+.x64",
     "choco": "na"
   },
   "WPFInstallvc2015_32": {
-    "winget": "Microsoft.VC++2015-2022Redist-x86",
+    "winget": "Microsoft.VCRedist.2015+.x86",
     "choco": "na"
   },
   "WPFInstallfoxpdf": {
@@ -3088,6 +3124,18 @@ $sync.configs.applications = '{
   "WPFInstallpostman": {
     "winget": "Postman.Postman",
     "choco": "postman"
+  },
+  "WPFInstallgsudo": {
+    "winget": "gerardog.gsudo",
+    "choco": "gsudo"
+  },
+  "WPFInstallwingetui": {
+    "winget": "SomePythonThings.WingetUIStore",
+    "choco": "na"
+  },
+  "WPFInstallprismlauncher": {
+    "winget": "PrismLauncher.PrismLauncher",
+    "choco": "na"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -5185,6 +5233,9 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+    ],
+    "UndoScript": [
+      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
   "WPFEssTweaksDeBloat": {
@@ -5318,6 +5369,10 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ], 
+    "UndoScript": [
+      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
+      "
     ]
   },
   "WPFMiscTweaksLapNum": {
@@ -5399,6 +5454,9 @@ $sync.configs.tweaks = '{
             }
         }
         "
+    ],
+    "UndoScript": [
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5422,6 +5480,12 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
+    ],
+    "UndoScript": [
+      "
+      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
+      Write-Host Restart Needed for change
+      "
     ]
   },
   "WPFEssTweaksDiskCleanup": {
@@ -5501,6 +5565,17 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFMiscTweaksEnableVerboselogon": {
+    "registry": [
+      {
+        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "OriginalValue": "0",
+        "name": "VerboseStatus",
+        "value": "1",
+        "type": "DWord"
+      }
+    ]
+  },
   "WPFEssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
@@ -5510,6 +5585,10 @@ $sync.configs.tweaks = '{
   "WPFEssTweaksRemoveCortana": {
     "InvokeScript": [
       "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {
@@ -5623,7 +5702,7 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
-$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName 'classic'
+$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName 'Matrix'
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
@@ -5639,7 +5718,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
