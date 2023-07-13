@@ -2,7 +2,10 @@ $OFS = "`r`n"
 $scriptname = "winutil.ps1"
 
 
-Remove-Item .\$scriptname
+if (Test-Path -Path "$($scriptname)")
+{
+    Remove-Item -Force "$($scriptname)"
+}
 
 Write-output '
 ################################################################################################################
