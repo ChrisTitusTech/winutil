@@ -1,0 +1,42 @@
+{
+    "Classic":  {
+                    "ComboBoxBackgroundColor":  "#777777",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#777777",
+                    "LabelBackgroundColor":  "#777777",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#222222",
+                    "ButtonTweaksBackgroundColor":  "#333333",
+                    "ButtonConfigBackgroundColor":  "#444444",
+                    "ButtonUpdatesBackgroundColor":  "#555555",
+                    "ButtonInstallForegroundColor":  "#FFFFFF",
+                    "ButtonBackgroundColor":  "#CACACA",
+                    "ButtonBackgroundPressedColor":  "#FFFFFF",
+                    "ButtonBackgroundMouseoverColor":  "AliceBlue",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "0",
+                    "ButtonMargin":  "0,3,0,3",
+                    "ButtonCornerRadius": "0"
+                },
+    "Matrix":  {
+                   "ComboBoxBackgroundColor":  "#000000",
+                   "LabelboxForegroundColor":  "#FFEE58",
+                   "MainForegroundColor":  "#9CCC65",
+                   "MainBackgroundColor":  "#000000",
+                   "LabelBackgroundColor":  "#000000",
+                   "ComboBoxForegroundColor":  "#FFEE58",
+                   "ButtonInstallBackgroundColor":  "#222222",
+                   "ButtonTweaksBackgroundColor":  "#333333",
+                   "ButtonConfigBackgroundColor":  "#444444",
+                   "ButtonUpdatesBackgroundColor":  "#555555",
+                   "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonBackgroundColor":  "#000000",
+                   "ButtonBackgroundPressedColor":  "#FFFFFF",
+                   "ButtonBackgroundMouseoverColor":  "#A55A64",
+                   "ButtonForegroundColor":  "#9CCC65",
+                   "ButtonBorderThickness":  "3",
+                   "ButtonMargin":  "2",
+                   "ButtonCornerRadius": "4"
+               }
+}

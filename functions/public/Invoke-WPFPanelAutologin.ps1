@@ -6,5 +6,5 @@ function Invoke-WPFPanelAutologin {
     
     #>
     curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-    cmd /c $env:temp\autologin.exe
+    cmd /c $env:temp\autologin.exe /accepteula
 }

@@ -26,8 +26,12 @@ Function Invoke-WinUtilCurrentSystem {
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            if($sync.configs.applications.$($psitem.Key).winget -in $sync.InstalledPrograms.Id){
-                Write-Output $psitem.name
+            $dependencies = $($sync.configs.applications.$($psitem.Key).winget -split ";")
+
+            Foreach ($dependency in $dependencies) {
+                if($dependency -in $sync.InstalledPrograms.Id){
+                    Write-Output $psitem.name
+                }
             }
         }
     }

@@ -47,6 +47,16 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+$app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+$system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+    if($app -eq 0 -and $system -eq 0){
+        $ctttheme = 'Matrix'
+    } 
+    else{
+        $ctttheme = 'Classic'
+    }
+$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
+
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 #Read XAML
