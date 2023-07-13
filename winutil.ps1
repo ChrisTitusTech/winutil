@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.06.11
+    Version        : 23.07.12
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.06.11"
+$sync.version = "23.07.12"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2157,7 +2157,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallorigin" Content="Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
@@ -2873,16 +2873,16 @@ $sync.configs.applications = '{
     "choco": "telegram"
   },
   "WPFInstallunity": {
-    "winget": "UnityTechnologies.UnityHub",
+    "winget": "Unity.UnityHub",
     "choco": "unityhub"
   },
   "WPFInstallqbittorrent": {
     "winget": "qBittorrent.qBittorrent",
     "choco": "qbittorrent"
   },
-  "WPFInstallorigin": {
+  "WPFInstalleaapp": {
     "winget": "ElectronicArts.EADesktop",
-    "choco": "origin"
+    "choco": "ea-app"
   },
   "WPFInstallopenshell": {
     "winget": "Open-Shell.Open-Shell-Menu",
@@ -2929,7 +2929,7 @@ $sync.configs.applications = '{
     "choco": "nuget.commandline"
   },
   "WPFInstallwinrar": {
-    "winget": "RARLab.WinRar",
+    "winget": "RARLab.WinRAR",
     "choco": "winrar"
   },
   "WPFInstallneovim": {
@@ -2991,7 +2991,6 @@ $sync.configs.feature = '{
   "WPFFeaturesdotnet": {
     "feature": [
       "NetFx4-AdvSrvs",
-      "NetFx4Extended-ASPNET45",
       "NetFx3"
     ],
     "InvokeScript": [
