@@ -117,6 +117,7 @@
       },
       {
         "Name": "AppVClient",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -131,6 +132,7 @@
       },
       {
         "Name": "AssignedAccessManagerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -140,10 +142,12 @@
       },
       {
         "Name": "AudioSrv",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Audiosrv",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -168,14 +172,17 @@
       },
       {
         "Name": "BTAGService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BcastDVRUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BluetoothUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -185,15 +192,18 @@
       },
       {
         "Name": "Browser",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "BthAvctpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BthHFSrv",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "CDPSvc",
@@ -202,6 +212,7 @@
       },
       {
         "Name": "CDPUserSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -211,6 +222,7 @@
       },
       {
         "Name": "CaptureService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -225,6 +237,7 @@
       },
       {
         "Name": "ConsentUxUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -234,6 +247,7 @@
       },
       {
         "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -258,7 +272,8 @@
       },
       {
         "Name": "DcpSvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "DevQueryBroker",
@@ -267,6 +282,7 @@
       },
       {
         "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -281,10 +297,12 @@
       },
       {
         "Name": "DevicePickerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "DevicesFlowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -299,14 +317,17 @@
       },
       {
         "Name": "DialogBlockingService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "DispBrokerDesktopSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "DisplayEnhancementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -336,6 +357,7 @@
       },
       {
         "Name": "DusmSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -370,7 +392,8 @@
       },
       {
         "Name": "Fax",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "FontCache",
@@ -379,31 +402,38 @@
       },
       {
         "Name": "FrameServer",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "FrameServerMonitor",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "GraphicsPerfSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupListener",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupProvider",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HvHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IEEtwCollectorService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "IKEEXT",
@@ -412,14 +442,17 @@
       },
       {
         "Name": "InstallService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "InventorySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IpxlatCfgSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -454,6 +487,7 @@
       },
       {
         "Name": "LxpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -473,34 +507,42 @@
       },
       {
         "Name": "McpManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MessagingService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MicrosoftEdgeElevationService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MixedRealityOpenXRSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MpsSvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "MsKeyboardFilter",
+        "StartupType": "Manual",
         "OriginalType": "Disabled"
       },
       {
         "Name": "NPSMSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "NaturalAuthentication",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -555,10 +597,12 @@
       },
       {
         "Name": "OneSyncSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "P9RdrService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -583,18 +627,22 @@
       },
       {
         "Name": "PenService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PerfHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PhoneSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -619,6 +667,7 @@
       },
       {
         "Name": "PrintWorkflowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -628,6 +677,7 @@
       },
       {
         "Name": "PushToInstall",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -662,6 +712,7 @@
       },
       {
         "Name": "RmSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -696,6 +747,7 @@
       },
       {
         "Name": "SEMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -705,10 +757,12 @@
       },
       {
         "Name": "SNMPTRAP",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "SNMPTrap",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -733,10 +787,12 @@
       },
       {
         "Name": "SecurityHealthService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "Sense",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -761,6 +817,7 @@
       },
       {
         "Name": "SgrmBroker",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -770,6 +827,7 @@
       },
       {
         "Name": "SharedRealitySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -819,7 +877,8 @@
       },
       {
         "Name": "TabletInputService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TapiSrv",
@@ -833,6 +892,7 @@
       },
       {
         "Name": "TextInputManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -842,18 +902,22 @@
       },
       {
         "Name": "TieringEngineService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TimeBroker",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TimeBrokerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TokenBroker",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -863,6 +927,7 @@
       },
       {
         "Name": "TroubleshootingSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -872,14 +937,17 @@
       },
       {
         "Name": "UI0Detect",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "UdkUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UevAgentService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -889,10 +957,12 @@
       },
       {
         "Name": "UnistoreSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UserDataSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -907,10 +977,12 @@
       },
       {
         "Name": "VGAuthService",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "VMTools",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -920,6 +992,7 @@
       },
       {
         "Name": "VacSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -939,6 +1012,7 @@
       },
       {
         "Name": "WFDSConMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -948,6 +1022,7 @@
       },
       {
         "Name": "WManSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -957,7 +1032,8 @@
       },
       {
         "Name": "WSService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WSearch",
@@ -966,6 +1042,7 @@
       },
       {
         "Name": "WaaSMedicSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -975,6 +1052,7 @@
       },
       {
         "Name": "WarpJITSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -989,7 +1067,8 @@
       },
       {
         "Name": "WcsPlugInService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WdNisSvc",
@@ -1048,10 +1127,12 @@
       },
       {
         "Name": "WlanSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "WpcMonSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1061,6 +1142,7 @@
       },
       {
         "Name": "WpnUserService_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -1080,6 +1162,7 @@
       },
       {
         "Name": "XboxGipSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1089,6 +1172,7 @@
       },
       {
         "Name": "autotimesvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1098,18 +1182,22 @@
       },
       {
         "Name": "camsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "cbdhsvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "dcsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1124,6 +1212,7 @@
       },
       {
         "Name": "diagsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1138,10 +1227,12 @@
       },
       {
         "Name": "edgeupdate",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "edgeupdatem",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1196,6 +1287,7 @@
       },
       {
         "Name": "mpssvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -1225,6 +1317,7 @@
       },
       {
         "Name": "perceptionsimulation",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1239,6 +1332,7 @@
       },
       {
         "Name": "shpamsvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -1248,6 +1342,7 @@
       },
       {
         "Name": "spectrum",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1257,6 +1352,7 @@
       },
       {
         "Name": "ssh-agent",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -1271,14 +1367,17 @@
       },
       {
         "Name": "tiledatamodelsvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "tzautoupdate",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "uhssvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -1293,6 +1392,7 @@
       },
       {
         "Name": "vm3dservice",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -1337,6 +1437,7 @@
       },
       {
         "Name": "vmvss",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1351,10 +1452,12 @@
       },
       {
         "Name": "webthreatdefsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "webthreatdefusersvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -1364,6 +1467,7 @@
       },
       {
         "Name": "wisvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1373,6 +1477,7 @@
       },
       {
         "Name": "wlpasvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1397,7 +1502,8 @@
       },
       {
         "Name": "wudfsvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       }
     ]
   },

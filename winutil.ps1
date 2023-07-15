@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.07.13
+    Version        : 23.07.15
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.07.13"
+$sync.version = "23.07.15"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -761,33 +761,32 @@ Function Set-WinUtilService {
         $Name,
         $StartupType
     )
-    Try{
-        Write-Host "Setting Services $Name to $StartupType"
-        Set-Service -Name $Name -StartupType $StartupType -ErrorAction Stop
-
-        if($StartupType -eq "Disabled"){
+    try {
+        Write-Host "Setting Service $Name to $StartupType"
+    
+        # Check if the service exists
+        $service = Get-Service -Name $Name -ErrorAction Stop
+    
+        # Service exists, proceed with changing properties
+        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+    
+        if ($StartupType -eq "Disabled") {
             Write-Host "Stopping $Name"
             Stop-Service -Name $Name -Force -ErrorAction Stop
         }
-        if($StartupType -eq "Enabled"){
-            Write-Host "Starting $Name"
-            Start-Service -Name $Name -Force -ErrorAction Stop
+        elseif ($StartupType -eq "Manual") {
+            Write-Host "Stopping $Name"
+            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
     }
-    Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or 
-           $psitem.Exception.Message -like "*was not found on computer*"){
-            Write-Warning "Service $name was not Found"
-        }
-        Else{
-            Write-Warning "Unable to set $Name due to unhandled exception"
-            Write-Warning $psitem.Exception.Message
-        }
+    catch [System.ServiceProcess.ServiceNotFoundException] {
+        Write-Warning "Service $Name was not found"
     }
-    Catch{
+    catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning $_.Exception.Message
     }
+    
 }
 function Set-WinUtilUITheme {
     <#
@@ -1036,9 +1035,23 @@ function Invoke-WPFFixesNetwork {
         PlaceHolder
     
     #>
+
     Write-Host "Reseting Network with netsh"
-    netsh int ip reset
-    netsh winsock reset
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
+
+    Write-Host "Process complete. Please reboot your computer."
+
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "Network Reset "
+    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    Write-Host "================================="
+    Write-Host "-- Reset Network Configuration --"
+    Write-Host "================================="
 }
 function Invoke-WPFFixesUpdate {
 
@@ -1050,94 +1063,72 @@ function Invoke-WPFFixesUpdate {
     #>
 
     ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
-    Write-Host "1. Stopping Windows Update Services..."
+Write-Host "1. Stopping Windows Update Services..."
     Stop-Service -Name BITS
     Stop-Service -Name wuauserv
     Stop-Service -Name appidsvc
     Stop-Service -Name cryptsvc
-
-    Write-Host "2. Remove QMGR Data file..."
+Write-Host "2. Remove QMGR Data file..."
     Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue
 
-    Write-Host "3. Renaming the Software Distribution and CatRoot Folder..."
+Write-Host "3. Renaming the Software Distribution and CatRoot Folder..."
     Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue
     Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
 
-    Write-Host "4. Removing old Windows Update log..."
+Write-Host "4. Removing old Windows Update log..."
     Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
 
-    Write-Host "5. Resetting the Windows Update Services to defualt settings..."
-    "sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
-    "sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+Write-Host "5. Resetting the Windows Update Services to default settings..."
+    Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+    Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
     Set-Location $env:systemroot\system32
 
-    Write-Host "6. Registering some DLLs..."
-    regsvr32.exe /s atl.dll
-    regsvr32.exe /s urlmon.dll
-    regsvr32.exe /s mshtml.dll
-    regsvr32.exe /s shdocvw.dll
-    regsvr32.exe /s browseui.dll
-    regsvr32.exe /s jscript.dll
-    regsvr32.exe /s vbscript.dll
-    regsvr32.exe /s scrrun.dll
-    regsvr32.exe /s msxml.dll
-    regsvr32.exe /s msxml3.dll
-    regsvr32.exe /s msxml6.dll
-    regsvr32.exe /s actxprxy.dll
-    regsvr32.exe /s softpub.dll
-    regsvr32.exe /s wintrust.dll
-    regsvr32.exe /s dssenh.dll
-    regsvr32.exe /s rsaenh.dll
-    regsvr32.exe /s gpkcsp.dll
-    regsvr32.exe /s sccbase.dll
-    regsvr32.exe /s slbcsp.dll
-    regsvr32.exe /s cryptdlg.dll
-    regsvr32.exe /s oleaut32.dll
-    regsvr32.exe /s ole32.dll
-    regsvr32.exe /s shell32.dll
-    regsvr32.exe /s initpki.dll
-    regsvr32.exe /s wuapi.dll
-    regsvr32.exe /s wuaueng.dll
-    regsvr32.exe /s wuaueng1.dll
-    regsvr32.exe /s wucltui.dll
-    regsvr32.exe /s wups.dll
-    regsvr32.exe /s wups2.dll
-    regsvr32.exe /s wuweb.dll
-    regsvr32.exe /s qmgr.dll
-    regsvr32.exe /s qmgrprxy.dll
-    regsvr32.exe /s wucltux.dll
-    regsvr32.exe /s muweb.dll
-    regsvr32.exe /s wuwebv.dll
+Write-Host "6. Registering some DLLs..."
+$DLLs = @(
+    "atl.dll", "urlmon.dll", "mshtml.dll", "shdocvw.dll", "browseui.dll",
+    "jscript.dll", "vbscript.dll", "scrrun.dll", "msxml.dll", "msxml3.dll",
+    "msxml6.dll", "actxprxy.dll", "softpub.dll", "wintrust.dll", "dssenh.dll",
+    "rsaenh.dll", "gpkcsp.dll", "sccbase.dll", "slbcsp.dll", "cryptdlg.dll",
+    "oleaut32.dll", "ole32.dll", "shell32.dll", "initpki.dll", "wuapi.dll",
+    "wuaueng.dll", "wuaueng1.dll", "wucltui.dll", "wups.dll", "wups2.dll",
+    "wuweb.dll", "qmgr.dll", "qmgrprxy.dll", "wucltux.dll", "muweb.dll", "wuwebv.dll"
+)
+foreach ($dll in $DLLs) {
+    Start-Process -NoNewWindow -FilePath "regsvr32.exe" -ArgumentList "/s", $dll
+}
 
-    Write-Host "7) Removing WSUS client settings..."
-    REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v AccountDomainSid /f
-    REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v PingID /f
-    REG DELETE "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" /v SusClientId /f
+Write-Host "7) Removing WSUS client settings..."
+if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate") {
+    Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "AccountDomainSid", "/f"
+    Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "PingID", "/f"
+    Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "SusClientId", "/f"
+}
 
-    Write-Host "8) Resetting the WinSock..."
-    netsh winsock reset
-    netsh winhttp reset proxy
-    netsh int ip reset
+Write-Host "8) Resetting the WinSock..."
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
 
-    Write-Host "9) Delete all BITS jobs..."
+Write-Host "9) Delete all BITS jobs..."
     Get-BitsTransfer | Remove-BitsTransfer
 
-    Write-Host "10) Attempting to install the Windows Update Agent..."
-    If ([System.Environment]::Is64BitOperatingSystem) {
-        wusa Windows8-RT-KB2937636-x64 /quiet
-    }
-    else {
-        wusa Windows8-RT-KB2937636-x86 /quiet
-    }
+Write-Host "10) Attempting to install the Windows Update Agent..."
+If ([System.Environment]::Is64BitOperatingSystem) {
+    Start-Process -NoNewWindow -FilePath "wusa" -ArgumentList "Windows8-RT-KB2937636-x64", "/quiet"
+}
+else {
+    Start-Process -NoNewWindow -FilePath "wusa" -ArgumentList "Windows8-RT-KB2937636-x86", "/quiet"
+}
 
-    Write-Host "11) Starting Windows Update Services..."
+Write-Host "11) Starting Windows Update Services..."
     Start-Service -Name BITS
     Start-Service -Name wuauserv
     Start-Service -Name appidsvc
     Start-Service -Name cryptsvc
 
-    Write-Host "12) Forcing discovery..."
-    wuauclt /resetauthorization /detectnow
+Write-Host "12) Forcing discovery..."
+    Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
+
 
     Write-Host "Process complete. Please reboot your computer."
 
@@ -1593,6 +1584,7 @@ Function Invoke-WPFUltimatePerformance {
 
                 # Add the power scheme
                 powercfg /duplicatescheme $powerSchemeGuid
+                powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
 
                 Write-Host "Power scheme added successfully."
             }
@@ -3428,6 +3420,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AppVClient",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -3442,6 +3435,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AssignedAccessManagerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3451,10 +3445,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AudioSrv",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Audiosrv",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3479,14 +3475,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "BTAGService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BcastDVRUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BluetoothUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3496,15 +3495,18 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Browser",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "BthAvctpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BthHFSrv",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "CDPSvc",
@@ -3513,6 +3515,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CDPUserSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3522,6 +3525,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CaptureService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3536,6 +3540,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "ConsentUxUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3545,6 +3550,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3569,7 +3575,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DcpSvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "DevQueryBroker",
@@ -3578,6 +3585,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3592,10 +3600,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DevicePickerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "DevicesFlowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3610,14 +3620,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DialogBlockingService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "DispBrokerDesktopSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "DisplayEnhancementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3647,6 +3660,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DusmSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3681,7 +3695,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Fax",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "FontCache",
@@ -3690,31 +3705,38 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "FrameServer",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "FrameServerMonitor",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "GraphicsPerfSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupListener",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupProvider",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HvHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IEEtwCollectorService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "IKEEXT",
@@ -3723,14 +3745,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "InstallService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "InventorySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IpxlatCfgSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3765,6 +3790,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "LxpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3784,34 +3810,42 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "McpManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MessagingService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MicrosoftEdgeElevationService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MixedRealityOpenXRSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MpsSvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "MsKeyboardFilter",
+        "StartupType": "Manual",
         "OriginalType": "Disabled"
       },
       {
         "Name": "NPSMSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "NaturalAuthentication",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3866,10 +3900,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "OneSyncSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "P9RdrService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3894,18 +3930,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PenService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PerfHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PhoneSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3930,6 +3970,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PrintWorkflowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3939,6 +3980,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PushToInstall",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3973,6 +4015,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "RmSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4007,6 +4050,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SEMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4016,10 +4060,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SNMPTRAP",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "SNMPTrap",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4044,10 +4090,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SecurityHealthService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "Sense",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4072,6 +4120,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SgrmBroker",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4081,6 +4130,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SharedRealitySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4130,7 +4180,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TabletInputService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TapiSrv",
@@ -4144,6 +4195,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TextInputManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -4153,18 +4205,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TieringEngineService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TimeBroker",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TimeBrokerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TokenBroker",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4174,6 +4230,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TroubleshootingSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4183,14 +4240,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "UI0Detect",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "UdkUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UevAgentService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4200,10 +4260,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "UnistoreSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UserDataSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4218,10 +4280,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VGAuthService",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "VMTools",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4231,6 +4295,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VacSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4250,6 +4315,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WFDSConMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4259,6 +4325,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WManSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4268,7 +4335,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WSService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WSearch",
@@ -4277,6 +4345,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WaaSMedicSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4286,6 +4355,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WarpJITSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4300,7 +4370,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WcsPlugInService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WdNisSvc",
@@ -4359,10 +4430,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WlanSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "WpcMonSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4372,6 +4445,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WpnUserService_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4391,6 +4465,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "XboxGipSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4400,6 +4475,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "autotimesvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4409,18 +4485,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "camsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "cbdhsvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "dcsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4435,6 +4515,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "diagsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4449,10 +4530,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "edgeupdate",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "edgeupdatem",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4507,6 +4590,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "mpssvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4536,6 +4620,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "perceptionsimulation",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4550,6 +4635,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "shpamsvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4559,6 +4645,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "spectrum",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4568,6 +4655,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "ssh-agent",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4582,14 +4670,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "tiledatamodelsvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "tzautoupdate",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "uhssvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4604,6 +4695,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "vm3dservice",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -4648,6 +4740,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "vmvss",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4662,10 +4755,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "webthreatdefsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "webthreatdefusersvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4675,6 +4770,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wisvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4684,6 +4780,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wlpasvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4708,7 +4805,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wudfsvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       }
     ]
   },

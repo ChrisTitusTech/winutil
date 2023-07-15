@@ -13,31 +13,30 @@ Function Set-WinUtilService {
         $Name,
         $StartupType
     )
-    Try{
-        Write-Host "Setting Services $Name to $StartupType"
-        Set-Service -Name $Name -StartupType $StartupType -ErrorAction Stop
-
-        if($StartupType -eq "Disabled"){
+    try {
+        Write-Host "Setting Service $Name to $StartupType"
+    
+        # Check if the service exists
+        $service = Get-Service -Name $Name -ErrorAction Stop
+    
+        # Service exists, proceed with changing properties
+        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+    
+        if ($StartupType -eq "Disabled") {
             Write-Host "Stopping $Name"
             Stop-Service -Name $Name -Force -ErrorAction Stop
         }
-        if($StartupType -eq "Enabled"){
-            Write-Host "Starting $Name"
-            Start-Service -Name $Name -Force -ErrorAction Stop
+        elseif ($StartupType -eq "Manual") {
+            Write-Host "Stopping $Name"
+            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
     }
-    Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or 
-           $psitem.Exception.Message -like "*was not found on computer*"){
-            Write-Warning "Service $name was not Found"
-        }
-        Else{
-            Write-Warning "Unable to set $Name due to unhandled exception"
-            Write-Warning $psitem.Exception.Message
-        }
+    catch [System.ServiceProcess.ServiceNotFoundException] {
+        Write-Warning "Service $Name was not found"
     }
-    Catch{
+    catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning $_.Exception.Message
     }
+    
 }
