@@ -1775,13 +1775,6 @@
         "type": "Dword"
       },
       {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
-        "OriginalValue": "1",
-        "name": "Start",
-        "value": "4",
-        "type": "Dword"
-      },
-      {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "400",
         "name": "MouseHoverTime",
