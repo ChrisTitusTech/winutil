@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.07.14
+    Version        : 23.07.15
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.07.14"
+$sync.version = "23.07.15"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -761,33 +761,32 @@ Function Set-WinUtilService {
         $Name,
         $StartupType
     )
-    Try{
-        Write-Host "Setting Services $Name to $StartupType"
-        Set-Service -Name $Name -StartupType $StartupType -ErrorAction Stop
-
-        if($StartupType -eq "Disabled"){
+    try {
+        Write-Host "Setting Service $Name to $StartupType"
+    
+        # Check if the service exists
+        $service = Get-Service -Name $Name -ErrorAction Stop
+    
+        # Service exists, proceed with changing properties
+        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+    
+        if ($StartupType -eq "Disabled") {
             Write-Host "Stopping $Name"
             Stop-Service -Name $Name -Force -ErrorAction Stop
         }
-        if($StartupType -eq "Enabled"){
-            Write-Host "Starting $Name"
-            Start-Service -Name $Name -Force -ErrorAction Stop
+        elseif ($StartupType -eq "Manual") {
+            Write-Host "Stopping $Name"
+            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
     }
-    Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*Cannot find any service with service name*" -or 
-           $psitem.Exception.Message -like "*was not found on computer*"){
-            Write-Warning "Service $name was not Found"
-        }
-        Else{
-            Write-Warning "Unable to set $Name due to unhandled exception"
-            Write-Warning $psitem.Exception.Message
-        }
+    catch [System.ServiceProcess.ServiceNotFoundException] {
+        Write-Warning "Service $Name was not found"
     }
-    Catch{
+    catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning $_.Exception.Message
     }
+    
 }
 function Set-WinUtilUITheme {
     <#
@@ -1585,6 +1584,7 @@ Function Invoke-WPFUltimatePerformance {
 
                 # Add the power scheme
                 powercfg /duplicatescheme $powerSchemeGuid
+                powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
 
                 Write-Host "Power scheme added successfully."
             }
@@ -3420,6 +3420,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AppVClient",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -3434,6 +3435,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AssignedAccessManagerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3443,10 +3445,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AudioSrv",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Audiosrv",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3471,14 +3475,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "BTAGService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BcastDVRUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BluetoothUserService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3488,15 +3495,18 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Browser",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "BthAvctpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "BthHFSrv",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "CDPSvc",
@@ -3505,6 +3515,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CDPUserSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3514,6 +3525,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CaptureService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3528,6 +3540,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "ConsentUxUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3537,6 +3550,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3561,7 +3575,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DcpSvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "DevQueryBroker",
@@ -3570,6 +3585,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3584,10 +3600,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DevicePickerUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "DevicesFlowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3602,14 +3620,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DialogBlockingService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "DispBrokerDesktopSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "DisplayEnhancementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3639,6 +3660,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "DusmSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -3673,7 +3695,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Fax",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "FontCache",
@@ -3682,31 +3705,38 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "FrameServer",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "FrameServerMonitor",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "GraphicsPerfSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupListener",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HomeGroupProvider",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "HvHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IEEtwCollectorService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "IKEEXT",
@@ -3715,14 +3745,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "InstallService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "InventorySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "IpxlatCfgSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3757,6 +3790,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "LxpSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3776,34 +3810,42 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "McpManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MessagingService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MicrosoftEdgeElevationService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MixedRealityOpenXRSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "MpsSvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "MsKeyboardFilter",
+        "StartupType": "Manual",
         "OriginalType": "Disabled"
       },
       {
         "Name": "NPSMSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "NaturalAuthentication",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3858,10 +3900,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "OneSyncSvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "P9RdrService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3886,18 +3930,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PenService_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PerfHost",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PhoneSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3922,6 +3970,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PrintWorkflowUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3931,6 +3980,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "PushToInstall",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3965,6 +4015,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "RmSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -3999,6 +4050,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SEMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4008,10 +4060,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SNMPTRAP",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "SNMPTrap",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4036,10 +4090,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SecurityHealthService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "Sense",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4064,6 +4120,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SgrmBroker",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4073,6 +4130,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SharedRealitySvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4122,7 +4180,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TabletInputService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TapiSrv",
@@ -4136,6 +4195,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TextInputManagementService",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -4145,18 +4205,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TieringEngineService",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TimeBroker",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "TimeBrokerSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "TokenBroker",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4166,6 +4230,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TroubleshootingSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4175,14 +4240,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "UI0Detect",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "UdkUserSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UevAgentService",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4192,10 +4260,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "UnistoreSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "UserDataSvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4210,10 +4280,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VGAuthService",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "VMTools",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4223,6 +4295,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VacSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4242,6 +4315,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WFDSConMgrSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4251,6 +4325,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WManSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4260,7 +4335,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WSService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WSearch",
@@ -4269,6 +4345,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WaaSMedicSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4278,6 +4355,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WarpJITSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4292,7 +4370,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WcsPlugInService",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "WdNisSvc",
@@ -4351,10 +4430,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WlanSvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
         "Name": "WpcMonSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4364,6 +4445,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "WpnUserService_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4383,6 +4465,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "XboxGipSvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4392,6 +4475,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "autotimesvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4401,18 +4485,22 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "camsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "cbdhsvc_dc2a4",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "cloudidsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "dcsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4427,6 +4515,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "diagsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4441,10 +4530,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "edgeupdate",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
         "Name": "edgeupdatem",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4499,6 +4590,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "mpssvc",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4528,6 +4620,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "perceptionsimulation",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4542,6 +4635,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "shpamsvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4551,6 +4645,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "spectrum",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4560,6 +4655,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "ssh-agent",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4574,14 +4670,17 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "tiledatamodelsvc",
-        "StartupType": "Automatic"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "tzautoupdate",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
         "Name": "uhssvc",
+        "StartupType": "Disabled",
         "OriginalType": "Disabled"
       },
       {
@@ -4596,6 +4695,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "vm3dservice",
+        "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
       {
@@ -4640,6 +4740,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "vmvss",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4654,10 +4755,12 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "webthreatdefsvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
         "Name": "webthreatdefusersvc_dc2a4",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
@@ -4667,6 +4770,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wisvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4676,6 +4780,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wlpasvc",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4700,7 +4805,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "wudfsvc",
-        "StartupType": "Manual"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       }
     ]
   },
