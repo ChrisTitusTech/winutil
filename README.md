@@ -16,7 +16,7 @@ iwr -useb https://christitus.com/win | iex
 ```
 Or shorter Thanks to [#144](/../../issues/144)
 ```
-irm christitus.com/win | iex
+irm https://christitus.com/win | iex
 ```
 If you are having TLS 1.2 Issues or You cannot find or resolve `christitus.com/win` then run with the following command:
 ```
