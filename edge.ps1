@@ -10,10 +10,10 @@ if ($also_remove_webview -eq 1) {
 }
 
 ## set useless policies
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name InstallDefault -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} -Value 1 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name DoNotUpdateToEdgeWithChromium -Value 1 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "InstallDefault" -Value 0 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" -Value 0 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" -Value 1 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord
 
 ## clear win32 uninstall block
 foreach ($hk in 'HKCU','HKLM') {
