@@ -8,12 +8,17 @@ if ($also_remove_webview -eq 1) {
     $remove_win32 += "Microsoft EdgeWebView"
     $remove_appx += "Win32WebViewHost"
 }
+$edgeupdatepath = "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate"
 
 ## set useless policies
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "InstallDefault" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" -Value 0 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" -Value 1 -Type DWord
-    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord
+If (!(Test-Path $edgeupdatepath)) {
+    Write-Host "$edgeupdatepath was not found, Creating..."
+    New-Item -Path $edgeupdatepath -Force -ErrorAction Stop | Out-Null
+}
+    Set-ItemProperty -Path $edgeupdatepath -Name "InstallDefault" -Value 0 -Type DWord
+    Set-ItemProperty -Path $edgeupdatepath -Name "Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" -Value 0 -Type DWord
+    Set-ItemProperty -Path $edgeupdatepath -Name "Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" -Value 1 -Type DWord
+    Set-ItemProperty -Path $edgeupdatepath -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord
 
 ## clear win32 uninstall block
 foreach ($hk in 'HKCU','HKLM') {
