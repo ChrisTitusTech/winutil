@@ -10,17 +10,16 @@ if ($also_remove_webview -eq 1) {
 }
 
 ## set useless policies
-foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE') {
-    Set-ItemProperty -Path "$p\Microsoft\EdgeUpdate" -Name InstallDefault -Value 0 -Type DWord >$null 2>$null
-    Set-ItemProperty -Path "$p\Microsoft\EdgeUpdate" -Name Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} -Value 0 -Type DWord >$null 2>$null
-    Set-ItemProperty -Path "$p\Microsoft\EdgeUpdate" -Name Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} -Value 1 -Type DWord >$null 2>$null
-    Set-ItemProperty -Path "$p\Microsoft\EdgeUpdate" -Name DoNotUpdateToEdgeWithChromium -Value 1 -Type DWord >$null 2>$null
-}
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name InstallDefault -Value 0 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} -Value 0 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} -Value 1 -Type DWord
+    Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate" -Name DoNotUpdateToEdgeWithChromium -Value 1 -Type DWord
+
 ## clear win32 uninstall block
 foreach ($hk in 'HKCU','HKLM') {
     foreach ($wow in '','\Wow6432Node') {
         foreach ($i in $remove_win32) {
-            Remove-ItemProperty -Path "$hk\SOFTWARE${wow}\Microsoft\Windows\CurrentVersion\Uninstall\$i" -Name NoRemove -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "$hk\:\\SOFTWARE${wow}\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$i" -Name NoRemove -ErrorAction SilentlyContinue
         }
     }
 }
@@ -53,7 +52,7 @@ foreach ($b in $bho) {
 ## clear appx uninstall block and remove
 $provisioned = Get-AppxProvisionedPackage -Online
 $appxpackage = Get-AppxPackage -AllUsers
-$store = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'
+$store = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore'
 $store_reg = $store.replace(':','')
 $users = @('S-1-5-18')
 if (Test-Path $store) {
@@ -66,25 +65,22 @@ foreach ($choice in $remove_appx) {
     foreach ($appx in $($provisioned | Where-Object { $_.PackageName -like "*$choice*" })) {
         $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $appx.DisplayName }).PackageFamilyName
         $PackageFamilyName
-        Set-ItemProperty -Path "$store_reg\Deprovisioned\$PackageFamilyName" -Force >$null 2>$null
+        Set-ItemProperty -Path "$store_reg\\Deprovisioned\\$PackageFamilyName"
         cmd /c "dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName) >nul 2>nul"
     }
     foreach ($appx in $($appxpackage | Where-Object { $_.PackageFullName -like "*$choice*" })) {
-        $inbox = (Get-ItemProperty "$store\InboxApplications\*$($appx.Name)*").Path.PSChildName
+        $inbox = (Get-ItemProperty "$store\\InboxApplications\\*$($appx.Name)*").Path.PSChildName
         $PackageFamilyName = $appx.PackageFamilyName
         $PackageFullName = $appx.PackageFullName
-        $PackageFullName
+
         foreach ($app in $inbox) {
-            Remove-ItemProperty -Path "$store_reg\InboxApplications\$app" -Force >$null 2>$null
+            Remove-ItemProperty -Path "$store_reg\\InboxApplications\\$app"
         }
-        Set-ItemProperty -Path "$store_reg\Deprovisioned\$PackageFamilyName" -Force >$null 2>$null
-        foreach ($sid in $users) {
-            Set-ItemProperty -Path "$store_reg\EndOfLife\$sid\$PackageFullName" -Force >$null 2>$null
-        }
-        dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >$null 2>$null
+        
+        cmd /c "dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >$null 2>$null"
         remove-appxpackage -package "$PackageFullName" -AllUsers >$null 2>&1
-        foreach ($sid in $users) {
-            Remove-ItemProperty -Path "$store_reg\EndOfLife\$sid\$PackageFullName" -Force >$null 2>$null
+        foreach ($user in $users) {
+            cmd /c "dism /online /remove-provisionedappxpackage /packagename:$PackageFullName /user:$user >nul 2>nul"
         }
     }
 }
@@ -118,22 +114,22 @@ Remove-Item -Path "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft E
 Remove-Item -Path "$desktop\Microsoft Edge.lnk" -Force -ErrorAction SilentlyContinue
 
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
-$IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
+$IFEO = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options'
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
 $MIN = ('--headless','--width 1 --height 1')[([environment]::OSVersion.Version.Build) -gt 25179]
 $CMD = "$env:systemroot\system32\conhost.exe $MIN" # AveYo: minimize prompt - see Terminal issue #13914
-Set-ItemProperty -Path HKCR\microsoft-edge -Force -Name '(default)' -Value 'URL:microsoft-edge' >$null
-Set-ItemProperty -Path HKCR\microsoft-edge -Force -Name 'URL Protocol' -Value '' >$null
-Set-ItemProperty -Path HKCR\microsoft-edge -Force -Name NoOpenWith -Value '' >$null
-Set-ItemProperty -Path 'HKCR\microsoft-edge\shell\open\command' -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1" >$null
-Set-ItemProperty -Path HKCR\MSEdgeHTM -Force -Name NoOpenWith -Value '' >$null
-Set-ItemProperty -Path 'HKCR\MSEdgeHTM\shell\open\command' -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1" >$null
-Set-ItemProperty -Path "$IFEO\ie_to_edge_stub.exe" -Force -Name UseFilter -Value 1 -Type DWord >$null
-Set-ItemProperty -Path "$IFEO\ie_to_edge_stub.exe\0" -Force -Name FilterFullPath -Value "$DIR\ie_to_edge_stub.exe" >$null
-Set-ItemProperty -Path "$IFEO\ie_to_edge_stub.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd" >$null
-Set-ItemProperty -Path "$IFEO\msedge.exe" -Force -Name UseFilter -Value 1 -Type DWord >$null
-Set-ItemProperty -Path "$IFEO\msedge.exe\0" -Force -Name FilterFullPath -Value "$MSEP\msedge.exe" >$null
-Set-ItemProperty -Path "$IFEO\msedge.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd" >$null
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name '(default)' -Value 'URL:microsoft-edge'
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name 'URL Protocol' -Value ''
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name NoOpenWith -Value ''
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1"
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM" -Force -Name NoOpenWith -Value ''
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1"
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe" -Force -Name UseFilter -Value 1 -Type DWord
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name FilterFullPath -Value "$DIR\ie_to_edge_stub.exe"
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd"
+Set-ItemProperty -Path "$IFEO\\msedge.exe" -Force -Name UseFilter -Value 1 -Type DWord
+Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name FilterFullPath -Value "$MSEP\msedge.exe"
+Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd"
 
 $OpenWebSearch = @'
 @title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser
