@@ -70,8 +70,8 @@ foreach ($choice in $remove_appx) {
     foreach ($appx in $($provisioned | Where-Object { $_.PackageName -like "*$choice*" })) {
         $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $appx.DisplayName }).PackageFamilyName
         Write-Host $PackageFamilyName
-        cmd /c "dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >$null 2>$null"
-        cmd /c "dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName) >nul 2>nul"
+        dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0
+        dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName)
     }
     foreach ($appx in $($appxpackage | Where-Object { $_.PackageFullName -like "*$choice*" })) {
         $inbox = (Get-ItemProperty "$store\\InboxApplications\\*$($appx.Name)*").Path.PSChildName
@@ -79,13 +79,13 @@ foreach ($choice in $remove_appx) {
         $PackageFullName = $appx.PackageFullName
 
         foreach ($app in $inbox) {
-            Remove-ItemProperty -Path "$store_reg\\InboxApplications\\$app"
+            Remove-ItemProperty -Path "$store_reg\\InboxApplications\\$app" -Name $PackageFamilyName -ErrorAction SilentlyContinue
         }
         
-        cmd /c "dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >$null 2>$null"
-        remove-appxpackage -package "$PackageFullName" -AllUsers >$null 2>&1
+        dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0
+        remove-appxpackage -package "$PackageFullName" -AllUsers -ErrorAction SilentlyContinue
         foreach ($user in $users) {
-            cmd /c "dism /online /remove-provisionedappxpackage /packagename:$PackageFullName /user:$user >nul 2>nul"
+            dism /online /remove-provisionedappxpackage /packagename:$PackageFullName /user:$user
         }
     }
 }
@@ -123,18 +123,18 @@ $IFEO = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Exec
 $MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
 $MIN = ('--headless','--width 1 --height 1')[([environment]::OSVersion.Version.Build) -gt 25179]
 $CMD = "$env:systemroot\system32\conhost.exe $MIN" # AveYo: minimize prompt - see Terminal issue #13914
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name '(default)' -Value 'URL:microsoft-edge'
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name 'URL Protocol' -Value ''
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name NoOpenWith -Value ''
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1"
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM" -Force -Name NoOpenWith -Value ''
-Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1"
-Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe" -Force -Name UseFilter -Value 1 -Type DWord
-Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name FilterFullPath -Value "$DIR\ie_to_edge_stub.exe"
-Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd"
-Set-ItemProperty -Path "$IFEO\\msedge.exe" -Force -Name UseFilter -Value 1 -Type DWord
-Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name FilterFullPath -Value "$MSEP\msedge.exe"
-Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd"
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name '(default)' -Value 'URL:microsoft-edge' -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name 'URL Protocol' -Value '' -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge" -Force -Name NoOpenWith -Value '' -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\microsoft-edge\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM" -Force -Name NoOpenWith -Value '' -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\\MSEdgeHTM\\shell\\open\\command" -Force -Name '(default)' -Value "$DIR\ie_to_edge_stub.exe %1" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe" -Force -Name UseFilter -Value 1 -Type DWord -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name FilterFullPath -Value "$DIR\ie_to_edge_stub.exe" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\ie_to_edge_stub.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\msedge.exe" -Force -Name UseFilter -Value 1 -Type DWord -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name FilterFullPath -Value "$MSEP\msedge.exe" -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$IFEO\\msedge.exe\0" -Force -Name Debugger -Value "$CMD $DIR\OpenWebSearch.cmd" -ErrorAction SilentlyContinue
 
 $OpenWebSearch = @'
 @title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser
