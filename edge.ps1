@@ -64,8 +64,8 @@ foreach ($choice in $remove_appx) {
     }
     foreach ($appx in $($provisioned | Where-Object { $_.PackageName -like "*$choice*" })) {
         $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $appx.DisplayName }).PackageFamilyName
-        $PackageFamilyName
-        Set-ItemProperty -Path "$store_reg\\Deprovisioned\\$PackageFamilyName"
+        Write-Host $PackageFamilyName
+        cmd /c "dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >$null 2>$null"
         cmd /c "dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName) >nul 2>nul"
     }
     foreach ($appx in $($appxpackage | Where-Object { $_.PackageFullName -like "*$choice*" })) {
