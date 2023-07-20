@@ -16,6 +16,6 @@ jobs:
     - name: Create local changes
       run: |
         powershell.exe -f Compile.ps1
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - uses: stefanzweifel/git-auto-commit-action@v4.16.0
       with:
         commit_message: Compile Winutil
