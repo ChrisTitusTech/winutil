@@ -21,21 +21,14 @@ If (!(Test-Path $edgeupdatepath)) {
     Set-ItemProperty -Path $edgeupdatepath -Name "DoNotUpdateToEdgeWithChromium" -Value 1 -Type DWord
 
 ## clear win32 uninstall block
-foreach ($hk in 'HKCU','HKLM') {
-    foreach ($wow in '','\Wow6432Node') {
-        foreach ($i in $remove_win32) {
-            Remove-ItemProperty -Path "$hk\:\\SOFTWARE${wow}\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$i" -Name NoRemove -ErrorAction SilentlyContinue
-        }
-    }
-}
+foreach ($hk in 'HKCU','HKLM') {foreach ($wow in '','\Wow6432Node') {foreach ($i in $remove_win32) {
+    cmd /c "reg delete ""$hk\SOFTWARE${wow}\Microsoft\Windows\CurrentVersion\Uninstall\$i"" /f /v NoRemove >nul 2>nul"
+  }}}
 ## find all Edge setup.exe and gather BHO paths
-$setup = @()
-$bho = @()
-$bho += "$env:ProgramData\ie_to_edge_stub.exe"
-$bho += "$env:Public\ie_to_edge_stub.exe"
+$setup = @(); $bho = @(); $bho += "$env:ProgramData\ie_to_edge_stub.exe"; $bho += "$env:Public\ie_to_edge_stub.exe"
 "LocalApplicationData","ProgramFilesX86","ProgramFiles" | ForEach-Object {
-    $setup += Get-ChildItem "$($([Environment]::GetFolderPath($_)))\Microsoft\Edge*\setup.exe" -Recurse -ErrorAction SilentlyContinue
-    $bho += Get-ChildItem "$($([Environment]::GetFolderPath($_)))\Microsoft\Edge*\ie_to_edge_stub.exe" -Recurse -ErrorAction SilentlyContinue
+  $setup += Get-ChildItem $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\setup.exe') -rec -ea 0
+  $bho += Get-ChildItem $($([Environment]::GetFolderPath($_)) + '\Microsoft\Edge*\ie_to_edge_stub.exe') -rec -ea 0
 }
 ## shut edge down
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') {
@@ -55,39 +48,25 @@ foreach ($b in $bho) {
     }
 }
 ## clear appx uninstall block and remove
-$provisioned = Get-AppxProvisionedPackage -Online
-$appxpackage = Get-AppxPackage -AllUsers
-$store = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore'
-$store_reg = $store.replace(':','')
-$users = @('S-1-5-18')
-if (Test-Path $store) {
-    $users += $((Get-ChildItem $store | Where-Object { $_ -like '*S-1-5-21*' }).PSChildName)
-}
-foreach ($choice in $remove_appx) {
-    if ('' -eq $choice.Trim()) {
-        continue
-    }
-    foreach ($appx in $($provisioned | Where-Object { $_.PackageName -like "*$choice*" })) {
-        $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $appx.DisplayName }).PackageFamilyName
-        Write-Host $PackageFamilyName
-        dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0
-        dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName)
-    }
-    foreach ($appx in $($appxpackage | Where-Object { $_.PackageFullName -like "*$choice*" })) {
-        $inbox = (Get-ItemProperty "$store\\InboxApplications\\*$($appx.Name)*").Path.PSChildName
-        $PackageFamilyName = $appx.PackageFamilyName
-        $PackageFullName = $appx.PackageFullName
-
-        foreach ($app in $inbox) {
-            Remove-ItemProperty -Path "$store_reg\\InboxApplications\\$app" -Name $PackageFamilyName -ErrorAction SilentlyContinue
-        }
-        
-        dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0
-        remove-appxpackage -package "$PackageFullName" -AllUsers -ErrorAction SilentlyContinue
-        foreach ($user in $users) {
-            dism /online /remove-provisionedappxpackage /packagename:$PackageFullName /user:$user
-        }
-    }
+$provisioned = get-appxprovisionedpackage -online; $appxpackage = get-appxpackage -allusers
+$store = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore'; $store_reg = $store.replace(':','')
+$users = @('S-1-5-18'); if (test-path $store) {$users += $((dir $store |where {$_ -like '*S-1-5-21*'}).PSChildName)}
+foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
+  foreach ($appx in $($provisioned |where {$_.PackageName -like "*$choice*"})) {
+    $PackageFamilyName = ($appxpackage |where {$_.Name -eq $appx.DisplayName}).PackageFamilyName; $PackageFamilyName
+    cmd /c "reg add ""$store_reg\Deprovisioned\$PackageFamilyName"" /f >nul 2>nul"
+    cmd /c "dism /online /remove-provisionedappxpackage /packagename:$($appx.PackageName) >nul 2>nul"
+  }
+  foreach ($appx in $($appxpackage |where {$_.PackageFullName -like "*$choice*"})) {
+    $inbox = (gp "$store\InboxApplications\*$($appx.Name)*" Path).PSChildName
+    $PackageFamilyName = $appx.PackageFamilyName; $PackageFullName = $appx.PackageFullName; $PackageFullName
+    foreach ($app in $inbox) {cmd /c "reg delete ""$store_reg\InboxApplications\$app"" /f >nul 2>nul" }
+    cmd /c "reg add ""$store_reg\Deprovisioned\$PackageFamilyName"" /f >nul 2>nul"
+    foreach ($sid in $users) {cmd /c "reg add ""$store_reg\EndOfLife\$sid\$PackageFullName"" /f >nul 2>nul"}
+    cmd /c "dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >nul 2>nul"
+    powershell -nop -c "remove-appxpackage -package '$PackageFullName' -AllUsers" 2>&1 >''
+    foreach ($sid in $users) {cmd /c "reg delete ""$store_reg\EndOfLife\$sid\$PackageFullName"" /f >nul 2>nul"}
+  }
 }
 ## shut edge down, again
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') {
@@ -111,6 +90,13 @@ foreach ($s in $setup) {
     catch {
     }
 }
+
+## prevent latest cumulative update (LCU) failing due to non-matching EndOfLife Edge entries
+foreach ($i in $remove_appx) {
+    Get-ChildItem "$store\EndOfLife" -rec -ea 0 | Where-Object {$_ -like "*${i}*"} | ForEach-Object {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
+    Get-ChildItem "$store\Deleted\EndOfLife" -rec -ea 0 | Where-Object {$_ -like "*${i}*"} | ForEach-Object {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
+  }
+
 ## cleanup
 $desktop = $([Environment]::GetFolderPath('Desktop'))
 $appdata = $([Environment]::GetFolderPath('ApplicationData'))
