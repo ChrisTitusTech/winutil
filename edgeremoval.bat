@@ -68,10 +68,11 @@ foreach ($i in $remove_appx) {
   dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
 }
 ## extra cleanup
-$desktop = $([Environment]::GetFolderPath('Desktop')); $appdata = $([Environment]::GetFolderPath('ApplicationData')); $programsFolder = Join-Path -Path $env:ProgramData -ChildPath 'Microsoft\Windows\Start Menu\Programs'
+$desktop = $([Environment]::GetFolderPath('Desktop')); $publicDesktop = Join-Path -Path $env:PUBLIC -ChildPath 'Desktop'; $appdata = $([Environment]::GetFolderPath('ApplicationData')); $programsFolder = Join-Path -Path $env:ProgramData -ChildPath 'Microsoft\Windows\Start Menu\Programs'
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force -ea 0
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force -ea 0
 del "$desktop\Microsoft Edge.lnk" -force -ea 0
+del "$publicDesktop\Microsoft Edge.lnk" -force -ea 0
 del "$programsFolder\Microsoft Edge.lnk" -force -ea 0
 
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
