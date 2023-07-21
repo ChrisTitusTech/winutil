@@ -4043,7 +4043,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SCardSvr",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
