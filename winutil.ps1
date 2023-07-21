@@ -5526,7 +5526,10 @@ $sync.configs.tweaks = '{
   },
   "WPFEssTweaksDiskCleanup": {
     "InvokeScript": [
-      "cleanmgr.exe /d C: /VERYLOWDISK"
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
     ]
   },
   "WPFMiscTweaksDisableTPMCheck": {
