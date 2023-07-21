@@ -1,3 +1,5 @@
+$ProgessStatus="SilentlyContinue"
+
 function Install-WinUtilWinget {
     
     <#
