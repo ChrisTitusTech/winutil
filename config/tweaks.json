@@ -92,7 +92,7 @@
     "service": [
       {
         "Name": "AJRouter",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -132,7 +132,7 @@
       },
       {
         "Name": "AssignedAccessManagerSvc",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
