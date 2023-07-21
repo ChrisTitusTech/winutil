@@ -1838,23 +1838,6 @@
         "type": "String"
       }
     ],
-    "service": [
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "dmwappushservice",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SysMain",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      }
-    ],
     "InvokeScript": [
       "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
