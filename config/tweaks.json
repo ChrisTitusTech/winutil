@@ -40,6 +40,9 @@
         "Value": "0",
         "OriginalValue": "1"
       }
+    ],
+    "InvokeScript": [
+        "powercfg.exe /hibernate off"
     ]
   },
   "WPFEssTweaksHome": {

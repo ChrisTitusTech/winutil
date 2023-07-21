@@ -3346,6 +3346,9 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
+    ],
+    "InvokeScript": [
+        "powercfg.exe /hibernate off"
     ]
   },
   "WPFEssTweaksHome": {
@@ -5144,23 +5147,6 @@ $sync.configs.tweaks = '{
         "type": "String"
       }
     ],
-    "service": [
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "dmwappushservice",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SysMain",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      }
-    ],
     "InvokeScript": [
       "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
@@ -5184,9 +5170,6 @@ $sync.configs.tweaks = '{
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
-        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
         "
     ]
   },
@@ -5779,7 +5762,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
