@@ -67,13 +67,18 @@ foreach ($i in $remove_appx) {
   dir "$store\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
   dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
 }
+
 ## extra cleanup
-$desktop = $([Environment]::GetFolderPath('Desktop')); $publicDesktop = Join-Path -Path $env:PUBLIC -ChildPath 'Desktop'; $appdata = $([Environment]::GetFolderPath('ApplicationData')); $programsFolder = Join-Path -Path $env:ProgramData -ChildPath 'Microsoft\Windows\Start Menu\Programs'
+$appdata = $([Environment]::GetFolderPath('ApplicationData'))
+$desktop = $([Environment]::GetFolderPath('Desktop'))
+$public_desktop = $([Environment]::GetFolderPath('CommonDesktopDirectory'))
+$start_menu_programs = $([Environment]::GetFolderPath('CommonPrograms'))
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force -ea 0
+del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Microsoft Edge.lnk" -force -ea 0
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force -ea 0
 del "$desktop\Microsoft Edge.lnk" -force -ea 0
-del "$publicDesktop\Microsoft Edge.lnk" -force -ea 0
-del "$programsFolder\Microsoft Edge.lnk" -force -ea 0
+del "$public_desktop\Microsoft Edge.lnk" -force -ea 0
+del "$start_menu_programs\Microsoft Edge.lnk" -force -ea 0
 
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
