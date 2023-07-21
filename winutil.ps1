@@ -4193,8 +4193,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TermService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "TextInputManagementService",
