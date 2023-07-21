@@ -3398,7 +3398,7 @@ $sync.configs.tweaks = '{
     "service": [
       {
         "Name": "AJRouter",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -3438,7 +3438,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AssignedAccessManagerSvc",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
