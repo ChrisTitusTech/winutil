@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 #Configure max thread count for RunspacePool.
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
