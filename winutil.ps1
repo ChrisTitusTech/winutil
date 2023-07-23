@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.07.22
+    Version        : 23.07.23
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.07.22"
+$sync.version = "23.07.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5688,6 +5688,8 @@ $sync.configs.tweaks = '{
     ]
   }
 }' | convertfrom-json
+# SPDX-License-Identifier: MIT
+
 #Configure max thread count for RunspacePool.
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
