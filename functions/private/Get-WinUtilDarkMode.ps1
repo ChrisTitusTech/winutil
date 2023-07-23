@@ -3,6 +3,9 @@ Function Get-WinUtilDarkMode {
     
         .DESCRIPTION
         Meant to pull the registry keys responsible for Dark Mode and returns true or false
+
+        True Means Dark mode is enabled
+        False means Light mode is enabled
     
     #>
     $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
