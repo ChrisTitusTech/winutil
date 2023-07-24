@@ -1220,7 +1220,7 @@
       },
       {
         "Name": "dmwappushservice",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
