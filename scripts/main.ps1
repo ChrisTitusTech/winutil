@@ -50,7 +50,7 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-if (Get-WinUtilDarkMode -eq $True){
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
     $ctttheme = 'Matrix'
 }
 Else{
@@ -94,11 +94,23 @@ $sync.keys | ForEach-Object {
     }
 }
 
-$sync["WPFToggleDarkMode"].Add_Click({    
-  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
-})
 
-$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if(
+            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+            -and $sync["$psitem"].Name -like "WPFToggle*"
+        ){
+            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
+
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFToggle $Sender.name
+            })
+        }
+    }
+}
+
 
 #===========================================================================
 # Setup background config

@@ -466,6 +466,12 @@
                                     <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
                                     <Label Content="On" />
                                 </StackPanel>
+                                <Label Content="Bing Search in Start Menu" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Off" />
+                                    <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="On" />
+                                </StackPanel>
 							<Label Content="Performance Plans" />
                                 <Button Name="WPFAddUltPerf" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
                                 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
