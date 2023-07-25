@@ -100,25 +100,6 @@ Function Get-WinUtilCheckBoxes {
 
     Write-Output $($Output | Select-Object -Unique)
 }
-Function Get-WinUtilDarkMode {
-    <#
-    
-        .DESCRIPTION
-        Meant to pull the registry keys responsible for Dark Mode and returns true or false
-
-        True Means Dark mode is enabled
-        False means Light mode is enabled
-    
-    #>
-    $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-    $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-    if($app -eq 0 -and $system -eq 0){
-        return $true
-    } 
-    else{
-        return $false
-    }
-}
 function Get-WinUtilInstallerProcess {
     <#
     
@@ -168,6 +149,38 @@ function Get-WinUtilRegistry {
     Catch{
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Get-WinUtilToggleStatus {
+    <#
+    
+        .DESCRIPTION
+        Meant to pull the registry keys for a toggle switch and returns true or false
+
+        True should mean status is enabled
+        False should mean status is disabled
+    
+    #>
+
+    Param($ToggleSwitch)
+    if($ToggleSwitch -eq "WPFToggleDarkMode"){
+        $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+        $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+        if($app -eq 0 -and $system -eq 0){
+            return $true
+        } 
+        else{
+            return $false
+        }
+    }
+    if($ToggleSwitch -eq "WPFToggleBingSearch"){
+        $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
+        if($bingsearch -eq 0){
+            return $false
+        } 
+        else{
+            return $true
+        }
     }
 }
 function Get-WinUtilVariables {
@@ -342,6 +355,37 @@ function Install-WinUtilWinget {
         throw [WingetFailedInstall]::new('Failed to install')
     }
 }
+function Invoke-WinUtilBingSearch {
+        <#
+    
+        .DESCRIPTION
+        Sets Bing Search on or off
+    
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Bing Search"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Bing Search"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 Function Invoke-WinUtilCurrentSystem {
 
     <#
@@ -446,6 +490,39 @@ Function Invoke-WinUtilCurrentSystem {
     }
 }
 
+Function Invoke-WinUtilDarkMode {
+        <#
+    
+        .DESCRIPTION
+        Sets Dark Mode on or off
+    
+    #>
+    Param($DarkMoveEnabled)
+    Try{
+        if ($DarkMoveEnabled -eq $false){
+            Write-Host "Enabling Dark Mode"
+            $DarkMoveValue = 0
+        }
+        else {
+            Write-Host "Disabling Dark Mode"
+            $DarkMoveValue = 1
+        }
+    
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
+        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Invoke-WinUtilFeatureInstall {
     <#
     
@@ -959,39 +1036,6 @@ function Invoke-WPFControlPanel {
         "WPFPanelsound"   {cmd /c mmsys.cpl}
         "WPFPanelsystem"  {cmd /c sysdm.cpl}
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
-    }
-}
-Function Invoke-WPFDarkMode {
-        <#
-    
-        .DESCRIPTION
-        Sets Dark Mode on or off
-    
-    #>
-    Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
-            Write-Host "Enabling Dark Mode"
-            $DarkMoveValue = 0
-        }
-        else {
-            Write-Host "Disabling Dark Mode"
-            $DarkMoveValue = 1
-        }
-    
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Invoke-WPFFeatureInstall {
@@ -1512,6 +1556,29 @@ function Invoke-WPFTab {
         else{
             $sync.$TabNav.Items[$psitem].IsSelected = $false
         }
+    }
+}
+function Invoke-WPFToggle {
+
+    <#
+    
+        .DESCRIPTION
+        Meant to make creating toggle switches easier. There is a section below in the gui that will assign this function to every switch.
+        This way you can dictate what each button does from this function. 
+    
+        Input will be the name of the toggle that is checked. 
+    #>
+    
+    Param ([string]$Button) 
+
+    #Use this to get the name of the button
+    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+
+    Switch -Wildcard ($Button){
+
+        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
+        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
+
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2476,6 +2543,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Off" />
                                     <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="On" />
+                                </StackPanel>
+                                <Label Content="Bing Search in Start Menu" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Off" />
+                                    <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
                                     <Label Content="On" />
                                 </StackPanel>
 							<Label Content="Performance Plans" />
@@ -5743,7 +5816,7 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-if (Get-WinUtilDarkMode -eq $True){
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
     $ctttheme = 'Matrix'
 }
 Else{
@@ -5766,7 +5839,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
@@ -5787,11 +5860,23 @@ $sync.keys | ForEach-Object {
     }
 }
 
-$sync["WPFToggleDarkMode"].Add_Click({    
-  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
-})
 
-$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if(
+            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+            -and $sync["$psitem"].Name -like "WPFToggle*"
+        ){
+            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
+
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFToggle $Sender.name
+            })
+        }
+    }
+}
+
 
 #===========================================================================
 # Setup background config
