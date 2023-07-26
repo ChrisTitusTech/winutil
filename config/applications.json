@@ -550,5 +550,9 @@
   "WPFInstallprismlauncher": {
     "winget": "PrismLauncher.PrismLauncher",
     "choco": "na"
+  },
+  "CCleaner": {
+    "winget": "Piriform.CCleaner",
+    "choco": "na"
   }
 }
