@@ -42,7 +42,7 @@ function Install-WinUtilWinget {
         # Source: https://github.com/asheroto/winget-installer
 
         #adding the code from the asheroto repo
-        Set-ExecutionPolicy RemoteSigned -force -ErrorAction SilentlyContinue
+        Set-ExecutionPolicy RemoteSigned -force
         $apiLatestUrl = 'https://api.github.com/repos/microsoft/winget-cli/releases/latest'
         $tempFolder = $env:TEMP
 
@@ -107,7 +107,7 @@ function Install-WinUtilWinget {
 
         foreach ($dependency in $dependencies) {
         $dependency.file = $dependency.fileName
-        iwr $dependency.url -OutFile $dependency.file
+        Invoke-WebRequest $dependency.url -OutFile $dependency.file
         }
 
         $uiLibs.nupkg.file = $PSScriptRoot + '\' + $uiLibs.nupkg.fileName
@@ -119,10 +119,10 @@ function Install-WinUtilWinget {
 
         Add-AppxPackage -Path $desktopAppInstaller.file -DependencyPath $vcLibsUwp.file,$uiLibs.uwp.file
 
-        rm $desktopAppInstaller.file
-        rm $vcLibsUwp.file
-        rm $uiLibs.nupkg.file
-        rm $uiLibs.uwp.file
+        Remove-Item $desktopAppInstaller.file
+        Remove-Item $vcLibsUwp.file
+        Remove-Item $uiLibs.nupkg.file
+        Remove-Item $uiLibs.uwp.file
         Write-Host "WinGet installed!" -ForegroundColor Green
         $ProgressPreference = $oldProgressPreference
         Update-EnvironmentVariables
