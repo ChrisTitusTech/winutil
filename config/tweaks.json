@@ -40,6 +40,9 @@
         "Value": "0",
         "OriginalValue": "1"
       }
+    ],
+    "InvokeScript": [
+        "powercfg.exe /hibernate off"
     ]
   },
   "WPFEssTweaksHome": {
@@ -92,7 +95,7 @@
     "service": [
       {
         "Name": "AJRouter",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -132,7 +135,7 @@
       },
       {
         "Name": "AssignedAccessManagerSvc",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -737,7 +740,7 @@
       },
       {
         "Name": "SCardSvr",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -887,8 +890,8 @@
       },
       {
         "Name": "TermService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "TextInputManagementService",
@@ -1217,7 +1220,7 @@
       },
       {
         "Name": "dmwappushservice",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -1838,23 +1841,6 @@
         "type": "String"
       }
     ],
-    "service": [
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "dmwappushservice",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SysMain",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      }
-    ],
     "InvokeScript": [
       "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
@@ -1878,9 +1864,6 @@
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
-        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
         "
     ]
   },
@@ -2237,7 +2220,10 @@
   },
   "WPFEssTweaksDiskCleanup": {
     "InvokeScript": [
-      "cleanmgr.exe /d C: /VERYLOWDISK"
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
     ]
   },
   "WPFMiscTweaksDisableTPMCheck": {
@@ -2374,11 +2360,7 @@
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      }
-    ]
-  },
-  "WPFDisableGameBar": {
-    "registry": [
+      },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",

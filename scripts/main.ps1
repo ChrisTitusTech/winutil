@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 #Configure max thread count for RunspacePool.
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
@@ -47,14 +49,14 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
-$app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-$system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-    if($app -eq 0 -and $system -eq 0){
-        $ctttheme = 'Matrix'
-    } 
-    else{
-        $ctttheme = 'Classic'
-    }
+
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
+    $ctttheme = 'Matrix'
+}
+Else{
+    $ctttheme = 'Classic'
+}
+
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -92,11 +94,23 @@ $sync.keys | ForEach-Object {
     }
 }
 
-$sync["WPFToggleDarkMode"].Add_Click({    
-  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
-})
 
-$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if(
+            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+            -and $sync["$psitem"].Name -like "WPFToggle*"
+        ){
+            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
+
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFToggle $Sender.name
+            })
+        }
+    }
+}
+
 
 #===========================================================================
 # Setup background config

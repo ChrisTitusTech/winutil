@@ -1,4 +1,4 @@
-Function Invoke-WPFDarkMode {
+Function Invoke-WinUtilDarkMode {
         <#
     
         .DESCRIPTION

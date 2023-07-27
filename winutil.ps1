@@ -100,22 +100,6 @@ Function Get-WinUtilCheckBoxes {
 
     Write-Output $($Output | Select-Object -Unique)
 }
-Function Get-WinUtilDarkMode {
-    <#
-    
-        .DESCRIPTION
-        Meant to pull the registry keys responsible for Dark Mode and returns true or false
-    
-    #>
-    $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-    $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-    if($app -eq 0 -and $system -eq 0){
-        return $true
-    } 
-    else{
-        return $false
-    }
-}
 function Get-WinUtilInstallerProcess {
     <#
     
@@ -165,6 +149,38 @@ function Get-WinUtilRegistry {
     Catch{
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Get-WinUtilToggleStatus {
+    <#
+    
+        .DESCRIPTION
+        Meant to pull the registry keys for a toggle switch and returns true or false
+
+        True should mean status is enabled
+        False should mean status is disabled
+    
+    #>
+
+    Param($ToggleSwitch)
+    if($ToggleSwitch -eq "WPFToggleDarkMode"){
+        $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+        $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+        if($app -eq 0 -and $system -eq 0){
+            return $true
+        } 
+        else{
+            return $false
+        }
+    }
+    if($ToggleSwitch -eq "WPFToggleBingSearch"){
+        $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
+        if($bingsearch -eq 0){
+            return $false
+        } 
+        else{
+            return $true
+        }
     }
 }
 function Get-WinUtilVariables {
@@ -263,6 +279,15 @@ Function Install-WinUtilProgramWinget {
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
 }
+function Get-LatestHash {
+    $shaUrl = ((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt$' }).browser_download_url
+  
+    $shaFile = Join-Path -Path $tempFolder -ChildPath 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt'
+    $WebClient.DownloadFile($shaUrl, $shaFile)
+  
+    Get-Content $shaFile
+  }
+
 function Install-WinUtilWinget {
     
     <#
@@ -293,50 +318,98 @@ function Install-WinUtilWinget {
             return
         }
 
-        #Gets the Windows Edition
-        $OSName = if ($ComputerInfo.OSName) {
-            $ComputerInfo.OSName
-        }else {
-            $ComputerInfo.WindowsProductName
+        Write-Host "Running Alternative Installer and Direct Installing"
+        $ErrorActionPreference = "Stop"
+        $apiLatestUrl = 'https://api.github.com/repos/microsoft/winget-cli/releases/latest'
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+        # Hide the progress bar of Invoke-WebRequest
+        $oldProgressPreference = $ProgressPreference
+        $ProgressPreference = 'SilentlyContinue'
+
+        $desktopAppInstaller = @{
+        fileName = 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
+        url      = $(((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle$' }).browser_download_url)
+        hash     = $(Get-LatestHash)
         }
 
-        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
-
-            Write-Host "Running Alternative Installer for LTSC/Server Editions"
-
-            # Switching to winget-install from PSGallery from asheroto
-            # Source: https://github.com/asheroto/winget-installer
-
-            #adding the code from the asheroto repo
-            Set-ExecutionPolicy RemoteSigned -force
-            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-            Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-            Install-Script -Name winget-install -force
-            winget-instal
-            
-            
-            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
-
-            if(!(Test-WinUtilPackageManager -winget)){
-                break
+        $vcLibsUwp = @{
+        fileName = 'Microsoft.VCLibs.x64.14.00.Desktop.appx'
+        url      = 'https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx'
+        hash     = '6602159c341bafea747d0edf15669ac72df8817299fbfaa90469909e06794256'
+        }
+        $uiLibs = @{
+            nupkg = @{
+                fileName = 'microsoft.ui.xaml.2.7.0.nupkg'
+                url = 'https://www.nuget.org/api/v2/package/Microsoft.UI.Xaml/2.7.0'
+                hash = "422FD24B231E87A842C4DAEABC6A335112E0D35B86FAC91F5CE7CF327E36A591"
+            }
+            uwp = @{
+                fileName = 'Microsoft.UI.Xaml.2.7.appx'
             }
         }
+        $uiLibs.uwp.file = $PWD.Path + '\' + $uiLibs.uwp.fileName
+        $uiLibs.uwp.zipPath = '*/x64/*/' + $uiLibs.uwp.fileName
 
-        else {
-            #Installing Winget from the Microsoft Store
-            Write-Host "Winget not found, installing it now."
-            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
-            $nid = (Get-Process AppInstaller).Id
-            Wait-Process -Id $nid
+        $dependencies = @($desktopAppInstaller, $vcLibsUwp, $uiLibs.nupkg)
 
-            if(!(Test-WinUtilPackageManager -winget)){
-                break
-            }
+        foreach ($dependency in $dependencies) {
+        $dependency.file = $dependency.fileName
+        Invoke-WebRequest $dependency.url -OutFile $dependency.file
         }
+
+        $uiLibs.nupkg.file = $PSScriptRoot + '\' + $uiLibs.nupkg.fileName
+        Add-Type -Assembly System.IO.Compression.FileSystem
+        $uiLibs.nupkg.zip = [IO.Compression.ZipFile]::OpenRead($uiLibs.nupkg.file)
+        $uiLibs.nupkg.zipUwp = $uiLibs.nupkg.zip.Entries | Where-Object { $_.FullName -like $uiLibs.uwp.zipPath }
+        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($uiLibs.nupkg.zipUwp, $uiLibs.uwp.file, $true)
+        $uiLibs.nupkg.zip.Dispose()
+
+        Add-AppxPackage -Path $desktopAppInstaller.file -DependencyPath $vcLibsUwp.file,$uiLibs.uwp.file
+
+        Remove-Item $desktopAppInstaller.file
+        Remove-Item $vcLibsUwp.file
+        Remove-Item $uiLibs.nupkg.file
+        Remove-Item $uiLibs.uwp.file
+        Write-Host "WinGet installed!" -ForegroundColor Green
+        $ProgressPreference = $oldProgressPreference
+        Update-EnvironmentVariables
+
         Write-Host "Winget Installed"
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
+    }
+}
+function Invoke-WinUtilBingSearch {
+        <#
+    
+        .DESCRIPTION
+        Sets Bing Search on or off
+    
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Bing Search"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Bing Search"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
 Function Invoke-WinUtilCurrentSystem {
@@ -443,6 +516,39 @@ Function Invoke-WinUtilCurrentSystem {
     }
 }
 
+Function Invoke-WinUtilDarkMode {
+        <#
+    
+        .DESCRIPTION
+        Sets Dark Mode on or off
+    
+    #>
+    Param($DarkMoveEnabled)
+    Try{
+        if ($DarkMoveEnabled -eq $false){
+            Write-Host "Enabling Dark Mode"
+            $DarkMoveValue = 0
+        }
+        else {
+            Write-Host "Disabling Dark Mode"
+            $DarkMoveValue = 1
+        }
+    
+        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
+        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Invoke-WinUtilFeatureInstall {
     <#
     
@@ -863,6 +969,24 @@ function Test-WinUtilPackageManager {
 
     return $false
 }
+<#
+    
+        .DESCRIPTION
+        Updates Path Variables for the current session
+    
+    #>
+
+function Update-EnvironmentVariables {
+  foreach($level in "Machine","User") {
+    [Environment]::GetEnvironmentVariables($level).GetEnumerator() | % {
+        # For Path variables, append the new values, if they're not already in there
+        if($_.Name -match 'Path$') {
+          $_.Value = ($((Get-Content "Env:$($_.Name)") + ";$($_.Value)") -split ';' | Select-Object -unique) -join ';'
+        }
+        $_
+    } | Set-Content -Path { "Env:$($_.Name)" }
+  }
+}
 Function Update-WinUtilProgramWinget {
 
     <#
@@ -956,39 +1080,6 @@ function Invoke-WPFControlPanel {
         "WPFPanelsound"   {cmd /c mmsys.cpl}
         "WPFPanelsystem"  {cmd /c sysdm.cpl}
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
-    }
-}
-Function Invoke-WPFDarkMode {
-        <#
-    
-        .DESCRIPTION
-        Sets Dark Mode on or off
-    
-    #>
-    Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
-            Write-Host "Enabling Dark Mode"
-            $DarkMoveValue = 0
-        }
-        else {
-            Write-Host "Disabling Dark Mode"
-            $DarkMoveValue = 1
-        }
-    
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Invoke-WPFFeatureInstall {
@@ -1509,6 +1600,29 @@ function Invoke-WPFTab {
         else{
             $sync.$TabNav.Items[$psitem].IsSelected = $false
         }
+    }
+}
+function Invoke-WPFToggle {
+
+    <#
+    
+        .DESCRIPTION
+        Meant to make creating toggle switches easier. There is a section below in the gui that will assign this function to every switch.
+        This way you can dictate what each button does from this function. 
+    
+        Input will be the name of the toggle that is checked. 
+    #>
+    
+    Param ([string]$Button) 
+
+    #Use this to get the name of the button
+    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+
+    Switch -Wildcard ($Button){
+
+        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
+        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
+
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2475,6 +2589,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
                                     <Label Content="On" />
                                 </StackPanel>
+                                <Label Content="Bing Search in Start Menu" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Off" />
+                                    <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="On" />
+                                </StackPanel>
 							<Label Content="Performance Plans" />
                                 <Button Name="WPFAddUltPerf" Content="Add Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
                                 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
@@ -3346,6 +3466,9 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
+    ],
+    "InvokeScript": [
+        "powercfg.exe /hibernate off"
     ]
   },
   "WPFEssTweaksHome": {
@@ -3398,7 +3521,7 @@ $sync.configs.tweaks = '{
     "service": [
       {
         "Name": "AJRouter",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -3438,7 +3561,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "AssignedAccessManagerSvc",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Manual"
       },
       {
@@ -4043,7 +4166,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "SCardSvr",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -4193,8 +4316,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "TermService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "TextInputManagementService",
@@ -4523,7 +4646,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "dmwappushservice",
-        "StartupType": "Disabled",
+        "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
@@ -5144,23 +5267,6 @@ $sync.configs.tweaks = '{
         "type": "String"
       }
     ],
-    "service": [
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "dmwappushservice",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SysMain",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      }
-    ],
     "InvokeScript": [
       "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
@@ -5184,9 +5290,6 @@ $sync.configs.tweaks = '{
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        $ram = (Get-CimInstance -ClassName \"Win32_PhysicalMemory\" | Measure-Object -Property Capacity -Sum).Sum / 1kb
-        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
         "
     ]
   },
@@ -5543,7 +5646,10 @@ $sync.configs.tweaks = '{
   },
   "WPFEssTweaksDiskCleanup": {
     "InvokeScript": [
-      "cleanmgr.exe /d C: /VERYLOWDISK"
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
     ]
   },
   "WPFMiscTweaksDisableTPMCheck": {
@@ -5680,11 +5786,7 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1",
         "Type": "DWord"
-      }
-    ]
-  },
-  "WPFDisableGameBar": {
-    "registry": [
+      },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
         "Name": "AllowGameDVR",
@@ -5706,6 +5808,8 @@ $sync.configs.tweaks = '{
     ]
   }
 }' | convertfrom-json
+# SPDX-License-Identifier: MIT
+
 #Configure max thread count for RunspacePool.
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
@@ -5755,14 +5859,14 @@ $sync.runspace.Open()
 #endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
-$app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-$system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-    if($app -eq 0 -and $system -eq 0){
-        $ctttheme = 'Matrix'
-    } 
-    else{
-        $ctttheme = 'Classic'
-    }
+
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
+    $ctttheme = 'Matrix'
+}
+Else{
+    $ctttheme = 'Classic'
+}
+
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -5800,11 +5904,23 @@ $sync.keys | ForEach-Object {
     }
 }
 
-$sync["WPFToggleDarkMode"].Add_Click({    
-  Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)
-})
 
-$sync["WPFToggleDarkMode"].IsChecked = Get-WinUtilDarkMode
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if(
+            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+            -and $sync["$psitem"].Name -like "WPFToggle*"
+        ){
+            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
+
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFToggle $Sender.name
+            })
+        }
+    }
+}
+
 
 #===========================================================================
 # Setup background config
