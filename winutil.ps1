@@ -320,10 +320,6 @@ function Install-WinUtilWinget {
         
         Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
 
-        if(!(Test-WinUtilPackageManager -winget)){
-            break
-        }
-        
         Write-Host "Winget Installed"
     }
     Catch{
