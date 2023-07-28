@@ -1,10 +1,10 @@
 @(set "0=%~f0"^)#) & powershell -nop -c iex([io.file]::ReadAllText($env:0)) & exit /b
-#:: made by padsalatushal source: https://raw.githubusercontent.com/padsalatushal/Edge-Removal/main/edge.bat
+#:: made by AveYo source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 sp 'HKCU:\Volatile Environment' 'Edge_Removal' @'
 
 $also_remove_webview = 1
 
-$host.ui.RawUI.WindowTitle = 'Edge Removal '
+$host.ui.RawUI.WindowTitle = 'Edge Removal - AveYo, 2023.07.08'
 ## targets
 $remove_win32 = @("Microsoft Edge","Microsoft Edge Update"); $remove_appx = @("MicrosoftEdge")
 if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remove_appx += "Win32WebViewHost"}
@@ -12,16 +12,24 @@ if ($also_remove_webview -eq 1) {$remove_win32 += "Microsoft EdgeWebView"; $remo
 $D1=[uri].module.gettype('System.Diagnostics.Process')."GetM`ethods"(42) |where {$_.Name -eq 'SetPrivilege'} #`:no-ev-warn
 'SeSecurityPrivilege','SeTakeOwnershipPrivilege','SeBackupPrivilege','SeRestorePrivilege'|foreach {$D1.Invoke($null, @("$_",2))}
 ## set useless policies
-foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE') {
+foreach ($p in 'HKLM\SOFTWARE\Policies','HKLM\SOFTWARE','HKLM\SOFTWARE\WOW6432Node') {
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v InstallDefault /d 0 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v Install{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062} /d 0 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v Install{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5} /d 1 /t reg_dword >nul 2>nul"
   cmd /c "reg add ""$p\Microsoft\EdgeUpdate"" /f /v DoNotUpdateToEdgeWithChromium /d 1 /t reg_dword >nul 2>nul"
 }
+$edgeupdate='Microsoft\EdgeUpdate\Clients\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
+foreach ($p in 'HKLM\SOFTWARE','HKLM\SOFTWARE\Wow6432Node') {
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-logon-autolaunch"" /f /v CommandLine /d systray.exe >nul 2>nul"
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-logon-startup-boost"" /f /v CommandLine /d systray.exe >nul 2>nul"
+  cmd /c "reg add ""$p\$edgeupdate\Commands\on-os-upgrade"" /f /v CommandLine /d systray.exe >nul 2>nul"
+}
 ## clear win32 uninstall block
 foreach ($hk in 'HKCU','HKLM') {foreach ($wow in '','\Wow6432Node') {foreach ($i in $remove_win32) {
   cmd /c "reg delete ""$hk\SOFTWARE${wow}\Microsoft\Windows\CurrentVersion\Uninstall\$i"" /f /v NoRemove >nul 2>nul"
+  cmd /c "reg add ""$hk\SOFTWARE${wow}\Microsoft\EdgeUpdateDev"" /f /v AllowUninstall /d 1 /t reg_dword >nul 2>nul"
 }}}
+
 ## find all Edge setup.exe and gather BHO paths
 $setup = @(); $bho = @(); $bho += "$env:ProgramData\ie_to_edge_stub.exe"; $bho += "$env:Public\ie_to_edge_stub.exe"
 "LocalApplicationData","ProgramFilesX86","ProgramFiles" |foreach {
@@ -56,29 +64,37 @@ foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
     foreach ($sid in $users) {cmd /c "reg delete ""$store_reg\EndOfLife\$sid\$PackageFullName"" /f >nul 2>nul"}
   }
 }
+
+## remove OpenWebSearch before running edge setup
+$IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
+$MSEP = ($env:ProgramFiles,${env:ProgramFiles(x86)})[[Environment]::Is64BitOperatingSystem] + '\Microsoft\Edge\Application'
+cmd /c "reg delete HKCR\microsoft-edge /f /v ""NoOpenWith"" >nul 2>nul"
+cmd /c "reg add HKCR\microsoft-edge\shell\open\command /f /ve /d ""\""$MSEP\msedge.exe\"" --single-argument %%1"" >nul"
+cmd /c "reg delete HKCR\MSEdgeHTM /f /v ""NoOpenWith"" >nul 2>nul"
+cmd /c "reg add HKCR\MSEdgeHTM\shell\open\command /f /ve /d ""\""$MSEP\msedge.exe\"" --single-argument %%1"" >nul"
+cmd /c "reg delete ""$IFEO\ie_to_edge_stub.exe"" /f >nul 2>nul"
+cmd /c "reg delete ""$IFEO\msedge.exe"" /f >nul 2>nul"
+
 ## shut edge down, again
 foreach ($p in 'MicrosoftEdgeUpdate','chredge','msedge','edge','msedgewebview2','Widgets') { kill -name $p -force -ea 0 }
 ## brute-run found Edge setup.exe with uninstall args
-$purge = '--uninstall --system-level --force-uninstall'
+$purge = '--uninstall --force-uninstall --system-level' # --delete-old-versions --channel=stable
 if ($also_remove_webview -eq 1) { foreach ($s in $setup) { try{ start -wait $s -args "--msedgewebview $purge" } catch{} } }
 foreach ($s in $setup) { try{ start -wait $s -args "--msedge $purge" } catch{} }
+
 ## prevent latest cumulative update (LCU) failing due to non-matching EndOfLife Edge entries
 foreach ($i in $remove_appx) {
   dir "$store\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
   dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
 }
-
 ## extra cleanup
-$appdata = $([Environment]::GetFolderPath('ApplicationData'))
-$desktop = $([Environment]::GetFolderPath('Desktop'))
-$public_desktop = $([Environment]::GetFolderPath('CommonDesktopDirectory'))
-$start_menu_programs = $([Environment]::GetFolderPath('CommonPrograms'))
+$desktop = $([Environment]::GetFolderPath('Desktop')); $appdata = $([Environment]::GetFolderPath('ApplicationData'))
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force -ea 0
-del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Microsoft Edge.lnk" -force -ea 0
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force -ea 0
 del "$desktop\Microsoft Edge.lnk" -force -ea 0
-del "$public_desktop\Microsoft Edge.lnk" -force -ea 0
-del "$start_menu_programs\Microsoft Edge.lnk" -force -ea 0
+#del "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk" -force -ea 0
+#pushd "${env:ProgramFiles(x86)}\Microsoft"
+#rmdir -LiteralPath 'Edge','EdgeCore','EdgeUpdate' -recurse -force -ea 0
 
 ## add OpenWebSearch to redirect microsoft-edge: anti-competitive links to the default browser
 $IFEO = 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options'
@@ -99,7 +115,7 @@ cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v FilterFullPath /d ""$MSEP\msedge.ex
 cmd /c "reg add ""$IFEO\msedge.exe\0"" /f /v Debugger /d ""$CMD $DIR\OpenWebSearch.cmd"" >nul"
 
 $OpenWebSearch = @$
-@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser
+@title OpenWebSearch Redux & echo off & set ?= open start menu web search, widgets links or help in your chosen browser - by AveYo
 for /f %%E in ('"prompt $E$S& for %%e in (1) do rem"') do echo;%%E[2t 2>nul & rem AveYo: minimize prompt
 call :reg_var "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID ProgID
 if /i "%ProgID%" equ "MSEdgeHTM" echo;Default browser is set to Edge! Change it or remove OpenWebSearch script. & pause & exit /b
@@ -135,7 +151,7 @@ for /f "skip=2 tokens=* delims=" %%V in ('%{reg}% %4 %5 %6 %7 %8 %9 2^>nul') do 
 if not defined {var} (set {reg}=& set "%~3="& exit /b) else if %2=="" set "{var}=%{var}:*)    =%"& rem AveYo: v3
 if not defined {var} (set {reg}=& set "%~3="& exit /b) else set {reg}=& set "%~3=%{var}:*)    =%"& set {var}=& exit /b
 
-:dec_url brute url percent decoding  
+:dec_url brute url percent decoding by AveYo
 set ".=%URL:!=}%"&setlocal enabledelayedexpansion& rem brute url percent decoding
 set ".=!.:%%={!" &set ".=!.:{3A=:!" &set ".=!.:{2F=/!" &set ".=!.:{3F=?!" &set ".=!.:{23=#!" &set ".=!.:{5B=[!" &set ".=!.:{5D=]!"
 set ".=!.:{40=@!"&set ".=!.:{21=}!" &set ".=!.:{24=$!" &set ".=!.:{26=&!" &set ".=!.:{27='!" &set ".=!.:{28=(!" &set ".=!.:{29=)!"
@@ -150,17 +166,17 @@ $@
 $cleanup = gp 'Registry::HKEY_Users\S-1-5-21*\Volatile*' Edge_Removal -ea 0
 if ($cleanup) {rp $cleanup.PSPath Edge_Removal -force -ea 0}
 
+function global:getfirefox {
+  $ffsetup='https://download.mozilla.org/?product=firefox-latest&os=win';
+  $firefox="$([Environment]::GetFolderPath('Desktop'))\FirefoxSetup.exe";
+  Invoke-WebRequest $ffsetup -OutFile $firefox; start $firefox
+}
+$getfirefox = "$([char]27)[38;2;255;165;0m getfirefox "
+write-host -nonew -fore green -back black "`n EDGE REMOVED! NEED ANOTHER BROWSER? ENTER:"; write-host -back black "$getfirefox"
 
-write-host -nonew -fore green -back black "`n EDGE REMOVED!"; 
-exit
-## TEsdss
 ## ask to run script as admin
 '@.replace("$@","'@").replace("@$","@'") -force -ea 0;
 $A = '-nop -noe -c & {iex((gp ''Registry::HKEY_Users\S-1-5-21*\Volatile*'' Edge_Removal -ea 0)[0].Edge_Removal)}'
 start powershell -args $A -verb runas
 $_Press_Enter
 #::
-
-Highlight Text (
-Alt+S
-)
