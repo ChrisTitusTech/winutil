@@ -172,13 +172,7 @@ $@
 $cleanup = gp 'Registry::HKEY_Users\S-1-5-21*\Volatile*' Edge_Removal -ea 0
 if ($cleanup) {rp $cleanup.PSPath Edge_Removal -force -ea 0}
 
-function global:getfirefox {
-  $ffsetup='https://download.mozilla.org/?product=firefox-latest&os=win';
-  $firefox="$([Environment]::GetFolderPath('Desktop'))\FirefoxSetup.exe";
-  Invoke-WebRequest $ffsetup -OutFile $firefox; start $firefox
-}
-$getfirefox = "$([char]27)[38;2;255;165;0m getfirefox "
-write-host -nonew -fore green -back black "`n EDGE REMOVED! NEED ANOTHER BROWSER? ENTER:"; write-host -back black "$getfirefox"
+write-host -nonew -fore green -back black "`n EDGE REMOVED!"
 
 ## ask to run script as admin
 '@.replace("$@","'@").replace("@$","@'") -force -ea 0;
