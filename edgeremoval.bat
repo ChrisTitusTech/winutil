@@ -87,12 +87,18 @@ foreach ($i in $remove_appx) {
   dir "$store\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
   dir "$store\Deleted\EndOfLife" -rec -ea 0 |where {$_ -like "*${i}*"} |foreach {cmd /c "reg delete ""$($_.Name)"" /f >nul 2>nul"}
 }
+
 ## extra cleanup
-$desktop = $([Environment]::GetFolderPath('Desktop')); $appdata = $([Environment]::GetFolderPath('ApplicationData'))
+$appdata = $([Environment]::GetFolderPath('ApplicationData'))
+$desktop = $([Environment]::GetFolderPath('Desktop'))
+$public_desktop = $([Environment]::GetFolderPath('CommonDesktopDirectory'))
+$start_menu_programs = $([Environment]::GetFolderPath('CommonPrograms'))
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force -ea 0
+del "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Microsoft Edge.lnk" -force -ea 0
 del "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force -ea 0
 del "$desktop\Microsoft Edge.lnk" -force -ea 0
-#del "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk" -force -ea 0
+del "$public_desktop\Microsoft Edge.lnk" -force -ea 0
+del "$start_menu_programs\Microsoft Edge.lnk" -force -ea 0
 #pushd "${env:ProgramFiles(x86)}\Microsoft"
 #rmdir -LiteralPath 'Edge','EdgeCore','EdgeUpdate' -recurse -force -ea 0
 
