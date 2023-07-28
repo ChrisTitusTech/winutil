@@ -5603,8 +5603,8 @@ $sync.configs.tweaks = '{
   },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
-        "      
-        #:: Standalone script by padsalatushal Source: https://raw.githubusercontent.com/padsalatushal/Edge-Removal/main/edge.bat
+        "
+	#:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
         curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
         Start-Process $ENV:temp\\edgeremoval.bat
