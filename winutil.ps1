@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.07.29
+    Version        : 23.07.30
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,13 +21,13 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.07.29"
+$sync.version = "23.07.30"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be ran as Administrator. Attempting to relaunch."
+    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
     Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
     break
 }
@@ -36,7 +36,7 @@ Function Get-WinUtilCheckBoxes {
     <#
 
         .DESCRIPTION
-        Function is meant to find all checkboxes that are checked on the specefic tab and input them into a script.
+        Function is meant to find all checkboxes that are checked on the specific tab and input them into a script.
 
         Outputed data will be the names of the checkboxes that were checked
 
@@ -188,7 +188,7 @@ function Get-WinUtilVariables {
     <#
     
         .DESCRIPTION
-        palceholder
+        placeholder
     
     #>
     param (
@@ -606,7 +606,7 @@ function Invoke-WinUtilScript {
     <#
     
         .DESCRIPTION
-        This function will run a seperate powershell script. Meant for things that can't be handled with the other functions
+        This function will run a separate powershell script. Meant for things that can't be handled with the other functions
 
         .EXAMPLE
 
@@ -946,7 +946,7 @@ function Test-WinUtilPackageManager {
     <#
     
         .DESCRIPTION
-        Checks for Winget or Choco depending on the paramater
+        Checks for Winget or Choco depending on the parameter
     
     #>
 
@@ -1068,7 +1068,7 @@ function Invoke-WPFControlPanel {
         <#
     
         .DESCRIPTION
-        Simple Switch for lagacy windows
+        Simple Switch for legacy windows
     
     #>
     param($Panel)
@@ -1127,7 +1127,7 @@ function Invoke-WPFFixesNetwork {
     
     #>
 
-    Write-Host "Reseting Network with netsh"
+    Write-Host "Resetting Network with netsh"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
@@ -1153,7 +1153,7 @@ function Invoke-WPFFixesUpdate {
     
     #>
 
-    ### Reset Windows Update Script - reregister dlls, services, and remove registry entires.
+    ### Reset Windows Update Script - reregister dlls, services, and remove registry entries.
 Write-Host "1. Stopping Windows Update Services..."
     Stop-Service -Name BITS
     Stop-Service -Name wuauserv
@@ -1423,7 +1423,7 @@ function Invoke-WPFInstallUpgrade {
     }
 
     if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
-        $msg = "Install process is currently running. Please check for a powershell window labled 'Winget Install'"
+        $msg = "Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -1583,7 +1583,7 @@ function Invoke-WPFTab {
     <#
     
         .DESCRIPTION
-        Sole purpose of this fuction reduce duplicated code for switching between tabs. 
+        Sole purpose of this function is to reduce duplicated code for switching between tabs. 
     
     #>
 
@@ -2572,16 +2572,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label FontSize="16" Content="Essential Tweaks"/>
                                 <CheckBox Name="WPFEssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
                                 <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                                <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spys heavily on you when using the Edge browser."/>
-                                <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scaned wifi networks and your current geo location."/>
+                                <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
+                                <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
                                 <CheckBox Name="WPFEssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
                                 <CheckBox Name="WPFEssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
                                 <CheckBox Name="WPFEssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
                                 <CheckBox Name="WPFEssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
                                 <CheckBox Name="WPFEssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn''t have this, it was awful."/>
                                 <CheckBox Name="WPFEssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                                <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves whats in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
-                                <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependancy for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
+                                <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
+                                <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
                                 <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
                                 <Label Content="Dark Theme" />
                                 <StackPanel Orientation="Horizontal">
@@ -2606,7 +2606,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
                                 <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
                                 <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
-                                <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and send you back to the past... or it simply turns numlock on at startup"/>
+                                <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
                                 <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
                                 <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
@@ -2615,7 +2615,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
                                 <CheckBox Name="WPFMiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
                                 <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search users, this is NOT recommended."/>
+                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search user, this is NOT recommended."/>
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
