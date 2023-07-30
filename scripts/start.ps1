@@ -20,7 +20,7 @@ $sync.ProcessRunning = $false
 
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be ran as Administrator. Attempting to relaunch."
+    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
     Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
     break
 }

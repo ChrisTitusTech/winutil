@@ -2,7 +2,7 @@ function Invoke-WPFControlPanel {
         <#
     
         .DESCRIPTION
-        Simple Switch for lagacy windows
+        Simple Switch for legacy windows
     
     #>
     param($Panel)

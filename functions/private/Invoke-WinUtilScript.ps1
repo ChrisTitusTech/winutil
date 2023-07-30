@@ -2,7 +2,7 @@ function Invoke-WinUtilScript {
     <#
     
         .DESCRIPTION
-        This function will run a seperate powershell script. Meant for things that can't be handled with the other functions
+        This function will run a separate powershell script. Meant for things that can't be handled with the other functions
 
         .EXAMPLE
 

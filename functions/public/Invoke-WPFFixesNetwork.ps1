@@ -6,7 +6,7 @@ function Invoke-WPFFixesNetwork {
     
     #>
 
-    Write-Host "Reseting Network with netsh"
+    Write-Host "Resetting Network with netsh"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
     Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
