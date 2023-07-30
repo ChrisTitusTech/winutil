@@ -2,7 +2,7 @@ function Test-WinUtilPackageManager {
     <#
     
         .DESCRIPTION
-        Checks for Winget or Choco depending on the paramater
+        Checks for Winget or Choco depending on the parameter
     
     #>
 

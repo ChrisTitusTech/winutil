@@ -5,7 +5,7 @@
     # Severity = @('Error','Warning')
 
     # Analyze **only** the following rules. Use IncludeRules when you want
-    # to invoke only a small subset of the defualt rules.
+    # to invoke only a small subset of the default rules.
 <#
     IncludeRules = @('PSAvoidDefaultValueSwitchParameter',
                      'PSMisleadingBacktick',
@@ -14,7 +14,7 @@
                      'PSReservedParams',
                      'PSShouldProcess',
                      'PSUseApprovedVerbs',
-                     'PSUseDeclaredVarsMoreThanAssigments')
+                     'PSUseDeclaredVarsMoreThanAssignments')
 #>    
     # Do not analyze the following rules. Use ExcludeRules when you have
     # commented out the IncludeRules settings above and want to include all

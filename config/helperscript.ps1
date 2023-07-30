@@ -9,7 +9,7 @@
     -----------------
     This file holds all the install commands to install the applications.
     This file has the ability to expect multiple frameworks per checkbox.
-    You can also add multiple install commands by seperating them with ;
+    You can also add multiple install commands by separating them with ;
 
     The structure of the json is as follows
 
@@ -63,7 +63,7 @@ $jsonfile | ConvertTo-Json | Out-File ./config/applications.json
 <#
     feature.json
     -----------------
-    This file holds all the windows commands to install specefic features (IE Hyper-v)
+    This file holds all the windows commands to install specific features (IE Hyper-v)
 
     The structure of the json is as follows
 
@@ -290,7 +290,7 @@ Example:
 #Make sure to uncomment the sections you which to add.
 
 #$Registry = @(
-#    #to add more repeat this seperated by a comma
+#    #to add more repeat this separated by a comma
 #    @{
 #        Path = ""
 #        Name = ""
@@ -301,7 +301,7 @@ Example:
 #)
 
 #$Service = @(
-#    #to add more repeat this seperated by a comma
+#    #to add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        StartupType = ""
@@ -310,7 +310,7 @@ Example:
 #)
 
 #$ScheduledTask = @(
-#    #to add more repeat this seperated by a comma
+#    #to add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        State = ""
@@ -358,7 +358,7 @@ Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -
 <#
     dns.json
     -----------------
-    This file holds all the DNS entrees.
+    This file holds all the DNS entries.
 
     The structure of the json is as follows
 

@@ -3,7 +3,7 @@ function Get-WinUtilVariables {
     <#
     
         .DESCRIPTION
-        palceholder
+        placeholder
     
     #>
     param (
