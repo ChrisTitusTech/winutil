@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.01
+    Version        : 23.08.02
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.01"
+$sync.version = "23.08.02"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1051,6 +1051,7 @@ function Invoke-WPFButton {
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
+        "WPFPanelregion" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelsound" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
@@ -1077,6 +1078,7 @@ function Invoke-WPFControlPanel {
         "WPFPanelcontrol" {cmd /c control}
         "WPFPanelnetwork" {cmd /c ncpa.cpl}
         "WPFPanelpower"   {cmd /c powercfg.cpl}
+        "WPFPanelregion"  {cmd /c intl.cpl}
         "WPFPanelsound"   {cmd /c mmsys.cpl}
         "WPFPanelsystem"  {cmd /c sysdm.cpl}
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
@@ -2654,16 +2656,17 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                                 <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesNetwork" FontSize="14" Background="AliceBlue" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
                                 <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelregion" FontSize="14" Content="Region" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
@@ -5883,7 +5886,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 

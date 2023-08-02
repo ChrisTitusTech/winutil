@@ -531,16 +531,17 @@
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                                 <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
-                                <Button Name="WPFPanelAutologin" FontSize="14" Background="AliceBlue" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesUpdate" FontSize="14" Background="AliceBlue" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFFixesNetwork" FontSize="14" Background="AliceBlue" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                                <Button Name="WPFPanelDISM" FontSize="14" Background="AliceBlue" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
                                 <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
+                                <Button Name="WPFPanelregion" FontSize="14" Content="Region" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                                 <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
