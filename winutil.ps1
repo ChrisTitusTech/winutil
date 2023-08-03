@@ -820,31 +820,21 @@ function Set-WinUtilRestorePoint {
     }
 
     # Check if System Restore is enabled for the main drive
-    $mainDrive = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "C:" }
-    $systemRestoreStatus = Get-WmiObject Win32_SystemRestoreConfiguration | Where-Object { $_.Drive -eq $mainDrive.DeviceID }
-
-    if (-Not $systemRestoreStatus.Enable) {
-        # System Restore is not enabled, so we need to enable it
-        Write-Host "System Restore is not enabled. Enabling it for the main drive (C:)..."
-        Enable-ComputerRestore -Drive "C:"
+    try {
+        # Try getting restore points to check if System Restore is enabled
+        Enable-ComputerRestore -Drive "$env:SystemDrive"
+    } catch {
+        Write-Host "An error occurred while enabling System Restore: $_"
     }
 
     # Get all the restore points for the current day
     $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
 
-    # If no restore points have been created today, create a new one
-    $existingRestorePoints = Get-ComputerRestorePoint
-
     # Check if there is already a restore point created today
     if ($existingRestorePoints.Count -eq 0) {
         $description = "System Restore Point created by WinUtil"
-        $status = (Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS").ReturnStatus
-        Write-Host $status
-       if ($status -eq "0") {
-            Write-Host "Successfully created a System Restore Point."
-        } else {
-            Write-Host "Failed to create a System Restore Point."
-        }
+        
+        Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
     }
 }
 function Set-WinUtilScheduledTask {
@@ -5913,7 +5903,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
