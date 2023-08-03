@@ -40,6 +40,7 @@ function Invoke-WPFButton {
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
+        "WPFPanelregion" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelsound" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}

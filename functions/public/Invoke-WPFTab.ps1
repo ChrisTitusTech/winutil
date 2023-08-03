@@ -3,7 +3,7 @@ function Invoke-WPFTab {
     <#
     
         .DESCRIPTION
-        Sole purpose of this fuction reduce duplicated code for switching between tabs. 
+        Sole purpose of this function is to reduce duplicated code for switching between tabs. 
     
     #>
 
