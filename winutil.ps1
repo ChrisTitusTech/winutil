@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.02
+    Version        : 23.08.03
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.02"
+$sync.version = "23.08.03"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -3629,13 +3629,13 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "BthAvctpSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "BthHFSrv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "CDPSvc",
