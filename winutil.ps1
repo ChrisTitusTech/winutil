@@ -812,6 +812,41 @@ function Set-WinUtilRegistry {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Set-WinUtilRestorePoint {
+    # Check if the user has administrative privileges
+    if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "Please run this script as an administrator."
+        return
+    }
+
+    # Check if System Restore is enabled for the main drive
+    $mainDrive = Get-WmiObject Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "C:" }
+    $systemRestoreStatus = Get-WmiObject Win32_SystemRestoreConfiguration | Where-Object { $_.Drive -eq $mainDrive.DeviceID }
+
+    if (-Not $systemRestoreStatus.Enable) {
+        # System Restore is not enabled, so we need to enable it
+        Write-Host "System Restore is not enabled. Enabling it for the main drive (C:)..."
+        Enable-ComputerRestore -Drive "C:"
+    }
+
+    # Get all the restore points for the current day
+    $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+
+    # If no restore points have been created today, create a new one
+    $existingRestorePoints = Get-ComputerRestorePoint
+
+    # Check if there is already a restore point created today
+    if ($existingRestorePoints.Count -eq 0) {
+        $description = "System Restore Point created by WinUtil"
+        $status = (Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS").ReturnStatus
+        Write-Host $status
+       if ($status -eq "0") {
+            Write-Host "Successfully created a System Restore Point."
+        } else {
+            Write-Host "Failed to create a System Restore Point."
+        }
+    }
+}
 function Set-WinUtilScheduledTask {
     <#
     
@@ -1650,6 +1685,8 @@ function Invoke-WPFtweaksbutton {
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
   }
+
+  Set-WinUtilRestorePoint
 
   Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
     param($Tweaks)
@@ -2572,7 +2609,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
                                 <Label FontSize="16" Content="Essential Tweaks"/>
-                                <CheckBox Name="WPFEssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
                                 <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
                                 <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
                                 <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
@@ -3355,7 +3391,6 @@ $sync.configs.preset = '{
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -3369,7 +3404,6 @@ $sync.configs.preset = '{
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -3380,7 +3414,6 @@ $sync.configs.preset = '{
   "minimal": [
     "WPFEssTweaksHome",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksTele"
   ]
@@ -5567,12 +5600,6 @@ $sync.configs.tweaks = '{
        "
     ]
   },
-  "WPFEssTweaksRP": {
-    "InvokeScript": [
-      "Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
-    ]
-  },
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
@@ -5886,7 +5913,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 

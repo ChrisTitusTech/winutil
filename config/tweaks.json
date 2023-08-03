@@ -2138,12 +2138,6 @@
        "
     ]
   },
-  "WPFEssTweaksRP": {
-    "InvokeScript": [
-      "Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
-    ]
-  },
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"

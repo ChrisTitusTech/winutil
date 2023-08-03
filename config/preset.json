@@ -6,7 +6,6 @@
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -20,7 +19,6 @@
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -31,7 +29,6 @@
   "minimal": [
     "WPFEssTweaksHome",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksTele"
   ]
