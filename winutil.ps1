@@ -813,6 +813,13 @@ function Set-WinUtilRegistry {
     }
 }
 function Set-WinUtilRestorePoint {
+    <#
+    
+        .DESCRIPTION
+        This function will make a Restore Point
+
+    #>    
+
     # Check if the user has administrative privileges
     if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Host "Please run this script as an administrator."
