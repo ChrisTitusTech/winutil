@@ -327,6 +327,10 @@
     "winget": "Nilesoft.Shell",
     "choco": "na"
   },
+  "WPFInstallsdio": {
+    "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
+    "choco": "na"
+  },
   "WPFInstallklite": {
     "winget": "CodecGuide.K-LiteCodecPack.Standard",
     "choco": "k-litecodecpack-standard"
