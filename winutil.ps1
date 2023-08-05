@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.03
+    Version        : 23.08.05
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.03"
+$sync.version = "23.08.05"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2562,6 +2562,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
@@ -3062,6 +3063,10 @@ $sync.configs.applications = '{
   },
   "WPFInstallshell": {
     "winget": "Nilesoft.Shell",
+    "choco": "na"
+  },
+  "WPFInstallsdio": {
+    "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
     "choco": "na"
   },
   "WPFInstallklite": {
