@@ -99,6 +99,10 @@
     "winget": "GOG.Galaxy",
     "choco": "goggalaxy"
   },
+  "WPFInstallheroiclauncher": {
+    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "choco": "na" 
+  },
   "WPFInstallgpuz": {
     "winget": "TechPowerUp.GPU-Z",
     "choco": "gpu-z"
@@ -155,6 +159,10 @@
     "winget": "EclipseAdoptium.Temurin.11.JRE",
     "choco": "javaruntime"
   },
+  "WPFInstalljava20": {
+    "winget": "Azul.Zulu.20.JDK",
+    "choco": "na"
+  },
   "WPFInstalljetbrains": {
     "winget": "JetBrains.Toolbox",
     "choco": "jetbrainstoolbox"
@@ -174,6 +182,10 @@
   "WPFInstallmatrix": {
     "winget": "Element.Element",
     "choco": "element-desktop"
+  },
+  "WPFInstallmonitorian": {
+    "winget": "emoacht.Monitorian",
+    "choco": "monitorian"
   },
   "WPFInstallmpc": {
     "winget": "clsid2.mpc-hc",
@@ -530,6 +542,10 @@
   "WPFInstallwinrar": {
     "winget": "RARLab.WinRAR",
     "choco": "winrar"
+  },
+  "WPFInstallnano": {
+    "winget": "GNU.Nano",
+    "choco": "nano"
   },
   "WPFInstallneovim": {
     "winget": "Neovim.Neovim",
