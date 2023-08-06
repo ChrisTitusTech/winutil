@@ -555,10 +555,6 @@
     "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
     "choco": "na" 
   },
-  "WPFInstalloperagx": {
-    "winget": "Opera.OperaGX",
-    "choco": "opera-gx"
-  },
   "WPFInstalljava20": {
     "winget": "Azul.Zulu.20.JDK",
     "choco": "na"
