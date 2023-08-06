@@ -264,6 +264,7 @@
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalloperagx" Content="Opera GX" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
@@ -286,6 +287,7 @@
                                 <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
@@ -324,6 +326,7 @@
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
@@ -395,6 +398,9 @@
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>

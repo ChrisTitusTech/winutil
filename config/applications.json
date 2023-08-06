@@ -550,5 +550,29 @@
   "WPFInstallprismlauncher": {
     "winget": "PrismLauncher.PrismLauncher",
     "choco": "na"
+  },
+  "WPFInstallheroiclauncher": {
+    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "choco": "na" 
+  },
+  "WPFInstalloperagx": {
+    "winget": "Opera.OperaGX",
+    "choco": "opera-gx"
+  },
+  "WPFInstalljava20": {
+    "winget": "Azul.Zulu.20.JDK",
+    "choco": "na"
+  },
+  "WPFInstallmonitorian": {
+    "winget": "emoacht.Monitorian",
+    "choco": "monitorian"
+  },
+  "WPFInstallnano": {
+    "winget": "GNU.Nano",
+    "choco": "nano"
+  },
+  "WPFInstallneovim": {
+    "winget": "Neovim.Neovim",
+    "choco": "neovim"
   }
 }
