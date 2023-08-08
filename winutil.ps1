@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.06
+    Version        : 23.08.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.06"
+$sync.version = "23.08.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2423,7 +2423,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalloperagx" Content="Opera GX" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
@@ -5936,7 +5935,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
