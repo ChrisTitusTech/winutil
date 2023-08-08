@@ -22,6 +22,8 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
+  Set-WinUtilRestorePoint
+
   Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
     param($Tweaks)
 

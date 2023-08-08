@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.03
+    Version        : 23.08.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.03"
+$sync.version = "23.08.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -812,6 +812,38 @@ function Set-WinUtilRegistry {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Set-WinUtilRestorePoint {
+    <#
+    
+        .DESCRIPTION
+        This function will make a Restore Point
+
+    #>    
+
+    # Check if the user has administrative privileges
+    if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "Please run this script as an administrator."
+        return
+    }
+
+    # Check if System Restore is enabled for the main drive
+    try {
+        # Try getting restore points to check if System Restore is enabled
+        Enable-ComputerRestore -Drive "$env:SystemDrive"
+    } catch {
+        Write-Host "An error occurred while enabling System Restore: $_"
+    }
+
+    # Get all the restore points for the current day
+    $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+
+    # Check if there is already a restore point created today
+    if ($existingRestorePoints.Count -eq 0) {
+        $description = "System Restore Point created by WinUtil"
+        
+        Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+    }
+}
 function Set-WinUtilScheduledTask {
     <#
     
@@ -875,15 +907,6 @@ Function Set-WinUtilService {
     
         # Service exists, proceed with changing properties
         $service | Set-Service -StartupType $StartupType -ErrorAction Stop
-    
-        if ($StartupType -eq "Disabled") {
-            Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
-        }
-        elseif ($StartupType -eq "Manual") {
-            Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
-        }
     }
     catch [System.ServiceProcess.ServiceNotFoundException] {
         Write-Warning "Service $Name was not found"
@@ -1651,6 +1674,8 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
+  Set-WinUtilRestorePoint
+
   Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
     param($Tweaks)
 
@@ -2405,6 +2430,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
@@ -2422,6 +2448,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
@@ -2444,6 +2471,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
@@ -2520,6 +2548,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
@@ -2528,6 +2557,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
@@ -2572,7 +2602,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10,5">
                                 <Label FontSize="16" Content="Essential Tweaks"/>
-                                <CheckBox Name="WPFEssTweaksRP" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a Windows Restore point before modifying system. Can use Windows System Restore to rollback to before tweaks were applied"/>
                                 <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
                                 <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
                                 <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
@@ -2803,6 +2832,10 @@ $sync.configs.applications = '{
     "winget": "GOG.Galaxy",
     "choco": "goggalaxy"
   },
+  "WPFInstallheroiclauncher": {
+    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "choco": "na" 
+  },
   "WPFInstallgpuz": {
     "winget": "TechPowerUp.GPU-Z",
     "choco": "gpu-z"
@@ -2859,6 +2892,10 @@ $sync.configs.applications = '{
     "winget": "EclipseAdoptium.Temurin.11.JRE",
     "choco": "javaruntime"
   },
+  "WPFInstalljava20": {
+    "winget": "Azul.Zulu.20.JDK",
+    "choco": "na"
+  },
   "WPFInstalljetbrains": {
     "winget": "JetBrains.Toolbox",
     "choco": "jetbrainstoolbox"
@@ -2878,6 +2915,10 @@ $sync.configs.applications = '{
   "WPFInstallmatrix": {
     "winget": "Element.Element",
     "choco": "element-desktop"
+  },
+  "WPFInstallmonitorian": {
+    "winget": "emoacht.Monitorian",
+    "choco": "monitorian"
   },
   "WPFInstallmpc": {
     "winget": "clsid2.mpc-hc",
@@ -3029,6 +3070,10 @@ $sync.configs.applications = '{
   },
   "WPFInstallshell": {
     "winget": "Nilesoft.Shell",
+    "choco": "na"
+  },
+  "WPFInstallsdio": {
+    "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
     "choco": "na"
   },
   "WPFInstallklite": {
@@ -3231,6 +3276,10 @@ $sync.configs.applications = '{
     "winget": "RARLab.WinRAR",
     "choco": "winrar"
   },
+  "WPFInstallnano": {
+    "winget": "GNU.Nano",
+    "choco": "nano"
+  },
   "WPFInstallneovim": {
     "winget": "Neovim.Neovim",
     "choco": "neovim"
@@ -3355,7 +3404,6 @@ $sync.configs.preset = '{
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -3369,7 +3417,6 @@ $sync.configs.preset = '{
     "WPFEssTweaksHome",
     "WPFEssTweaksLoc",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
@@ -3380,7 +3427,6 @@ $sync.configs.preset = '{
   "minimal": [
     "WPFEssTweaksHome",
     "WPFEssTweaksOO",
-    "WPFEssTweaksRP",
     "WPFEssTweaksServices",
     "WPFEssTweaksTele"
   ]
@@ -3889,8 +3935,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "KeyIso",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "KtmRm",
@@ -4429,8 +4475,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VaultSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "W32Time",
@@ -5563,14 +5609,8 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"$ENV:temp\\ooshutup10.cfg /quiet\"
+       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
        "
-    ]
-  },
-  "WPFEssTweaksRP": {
-    "InvokeScript": [
-      "Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-       Checkpoint-Computer -Description \"RestorePoint1\" -RestorePointType \"MODIFY_SETTINGS\""
     ]
   },
   "WPFEssTweaksStorage": {

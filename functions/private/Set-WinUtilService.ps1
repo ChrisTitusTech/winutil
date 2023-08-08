@@ -21,15 +21,6 @@ Function Set-WinUtilService {
     
         # Service exists, proceed with changing properties
         $service | Set-Service -StartupType $StartupType -ErrorAction Stop
-    
-        if ($StartupType -eq "Disabled") {
-            Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
-        }
-        elseif ($StartupType -eq "Manual") {
-            Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
-        }
     }
     catch [System.ServiceProcess.ServiceNotFoundException] {
         Write-Warning "Service $Name was not found"
