@@ -460,8 +460,8 @@
       },
       {
         "Name": "KeyIso",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "KtmRm",
@@ -1000,8 +1000,8 @@
       },
       {
         "Name": "VaultSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "W32Time",
