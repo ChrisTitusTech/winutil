@@ -24,11 +24,9 @@ Function Set-WinUtilService {
     
         if ($StartupType -eq "Disabled") {
             Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
         elseif ($StartupType -eq "Manual") {
             Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
     }
     catch [System.ServiceProcess.ServiceNotFoundException] {
