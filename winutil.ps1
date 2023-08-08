@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.05
+    Version        : 23.08.06
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.05"
+$sync.version = "23.08.06"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2423,6 +2423,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalloperagx" Content="Opera GX" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
@@ -2439,6 +2440,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
@@ -2456,6 +2458,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
@@ -2478,6 +2481,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
@@ -2554,6 +2558,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
@@ -2837,6 +2842,10 @@ $sync.configs.applications = '{
     "winget": "GOG.Galaxy",
     "choco": "goggalaxy"
   },
+  "WPFInstallheroiclauncher": {
+    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "choco": "na" 
+  },
   "WPFInstallgpuz": {
     "winget": "TechPowerUp.GPU-Z",
     "choco": "gpu-z"
@@ -2893,6 +2902,10 @@ $sync.configs.applications = '{
     "winget": "EclipseAdoptium.Temurin.11.JRE",
     "choco": "javaruntime"
   },
+  "WPFInstalljava20": {
+    "winget": "Azul.Zulu.20.JDK",
+    "choco": "na"
+  },
   "WPFInstalljetbrains": {
     "winget": "JetBrains.Toolbox",
     "choco": "jetbrainstoolbox"
@@ -2912,6 +2925,10 @@ $sync.configs.applications = '{
   "WPFInstallmatrix": {
     "winget": "Element.Element",
     "choco": "element-desktop"
+  },
+  "WPFInstallmonitorian": {
+    "winget": "emoacht.Monitorian",
+    "choco": "monitorian"
   },
   "WPFInstallmpc": {
     "winget": "clsid2.mpc-hc",
@@ -3268,6 +3285,10 @@ $sync.configs.applications = '{
   "WPFInstallwinrar": {
     "winget": "RARLab.WinRAR",
     "choco": "winrar"
+  },
+  "WPFInstallnano": {
+    "winget": "GNU.Nano",
+    "choco": "nano"
   },
   "WPFInstallneovim": {
     "winget": "Neovim.Neovim",
@@ -5915,7 +5936,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
