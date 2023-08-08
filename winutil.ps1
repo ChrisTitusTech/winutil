@@ -2657,7 +2657,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
-                                <CheckBox Name="WPFUninstallEdgeHTML" Content="Remove EdgeHTML" Margin="5,0" ToolTip="Removes Microsoft Edge Legacy."/>
+                                <CheckBox Name="WPFMiscTweaksUninstallEdgeHTML" Content="Remove EdgeHTML" Margin="5,0" ToolTip="Removes Microsoft Edge Legacy."/>
 
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
@@ -5350,7 +5350,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFUninstallEdgeHTML": {
+  "WPFMiscTweaksUninstallEdgeHTML": {
     "InvokeScript": [
       "
         curl.exe -s \"https://raw.githubusercontent.com/ChaseKnowlden/winutil/test-2023-08-02/install_wim_tweak.exe\" -o $ENV:temp\\install_wim_tweak.exe
