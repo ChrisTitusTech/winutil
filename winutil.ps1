@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.05
+    Version        : 23.08.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.05"
+$sync.version = "23.08.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2657,6 +2657,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+                                <CheckBox Name="WPFUninstallEdgeHTML" Content="Remove EdgeHTML" Margin="5,0" ToolTip="Removes Microsoft Edge Legacy."/>
 
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
@@ -5349,6 +5350,15 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFUninstallEdgeHTML": {
+    "InvokeScript": [
+      "
+        curl.exe -s \"https://raw.githubusercontent.com/ChaseKnowlden/winutil/test-2023-08-02/install_wim_tweak.exe\" -o $ENV:temp\\install_wim_tweak.exe
+        curl.exe -s \"https://raw.githubusercontent.com/ChaseKnowlden/winutil/test-2023-08-02/edgehtml.cmd\" -o $ENV:temp\\edgehtml.cmd
+        Start-Process $ENV:temp\\edgehtml.cmd
+      "
+    ]
+  },
   "WPFMiscTweaksLapPower": {
     "registry": [
       {
@@ -5635,7 +5645,7 @@ $sync.configs.tweaks = '{
   },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
-        "      
+        "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
         curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
