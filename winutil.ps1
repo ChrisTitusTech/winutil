@@ -910,11 +910,9 @@ Function Set-WinUtilService {
     
         if ($StartupType -eq "Disabled") {
             Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
         elseif ($StartupType -eq "Manual") {
             Write-Host "Stopping $Name"
-            Stop-Service -Name $Name -Force -ErrorAction Stop
         }
     }
     catch [System.ServiceProcess.ServiceNotFoundException] {
@@ -3944,8 +3942,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "KeyIso",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "KtmRm",
@@ -4484,8 +4482,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "VaultSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "W32Time",
