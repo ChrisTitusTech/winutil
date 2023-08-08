@@ -24,6 +24,7 @@ ooshutup10.cfg
 winutil.exe.config
 Microsoft.UI.Xaml*
 license1.xml
+!install_wim_tweak.exe
 
 # Libraries
 System.Management.Automation.dll
