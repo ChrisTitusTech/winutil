@@ -28,5 +28,6 @@ function Set-WinUtilRestorePoint {
         $description = "System Restore Point created by WinUtil"
         
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }
 }

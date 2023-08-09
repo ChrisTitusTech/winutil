@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.08
+    Version        : 23.08.09
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.08"
+$sync.version = "23.08.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -788,6 +788,7 @@ function Set-WinUtilRestorePoint {
         $description = "System Restore Point created by WinUtil"
         
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }
 }
 function Set-WinUtilScheduledTask {
@@ -5854,7 +5855,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
