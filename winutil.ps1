@@ -2463,6 +2463,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
@@ -2691,6 +2692,10 @@ $sync.configs.applications = '{
   "WPFInstallbrave": {
     "winget": "Brave.Brave",
     "choco": "brave"
+  },
+  "WPFInstallbulkcrapuninstaller": {
+    "winget": "Klocman.BulkCrapUninstaller",
+    "choco": "bulk-crap-uninstaller"
   },
   "WPFInstallchrome": {
     "winget": "Google.Chrome",
