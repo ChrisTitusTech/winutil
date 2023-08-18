@@ -31,6 +31,10 @@
     "winget": "Brave.Brave",
     "choco": "brave"
   },
+  "WPFInstallbulkcrapuninstaller": {
+    "winget": "Klocman.BulkCrapUninstaller",
+    "choco": "bulk-crap-uninstaller"
+  },
   "WPFInstallchrome": {
     "winget": "Google.Chrome",
     "choco": "googlechrome"
