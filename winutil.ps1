@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.26
+    Version        : 23.09.01
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.26"
+$sync.version = "23.09.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5421,6 +5421,34 @@ $sync.configs.tweaks = '{
         "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
         "name": "EnableAeroPeek",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarMn",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarDa",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "OriginalValue": "1",
+        "name": "SearchboxTaskbarMode",
         "value": "0",
         "type": "DWord"
       }
