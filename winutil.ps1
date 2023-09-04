@@ -2393,6 +2393,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
@@ -2868,6 +2869,10 @@ $sync.configs.applications = '{
   "WPFInstallmremoteng": {
     "winget": "mRemoteNG.mRemoteNG",
     "choco": "mremoteng"
+  },
+  "WPFInstallnaps2": {
+    "winget": "Cyanfish.NAPS2",
+    "choco": "naps2"
   },
   "WPFInstallnodejs": {
     "winget": "OpenJS.NodeJS",

@@ -199,6 +199,10 @@
     "winget": "mRemoteNG.mRemoteNG",
     "choco": "mremoteng"
   },
+  "WPFInstallnaps2": {
+    "winget": "Cyanfish.NAPS2",
+    "choco": "naps2"
+  },
   "WPFInstallnodejs": {
     "winget": "OpenJS.NodeJS",
     "choco": "nodejs"
