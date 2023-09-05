@@ -2687,7 +2687,7 @@ $sync.configs.applications = '{
     "choco": "audacity"
   },
   "WPFInstallautohotkey": {
-    "winget": "Lexikos.AutoHotkey",
+    "winget": "AutoHotkey.AutoHotkey",
     "choco": "autohotkey"
   },
   "WPFInstallbitwarden": {
