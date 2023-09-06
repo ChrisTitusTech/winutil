@@ -2967,7 +2967,7 @@ $sync.configs.applications = '{
     "choco": "treesizefree"
   },
   "WPFInstallttaskbar": {
-    "winget": "TranslucentTB.TranslucentTB",
+    "winget": "9PF4KZ2VN4W9",
     "choco": "translucenttb"
   },
   "WPFInstallvisualstudio": {
