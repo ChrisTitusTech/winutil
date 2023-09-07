@@ -577,7 +577,7 @@
 	},
 	"WPFInstallwiztree": {
 		"Winget": "AntibodySoftware.WizTree",
-		"choco": "wiztree\\"
+		"choco": "wiztree"
 	},
 	"WPFInstallxdm": {
 		"winget": "subhra74.XtremeDownloadManager",
