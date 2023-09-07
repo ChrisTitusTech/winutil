@@ -8,6 +8,7 @@ Brave
 ## Oficina
 ONLYOFFICE  
 LibreOffice  
+WinMerge
 Evince  
 Scribus  
 Sumatra PDF  

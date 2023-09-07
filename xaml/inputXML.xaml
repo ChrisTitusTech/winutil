@@ -215,14 +215,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" 
-                        Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" 
-                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" 
-                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" 
-                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
+                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
+                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
+                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
+                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
                 </DockPanel>
                 <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
@@ -253,67 +249,25 @@
                                 <Button Name="WPFexportWinget" Content=" Export " Margin="7"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
-                                <Label Content="Browsers" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
+                                <Label Content="Navegadors" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
 
-                                <Label Content="Communications" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
+                                <Label Content="Programació" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
-                                <Label Content="Development" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-                                <Label Content="Document" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
+                                <Label Content="Oficina" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOFFICE Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
 
