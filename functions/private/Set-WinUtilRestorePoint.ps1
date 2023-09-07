@@ -20,6 +20,13 @@ function Set-WinUtilRestorePoint {
         Write-Host "An error occurred while enabling System Restore: $_"
     }
 
+    # Check if the SystemRestorePointCreationFrequency value exists
+    $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
+    if($null -eq $exists){
+        write-host 'Changing system to allow multiple restore points per day'
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null  
+    }
+
     # Get all the restore points for the current day
     $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
 
@@ -28,5 +35,6 @@ function Set-WinUtilRestorePoint {
         $description = "System Restore Point created by WinUtil"
         
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }
 }

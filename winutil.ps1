@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.08.08
+    Version        : 23.09.07
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.08.08"
+$sync.version = "23.09.07"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -780,6 +780,13 @@ function Set-WinUtilRestorePoint {
         Write-Host "An error occurred while enabling System Restore: $_"
     }
 
+    # Check if the SystemRestorePointCreationFrequency value exists
+    $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
+    if($null -eq $exists){
+        write-host 'Changing system to allow multiple restore points per day'
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null  
+    }
+
     # Get all the restore points for the current day
     $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
 
@@ -788,6 +795,7 @@ function Set-WinUtilRestorePoint {
         $description = "System Restore Point created by WinUtil"
         
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }
 }
 function Set-WinUtilScheduledTask {
@@ -1993,7 +2001,7 @@ function Invoke-WPFUpdatesdefault {
     Write-Host "Enabled driver offering through Windows Update"
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
     Write-Host "================================="
     Write-Host "---  Updates Set to Default   ---"
     Write-Host "================================="
@@ -2064,7 +2072,7 @@ function Invoke-WPFUpdatessecurity {
         }
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
         Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays " -Type DWord -Value 4
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -Type DWord -Value 4
 
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "Set Security Updates"
@@ -2385,6 +2393,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
@@ -2463,6 +2472,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
@@ -2677,7 +2687,7 @@ $sync.configs.applications = '{
     "choco": "audacity"
   },
   "WPFInstallautohotkey": {
-    "winget": "Lexikos.AutoHotkey",
+    "winget": "AutoHotkey.AutoHotkey",
     "choco": "autohotkey"
   },
   "WPFInstallbitwarden": {
@@ -2691,6 +2701,10 @@ $sync.configs.applications = '{
   "WPFInstallbrave": {
     "winget": "Brave.Brave",
     "choco": "brave"
+  },
+  "WPFInstallbulkcrapuninstaller": {
+    "winget": "Klocman.BulkCrapUninstaller",
+    "choco": "bulk-crap-uninstaller"
   },
   "WPFInstallchrome": {
     "winget": "Google.Chrome",
@@ -2856,6 +2870,10 @@ $sync.configs.applications = '{
     "winget": "mRemoteNG.mRemoteNG",
     "choco": "mremoteng"
   },
+  "WPFInstallnaps2": {
+    "winget": "Cyanfish.NAPS2",
+    "choco": "naps2"
+  },
   "WPFInstallnodejs": {
     "winget": "OpenJS.NodeJS",
     "choco": "nodejs"
@@ -2949,7 +2967,7 @@ $sync.configs.applications = '{
     "choco": "treesizefree"
   },
   "WPFInstallttaskbar": {
-    "winget": "TranslucentTB.TranslucentTB",
+    "winget": "9PF4KZ2VN4W9",
     "choco": "translucenttb"
   },
   "WPFInstallvisualstudio": {
@@ -5408,6 +5426,34 @@ $sync.configs.tweaks = '{
         "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
         "name": "EnableAeroPeek",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarMn",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarDa",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "OriginalValue": "1",
+        "name": "SearchboxTaskbarMode",
         "value": "0",
         "type": "DWord"
       }
