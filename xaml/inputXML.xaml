@@ -396,7 +396,6 @@
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>

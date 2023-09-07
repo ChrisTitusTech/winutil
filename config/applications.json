@@ -227,6 +227,10 @@
     "winget": "Obsidian.Obsidian",
     "choco": "obsidian"
   },
+  "WPFInstallpeazip": {
+    "winget": "Giorgiotani.Peazip",
+    "choco": "peazip"
+  },
   "WPFInstallpowertoys": {
     "winget": "Microsoft.PowerToys",
     "choco": "powertoys"
@@ -454,10 +458,6 @@
   "WPFInstalltwinkletray": {
     "Winget": "xanderfrangos.twinkletray",
     "choco": "na"
-  },
-  "WPFInstallidm": {
-    "Winget": "Tonec.InternetDownloadManager",
-    "choco": "internet-download-manager"
   },
   "WPFInstallviber": {
     "Winget": "Viber.Viber",
