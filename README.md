@@ -1,4 +1,4 @@
-# Fully Open Windows Utility
-This is a modified version of *Chris Titus Tech's Windows Utility* to only include open source software and utilities.
+# Utilitat lliure per Windows
+Aquesta és una versió modificada de *Chris Titus Tech's Windows Utility* que només inclou una selecció de programari lliure.
 
-Right now it is on development, not ready and not intended to use.
+Aquesta utilitat forma part de la part pràctica del meu Treball De Recerca.
