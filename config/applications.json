@@ -578,5 +578,9 @@
   "WPFInstallprismlauncher": {
     "winget": "PrismLauncher.PrismLauncher",
     "choco": "na"
+  },
+  "WPFInstallxdm": {
+    "winget": "subhra74.XtremeDownloadManager",
+    "choco": "xdm"
   }
 }
