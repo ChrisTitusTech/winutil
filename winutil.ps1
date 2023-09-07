@@ -2482,13 +2482,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
@@ -2504,6 +2504,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
                                 
                             </StackPanel>
                         </Grid>
@@ -2898,6 +2899,10 @@ $sync.configs.applications = '{
     "winget": "Obsidian.Obsidian",
     "choco": "obsidian"
   },
+  "WPFInstallpeazip": {
+    "winget": "Giorgiotani.Peazip",
+    "choco": "peazip"
+  },
   "WPFInstallpowertoys": {
     "winget": "Microsoft.PowerToys",
     "choco": "powertoys"
@@ -3126,10 +3131,6 @@ $sync.configs.applications = '{
     "Winget": "xanderfrangos.twinkletray",
     "choco": "na"
   },
-  "WPFInstallidm": {
-    "Winget": "Tonec.InternetDownloadManager",
-    "choco": "internet-download-manager"
-  },
   "WPFInstallviber": {
     "Winget": "Viber.Viber",
     "choco": "viber"
@@ -3249,6 +3250,10 @@ $sync.configs.applications = '{
   "WPFInstallprismlauncher": {
     "winget": "PrismLauncher.PrismLauncher",
     "choco": "na"
+  },
+  "WPFInstallxdm": {
+    "winget": "subhra74.XtremeDownloadManager",
+    "choco": "xdm"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -4983,7 +4988,7 @@ $sync.configs.tweaks = '{
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
         "type": "Dword",
-        "value": 0,
+        "value": "0",
         "name": "AllowTelemetry",
         "OriginalValue": "1"
       },
@@ -4991,168 +4996,168 @@ $sync.configs.tweaks = '{
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "1",
         "name": "AllowTelemetry",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "ContentDeliveryAllowed",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "OemPreInstalledAppsEnabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "PreInstalledAppsEnabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "PreInstalledAppsEverEnabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SilentInstalledAppsEnabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338387Enabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338388Enabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338389Enabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-353698Enabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SystemPaneSuggestionsEnabled",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
         "name": "DisableWindowsConsumerFeatures",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
         "OriginalValue": "0",
         "name": "NumberOfSIUFInPeriod",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "0",
         "name": "DoNotShowFeedbackNotifications",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
         "name": "DisableTailoredExperiencesWithDiagnosticData",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
         "OriginalValue": "0",
         "name": "DisabledByGroupPolicy",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
         "OriginalValue": "0",
         "name": "Disabled",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
         "OriginalValue": "1",
         "name": "DODownloadMode",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
         "OriginalValue": "1",
         "name": "fAllowToGetHelp",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
         "OriginalValue": "0",
         "name": "EnthusiastMode",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "name": "ShowTaskViewButton",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
         "OriginalValue": "1",
         "name": "PeopleBand",
-        "value": 0,
+        "value": "0",
         "type": "Dword"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "name": "LaunchTo",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "OriginalValue": "0",
         "name": "LongPathsEnabled",
-        "value": 1,
+        "value": "1",
         "type": "Dword"
       },
       {
@@ -5900,7 +5905,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
