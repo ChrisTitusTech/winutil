@@ -402,6 +402,7 @@
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
