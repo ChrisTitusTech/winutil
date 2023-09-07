@@ -347,6 +347,7 @@
                                 <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
