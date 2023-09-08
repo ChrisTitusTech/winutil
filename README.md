@@ -29,6 +29,10 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 or 8.8.
 - This project needs a ⭐️ from you. Don't forget to leave a star ⭐️.
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
+## Tutorial
+
+[![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+
 ## Overview
 
 - Install
