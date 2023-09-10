@@ -63,6 +63,10 @@
 		"winget": "CPUID.CPU-Z",
 		"choco": "cpu-z"
 	},
+	"WPFInstallddu": {
+		"winget": "ddu",
+		"choco": "ddu"
+	},
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
 		"choco": "deluge"

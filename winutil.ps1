@@ -2473,6 +2473,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
@@ -2732,6 +2733,10 @@ $sync.configs.applications = '{
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
 		"choco": "cpu-z"
+	},
+	"WPFInstallddu": {
+		"winget": "ddu",
+		"choco": "ddu"
 	},
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
