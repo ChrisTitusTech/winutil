@@ -3138,8 +3138,8 @@ $sync.configs.applications = '{
 		"choco": "sumatrapdf"
 	},
 	"WPFInstalltcpview": {
-    	"winget": "Microsoft.Sysinternals.Tcpview",
-    	"choco": "tcpview"
+		"winget": "Microsoft.Sysinternals.Tcpview",
+		"choco": "tcpview"
 	},
 	"WPFInstallteams": {
 		"winget": "Microsoft.Teams",
