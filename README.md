@@ -66,7 +66,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 or 8.8.
 - Updates:
   - Default (Out of Box) Settings: Provides the default settings that come with Windows for updates.
   
-  - Security (Recommended) Settings: Offers recommended settings, including a slight delay of feature updates by 2 days and installation of security updates 4 days after release.
+  - Security (Recommended) Settings: Offers recommended settings, including a slight delay of feature updates by 2 years and installation of security updates 4 days after release.
 
   - Disable All Updates (Not Recommended!): Allows users to disable all Windows updates, but it's not recommended due to potential security risks.
 
