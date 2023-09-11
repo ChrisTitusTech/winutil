@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.10
+    Version        : 23.09.11
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.10"
+$sync.version = "23.09.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -386,12 +386,10 @@ Function Invoke-WinUtilCurrentSystem {
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = $($sync.configs.applications.$($psitem.Key).winget -split ";")
+            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
 
-            Foreach ($dependency in $dependencies) {
-                if($dependency -in $sync.InstalledPrograms.Id){
-                    Write-Output $psitem.name
-                }
+            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
+                Write-Output $psitem.name
             }
         }
     }
