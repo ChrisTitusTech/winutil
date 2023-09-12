@@ -1,4 +1,8 @@
-{
+{	
+	"WPFInstall7zip": {
+		"winget": "7zip.7zip",
+		"choco": "7zip"
+	},
 	"WPFInstalladobe": {
 		"winget": "Adobe.Acrobat.Reader.64-bit",
 		"choco": "adobereader"
@@ -58,6 +62,10 @@
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
 		"choco": "cpu-z"
+	},
+	"WPFInstallddu": {
+		"winget": "ddu",
+		"choco": "ddu"
 	},
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
@@ -199,6 +207,10 @@
 		"winget": "SFLinux.Jami",
 		"choco": "jami"
 	},
+	"WPFInstalljava8": {
+		"winget": "EclipseAdoptium.Temurin.8.JRE",
+		"choco": "temurin8jre"
+	},
 	"WPFInstalljava11": {
 		"winget": "EclipseAdoptium.Temurin.11.JRE",
 		"choco": "javaruntime"
@@ -222,10 +234,6 @@
 	"WPFInstalljava20": {
 		"winget": "Azul.Zulu.20.JDK",
 		"choco": "na"
-	},
-	"WPFInstalljava8": {
-		"winget": "EclipseAdoptium.Temurin.8.JRE",
-		"choco": "temurin8jre"
 	},
 	"WPFInstalljdownloader": {
 		"winget": "AppWork.JDownloader",
@@ -415,17 +423,9 @@
 		"winget": "Sandboxie.Plus",
 		"choco": "sandboxie"
 	},
-	"WPFInstallscp": {
-		"winget": "WinSCP.WinSCP",
-		"choco": "winscp"
-	},
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
 		"choco": "na"
-	},
-	"WPFInstallsevenzip": {
-		"winget": "7zip.7zip",
-		"choco": "7zip"
 	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",
@@ -471,10 +471,10 @@
 		"winget": "SumatraPDF.SumatraPDF",
 		"choco": "sumatrapdf"
 	},
-  "WPFInstalltcpview": {
-    "winget": "Microsoft.Sysinternals.Tcpview",
-    "choco": "tcpview"
-  },
+	"WPFInstalltcpview": {
+		"winget": "Microsoft.Sysinternals.Tcpview",
+		"choco": "tcpview"
+	},
 	"WPFInstallteams": {
 		"winget": "Microsoft.Teams",
 		"choco": "microsoft-teams"
@@ -570,6 +570,10 @@
 	"WPFInstallwinrar": {
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
+	},
+	"WPFInstallwinscp": {
+		"winget": "WinSCP.WinSCP",
+		"choco": "winscp"
 	},
 	"WPFInstallwireshark": {
 		"winget": "WiresharkFoundation.Wireshark",
