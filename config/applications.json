@@ -160,7 +160,7 @@
 		"choco": "goggalaxy"
 	},
 	"WPFInstallgolang": {
-		"Winget": "GoLang.Go.1.19",
+		"Winget": "GoLang.Go",
 		"choco": "golang"
 	},
 	"WPFInstallgpuz": {
