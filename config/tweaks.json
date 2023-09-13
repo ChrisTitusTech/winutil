@@ -1971,7 +1971,35 @@
         "name": "EnableAeroPeek",
         "value": "0",
         "type": "DWord"
-      }
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarMn",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarDa",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "OriginalValue": "1",
+        "name": "SearchboxTaskbarMode",
+        "value": "0",
+        "type": "DWord"
+      },
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
