@@ -295,6 +295,10 @@
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
 	},
+	"WPFInstallmusicbee": {
+		"winget": "MusicBee.MusicBee",
+		"choco": "musicbee"
+	},
 	"WPFInstallnano": {
 		"winget": "GNU.Nano",
 		"choco": "nano"
