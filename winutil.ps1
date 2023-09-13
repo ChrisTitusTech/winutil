@@ -10,7 +10,6 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.13
     Version        : 23.09.11
 #>
 
@@ -22,7 +21,6 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.13"
 $sync.version = "23.09.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
@@ -272,7 +270,7 @@ Function Install-WinUtilProgramWinget {
             Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent $Program" -NoNewWindow -Wait
         }
         
         $X++
@@ -795,7 +793,6 @@ function Set-WinUtilRestorePoint {
         $description = "System Restore Point created by WinUtil"
         
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
-        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
         Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }
 }
@@ -2448,8 +2445,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
@@ -2576,6 +2571,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
+                                <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
+                                <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
                                 <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
                                 <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
                                 <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
@@ -2583,9 +2580,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
                                 <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
+                                <CheckBox Name="WPFMiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
                                 <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search user, this is NOT recommended."/>
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
@@ -5318,6 +5316,42 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFMiscTweaksLapPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000000",
+        "OriginalValue": "00000001"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000001",
+        "OriginalValue": "0000000"
+      }
+    ]
+  },
+  "WPFMiscTweaksPower": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "Name": "PowerThrottlingOff",
+        "Type": "DWord",
+        "Value": "00000001",
+        "OriginalValue": "00000000"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HiberbootEnabled",
+        "Type": "DWord",
+        "Value": "0000000",
+        "OriginalValue": "00000001"
+      }
+    ]
+  },
   "WPFMiscTweaksExt": {
     "registry": [
       {
@@ -5605,87 +5639,7 @@ $sync.configs.tweaks = '{
         "
     ],
     "UndoScript": [
-      "
-      Write-Host \"Install Microsoft Edge\"
-      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
-      "
-    ]
-  },
-  "WPFEssTweaksRemoveOnedrive": {
-    "InvokeScript": [
-        "
-         
-        Write-Host \"Kill OneDrive process\"
-        taskkill.exe /F /IM \"OneDrive.exe\"
-        taskkill.exe /F /IM \"explorer.exe\"
-
-        Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath robocopy -ArgumentList \"$env:USERPROFILE\\OneDrive $env:USERPROFILE /e /xj\" -NoNewWindow -Wait
-
-        Write-Host \"Remove OneDrive\"
-        Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
-
-        Write-Host \"Removing OneDrive leftovers\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
-        # check if directory is empty before removing:
-        If ((Get-ChildItem \"$env:userprofile\\OneDrive\" -Recurse | Measure-Object).Count -eq 0) {
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:userprofile\\OneDrive\"
-        }
-
-        Write-Host \"Remove Onedrive from explorer sidebar\"
-        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
-        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
-
-        Write-Host \"Removing run hook for new users\"
-        reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
-        reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
-        reg unload \"hku\\Default\"
-
-        Write-Host \"Removing startmenu entry\"
-        Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
-
-        Write-Host \"Removing scheduled task\"
-        Get-ScheduledTask -TaskPath ''\\'' -TaskName ''OneDrive*'' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
-
-        # Add Shell folders restoring default locations
-        Write-Host \"Shell Fixing\"
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"AppData\" -Value \"$env:userprofile\\AppData\\Roaming\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cache\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCache\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cookies\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCookies\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Favorites\" -Value \"$env:userprofile\\Favorites\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"History\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\History\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Local AppData\" -Value \"$env:userprofile\\AppData\\Local\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Music\" -Value \"$env:userprofile\\Music\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Video\" -Value \"$env:userprofile\\Videos\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"NetHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Network Shortcuts\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"PrintHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Printer Shortcuts\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Programs\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Recent\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Recent\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"SendTo\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\SendTo\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Start Menu\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Startup\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Templates\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Templates\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{374DE290-123F-4565-9164-39C4925E467B}\" -Value \"$env:userprofile\\Downloads\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Desktop\" -Value \"$env:userprofile\\Desktop\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Pictures\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Personal\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
-        Write-Host \"Restarting explorer\"
-        Start-Process \"explorer.exe\"
-
-        Write-Host \"Waiting for explorer to complete loading\"
-        Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
-        Start-Sleep 5
-        "
-    ],
-    "UndoScript": [
-      "
-      Write-Host \"Install OneDrive\"
-      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
-      "
+      "winget install Microsoft.Edge"
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5723,6 +5677,17 @@ $sync.configs.tweaks = '{
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
+    ]
+  },
+  "WPFMiscTweaksDisableTPMCheck": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
+        "Name": "AllowUpgradesWithUnsupportedTPM",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
     ]
   },
   "WPFMiscTweaksDisableUAC": {
@@ -5801,6 +5766,15 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
+    ]
+  },
+  "WPFEssTweaksRemoveCortana": {
+    "InvokeScript": [
+      "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
+    ],
+    "UndoScript": [
+      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
+      "
     ]
   },
   "WPFEssTweaksDVR": {
