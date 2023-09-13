@@ -18,7 +18,16 @@ Or shorter Thanks to [#144](/../../issues/144)
 ```
 irm https://christitus.com/win | iex
 ```
-If you are having TLS 1.2 Issues or You cannot find or resolve `christitus.com/win` then run with the following command:
+### Issues:
+
+- If you can't resolve christitus.com/win and getting errors launching India Region is BLOCKING raw github files and you need to VPN outside India. 
+
+Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
+
+- AntiVirus is also blocking the script. You can disable it temporarily to run the script. The script is flagged for malware because it runs under the administrator and makes system changes.
+
+- If you are having TLS 1.2 Issues or You cannot find or resolve `christitus.com/win` then run with the following command:
+
 ```
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1')
 ```
@@ -28,6 +37,10 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 or 8.8.
 ## Support
 - This project needs a ⭐️ from you. Don't forget to leave a star ⭐️.
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
+
+## Tutorial
+
+[![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
 ## Overview
 
@@ -62,7 +75,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 or 8.8.
 - Updates:
   - Default (Out of Box) Settings: Provides the default settings that come with Windows for updates.
   
-  - Security (Recommended) Settings: Offers recommended settings, including a slight delay of feature updates by 2 days and installation of security updates 4 days after release.
+  - Security (Recommended) Settings: Offers recommended settings, including a slight delay of feature updates by 2 years and installation of security updates 4 days after release.
 
   - Disable All Updates (Not Recommended!): Allows users to disable all Windows updates, but it's not recommended due to potential security risks.
 

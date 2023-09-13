@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.07
+    Version        : 23.09.13
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.07"
+$sync.version = "23.09.13"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -270,7 +270,7 @@ Function Install-WinUtilProgramWinget {
             Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "remove -e --purge --force --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
         }
         
         $X++
@@ -386,12 +386,10 @@ Function Invoke-WinUtilCurrentSystem {
 
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
         $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = $($sync.configs.applications.$($psitem.Key).winget -split ";")
+            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
 
-            Foreach ($dependency in $dependencies) {
-                if($dependency -in $sync.InstalledPrograms.Id){
-                    Write-Output $psitem.name
-                }
+            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
+                Write-Output $psitem.name
             }
         }
     }
@@ -2367,29 +2365,31 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
+                                
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
@@ -2397,32 +2397,20 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
-
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
-
-                                <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallscp" Content="WinSCP" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
 
                                 <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
@@ -2433,10 +2421,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
@@ -2449,7 +2437,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
@@ -2457,38 +2444,50 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
+
+                                <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsevenzip" Content="7-Zip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstall7zip" Content="7-Zip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallidm" Content="Internet Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
@@ -2504,7 +2503,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                                
+                                <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -2573,8 +2572,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
-                                <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
-                                <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
                                 <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
                                 <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
                                 <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
@@ -2582,14 +2579,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
                                 <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFMiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
                                 <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search user, this is NOT recommended."/>
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+                                <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+                                <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
+                                <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
@@ -2669,587 +2667,603 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         </Viewbox>
     </Border>
 </Window>'
-$sync.configs.applications = '{
-  "WPFInstalladobe": {
-    "winget": "Adobe.Acrobat.Reader.64-bit",
-    "choco": "adobereader"
-  },
-  "WPFInstalladvancedip": {
-    "winget": "Famatech.AdvancedIPScanner",
-    "choco": "advanced-ip-scanner"
-  },
-  "WPFInstallanydesk": {
-    "winget": "AnyDeskSoftwareGmbH.AnyDesk",
-    "choco": "anydesk"
-  },
-  "WPFInstallaudacity": {
-    "winget": "Audacity.Audacity",
-    "choco": "audacity"
-  },
-  "WPFInstallautohotkey": {
-    "winget": "AutoHotkey.AutoHotkey",
-    "choco": "autohotkey"
-  },
-  "WPFInstallbitwarden": {
-    "winget": "Bitwarden.Bitwarden",
-    "choco": "bitwarden"
-  },
-  "WPFInstallblender": {
-    "winget": "BlenderFoundation.Blender",
-    "choco": "blender"
-  },
-  "WPFInstallbrave": {
-    "winget": "Brave.Brave",
-    "choco": "brave"
-  },
-  "WPFInstallbulkcrapuninstaller": {
-    "winget": "Klocman.BulkCrapUninstaller",
-    "choco": "bulk-crap-uninstaller"
-  },
-  "WPFInstallchrome": {
-    "winget": "Google.Chrome",
-    "choco": "googlechrome"
-  },
-  "WPFInstallchromium": {
-    "winget": "eloston.ungoogled-chromium",
-    "choco": "chromium"
-  },
-  "WPFInstallcpuz": {
-    "winget": "CPUID.CPU-Z",
-    "choco": "cpu-z"
-  },
-  "WPFInstalldeluge": {
-    "winget": "DelugeTeam.Deluge",
-    "choco": "deluge"
-  },
-  "WPFInstalldiscord": {
-    "winget": "Discord.Discord",
-    "choco": "discord"
-  },
-  "WPFInstalleartrumpet": {
-    "winget": "File-New-Project.EarTrumpet",
-    "choco": "eartrumpet"
-  },
-  "WPFInstallepicgames": {
-    "winget": "EpicGames.EpicGamesLauncher",
-    "choco": "epicgameslauncher"
-  },
-  "WPFInstallesearch": {
-    "winget": "voidtools.Everything",
-    "choco": "everything"
-  },
-  "WPFInstalletcher": {
-    "winget": "Balena.Etcher",
-    "choco": "etcher"
-  },
-  "WPFInstallfirefox": {
-    "winget": "Mozilla.Firefox",
-    "choco": "firefox"
-  },
-  "WPFInstallflameshot": {
-    "winget": "Flameshot.Flameshot",
-    "choco": "na"
-  },
-  "WPFInstallfoobar": {
-    "winget": "PeterPawlowski.foobar2000",
-    "choco": "foobar2000"
-  },
-  "WPFInstallgeforcenow": {
-    "winget": "Nvidia.GeForceNow",
-    "choco": "nvidia-geforce-now"
-  },
-  "WPFInstallgimp": {
-    "winget": "GIMP.GIMP",
-    "choco": "gimp"
-  },
-  "WPFInstallgithubdesktop": {
-    "winget": "Git.Git;GitHub.GitHubDesktop",
-    "choco": "git;github-desktop"
-  },
-  "WPFInstalldockerdesktop": {
-    "winget": "Docker.DockerDesktop",
-    "choco": "docker-desktop"
-  },
-  "WPFInstallgog": {
-    "winget": "GOG.Galaxy",
-    "choco": "goggalaxy"
-  },
-  "WPFInstallheroiclauncher": {
-    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
-    "choco": "na" 
-  },
-  "WPFInstallgpuz": {
-    "winget": "TechPowerUp.GPU-Z",
-    "choco": "gpu-z"
-  },
-  "WPFInstallgreenshot": {
-    "winget": "Greenshot.Greenshot",
-    "choco": "greenshot"
-  },
-  "WPFInstallhandbrake": {
-    "winget": "HandBrake.HandBrake",
-    "choco": "handbrake"
-  },
-  "WPFInstallhexchat": {
-    "winget": "HexChat.HexChat",
-    "choco": "hexchat"
-  },
-  "WPFInstallhwinfo": {
-    "winget": "REALiX.HWiNFO",
-    "choco": "hwinfo"
-  },
-  "WPFInstallnomacs": {
-    "winget": "nomacs.nomacs",
-    "choco": "nomacs"
-  },
-  "WPFInstallimageglass": {
-    "winget": "DuongDieuPhap.ImageGlass",
-    "choco": "imageglass"
-  },
-  "WPFInstallinkscape": {
-    "winget": "Inkscape.Inkscape",
-    "choco": "inkscape"
-  },
-  "WPFInstalljava16": {
-    "winget": "AdoptOpenJDK.OpenJDK.16",
-    "choco": "temurin16jre"
-  },
-  "WPFInstalljava18": {
-    "winget": "EclipseAdoptium.Temurin.18.JRE",
-    "choco": "temurin18jre"
-  },
-  "WPFInstalljava8": {
-    "winget": "EclipseAdoptium.Temurin.8.JRE",
-    "choco": "temurin8jre"
-  },
-  "WPFInstalljava19": {
-    "winget": "EclipseAdoptium.Temurin.19.JRE",
-    "choco": "temurin19jre"
-  },
-  "WPFInstalljava17": {
-    "winget": "EclipseAdoptium.Temurin.17.JRE",
-    "choco": "temurin17jre"
-  },
-  "WPFInstalljava11": {
-    "winget": "EclipseAdoptium.Temurin.11.JRE",
-    "choco": "javaruntime"
-  },
-  "WPFInstalljava20": {
-    "winget": "Azul.Zulu.20.JDK",
-    "choco": "na"
-  },
-  "WPFInstalljetbrains": {
-    "winget": "JetBrains.Toolbox",
-    "choco": "jetbrainstoolbox"
-  },
-  "WPFInstallkeepass": {
-    "winget": "KeePassXCTeam.KeePassXC",
-    "choco": "keepassxc"
-  },
-  "WPFInstalllibrewolf": {
-    "winget": "LibreWolf.LibreWolf",
-    "choco": "librewolf"
-  },
-  "WPFInstallmalwarebytes": {
-    "winget": "Malwarebytes.Malwarebytes",
-    "choco": "malwarebytes"
-  },
-  "WPFInstallmatrix": {
-    "winget": "Element.Element",
-    "choco": "element-desktop"
-  },
-  "WPFInstallmonitorian": {
-    "winget": "emoacht.Monitorian",
-    "choco": "monitorian"
-  },
-  "WPFInstallmpc": {
-    "winget": "clsid2.mpc-hc",
-    "choco": "mpc-hc"
-  },
-  "WPFInstallmremoteng": {
-    "winget": "mRemoteNG.mRemoteNG",
-    "choco": "mremoteng"
-  },
-  "WPFInstallnaps2": {
-    "winget": "Cyanfish.NAPS2",
-    "choco": "naps2"
-  },
-  "WPFInstallnodejs": {
-    "winget": "OpenJS.NodeJS",
-    "choco": "nodejs"
-  },
-  "WPFInstallnodejslts": {
-    "winget": "OpenJS.NodeJS.LTS",
-    "choco": "nodejs-lts"
-  },
-  "WPFInstallnotepadplus": {
-    "winget": "Notepad++.Notepad++",
-    "choco": "notepadplusplus"
-  },
-  "WPFInstallnvclean": {
-    "winget": "TechPowerUp.NVCleanstall",
-    "choco": "na"
-  },
-  "WPFInstallobs": {
-    "winget": "OBSProject.OBSStudio",
-    "choco": "obs-studio"
-  },
-  "WPFInstallobsidian": {
-    "winget": "Obsidian.Obsidian",
-    "choco": "obsidian"
-  },
-  "WPFInstallpowertoys": {
-    "winget": "Microsoft.PowerToys",
-    "choco": "powertoys"
-  },
-  "WPFInstallputty": {
-    "winget": "PuTTY.PuTTY",
-    "choco": "putty"
-  },
-  "WPFInstallpython3": {
-    "winget": "Python.Python.3.11",
-    "choco": "python"
-  },
-  "WPFInstallrevo": {
-    "winget": "RevoUninstaller.RevoUninstaller",
-    "choco": "revo-uninstaller"
-  },
-  "WPFInstallrufus": {
-    "winget": "Rufus.Rufus",
-    "choco": "rufus"
-  },
-  "WPFInstallsevenzip": {
-    "winget": "7zip.7zip",
-    "choco": "7zip"
-  },
-  "WPFInstallsharex": {
-    "winget": "ShareX.ShareX",
-    "choco": "sharex"
-  },
-  "WPFInstallsignal": {
-    "winget": "OpenWhisperSystems.Signal",
-    "choco": "signal"
-  },
-  "WPFInstallskype": {
-    "winget": "Microsoft.Skype",
-    "choco": "skype"
-  },
-  "WPFInstallslack": {
-    "winget": "SlackTechnologies.Slack",
-    "choco": "slack"
-  },
-  "WPFInstallsteam": {
-    "winget": "Valve.Steam",
-    "choco": "steam-client"
-  },
-  "WPFInstallsublime": {
-    "winget": "SublimeHQ.SublimeText.4",
-    "choco": "sublimetext4"
-  },
-  "WPFInstallsumatra": {
-    "winget": "SumatraPDF.SumatraPDF",
-    "choco": "sumatrapdf"
-  },
-  "WPFInstallteams": {
-    "winget": "Microsoft.Teams",
-    "choco": "microsoft-teams"
-  },
-  "WPFInstallteamviewer": {
-    "winget": "TeamViewer.TeamViewer",
-    "choco": "teamviewer9"
-  },
-  "WPFInstallterminal": {
-    "winget": "Microsoft.WindowsTerminal",
-    "choco": "microsoft-windows-terminal"
-  },
-  "WPFInstalltreesize": {
-    "winget": "JAMSoftware.TreeSize.Free",
-    "choco": "treesizefree"
-  },
-  "WPFInstallttaskbar": {
-    "winget": "9PF4KZ2VN4W9",
-    "choco": "translucenttb"
-  },
-  "WPFInstallvisualstudio": {
-    "winget": "Microsoft.VisualStudio.2022.Community",
-    "choco": "visualstudio2022community"
-  },
-  "WPFInstallvivaldi": {
-    "winget": "VivaldiTechnologies.Vivaldi",
-    "choco": "vivaldi"
-  },
-  "WPFInstallvlc": {
-    "winget": "VideoLAN.VLC",
-    "choco": "vlc"
-  },
-  "WPFInstallvoicemeeter": {
-    "winget": "VB-Audio.Voicemeeter",
-    "choco": "voicemeeter"
-  },
-  "WPFInstallvscode": {
-    "winget": "Git.Git;Microsoft.VisualStudioCode",
-    "choco": "vscode"
-  },
-  "WPFInstallvscodium": {
-    "winget": "Git.Git;VSCodium.VSCodium",
-    "choco": "vscodium"
-  },
-  "WPFInstallwindirstat": {
-    "winget": "WinDirStat.WinDirStat",
-    "choco": "windirstat"
-  },
-  "WPFInstallscp": {
-    "winget": "WinSCP.WinSCP",
-    "choco": "winscp"
-  },
-  "WPFInstallwireshark": {
-    "winget": "WiresharkFoundation.Wireshark",
-    "choco": "wireshark"
-  },
-  "WPFInstallzoom": {
-    "winget": "Zoom.Zoom",
-    "choco": "zoom"
-  },
-  "WPFInstalllibreoffice": {
-    "winget": "TheDocumentFoundation.LibreOffice",
-    "choco": "libreoffice-fresh"
-  },
-  "WPFInstallshell": {
-    "winget": "Nilesoft.Shell",
-    "choco": "na"
-  },
-  "WPFInstallsdio": {
-    "winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-    "choco": "na"
-  },
-  "WPFInstallklite": {
-    "winget": "CodecGuide.K-LiteCodecPack.Standard",
-    "choco": "k-litecodecpack-standard"
-  },
-  "WPFInstallsandboxie": {
-    "winget": "Sandboxie.Plus",
-    "choco": "sandboxie"
-  },
-  "WPFInstallprocesslasso": {
-    "winget": "BitSum.ProcessLasso",
-    "choco": "plasso"
-  },
-  "WPFInstallwinmerge": {
-    "winget": "WinMerge.WinMerge",
-    "choco": "winmerge"
-  },
-  "WPFInstalldotnet3": {
-    "winget": "Microsoft.DotNet.DesktopRuntime.3_1",
-    "choco": "dotnetcore3-desktop-runtime"
-  },
-  "WPFInstalldotnet5": {
-    "winget": "Microsoft.DotNet.DesktopRuntime.5",
-    "choco": "dotnet-5.0-runtime"
-  },
-  "WPFInstalldotnet6": {
-    "winget": "Microsoft.DotNet.DesktopRuntime.6",
-    "choco": "dotnet-6.0-runtime"
-  },
-  "WPFInstallvc2015_64": {
-    "winget": "Microsoft.VCRedist.2015+.x64",
-    "choco": "na"
-  },
-  "WPFInstallvc2015_32": {
-    "winget": "Microsoft.VCRedist.2015+.x86",
-    "choco": "na"
-  },
-  "WPFInstallfoxpdf": {
-    "winget": "Foxit.PhantomPDF",
-    "choco": "na"
-  },
-  "WPFInstallonlyoffice": {
-    "winget": "ONLYOFFICE.DesktopEditors",
-    "choco": "onlyoffice"
-  },
-  "WPFInstallflux": {
-    "winget": "flux.flux",
-    "choco": "flux"
-  },
-  "WPFInstallitunes": {
-    "winget": "Apple.iTunes",
-    "choco": "itunes"
-  },
-  "WPFInstallcider": {
-    "winget": "CiderCollective.Cider",
-    "choco": "cider"
-  },
-  "WPFInstalljoplin": {
-    "winget": "Joplin.Joplin",
-    "choco": "joplin"
-  },
-  "WPFInstallopenoffice": {
-    "winget": "Apache.OpenOffice",
-    "choco": "openoffice"
-  },
-  "WPFInstallrustdesk": {
-    "winget": "RustDesk.RustDesk",
-    "choco": "rustdesk.portable"
-  },
-  "WPFInstalljami": {
-    "winget": "SFLinux.Jami",
-    "choco": "jami"
-  },
-  "WPFInstalljdownloader": {
-    "winget": "AppWork.JDownloader",
-    "choco": "jdownloader"
-  },
-  "WPFInstallsimplewall": {
-    "Winget": "Henry++.simplewall",
-    "choco": "simplewall"
-  },
-  "WPFInstallrustlang": {
-    "Winget": "Rustlang.Rust.MSVC",
-    "choco": "rust"
-  },
-  "WPFInstallgolang": {
-    "Winget": "GoLang.Go.1.19",
-    "choco": "golang"
-  },
-  "WPFInstallalacritty": {
-    "Winget": "Alacritty.Alacritty",
-    "choco": "alacritty"
-  },
-  "WPFInstallkdenlive": {
-    "Winget": "KDE.Kdenlive",
-    "choco": "kdenlive"
-  },
-  "WPFInstallglaryutilities": {
-    "Winget": "Glarysoft.GlaryUtilities",
-    "choco": "glaryutilities-free"
-  },
-  "WPFInstalltwinkletray": {
-    "Winget": "xanderfrangos.twinkletray",
-    "choco": "na"
-  },
-  "WPFInstallidm": {
-    "Winget": "Tonec.InternetDownloadManager",
-    "choco": "internet-download-manager"
-  },
-  "WPFInstallviber": {
-    "Winget": "Viber.Viber",
-    "choco": "viber"
-  },
-  "WPFInstallgit": {
-    "Winget": "Git.Git",
-    "choco": "git"
-  },
-  "WPFInstallwiztree": {
-    "Winget": "AntibodySoftware.WizTree",
-    "choco": "wiztree\\"
-  },
-  "WPFInstalltor": {
-    "Winget": "TorProject.TorBrowser",
-    "choco": "tor-browser"
-  },
-  "WPFInstallkrita": {
-    "winget": "KDE.Krita",
-    "choco": "krita"
-  },
-  "WPFInstallnglide": {
-    "winget": "ZeusSoftware.nGlide",
-    "choco": "na"
-  },
-  "WPFInstallkodi": {
-    "winget": "XBMCFoundation.Kodi",
-    "choco": "kodi"
-  },
-  "WPFInstalltelegram": {
-    "winget": "Telegram.TelegramDesktop",
-    "choco": "telegram"
-  },
-  "WPFInstallunity": {
-    "winget": "Unity.UnityHub",
-    "choco": "unityhub"
-  },
-  "WPFInstallqbittorrent": {
-    "winget": "qBittorrent.qBittorrent",
-    "choco": "qbittorrent"
-  },
-  "WPFInstalleaapp": {
-    "winget": "ElectronicArts.EADesktop",
-    "choco": "ea-app"
-  },
-  "WPFInstallopenshell": {
-    "winget": "Open-Shell.Open-Shell-Menu",
-    "choco": "open-shell"
-  },
-  "WPFInstallbluestacks": {
-    "winget": "BlueStack.BlueStacks",
-    "choco": "na"
-  },
-  "WPFInstallstrawberry": {
-    "winget": "StrawberryMusicPlayer.Strawberry",
-    "choco": "strawberrymusicplayer"
-  },
-  "WPFInstallsqlstudio": {
-    "winget": "Microsoft.SQLServerManagementStudio",
-    "choco": "sql-server-management-studio"
-  },
-  "WPFInstallwaterfox": {
-    "winget": "Waterfox.Waterfox",
-    "choco": "waterfox"
-  },
-  "WPFInstallpowershell": {
-    "winget": "Microsoft.PowerShell",
-    "choco": "powershell-core"
-  },
-  "WPFInstallprocessmonitor": {
-    "winget": "Microsoft.Sysinternals.ProcessMonitor",
-    "choco": "procexp"
-  },
-  "WPFInstallonedrive": {
-    "winget": "Microsoft.OneDrive",
-    "choco": "onedrive"
-  },
-  "WPFInstalledge": {
-    "winget": "Microsoft.Edge",
-    "choco": "microsoft-edge"
-  },
-  "WPFInstallubisoft": {
-    "winget": "Ubisoft.Connect",
-    "choco": "ubisoft-connect"
-  },
-  "WPFInstallnuget": {
-    "winget": "Microsoft.NuGet",
-    "choco": "nuget.commandline"
-  },
-  "WPFInstallwinrar": {
-    "winget": "RARLab.WinRAR",
-    "choco": "winrar"
-  },
-  "WPFInstallnano": {
-    "winget": "GNU.Nano",
-    "choco": "nano"
-  },
-  "WPFInstallneovim": {
-    "winget": "Neovim.Neovim",
-    "choco": "neovim"
-  },
-  "WPFInstallnvm": {
-    "winget": "CoreyButler.NVMforWindows",
-    "choco": "nvm"
-  },
-  "WPFInstallpostman": {
-    "winget": "Postman.Postman",
-    "choco": "postman"
-  },
-  "WPFInstallgsudo": {
-    "winget": "gerardog.gsudo",
-    "choco": "gsudo"
-  },
-  "WPFInstallwingetui": {
-    "winget": "SomePythonThings.WingetUIStore",
-    "choco": "na"
-  },
-  "WPFInstallprismlauncher": {
-    "winget": "PrismLauncher.PrismLauncher",
-    "choco": "na"
-  }
+$sync.configs.applications = '{	
+	"WPFInstall7zip": {
+		"winget": "7zip.7zip",
+		"choco": "7zip"
+	},
+	"WPFInstalladobe": {
+		"winget": "Adobe.Acrobat.Reader.64-bit",
+		"choco": "adobereader"
+	},
+	"WPFInstalladvancedip": {
+		"winget": "Famatech.AdvancedIPScanner",
+		"choco": "advanced-ip-scanner"
+	},
+	"WPFInstallalacritty": {
+		"Winget": "Alacritty.Alacritty",
+		"choco": "alacritty"
+	},
+	"WPFInstallanydesk": {
+		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
+		"choco": "anydesk"
+	},
+	"WPFInstallaudacity": {
+		"winget": "Audacity.Audacity",
+		"choco": "audacity"
+	},
+	"WPFInstallautohotkey": {
+		"winget": "AutoHotkey.AutoHotkey",
+		"choco": "autohotkey"
+	},
+	"WPFInstallbitwarden": {
+		"winget": "Bitwarden.Bitwarden",
+		"choco": "bitwarden"
+	},
+	"WPFInstallblender": {
+		"winget": "BlenderFoundation.Blender",
+		"choco": "blender"
+	},
+	"WPFInstallbluestacks": {
+		"winget": "BlueStack.BlueStacks",
+		"choco": "na"
+	},
+	"WPFInstallbrave": {
+		"winget": "Brave.Brave",
+		"choco": "brave"
+	},
+	"WPFInstallbulkcrapuninstaller": {
+		"winget": "Klocman.BulkCrapUninstaller",
+		"choco": "bulk-crap-uninstaller"
+	},
+	"WPFInstallchrome": {
+		"winget": "Google.Chrome",
+		"choco": "googlechrome"
+	},
+	"WPFInstallchromium": {
+		"winget": "eloston.ungoogled-chromium",
+		"choco": "chromium"
+	},
+	"WPFInstallcider": {
+		"winget": "CiderCollective.Cider",
+		"choco": "cider"
+	},
+	"WPFInstallcpuz": {
+		"winget": "CPUID.CPU-Z",
+		"choco": "cpu-z"
+	},
+	"WPFInstallddu": {
+		"winget": "ddu",
+		"choco": "ddu"
+	},
+	"WPFInstalldeluge": {
+		"winget": "DelugeTeam.Deluge",
+		"choco": "deluge"
+	},
+	"WPFInstalldiscord": {
+		"winget": "Discord.Discord",
+		"choco": "discord"
+	},
+	"WPFInstalldockerdesktop": {
+		"winget": "Docker.DockerDesktop",
+		"choco": "docker-desktop"
+	},
+	"WPFInstalldotnet3": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
+		"choco": "dotnetcore3-desktop-runtime"
+	},
+	"WPFInstalldotnet5": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.5",
+		"choco": "dotnet-5.0-runtime"
+	},
+	"WPFInstalldotnet6": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.6",
+		"choco": "dotnet-6.0-runtime"
+	},
+	"WPFInstalleaapp": {
+		"winget": "ElectronicArts.EADesktop",
+		"choco": "ea-app"
+	},
+	"WPFInstalleartrumpet": {
+		"winget": "File-New-Project.EarTrumpet",
+		"choco": "eartrumpet"
+	},
+	"WPFInstalledge": {
+		"winget": "Microsoft.Edge",
+		"choco": "microsoft-edge"
+	},
+	"WPFInstallepicgames": {
+		"winget": "EpicGames.EpicGamesLauncher",
+		"choco": "epicgameslauncher"
+	},
+	"WPFInstallesearch": {
+		"winget": "voidtools.Everything",
+		"choco": "everything"
+	},
+	"WPFInstalletcher": {
+		"winget": "Balena.Etcher",
+		"choco": "etcher"
+	},
+	"WPFInstallfirefox": {
+		"winget": "Mozilla.Firefox",
+		"choco": "firefox"
+	},
+	"WPFInstallflameshot": {
+		"winget": "Flameshot.Flameshot",
+		"choco": "na"
+	},
+	"WPFInstallflux": {
+		"winget": "flux.flux",
+		"choco": "flux"
+	},
+	"WPFInstallfoobar": {
+		"winget": "PeterPawlowski.foobar2000",
+		"choco": "foobar2000"
+	},
+	"WPFInstallfoxpdf": {
+		"winget": "Foxit.PhantomPDF",
+		"choco": "na"
+	},
+	"WPFInstallgeforcenow": {
+		"winget": "Nvidia.GeForceNow",
+		"choco": "nvidia-geforce-now"
+	},
+	"WPFInstallgimp": {
+		"winget": "GIMP.GIMP",
+		"choco": "gimp"
+	},
+	"WPFInstallgit": {
+		"Winget": "Git.Git",
+		"choco": "git"
+	},
+	"WPFInstallgithubdesktop": {
+		"winget": "Git.Git;GitHub.GitHubDesktop",
+		"choco": "git;github-desktop"
+	},
+	"WPFInstallglaryutilities": {
+		"Winget": "Glarysoft.GlaryUtilities",
+		"choco": "glaryutilities-free"
+	},
+	"WPFInstallgog": {
+		"winget": "GOG.Galaxy",
+		"choco": "goggalaxy"
+	},
+	"WPFInstallgolang": {
+		"Winget": "GoLang.Go",
+		"choco": "golang"
+	},
+	"WPFInstallgpuz": {
+		"winget": "TechPowerUp.GPU-Z",
+		"choco": "gpu-z"
+	},
+	"WPFInstallgreenshot": {
+		"winget": "Greenshot.Greenshot",
+		"choco": "greenshot"
+	},
+	"WPFInstallgsudo": {
+		"winget": "gerardog.gsudo",
+		"choco": "gsudo"
+	},
+	"WPFInstallhandbrake": {
+		"winget": "HandBrake.HandBrake",
+		"choco": "handbrake"
+	},
+	"WPFInstallheroiclauncher": {
+		"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+		"choco": "na"
+	},
+	"WPFInstallhexchat": {
+		"winget": "HexChat.HexChat",
+		"choco": "hexchat"
+	},
+	"WPFInstallhwinfo": {
+		"winget": "REALiX.HWiNFO",
+		"choco": "hwinfo"
+	},
+	"WPFInstallimageglass": {
+		"winget": "DuongDieuPhap.ImageGlass",
+		"choco": "imageglass"
+	},
+	"WPFInstallinkscape": {
+		"winget": "Inkscape.Inkscape",
+		"choco": "inkscape"
+	},
+	"WPFInstallitunes": {
+		"winget": "Apple.iTunes",
+		"choco": "itunes"
+	},
+	"WPFInstalljami": {
+		"winget": "SFLinux.Jami",
+		"choco": "jami"
+	},
+	"WPFInstalljava8": {
+		"winget": "EclipseAdoptium.Temurin.8.JRE",
+		"choco": "temurin8jre"
+	},
+	"WPFInstalljava11": {
+		"winget": "EclipseAdoptium.Temurin.11.JRE",
+		"choco": "javaruntime"
+	},
+	"WPFInstalljava16": {
+		"winget": "AdoptOpenJDK.OpenJDK.16",
+		"choco": "temurin16jre"
+	},
+	"WPFInstalljava17": {
+		"winget": "EclipseAdoptium.Temurin.17.JRE",
+		"choco": "temurin17jre"
+	},
+	"WPFInstalljava18": {
+		"winget": "EclipseAdoptium.Temurin.18.JRE",
+		"choco": "temurin18jre"
+	},
+	"WPFInstalljava19": {
+		"winget": "EclipseAdoptium.Temurin.19.JRE",
+		"choco": "temurin19jre"
+	},
+	"WPFInstalljava20": {
+		"winget": "Azul.Zulu.20.JDK",
+		"choco": "na"
+	},
+	"WPFInstalljdownloader": {
+		"winget": "AppWork.JDownloader",
+		"choco": "jdownloader"
+	},
+	"WPFInstalljetbrains": {
+		"winget": "JetBrains.Toolbox",
+		"choco": "jetbrainstoolbox"
+	},
+	"WPFInstalljoplin": {
+		"winget": "Joplin.Joplin",
+		"choco": "joplin"
+	},
+	"WPFInstallkdenlive": {
+		"Winget": "KDE.Kdenlive",
+		"choco": "kdenlive"
+	},
+	"WPFInstallkeepass": {
+		"winget": "KeePassXCTeam.KeePassXC",
+		"choco": "keepassxc"
+	},
+	"WPFInstallklite": {
+		"winget": "CodecGuide.K-LiteCodecPack.Standard",
+		"choco": "k-litecodecpack-standard"
+	},
+	"WPFInstallkodi": {
+		"winget": "XBMCFoundation.Kodi",
+		"choco": "kodi"
+	},
+	"WPFInstallkrita": {
+		"winget": "KDE.Krita",
+		"choco": "krita"
+	},
+	"WPFInstalllibreoffice": {
+		"winget": "TheDocumentFoundation.LibreOffice",
+		"choco": "libreoffice-fresh"
+	},
+	"WPFInstalllibrewolf": {
+		"winget": "LibreWolf.LibreWolf",
+		"choco": "librewolf"
+	},
+	"WPFInstallmalwarebytes": {
+		"winget": "Malwarebytes.Malwarebytes",
+		"choco": "malwarebytes"
+	},
+	"WPFInstallmatrix": {
+		"winget": "Element.Element",
+		"choco": "element-desktop"
+	},
+	"WPFInstallmonitorian": {
+		"winget": "emoacht.Monitorian",
+		"choco": "monitorian"
+	},
+	"WPFInstallmpc": {
+		"winget": "clsid2.mpc-hc",
+		"choco": "mpc-hc"
+	},
+	"WPFInstallmremoteng": {
+		"winget": "mRemoteNG.mRemoteNG",
+		"choco": "mremoteng"
+	},
+	"WPFInstallmusicbee": {
+		"winget": "MusicBee.MusicBee",
+		"choco": "musicbee"
+	},
+	"WPFInstallnano": {
+		"winget": "GNU.Nano",
+		"choco": "nano"
+	},
+	"WPFInstallnaps2": {
+		"winget": "Cyanfish.NAPS2",
+		"choco": "naps2"
+	},
+	"WPFInstallneovim": {
+		"winget": "Neovim.Neovim",
+		"choco": "neovim"
+	},
+	"WPFInstallnglide": {
+		"winget": "ZeusSoftware.nGlide",
+		"choco": "na"
+	},
+	"WPFInstallnodejs": {
+		"winget": "OpenJS.NodeJS",
+		"choco": "nodejs"
+	},
+	"WPFInstallnodejslts": {
+		"winget": "OpenJS.NodeJS.LTS",
+		"choco": "nodejs-lts"
+	},
+	"WPFInstallnomacs": {
+		"winget": "nomacs.nomacs",
+		"choco": "nomacs"
+	},
+	"WPFInstallnotepadplus": {
+		"winget": "Notepad++.Notepad++",
+		"choco": "notepadplusplus"
+	},
+	"WPFInstallnuget": {
+		"winget": "Microsoft.NuGet",
+		"choco": "nuget.commandline"
+	},
+	"WPFInstallnvclean": {
+		"winget": "TechPowerUp.NVCleanstall",
+		"choco": "na"
+	},
+	"WPFInstallnvm": {
+		"winget": "CoreyButler.NVMforWindows",
+		"choco": "nvm"
+	},
+	"WPFInstallobs": {
+		"winget": "OBSProject.OBSStudio",
+		"choco": "obs-studio"
+	},
+	"WPFInstallobsidian": {
+		"winget": "Obsidian.Obsidian",
+		"choco": "obsidian"
+	},
+	"WPFInstallonedrive": {
+		"winget": "Microsoft.OneDrive",
+		"choco": "onedrive"
+	},
+	"WPFInstallonlyoffice": {
+		"winget": "ONLYOFFICE.DesktopEditors",
+		"choco": "onlyoffice"
+	},
+	"WPFInstallopenoffice": {
+		"winget": "Apache.OpenOffice",
+		"choco": "openoffice"
+	},
+	"WPFInstallopenshell": {
+		"winget": "Open-Shell.Open-Shell-Menu",
+		"choco": "open-shell"
+	},
+	"WPFInstallpeazip": {
+		"winget": "Giorgiotani.Peazip",
+		"choco": "peazip"
+	},
+	"WPFInstallpostman": {
+		"winget": "Postman.Postman",
+		"choco": "postman"
+	},
+	"WPFInstallpowershell": {
+		"winget": "Microsoft.PowerShell",
+		"choco": "powershell-core"
+	},
+	"WPFInstallpowertoys": {
+		"winget": "Microsoft.PowerToys",
+		"choco": "powertoys"
+	},
+	"WPFInstallprismlauncher": {
+		"winget": "PrismLauncher.PrismLauncher",
+		"choco": "na"
+	},
+	"WPFInstallprocesslasso": {
+		"winget": "BitSum.ProcessLasso",
+		"choco": "plasso"
+	},
+	"WPFInstallprocessmonitor": {
+		"winget": "Microsoft.Sysinternals.ProcessMonitor",
+		"choco": "procexp"
+	},
+	"WPFInstallputty": {
+		"winget": "PuTTY.PuTTY",
+		"choco": "putty"
+	},
+	"WPFInstallpython3": {
+		"winget": "Python.Python.3.11",
+		"choco": "python"
+	},
+	"WPFInstallqbittorrent": {
+		"winget": "qBittorrent.qBittorrent",
+		"choco": "qbittorrent"
+	},
+	"WPFInstallrevo": {
+		"winget": "RevoUninstaller.RevoUninstaller",
+		"choco": "revo-uninstaller"
+	},
+	"WPFInstallrufus": {
+		"winget": "Rufus.Rufus",
+		"choco": "rufus"
+	},
+	"WPFInstallrustdesk": {
+		"winget": "RustDesk.RustDesk",
+		"choco": "rustdesk.portable"
+	},
+	"WPFInstallrustlang": {
+		"Winget": "Rustlang.Rust.MSVC",
+		"choco": "rust"
+	},
+	"WPFInstallsandboxie": {
+		"winget": "Sandboxie.Plus",
+		"choco": "sandboxie"
+	},
+	"WPFInstallsdio": {
+		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
+		"choco": "na"
+	},
+	"WPFInstallsharex": {
+		"winget": "ShareX.ShareX",
+		"choco": "sharex"
+	},
+	"WPFInstallshell": {
+		"winget": "Nilesoft.Shell",
+		"choco": "na"
+	},
+	"WPFInstallsignal": {
+		"winget": "OpenWhisperSystems.Signal",
+		"choco": "signal"
+	},
+	"WPFInstallsimplewall": {
+		"Winget": "Henry++.simplewall",
+		"choco": "simplewall"
+	},
+	"WPFInstallskype": {
+		"winget": "Microsoft.Skype",
+		"choco": "skype"
+	},
+	"WPFInstallslack": {
+		"winget": "SlackTechnologies.Slack",
+		"choco": "slack"
+	},
+	"WPFInstallsqlstudio": {
+		"winget": "Microsoft.SQLServerManagementStudio",
+		"choco": "sql-server-management-studio"
+	},
+	"WPFInstallsteam": {
+		"winget": "Valve.Steam",
+		"choco": "steam-client"
+	},
+	"WPFInstallstrawberry": {
+		"winget": "StrawberryMusicPlayer.Strawberry",
+		"choco": "strawberrymusicplayer"
+	},
+	"WPFInstallsublime": {
+		"winget": "SublimeHQ.SublimeText.4",
+		"choco": "sublimetext4"
+	},
+	"WPFInstallsumatra": {
+		"winget": "SumatraPDF.SumatraPDF",
+		"choco": "sumatrapdf"
+	},
+	"WPFInstalltcpview": {
+		"winget": "Microsoft.Sysinternals.Tcpview",
+		"choco": "tcpview"
+	},
+	"WPFInstallteams": {
+		"winget": "Microsoft.Teams",
+		"choco": "microsoft-teams"
+	},
+	"WPFInstallteamviewer": {
+		"winget": "TeamViewer.TeamViewer",
+		"choco": "teamviewer9"
+	},
+	"WPFInstalltelegram": {
+		"winget": "Telegram.TelegramDesktop",
+		"choco": "telegram"
+	},
+	"WPFInstallterminal": {
+		"winget": "Microsoft.WindowsTerminal",
+		"choco": "microsoft-windows-terminal"
+	},
+	"WPFInstalltor": {
+		"Winget": "TorProject.TorBrowser",
+		"choco": "tor-browser"
+	},
+	"WPFInstalltreesize": {
+		"winget": "JAMSoftware.TreeSize.Free",
+		"choco": "treesizefree"
+	},
+	"WPFInstallttaskbar": {
+		"winget": "9PF4KZ2VN4W9",
+		"choco": "translucenttb"
+	},
+	"WPFInstalltwinkletray": {
+		"Winget": "xanderfrangos.twinkletray",
+		"choco": "na"
+	},
+	"WPFInstallubisoft": {
+		"winget": "Ubisoft.Connect",
+		"choco": "ubisoft-connect"
+	},
+	"WPFInstallunity": {
+		"winget": "Unity.UnityHub",
+		"choco": "unityhub"
+	},
+	"WPFInstallvc2015_32": {
+		"winget": "Microsoft.VCRedist.2015+.x86",
+		"choco": "na"
+	},
+	"WPFInstallvc2015_64": {
+		"winget": "Microsoft.VCRedist.2015+.x64",
+		"choco": "na"
+	},
+	"WPFInstallviber": {
+		"Winget": "Viber.Viber",
+		"choco": "viber"
+	},
+	"WPFInstallvisualstudio": {
+		"winget": "Microsoft.VisualStudio.2022.Community",
+		"choco": "visualstudio2022community"
+	},
+	"WPFInstallvivaldi": {
+		"winget": "VivaldiTechnologies.Vivaldi",
+		"choco": "vivaldi"
+	},
+	"WPFInstallvlc": {
+		"winget": "VideoLAN.VLC",
+		"choco": "vlc"
+	},
+	"WPFInstallvoicemeeter": {
+		"winget": "VB-Audio.Voicemeeter",
+		"choco": "voicemeeter"
+	},
+	"WPFInstallvscode": {
+		"winget": "Git.Git;Microsoft.VisualStudioCode",
+		"choco": "vscode"
+	},
+	"WPFInstallvscodium": {
+		"winget": "Git.Git;VSCodium.VSCodium",
+		"choco": "vscodium"
+	},
+	"WPFInstallwaterfox": {
+		"winget": "Waterfox.Waterfox",
+		"choco": "waterfox"
+	},
+	"WPFInstallwindirstat": {
+		"winget": "WinDirStat.WinDirStat",
+		"choco": "windirstat"
+	},
+	"WPFInstallwingetui": {
+		"winget": "SomePythonThings.WingetUIStore",
+		"choco": "na"
+	},
+	"WPFInstallwinmerge": {
+		"winget": "WinMerge.WinMerge",
+		"choco": "winmerge"
+	},
+	"WPFInstallwinrar": {
+		"winget": "RARLab.WinRAR",
+		"choco": "winrar"
+	},
+	"WPFInstallwinscp": {
+		"winget": "WinSCP.WinSCP",
+		"choco": "winscp"
+	},
+	"WPFInstallwireshark": {
+		"winget": "WiresharkFoundation.Wireshark",
+		"choco": "wireshark"
+	},
+	"WPFInstallwiztree": {
+		"Winget": "AntibodySoftware.WizTree",
+		"choco": "wiztree"
+	},
+	"WPFInstallxdm": {
+		"winget": "subhra74.XtremeDownloadManager",
+		"choco": "xdm"
+	},
+	"WPFInstallzoom": {
+		"winget": "Zoom.Zoom",
+		"choco": "zoom"
+	}
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
@@ -3450,14 +3464,14 @@ $sync.configs.tweaks = '{
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
         "Name": "HibernateEnabled",
-        "Type": "Dword",
+        "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
         "Name": "ShowHibernateOption",
-        "Type": "Dword",
+        "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
       }
@@ -3492,21 +3506,21 @@ $sync.configs.tweaks = '{
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
         "Name": "SensorPermissionState",
-        "Type": "Dword",
+        "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
         "Name": "Status",
-        "Type": "Dword",
+        "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SYSTEM\\Maps",
         "Name": "AutoUpdateEnabled",
-        "Type": "Dword",
+        "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
       }
@@ -4982,8 +4996,8 @@ $sync.configs.tweaks = '{
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "type": "Dword",
-        "value": 0,
+        "type": "DWord",
+        "value": "0",
         "name": "AllowTelemetry",
         "OriginalValue": "1"
       },
@@ -4991,169 +5005,169 @@ $sync.configs.tweaks = '{
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "1",
         "name": "AllowTelemetry",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "ContentDeliveryAllowed",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "OemPreInstalledAppsEnabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "PreInstalledAppsEnabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "PreInstalledAppsEverEnabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SilentInstalledAppsEnabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338387Enabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338388Enabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-338389Enabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SubscribedContent-353698Enabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
         "name": "SystemPaneSuggestionsEnabled",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
         "name": "DisableWindowsConsumerFeatures",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
         "OriginalValue": "0",
         "name": "NumberOfSIUFInPeriod",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "0",
         "name": "DoNotShowFeedbackNotifications",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
         "name": "DisableTailoredExperiencesWithDiagnosticData",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
         "OriginalValue": "0",
         "name": "DisabledByGroupPolicy",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
         "OriginalValue": "0",
         "name": "Disabled",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
         "OriginalValue": "1",
         "name": "DODownloadMode",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
         "OriginalValue": "1",
         "name": "fAllowToGetHelp",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
         "OriginalValue": "0",
         "name": "EnthusiastMode",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "name": "ShowTaskViewButton",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
         "OriginalValue": "1",
         "name": "PeopleBand",
-        "value": 0,
-        "type": "Dword"
+        "value": "0",
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "name": "LaunchTo",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "OriginalValue": "0",
         "name": "LongPathsEnabled",
-        "value": 1,
-        "type": "Dword"
+        "value": "1",
+        "type": "DWord"
       },
       {
         "_Comment" : "Driver searching is a function that should be left in",
@@ -5161,49 +5175,49 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "name": "SearchOrderConfig",
         "value": "1",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "SystemResponsiveness",
         "value": "0",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
         "name": "NetworkThrottlingIndex",
         "value": "4294967295",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "MenuShowDelay",
         "value": "1",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "name": "AutoEndTasks",
         "value": "1",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
         "OriginalValue": "0",
         "name": "ClearPageFileAtShutdown",
         "value": "0",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
         "OriginalValue": "1",
         "name": "Start",
         "value": "2",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
@@ -5217,42 +5231,42 @@ $sync.configs.tweaks = '{
         "OriginalValue": "20",
         "name": "IRPStackSize",
         "value": "30",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
         "OriginalValue": "1",
         "name": "EnableFeeds",
         "value": "0",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
         "OriginalValue": "1",
         "name": "ShellFeedsTaskbarViewMode",
         "value": "2",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "OriginalValue": "1",
         "name": "HideSCAMeetNow",
         "value": "1",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
         "OriginalValue": "1",
         "name": "GPU Priority",
         "value": "8",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
         "OriginalValue": "1",
         "name": "Priority",
         "value": "6",
-        "type": "Dword"
+        "type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
@@ -5303,42 +5317,6 @@ $sync.configs.tweaks = '{
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
-      }
-    ]
-  },
-  "WPFMiscTweaksLapPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000000",
-        "OriginalValue": "00000001"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000001",
-        "OriginalValue": "0000000"
-      }
-    ]
-  },
-  "WPFMiscTweaksPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000001",
-        "OriginalValue": "00000000"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000000",
-        "OriginalValue": "00000001"
       }
     ]
   },
@@ -5456,7 +5434,7 @@ $sync.configs.tweaks = '{
         "name": "SearchboxTaskbarMode",
         "value": "0",
         "type": "DWord"
-      }
+      },
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
@@ -5629,7 +5607,87 @@ $sync.configs.tweaks = '{
         "
     ],
     "UndoScript": [
-      "winget install Microsoft.Edge"
+      "
+      Write-Host \"Install Microsoft Edge\"
+      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
+      "
+    ]
+  },
+  "WPFEssTweaksRemoveOnedrive": {
+    "InvokeScript": [
+        "
+         
+        Write-Host \"Kill OneDrive process\"
+        taskkill.exe /F /IM \"OneDrive.exe\"
+        taskkill.exe /F /IM \"explorer.exe\"
+
+        Write-Host \"Copy all OneDrive to Root UserProfile\"
+        Start-Process -FilePath robocopy -ArgumentList \"$env:USERPROFILE\\OneDrive $env:USERPROFILE /e /xj\" -NoNewWindow -Wait
+
+        Write-Host \"Remove OneDrive\"
+        Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
+
+        Write-Host \"Removing OneDrive leftovers\"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
+        # check if directory is empty before removing:
+        If ((Get-ChildItem \"$env:userprofile\\OneDrive\" -Recurse | Measure-Object).Count -eq 0) {
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:userprofile\\OneDrive\"
+        }
+
+        Write-Host \"Remove Onedrive from explorer sidebar\"
+        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
+        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
+
+        Write-Host \"Removing run hook for new users\"
+        reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
+        reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
+        reg unload \"hku\\Default\"
+
+        Write-Host \"Removing startmenu entry\"
+        Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
+
+        Write-Host \"Removing scheduled task\"
+        Get-ScheduledTask -TaskPath ''\\'' -TaskName ''OneDrive*'' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+        # Add Shell folders restoring default locations
+        Write-Host \"Shell Fixing\"
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"AppData\" -Value \"$env:userprofile\\AppData\\Roaming\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cache\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCache\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cookies\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCookies\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Favorites\" -Value \"$env:userprofile\\Favorites\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"History\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\History\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Local AppData\" -Value \"$env:userprofile\\AppData\\Local\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Music\" -Value \"$env:userprofile\\Music\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Video\" -Value \"$env:userprofile\\Videos\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"NetHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Network Shortcuts\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"PrintHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Printer Shortcuts\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Programs\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Recent\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Recent\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"SendTo\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\SendTo\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Start Menu\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Startup\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Templates\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Templates\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{374DE290-123F-4565-9164-39C4925E467B}\" -Value \"$env:userprofile\\Downloads\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Desktop\" -Value \"$env:userprofile\\Desktop\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Pictures\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Personal\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
+        Write-Host \"Restarting explorer\"
+        Start-Process \"explorer.exe\"
+
+        Write-Host \"Waiting for explorer to complete loading\"
+        Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
+        Start-Sleep 5
+        "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Install OneDrive\"
+      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
+      "
     ]
   },
   "WPFMiscTweaksDisableNotifications": {
@@ -5667,17 +5725,6 @@ $sync.configs.tweaks = '{
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
-    ]
-  },
-  "WPFMiscTweaksDisableTPMCheck": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
-        "Name": "AllowUpgradesWithUnsupportedTPM",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      }
     ]
   },
   "WPFMiscTweaksDisableUAC": {
@@ -5758,15 +5805,6 @@ $sync.configs.tweaks = '{
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
-  "WPFEssTweaksRemoveCortana": {
-    "InvokeScript": [
-      "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
-    ],
-    "UndoScript": [
-      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
-      "
-    ]
-  },
   "WPFEssTweaksDVR": {
     "registry": [
       {
@@ -5819,9 +5857,25 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Name": "BingSearchEnabled",
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Type": "DWORD",
+        "Type": "DWord",
         "Value": "0"
       }
+    ]
+  },
+  "WPFMiscTweaksDisableipsix": {
+    "InvokeScript": [
+      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ],
+    "UndoScript": [
+      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFMiscTweaksEnableipsix": {
+    "InvokeScript": [
+      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ],
+    "UndoScript": [
+      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
     ]
   }
 }' | convertfrom-json
@@ -5900,7 +5954,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
