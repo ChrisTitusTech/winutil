@@ -2586,6 +2586,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+                                <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
+                                <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
                                 <Label Content="DNS" />
 							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
@@ -5404,7 +5406,35 @@ $sync.configs.tweaks = '{
         "name": "EnableAeroPeek",
         "value": "0",
         "type": "DWord"
-      }
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarMn",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "TaskbarDa",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "name": "ShowTaskViewButton",
+        "value": "0",
+        "type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "OriginalValue": "1",
+        "name": "SearchboxTaskbarMode",
+        "value": "0",
+        "type": "DWord"
+      },
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
@@ -5830,6 +5860,22 @@ $sync.configs.tweaks = '{
         "Type": "DWord",
         "Value": "0"
       }
+    ]
+  },
+  "WPFMiscTweaksDisableipsix": {
+    "InvokeScript": [
+      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ],
+    "UndoScript": [
+      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFMiscTweaksEnableipsix": {
+    "InvokeScript": [
+      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+    ],
+    "UndoScript": [
+      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
     ]
   }
 }' | convertfrom-json
