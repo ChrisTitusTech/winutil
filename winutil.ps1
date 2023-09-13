@@ -5576,17 +5576,9 @@ $sync.configs.tweaks = '{
             Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:userprofile\\OneDrive\"
         }
 
-        Write-Host \"Disable OneDrive via Group Policies\"
-        New-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\OneDrive\" -Force
-        Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Wow6432Node\\Policies\\Microsoft\\Windows\\OneDrive\" \"DisableFileSyncNGSC\" 1
-
         Write-Host \"Remove Onedrive from explorer sidebar\"
-        New-PSDrive -PSProvider \"Registry\" -Root \"HKEY_CLASSES_ROOT\" -Name \"HKCR\"
-        mkdir -Force \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\"
-        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" \"System.IsPinnedToNameSpaceTree\" 0
-        mkdir -Force \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\"
-        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" \"System.IsPinnedToNameSpaceTree\" 0
-        Remove-PSDrive \"HKCR\"
+        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
+        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
 
         Write-Host \"Removing run hook for new users\"
         reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
@@ -5627,6 +5619,7 @@ $sync.configs.tweaks = '{
         Start-Process \"explorer.exe\"
 
         Write-Host \"Waiting for explorer to complete loading\"
+        Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
         Start-Sleep 5
         "
     ],
@@ -5882,7 +5875,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
