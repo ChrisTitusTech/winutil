@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.11
+    Version        : 23.09.13
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.11"
+$sync.version = "23.09.13"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2829,7 +2829,7 @@ $sync.configs.applications = '{
 		"choco": "goggalaxy"
 	},
 	"WPFInstallgolang": {
-		"Winget": "GoLang.Go.1.19",
+		"Winget": "GoLang.Go",
 		"choco": "golang"
 	},
 	"WPFInstallgpuz": {
@@ -5910,7 +5910,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
