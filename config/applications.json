@@ -195,6 +195,10 @@
     "winget": "mRemoteNG.mRemoteNG",
     "choco": "mremoteng"
   },
+  "WPFInstallmusicbee": {
+    "winget": "MusicBee.MusicBee",
+    "choco": "musicbee"
+  },
   "WPFInstallnodejs": {
     "winget": "OpenJS.NodeJS",
     "choco": "nodejs"
