@@ -5550,7 +5550,10 @@ $sync.configs.tweaks = '{
         "
     ],
     "UndoScript": [
-      "winget install Microsoft.Edge"
+      "
+      Write-Host \"Install Microsoft Edge\"
+      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
+      "
     ]
   },
   "WPFEssTweaksRemoveOnedrive": {
