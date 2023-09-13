@@ -1885,42 +1885,6 @@
       }
     ]
   },
-  "WPFMiscTweaksLapPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000000",
-        "OriginalValue": "00000001"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000001",
-        "OriginalValue": "0000000"
-      }
-    ]
-  },
-  "WPFMiscTweaksPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000001",
-        "OriginalValue": "00000000"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000000",
-        "OriginalValue": "00000001"
-      }
-    ]
-  },
   "WPFMiscTweaksExt": {
     "registry": [
       {
@@ -2220,17 +2184,6 @@
       "
     ]
   },
-  "WPFMiscTweaksDisableTPMCheck": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
-        "Name": "AllowUpgradesWithUnsupportedTPM",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      }
-    ]
-  },
   "WPFMiscTweaksDisableUAC": {
     "registry": [
       {
@@ -2307,15 +2260,6 @@
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
-  },
-  "WPFEssTweaksRemoveCortana": {
-    "InvokeScript": [
-      "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
-    ],
-    "UndoScript": [
-      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
-      "
     ]
   },
   "WPFEssTweaksDVR": {

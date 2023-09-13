@@ -652,6 +652,91 @@ function Invoke-WinUtilTweaks {
 
     }
 }
+function Remove-OneDrive {
+    <#
+    
+        .DESCRIPTION
+        This function will remove onedrive
+
+        .EXAMPLE
+
+        Remove-OneDrive
+    
+    #>
+    param (
+        $name = "OneDrive"
+    )
+
+    Try{
+        
+        Write-Output "Kill OneDrive process"
+        taskkill.exe /F /IM "OneDrive.exe"
+        taskkill.exe /F /IM "explorer.exe"
+
+        Write-Output "Copy all OneDrive to Root UserProfile"
+        robocopy $env:USERPROFILE\OneDrive $env:USERPROFILE /e /xj
+
+        Write-Output "Remove OneDrive"
+        if (Test-Path "$env:systemroot\System32\OneDriveSetup.exe") {
+            & "$env:systemroot\System32\OneDriveSetup.exe" /uninstall
+        }
+        if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
+            & "$env:systemroot\SysWOW64\OneDriveSetup.exe" /uninstall
+        }
+
+        Write-Output "Removing OneDrive leftovers"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:localappdata\Microsoft\OneDrive"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:programdata\Microsoft OneDrive"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:systemdrive\OneDriveTemp"
+        # check if directory is empty before removing:
+        If ((Get-ChildItem "$env:userprofile\OneDrive" -Recurse | Measure-Object).Count -eq 0) {
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$env:userprofile\OneDrive"
+        }
+
+        Write-Output "Disable OneDrive via Group Policies"
+        New-FolderForced -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\OneDrive"
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\OneDrive" "DisableFileSyncNGSC" 1
+
+        Write-Output "Remove Onedrive from explorer sidebar"
+        New-PSDrive -PSProvider "Registry" -Root "HKEY_CLASSES_ROOT" -Name "HKCR"
+        mkdir -Force "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
+        Set-ItemProperty -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" "System.IsPinnedToNameSpaceTree" 0
+        mkdir -Force "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
+        Set-ItemProperty -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" "System.IsPinnedToNameSpaceTree" 0
+        Remove-PSDrive "HKCR"
+
+        # Thank you Matthew Israelsson
+        Write-Output "Removing run hook for new users"
+        reg load "hku\Default" "C:\Users\Default\NTUSER.DAT"
+        reg delete "HKEY_USERS\Default\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f
+        reg unload "hku\Default"
+
+        Write-Output "Removing startmenu entry"
+        Remove-Item -Force -ErrorAction SilentlyContinue "$env:userprofile\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+
+        Write-Output "Removing scheduled task"
+        Get-ScheduledTask -TaskPath '\' -TaskName 'OneDrive*' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+        Write-Output "Restarting explorer"
+        Start-Process "explorer.exe"
+
+        Write-Output "Waiting for explorer to complete loading"
+        Start-Sleep 10
+    }
+    Catch [System.Exception] {
+        if($psitem.Exception.Message -like "*The requested operation requires elevation*"){
+            Write-Warning "Unable to uninstall $name due to a Security Exception"
+        }
+        Else{
+            Write-Warning "Unable to uninstall $name due to unhandled exception"
+            Write-Warning $psitem.Exception.StackTrace 
+        }
+    }
+    Catch{
+        Write-Warning "Unable to uninstall $name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace 
+    }
+}
 function Remove-WinUtilAPPX {
     <#
     
@@ -2565,8 +2650,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Misc. Tweaks"/>
-                                <CheckBox Name="WPFMiscTweaksPower" Content="Disable Power Throttling" Margin="5,0" ToolTip="This is mainly for Laptops, It disables Power Throttling and will use more battery."/>
-                                <CheckBox Name="WPFMiscTweaksLapPower" Content="Enable Power Throttling" Margin="5,0" ToolTip="ONLY FOR LAPTOPS! Do not use on a desktop."/>
                                 <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
                                 <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
                                 <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
@@ -2574,9 +2657,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
                                 <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFMiscTweaksDisableTPMCheck" Content="Disable TPM on Update" Margin="5,0" ToolTip="Add the Windows 11 Bypass for those that want to upgrade their Windows 10."/>
                                 <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFEssTweaksRemoveCortana" Content="Remove Cortana" Margin="5,0" ToolTip="Removes Cortana, but often breaks search... if you are a heavy windows search user, this is NOT recommended."/>
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
@@ -5294,42 +5375,6 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFMiscTweaksLapPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000000",
-        "OriginalValue": "00000001"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000001",
-        "OriginalValue": "0000000"
-      }
-    ]
-  },
-  "WPFMiscTweaksPower": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
-        "Name": "PowerThrottlingOff",
-        "Type": "DWord",
-        "Value": "00000001",
-        "OriginalValue": "00000000"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HiberbootEnabled",
-        "Type": "DWord",
-        "Value": "0000000",
-        "OriginalValue": "00000001"
-      }
-    ]
-  },
   "WPFMiscTweaksExt": {
     "registry": [
       {
@@ -5629,17 +5674,6 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFMiscTweaksDisableTPMCheck": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\Setup\\MoSetup",
-        "Name": "AllowUpgradesWithUnsupportedTPM",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      }
-    ]
-  },
   "WPFMiscTweaksDisableUAC": {
     "registry": [
       {
@@ -5716,15 +5750,6 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
-  },
-  "WPFEssTweaksRemoveCortana": {
-    "InvokeScript": [
-      "Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage"
-    ],
-    "UndoScript": [
-      "Get-AppxPackage -allusers | where Name -like \"Microsoft.549981C3F5F10\" | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}
-      "
     ]
   },
   "WPFEssTweaksDVR": {
@@ -5860,7 +5885,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
