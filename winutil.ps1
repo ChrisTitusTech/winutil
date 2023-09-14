@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.14
+    Version        : 23.09.13
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.14"
+$sync.version = "23.09.13"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5434,7 +5434,7 @@ $sync.configs.tweaks = '{
         "name": "SearchboxTaskbarMode",
         "value": "0",
         "type": "DWord"
-      },
+      }
     ],
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
