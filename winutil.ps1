@@ -5864,18 +5864,18 @@ $sync.configs.tweaks = '{
   },
   "WPFMiscTweaksDisableipsix": {
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
   "WPFMiscTweaksEnableipsix": {
     "InvokeScript": [
-      "Enable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "Disable-NetAdapterBinding -Name ''*'' -ComponentID ms_tcpip6"
+      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   }
 }' | convertfrom-json
