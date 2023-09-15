@@ -476,7 +476,7 @@
 		"choco": "sumatrapdf"
 	},
 	"WPFInstalltcpview": {
-		"winget": "Microsoft.Sysinternals.Tcpview",
+		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
 	},
 	"WPFInstallteams": {
