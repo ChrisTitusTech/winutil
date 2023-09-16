@@ -299,6 +299,10 @@
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
 	},
+	"WPFInstallnanazip": {
+		"winget": "M2Team.NanaZip",
+		"choco": "nanazip"
+	},
 	"WPFInstallnano": {
 		"winget": "GNU.Nano",
 		"choco": "nano"
