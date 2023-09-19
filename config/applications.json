@@ -515,6 +515,10 @@
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
 	},
+	"WPFInstalltidal": {
+		"Winget": "9NNCB5BS59PH",
+		"choco": "na"
+	},	
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
