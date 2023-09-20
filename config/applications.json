@@ -75,6 +75,10 @@
 		"winget": "Discord.Discord",
 		"choco": "discord"
 	},
+	"WPFinstalldiscordptb": {
+		"winget": "Discord.Discord.PTB",
+		"choco": "na"
+	},
 	"WPFInstalldockerdesktop": {
 		"winget": "Docker.DockerDesktop",
 		"choco": "docker-desktop"
