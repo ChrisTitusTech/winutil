@@ -351,6 +351,10 @@
 		"winget": "Obsidian.Obsidian",
 		"choco": "obsidian"
 	},
+	"WPFInstallokular": {
+		"winget": "KDE.Okular",
+		"choco": "okular"
+	},
 	"WPFInstallonedrive": {
 		"winget": "Microsoft.OneDrive",
 		"choco": "onedrive"
