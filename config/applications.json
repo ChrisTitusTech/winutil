@@ -203,6 +203,10 @@
 		"winget": "Apple.iTunes",
 		"choco": "itunes"
 	},
+	"WPFInstalljellyfinmediaplayer": {
+		"winget": "Jellyfin.JellyfinMediaPlayer",
+		"choco": "jellyfin-media-player"
+	},
 	"WPFInstalljami": {
 		"winget": "SFLinux.Jami",
 		"choco": "jami"

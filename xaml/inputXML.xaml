@@ -356,6 +356,7 @@
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
