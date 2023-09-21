@@ -307,6 +307,10 @@
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
 	},
+	"WPFInstallnanazip": {
+		"winget": "M2Team.NanaZip",
+		"choco": "nanazip"
+	},
 	"WPFInstallnano": {
 		"winget": "GNU.Nano",
 		"choco": "nano"
@@ -484,7 +488,7 @@
 		"choco": "sumatrapdf"
 	},
 	"WPFInstalltcpview": {
-		"winget": "Microsoft.Sysinternals.Tcpview",
+		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
 	},
 	"WPFInstallteams": {
@@ -519,6 +523,10 @@
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
 	},
+	"WPFInstalltidal": {
+		"Winget": "9NNCB5BS59PH",
+		"choco": "na"
+	},	
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
