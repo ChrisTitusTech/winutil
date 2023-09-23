@@ -1,14 +1,17 @@
 function Invoke-WinUtilTweaks {
     <#
     
-        .DESCRIPTION
-        This function converts all the values from the tweaks.json and routes them to the appropriate function
+    .DESCRIPTION
+    This function converts all the values from the tweaks.json and routes them to the appropriate function
     
     #>
-
+    
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
-        $CheckBox,
-        $undo = $false
+        [Parameter(Mandatory=$true)]
+        [string[]]$TweakName,
+        [Parameter(Mandatory=$false)]
+        [switch]$undo
     )
     if($undo){
         $Values = @{
@@ -27,31 +30,32 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+    # TODO: add support for confrim and whatif
+    if($sync.configs.tweaks.$TweakName.ScheduledTask){
+        $sync.configs.tweaks.$TweakName.ScheduledTask | ForEach-Object {
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.service){
+        $sync.configs.tweaks.$TweakName.service | ForEach-Object {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.registry){
+        $sync.configs.tweaks.$TweakName.registry | ForEach-Object {
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.$($values.ScriptType)){
+        $sync.configs.tweaks.$TweakName.$($values.ScriptType) | ForEach-Object {
             $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $TweakName
         }
     }
 
     if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+        if($sync.configs.tweaks.$TweakName.appx){
+            $sync.configs.tweaks.$TweakName.appx | ForEach-Object {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }

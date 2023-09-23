@@ -139,12 +139,27 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-$sync["Form"].title = $sync["Form"].title + " " + $sync.version
-$sync["Form"].Add_Closing({
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
-    [System.GC]::Collect()
-})
 
-$sync["Form"].ShowDialog() | out-null
+switch ( Get-UserInterfaceType ) {
+    "CLI" { 
+        if ($ListTweaks) {
+            $msg =$sync.configs.tweaks | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name | Format-List | Out-String
+            Show-Message -PromptType "OK" -Title "Available Tweaks:" -Text $msg -Severity "Warning"
+            break
+        }
+        Invoke-TweaksAction $Tweaks -undo:$undo
+     }
+    "WPF" {
+        $sync["Form"].title = $sync["Form"].title + " " + $sync.version
+        $sync["Form"].Add_Closing({
+            $sync.runspace.Dispose()
+            $sync.runspace.Close()
+            [System.GC]::Collect()
+        })
+        $sync["Form"].ShowDialog() | out-null
+    }
+    Default {
+        throw "Unknown UserInterfaceType"
+    }
+}
 Stop-Transcript

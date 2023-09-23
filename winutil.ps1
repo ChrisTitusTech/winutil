@@ -10,8 +10,19 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.14
+    Version        : 23.09.23
 #>
+# TODO: add support for confrim and whatif
+[CmdletBinding(SupportsShouldProcess=$true)]
+Param(
+  [Parameter(Mandatory=$false)]
+  [switch]$ListTweaks,
+  [Parameter(Mandatory=$false)]
+  [string[]]$Tweaks,
+  [Parameter(Mandatory=$false)]
+  [switch]$Undo
+
+)
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
@@ -21,11 +32,11 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.14"
+$sync.version = "23.09.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-
+# TODO: add support for confrim and whatif
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
     Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
@@ -593,14 +604,17 @@ function Invoke-WinUtilScript {
 function Invoke-WinUtilTweaks {
     <#
     
-        .DESCRIPTION
-        This function converts all the values from the tweaks.json and routes them to the appropriate function
+    .DESCRIPTION
+    This function converts all the values from the tweaks.json and routes them to the appropriate function
     
     #>
-
+    
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
-        $CheckBox,
-        $undo = $false
+        [Parameter(Mandatory=$true)]
+        [string[]]$TweakName,
+        [Parameter(Mandatory=$false)]
+        [switch]$undo
     )
     if($undo){
         $Values = @{
@@ -619,31 +633,32 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+    # TODO: add support for confrim and whatif
+    if($sync.configs.tweaks.$TweakName.ScheduledTask){
+        $sync.configs.tweaks.$TweakName.ScheduledTask | ForEach-Object {
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.service){
+        $sync.configs.tweaks.$TweakName.service | ForEach-Object {
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.registry){
+        $sync.configs.tweaks.$TweakName.registry | ForEach-Object {
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($sync.configs.tweaks.$TweakName.$($values.ScriptType)){
+        $sync.configs.tweaks.$TweakName.$($values.ScriptType) | ForEach-Object {
             $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $TweakName
         }
     }
 
     if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+        if($sync.configs.tweaks.$TweakName.appx){
+            $sync.configs.tweaks.$TweakName.appx | ForEach-Object {
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
@@ -965,6 +980,15 @@ Function Update-WinUtilProgramWinget {
 
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
+}
+function Get-UserInterfaceType {
+    $PSBoundParameters = Get-Variable -Name "PSBoundParameters" -Scope "Script"
+    if ($PSBoundParameters.Count -gt 0) {
+        return "CLI"
+    }
+    else {
+        return "WPF"
+    }
 }
 function Invoke-WPFButton {
 
@@ -1584,27 +1608,29 @@ function Invoke-WPFToggle {
 
     }
 }
-function Invoke-WPFtweaksbutton {
-  <#
-  
-      .DESCRIPTION
-      PlaceHolder
-  
-  #>
-
+function Invoke-WPFtweaksbutton{
+  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+  Invoke-TweaksAction $Tweaks
+}
+function Invoke-TweaksAction {
+  # TODO: add support for confrim and whatif
+  Param(
+    [Parameter(Mandatory=$true)]
+    [string[]]$Tweaks,
+    [Parameter(Mandatory=$false)]
+    [switch]$undo
+  )
   if($sync.ProcessRunning){
     $msg = "Install process is currently running."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    Show-Message -PromptType "OK" -Title "Winutil" -Text $msg -Severity "Warning"
     return
   }
-
-  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    Show-Message -PromptType "OK" -Title "Winutil" -Text $msg -Severity "Warning"
     return
   }
 
@@ -1624,12 +1650,12 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
 
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $ButtonType = "OK"
     $MessageboxTitle = "Tweaks are Finished "
     $Messageboxbody = ("Done")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    $MessageIcon = "Information"
 
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    Show-Message -PromptType $ButtonType -Title $MessageboxTitle -Text $Messageboxbody -Severity $MessageIcon
   }
 }
 Function Invoke-WPFUltimatePerformance {
@@ -2082,6 +2108,118 @@ function Invoke-WPFUpdatessecurity {
         Write-Host "-- Updates Set to Recommended ---"
         Write-Host "================================="
 }
+function Show-Message {
+    param (
+        [ValidateSet("OK", "OKCancel", "YesNo", "YesNoCancel")]
+        [string]$PromptType = "OK",
+        [string]$Title = $null,
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        [ValidateSet("Asterisk", "Error", "Exclamation", "Hand", "Information", "None", "Question", "Stop", "Warning")]
+        [string]$Severity = "Information"
+    )
+    switch (Get-UserInterfaceType) {
+        "CLI" {  
+            Show-MessageCLI -PromptType $PromptType -Title $Title -Text $Text -Severity $Severity
+        }
+        "WPF" {
+            Show-MessageWPF -PromptType $PromptType -Title $Title -Text $Text -Severity $Severity
+        }
+        Default {
+            throw "Unknown UserInterfaceType"
+        }
+    }
+}
+
+function Show-MessageCLI {
+  # TODO: implement this? add support for confrim and whatif?
+  # https://jcallaghan.com/2011/10/adding-a-yes-no-cancel-prompt-to-a-powershell-script/
+    param (
+        [ValidateSet("OK", "OKCancel", "YesNo", "YesNoCancel")]
+        [string]$PromptType = "OK",
+        [string]$Title = $null,
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        [ValidateSet("Asterisk", "Error", "Exclamation", "Hand", "Information", "None", "Question", "Stop", "Warning")]
+        [string]$Severity = "Information"
+    )
+    $foregroundColors = @{
+        "Information" = "White"
+        "Warning"     = "Red"
+    }
+    if (![string]::IsNullOrEmpty($Title)) {
+        Write-Host $Title -ForegroundColor $foregroundColors[$Severity]
+        Write-Host $Text -ForegroundColor White
+    }
+    else {
+        Write-Host $Text -ForegroundColor $foregroundColors[$Severity]
+    }
+    switch ($PromptType) {
+        "OK" { 
+            Read-Host "Press Enter to continue..."
+            break
+        }
+        { "YesNo", "OKCancel" -eq $_ } {
+            $answer = Read-Host "Press Y for Yes or N for No"
+            if ($answer -eq "Y") {
+                return "YES"
+            }
+            if ($answer -eq "N") {
+                return "NO"
+            }
+            break
+        }
+        "YesNoCancel" {
+            $answer = Read-Host "Press Y for Yes, N for No, or C for Cancel"
+            if ($answer -eq "Y") {
+                return "YES"
+            }
+            if ($answer -eq "N") {
+                return "NO"
+            }
+            if ($answer -eq "C") {
+                return "CANCEL"
+            }
+            break
+        }
+        Default {
+            throw "Invalid PromptType"
+        }
+    }
+}
+
+function Show-MessageWPF {
+    param (
+        [ValidateSet("OK", "OKCancel", "YesNo", "YesNoCancel")]
+        [string]$PromptType = "OK",
+        [string]$Title = $null,
+        [Parameter(Mandatory = $true)]
+        [string]$Text,
+        [ValidateSet("Asterisk", "Error", "Exclamation", "Hand", "Information", "None", "Question", "Stop", "Warning")]
+        [string]$Severity = "Information"
+    )
+    $ButtonTypes = @{
+        "OK"          = [System.Windows.MessageBoxButton]::OK
+        "OKCancel"    = [System.Windows.MessageBoxButton]::OKCancel
+        "YesNo"       = [System.Windows.MessageBoxButton]::YesNo
+        "YesNoCancel" = [System.Windows.MessageBoxButton]::YesNoCancel
+    }
+    $MessageIcons = @{
+        "Asterisk"    = [System.Windows.MessageBoxImage]::Asterisk
+        "Error"       = [System.Windows.MessageBoxImage]::Error
+        "Exclamation" = [System.Windows.MessageBoxImage]::Exclamation
+        "Hand"        = [System.Windows.MessageBoxImage]::Hand
+        "Information" = [System.Windows.MessageBoxImage]::Information
+        "None"        = [System.Windows.MessageBoxImage]::None
+        "Question"    = [System.Windows.MessageBoxImage]::Question
+        "Stop"        = [System.Windows.MessageBoxImage]::Stop
+        "Warning"     = [System.Windows.MessageBoxImage]::Warning
+    }
+    $ButtonType = $ButtonTypes[$PromptType]
+    $MessageIcon = $MessageIcons[$Severity]
+    return [System.Windows.MessageBox]::Show($Text, $Title, $ButtonType, $MessageIcon)
+}
+
 $inputXML = '<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -5954,7 +6092,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
@@ -6020,12 +6158,27 @@ Catch [ChocoFailedInstall]{
     Write-Host "--    Chocolatey failed to install      ---"
     Write-Host "==========================================="
 }
-$sync["Form"].title = $sync["Form"].title + " " + $sync.version
-$sync["Form"].Add_Closing({
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
-    [System.GC]::Collect()
-})
 
-$sync["Form"].ShowDialog() | out-null
+switch ( Get-UserInterfaceType ) {
+    "CLI" { 
+        if ($ListTweaks) {
+            $msg =$sync.configs.tweaks | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name | Format-List | Out-String
+            Show-Message -PromptType "OK" -Title "Available Tweaks:" -Text $msg -Severity "Warning"
+            break
+        }
+        Invoke-TweaksAction $Tweaks -undo:$undo
+     }
+    "WPF" {
+        $sync["Form"].title = $sync["Form"].title + " " + $sync.version
+        $sync["Form"].Add_Closing({
+            $sync.runspace.Dispose()
+            $sync.runspace.Close()
+            [System.GC]::Collect()
+        })
+        $sync["Form"].ShowDialog() | out-null
+    }
+    Default {
+        throw "Unknown UserInterfaceType"
+    }
+}
 Stop-Transcript

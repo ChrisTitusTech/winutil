@@ -1,24 +1,26 @@
-function Invoke-WPFtweaksbutton {
-  <#
-  
-      .DESCRIPTION
-      PlaceHolder
-  
-  #>
-
+function Invoke-WPFtweaksbutton{
+  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+  Invoke-TweaksAction $Tweaks
+}
+function Invoke-TweaksAction {
+  # TODO: add support for confrim and whatif
+  Param(
+    [Parameter(Mandatory=$true)]
+    [string[]]$Tweaks,
+    [Parameter(Mandatory=$false)]
+    [switch]$undo
+  )
   if($sync.ProcessRunning){
     $msg = "Install process is currently running."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    Show-Message -PromptType "OK" -Title "Winutil" -Text $msg -Severity "Warning"
     return
   }
-
-  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    Show-Message -PromptType "OK" -Title "Winutil" -Text $msg -Severity "Warning"
     return
   }
 
@@ -38,11 +40,11 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
 
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $ButtonType = "OK"
     $MessageboxTitle = "Tweaks are Finished "
     $Messageboxbody = ("Done")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    $MessageIcon = "Information"
 
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    Show-Message -PromptType $ButtonType -Title $MessageboxTitle -Text $Messageboxbody -Severity $MessageIcon
   }
 }
