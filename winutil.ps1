@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.09.14
+    Version        : 23.09.23
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.09.14"
+$sync.version = "23.09.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2396,6 +2396,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
@@ -2440,6 +2441,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
@@ -2451,6 +2454,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
@@ -2485,6 +2489,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
@@ -2872,6 +2877,14 @@ $sync.configs.applications = '{
 		"winget": "Apple.iTunes",
 		"choco": "itunes"
 	},
+	"WPFInstalljellyfinmediaplayer": {
+		"winget": "Jellyfin.JellyfinMediaPlayer",
+		"choco": "jellyfin-media-player"
+	},
+	"WPFInstalljellyfinserver": {
+		"winget": "Jellyfin.Server",
+		"choco": "jellyfin"
+	},
 	"WPFInstalljami": {
 		"winget": "SFLinux.Jami",
 		"choco": "jami"
@@ -2968,6 +2981,10 @@ $sync.configs.applications = '{
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
 	},
+	"WPFInstallnanazip": {
+		"winget": "M2Team.NanaZip",
+		"choco": "nanazip"
+	},
 	"WPFInstallnano": {
 		"winget": "GNU.Nano",
 		"choco": "nano"
@@ -3019,6 +3036,10 @@ $sync.configs.applications = '{
 	"WPFInstallobsidian": {
 		"winget": "Obsidian.Obsidian",
 		"choco": "obsidian"
+	},
+	"WPFInstallokular": {
+		"winget": "KDE.Okular",
+		"choco": "okular"
 	},
 	"WPFInstallonedrive": {
 		"winget": "Microsoft.OneDrive",
@@ -3098,7 +3119,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-		"choco": "na"
+		"choco": "sdio"
 	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",
@@ -3145,7 +3166,7 @@ $sync.configs.applications = '{
 		"choco": "sumatrapdf"
 	},
 	"WPFInstalltcpview": {
-		"winget": "Microsoft.Sysinternals.Tcpview",
+		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
 	},
 	"WPFInstallteams": {
@@ -3180,6 +3201,10 @@ $sync.configs.applications = '{
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
 	},
+	"WPFInstalltidal": {
+		"Winget": "9NNCB5BS59PH",
+		"choco": "na"
+	},	
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
@@ -4996,284 +5021,284 @@ $sync.configs.tweaks = '{
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "type": "DWord",
-        "value": "0",
-        "name": "AllowTelemetry",
+        "Type": "DWord",
+        "Value": "0",
+        "Name": "AllowTelemetry",
         "OriginalValue": "1"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "1",
-        "name": "AllowTelemetry",
-        "value": "0",
-        "type": "DWord"
+        "Name": "AllowTelemetry",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "ContentDeliveryAllowed",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ContentDeliveryAllowed",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "OemPreInstalledAppsEnabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "OemPreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "PreInstalledAppsEnabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "PreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "PreInstalledAppsEverEnabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "PreInstalledAppsEverEnabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SilentInstalledAppsEnabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SilentInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SubscribedContent-338387Enabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SubscribedContent-338387Enabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SubscribedContent-338388Enabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SubscribedContent-338388Enabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SubscribedContent-338389Enabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SubscribedContent-338389Enabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SubscribedContent-353698Enabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SubscribedContent-353698Enabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
         "OriginalValue": "1",
-        "name": "SystemPaneSuggestionsEnabled",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SystemPaneSuggestionsEnabled",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
-        "name": "DisableWindowsConsumerFeatures",
-        "value": "1",
-        "type": "DWord"
+        "Name": "DisableWindowsConsumerFeatures",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
         "OriginalValue": "0",
-        "name": "NumberOfSIUFInPeriod",
-        "value": "0",
-        "type": "DWord"
+        "Name": "NumberOfSIUFInPeriod",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
         "OriginalValue": "0",
-        "name": "DoNotShowFeedbackNotifications",
-        "value": "1",
-        "type": "DWord"
+        "Name": "DoNotShowFeedbackNotifications",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
         "OriginalValue": "0",
-        "name": "DisableTailoredExperiencesWithDiagnosticData",
-        "value": "1",
-        "type": "DWord"
+        "Name": "DisableTailoredExperiencesWithDiagnosticData",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
         "OriginalValue": "0",
-        "name": "DisabledByGroupPolicy",
-        "value": "1",
-        "type": "DWord"
+        "Name": "DisabledByGroupPolicy",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
         "OriginalValue": "0",
-        "name": "Disabled",
-        "value": "1",
-        "type": "DWord"
+        "Name": "Disabled",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
         "OriginalValue": "1",
-        "name": "DODownloadMode",
-        "value": "1",
-        "type": "DWord"
+        "Name": "DODownloadMode",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
         "OriginalValue": "1",
-        "name": "fAllowToGetHelp",
-        "value": "0",
-        "type": "DWord"
+        "Name": "fAllowToGetHelp",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
         "OriginalValue": "0",
-        "name": "EnthusiastMode",
-        "value": "1",
-        "type": "DWord"
+        "Name": "EnthusiastMode",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "ShowTaskViewButton",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ShowTaskViewButton",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
         "OriginalValue": "1",
-        "name": "PeopleBand",
-        "value": "0",
-        "type": "DWord"
+        "Name": "PeopleBand",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "LaunchTo",
-        "value": "1",
-        "type": "DWord"
+        "Name": "LaunchTo",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "OriginalValue": "0",
-        "name": "LongPathsEnabled",
-        "value": "1",
-        "type": "DWord"
+        "Name": "LongPathsEnabled",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "_Comment" : "Driver searching is a function that should be left in",
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
-        "name": "SearchOrderConfig",
-        "value": "1",
-        "type": "DWord"
+        "Name": "SearchOrderConfig",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
-        "name": "SystemResponsiveness",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SystemResponsiveness",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "OriginalValue": "1",
-        "name": "NetworkThrottlingIndex",
-        "value": "4294967295",
-        "type": "DWord"
+        "Name": "NetworkThrottlingIndex",
+        "Value": "4294967295",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "name": "MenuShowDelay",
-        "value": "1",
-        "type": "DWord"
+        "Name": "MenuShowDelay",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "name": "AutoEndTasks",
-        "value": "1",
-        "type": "DWord"
+        "Name": "AutoEndTasks",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
         "OriginalValue": "0",
-        "name": "ClearPageFileAtShutdown",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ClearPageFileAtShutdown",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
         "OriginalValue": "1",
-        "name": "Start",
-        "value": "2",
-        "type": "DWord"
+        "Name": "Start",
+        "Value": "2",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "400",
-        "name": "MouseHoverTime",
-        "value": "400",
-        "type": "String"
+        "Name": "MouseHoverTime",
+        "Value": "400",
+        "Type": "String"
       },
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
         "OriginalValue": "20",
-        "name": "IRPStackSize",
-        "value": "30",
-        "type": "DWord"
+        "Name": "IRPStackSize",
+        "Value": "30",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
         "OriginalValue": "1",
-        "name": "EnableFeeds",
-        "value": "0",
-        "type": "DWord"
+        "Name": "EnableFeeds",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
         "OriginalValue": "1",
-        "name": "ShellFeedsTaskbarViewMode",
-        "value": "2",
-        "type": "DWord"
+        "Name": "ShellFeedsTaskbarViewMode",
+        "Value": "2",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "OriginalValue": "1",
-        "name": "HideSCAMeetNow",
-        "value": "1",
-        "type": "DWord"
+        "Name": "HideSCAMeetNow",
+        "Value": "1",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
         "OriginalValue": "1",
-        "name": "GPU Priority",
-        "value": "8",
-        "type": "DWord"
+        "Name": "GPU Priority",
+        "Value": "8",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
         "OriginalValue": "1",
-        "name": "Priority",
-        "value": "6",
-        "type": "DWord"
+        "Name": "Priority",
+        "Value": "6",
+        "Type": "DWord"
       },
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
         "OriginalValue": "High",
-        "name": "Scheduling Category",
-        "value": "High",
-        "type": "String"
+        "Name": "Scheduling Category",
+        "Value": "High",
+        "Type": "String"
       }
     ],
     "InvokeScript": [
@@ -5347,93 +5372,93 @@ $sync.configs.tweaks = '{
       {
         "path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "name": "DragFullWindows",
-        "value": "0",
-        "type": "String"
+        "Name": "DragFullWindows",
+        "Value": "0",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
-        "name": "MenuShowDelay",
-        "value": "200",
-        "type": "String"
+        "Name": "MenuShowDelay",
+        "Value": "200",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
         "OriginalValue": "1",
-        "name": "MinAnimate",
-        "value": "0",
-        "type": "String"
+        "Name": "MinAnimate",
+        "Value": "0",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Keyboard",
         "OriginalValue": "1",
-        "name": "KeyboardDelay",
-        "value": "0",
-        "type": "DWord"
+        "Name": "KeyboardDelay",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "ListviewAlphaSelect",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ListviewAlphaSelect",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "ListviewShadow",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ListviewShadow",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "TaskbarAnimations",
-        "value": "0",
-        "type": "DWord"
+        "Name": "TaskbarAnimations",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
         "OriginalValue": "1",
-        "name": "VisualFXSetting",
-        "value": "3",
-        "type": "DWord"
+        "Name": "VisualFXSetting",
+        "Value": "3",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
-        "name": "EnableAeroPeek",
-        "value": "0",
-        "type": "DWord"
+        "Name": "EnableAeroPeek",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "TaskbarMn",
-        "value": "0",
-        "type": "DWord"
+        "Name": "TaskbarMn",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "TaskbarDa",
-        "value": "0",
-        "type": "DWord"
+        "Name": "TaskbarDa",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
-        "name": "ShowTaskViewButton",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ShowTaskViewButton",
+        "Value": "0",
+        "Type": "DWord"
       },
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
         "OriginalValue": "1",
-        "name": "SearchboxTaskbarMode",
-        "value": "0",
-        "type": "DWord"
+        "Name": "SearchboxTaskbarMode",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
@@ -5579,9 +5604,9 @@ $sync.configs.tweaks = '{
       {
         "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
-        "name": "InitialKeyboardIndicators",
-        "value": "0",
-        "type": "DWord"
+        "Name": "InitialKeyboardIndicators",
+        "Value": "0",
+        "Type": "DWord"
       }
     ]
   },
@@ -5590,9 +5615,9 @@ $sync.configs.tweaks = '{
       {
         "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
-        "name": "InitialKeyboardIndicators",
-        "value": "80000002",
-        "type": "DWord"
+        "Name": "InitialKeyboardIndicators",
+        "Value": "80000002",
+        "Type": "DWord"
       }
     ]
   },
@@ -5732,9 +5757,9 @@ $sync.configs.tweaks = '{
       {
         "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
         "OriginalValue": "5",
-        "name": "ConsentPromptBehaviorAdmin",
-        "value": "0",
-        "type": "DWord"
+        "Name": "ConsentPromptBehaviorAdmin",
+        "Value": "0",
+        "Type": "DWord"
       }
     ]
   },
@@ -5743,23 +5768,23 @@ $sync.configs.tweaks = '{
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
-        "name": "MouseSpeed",
-        "value": "0",
-        "type": "String"
+        "Name": "MouseSpeed",
+        "Value": "0",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
-        "name": "MouseThreshold1",
-        "value": "0",
-        "type": "String"
+        "Name": "MouseThreshold1",
+        "Value": "0",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
-        "name": "MouseThreshold2",
-        "value": "0",
-        "type": "String"
+        "Name": "MouseThreshold2",
+        "Value": "0",
+        "Type": "String"
       }
     ]
   },
@@ -5768,23 +5793,23 @@ $sync.configs.tweaks = '{
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
-        "name": "MouseSpeed",
-        "value": "1",
-        "type": "String"
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
-        "name": "MouseThreshold1",
-        "value": "6",
-        "type": "String"
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "Type": "String"
       },
       {
         "path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
-        "name": "MouseThreshold2",
-        "value": "10",
-        "type": "String"
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "Type": "String"
       }
     ]
   },
@@ -5793,9 +5818,9 @@ $sync.configs.tweaks = '{
       {
         "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
         "OriginalValue": "0",
-        "name": "VerboseStatus",
-        "value": "1",
-        "type": "DWord"
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "Type": "DWord"
       }
     ]
   },
@@ -5954,7 +5979,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="????" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="??" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
