@@ -215,7 +215,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
-                    <Image Height="50" Width="100" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
+                    <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
                     <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" 
                         Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
                     <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" 
@@ -312,6 +312,7 @@
                                 <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
@@ -356,6 +357,8 @@
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
@@ -367,6 +370,7 @@
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
@@ -401,6 +405,7 @@
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>

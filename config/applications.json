@@ -203,6 +203,14 @@
 		"winget": "Apple.iTunes",
 		"choco": "itunes"
 	},
+	"WPFInstalljellyfinmediaplayer": {
+		"winget": "Jellyfin.JellyfinMediaPlayer",
+		"choco": "jellyfin-media-player"
+	},
+	"WPFInstalljellyfinserver": {
+		"winget": "Jellyfin.Server",
+		"choco": "jellyfin"
+	},
 	"WPFInstalljami": {
 		"winget": "SFLinux.Jami",
 		"choco": "jami"
@@ -299,6 +307,10 @@
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
 	},
+	"WPFInstallnanazip": {
+		"winget": "M2Team.NanaZip",
+		"choco": "nanazip"
+	},
 	"WPFInstallnano": {
 		"winget": "GNU.Nano",
 		"choco": "nano"
@@ -350,6 +362,10 @@
 	"WPFInstallobsidian": {
 		"winget": "Obsidian.Obsidian",
 		"choco": "obsidian"
+	},
+	"WPFInstallokular": {
+		"winget": "KDE.Okular",
+		"choco": "okular"
 	},
 	"WPFInstallonedrive": {
 		"winget": "Microsoft.OneDrive",
@@ -429,7 +445,7 @@
 	},
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-		"choco": "na"
+		"choco": "sdio"
 	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",
@@ -476,7 +492,7 @@
 		"choco": "sumatrapdf"
 	},
 	"WPFInstalltcpview": {
-		"winget": "Microsoft.Sysinternals.Tcpview",
+		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
 	},
 	"WPFInstallteams": {
@@ -511,6 +527,10 @@
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
 	},
+	"WPFInstalltidal": {
+		"Winget": "9NNCB5BS59PH",
+		"choco": "na"
+	},	
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
