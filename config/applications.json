@@ -145,7 +145,7 @@
 	},
 	"WPFInstallguilded": {
 		"winget": "Guilded.Guilded",
-		"choco": "guilded"
+		"choco": ""
 	},
 	"WPFInstallgit": {
 		"Winget": "Git.Git",
