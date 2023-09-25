@@ -382,6 +382,7 @@
                                 <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
                             </StackPanel>

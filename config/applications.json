@@ -559,6 +559,10 @@
 		"winget": "Microsoft.VCRedist.2015+.x64",
 		"choco": "na"
 	},
+	"WPFInstallventoy": {
+		"winget": "na",
+		"choco": "ventoy"
+	},
 	"WPFInstallviber": {
 		"Winget": "Viber.Viber",
 		"choco": "viber"
