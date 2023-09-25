@@ -471,6 +471,10 @@
 		"winget": "SlackTechnologies.Slack",
 		"choco": "slack"
 	},
+	"WPFInstallsuperf4": {
+		"winget": "StefanSundin.Superf4"
+		"choco": "superf4"
+	},
 	"WPFInstallsqlstudio": {
 		"winget": "Microsoft.SQLServerManagementStudio",
 		"choco": "sql-server-management-studio"
