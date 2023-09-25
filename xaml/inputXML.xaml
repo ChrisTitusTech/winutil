@@ -334,6 +334,7 @@
                                 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
