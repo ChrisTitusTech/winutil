@@ -143,6 +143,10 @@
 		"winget": "GIMP.GIMP",
 		"choco": "gimp"
 	},
+	"WPFInstallguilded": {
+		"winget": "Guilded.Guilded",
+		"choco": ""
+	},
 	"WPFInstallgit": {
 		"Winget": "Git.Git",
 		"choco": "git"
