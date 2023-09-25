@@ -615,6 +615,10 @@
 		"winget": "subhra74.XtremeDownloadManager",
 		"choco": "xdm"
 	},
+	"WPFInstallzerotierone": {
+    "winget": "ZeroTier.ZeroTierOne",
+    "choco": "zerotier-one"
+  },
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
