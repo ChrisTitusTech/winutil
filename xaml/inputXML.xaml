@@ -346,6 +346,7 @@
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>

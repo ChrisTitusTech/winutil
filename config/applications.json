@@ -19,6 +19,10 @@
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
 	},
+	"WPFInstallaimp": {
+		"winget": "AIMP.AIMP",
+		"choco": "aimp"
+	},
 	"WPFInstallaudacity": {
 		"winget": "Audacity.Audacity",
 		"choco": "audacity"
