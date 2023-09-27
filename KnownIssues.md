@@ -1,5 +1,4 @@
-JUST A TEST
-
+hELLO
 ## Known Issues and Fixes
 - Windows taking longer to shut down:
   - [#69](https://github.com/ChrisTitusTech/winutil/issues/69) Turn on fast startup: Press Windows key + R, then type:
