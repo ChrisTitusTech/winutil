@@ -365,10 +365,12 @@
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmpv" Content="mpv (Media Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallspotify" Content="Spotify" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
@@ -405,6 +407,7 @@
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>

@@ -1,4 +1,4 @@
-{	
+{
 	"WPFInstall7zip": {
 		"winget": "7zip.7zip",
 		"choco": "7zip"
@@ -299,9 +299,17 @@
 		"winget": "clsid2.mpc-hc",
 		"choco": "mpc-hc"
 	},
+	"WPFInstallmpv": {
+		"winget": "na",
+		"choco": "mpv"
+	},
 	"WPFInstallmremoteng": {
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
+	},
+	"WPFInstallmsiafterburner": {
+		"winget": "Guru3D.Afterburner",
+		"choco": "msiafterburner"
 	},
 	"WPFInstallmusicbee": {
 		"winget": "MusicBee.MusicBee",
@@ -471,6 +479,10 @@
 		"winget": "SlackTechnologies.Slack",
 		"choco": "slack"
 	},
+	"WPFInstallspotify": {
+		"winget": "Spotify.Spotify",
+		"choco": "spotify"
+	},
 	"WPFInstallsqlstudio": {
 		"winget": "Microsoft.SQLServerManagementStudio",
 		"choco": "sql-server-management-studio"
@@ -530,7 +542,7 @@
 	"WPFInstalltidal": {
 		"Winget": "9NNCB5BS59PH",
 		"choco": "na"
-	},	
+	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
