@@ -19,6 +19,10 @@
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
 	},
+	"WPFInstallaimp": {
+		"winget": "AIMP.AIMP",
+		"choco": "aimp"
+	},
 	"WPFInstallaudacity": {
 		"winget": "Audacity.Audacity",
 		"choco": "audacity"
@@ -91,6 +95,10 @@
 		"winget": "Microsoft.DotNet.DesktopRuntime.6",
 		"choco": "dotnet-6.0-runtime"
 	},
+	"WPFInstalldotnet7": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.7",
+		"choco": "dotnet-7.0-runtime"
+	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
 		"choco": "ea-app"
@@ -142,6 +150,10 @@
 	"WPFInstallgimp": {
 		"winget": "GIMP.GIMP",
 		"choco": "gimp"
+	},
+	"WPFInstallguilded": {
+		"winget": "Guilded.Guilded",
+		"choco": ""
 	},
 	"WPFInstallgit": {
 		"Winget": "Git.Git",
@@ -503,6 +515,10 @@
 		"winget": "SumatraPDF.SumatraPDF",
 		"choco": "sumatrapdf"
 	},
+	"WPFInstallsuperf4": {
+		"winget": "StefanSundin.Superf4",
+		"choco": "superf4"
+	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
@@ -558,6 +574,10 @@
 	"WPFInstallvc2015_64": {
 		"winget": "Microsoft.VCRedist.2015+.x64",
 		"choco": "na"
+	},
+	"WPFInstallventoy": {
+		"winget": "na",
+		"choco": "ventoy"
 	},
 	"WPFInstallviber": {
 		"Winget": "Viber.Viber",
@@ -623,6 +643,10 @@
 		"winget": "subhra74.XtremeDownloadManager",
 		"choco": "xdm"
 	},
+	"WPFInstallzerotierone": {
+    "winget": "ZeroTier.ZeroTierOne",
+    "choco": "zerotier-one"
+  },
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
