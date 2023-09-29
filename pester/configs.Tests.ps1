@@ -1,4 +1,4 @@
-#region Load Variables needed for testing
+# Load Variables needed for testing
 
     #Config Files
     $global:importedconfigs = @{}
@@ -7,7 +7,7 @@
     }
 
 
-#endregion Load Variables needed for testing 
+# Load Variables needed for testing 
 
 #===========================================================================
 # Tests - Application Installs

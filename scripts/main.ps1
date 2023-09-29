@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: MIT
 
-#Configure max thread count for RunspacePool.
+# Configure max thread count for RunspacePool.
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
-#Create a new session state for parsing variables ie hashtable into our runspace.
+# Create a new session state for parsing variables ie hashtable into our runspace.
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-#Add the variable to the RunspacePool sessionstate
+# Add the variable to the RunspacePool sessionstate
 $InitialSessionState.Variables.Add($hashVars)
 
-#Add functions
+# Add functions
 $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
 foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
@@ -20,13 +20,13 @@ foreach ($function in $functions){
     $initialSessionState.Commands.Add($functionEntry)
 }
 
-#Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
+# Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
 $sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
 
-#Open a RunspacePool instance.
+# Open a RunspacePool instance.
 $sync.runspace.Open()
 
-#region exception classes
+# Exception classes
 
     class WingetFailedInstall : Exception {
         [string] $additionalData
@@ -46,7 +46,6 @@ $sync.runspace.Open()
         GenericException($Message) : base($Message) {}
     }
     
-#endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
@@ -61,7 +60,7 @@ $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
-#Read XAML
+# Read XAML
 
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
@@ -116,7 +115,7 @@ $sync.keys | ForEach-Object {
 # Setup background config
 #===========================================================================
 
-#Load information in the background
+# Load information in the background
 Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $False
 

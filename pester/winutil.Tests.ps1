@@ -1,4 +1,4 @@
-#region Load Variables needed for testing
+# Load Variables needed for testing
 
     ./Compile.ps1
 
@@ -6,7 +6,7 @@
     $script[0..($script.count - 21)] | Out-File .\pester.ps1    
 
 
-#endregion Load Variables needed for testing 
+# Load Variables needed for testing 
 
 BeforeAll {
    . .\pester.ps1

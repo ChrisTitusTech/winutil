@@ -1,5 +1,5 @@
 Function Invoke-WinUtilDarkMode {
-        <#
+    <#
     
         .DESCRIPTION
         Sets Dark Mode on or off

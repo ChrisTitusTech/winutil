@@ -1,5 +1,5 @@
 function Invoke-WinUtilBingSearch {
-        <#
+    <#
     
         .DESCRIPTION
         Sets Bing Search on or off

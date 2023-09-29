@@ -1,5 +1,5 @@
 function Invoke-WPFControlPanel {
-        <#
+    <#
     
         .DESCRIPTION
         Simple Switch for legacy windows

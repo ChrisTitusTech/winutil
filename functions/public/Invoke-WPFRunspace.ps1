@@ -23,18 +23,18 @@ function Invoke-WPFRunspace {
         $ArgumentList
     ) 
 
-    #Crate a PowerShell instance.
+    # Crate a PowerShell instance.
     $script:powershell = [powershell]::Create()
 
-    #Add Scriptblock and Arguments to runspace
+    # Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $sync.runspace
     
-    #Run our RunspacePool.
+    # Run our RunspacePool.
     $script:handle = $script:powershell.BeginInvoke()
 
-    #Cleanup our RunspacePool threads when they are complete ie. GC.
+    # Cleanup our RunspacePool threads when they are complete ie. GC.
     if ($script:handle.IsCompleted)
     {
         $script:powershell.EndInvoke($script:handle)

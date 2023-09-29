@@ -1,8 +1,8 @@
 function Invoke-WPFGetInstalled {
     <#
 
-    .DESCRIPTION
-    placeholder
+        .DESCRIPTION
+        placeholder
 
     #>
     param($checkbox)

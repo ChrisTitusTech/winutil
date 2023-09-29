@@ -1,4 +1,4 @@
-#This file is meant to assist in building out the json files inside this folder.
+# This file is meant to assist in building out the json files inside this folder.
 
 #===========================================================================
 # applications.json
@@ -35,7 +35,7 @@ Example:
 
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 #------Do not delete WPF------
 
 $NameofButton = "WPF" + ""
@@ -45,7 +45,7 @@ $ChocoCommand = ""
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -88,7 +88,7 @@ Example:
 }    
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofButton = ""
 $commands = @(
@@ -97,7 +97,7 @@ $commands = @(
 
 $jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -150,7 +150,7 @@ Example:
 }    
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofButton = "WPF" + ""
 $commands = @(
@@ -159,7 +159,7 @@ $commands = @(
 
 $jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -286,11 +286,11 @@ Example:
 
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
-#Make sure to uncomment the sections you which to add.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Make sure to uncomment the sections you which to add.
 
 #$Registry = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Path = ""
 #        Name = ""
@@ -301,7 +301,7 @@ Example:
 #)
 
 #$Service = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        StartupType = ""
@@ -310,7 +310,7 @@ Example:
 #)
 
 #$ScheduledTask = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        State = ""
@@ -335,7 +335,7 @@ $NameofButton = "WPF" + ""
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/tweaks.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -378,7 +378,7 @@ Example:
 }    
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofProvider = "" -replace " ","_"
 $IPAddress = @{
@@ -389,7 +389,7 @@ $IPAddress = @{
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/dns.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofProvider){
     $jsonfile.psobject.Properties.remove($NameofProvider)
 }
