@@ -75,11 +75,8 @@ catch [System.Management.Automation.MethodInvocationException] {
         write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
     }
 }
-catch [System.Management.Automation.RuntimeException] {
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
-}
 catch {
-    Write-Error "An Error occurred while attempting to load the XAML file: $_"
+    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
 #===========================================================================
