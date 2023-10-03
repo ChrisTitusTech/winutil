@@ -7,16 +7,15 @@ $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-# Add the variable to the RunspacePool sessionstate
+# Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 
-# Add functions
+# Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
 foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-    
-    # Add it to the iss object
+
     $initialSessionState.Commands.Add($functionEntry)
 }
 
@@ -28,10 +27,10 @@ $sync.runspace = [runspacefactory]::CreateRunspacePool(
     $Host                   # Machine to create runspaces on
 )
 
-# Open a RunspacePool instance.
+# Open the RunspacePool instance
 $sync.runspace.Open()
 
-# Exception classes
+# Create classes for different exceptions
 
     class WingetFailedInstall : Exception {
         [string] $additionalData
@@ -132,7 +131,7 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Setup and Show the Window
+# Setup and Show the Form
 #===========================================================================
 
 # Print the logo
