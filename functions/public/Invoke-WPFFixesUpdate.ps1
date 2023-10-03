@@ -7,7 +7,7 @@ function Invoke-WPFFixesUpdate {
     
     #>
 
-    ### Reset Windows Update Script - reregister dlls, services, and remove registry entries.
+    # Reset Windows Update Script - reregister dlls, services, and remove registry entries
 Write-Host "1. Stopping Windows Update Services..."
     Stop-Service -Name BITS
     Stop-Service -Name wuauserv
@@ -83,7 +83,7 @@ Write-Host "12) Forcing discovery..."
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "================================="
-    Write-Host "-- Reset ALL Updates to Factory -"
-    Write-Host "================================="
+    Write-Host "==============================================="
+    Write-Host "-- Reset All Windows Update Settings to Stock -"
+    Write-Host "==============================================="
 }

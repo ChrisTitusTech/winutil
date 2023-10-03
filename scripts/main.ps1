@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: MIT
 
-# Configure max thread count for RunspacePool.
+# Configure max thread count for RunspacePool
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
-# Create a new session state for parsing variables ie hashtable into our runspace.
+# Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
@@ -16,12 +16,12 @@ foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
     
-    # And add it to the iss object
+    # Add it to the iss object
     $initialSessionState.Commands.Add($functionEntry)
 }
 
-# Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
 $sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
+# Create the runspace pool
 
 # Open a RunspacePool instance.
 $sync.runspace.Open()
@@ -60,8 +60,8 @@ $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
-# Read XAML
 
+# Read the XAML file
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
@@ -72,7 +72,7 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
+    # If it broke some other way
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
@@ -115,7 +115,7 @@ $sync.keys | ForEach-Object {
 # Setup background config
 #===========================================================================
 
-# Load information in the background
+# Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $False
 
@@ -125,7 +125,7 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Shows the form
+# Show the form
 #===========================================================================
 
 Invoke-WPFFormVariables

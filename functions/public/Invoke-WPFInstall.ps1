@@ -28,7 +28,7 @@ function Invoke-WPFInstall {
             # Ensure winget is installed
             Install-WinUtilWinget
 
-            # Install all winget programs in new window
+            # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
 
             $ButtonType = [System.Windows.MessageBoxButton]::OK

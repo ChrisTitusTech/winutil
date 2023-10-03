@@ -6,8 +6,6 @@
     $script[0..($script.count - 21)] | Out-File .\pester.ps1    
 
 
-# Load Variables needed for testing 
-
 BeforeAll {
    . .\pester.ps1
 }
