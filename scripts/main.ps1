@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-# Configure max thread count for RunspacePool
+# Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
@@ -20,8 +20,13 @@ foreach ($function in $functions){
     $initialSessionState.Commands.Add($functionEntry)
 }
 
-$sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
 # Create the runspace pool
+$sync.runspace = [runspacefactory]::CreateRunspacePool(
+    1,                      # Minimum thread count
+    $maxthreads,            # Maximum thread count
+    $InitialSessionState,   # Initial session state
+    $Host                   # Machine to create runspaces on
+)
 
 # Open a RunspacePool instance.
 $sync.runspace.Open()
@@ -71,9 +76,11 @@ catch [System.Management.Automation.MethodInvocationException] {
         write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
     }
 }
-catch {
-    # If it broke some other way
+catch [System.Management.Automation.RuntimeException] {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+}
+catch {
+    Write-Error "An Error occurred while attempting to load the XAML file: $_"
 }
 
 #===========================================================================
@@ -125,25 +132,32 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Show the form
+# Setup and Show the Window
 #===========================================================================
 
+# Print the logo
 Invoke-WPFFormVariables
 
+# Check if Chocolatey is installed
 try{
     Install-WinUtilChoco
 }
 Catch [ChocoFailedInstall]{
     Write-Host "==========================================="
-    Write-Host "--    Chocolatey failed to install      ---"
+    Write-Host "--     Chocolatey failed to install     ---"
     Write-Host "==========================================="
 }
+
+# Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
+# Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
 })
 
+# Show the form
 $sync["Form"].ShowDialog() | out-null
+
 Stop-Transcript

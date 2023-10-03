@@ -1,10 +1,8 @@
-# Load Variables needed for testing
-
-    # Config Files
-    $global:importedconfigs = @{}
-    Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Object {
-        $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
-    }
+# Import Config Files
+$global:importedconfigs = @{}
+Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Object {
+    $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
+}
 
 
 #===========================================================================
