@@ -23,7 +23,7 @@ function Invoke-WPFFixesNetwork {
     $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
     [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "================================="
-    Write-Host "-- Reset Network Configuration --"
-    Write-Host "================================="
+    Write-Host "=========================================="
+    Write-Host "-- Network Configuration has been Reset --"
+    Write-Host "=========================================="
 }
