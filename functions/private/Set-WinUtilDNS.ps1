@@ -1,13 +1,15 @@
 function Set-WinUtilDNS {
     <#
-    
-        .DESCRIPTION
+
+    .SYNOPSIS
         Sets the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
 
-        .EXAMPLE
+    .PARAMETER DNSProvider
+        The DNS provider to set the DNS server to
 
+    .EXAMPLE
         Set-WinUtilDNS -DNSProvider "google"
-    
+
     #>
     param($DNSProvider)
     if($DNSProvider -eq "Default"){return}

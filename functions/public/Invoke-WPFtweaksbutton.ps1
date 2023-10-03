@@ -1,9 +1,9 @@
 function Invoke-WPFtweaksbutton {
   <#
-  
-      .DESCRIPTION
-      PlaceHolder
-  
+
+    .SYNOPSIS
+        Invokes the functions associated with each group of checkboxes
+
   #>
 
   if($sync.ProcessRunning){

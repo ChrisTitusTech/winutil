@@ -1,9 +1,12 @@
 Function Invoke-WPFUltimatePerformance {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Creates or removes the Ultimate Performance power scheme
+
+    .PARAMETER State
+        Indicates whether to enable or disable the Ultimate Performance power scheme
+
     #>
     param($State)
     Try{

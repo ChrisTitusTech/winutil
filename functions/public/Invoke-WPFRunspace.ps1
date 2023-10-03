@@ -1,20 +1,21 @@
 function Invoke-WPFRunspace {
 
     <#
-    
-        .DESCRIPTION
-        Simple function to make it easier to invoke a runspace from inside the script. 
 
-        .EXAMPLE
+    .SYNOPSIS
+        Creates and invokes a runspace using the given scriptblock and argumentlist
 
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "Installadvancedip,Installbitwarden"
-            Verbose = $true
-        }
+    .PARAMETER ScriptBlock
+        The scriptblock to invoke in the runspace
 
-        Invoke-WPFRunspace @params
-    
+    .PARAMETER ArgumentList
+        A list of arguments to pass to the runspace
+
+    .EXAMPLE
+        Invoke-WPFRunspace `
+            -ScriptBlock $sync.ScriptsInstallPrograms `
+            -ArgumentList "Installadvancedip,Installbitwarden" `
+
     #>
 
     [CmdletBinding()]

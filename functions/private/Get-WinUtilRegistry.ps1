@@ -1,12 +1,12 @@
 function Get-WinUtilRegistry {
     <#
-    
-        .DESCRIPTION
+
+    .SYNOPSIS
         Gets the value of a registry key
 
-        .EXAMPLE
+    .EXAMPLE
         Get-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-    
+
     #>    
     param (
         $Name,

@@ -1,9 +1,9 @@
 function Invoke-WPFUnInstall {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Uninstalls the selected programs
+
     #>
 
     if($sync.ProcessRunning){

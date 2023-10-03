@@ -1,14 +1,19 @@
 function Invoke-WinUtilScript {
     <#
-    
-        .DESCRIPTION
-        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions
 
-        .EXAMPLE
+    .SYNOPSIS
+        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
 
+    .PARAMETER Name
+        The name of the scriptblock being invoked
+
+    .PARAMETER scriptblock
+        The scriptblock to be invoked
+
+    .EXAMPLE
         $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
         Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
-    
+
     #>
     param (
         $Name,

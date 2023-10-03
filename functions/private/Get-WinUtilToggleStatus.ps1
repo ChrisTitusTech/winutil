@@ -1,12 +1,15 @@
 Function Get-WinUtilToggleStatus {
     <#
-    
-        .DESCRIPTION
-        Pulls the registry keys for a toggle switch and returns true or false
 
-        True should mean status is enabled
-        False should mean status is disabled
-    
+    .SYNOPSIS
+        Pulls the registry keys for the given toggle switch and checks whether the toggle should be checked or unchecked
+
+    .PARAMETER ToggleSwitch
+        The name of the toggle to check
+
+    .OUTPUTS
+        Boolean to set the toggle's status to
+
     #>
 
     Param($ToggleSwitch)

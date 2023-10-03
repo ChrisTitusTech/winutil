@@ -1,10 +1,10 @@
 function Invoke-WPFFixesUpdate {
 
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Performs various tasks in an attempt to repair Windows Update
+
     #>
 
     # Reset Windows Update Script - reregister dlls, services, and remove registry entries

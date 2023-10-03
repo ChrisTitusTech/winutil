@@ -1,13 +1,15 @@
 function Remove-WinUtilAPPX {
     <#
-    
-        .DESCRIPTION
+
+    .SYNOPSIS
         Removes all APPX packages that match the given name
 
-        .EXAMPLE
+    .PARAMETER Name
+        The name of the APPX package to remove
 
+    .EXAMPLE
         Remove-WinUtilAPPX -Name "Microsoft.Microsoft3DViewer"
-    
+
     #>
     param (
         $Name

@@ -1,10 +1,10 @@
 function Install-WinUtilChoco {
 
     <#
-    
-        .DESCRIPTION
-        Installs Chocolatey if it is not installed
-    
+
+    .SYNOPSIS
+        Installs Chocolatey if it is not already installed
+
     #>
 
     try{

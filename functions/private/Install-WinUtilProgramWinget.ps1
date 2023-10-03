@@ -1,12 +1,19 @@
 Function Install-WinUtilProgramWinget {
 
     <#
-    
-        .DESCRIPTION
-        This will install programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
 
-        Note the triple quotes are required any time you need a " in a normal script block.
-    
+    .SYNOPSIS
+        Manages the provided programs using Winget
+
+    .PARAMETER ProgramsToInstall
+        A list of programs to manage
+
+    .PARAMETER manage
+        The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
+
+    .NOTES
+        The triple quotes are required any time you need a " in a normal script block.
+
     #>
 
     param(

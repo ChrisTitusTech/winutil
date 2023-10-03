@@ -1,9 +1,9 @@
 function Invoke-WPFFeatureInstall {
     <#
-    
-        .DESCRIPTION
-        GUI Function to install Windows Features
-    
+
+    .SYNOPSIS
+        Installs selected Windows Features
+
     #>
 
     if($sync.ProcessRunning){

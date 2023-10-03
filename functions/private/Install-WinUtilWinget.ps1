@@ -8,12 +8,12 @@ function Get-LatestHash {
 }
 
 function Install-WinUtilWinget {
-    
+
     <#
-    
-        .DESCRIPTION
-        Function is meant to ensure winget is installed 
-    
+
+    .SYNOPSIS
+        Installs Winget if it is not already installed
+
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."

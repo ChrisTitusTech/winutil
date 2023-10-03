@@ -1,13 +1,18 @@
 function Set-WinUtilScheduledTask {
     <#
-    
-        .DESCRIPTION
+
+    .SYNOPSIS
         Enables/Disables the provided Scheduled Task
 
-        .EXAMPLE
+    .PARAMETER Name
+        The path to the Scheduled Task
 
+    .PARAMETER State
+        The State to set the Task to
+
+    .EXAMPLE
         Set-WinUtilScheduledTask -Name "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -State "Disabled"
-    
+
     #>
     param (
         $Name,

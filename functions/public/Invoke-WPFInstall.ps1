@@ -1,9 +1,9 @@
 function Invoke-WPFInstall {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Installs the selected programs using winget
+
     #>
 
     if($sync.ProcessRunning){

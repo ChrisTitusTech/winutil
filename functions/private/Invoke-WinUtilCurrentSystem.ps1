@@ -2,11 +2,10 @@ Function Invoke-WinUtilCurrentSystem {
 
     <#
 
-        .DESCRIPTION
-        Checks to see what tweaks have already been applied, and checks the according boxes
+    .SYNOPSIS
+        Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
 
-        .EXAMPLE
-
+    .EXAMPLE
         Get-WinUtilCheckBoxes "WPFInstall"
 
     #>

@@ -1,9 +1,12 @@
 Function Invoke-WinUtilDarkMode {
     <#
-    
-        .DESCRIPTION
+
+    .SYNOPSIS
         Enables/Disables Dark Mode
-    
+
+    .PARAMETER DarkMoveEnabled
+        Indicates the current dark mode state
+
     #>
     Param($DarkMoveEnabled)
     Try{

@@ -1,10 +1,13 @@
 function Get-WinUtilVariables {
 
     <#
-    
-        .DESCRIPTION
-        placeholder
-    
+
+    .SYNOPSIS
+        Gets every form object of the provided type
+
+    .OUTPUTS
+        List containing every object that matches the provided type
+
     #>
     param (
         [Parameter()]

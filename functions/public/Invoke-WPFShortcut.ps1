@@ -1,8 +1,11 @@
 function Invoke-WPFShortcut {
     <#
 
-        .DESCRIPTION
-        Creates a shortcut
+    .SYNOPSIS
+        Creates a shortcut and prompts for a save location
+
+    .PARAMETER ShortcutToAdd
+        The name of the shortcut to add
 
     #>
     param($ShortcutToAdd)

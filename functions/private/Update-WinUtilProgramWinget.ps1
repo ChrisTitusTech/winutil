@@ -1,10 +1,10 @@
 Function Update-WinUtilProgramWinget {
 
     <#
-    
-        .DESCRIPTION
-        This will update programs via Winget using a new powershell.exe instance to prevent the GUI from locking up.
-    
+
+    .SYNOPSIS
+        This will update all programs using Winget
+
     #>
 
     [ScriptBlock]$wingetinstall = {
