@@ -2,7 +2,7 @@ function Invoke-WinUtilBingSearch {
     <#
     
         .DESCRIPTION
-        Sets Bing Search on or off
+        Disables/Enables Bing Search
     
     #>
     Param($Enabled)

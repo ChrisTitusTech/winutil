@@ -3,9 +3,7 @@ Function Invoke-WinUtilCurrentSystem {
     <#
 
         .DESCRIPTION
-        Function is meant to read existing system registry and check according configuration.
-
-        Example: Is telemetry enabled? check the box.
+        Checks to see what tweaks have already been applied, and checks the according boxes
 
         .EXAMPLE
 

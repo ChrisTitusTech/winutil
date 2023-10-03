@@ -2,7 +2,7 @@ function Set-WinUtilScheduledTask {
     <#
     
         .DESCRIPTION
-        This function will enable/disable the provided Scheduled Task
+        Enables/Disables the provided Scheduled Task
 
         .EXAMPLE
 

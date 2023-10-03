@@ -2,7 +2,7 @@ function Set-WinUtilDNS {
     <#
     
         .DESCRIPTION
-        This function will set the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
+        Sets the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
 
         .EXAMPLE
 

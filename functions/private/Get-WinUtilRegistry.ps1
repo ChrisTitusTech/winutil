@@ -2,11 +2,10 @@ function Get-WinUtilRegistry {
     <#
     
         .DESCRIPTION
-        This function will make all modifications to the registry
+        Gets the value of a registry key
 
         .EXAMPLE
-
-        Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
+        Get-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
     
     #>    
     param (

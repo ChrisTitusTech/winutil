@@ -2,7 +2,7 @@ Function Set-WinUtilService {
     <#
     
         .DESCRIPTION
-        This function will change the startup type of services and start/stop them as needed
+        Changes the startup type of services and starts/stops them as needed
 
         .EXAMPLE
 

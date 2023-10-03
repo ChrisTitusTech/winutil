@@ -2,7 +2,7 @@ function Set-WinUtilRegistry {
     <#
     
         .DESCRIPTION
-        This function will make all modifications to the registry
+        Modifies the registry based on the given inputs
 
         .EXAMPLE
 

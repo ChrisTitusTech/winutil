@@ -5,7 +5,7 @@ function Get-LatestHash {
     $WebClient.DownloadFile($shaUrl, $shaFile)
   
     Get-Content $shaFile
-  }
+}
 
 function Install-WinUtilWinget {
     

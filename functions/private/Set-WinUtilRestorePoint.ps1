@@ -2,7 +2,7 @@ function Set-WinUtilRestorePoint {
     <#
     
         .DESCRIPTION
-        This function will make a Restore Point
+        Creates a Restore Point
 
     #>    
 

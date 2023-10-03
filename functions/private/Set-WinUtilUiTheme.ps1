@@ -2,7 +2,7 @@ function Set-WinUtilUITheme {
     <#
     
         .DESCRIPTION
-        This function will set theme to the XAML file
+        Sets the theme of the XAML file
 
         .EXAMPLE
 

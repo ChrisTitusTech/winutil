@@ -2,7 +2,7 @@ function Get-WinUtilInstallerProcess {
     <#
     
         .DESCRIPTION
-        Meant to check for running processes and will return a boolean response
+        Meant to check for running processes, will return a boolean response
     
     #>
 

@@ -2,7 +2,7 @@ function Remove-WinUtilAPPX {
     <#
     
         .DESCRIPTION
-        This function will remove any of the provided APPX names
+        Removes all APPX packages that match the given name
 
         .EXAMPLE
 

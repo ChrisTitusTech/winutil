@@ -2,7 +2,7 @@ Function Get-WinUtilToggleStatus {
     <#
     
         .DESCRIPTION
-        Meant to pull the registry keys for a toggle switch and returns true or false
+        Pulls the registry keys for a toggle switch and returns true or false
 
         True should mean status is enabled
         False should mean status is disabled

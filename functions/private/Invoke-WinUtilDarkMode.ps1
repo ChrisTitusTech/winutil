@@ -2,7 +2,7 @@ Function Invoke-WinUtilDarkMode {
     <#
     
         .DESCRIPTION
-        Sets Dark Mode on or off
+        Enables/Disables Dark Mode
     
     #>
     Param($DarkMoveEnabled)
