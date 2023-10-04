@@ -18,7 +18,7 @@ Function Get-WinUtilToggleStatus {
         $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
         if($app -eq 0 -and $system -eq 0){
             return $true
-        } 
+        }
         else{
             return $false
         }
@@ -27,7 +27,7 @@ Function Get-WinUtilToggleStatus {
         $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
         if($bingsearch -eq 0){
             return $false
-        } 
+        }
         else{
             return $true
         }

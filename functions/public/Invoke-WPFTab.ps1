@@ -16,7 +16,7 @@ function Invoke-WPFTab {
     $x = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
 
     0..($Tabs.Count -1 ) | ForEach-Object {
-        
+
         if ($x -eq $psitem){
             $sync.$TabNav.Items[$psitem].IsSelected = $true
         }

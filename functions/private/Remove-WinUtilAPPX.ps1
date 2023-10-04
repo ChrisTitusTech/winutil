@@ -26,11 +26,11 @@ function Remove-WinUtilAPPX {
         }
         Else{
             Write-Warning "Unable to uninstall $name due to unhandled exception"
-            Write-Warning $psitem.Exception.StackTrace 
+            Write-Warning $psitem.Exception.StackTrace
         }
     }
     Catch{
         Write-Warning "Unable to uninstall $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 }

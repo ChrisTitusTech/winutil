@@ -9,8 +9,8 @@ function Invoke-WPFButton {
         The name of the button that was clicked
 
     #>
-    
-    Param ([string]$Button) 
+
+    Param ([string]$Button)
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")

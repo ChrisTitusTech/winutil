@@ -27,7 +27,7 @@ function Set-WinUtilRegistry {
         $Value
     )
 
-    Try{      
+    Try{
         if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
 
         If (!(Test-Path $Path)) {

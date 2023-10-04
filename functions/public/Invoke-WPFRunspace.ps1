@@ -22,7 +22,7 @@ function Invoke-WPFRunspace {
     Param (
         $ScriptBlock,
         $ArgumentList
-    ) 
+    )
 
     # Create a PowerShell instance
     $script:powershell = [powershell]::Create()
@@ -31,7 +31,7 @@ function Invoke-WPFRunspace {
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $sync.runspace
-    
+
     # Execute the RunspacePool
     $script:handle = $script:powershell.BeginInvoke()
 

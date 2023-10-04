@@ -10,14 +10,14 @@ Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Objec
 #===========================================================================
 
 Describe "Config Files" -ForEach @(
-    @{ 
+    @{
         name = "applications"
         config = $('{
             "winget": "value",
             "choco": "value"
           }' | ConvertFrom-Json)
     },
-    @{ 
+    @{
         name = "tweaks"
         undo = $true
     }
@@ -37,7 +37,7 @@ Describe "Config Files" -ForEach @(
                         $result.Add($application)
                     }
                 }
-    
+
                 $result | Select-String "WPF*" | should -BeNullOrEmpty
             }
         }
@@ -48,16 +48,16 @@ Describe "Config Files" -ForEach @(
 
                 foreach ($tweak in $tweaks){
                     $Originals = @(
-                        @{ 
-                            name = "registry" 
+                        @{
+                            name = "registry"
                             value = "OriginalValue"
                         },
-                        @{ 
-                            name = "service" 
+                        @{
+                            name = "service"
                             value = "OriginalType"
-                        },                        
-                        @{ 
-                            name = "ScheduledTask" 
+                        },
+                        @{
+                            name = "ScheduledTask"
                             value = "OriginalState"
                         }
                     )

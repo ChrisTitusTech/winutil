@@ -37,7 +37,7 @@ $sync.runspace.Open()
 
         WingetFailedInstall($Message) : base($Message) {}
     }
-    
+
     class ChocoFailedInstall : Exception {
         [string] $additionalData
 
@@ -49,7 +49,7 @@ $sync.runspace.Open()
 
         GenericException($Message) : base($Message) {}
     }
-    
+
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
