@@ -7,12 +7,12 @@ function Invoke-WPFUnInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFUnInstall] Install process is currently running"
+        $msg = "Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
+    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
 
     if ($wingetinstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install"
@@ -29,9 +29,8 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
-        param($WingetInstall, $DebugPreference)
-
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
+        param($WingetInstall)
         try{
             $sync.ProcessRunning = $true
 
@@ -42,7 +41,7 @@ function Invoke-WPFUnInstall {
             $MessageboxTitle = "Uninstalls are Finished "
             $Messageboxbody = ("Done")
             $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
+        
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="

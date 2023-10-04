@@ -7,7 +7,7 @@ function Get-WinUtilRegistry {
     .EXAMPLE
         Get-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
 
-    #>
+    #>    
     param (
         $Name,
         $Path,
@@ -15,7 +15,7 @@ function Get-WinUtilRegistry {
         $Value
     )
 
-    Try{
+    Try{      
         $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
 
     }
