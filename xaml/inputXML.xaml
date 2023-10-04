@@ -8,7 +8,7 @@
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
-
+    
     <Window.Resources>
         <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
@@ -24,7 +24,7 @@
                                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                           ClickMode="Press">
                                 <TextBlock Text="{TemplateBinding SelectionBoxItem}"
-                                           Foreground="{TemplateBinding Foreground}"
+                                           Foreground="{TemplateBinding Foreground}" 
                                            Background="{TemplateBinding Background}"
                                            />
                             </ToggleButton>
@@ -132,24 +132,24 @@
                     </ControlTemplate>
                  </Setter.Value>
             </Setter>
-        </Style>
+        </Style>        
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel>
                             <Grid>
-                                <Border Width="45"
+                                <Border Width="45" 
                                         Height="20"
-                                        Background="#555555"
-                                        CornerRadius="10"
+                                        Background="#555555" 
+                                        CornerRadius="10" 
                                         Margin="5,0"
                                 />
                                 <Border Name="WPFToggleSwitchButton"
-                                        Width="25"
+                                        Width="25" 
                                         Height="25"
-                                        Background="Black"
-                                        CornerRadius="12.5"
+                                        Background="Black" 
+                                        CornerRadius="12.5" 
                                         HorizontalAlignment="Left"
                                 />
                                 <ContentPresenter Name="WPFToggleSwitchContent"
@@ -216,13 +216,13 @@
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
                     <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100"
+                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100" 
                         Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100"
+                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100" 
                         Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100"
+                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100" 
                         Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100"
+                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100" 
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
                 </DockPanel>
                 <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222">
@@ -303,7 +303,7 @@
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-
+                                
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
@@ -517,17 +517,17 @@
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
                                 <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
-								    <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                    <ComboBoxItem Content = "DHCP"/>
-								    <ComboBoxItem Content = "Google"/>
-								    <ComboBoxItem Content = "Cloudflare"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
-								    <ComboBoxItem Content = "Level3"/>
-								    <ComboBoxItem Content = "Open_DNS"/>
+							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5"> 
+								    <ComboBoxItem IsSelected="True" Content = "Default"/> 
+                                    <ComboBoxItem Content = "DHCP"/> 
+								    <ComboBoxItem Content = "Google"/> 
+								    <ComboBoxItem Content = "Cloudflare"/> 
+                                    <ComboBoxItem Content = "Cloudflare_Malware"/> 
+                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/> 
+								    <ComboBoxItem Content = "Level3"/> 
+								    <ComboBoxItem Content = "Open_DNS"/> 
                                     <ComboBoxItem Content = "Quad9"/>
-							    </ComboBox>
+							    </ComboBox> 
                                 <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160"/>
                                 <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160"/>
                             </StackPanel>

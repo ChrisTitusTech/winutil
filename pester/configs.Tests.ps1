@@ -7,21 +7,21 @@
     }
 
 
-#endregion Load Variables needed for testing
+#endregion Load Variables needed for testing 
 
 #===========================================================================
 # Tests - Application Installs
 #===========================================================================
 
 Describe "Config Files" -ForEach @(
-    @{
+    @{ 
         name = "applications"
         config = $('{
             "winget": "value",
             "choco": "value"
           }' | ConvertFrom-Json)
     },
-    @{
+    @{ 
         name = "tweaks"
         undo = $true
     }
@@ -41,7 +41,7 @@ Describe "Config Files" -ForEach @(
                         $result.Add($application)
                     }
                 }
-
+    
                 $result | Select-String "WPF*" | should -BeNullOrEmpty
             }
         }
@@ -52,16 +52,16 @@ Describe "Config Files" -ForEach @(
 
                 foreach ($tweak in $tweaks){
                     $Originals = @(
-                        @{
-                            name = "registry"
+                        @{ 
+                            name = "registry" 
                             value = "OriginalValue"
                         },
-                        @{
-                            name = "service"
+                        @{ 
+                            name = "service" 
                             value = "OriginalType"
-                        },
-                        @{
-                            name = "ScheduledTask"
+                        },                        
+                        @{ 
+                            name = "ScheduledTask" 
                             value = "OriginalState"
                         }
                     )

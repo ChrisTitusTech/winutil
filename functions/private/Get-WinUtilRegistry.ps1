@@ -1,14 +1,14 @@
 function Get-WinUtilRegistry {
     <#
-
+    
         .DESCRIPTION
         This function will make all modifications to the registry
 
         .EXAMPLE
 
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-
-    #>
+    
+    #>    
     param (
         $Name,
         $Path,
@@ -16,7 +16,7 @@ function Get-WinUtilRegistry {
         $Value
     )
 
-    Try{
+    Try{      
         $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
 
     }

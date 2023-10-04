@@ -1,13 +1,13 @@
 function Set-WinUtilDNS {
     <#
-
+    
         .DESCRIPTION
         This function will set the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
 
         .EXAMPLE
 
         Set-WinUtilDNS -DNSProvider "google"
-
+    
     #>
     param($DNSProvider)
     if($DNSProvider -eq "Default"){return}
@@ -27,6 +27,6 @@ function Set-WinUtilDNS {
     }
     Catch{
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning $psitem.Exception.StackTrace 
     }
 }

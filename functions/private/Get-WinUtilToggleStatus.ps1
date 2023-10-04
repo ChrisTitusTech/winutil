@@ -1,12 +1,12 @@
 Function Get-WinUtilToggleStatus {
     <#
-
+    
         .DESCRIPTION
         Meant to pull the registry keys for a toggle switch and returns true or false
 
         True should mean status is enabled
         False should mean status is disabled
-
+    
     #>
 
     Param($ToggleSwitch)
@@ -15,7 +15,7 @@ Function Get-WinUtilToggleStatus {
         $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
         if($app -eq 0 -and $system -eq 0){
             return $true
-        }
+        } 
         else{
             return $false
         }
@@ -24,7 +24,7 @@ Function Get-WinUtilToggleStatus {
         $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
         if($bingsearch -eq 0){
             return $false
-        }
+        } 
         else{
             return $true
         }

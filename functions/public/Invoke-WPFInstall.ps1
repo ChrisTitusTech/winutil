@@ -1,9 +1,9 @@
 function Invoke-WPFInstall {
     <#
-
+    
         .DESCRIPTION
         PlaceHolder
-
+    
     #>
 
     if($sync.ProcessRunning){
@@ -35,7 +35,7 @@ function Invoke-WPFInstall {
             $MessageboxTitle = "Installs are Finished "
             $Messageboxbody = ("Done")
             $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
+        
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
