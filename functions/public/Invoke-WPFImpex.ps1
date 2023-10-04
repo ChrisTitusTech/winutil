@@ -23,7 +23,7 @@ function Invoke-WPFImpex {
         $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
     }
     if ($type -eq "import"){
-        $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog 
+        $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
     }
 
     $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
@@ -33,7 +33,7 @@ function Invoke-WPFImpex {
     if($FileBrowser.FileName -eq ""){
         return
     }
-    
+
     if ($type -eq "export"){
         $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force

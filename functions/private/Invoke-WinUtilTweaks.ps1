@@ -24,7 +24,7 @@ function Invoke-WinUtilTweaks {
             ScriptType = "UndoScript"
         }
 
-    }    
+    }
     Else{
         $Values = @{
             Registry = "Value"

@@ -18,7 +18,7 @@ Function Invoke-WinUtilDarkMode {
             Write-Host "Disabling Dark Mode"
             $DarkMoveValue = 1
         }
-    
+
         $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue

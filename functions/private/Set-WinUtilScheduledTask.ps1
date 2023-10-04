@@ -40,6 +40,6 @@ function Set-WinUtilScheduledTask {
     }
     Catch{
         Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 }

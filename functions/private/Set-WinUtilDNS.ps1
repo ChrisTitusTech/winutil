@@ -29,6 +29,6 @@ function Set-WinUtilDNS {
     }
     Catch{
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 }

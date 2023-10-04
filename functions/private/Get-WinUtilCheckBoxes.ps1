@@ -38,18 +38,18 @@ Function Get-WinUtilCheckBoxes {
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }
-                
+
             }
         }
     }
-    
+
     if($Group -eq "WPFTweaks"){
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
         $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
-                
+
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }
@@ -63,7 +63,7 @@ Function Get-WinUtilCheckBoxes {
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
-                
+
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }

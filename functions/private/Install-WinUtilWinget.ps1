@@ -1,9 +1,9 @@
 function Get-LatestHash {
     $shaUrl = ((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt$' }).browser_download_url
-  
+
     $shaFile = Join-Path -Path $tempFolder -ChildPath 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt'
     $WebClient.DownloadFile($shaUrl, $shaFile)
-  
+
     Get-Content $shaFile
 }
 
@@ -39,7 +39,7 @@ function Install-WinUtilWinget {
 
         Write-Host "Running Alternative Installer and Direct Installing"
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex"
-        
+
         Write-Host "Winget Installed"
     }
     Catch{

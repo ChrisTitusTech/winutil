@@ -46,7 +46,7 @@ function Set-WinUtilUITheme {
     }
     catch {
         Write-Warning "Unable to apply theme"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 
     return $inputXML;

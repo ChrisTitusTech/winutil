@@ -12,7 +12,7 @@ function Invoke-WPFShortcut {
 
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" 
+            $SourceExe = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
             $IRM = 'irm https://christitus.com/win | iex'
             $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
             $ArgumentsToSourceExe = "$powershell '$IRM'"
@@ -31,6 +31,6 @@ function Invoke-WPFShortcut {
     $Shortcut.TargetPath = $SourceExe
     $Shortcut.Arguments = $ArgumentsToSourceExe
     $Shortcut.Save()
-    
+
     Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"
 }

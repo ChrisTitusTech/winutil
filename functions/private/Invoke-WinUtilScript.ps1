@@ -43,7 +43,7 @@ function Invoke-WinUtilScript {
     Catch {
         # Generic catch block to handle any other type of exception
         Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
-    
+
 }

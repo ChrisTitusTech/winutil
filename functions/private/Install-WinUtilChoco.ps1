@@ -14,7 +14,7 @@ function Install-WinUtilChoco {
             Write-Host "Chocolatey Already Installed"
             return
         }
-    
+
         Write-Host "Seems Chocolatey is not installed, installing now?"
         # Let user decide if they want to install Chocolatey
         $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
