@@ -1,9 +1,9 @@
 function Invoke-WPFUpdatesdisable {
     <#
-    
+
         .DESCRIPTION
         PlaceHolder
-    
+
     #>
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null

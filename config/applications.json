@@ -1,4 +1,4 @@
-{	
+{
 	"WPFInstall7zip": {
 		"winget": "7zip.7zip",
 		"choco": "7zip"
@@ -546,7 +546,7 @@
 	"WPFInstalltidal": {
 		"Winget": "9NNCB5BS59PH",
 		"choco": "na"
-	},	
+	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"

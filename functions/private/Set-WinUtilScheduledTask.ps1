@@ -1,13 +1,13 @@
 function Set-WinUtilScheduledTask {
     <#
-    
+
         .DESCRIPTION
         This function will enable/disable the provided Scheduled Task
 
         .EXAMPLE
 
         Set-WinUtilScheduledTask -Name "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -State "Disabled"
-    
+
     #>
     param (
         $Name,
@@ -35,6 +35,6 @@ function Set-WinUtilScheduledTask {
     }
     Catch{
         Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 }

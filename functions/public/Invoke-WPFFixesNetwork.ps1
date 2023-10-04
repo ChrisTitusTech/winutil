@@ -1,9 +1,9 @@
 function Invoke-WPFFixesNetwork {
     <#
-    
+
         .DESCRIPTION
         PlaceHolder
-    
+
     #>
 
     Write-Host "Resetting Network with netsh"

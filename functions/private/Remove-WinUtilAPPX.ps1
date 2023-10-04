@@ -1,13 +1,13 @@
 function Remove-WinUtilAPPX {
     <#
-    
+
         .DESCRIPTION
         This function will remove any of the provided APPX names
 
         .EXAMPLE
 
         Remove-WinUtilAPPX -Name "Microsoft.Microsoft3DViewer"
-    
+
     #>
     param (
         $Name
@@ -24,11 +24,11 @@ function Remove-WinUtilAPPX {
         }
         Else{
             Write-Warning "Unable to uninstall $name due to unhandled exception"
-            Write-Warning $psitem.Exception.StackTrace 
+            Write-Warning $psitem.Exception.StackTrace
         }
     }
     Catch{
         Write-Warning "Unable to uninstall $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
