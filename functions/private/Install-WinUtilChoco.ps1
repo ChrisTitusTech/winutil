@@ -1,10 +1,10 @@
 function Install-WinUtilChoco {
 
     <#
-    
-        .DESCRIPTION
-        Function is meant to ensure Choco is installed 
-    
+
+    .SYNOPSIS
+        Installs Chocolatey if it is not already installed
+
     #>
 
     try{
@@ -16,7 +16,7 @@ function Install-WinUtilChoco {
         }
     
         Write-Host "Seems Chocolatey is not installed, installing now?"
-        #Let user decide if he wants to install Chocolatey
+        # Let user decide if they want to install Chocolatey
         $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
         if ($confirmation -eq 'y') {
             Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop

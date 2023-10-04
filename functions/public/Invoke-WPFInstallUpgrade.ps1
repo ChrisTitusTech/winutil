@@ -1,9 +1,9 @@
 function Invoke-WPFInstallUpgrade {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Invokes the function that upgrades all installed programs using winget
+
     #>
     if(!(Test-WinUtilPackageManager -winget)){
         Write-Host "==========================================="

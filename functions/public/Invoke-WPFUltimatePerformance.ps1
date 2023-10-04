@@ -1,25 +1,27 @@
 Function Invoke-WPFUltimatePerformance {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Creates or removes the Ultimate Performance power scheme
+
+    .PARAMETER State
+        Indicates whether to enable or disable the Ultimate Performance power scheme
+
     #>
     param($State)
     Try{
 
         if($state -eq "Enabled"){
-            # Define the name and GUID of the power scheme you want to add
+            # Define the name and GUID of the power scheme
             $powerSchemeName = "Ultimate Performance"
             $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
 
             # Get all power schemes
             $schemes = powercfg /list | Out-String -Stream
 
-            # Find the scheme you want to add
+            # Check if the power scheme already exists
             $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
 
-            # If the scheme does not exist, add it
             if ($null -eq $ultimateScheme) {
                 Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
 
@@ -34,13 +36,13 @@ Function Invoke-WPFUltimatePerformance {
             }           
         }
         elseif($state -eq "Disabled"){
-                # Define the name of the power scheme you want to remove
+                # Define the name of the power scheme
                 $powerSchemeName = "Ultimate Performance"
 
                 # Get all power schemes
                 $schemes = powercfg /list | Out-String -Stream
 
-                # Find the scheme you want to remove
+                # Find the scheme to be removed
                 $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
 
                 # If the scheme exists, remove it

@@ -1,9 +1,15 @@
 function Test-WinUtilPackageManager {
     <#
-    
-        .DESCRIPTION
-        Checks for Winget or Choco depending on the parameter
-    
+
+    .SYNOPSIS
+        Checks if Winget and/or Choco are installed
+
+    .PARAMETER winget
+        Check if Winget is installed
+
+    .PARAMETER choco
+        Check if Chocolatey is installed
+
     #>
 
     Param(
