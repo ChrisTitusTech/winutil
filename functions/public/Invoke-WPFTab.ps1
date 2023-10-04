@@ -1,10 +1,13 @@
 function Invoke-WPFTab {
 
     <#
-    
-        .DESCRIPTION
-        Sole purpose of this function is to reduce duplicated code for switching between tabs. 
-    
+
+    .SYNOPSIS
+        Sets the selected tab to the tab that was clicked
+
+    .PARAMETER ClickedTab
+        The name of the tab that was clicked
+
     #>
 
     Param ($ClickedTab)

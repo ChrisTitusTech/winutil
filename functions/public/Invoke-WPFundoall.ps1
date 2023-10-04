@@ -1,9 +1,9 @@
 function Invoke-WPFundoall {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Undoes every selected tweak
+
     #>
 
     if($sync.ProcessRunning){

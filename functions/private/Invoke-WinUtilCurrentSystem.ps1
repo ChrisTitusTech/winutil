@@ -2,13 +2,10 @@ Function Invoke-WinUtilCurrentSystem {
 
     <#
 
-        .DESCRIPTION
-        Function is meant to read existing system registry and check according configuration.
+    .SYNOPSIS
+        Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
 
-        Example: Is telemetry enabled? check the box.
-
-        .EXAMPLE
-
+    .EXAMPLE
         Get-WinUtilCheckBoxes "WPFInstall"
 
     #>

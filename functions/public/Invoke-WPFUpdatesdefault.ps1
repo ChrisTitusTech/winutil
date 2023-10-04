@@ -1,9 +1,9 @@
 function Invoke-WPFUpdatesdefault {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Resets Windows Update settings to default
+
     #>
     If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
         New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
@@ -39,7 +39,7 @@ function Invoke-WPFUpdatesdefault {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-    Write-Host "================================="
-    Write-Host "---  Updates Set to Default   ---"
-    Write-Host "================================="
+    Write-Host "==================================================="
+    Write-Host "---  Windows Update Settings Reset to Default   ---"
+    Write-Host "==================================================="
 }

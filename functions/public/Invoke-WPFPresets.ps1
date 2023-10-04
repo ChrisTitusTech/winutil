@@ -1,8 +1,17 @@
 function Invoke-WPFPresets {
     <#
 
-        .DESCRIPTION
-        Meant to make settings presets easier in the tweaks tab. Will pull the data from config/preset.json
+    .SYNOPSIS
+        Sets the options in the tweaks panel to the given preset
+
+    .PARAMETER preset
+        The preset to set the options to
+
+    .PARAMETER imported
+        If the preset is imported from a file, defaults to false
+
+    .PARAMETER checkbox
+        The checkbox to set the options to, defaults to 'WPFTweaks'
 
     #>
 

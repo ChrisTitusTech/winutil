@@ -1,9 +1,9 @@
 function Invoke-WinUtilFeatureInstall {
     <#
-    
-        .DESCRIPTION
-        This function converts all the values from the tweaks.json and routes them to the appropriate function
-    
+
+    .SYNOPSIS
+        Converts all the values from the tweaks.json and routes them to the appropriate function
+
     #>
 
     param(

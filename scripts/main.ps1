@@ -1,32 +1,36 @@
 # SPDX-License-Identifier: MIT
 
-#Configure max thread count for RunspacePool.
+# Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
-#Create a new session state for parsing variables ie hashtable into our runspace.
+# Create a new session state for parsing variables into our runspace
 $hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-#Add the variable to the RunspacePool sessionstate
+# Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 
-#Add functions
+# Get every private function and add them to the session state
 $functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
 foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
-    
-    # And add it to the iss object
+
     $initialSessionState.Commands.Add($functionEntry)
 }
 
-#Create our runspace pool. We are entering three parameters here min thread count, max thread count and host machine of where these runspaces should be made.
-$sync.runspace = [runspacefactory]::CreateRunspacePool(1,$maxthreads,$InitialSessionState, $Host)
+# Create the runspace pool
+$sync.runspace = [runspacefactory]::CreateRunspacePool(
+    1,                      # Minimum thread count
+    $maxthreads,            # Maximum thread count
+    $InitialSessionState,   # Initial session state
+    $Host                   # Machine to create runspaces on
+)
 
-#Open a RunspacePool instance.
+# Open the RunspacePool instance
 $sync.runspace.Open()
 
-#region exception classes
+# Create classes for different exceptions
 
     class WingetFailedInstall : Exception {
         [string] $additionalData
@@ -46,7 +50,6 @@ $sync.runspace.Open()
         GenericException($Message) : base($Message) {}
     }
     
-#endregion exception classes
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
@@ -61,8 +64,8 @@ $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
-#Read XAML
 
+# Read the XAML file
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
@@ -73,7 +76,6 @@ catch [System.Management.Automation.MethodInvocationException] {
     }
 }
 catch {
-    # If it broke some other way <img draggable="false" role="img" class="emoji" alt="😀" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f600.svg">
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
@@ -116,7 +118,7 @@ $sync.keys | ForEach-Object {
 # Setup background config
 #===========================================================================
 
-#Load information in the background
+# Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $False
 
@@ -126,25 +128,32 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Shows the form
+# Setup and Show the Form
 #===========================================================================
 
+# Print the logo
 Invoke-WPFFormVariables
 
+# Check if Chocolatey is installed
 try{
     Install-WinUtilChoco
 }
 Catch [ChocoFailedInstall]{
     Write-Host "==========================================="
-    Write-Host "--    Chocolatey failed to install      ---"
+    Write-Host "--     Chocolatey failed to install     ---"
     Write-Host "==========================================="
 }
+
+# Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
+# Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
 })
 
+# Show the form
 $sync["Form"].ShowDialog() | out-null
+
 Stop-Transcript
