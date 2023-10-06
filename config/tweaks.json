@@ -1910,84 +1910,84 @@
   "WPFMiscTweaksDisplay": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "DragFullWindows",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "MenuShowDelay",
         "Value": "200",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
         "OriginalValue": "1",
         "Name": "MinAnimate",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Keyboard",
+        "Path": "HKCU:\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "KeyboardDelay",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewAlphaSelect",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewShadow",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarAnimations",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
         "OriginalValue": "1",
         "Name": "VisualFXSetting",
         "Value": "3",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
         "Name": "EnableAeroPeek",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarMn",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarDa",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
         "Value": "0",
@@ -2142,7 +2142,7 @@
   "WPFMiscTweaksLapNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "0",
@@ -2153,7 +2153,7 @@
   "WPFMiscTweaksNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "80000002",
@@ -2295,7 +2295,7 @@
   "WPFMiscTweaksDisableUAC": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
         "OriginalValue": "5",
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
@@ -2306,21 +2306,21 @@
   "WPFMiscTweaksDisableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "0",
@@ -2331,21 +2331,21 @@
   "WPFMiscTweaksEnableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "1",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "6",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "10",
@@ -2356,7 +2356,7 @@
   "WPFMiscTweaksEnableVerboselogon": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
         "OriginalValue": "0",
         "Name": "VerboseStatus",
         "Value": "1",
