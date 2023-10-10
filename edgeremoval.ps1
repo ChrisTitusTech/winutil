@@ -317,14 +317,24 @@ for /f %%E in ('"prompt $E$S & for %%e in (1) do rem"') do echo;%%E[2t >nul 2>&1
 
 :: Get default browser from registry
 call :get_registry_value "HKCU\SOFTWARE\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" ProgID DefaultBrowser
+if not defined DefaultBrowser (
+    echo Error: Failed to get default browser from registry.
+    pause
+    exit /b
+)
 if /i "%DefaultBrowser%" equ "MSEdgeHTM" (
-    echo Default browser is set to Edge! Change it or remove OpenWebSearch script.
+    echo Error: Default browser is set to Edge! Change it or remove OpenWebSearch script.
     pause
     exit /b
 )
 
 :: Get browser command line
 call :get_registry_value "HKCR\%DefaultBrowser%\shell\open\command" "" BrowserCommand
+if not defined BrowserCommand (
+    echo Error: Failed to get browser command from registry.
+    pause
+    exit /b
+)
 set Browser=& for %%i in (%BrowserCommand%) do if not defined Browser set "Browser=%%~i"
 
 :: Set fallback for Edge
@@ -337,16 +347,25 @@ set "CommandLineArgs=%CMDCMDLINE:"=``% "
 call :parse_arguments
 
 if defined NOOP (
-    if exist "%PassThrough%" start "" "%PassThrough%" %ParsedArgs%
+    if not exist "%PassThrough%" (
+        echo Error: PassThrough path doesn't exist.
+        pause
+        exit /b
+    )
+    start "" "%PassThrough%" %ParsedArgs%
     exit /b
 )
 
 :: Decode URL
 call :decode_url
+if not defined URL (
+    echo Error: Failed to decode URL.
+    pause
+    exit /b
+)
 
 :: Open URL in default browser
 start "" "%Browser%" "%URL%"
-
 exit
 
 :: Functions
