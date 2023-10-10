@@ -310,9 +310,9 @@ foreach ($setting in $exeSettings) {
 # Write OpenWebSearch Batch Script
 $OpenWebSearch = @'
 @echo off
-@title OpenWebSearch Redux - by ChatGPT
+@title OpenWebSearch Redux
 
-:: Minimize prompt by ChatGPT
+:: Minimize prompt
 for /f %%E in ('"prompt $E$S & for %%e in (1) do rem"') do echo;%%E[2t >nul 2>&1
 
 :: Get default browser from registry
