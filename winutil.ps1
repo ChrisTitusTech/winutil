@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.05
+    Version        : 23.10.10
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.05"
+$sync.version = "23.10.10"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -238,7 +238,7 @@ function Install-WinUtilChoco {
 
     #>
 
-    try{
+    try {
         Write-Host "Checking if Chocolatey is Installed..."
 
         if((Test-WinUtilPackageManager -choco)){
@@ -254,8 +254,10 @@ function Install-WinUtilChoco {
             powershell choco feature enable -n allowGlobalConfirmation
         }
     }
-    Catch{
-        throw [ChocoFailedInstall]::new('Failed to install')
+    Catch {
+        Write-Host "==========================================="
+        Write-Host "--     Chocolatey failed to install     ---"
+        Write-Host "==========================================="
     }
 
 }
@@ -5536,84 +5538,84 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksDisplay": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "DragFullWindows",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "MenuShowDelay",
         "Value": "200",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
         "OriginalValue": "1",
         "Name": "MinAnimate",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Keyboard",
+        "Path": "HKCU:\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "KeyboardDelay",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewAlphaSelect",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewShadow",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarAnimations",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
         "OriginalValue": "1",
         "Name": "VisualFXSetting",
         "Value": "3",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
         "Name": "EnableAeroPeek",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarMn",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarDa",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
         "Value": "0",
@@ -5768,7 +5770,7 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksLapNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "0",
@@ -5779,7 +5781,7 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "80000002",
@@ -5921,7 +5923,7 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksDisableUAC": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
         "OriginalValue": "5",
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
@@ -5932,21 +5934,21 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksDisableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "0",
@@ -5957,21 +5959,21 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksEnableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "1",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "6",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "10",
@@ -5982,7 +5984,7 @@ $sync.configs.tweaks = '{
   "WPFMiscTweaksEnableVerboselogon": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
         "OriginalValue": "0",
         "Name": "VerboseStatus",
         "Value": "1",
@@ -6207,14 +6209,7 @@ Invoke-WPFRunspace -ScriptBlock {
 Invoke-WPFFormVariables
 
 # Check if Chocolatey is installed
-try{
-    Install-WinUtilChoco
-}
-Catch [ChocoFailedInstall]{
-    Write-Host "==========================================="
-    Write-Host "--     Chocolatey failed to install     ---"
-    Write-Host "==========================================="
-}
+Install-WinUtilChoco
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version

@@ -135,14 +135,7 @@ Invoke-WPFRunspace -ScriptBlock {
 Invoke-WPFFormVariables
 
 # Check if Chocolatey is installed
-try{
-    Install-WinUtilChoco
-}
-Catch [ChocoFailedInstall]{
-    Write-Host "==========================================="
-    Write-Host "--     Chocolatey failed to install     ---"
-    Write-Host "==========================================="
-}
+Install-WinUtilChoco
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
