@@ -303,6 +303,10 @@
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
 	},
+	"WPFInstallmsiafterburner": {
+		"winget": "Guru3D.Afterburner",
+		"choco": "msiafterburner"
+	},
 	"WPFInstallmusicbee": {
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
