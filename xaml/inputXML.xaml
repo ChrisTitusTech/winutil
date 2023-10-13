@@ -409,6 +409,7 @@
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
