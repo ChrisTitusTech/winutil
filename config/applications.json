@@ -75,6 +75,10 @@
 		"winget": "DelugeTeam.Deluge",
 		"choco": "deluge"
 	},
+	"WPFInstallgdrive":{
+		"winget": "Google.Drive",
+		"choco": "googledrive"
+	},
 	"WPFInstalldiscord": {
 		"winget": "Discord.Discord",
 		"choco": "discord"
@@ -494,6 +498,10 @@
 	"WPFInstallsteam": {
 		"winget": "Valve.Steam",
 		"choco": "steam-client"
+	},
+	"WPFInstallspotify": {
+		"winget": "Spotify.Spotify",
+		"choco": "spotify"
 	},
 	"WPFInstallstrawberry": {
 		"winget": "StrawberryMusicPlayer.Strawberry",
