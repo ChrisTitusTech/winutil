@@ -1862,7 +1862,8 @@
       }
     ],
     "InvokeScript": [
-      "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+      "
+      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
             $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
             Do {
@@ -1884,6 +1885,9 @@
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        # Disable Defender Auto Sample Submission
+        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
     ]
   },
