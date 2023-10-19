@@ -2,13 +2,19 @@ Function Get-WinUtilCheckBoxes {
 
     <#
 
-        .DESCRIPTION
-        Function is meant to find all checkboxes that are checked on the specific tab and input them into a script.
+    .SYNOPSIS
+        Finds all checkboxes that are checked on the specific tab and inputs them into a script.
 
-        Outputed data will be the names of the checkboxes that were checked
+    .PARAMETER Group
+        The group of checkboxes to check
 
-        .EXAMPLE
+    .PARAMETER unCheck
+        Whether to uncheck the checkboxes that are checked. Defaults to true
 
+    .OUTPUTS
+        A List containing the name of each checked checkbox
+
+    .EXAMPLE
         Get-WinUtilCheckBoxes "WPFInstall"
 
     #>
@@ -32,18 +38,18 @@ Function Get-WinUtilCheckBoxes {
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }
-                
+
             }
         }
     }
-    
+
     if($Group -eq "WPFTweaks"){
         $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
         $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
-                
+
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }
@@ -57,7 +63,7 @@ Function Get-WinUtilCheckBoxes {
         Foreach ($CheckBox in $CheckBoxes){
             if($CheckBox.value.ischecked -eq $true){
                 $Output.Add($Checkbox.Name)
-                
+
                 if ($uncheck -eq $true){
                     $CheckBox.value.ischecked = $false
                 }

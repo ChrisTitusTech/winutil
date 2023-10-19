@@ -1,9 +1,9 @@
 function Invoke-WPFInstall {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Installs the selected programs using winget
+
     #>
 
     if($sync.ProcessRunning){
@@ -28,14 +28,14 @@ function Invoke-WPFInstall {
             # Ensure winget is installed
             Install-WinUtilWinget
 
-            # Install all winget programs in new window
+            # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
 
             $ButtonType = [System.Windows.MessageBoxButton]::OK
             $MessageboxTitle = "Installs are Finished "
             $Messageboxbody = ("Done")
             $MessageIcon = [System.Windows.MessageBoxImage]::Information
-        
+
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="

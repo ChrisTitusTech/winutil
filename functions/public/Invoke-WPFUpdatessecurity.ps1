@@ -1,9 +1,16 @@
 function Invoke-WPFUpdatessecurity {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Sets Windows Update to recommended settings
+
+    .DESCRIPTION
+        1. Disables driver offering through Windows Update
+        2. Disables Windows Update automatic restart
+        3. Sets Windows Update to Semi-Annual Channel (Targeted)
+        4. Defers feature updates for 365 days
+        5. Defers quality updates for 4 days
+
     #>
     Write-Host "Disabling driver offering through Windows Update..."
         If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {

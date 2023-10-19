@@ -1,9 +1,12 @@
 function Invoke-WinUtilBingSearch {
-        <#
-    
-        .DESCRIPTION
-        Sets Bing Search on or off
-    
+    <#
+
+    .SYNOPSIS
+        Disables/Enables Bing Search
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Bing Search
+
     #>
     Param($Enabled)
     Try{

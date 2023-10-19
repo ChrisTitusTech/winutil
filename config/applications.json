@@ -1,4 +1,4 @@
-{	
+{
 	"WPFInstall7zip": {
 		"winget": "7zip.7zip",
 		"choco": "7zip"
@@ -18,6 +18,10 @@
 	"WPFInstallanydesk": {
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
+	},
+	"WPFInstallaimp": {
+		"winget": "AIMP.AIMP",
+		"choco": "aimp"
 	},
 	"WPFInstallaudacity": {
 		"winget": "Audacity.Audacity",
@@ -91,6 +95,10 @@
 		"winget": "Microsoft.DotNet.DesktopRuntime.6",
 		"choco": "dotnet-6.0-runtime"
 	},
+	"WPFInstalldotnet7": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.7",
+		"choco": "dotnet-7.0-runtime"
+	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
 		"choco": "ea-app"
@@ -142,6 +150,10 @@
 	"WPFInstallgimp": {
 		"winget": "GIMP.GIMP",
 		"choco": "gimp"
+	},
+	"WPFInstallguilded": {
+		"winget": "Guilded.Guilded",
+		"choco": ""
 	},
 	"WPFInstallgit": {
 		"Winget": "Git.Git",
@@ -302,6 +314,10 @@
 	"WPFInstallmremoteng": {
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
+	},
+	"WPFInstallmsiafterburner": {
+		"winget": "Guru3D.Afterburner",
+		"choco": "msiafterburner"
 	},
 	"WPFInstallmusicbee": {
 		"winget": "MusicBee.MusicBee",
@@ -491,6 +507,10 @@
 		"winget": "SumatraPDF.SumatraPDF",
 		"choco": "sumatrapdf"
 	},
+	"WPFInstallsuperf4": {
+		"winget": "StefanSundin.Superf4",
+		"choco": "superf4"
+	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
@@ -511,6 +531,10 @@
 		"winget": "Microsoft.WindowsTerminal",
 		"choco": "microsoft-windows-terminal"
 	},
+	"WPFInstallthorium": {
+		"winget": "Alex313031.Thorium",
+		"choco": "na"
+	},
 	"WPFInstalltor": {
 		"Winget": "TorProject.TorBrowser",
 		"choco": "tor-browser"
@@ -530,7 +554,7 @@
 	"WPFInstalltidal": {
 		"Winget": "9NNCB5BS59PH",
 		"choco": "na"
-	},	
+	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
@@ -546,6 +570,10 @@
 	"WPFInstallvc2015_64": {
 		"winget": "Microsoft.VCRedist.2015+.x64",
 		"choco": "na"
+	},
+	"WPFInstallventoy": {
+		"winget": "na",
+		"choco": "ventoy"
 	},
 	"WPFInstallviber": {
 		"Winget": "Viber.Viber",
@@ -611,6 +639,10 @@
 		"winget": "subhra74.XtremeDownloadManager",
 		"choco": "xdm"
 	},
+	"WPFInstallzerotierone": {
+    "winget": "ZeroTier.ZeroTierOne",
+    "choco": "zerotier-one"
+  },
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"

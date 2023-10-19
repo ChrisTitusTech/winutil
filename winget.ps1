@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 3.0.0
+.VERSION 3.0.1
 
 .GUID 3b581edb-5d90-4fa1-ba15-4f2377275463
 
@@ -29,6 +29,7 @@
 [Version 2.1.0] - Added alternate method/URL for dependencies in case the main URL is down. Fixed licensing issue when winget is installed on Server 2022.
 [Version 2.1.1] - Switched primary/alternate methods. Added Cleanup function to avoid errors when cleaning up temp files. Added output of URL for alternate method. Suppressed Add-AppxProvisionedPackage output. Improved success message. Improved verbiage. Improve PS script comments. Added check if the URL is empty. Moved display of URL beneath the check.
 [Version 3.0.0] - Major changes. Added OS version detection checks - detects OS version, release ID, ensures compatibility. Forces older file installation for Server 2022 to avoid issues after installing. Added DebugMode, DisableCleanup, Force. Renamed CheckForUpdates to CheckForUpdate. Improved output. Improved error handling. Improved comments. Improved code readability. Moved CheckForUpdate into function. Added PowerShellGalleryName. Renamed Get-OSVersion to Get-OSInfo. Moved architecture detection into Get-OSInfo. Renamed Get-NewestLink to Get-WingetDownloadUrl. Have Get-WingetDownloadUrl not get preview releases.
+[Version 3.0.1] - Updated Get-OSInfo function to fix issues when used on non-English systems. Improved error handling of "resources in use" error.
 
 #>
 
@@ -56,7 +57,7 @@ This function should be run with administrative privileges.
 .PARAMETER Help
     Displays the full help information for the script.
 .NOTES
-	Version      : 3.0.0
+	Version      : 3.0.1
 	Created by   : asheroto
 .LINK
 	Project Site: https://github.com/asheroto/winget-install
@@ -72,7 +73,7 @@ param (
 )
 
 # Version
-$CurrentVersion = '3.0.0'
+$CurrentVersion = '3.0.1'
 $RepoOwner = 'asheroto'
 $RepoName = 'winget-install'
 $PowerShellGalleryName = 'winget-install'
@@ -158,12 +159,13 @@ function Get-OSInfo {
         $nameValue = $osDetails.Caption
 
         # Get architecture details of the OS (not the processor)
-        $architecture = $osDetails.OSArchitecture
+        # Get only the numbers
+        $architecture = ($osDetails.OSArchitecture -replace "[^\d]").Trim()
 
         # If 32-bit or 64-bit replace with x32 and x64
-        if ($architecture -eq "32-bit") {
+        if ($architecture -eq "32") {
             $architecture = "x32"
-        } elseif ($architecture -eq "64-bit") {
+        } elseif ($architecture -eq "64") {
             $architecture = "x64"
         }
 
@@ -624,12 +626,20 @@ function Install-Prerequisite {
             throw
         }
 
-        Write-Output "URL: ${url}"
-        Write-Output "`nInstalling ${arch} ${Name}..."
+        if ($DebugMode) {
+            Write-Output "URL: ${url}`n"
+        }
+        Write-Output "Installing ${arch} ${Name}..."
         Add-AppxPackage $url -ErrorAction Stop
         Write-Output "`n$Name installed successfully."
     } catch {
         # Alternate method
+        if ($_.Exception.Message -match '0x80073D02') {
+            # If resources in use exception, fail immediately
+            Handle-Error $_
+            throw
+        }
+
         try {
             $url = $AlternateUrl
 
@@ -758,6 +768,7 @@ if ($CheckForUpdate) {
 
 # Heading
 Write-Output "winget-install $CurrentVersion"
+Write-Output "To check for updates, run winget-install -CheckForUpdate"
 
 # Set OS version
 $osVersion = Get-OSInfo
@@ -891,7 +902,7 @@ try {
     if (Get-WingetStatus -eq $true) {
         Write-Output "winget is installed and working now, you can go ahead and use it."
     } else {
-        Write-Warning "winget is installed but is not detected as a command. Try using winget now. If it doesn't work, try restarting your computer."
+        Write-Warning "winget is installed but is not detected as a command. Try using winget now. If it doesn't work, wait about 1 minute and try again (it is sometimes delayed). Also try restarting your computer."
         Write-Warning "If you restart your computer and the command still isn't recognized, please read the Troubleshooting section`nof the README: https://github.com/asheroto/winget-install#troubleshooting`n"
         Write-Warning "Make sure you have the latest version of the script by running this command: $PowerShellGalleryName -CheckForUpdate"
     }

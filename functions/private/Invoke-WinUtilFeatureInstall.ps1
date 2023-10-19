@@ -1,9 +1,9 @@
 function Invoke-WinUtilFeatureInstall {
     <#
-    
-        .DESCRIPTION
-        This function converts all the values from the tweaks.json and routes them to the appropriate function
-    
+
+    .SYNOPSIS
+        Converts all the values from the tweaks.json and routes them to the appropriate function
+
     #>
 
     param(
@@ -13,7 +13,7 @@ function Invoke-WinUtilFeatureInstall {
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
             Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{ 
+                Try{
                     Write-Host "Installing $feature"
                     Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
                 }
@@ -24,10 +24,10 @@ function Invoke-WinUtilFeatureInstall {
 
                     else{
                         Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace 
+                        Write-Warning $psitem.Exception.StackTrace
                     }
                 }
-            } 
+            }
         }
         if($sync.configs.feature.$psitem.InvokeScript){
             Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
@@ -44,10 +44,10 @@ function Invoke-WinUtilFeatureInstall {
 
                     else{
                         Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace 
+                        Write-Warning $psitem.Exception.StackTrace
                     }
                 }
-            } 
+            }
         }
     }
 }

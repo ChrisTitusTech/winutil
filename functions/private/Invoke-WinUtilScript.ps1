@@ -1,14 +1,19 @@
 function Invoke-WinUtilScript {
     <#
-    
-        .DESCRIPTION
-        This function will run a separate powershell script. Meant for things that can't be handled with the other functions
 
-        .EXAMPLE
+    .SYNOPSIS
+        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
 
+    .PARAMETER Name
+        The name of the scriptblock being invoked
+
+    .PARAMETER scriptblock
+        The scriptblock to be invoked
+
+    .EXAMPLE
         $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
         Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
-    
+
     #>
     param (
         $Name,
@@ -38,7 +43,7 @@ function Invoke-WinUtilScript {
     Catch {
         # Generic catch block to handle any other type of exception
         Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
-    
+
 }

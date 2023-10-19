@@ -1,14 +1,25 @@
 function Set-WinUtilRegistry {
     <#
-    
-        .DESCRIPTION
-        This function will make all modifications to the registry
 
-        .EXAMPLE
+    .SYNOPSIS
+        Modifies the registry based on the given inputs
 
+    .PARAMETER Name
+        The name of the key to modify
+
+    .PARAMETER Path
+        The path to the key
+
+    .PARAMETER Type
+        The type of value to set the key to
+
+    .PARAMETER Value
+        The value to set the key to
+
+    .EXAMPLE
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-    
-    #>    
+
+    #>
     param (
         $Name,
         $Path,
@@ -16,7 +27,7 @@ function Set-WinUtilRegistry {
         $Value
     )
 
-    Try{      
+    Try{
         if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
 
         If (!(Test-Path $Path)) {

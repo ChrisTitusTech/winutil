@@ -1,9 +1,15 @@
 function Invoke-WinUtilTweaks {
     <#
-    
-        .DESCRIPTION
-        This function converts all the values from the tweaks.json and routes them to the appropriate function
-    
+
+    .SYNOPSIS
+        Invokes the function associated with each provided checkbox
+
+    .PARAMETER CheckBox
+        The checkbox to invoke
+
+    .PARAMETER undo
+        Indicates whether to undo the operation contained in the checkbox
+
     #>
 
     param(
@@ -18,7 +24,7 @@ function Invoke-WinUtilTweaks {
             ScriptType = "UndoScript"
         }
 
-    }    
+    }
     Else{
         $Values = @{
             Registry = "Value"

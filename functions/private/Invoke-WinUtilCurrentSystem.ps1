@@ -2,13 +2,10 @@ Function Invoke-WinUtilCurrentSystem {
 
     <#
 
-        .DESCRIPTION
-        Function is meant to read existing system registry and check according configuration.
+    .SYNOPSIS
+        Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
 
-        Example: Is telemetry enabled? check the box.
-
-        .EXAMPLE
-
+    .EXAMPLE
         Get-WinUtilCheckBoxes "WPFInstall"
 
     #>
@@ -46,19 +43,19 @@ Function Invoke-WinUtilCurrentSystem {
             $registryKeys = $sync.configs.tweaks.$Config.registry
             $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
             $serviceKeys = $sync.configs.tweaks.$Config.service
-        
+
             if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
                 $Values = @()
 
 
                 Foreach ($tweaks in $registryKeys){
                     Foreach($tweak in $tweaks){
-            
+
                         if(test-path $tweak.Path){
                             $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             $expectedValue = $tweak.Value
                             if ($expectedValue -notlike $actualValue){
-                                $values += $False                                
+                                $values += $False
                             }
                         }
                     }
@@ -67,7 +64,7 @@ Function Invoke-WinUtilCurrentSystem {
                 Foreach ($tweaks in $scheduledtaskKeys){
                     Foreach($tweak in $tweaks){
                         $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
-            
+
                         if($task){
                             $actualValue = $task.State
                             $expectedValue = $tweak.State
@@ -81,7 +78,7 @@ Function Invoke-WinUtilCurrentSystem {
                 Foreach ($tweaks in $serviceKeys){
                     Foreach($tweak in $tweaks){
                         $Service = Get-Service -Name $tweak.Name
-            
+
                         if($Service){
                             $actualValue = $Service.StartType
                             $expectedValue = $tweak.StartupType

@@ -1556,6 +1556,26 @@
         "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
         "State": "Disabled",
         "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\MareBackup",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
       }
     ],
     "registry": [
@@ -1842,7 +1862,8 @@
       }
     ],
     "InvokeScript": [
-      "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+      "
+      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
             $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
             Do {
@@ -1853,7 +1874,7 @@
             $preferences.Preferences[28] = 0
             Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
         }
-        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue  
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
 
         # Group svchost.exe processes
         $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
@@ -1864,6 +1885,9 @@
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        # Disable Defender Auto Sample Submission
+        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
     ]
   },
@@ -1910,84 +1934,84 @@
   "WPFMiscTweaksDisplay": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "DragFullWindows",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop",
+        "Path": "HKCU:\\Control Panel\\Desktop",
         "OriginalValue": "1",
         "Name": "MenuShowDelay",
         "Value": "200",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
         "OriginalValue": "1",
         "Name": "MinAnimate",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Keyboard",
+        "Path": "HKCU:\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "KeyboardDelay",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewAlphaSelect",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ListviewShadow",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarAnimations",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
         "OriginalValue": "1",
         "Name": "VisualFXSetting",
         "Value": "3",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
         "OriginalValue": "1",
         "Name": "EnableAeroPeek",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarMn",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "TaskbarDa",
         "Value": "0",
         "Type": "DWord"
       },
       {
-        "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
         "OriginalValue": "1",
         "Name": "ShowTaskViewButton",
         "Value": "0",
@@ -2089,26 +2113,26 @@
       "
         $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
         $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
-    
+
         Write-Host \"Stopping Teams process...\"
         Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
-    
+
         Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
         if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
             # Uninstall app
             $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
             $proc.WaitForExit()
         }
-    
+
         Write-Host \"Removing Teams AppxPackage...\"
         Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
-    
+
         Write-Host \"Deleting Teams directory\"
         if ([System.IO.Directory]::Exists($TeamsPath)) {
             Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
         }
-    
+
         Write-Host \"Deleting Teams uninstall registry key\"
         # Uninstall from Uninstall registry key UninstallString
         $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
@@ -2133,7 +2157,7 @@
   "WPFEssTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
-    ], 
+    ],
     "UndoScript": [
       "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
       "
@@ -2142,7 +2166,7 @@
   "WPFMiscTweaksLapNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "0",
@@ -2153,7 +2177,7 @@
   "WPFMiscTweaksNum": {
     "Registry": [
       {
-        "path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
+        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
         "OriginalValue": "1",
         "Name": "InitialKeyboardIndicators",
         "Value": "80000002",
@@ -2163,10 +2187,10 @@
   },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
-        "      
+        "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
-        curl.exe -s \"https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat\" -o $ENV:temp\\edgeremoval.bat
+        curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
         Start-Process $ENV:temp\\edgeremoval.bat
 
         "
@@ -2181,7 +2205,7 @@
   "WPFEssTweaksRemoveOnedrive": {
     "InvokeScript": [
         "
-         
+
         Write-Host \"Kill OneDrive process\"
         taskkill.exe /F /IM \"OneDrive.exe\"
         taskkill.exe /F /IM \"explorer.exe\"
@@ -2295,7 +2319,7 @@
   "WPFMiscTweaksDisableUAC": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
         "OriginalValue": "5",
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
@@ -2306,21 +2330,21 @@
   "WPFMiscTweaksDisableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "0",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "0",
@@ -2331,21 +2355,21 @@
   "WPFMiscTweaksEnableMouseAcceleration": {
     "registry": [
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "1",
         "Name": "MouseSpeed",
         "Value": "1",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "6",
         "Name": "MouseThreshold1",
         "Value": "6",
         "Type": "String"
       },
       {
-        "path": "HKCU:\\Control Panel\\Mouse",
+        "Path": "HKCU:\\Control Panel\\Mouse",
         "OriginalValue": "10",
         "Name": "MouseThreshold2",
         "Value": "10",
@@ -2356,7 +2380,7 @@
   "WPFMiscTweaksEnableVerboselogon": {
     "registry": [
       {
-        "path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
         "OriginalValue": "0",
         "Name": "VerboseStatus",
         "Value": "1",

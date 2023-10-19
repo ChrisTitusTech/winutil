@@ -1,9 +1,15 @@
 function Get-WinUtilInstallerProcess {
     <#
-    
-        .DESCRIPTION
-        Meant to check for running processes and will return a boolean response
-    
+
+    .SYNOPSIS
+        Checks if the given process is running
+
+    .PARAMETER Process
+        The process to check
+
+    .OUTPUTS
+        Boolean - True if the process is running
+
     #>
 
     param($Process)

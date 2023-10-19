@@ -1,9 +1,9 @@
 function Invoke-WPFFeatureInstall {
-        <#
-    
-        .DESCRIPTION
-        GUI Function to install Windows Features
-    
+    <#
+
+    .SYNOPSIS
+        Installs selected Windows Features
+
     #>
 
     if($sync.ProcessRunning){
@@ -26,12 +26,12 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
-    
+
         $ButtonType = [System.Windows.MessageBoxButton]::OK
         $MessageboxTitle = "All features are now installed "
         $Messageboxbody = ("Done")
         $MessageIcon = [System.Windows.MessageBoxImage]::Information
-    
+
         [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
 }

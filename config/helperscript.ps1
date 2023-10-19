@@ -1,4 +1,4 @@
-#This file is meant to assist in building out the json files inside this folder.
+# This file is meant to assist in building out the json files inside this folder.
 
 #===========================================================================
 # applications.json
@@ -35,7 +35,7 @@ Example:
 
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 #------Do not delete WPF------
 
 $NameofButton = "WPF" + ""
@@ -45,7 +45,7 @@ $ChocoCommand = ""
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/applications.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -85,10 +85,10 @@ Example:
         "ClientForNFS-Infrastructure",
         "NFS-Administration"
     ]
-}    
+}
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofButton = ""
 $commands = @(
@@ -97,7 +97,7 @@ $commands = @(
 
 $jsonfile = Get-Content ./config/feature.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -147,19 +147,19 @@ Example:
         "EssTweaksServices",
         "EssTweaksTele"
     ]
-}    
+}
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofButton = "WPF" + ""
 $commands = @(
-    
+
 )
 
 $jsonfile = Get-Content ./config/preset.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -186,21 +186,21 @@ $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
                 "Path":  "Path in registry",
                 "Name":  "Name of Registry key",
                 "Type": "Item type",
-                "Value":  "Value to modify", 
+                "Value":  "Value to modify",
                 "OriginalValue": "value to reset"
             }
         ],
         "service" : [
             {
                 "Name":  "Name of service",
-                "StartupType":  "Startup type to set", 
+                "StartupType":  "Startup type to set",
                 "OriginalType": "Startup type to reset"
             }
         ],
         "ScheduledTask" : [
             {
                 "Name":  "Path to scheduled task",
-                "State":  "State to set", 
+                "State":  "State to set",
                 "OriginalState": "State to reset"
             }
         ],
@@ -211,10 +211,10 @@ $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
         "InvokeScript": [
             "Script to make modifications not possible with the above types
             Special care needs to be taken here as converting from json to a scriptblock
-            can cause weird issues. Please look at the example below to get an idea of how things should work"                 
+            can cause weird issues. Please look at the example below to get an idea of how things should work"
         ],
         "UndoScript": [
-            "Same as above however is meant to undo what you did above"                 
+            "Same as above however is meant to undo what you did above"
         ]
     }
 }
@@ -228,14 +228,14 @@ Example:
                 "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                 "Name":  "EnableActivityFeed",
                 "Type": "DWord",
-                "Value":  "0", 
+                "Value":  "0",
                 "OriginalValue": "1"
             },
             {
                 "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
                 "Name":  "PublishUserActivities",
                 "Type": "DWord",
-                "Value":  "0", 
+                "Value":  "0",
                 "OriginalValue": "1"
             }
         ]
@@ -244,12 +244,12 @@ Example:
         "service" : [
             {
                 "Name":  "HomeGroupListener",
-                "StartupType":  "Manual", 
+                "StartupType":  "Manual",
                 "OriginalType": "Automatic"
             },
             {
                 "Name":  "HomeGroupProvider",
-                "StartupType":  "Manual", 
+                "StartupType":  "Manual",
                 "OriginalType": "Automatic"
             }
         ]
@@ -258,12 +258,12 @@ Example:
         "ScheduledTask" : [
             {
                 "Name":  "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
-                "State":  "Disabled", 
+                "State":  "Disabled",
                 "OriginalState": "Enabled"
-            },                    
+            },
             {
                 "Name":  "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
-                "State":  "Disabled", 
+                "State":  "Disabled",
                 "OriginalState": "Enabled"
             }
         ]
@@ -279,18 +279,18 @@ Example:
             "Import-Module BitsTransfer
             Start-BitsTransfer -Source \"https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg\" -Destination C:\\Windows\\Temp\\ooshutup10.cfg
             Start-BitsTransfer -Source \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -Destination C:\\Windows\\Temp\\OOSU10.exe
-            C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"                 
+            C:\\Windows\\Temp\\OOSU10.exe C:\\Windows\\Temp\\ooshutup10.cfg /quiet"
         ]
     }
 }
 
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
-#Make sure to uncomment the sections you which to add.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Make sure to uncomment the sections you which to add.
 
 #$Registry = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Path = ""
 #        Name = ""
@@ -301,7 +301,7 @@ Example:
 #)
 
 #$Service = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        StartupType = ""
@@ -310,7 +310,7 @@ Example:
 #)
 
 #$ScheduledTask = @(
-#    #to add more repeat this separated by a comma
+#    # To add more repeat this separated by a comma
 #    @{
 #        Name = ""
 #        State = ""
@@ -323,11 +323,11 @@ Example:
 #)
 
 #$InvokeScript = @(
-#    "" 
+#    ""
 #)
 
 #$UndoScript = @(
-#    "" 
+#    ""
 #)
 
 $NameofButton = "WPF" + ""
@@ -335,7 +335,7 @@ $NameofButton = "WPF" + ""
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/tweaks.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofButton){
     $jsonfile.psobject.Properties.remove($NameofButton)
 }
@@ -375,10 +375,10 @@ Example:
         "Primary": "1.1.1.1",
         "Secondary": "1.0.0.1"
     }
-}    
+}
 #>
 
-#Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
+# Modify the variables and run his code. It will import the current file and add your addition. From there you can create a pull request.
 
 $NameofProvider = "" -replace " ","_"
 $IPAddress = @{
@@ -389,7 +389,7 @@ $IPAddress = @{
 $ButtonToAdd = New-Object psobject
 $jsonfile = Get-Content ./config/dns.json | ConvertFrom-Json
 
-#remove if already exists
+# Remove if already exists
 if($jsonfile.$NameofProvider){
     $jsonfile.psobject.Properties.remove($NameofProvider)
 }

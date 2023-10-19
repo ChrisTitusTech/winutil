@@ -1,13 +1,18 @@
 function Set-WinUtilUITheme {
     <#
-    
-        .DESCRIPTION
-        This function will set theme to the XAML file
 
-        .EXAMPLE
+    .SYNOPSIS
+        Sets the theme of the XAML file
 
+    .PARAMETER inputXML
+        A string representing the XAML object to modify
+
+    .PARAMETER themeName
+        The name of the theme to set the XAML to. Defaults to 'matrix'
+
+    .EXAMPLE
         Set-WinUtilUITheme -inputXAML $inputXAML
-    
+
     #>
     param
     (
@@ -41,7 +46,7 @@ function Set-WinUtilUITheme {
     }
     catch {
         Write-Warning "Unable to apply theme"
-        Write-Warning $psitem.Exception.StackTrace 
+        Write-Warning $psitem.Exception.StackTrace
     }
 
     return $inputXML;

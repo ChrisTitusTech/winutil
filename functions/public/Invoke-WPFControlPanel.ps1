@@ -1,9 +1,12 @@
 function Invoke-WPFControlPanel {
-        <#
-    
-        .DESCRIPTION
-        Simple Switch for legacy windows
-    
+    <#
+
+    .SYNOPSIS
+        Opens the requested legacy panel
+
+    .PARAMETER Panel
+        The panel to open
+
     #>
     param($Panel)
 

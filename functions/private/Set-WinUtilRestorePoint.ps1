@@ -1,10 +1,10 @@
 function Set-WinUtilRestorePoint {
     <#
-    
-        .DESCRIPTION
-        This function will make a Restore Point
 
-    #>    
+    .SYNOPSIS
+        Creates a Restore Point
+
+    #>
 
     # Check if the user has administrative privileges
     if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -24,7 +24,7 @@ function Set-WinUtilRestorePoint {
     $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
     if($null -eq $exists){
         write-host 'Changing system to allow multiple restore points per day'
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null  
+        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null
     }
 
     # Get all the restore points for the current day
@@ -33,7 +33,7 @@ function Set-WinUtilRestorePoint {
     # Check if there is already a restore point created today
     if ($existingRestorePoints.Count -eq 0) {
         $description = "System Restore Point created by WinUtil"
-        
+
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
         Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
     }

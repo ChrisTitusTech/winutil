@@ -1,9 +1,9 @@
 function Invoke-WPFundoall {
     <#
-    
-        .DESCRIPTION
-        PlaceHolder
-    
+
+    .SYNOPSIS
+        Undoes every selected tweak
+
     #>
 
     if($sync.ProcessRunning){
@@ -18,8 +18,8 @@ function Invoke-WPFundoall {
         $msg = "Please check the tweaks you wish to undo."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
-    }      
-    
+    }
+
     Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
         param($Tweaks)
 

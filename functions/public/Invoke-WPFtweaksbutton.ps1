@@ -1,9 +1,9 @@
 function Invoke-WPFtweaksbutton {
   <#
-  
-      .DESCRIPTION
-      PlaceHolder
-  
+
+    .SYNOPSIS
+        Invokes the functions associated with each group of checkboxes
+
   #>
 
   if($sync.ProcessRunning){
@@ -22,12 +22,12 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  Set-WinUtilRestorePoint
-
   Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
     param($Tweaks)
 
     $sync.ProcessRunning = $true
+
+    Set-WinUtilRestorePoint
 
     Foreach ($tweak in $tweaks){
         Invoke-WinUtilTweaks $tweak

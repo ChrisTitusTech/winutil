@@ -1,40 +1,41 @@
 function Invoke-WPFRunspace {
 
     <#
-    
-        .DESCRIPTION
-        Simple function to make it easier to invoke a runspace from inside the script. 
 
-        .EXAMPLE
+    .SYNOPSIS
+        Creates and invokes a runspace using the given scriptblock and argumentlist
 
-        $params = @{
-            ScriptBlock = $sync.ScriptsInstallPrograms
-            ArgumentList = "Installadvancedip,Installbitwarden"
-            Verbose = $true
-        }
+    .PARAMETER ScriptBlock
+        The scriptblock to invoke in the runspace
 
-        Invoke-WPFRunspace @params
-    
+    .PARAMETER ArgumentList
+        A list of arguments to pass to the runspace
+
+    .EXAMPLE
+        Invoke-WPFRunspace `
+            -ScriptBlock $sync.ScriptsInstallPrograms `
+            -ArgumentList "Installadvancedip,Installbitwarden" `
+
     #>
 
     [CmdletBinding()]
     Param (
         $ScriptBlock,
         $ArgumentList
-    ) 
+    )
 
-    #Crate a PowerShell instance.
+    # Create a PowerShell instance
     $script:powershell = [powershell]::Create()
 
-    #Add Scriptblock and Arguments to runspace
+    # Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.RunspacePool = $sync.runspace
-    
-    #Run our RunspacePool.
+
+    # Execute the RunspacePool
     $script:handle = $script:powershell.BeginInvoke()
 
-    #Cleanup our RunspacePool threads when they are complete ie. GC.
+    # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
     if ($script:handle.IsCompleted)
     {
         $script:powershell.EndInvoke($script:handle)
