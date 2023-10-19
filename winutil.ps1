@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.10
+    Version        : 23.10.19
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.10"
+$sync.version = "23.10.19"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2483,6 +2483,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
@@ -2631,6 +2632,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
@@ -3133,6 +3135,10 @@ $sync.configs.applications = '{
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
 	},
+	"WPFInstallmsiafterburner": {
+		"winget": "Guru3D.Afterburner",
+		"choco": "msiafterburner"
+	},
 	"WPFInstallmusicbee": {
 		"winget": "MusicBee.MusicBee",
 		"choco": "musicbee"
@@ -3344,6 +3350,10 @@ $sync.configs.applications = '{
 	"WPFInstallterminal": {
 		"winget": "Microsoft.WindowsTerminal",
 		"choco": "microsoft-windows-terminal"
+	},
+	"WPFInstallthorium": {
+		"winget": "Alex313031.Thorium",
+		"choco": "na"
 	},
 	"WPFInstalltor": {
 		"Winget": "TorProject.TorBrowser",
@@ -5184,6 +5194,26 @@ $sync.configs.tweaks = '{
         "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
         "State": "Disabled",
         "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\MareBackup",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
       }
     ],
     "registry": [
@@ -5470,7 +5500,8 @@ $sync.configs.tweaks = '{
       }
     ],
     "InvokeScript": [
-      "bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+      "
+      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
             $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
             Do {
@@ -5492,6 +5523,9 @@ $sync.configs.tweaks = '{
             Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
         }
         icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        # Disable Defender Auto Sample Submission
+        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
     ]
   },
