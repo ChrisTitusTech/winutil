@@ -38,7 +38,7 @@ function Install-WinUtilWinget {
         }
 
         Write-Host "Running Alternative Installer and Direct Installing"
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1 | iex"
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
 
         Write-Host "Winget Installed"
     }

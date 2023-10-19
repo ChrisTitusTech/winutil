@@ -15,13 +15,10 @@ function Install-WinUtilChoco {
             return
         }
 
-        Write-Host "Seems Chocolatey is not installed, installing now?"
-        # Let user decide if they want to install Chocolatey
-        $confirmation = Read-Host "Are you Sure You Want To Proceed:(y/n)"
-        if ($confirmation -eq 'y') {
-            Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
-            powershell choco feature enable -n allowGlobalConfirmation
-        }
+        Write-Host "Seems Chocolatey is not installed, installing now"
+        Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
+        powershell choco feature enable -n allowGlobalConfirmation
+
     }
     Catch {
         Write-Host "==========================================="
