@@ -28,6 +28,9 @@ Function Invoke-WPFUltimatePerformance {
                 # Add the power scheme
                 powercfg /duplicatescheme $powerSchemeGuid
                 powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
+                powercfg -setactive $powerSchemeGuid
+                powercfg -change -monitor-timeout-ac 0
+
 
                 Write-Host "Power scheme added successfully."
             }
