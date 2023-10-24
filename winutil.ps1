@@ -2213,7 +2213,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         mc:Ignorable="d"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
-        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1200">
+        Title="Twomey PC Repair Toolkit" Height="800" Width="1200">
 
     <Window.Resources>
         <Style TargetType="ComboBox">
