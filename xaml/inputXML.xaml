@@ -330,6 +330,7 @@
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrockstarlauncher" Content="Rockstar Games Launcher" Margin="5,0"/>
 
                                 <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>

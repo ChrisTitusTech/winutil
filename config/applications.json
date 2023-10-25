@@ -443,6 +443,10 @@
 		"winget": "RevoUninstaller.RevoUninstaller",
 		"choco": "revo-uninstaller"
 	},
+	"WPFInstallrockstarlauncher": {
+		"winget": "na",
+		"choco": "rockstar-launcher"
+	},
 	"WPFInstallrufus": {
 		"winget": "Rufus.Rufus",
 		"choco": "rufus"
