@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.25
+    Version        : 23.10.26
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.25"
+$sync.version = "23.10.26"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1023,7 +1023,7 @@ function New-Unattend {
 		</settings>
 	</unattend>
 "@
-	$unattend | Out-File -FilePath "$pwd\unattend.xml"
+	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
 function New-FirstRun {
@@ -1187,7 +1187,7 @@ function New-FirstRun {
 		Invoke-Expression -Command "C:\Windows\winutil.ps1"
 	}
 "@
-	$firstRun | Out-File -FilePath "$pwd\FirstStartup.ps1"
+	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
 function Remove-WinUtilAPPX {
     <#
@@ -2111,9 +2111,6 @@ function Invoke-WPFMicrowin {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-	# get unattench
-	# get firststartup.ps1
-
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -2187,10 +2184,10 @@ function Invoke-WPFMicrowin {
 	"wmic bios get serialnumber > C:\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 	"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 	New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Panther
-	Copy-Item $pwd\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
+	Copy-Item $env:temp\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
 	New-Item -ItemType Directory -Force -Path $scratchDir\Windows\System32\Sysprep
-	Copy-Item $pwd\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
-	Copy-Item $pwd\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
+	Copy-Item $env:temp\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
+	Copy-Item $env:temp\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
 	Copy-Item $pwd\winutil.ps1 $scratchDir\Windows\winutil.ps1 -force
 
 	# in case we want to get the file from the internet instead?
@@ -2313,10 +2310,11 @@ function Invoke-WPFMicrowin {
 	dism /unmount-image /mountdir:$scratchDir /commit 
 
 	Write-Host "Creating ISO image"
-	& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $pwd\microwin.iso
+	& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
 	Write-Host "Performing Cleanup"
 	Remove-Item -Recurse -Force "$($scratchDir)"
 	Remove-Item -Recurse -Force "$($mountDir)"
+	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
 	Write-Host " _____                       "
 	Write-Host "(____ \                      "
 	Write-Host " _   \ \ ___  ____   ____    "
@@ -3650,7 +3648,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     </TextBlock>
                                     <Button Name="WPFGetIso" Content="Chose Windows Iso file to process" Margin="2" Padding="15"/>
                                 </StackPanel>
-                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
+                                <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
                                     <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Chose Windows SKU</TextBlock>
                                     <ComboBox x:Name = "MicrowinWindowsFlavors" HorizontalAlignment="Left" Margin="1" VerticalAlignment="Top"/>
                                     <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Choose Windows features you want to remove from the ISO</TextBlock>
@@ -3670,6 +3668,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Border>
 
                             <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="1" Grid.Column="1">
+                                <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Visible">
                                     <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
                                         INSTRUCTIONS: <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
@@ -3681,8 +3680,20 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         - Click Start Process button <LineBreak/>
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
                                         Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
-                                        User Ventoy on your USB key to boot to this image. gg,
-                                    </TextBlock>     
+                                        Use Ventoy on your USB key to boot to this image. gg,
+                                    </TextBlock>
+                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                                        <LineBreak/>
+                                        AFTER the process is done final ISO will be put into the %TEMP% directory <LineBreak/>
+                                        And the path will be printed below:
+                                    </TextBlock>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="0" 
+                                        Text="Iso location..." 
+                                        IsReadOnly="True" 
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                        />
+                               </StackPanel>
                             </Border>
                         </Grid>
                     </TabItem>                    

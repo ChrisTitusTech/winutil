@@ -251,7 +251,7 @@ function New-Unattend {
 		</settings>
 	</unattend>
 "@
-	$unattend | Out-File -FilePath "$pwd\unattend.xml"
+	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
 function New-FirstRun {
@@ -415,5 +415,5 @@ function New-FirstRun {
 		Invoke-Expression -Command "C:\Windows\winutil.ps1"
 	}
 "@
-	$firstRun | Out-File -FilePath "$pwd\FirstStartup.ps1"
+	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }

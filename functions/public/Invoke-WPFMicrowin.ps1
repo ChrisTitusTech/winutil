@@ -23,9 +23,6 @@ function Invoke-WPFMicrowin {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-	# get unattench
-	# get firststartup.ps1
-
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -99,10 +96,10 @@ function Invoke-WPFMicrowin {
 	"wmic bios get serialnumber > C:\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 	"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 	New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Panther
-	Copy-Item $pwd\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
+	Copy-Item $env:temp\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
 	New-Item -ItemType Directory -Force -Path $scratchDir\Windows\System32\Sysprep
-	Copy-Item $pwd\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
-	Copy-Item $pwd\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
+	Copy-Item $env:temp\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
+	Copy-Item $env:temp\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
 	Copy-Item $pwd\winutil.ps1 $scratchDir\Windows\winutil.ps1 -force
 
 	# in case we want to get the file from the internet instead?
@@ -225,10 +222,11 @@ function Invoke-WPFMicrowin {
 	dism /unmount-image /mountdir:$scratchDir /commit 
 
 	Write-Host "Creating ISO image"
-	& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $pwd\microwin.iso
+	& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
 	Write-Host "Performing Cleanup"
 	Remove-Item -Recurse -Force "$($scratchDir)"
 	Remove-Item -Recurse -Force "$($mountDir)"
+	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
 	Write-Host " _____                       "
 	Write-Host "(____ \                      "
 	Write-Host " _   \ \ ___  ____   ____    "
