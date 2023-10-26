@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.25
+    Version        : 23.10.24
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
