@@ -3681,6 +3681,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         - Click Start Process button <LineBreak/>
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
                                         Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
+                                        User Ventoy on your USB key to boot to this image. gg,
                                     </TextBlock>     
                             </Border>
                         </Grid>
