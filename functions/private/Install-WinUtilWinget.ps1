@@ -40,6 +40,41 @@ function Install-WinUtilWinget {
         Write-Host "Running Alternative Installer and Direct Installing"
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
 
+        if (((($OSName.IndexOf("LTSC")) -ne -1) -or ($OSName.IndexOf("Server") -ne -1)) -and (($ComputerInfo.WindowsVersion) -ge "1809")) {
+
+            Write-Host "Running Alternative Installer for LTSC/Server Editions"
+
+            # Switching to winget-install from PSGallery from asheroto
+            # Source: https://github.com/asheroto/winget-installer
+
+            #adding the code from the asheroto repo
+            Set-ExecutionPolicy RemoteSigned -force
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+            Install-Script -Name winget-install -force
+            winget-instal
+            
+            
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-command irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/$BranchToUse/winget.ps1 | iex | Out-Host" -WindowStyle Normal -ErrorAction Stop
+
+            if(!(Test-WinUtilPackageManager -winget)){
+                break
+            }
+        }
+
+        else {
+            #Installing Winget from the Microsoft Store
+            # TODO: is MS store is uninstalled or corruted this doesn't work we should tryto above code if this is not working
+            # TODO: I've seen it fail way too many times not working to to try the back up logic.
+            Write-Host "Winget not found, installing it now."
+            Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+            $nid = (Get-Process AppInstaller).Id
+            Wait-Process -Id $nid
+
+            if(!(Test-WinUtilPackageManager -winget)){
+                break
+            }
+        }
         Write-Host "Winget Installed"
     }
     Catch{

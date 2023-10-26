@@ -53,5 +53,7 @@ function Invoke-WPFButton {
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
+        "WPFGetIso" {Invoke-WPFGetIso}
+        "WPFMicrowin" {Invoke-WPFMicrowin}
     }
 }
