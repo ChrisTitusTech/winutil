@@ -13,54 +13,7 @@
                     Command="{Binding keyWPFTab5BT}"/>
     </Window.InputBindings>
     <Window.Resources>
-<!--
-
-<Color x:Key="BorderMediumColor">#000000</Color>
-<Style TargetType="{x:Type ScrollViewer}">
-  <Setter Property="OverridesDefaultStyle"
-          Value="True" />
-  <Setter Property="Template">
-    <Setter.Value>
-      <ControlTemplate TargetType="{x:Type ScrollViewer}">
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <Border Grid.Column="1"
-                  BorderThickness="0,1,1,1">
-            <Border.BorderBrush>
-              <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
-            </Border.BorderBrush>
-            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}" />
-          </Border>
-          <ScrollBar x:Name="PART_VerticalScrollBar"
-                     Value="{TemplateBinding VerticalOffset}"
-                     Maximum="{TemplateBinding ScrollableHeight}"
-                     ViewportSize="{TemplateBinding ViewportHeight}"
-                     Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
-          <ScrollBar x:Name="PART_HorizontalScrollBar"
-                     Orientation="Horizontal"
-                     Grid.Row="1"
-                     Grid.Column="1"
-                     Value="{TemplateBinding HorizontalOffset}"
-                     Maximum="{TemplateBinding ScrollableWidth}"
-                     ViewportSize="{TemplateBinding ViewportWidth}"
-                     Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
-
-        </Grid>
-      </ControlTemplate>
-    </Setter.Value>
-  </Setter>
-</Style>
- -->
-
-
-<!--Scrollbar Thumbs-->
+        <!--Scrollbar Thumbs-->
         <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
             <Setter Property="Template">
                 <Setter.Value>

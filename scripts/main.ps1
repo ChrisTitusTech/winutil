@@ -146,7 +146,60 @@ $sync["Form"].Add_Closing({
     [System.GC]::Collect()
 })
 
+# adding some left mouse window move on drag capability
+$sync["Form"].Add_MouseLeftButtonDown({
+    $sync["Form"].DragMove()
+})
+
+# setting window icon to make it look more professional
+$sync["Form"].add_Loaded({
+    $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
+})
+
+$sync["Form"].Add_ContentRendered({    
+    Try { 
+        [Void][Window]
+    } Catch {
+        Add-Type @"
+        using System;
+        using System.Runtime.InteropServices;
+        public class Window {
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool ShowWindow(IntPtr handle, int state);
+        }
+        public struct RECT {
+            public int Left;   // x position of upper-left corner
+            public int Top;    // y position of upper-left corner
+            public int Right;  // x position of lower-right corner
+            public int Bottom; // y position of lower-right corner
+        }
+"@
+    }
+    
+    $processId  = [System.Diagnostics.Process]::GetCurrentProcess().Id
+    $windowHandle  = (Get-Process -Id $processId).MainWindowHandle
+    $rect = New-Object RECT
+    [Void][Window]::GetWindowRect($windowHandle,[ref]$rect)
+    
+    # only snap upper edge don't move left to right, in case people have multimon setup
+    $x = $rect.Left
+    $y = 0
+    $width  = $rect.Right  - $rect.Left
+    $height = $rect.Bottom - $rect.Top
+    
+    # Move the window to that position...
+    [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+})
+
 # Show the form
+$sync["Form"].Top = 0
 $sync["Form"].ShowDialog() | out-null
 
 Stop-Transcript

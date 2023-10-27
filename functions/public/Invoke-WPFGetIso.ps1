@@ -1,11 +1,8 @@
 function Invoke-WPFGetIso {
     <#
-
     .DESCRIPTION
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
-
     #>
-    #param($checkbox)
 
     Write-Host "Invoking WPFGetIso"
 
