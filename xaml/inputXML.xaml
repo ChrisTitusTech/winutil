@@ -13,6 +13,136 @@
                     Command="{Binding keyWPFTab5BT}"/>
     </Window.InputBindings>
     <Window.Resources>
+<!--
+
+<Color x:Key="BorderMediumColor">#000000</Color>
+<Style TargetType="{x:Type ScrollViewer}">
+  <Setter Property="OverridesDefaultStyle"
+          Value="True" />
+  <Setter Property="Template">
+    <Setter.Value>
+      <ControlTemplate TargetType="{x:Type ScrollViewer}">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border Grid.Column="1"
+                  BorderThickness="0,1,1,1">
+            <Border.BorderBrush>
+              <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
+            </Border.BorderBrush>
+            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}" />
+          </Border>
+          <ScrollBar x:Name="PART_VerticalScrollBar"
+                     Value="{TemplateBinding VerticalOffset}"
+                     Maximum="{TemplateBinding ScrollableHeight}"
+                     ViewportSize="{TemplateBinding ViewportHeight}"
+                     Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+          <ScrollBar x:Name="PART_HorizontalScrollBar"
+                     Orientation="Horizontal"
+                     Grid.Row="1"
+                     Grid.Column="1"
+                     Value="{TemplateBinding HorizontalOffset}"
+                     Maximum="{TemplateBinding ScrollableWidth}"
+                     ViewportSize="{TemplateBinding ViewportWidth}"
+                     Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+
+        </Grid>
+      </ControlTemplate>
+    </Setter.Value>
+  </Setter>
+</Style>
+ -->
+
+
+<!--Scrollbar Thumbs-->
+        <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                            <Border x:Name="Rectangle1" CornerRadius="9" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"
+                                 Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag" Value="Horizontal">
+                                <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                                <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--ScrollBars-->
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*" />
+                            </Grid.RowDefinitions>
+
+                            <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                                <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            </Trigger>
+                            <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                                <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Width" Value="Auto" />
+                                <Setter Property="Height" Value="12" />
+                                <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                                <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                                <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
@@ -169,7 +299,7 @@
         </Style>
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
-        <Viewbox Stretch="Uniform" VerticalAlignment="Top">
+        <!-- <Viewbox Stretch="Uniform" VerticalAlignment="Top"> -->
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid"  Width="Auto" Height="Auto">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
@@ -188,10 +318,11 @@
                         Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
                     <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
-                    <Button Content="MicroWin" HorizontalAlignment="Left" Height="40" Width="100" 
+                    <Button Content="MicroWin" HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab5BT" x:Key="keyWPFTab5BT" />
                 </DockPanel>
-                <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
+                <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="{ButtonForegroundColor}">
+                <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                         <Grid Background="#222222">
                             <Grid.ColumnDefinitions>
@@ -202,8 +333,8 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height=".10*"/>
-                                <RowDefinition Height=".90*"/>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
@@ -625,18 +756,19 @@
                                         AFTER the process is done final ISO will be put into the %TEMP% directory <LineBreak/>
                                         And the path will be printed below:
                                     </TextBlock>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="0" 
-                                        Text="Iso location..." 
-                                        IsReadOnly="True" 
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="0"
+                                        Text="Iso location..."
+                                        IsReadOnly="True"
                                         TextWrapping="Wrap"
                                         Foreground="{LabelboxForegroundColor}"
                                         />
                                </StackPanel>
                             </Border>
                         </Grid>
-                    </TabItem>                    
+                    </TabItem>
                 </TabControl>
+                </ScrollViewer>
             </Grid>
-        </Viewbox>
+        <!-- </Viewbox> -->
     </Border>
 </Window>
