@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
@@ -96,7 +95,6 @@ $sync.keys | ForEach-Object {
     }
 }
 
-
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
         if(
@@ -113,7 +111,6 @@ $sync.keys | ForEach-Object {
     }
 }
 
-
 #===========================================================================
 # Setup background config
 #===========================================================================
@@ -126,6 +123,8 @@ Invoke-WPFRunspace -ScriptBlock {
 
     $sync.ConfigLoaded = $True
 } | Out-Null
+
+Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
 
 #===========================================================================
 # Setup and Show the Form
@@ -145,6 +144,52 @@ $sync["Form"].Add_Closing({
     $sync.runspace.Close()
     [System.GC]::Collect()
 })
+
+
+
+# add some shortcuts for people that don't like clicking
+$commonKeyEvents = {
+    if ($sync.ProcessRunning -eq $true) {
+        return
+    }
+
+    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") -or
+        ($_.Key -eq "Escape")) {
+
+        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::OKCancel) 
+        switch ($ret){
+            "OK" {
+                $this.Close()
+            } 
+            "Cancel" {
+                return
+            } 
+        }
+    }
+    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "") {
+        Invoke-WPFButton "WPFTab1BT"
+    }
+    if ($_.Key -eq "T" -and $_.KeyboardDevice.Modifiers -eq "") {
+        Invoke-WPFButton "WPFTab2BT"
+    }
+    if ($_.Key -eq "C" -and $_.KeyboardDevice.Modifiers -eq "") {
+        Invoke-WPFButton "WPFTab3BT"
+    }
+    if ($_.Key -eq "U" -and $_.KeyboardDevice.Modifiers -eq "") {
+        Invoke-WPFButton "WPFTab4BT"
+    }
+    if ($_.Key -eq "M" -and $_.KeyboardDevice.Modifiers -eq "") {
+        Invoke-WPFButton "WPFTab5BT"
+    }
+    # shortcut to call Get Iso button for people that don't like clicking
+    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+        if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
+            Invoke-WPFButton "WPFGetIso"
+        }
+    }
+}
+$sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 # adding some left mouse window move on drag capability
 $sync["Form"].Add_MouseLeftButtonDown({
