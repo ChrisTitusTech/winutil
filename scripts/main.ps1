@@ -97,6 +97,17 @@ $sync.keys | ForEach-Object {
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+    }
+}
+
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
         if(
             $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
             -and $sync["$psitem"].Name -like "WPFToggle*"
@@ -240,6 +251,7 @@ $sync["Form"].add_Loaded({
     
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+    Invoke-WPFTab "WPFTab1BT"
 })
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

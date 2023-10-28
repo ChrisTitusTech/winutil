@@ -11,7 +11,7 @@ function Get-WinUtilVariables {
     #>
     param (
         [Parameter()]
-        [ValidateSet("CheckBox", "Button")]
+        [ValidateSet("CheckBox", "Button", "ToggleButton")]
         [string]$Type
     )
 

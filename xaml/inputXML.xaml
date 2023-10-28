@@ -8,10 +8,6 @@
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
-    <Window.InputBindings>
-        <KeyBinding Key="M" Modifiers="Shift+Alt"
-                    Command="{Binding WPFTab5BT}"/>
-    </Window.InputBindings>
     <Window.Resources>
         <!--Scrollbar Thumbs-->
         <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
@@ -33,7 +29,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
         <!--ScrollBars-->
         <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
             <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
@@ -94,16 +89,91 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-
+        <!-- Label template -->
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- Toggle button template x:Key="TabToggleButton" -->
+        <Style TargetType="{x:Type ToggleButton}">
+            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="ButtonGlow">
+                                <Grid>
+                                    <Border x:Name="BackgroundBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="White"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}"
+                                    >
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="0" BlurRadius="45"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="BorderBrush" Value="#007ACC"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+<!-- 
+<Style x:Key="TextBoxGlow" TargetType="{x:Type Button}">
+        <Style.Triggers>
+          <EventTrigger RoutedEvent="Button.MouseEnter">
+            <EventTrigger.Actions>
+              <BeginStoryboard>
+                <Storyboard>
+                  <DoubleAnimation Storyboard.TargetProperty="(Button.Content).(TextBlock.Effect).Opacity" From="0"
+                                   To="1" Duration="0:0:0.5" />
+                </Storyboard>
+              </BeginStoryboard>
+            </EventTrigger.Actions>
+          </EventTrigger>
+          <EventTrigger RoutedEvent="Button.MouseLeave">
+            <EventTrigger.Actions>
+              <BeginStoryboard>
+                <Storyboard>
+                  <DoubleAnimation Storyboard.TargetProperty="(Button.Content).(TextBlock.Effect).Opacity" From="1"
+                                   To="0" Duration="0:0:0.5" />
+                </Storyboard>
+              </BeginStoryboard>
+            </EventTrigger.Actions>
+          </EventTrigger>
+        </Style.Triggers>
+      </Style>
+ -->
+
+
+        <!-- Button Template -->
         <Style TargetType="Button">
             <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
             <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
@@ -124,7 +194,7 @@
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
                             </Trigger>
-                             <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
@@ -136,6 +206,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
@@ -262,46 +333,46 @@
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
                     <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button HorizontalAlignment="Left" Height="40" Width="100"
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT">
-                        <Button.Content>
-                            <TextBlock Background="{ButtonInstallBackgroundColor}">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent">
                                 <Underline>I</Underline>nstall
                             </TextBlock>
-                        </Button.Content>
-                    </Button>
-                    <Button HorizontalAlignment="Left" Height="40" Width="100"
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
-                        <Button.Content>
-                            <TextBlock Background="{ButtonTweaksBackgroundColor}">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent">
                                 <Underline>T</Underline>weaks
                             </TextBlock>
-                        </Button.Content>
-                    </Button>
-                    <Button HorizontalAlignment="Left" Height="40" Width="100"
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
-                        <Button.Content>
-                            <TextBlock Background="{ButtonConfigBackgroundColor}">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent">
                                 <Underline>C</Underline>onfig
                             </TextBlock>
-                        </Button.Content>
-                    </Button>
-                    <Button  HorizontalAlignment="Left" Height="40" Width="100"
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
-                        <Button.Content>
-                            <TextBlock Background="{ButtonUpdatesBackgroundColor}">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent">
                                 <Underline>U</Underline>pdates
                             </TextBlock>
-                        </Button.Content>
-                    </Button>
-                    <Button HorizontalAlignment="Left" Height="40" Width="100"
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
-                        <Button.Content>
-                            <TextBlock Background="{ButtonUpdatesBackgroundColor}">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent">
                                 <Underline>M</Underline>icroWin
                             </TextBlock>
-                        </Button.Content>
-                    </Button>
+                        </ToggleButton.Content>
+                    </ToggleButton>
                 </DockPanel>
                 <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="{ButtonForegroundColor}">
                 <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
@@ -332,7 +403,6 @@
                                 <Button Name="WPFimportWinget" Content=" Import " Margin="3"/>
                                 <Button Name="WPFexportWinget" Content=" Export " Margin="3"/>
                             </StackPanel>
-
                             
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
