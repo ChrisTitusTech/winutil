@@ -226,12 +226,15 @@ function Invoke-WPFMicrowin {
 	Write-Host "Performing Cleanup"
 	Remove-Item -Recurse -Force "$($scratchDir)"
 	Remove-Item -Recurse -Force "$($mountDir)"
-	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+	
 	Write-Host " _____                       "
 	Write-Host "(____ \                      "
 	Write-Host " _   \ \ ___  ____   ____    "
 	Write-Host "| |   | / _ \|  _ \ / _  )   "
 	Write-Host "| |__/ / |_| | | | ( (/ /    "
 	Write-Host "|_____/ \___/|_| |_|\____)   "
+	
+	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+	Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
 	$sync.ProcessRunning = $false
 }

@@ -252,7 +252,6 @@
         </Style>
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
-        <!-- <Viewbox Stretch="Uniform" VerticalAlignment="Top"> -->
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid"  Width="Auto" Height="Auto">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
@@ -303,6 +302,8 @@
                                 <Button Name="WPFimportWinget" Content=" Import " Margin="3"/>
                                 <Button Name="WPFexportWinget" Content=" Export " Margin="3"/>
                             </StackPanel>
+
+                            
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
@@ -722,6 +723,5 @@
                 </TabControl>
                 </ScrollViewer>
             </Grid>
-        <!-- </Viewbox> -->
     </Border>
 </Window>

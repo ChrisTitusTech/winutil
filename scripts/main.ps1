@@ -153,10 +153,9 @@ $sync["Form"].Add_MouseLeftButtonDown({
 
 # setting window icon to make it look more professional
 $sync["Form"].add_Loaded({
+   
     $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
-})
 
-$sync["Form"].Add_ContentRendered({    
     Try { 
         [Void][Window]
     } Catch {
@@ -197,9 +196,5 @@ $sync["Form"].Add_ContentRendered({
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
 })
-
-# Show the form
-$sync["Form"].Top = 0
 $sync["Form"].ShowDialog() | out-null
-
 Stop-Transcript
