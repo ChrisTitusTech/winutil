@@ -26,7 +26,6 @@ $adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
 if ($principal.IsInRole($adminRole))
 {
     $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-    $Host.UI.RawUI.BackgroundColor = "DarkGreen"
     clear-host
 }
 else
