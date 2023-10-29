@@ -722,50 +722,42 @@
                     <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
                         <Grid Width="Auto" Height="Auto">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-			                    <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="*"/>
+			                    <ColumnDefinition Width="4*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="1*" />
-			                    <RowDefinition Height="4*" />
+			                    <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="2" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        <Bold>MicroWin features:</Bold><LineBreak/>
-                                        - Remove Telemetry and Tracking <LineBreak/>
-                                        - Add ability to use local accounts <LineBreak/>
-                                        - Remove Wifi requirement to finish install <LineBreak/>
-                                        - Ability to remove Edge <LineBreak/>
-                                        - Ability to remove Defender <LineBreak/>
-                                        - Remove Teams <LineBreak/>
-                                        - Apps debloat <LineBreak/>
-                                    </TextBlock>
-                            </Border>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="1" Grid.Column="0">
-                            <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0" Margin="10,5" Width="269">
-                                <StackPanel HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
+                            <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                                <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                                    <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                         Choose a Windows ISO file that you've downloaded. <LineBreak/>
-                                        It will be processed and unpacked which could take several minutes to process the ISO depending on your machine. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
                                     <Button Name="WPFGetIso" Margin="2" Padding="15">
                                        <Button.Content>
                                             <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
-                                                Get Windows <Underline>I</Underline>SO
+                                                Select Windows <Underline>I</Underline>SO
                                             </TextBlock>
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Chose Windows SKU</TextBlock>
-                                    <ComboBox x:Name = "MicrowinWindowsFlavors" HorizontalAlignment="Left" Margin="1" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
+                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                                     <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
@@ -775,12 +767,53 @@
                                 </StackPanel>
                             </StackPanel>
                             </Border>
+                            <Border Background="{MainBackgroundColor}" 
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                BorderBrush="Yellow" 
+                                CornerRadius="2" 
+                                BorderThickness="2"
+                                Grid.Row="0" Grid.Column="1"
+                                Margin="1">
+                                <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible" 
+                                    >
+                                    <TextBlock x:Name = "asciiTextBlock"
+                                        xml:space ="preserve"
+                                        HorizontalAlignment = "Center"
+                                        Margin = "0"
+                                        VerticalAlignment = "Top"
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        FontSize = "10"
+                                        FontFamily = "Courier New"
+                                    >
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
+ /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+                                    </TextBlock>
+                                    <TextBlock Margin="0" 
+                                        Padding="8" 
+                                        VerticalAlignment="Center" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        Foreground="{ComboBoxForegroundColor}">
+                                        <Bold>MicroWin features:</Bold><LineBreak/>
+                                        - Remove Telemetry and Tracking <LineBreak/>
+                                        - Add ability to use local accounts <LineBreak/>
+                                        - Remove Wifi requirement to finish install <LineBreak/>
+                                        - Ability to remove Edge <LineBreak/>
+                                        - Ability to remove Defender <LineBreak/>
+                                        - Remove Teams <LineBreak/>
+                                        - Apps debloat <LineBreak/>
+                                        <LineBreak/>
+                                        <LineBreak/>
 
-                            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="1" Grid.Column="1">
-                                <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Visible">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        INSTRUCTIONS: <LineBreak/>
+                                        <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
+                                            It will be processed and unpacked which could take <LineBreak/>
+                                            several minutes to process the ISO depending on your machine. <LineBreak/>
                                         - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
                                         - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
@@ -791,17 +824,10 @@
                                         Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
                                         Use Ventoy on your USB key to boot to this image. gg,
                                     </TextBlock>
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                                    <TextBlock Margin="0" Padding="8" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
                                         <LineBreak/>
-                                        AFTER the process is done final ISO will be put into the %TEMP% directory <LineBreak/>
-                                        And the path will be printed below:
+                                        AFTER the process is done, final ISO will be put into the %TEMP% directory <LineBreak/>
                                     </TextBlock>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="0"
-                                        Text="ISO location will be printed here"
-                                        IsReadOnly="True"
-                                        TextWrapping="Wrap"
-                                        Foreground="{LabelboxForegroundColor}"
-                                        />
                                </StackPanel>
                             </Border>
                         </Grid>

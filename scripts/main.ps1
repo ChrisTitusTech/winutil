@@ -135,8 +135,6 @@ Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $True
 } | Out-Null
 
-Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
-
 #===========================================================================
 # Setup and Show the Form
 #===========================================================================
@@ -253,5 +251,9 @@ $sync["Form"].add_Loaded({
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
     Invoke-WPFTab "WPFTab1BT"
 })
+
+# show current windowsd Product ID
+Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
