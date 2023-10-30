@@ -3240,6 +3240,10 @@ $sync.configs.applications = '{
 		"winget": "Oracle.VirtualBox",
 		"choco": "virtualbox"
 	},
+	"WPFInstallPaintdotnet": {
+		"winget": "dotPDNLLC.paintdotnet",
+		"choco": "paint.net"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
