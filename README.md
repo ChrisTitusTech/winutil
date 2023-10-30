@@ -18,7 +18,7 @@ or by executing:
 ```
 irm https://christitus.com/win | iex
 ```
-Credits to [#144](/../../issues/144)
+Courtesy of the issue raised at: [#144](/../../issues/144)
 
 ### Issues:
 
