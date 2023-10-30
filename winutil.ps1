@@ -3236,6 +3236,10 @@ $sync.configs.applications = '{
 		"winget": "OpenVPNTechnologies.OpenVPNConnect",
 		"choco": "openvpn-connect"
 	},
+	"WPFInstallOVirtualBox": {
+		"winget": "Oracle.VirtualBox",
+		"choco": "virtualbox"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
