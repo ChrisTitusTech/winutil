@@ -2924,6 +2924,10 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.DotNet.DesktopRuntime.7",
 		"choco": "dotnet-7.0-runtime"
 	},
+	"WPFInstallduplicati": {
+		"winget": "Duplicati.Duplicati",
+		"choco": "duplicati"
+	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
 		"choco": "ea-app"
