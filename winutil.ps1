@@ -3232,6 +3232,10 @@ $sync.configs.applications = '{
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
 	},
+	"WPFInstallOpenVPN": {
+		"winget": "OpenVPNTechnologies.OpenVPNConnect",
+		"choco": "openvpn-connect"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
