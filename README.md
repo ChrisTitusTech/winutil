@@ -1,6 +1,6 @@
 # Chris Titus Tech's Windows Utility
 
-This Utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient. 
+This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient. 
 
 ![screen-install](screen-install.png)
 
@@ -14,28 +14,30 @@ Launch Command:
 ```
 iwr -useb https://christitus.com/win | iex
 ```
-Or shorter Thanks to [#144](/../../issues/144)
+or by executing: 
 ```
 irm https://christitus.com/win | iex
 ```
+Courtesy of the issue raised at: [#144](/../../issues/144)
+
 ### Issues:
 
-- If you can't resolve christitus.com/win and getting errors launching India Region is BLOCKING raw github files and you need to VPN outside India. 
+- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
 
 Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
 
-- AntiVirus is also blocking the script. You can disable it temporarily to run the script. The script is flagged for malware because it runs under the administrator and makes system changes.
+- Windows Security (formerly Defender) and other anti-virus software are known to block the script. The script gets flagged due to the fact that it requires administrator privileges & makes drastic system changes.
 
-- If you are having TLS 1.2 Issues or You cannot find or resolve `christitus.com/win` then run with the following command:
+- If you are having TLS 1.2 issues, or are having trouble resolving `christitus.com/win` then run with the following command:
 
 ```
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1')
 ```
 
-If you are still having issues try changing your DNS provider to 1.1.1.1 or 8.8.8.8
+If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.0.1 or 8.8.8.8 || 8.8.4.4
 
 ## Support
-- This project needs a ⭐️ from you. Don't forget to leave a star ⭐️.
+- To morally and mentally support the project, make sure to leave a ⭐️!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
 ## Tutorial
@@ -88,7 +90,7 @@ If you encounter any challenges or problems with the script, I kindly request th
 
 ## Contribute Code
 
-To contribute a new code, please ensure that it is submitted to the **TEST BRANCH**. Please note that merges will not be performed directly on the MAIN branch.
+To contribute new code, please ensure that it is submitted to the **TEST BRANCH**. Please note that merges will not be performed directly on the MAIN branch.
 
 When creating pull requests, it is essential to thoroughly document all changes made. This includes documenting any additions made to the tweaks section and ensuring that corresponding undo measures are in place to remove the newly added tweaks if necessary. Failure to adhere to this format may result in denial of the pull request. Additionally, comprehensive documentation is required for all code changes. Any code lacking sufficient documentation may also be denied.
 
