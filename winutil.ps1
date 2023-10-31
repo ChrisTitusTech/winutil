@@ -3098,7 +3098,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallkdeconnect": {
 		"winget": "KDE.KDEConnect",
-		"choco": "duplicati"
+		"choco": "kdeconnect-kde"
 	},
 	"WPFInstallkdenlive": {
 		"Winget": "KDE.Kdenlive",
