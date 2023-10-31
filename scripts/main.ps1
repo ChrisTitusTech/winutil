@@ -129,9 +129,7 @@ $sync.keys | ForEach-Object {
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $False
-
     $sync.ComputerInfo = Get-ComputerInfo
-
     $sync.ConfigLoaded = $True
 } | Out-Null
 
@@ -154,40 +152,58 @@ $sync["Form"].Add_Closing({
     [System.GC]::Collect()
 })
 
-
-
 # add some shortcuts for people that don't like clicking
 $commonKeyEvents = {
     if ($sync.ProcessRunning -eq $true) {
         return
     }
 
-    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") -or
-        ($_.Key -eq "Escape")) {
+    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
+    if ($_.Key -eq "Escape") {
+        if ($sync.CheckboxFilter.Text -eq "") {
+            $sync.WPFTab1BT.Focus()
+        }
+        else {
+            $sync.CheckboxFilter.Text = ""
+            return
+        }
+    }
 
-        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::OKCancel) 
+    # don't ask, I know what I'm doing, just go...
+    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
+    {
+        $this.Close()
+        return
+    }
+   
+    # Escape is easier to press by mistake, ask if they really want to leave
+    if($_.Key -eq "Escape") {
+
+        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
         switch ($ret){
-            "OK" {
+            "Yes" {
                 $this.Close()
             } 
-            "Cancel" {
+            "No" {
                 return
             } 
         }
     }
-    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "") {
+
+    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
         Invoke-WPFButton "WPFTab1BT"
     }
-    if ($_.Key -eq "T" -and $_.KeyboardDevice.Modifiers -eq "") {
+    if ($_.Key -eq "T" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
         Invoke-WPFButton "WPFTab2BT"
     }
-    if ($_.Key -eq "C" -and $_.KeyboardDevice.Modifiers -eq "") {
+    if ($_.Key -eq "C" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
         Invoke-WPFButton "WPFTab3BT"
     }
-    if ($_.Key -eq "U" -and $_.KeyboardDevice.Modifiers -eq "") {
+    if ($_.Key -eq "U" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
         Invoke-WPFButton "WPFTab4BT"
     }
-    if ($_.Key -eq "M" -and $_.KeyboardDevice.Modifiers -eq "") {
+    if ($_.Key -eq "M" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
         Invoke-WPFButton "WPFTab5BT"
     }
     # shortcut to call Get Iso button for people that don't like clicking
@@ -195,6 +211,14 @@ $commonKeyEvents = {
         $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
         if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
             Invoke-WPFButton "WPFGetIso"
+        }
+    }
+    # shortcut for the filter box
+    if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $sync.CheckboxFilter.Focus()
+        if ($sync.CheckboxFilter.Text -eq "Filter") {
+            $sync.CheckboxFilter.SelectAll()
+            $sync.CheckboxFilter.Text = ""
         }
     }
 }
@@ -206,7 +230,7 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 # setting window icon to make it look more professional
-$sync["Form"].add_Loaded({
+$sync["Form"].Add_Loaded({
    
     $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
 
@@ -250,6 +274,27 @@ $sync["Form"].add_Loaded({
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
     Invoke-WPFTab "WPFTab1BT"
+})
+
+$sync["CheckboxFilter"].Add_TextChanged({
+    Write-host $sync.CheckboxFilter.Text
+
+    $filter = Get-WinUtilVariables -Type Checkbox
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+    $textToSearch = $sync.CheckboxFilter.Text
+    Foreach ($CheckBox in $CheckBoxes) {
+         #Write-Host "$($CheckBox.GetType().Name)"
+         Write-Host "$($sync.CheckboxFilter.Text)"
+         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+            continue
+        }
+         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+             $CheckBox.Value.Visibility = "Visible"
+         }
+         else {
+             $CheckBox.Value.Visibility = "Collapsed"
+         }
+     }
 })
 
 # show current windowsd Product ID

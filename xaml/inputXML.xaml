@@ -353,6 +353,9 @@
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
+                    <TextBox VerticalContentAlignment="Center" HorizontalAlignment="Right" Name="CheckboxFilter" ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
+                        Height="25" Width="150" 
+                        Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"></TextBox>
                 </DockPanel>
                 <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="{ButtonForegroundColor}">
                 <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
