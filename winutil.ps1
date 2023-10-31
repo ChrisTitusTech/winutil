@@ -3252,7 +3252,7 @@ $sync.configs.applications = '{
 		"choco": "putty"
 	},
 	"WPFInstallpython3": {
-		"winget": "Python.Python.3.11",
+		"winget": "Python.Python.3.12",
 		"choco": "python"
 	},
 	"WPFInstallqbittorrent": {
