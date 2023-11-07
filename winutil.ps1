@@ -2424,6 +2424,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
+               
                                 <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -2505,6 +2506,97 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid x:Name="toggleSwitch">
+                            <Border x:Name="Border" CornerRadius="10"
+                                    Background="#FFFFFFFF"
+                                    Width="70" Height="25">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
+                                </Border.Effect>
+                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
+                                        Margin="2 2 2 1"
+                                        Stroke="Gray" StrokeThickness="0.2"
+                                        HorizontalAlignment="Left" Width="22">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+
+                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
+                            <TextBlock x:Name="txtEnable" Text="    Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ToggleButton.IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#C2283B" />
+                                <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
+                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
+                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
+                            </Trigger>
+
+                            <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#34A543" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="56 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+
+                                <!-- Some out fading -->
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#C2283B" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="2 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+
+                                <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+
+
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
         <Viewbox Stretch="Uniform" VerticalAlignment="Top">
@@ -2741,15 +2833,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                         <Grid Background="#333333">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".35*"/>
+                                <ColumnDefinition Width=".35*"/>
+                                <ColumnDefinition Width=".30*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height=".10*"/>
                                 <RowDefinition Height=".70*"/>
                                 <RowDefinition Height=".10*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center"  Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
                                 <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
@@ -2757,12 +2850,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFclear" Content=" Clear " Margin="7"/>
                                 <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFimport" Content=" Import " Margin="7"/>
                                 <Button Name="WPFexport" Content=" Export " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="3" Margin="10">
                                 <TextBlock Padding="10">
                                     Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                     <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
@@ -2782,18 +2875,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
                                 <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
                                 <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-                                <Label Content="Dark Theme" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Off" />
-                                    <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="On" />
-                                </StackPanel>
-                                <Label Content="Bing Search in Start Menu" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Off" />
-                                    <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="On" />
-                                </StackPanel>
+                                
 							<Label Content="Performance Plans" />
                                 <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
                                 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
@@ -2803,12 +2885,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <Label Content="NumLock on Startup" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Disable" />
-                                    <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="Enable" />
-                                </StackPanel>                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
+                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
@@ -2819,12 +2896,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <Label Content="Verbose Logon Messages" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Disable" />
-                                    <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="Enable" />
-                                </StackPanel>                                
+                               
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
@@ -2843,6 +2915,36 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160"/>
                                 <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160"/>
                             </StackPanel>
+
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10,5">
+                            <Label FontSize="16" Content="Customize Preferences"/>
+
+                            
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Dark Theme" />
+                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Bing Search in Start Menu" />
+                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="NumLock on Startup" />
+                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Verbose Logon Messages" />
+                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+
+                            </StackPanel> <!-- End of Customize Preferences Section -->
+                            
+
                         </Grid>
                     </TabItem>
                     <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
