@@ -50,4 +50,13 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleShowExt"){
+        $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
+        if($hideextvalue -eq 0){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
 }
