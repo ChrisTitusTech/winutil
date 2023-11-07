@@ -223,6 +223,18 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
+        $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
+        $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
+        $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
+
+        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
 }
 function Get-WinUtilVariables {
 
@@ -597,6 +609,48 @@ function Invoke-WinUtilFeatureInstall {
                 }
             }
         }
+    }
+}
+Function Invoke-WinUtilMouseAcceleration {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Mouse Acceleration
+
+    .PARAMETER DarkMoveEnabled
+        Indicates the current Mouse Acceleration State
+
+    #>
+    Param($MouseAccelerationEnabled)
+    Try{
+        if ($MouseAccelerationEnabled -eq $false){
+            Write-Host "Enabling Mouse Acceleration"
+            $MouseSpeed = 1
+            $MouseThreshold1 = 6
+            $MouseThreshold2 = 10
+        } 
+        else {
+            Write-Host "Disabling Mouse Acceleration"
+            $MouseSpeed = 0
+            $MouseThreshold1 = 0
+            $MouseThreshold2 = 0 
+            
+        }
+
+        $Path = "HKCU:\Control Panel\Mouse"
+        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
+        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
+        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Invoke-WinUtilNumLock {
@@ -1826,6 +1880,7 @@ function Invoke-WPFToggle {
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
         "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2934,8 +2989,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
+                                
                                
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
@@ -2985,7 +3039,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Show File Extentions" />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
-
+                            <!-- <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
+                            <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/> -->
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Mouse Acceleration" />
+                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
 
                             </StackPanel> <!-- End of Customize Preferences Section -->
                             
@@ -5780,17 +5839,6 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFMiscTweaksExt": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "HideFileExt",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFMiscTweaksUTC": {
     "registry": [
       {
@@ -6173,56 +6221,6 @@ $sync.configs.tweaks = '{
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
         "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksDisableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "0",
-        "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "1",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "6",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "10",
-        "Type": "String"
       }
     ]
   },
