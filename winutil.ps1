@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.31
+    Version        : 23.11.07
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.31"
+$sync.version = "23.11.07"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -196,6 +196,15 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if($ToggleSwitch -eq "WPFToggleNumLock"){
+        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
+        if($numlockvalue -eq 2){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
 }
 function Get-WinUtilVariables {
 
@@ -570,6 +579,37 @@ function Invoke-WinUtilFeatureInstall {
                 }
             }
         }
+    }
+}
+function Invoke-WinUtilNumLock {
+    <#
+    .SYNOPSIS
+        Disables/Enables NumLock on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Numlock on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Numlock on startup"
+            $value = 2
+        }
+        else {
+            Write-Host "Disabling Numlock on startup"
+            $value = 0
+        }
+        $Path = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Invoke-WinUtilScript {
@@ -1074,7 +1114,6 @@ function Invoke-WPFButton {
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
-        "WPFToggleDarkMode" {Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
         "WPFPanelDISM" {Invoke-WPFPanelDISM}
@@ -1704,7 +1743,7 @@ function Invoke-WPFToggle {
 
         "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
         "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
-
+        "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2723,9 +2762,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
-                                <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
-                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
+                                <Label Content="NumLock on Startup" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Disable" />
+                                    <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="Enable" />
+                                </StackPanel>                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
@@ -3571,8 +3613,7 @@ $sync.configs.preset = '{
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksPower",
-    "WPFMiscTweaksNum"
+    "WPFMiscTweaksPower"
   ],
   "laptop": [
     "WPFEssTweaksAH",
@@ -3584,8 +3625,7 @@ $sync.configs.preset = '{
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksLapPower",
-    "WPFMiscTweaksLapNum"
+    "WPFMiscTweaksLapPower"
   ],
   "minimal": [
     "WPFEssTweaksHome",
@@ -5799,28 +5839,6 @@ $sync.configs.tweaks = '{
     "UndoScript": [
       "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
       "
-    ]
-  },
-  "WPFMiscTweaksLapNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "80000002",
-        "Type": "DWord"
-      }
     ]
   },
   "WPFEssTweaksRemoveEdge": {
