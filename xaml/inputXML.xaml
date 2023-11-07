@@ -591,60 +591,60 @@
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                
-                               
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
-                                <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
-								    <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                    <ComboBoxItem Content = "DHCP"/>
-								    <ComboBoxItem Content = "Google"/>
-								    <ComboBoxItem Content = "Cloudflare"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
-								    <ComboBoxItem Content = "Level3"/>
-								    <ComboBoxItem Content = "Open_DNS"/>
-                                    <ComboBoxItem Content = "Quad9"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <Label Content="DNS" />
+                                    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
+                                        <ComboBoxItem IsSelected="True" Content = "Default"/>
+                                        <ComboBoxItem Content = "DHCP"/>
+                                        <ComboBoxItem Content = "Google"/>
+                                        <ComboBoxItem Content = "Cloudflare"/>
+                                        <ComboBoxItem Content = "Cloudflare_Malware"/>
+                                        <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
+                                        <ComboBoxItem Content = "Level3"/>
+                                        <ComboBoxItem Content = "Open_DNS"/>
+                                        <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox>
-                                <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160"/>
-                                <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160"/>
+                                </StackPanel>
+                                
+                                    <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
+                                    <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
+                                
                             </StackPanel>
 
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10,5">
                             <Label FontSize="16" Content="Customize Preferences"/>
 
                             
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Dark Theme" />
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Dark Theme" ToolTip="Enable/Disable Dark Mode." />
                                 <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
-                            
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Bing Search in Start Menu" />
+                                <Label Content="Bing Search in Start Menu" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
                                 <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="NumLock on Startup" />
+                                <Label Content="NumLock on Startup" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
                                 <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Verbose Logon Messages" />
+                                <Label Content="Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
                                 <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extentions" />
+                                <Label Content="Show File Extentions" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
-                            <!-- <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
-                            <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/> -->
+
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Mouse Acceleration" />
+                                <Label Content="Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
                                 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
