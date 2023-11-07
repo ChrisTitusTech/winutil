@@ -518,7 +518,13 @@
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+                                <Label Content="Verbose Logon Messages" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Disable" />
+                                    <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="Enable" />
+                                </StackPanel>
+                                
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
