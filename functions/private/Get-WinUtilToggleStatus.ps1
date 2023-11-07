@@ -32,4 +32,24 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if($ToggleSwitch -eq "WPFToggleNumLock"){
+        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
+        if($numlockvalue -eq 2){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
+    HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+        if($VerboseStatusvalue -eq 1){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
+
 }

@@ -10,8 +10,7 @@
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksPower",
-    "WPFMiscTweaksNum"
+    "WPFMiscTweaksPower"
   ],
   "laptop": [
     "WPFEssTweaksAH",
@@ -23,8 +22,7 @@
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksLapPower",
-    "WPFMiscTweaksLapNum"
+    "WPFMiscTweaksLapPower"
   ],
   "minimal": [
     "WPFEssTweaksHome",

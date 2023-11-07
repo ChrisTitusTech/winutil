@@ -2163,28 +2163,6 @@
       "
     ]
   },
-  "WPFMiscTweaksLapNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "80000002",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
         "
@@ -2374,17 +2352,6 @@
         "Name": "MouseThreshold2",
         "Value": "10",
         "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "Name": "VerboseStatus",
-        "Value": "1",
-        "Type": "DWord"
       }
     ]
   },
