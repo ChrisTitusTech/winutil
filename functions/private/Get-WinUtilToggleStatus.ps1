@@ -40,5 +40,14 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
+    }
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+        if($VerboseStatusvalue -eq 1){
+            return $true
+        }
+        else{
+            return $false
+        }
     }    
 }

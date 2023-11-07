@@ -2355,17 +2355,6 @@
       }
     ]
   },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "Name": "VerboseStatus",
-        "Value": "1",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFEssTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse

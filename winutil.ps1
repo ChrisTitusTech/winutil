@@ -204,6 +204,15 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
+    }
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+        if($VerboseStatusvalue -eq 1){
+            return $true
+        }
+        else{
+            return $false
+        }
     }    
 }
 function Get-WinUtilVariables {
@@ -725,6 +734,37 @@ function Invoke-WinUtilTweaks {
             }
         }
 
+    }
+}
+function Invoke-WinUtilVerboseLogon {
+    <#
+    .SYNOPSIS
+        Disables/Enables VerboseLogon Messages
+    .PARAMETER Enabled
+        Indicates whether to enable or disable VerboseLogon messages
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Verbose Logon Messages"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Verbose Logon Messages"
+            $value = 0
+        }
+        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Remove-WinUtilAPPX {
@@ -1744,6 +1784,7 @@ function Invoke-WPFToggle {
         "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
         "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
+        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2778,7 +2819,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
                                 <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
                                 <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
+                                <Label Content="Verbose Logon Messages" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Disable" />
+                                    <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
+                                    <Label Content="Enable" />
+                                </StackPanel>                                
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
@@ -6030,17 +6076,6 @@ $sync.configs.tweaks = '{
         "Name": "MouseThreshold2",
         "Value": "10",
         "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "Name": "VerboseStatus",
-        "Value": "1",
-        "Type": "DWord"
       }
     ]
   },
