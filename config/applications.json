@@ -547,6 +547,10 @@
 		"winget": "9PF4KZ2VN4W9",
 		"choco": "translucenttb"
 	},
+	"WPFInstallthunderbird": {
+		"winget": "Mozilla.Thunderbird",
+		"choco": "thunderbird"
+	},
 	"WPFInstalltwinkletray": {
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
