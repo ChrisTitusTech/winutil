@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.07
+    Version        : 23.11.09
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.07"
+$sync.version = "23.11.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2602,7 +2602,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -2689,6 +2688,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
             <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+            <Setter Property="Background" Value="{MainBackgroundColor}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
 
@@ -3017,32 +3025,32 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Dark Theme" ToolTip="Enable/Disable Dark Mode." />
+                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
                                 <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Bing Search in Start Menu" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
+                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
                                 <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="NumLock on Startup" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
+                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
                                 <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
+                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
                                 <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extentions" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <Label Content="Show File Extentions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
+                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
                                 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
