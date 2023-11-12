@@ -10,25 +10,37 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.24
+    Version        : 23.10.31
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # Load DLLs
+Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.26"
+$sync.version = "23.10.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
+$currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
+$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+if ($principal.IsInRole($adminRole))
+{
+    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+    clear-host
+}
+else
+{
+    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
+    $newProcess.Arguments = $myInvocation.MyCommand.Definition;
+    $newProcess.Verb = "runas";
+    [System.Diagnostics.Process]::Start($newProcess);
     break
 }
 function Copy-Files {
@@ -258,7 +270,7 @@ function Get-WinUtilVariables {
     #>
     param (
         [Parameter()]
-        [ValidateSet("CheckBox", "Button")]
+        [ValidateSet("CheckBox", "Button", "ToggleButton")]
         [string]$Type
     )
 
@@ -1808,7 +1820,6 @@ Function Invoke-WPFFormVariables {
     Write-Host "====Chris Titus Tech====="
     Write-Host "=====Windows Toolbox====="
 
-
     #====DEBUG GUI Elements====
 
     #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
@@ -1865,12 +1876,9 @@ function Invoke-WPFGetInstalled {
 }
 function Invoke-WPFGetIso {
     <#
-
     .DESCRIPTION
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
-
     #>
-    #param($checkbox)
 
     Write-Host "Invoking WPFGetIso"
 
@@ -1886,19 +1894,20 @@ function Invoke-WPFGetIso {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    Get-IsoInfo
-    Write-Host "Done reading and unpacking ISO..."
-    $sync.ProcessRunning = $false
-}
-
-function Get-IsoInfo
-{
-    
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
-    Write-Verbose -vb "oscdimge.exe found? $oscdImgFound"
+    Write-Host "oscdimge.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) {
         [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
+        
+        # the step below needs choco to download oscdimg
+        $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
+        Write-Host "choco on system: $oscdImgFound"
+        if (!$chocoFound) {
+            [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+            return
+        }
+
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
         [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
         return
@@ -1915,53 +1924,86 @@ function Get-IsoInfo
     $openFileDialog.ShowDialog() | Out-Null
     $filePath = $openFileDialog.FileName
 
+    if ([string]::IsNullOrEmpty($filePath))
+    {
+        Write-Host "No ISO is chosen"
+        return
+    }
+
     Write-Host "File path $($filePath)"
-    #$sync.MicrowinIsoLocation.Text = "Iso Location: $($filePath)"
+    if (-not (Test-Path -Path $filePath -PathType Leaf))
+    {
+        $msg = "File you've chosen doesn't exist"
+        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+        return
+    }
+
     Write-Host "MicroWin: Mounting Iso"
 
     $mountedISO = Mount-DiskImage -PassThru $filePath
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
-    $data = @($driveLetter,$filePath)
-    Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
-        param($data)
-        $sync.ProcessRunning = $true
-        $sync.Form.Dispatcher.Invoke({
-            $sync.MicrowinIsoDrive.Text = $data[0]
-            $sync.MicrowinIsoLocation.Text = $data[1]
-        })
+    try {
+        
+        $data = @($driveLetter,$filePath)
+        Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
+            param($data)
+            $sync.ProcessRunning = $true
+            $sync.Form.Dispatcher.Invoke({
+                $sync.MicrowinIsoDrive.Text = $data[0]
+                $sync.MicrowinIsoLocation.Text = $data[1]
+            })
+        }
+
+        Write-Host "MicroWin: ISO is mounted to $($driveLetter) Installed"
+            
+        Write-Host "Creating temp directories"
+        $mountDir = "c:\microwin"
+        $scratchDir = "c:\microwinscratch"
+        $sync.MicrowinMountDir.Text = $mountDir
+        $sync.MicrowinScratchDir.Text = $scratchDir
+        New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
+        New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
+        Write-Host "Copying Windows image..."
+        
+        # xcopy we can verify files and also not copy files that already exist, but hard to measure
+        # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
+        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
+        Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
+
+        $wimFile = "$mountDir\sources\install.wim"
+        Write-Host "Getting image information $wimFile"
+
+        if (-not (Test-Path -Path $wimFile -PathType Leaf))
+        {
+            $msg = "install wim file doesn't exist in the image, are you sure you used Windows image??"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            throw
+        }
+        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+            $imageIdx = $_.ImageIndex
+            $imageName = $_.ImageName
+            $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
+        }
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
+        Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
+
+        $sync.MicrowinOptionsPanel.Visibility = 'Visible'
+    }
+    catch {
+        Write-Host "Dismounting bad image..."
+        Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
+        Remove-Item -Recurse -Force "$($scratchDir)"
+        Remove-Item -Recurse -Force "$($mountDir)"
     }
 
-    Write-Host "MicroWin: ISO is mounted to $($driveLetter) Installed"
-        
-	Write-Host "Creating temp directories"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
-    $sync.MicrowinMountDir.Text = $mountDir
-    $sync.MicrowinScratchDir.Text = $scratchDir
-	New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
-	New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
-	Write-Host "Copying Windows image..."
-    
-    # xcopy we can verify files and also not copy files that already exist, but hard to measure
-	# xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-	$totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
-	Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
-
-    $wimFile = "$mountDir\sources\install.wim"
-    Write-Host "Getting image information $wimFile"
-    Get-WindowsImage -ImagePath C:\microwin\sources\install.wim | ForEach-Object {
-		$imageIdx = $_.ImageIndex
-        $imageName = $_.ImageName
-        $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
-	}
-    $sync.MicrowinWindowsFlavors.SelectedIndex = 0
-    Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
-    Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
-
-    $sync.MicrowinOptionsPanel.Visibility = 'Visible'
+    Write-Host "Done reading and unpacking ISO..."
+    $sync.ProcessRunning = $false
 }
+
+
 function Invoke-WPFImpex {
     <#
 
@@ -2314,13 +2356,16 @@ function Invoke-WPFMicrowin {
 	Write-Host "Performing Cleanup"
 	Remove-Item -Recurse -Force "$($scratchDir)"
 	Remove-Item -Recurse -Force "$($mountDir)"
-	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+	
 	Write-Host " _____                       "
 	Write-Host "(____ \                      "
 	Write-Host " _   \ \ ___  ____   ____    "
 	Write-Host "| |   | / _ \|  _ \ / _  )   "
 	Write-Host "| |__/ / |_| | | | ( (/ /    "
 	Write-Host "|_____/ \___/|_| |_|\____)   "
+	
+	$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+	Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
 	$sync.ProcessRunning = $false
 }
 function Invoke-WPFPanelAutologin {
@@ -2509,17 +2554,21 @@ function Invoke-WPFTab {
     #>
 
     Param ($ClickedTab)
-    $Tabs = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTab?BT"}
-    $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-    $x = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
 
-    0..($Tabs.Count -1 ) | ForEach-Object {
+    $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+    $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
 
-        if ($x -eq $psitem){
-            $sync.$TabNav.Items[$psitem].IsSelected = $true
+    $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
+    $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+        if ($ClickedTab -ne $PSItem.name) {
+            $sync[$PSItem.Name].IsChecked = $false
+            # $tabNumber = [int]($PSItem.Name -replace "WPFTab","" -replace "BT","") - 1
+            # $sync.$tabNav.Items[$tabNumber].IsSelected = $false
         }
-        else{
-            $sync.$TabNav.Items[$psitem].IsSelected = $false
+        else {
+            $sync["$ClickedTab"].IsChecked = $true
+            $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
+            $sync.$tabNav.Items[$tabNumber].IsSelected = $true
         }
     }
 }
@@ -3070,23 +3119,156 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1200">
-    <Window.InputBindings>
-        <KeyBinding Key="M" Modifiers="Shift+Alt"
-                    Command="{Binding keyWPFTab5BT}"/>
-    </Window.InputBindings>
     <Window.Resources>
+        <!--Scrollbar Thumbs-->
+        <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                            <Border x:Name="Rectangle1" CornerRadius="9" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"
+                                 Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag" Value="Horizontal">
+                                <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                                <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--ScrollBars-->
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*" />
+                            </Grid.RowDefinitions>
+
+                            <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                                <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            </Trigger>
+                            <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                                <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Width" Value="Auto" />
+                                <Setter Property="Height" Value="12" />
+                                <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                                <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                                <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Label template -->
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- Toggle button template x:Key="TabToggleButton" -->
+        <Style TargetType="{x:Type ToggleButton}">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="ButtonGlow" 
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonForegroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                <Grid>
+                                    <Border x:Name="BackgroundBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonBackgroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Panel.ZIndex" Value="2000"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="{ButtonBorderThickness}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Button Template -->
         <Style TargetType="Button">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
             <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
-            <Setter Property="Margin" Value="{ButtonMargin}"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -3103,11 +3285,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
                             </Trigger>
-                             <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="White"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Foreground" Value="DimGray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -3115,6 +3297,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
@@ -3231,7 +3414,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         </Style>
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
-        <Viewbox Stretch="Uniform" VerticalAlignment="Top">
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid"  Width="Auto" Height="Auto">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
@@ -3242,18 +3424,52 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
                     <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
-                    <Button Content="MicroWin" HorizontalAlignment="Left" Height="40" Width="100" 
-                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab5BT" x:Key="keyWPFTab5BT" />
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
+                                <Underline>I</Underline>nstall
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
+                                <Underline>T</Underline>weaks
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
+                                <Underline>C</Underline>onfig
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                                <Underline>U</Underline>pdates
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                                <Underline>M</Underline>icroWin
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <TextBox VerticalContentAlignment="Center" HorizontalAlignment="Right" Name="CheckboxFilter" ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
+                        Height="25" Width="150" 
+                        Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"></TextBox>
                 </DockPanel>
-                <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
+                <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="{ButtonForegroundColor}">
+                <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                         <Grid Background="#222222">
                             <Grid.ColumnDefinitions>
@@ -3264,8 +3480,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height=".10*"/>
-                                <RowDefinition Height=".90*"/>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
@@ -3281,6 +3497,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFimportWinget" Content=" Import " Margin="3"/>
                                 <Button Name="WPFexportWinget" Content=" Export " Margin="3"/>
                             </StackPanel>
+                            
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
@@ -3620,43 +3837,42 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
                         <Grid Width="Auto" Height="Auto">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-			                    <ColumnDefinition Width="4*" />
+                                <ColumnDefinition Width="*"/>
+			                    <ColumnDefinition Width="4*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="1*" />
-			                    <RowDefinition Height="4*" />
+			                    <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="2" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        Welcome to MicroWin feature!!! <LineBreak/>
-                                        1. Remove Telemetry and Tracking <LineBreak/>
-                                        2. Add ability to use local accounts <LineBreak/>
-                                        3. Remove Wifi requirement to finish install <LineBreak/>
-                                        4. Ability to remove Edge <LineBreak/>
-                                        5. Ability to remove Defender <LineBreak/>
-                                        6. Apps debloat <LineBreak/>
-                                    </TextBlock>
-                            </Border>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="1" Grid.Column="0">
-                            <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0" Margin="10,5" Width="269">
-                                <StackPanel HorizontalAlignment="Left" Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
+                            <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                                <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                                    <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                         Choose a Windows ISO file that you''ve downloaded. <LineBreak/>
-                                        It will be processed and unpacked which could take several minutes to process the ISO depending on your machine. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
-                                    <Button Name="WPFGetIso" Content="Chose Windows Iso file to process" Margin="2" Padding="15"/>
+                                    <Button Name="WPFGetIso" Margin="2" Padding="15">
+                                       <Button.Content>
+                                            <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
+                                                Select Windows <Underline>I</Underline>SO
+                                            </TextBlock>
+                                        </Button.Content>
+                                    </Button>
                                 </StackPanel>
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Chose Windows SKU</TextBlock>
-                                    <ComboBox x:Name = "MicrowinWindowsFlavors" HorizontalAlignment="Left" Margin="1" VerticalAlignment="Top"/>
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="WrapWithOverflow">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
+                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                                     <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
@@ -3666,12 +3882,53 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 </StackPanel>
                             </StackPanel>
                             </Border>
+                            <Border Background="{MainBackgroundColor}" 
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                BorderBrush="Yellow" 
+                                CornerRadius="2" 
+                                BorderThickness="2"
+                                Grid.Row="0" Grid.Column="1"
+                                Margin="1">
+                                <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible" 
+                                    >
+                                    <TextBlock x:Name = "asciiTextBlock"
+                                        xml:space ="preserve"
+                                        HorizontalAlignment = "Center"
+                                        Margin = "0"
+                                        VerticalAlignment = "Top"
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        FontSize = "10"
+                                        FontFamily = "Courier New"
+                                    >
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
+ /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \  
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+                                    </TextBlock>
+                                    <TextBlock Margin="0" 
+                                        Padding="8" 
+                                        VerticalAlignment="Center" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        Foreground="{ComboBoxForegroundColor}">
+                                        <Bold>MicroWin features:</Bold><LineBreak/>
+                                        - Remove Telemetry and Tracking <LineBreak/>
+                                        - Add ability to use local accounts <LineBreak/>
+                                        - Remove Wifi requirement to finish install <LineBreak/>
+                                        - Ability to remove Edge <LineBreak/>
+                                        - Ability to remove Defender <LineBreak/>
+                                        - Remove Teams <LineBreak/>
+                                        - Apps debloat <LineBreak/>
+                                        <LineBreak/>
+                                        <LineBreak/>
 
-                            <Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="1" Grid.Column="1">
-                                <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Visible">
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        INSTRUCTIONS: <LineBreak/>
+                                        <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
+                                            It will be processed and unpacked which could take <LineBreak/>
+                                            several minutes to process the ISO depending on your machine. <LineBreak/>
                                         - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
                                         - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
@@ -3682,24 +3939,17 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
                                         Use Ventoy on your USB key to boot to this image. gg,
                                     </TextBlock>
-                                    <TextBlock Margin="1" Padding="1" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                                    <TextBlock Margin="0" Padding="8" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
                                         <LineBreak/>
-                                        AFTER the process is done final ISO will be put into the %TEMP% directory <LineBreak/>
-                                        And the path will be printed below:
+                                        AFTER the process is done, final ISO will be put into the %TEMP% directory <LineBreak/>
                                     </TextBlock>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="0" 
-                                        Text="Iso location..." 
-                                        IsReadOnly="True" 
-                                        TextWrapping="Wrap"
-                                        Foreground="{LabelboxForegroundColor}"
-                                        />
                                </StackPanel>
                             </Border>
                         </Grid>
-                    </TabItem>                    
+                    </TabItem>
                 </TabControl>
+                </ScrollViewer>
             </Grid>
-        </Viewbox>
     </Border>
 </Window>'
 $sync.configs.applications = '{
@@ -4491,9 +4741,13 @@ $sync.configs.themes = '{
                     "ButtonConfigBackgroundColor":  "#444444",
                     "ButtonUpdatesBackgroundColor":  "#555555",
                     "ButtonInstallForegroundColor":  "#FFFFFF",
+                    "ButtonTweaksForegroundColor":  "#FFFFFF",
+                    "ButtonConfigForegroundColor":  "#FFFFFF",
+                    "ButtonUpdatesForegroundColor":  "#FFFFFF",
                     "ButtonBackgroundColor":  "#CACACA",
                     "ButtonBackgroundPressedColor":  "#FFFFFF",
-                    "ButtonBackgroundMouseoverColor":  "AliceBlue",
+                    "ButtonBackgroundMouseoverColor":  "#A55A64",
+                    "ButtonBackgroundSelectedColor":  "#BADFFF",
                     "ButtonForegroundColor":  "#000000",
                     "ButtonBorderThickness":  "0",
                     "ButtonMargin":  "0,3,0,3",
@@ -4511,9 +4765,13 @@ $sync.configs.themes = '{
                    "ButtonConfigBackgroundColor":  "#444444",
                    "ButtonUpdatesBackgroundColor":  "#555555",
                    "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonTweaksForegroundColor":  "#FFFFFF",
+                   "ButtonConfigForegroundColor":  "#FFFFFF",
+                   "ButtonUpdatesForegroundColor":  "#FFFFFF",
                    "ButtonBackgroundColor":  "#000019",
                    "ButtonBackgroundPressedColor":  "#FFFFFF",
                    "ButtonBackgroundMouseoverColor":  "#A55A64",
+                   "ButtonBackgroundSelectedColor":  "#FF5733",
                    "ButtonForegroundColor":  "#9CCC65",
                    "ButtonBorderThickness":  "1",
                    "ButtonMargin":  "1",
@@ -6991,7 +7249,6 @@ $sync.configs.tweaks = '{
   }
 }' | convertfrom-json
 # SPDX-License-Identifier: MIT
-
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
@@ -7088,6 +7345,16 @@ $sync.keys | ForEach-Object {
     }
 }
 
+$sync.keys | ForEach-Object {
+    if($sync.$psitem){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+    }
+}
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
@@ -7105,7 +7372,6 @@ $sync.keys | ForEach-Object {
     }
 }
 
-
 #===========================================================================
 # Setup background config
 #===========================================================================
@@ -7113,9 +7379,7 @@ $sync.keys | ForEach-Object {
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
     $sync.ConfigLoaded = $False
-
     $sync.ComputerInfo = Get-ComputerInfo
-
     $sync.ConfigLoaded = $True
 } | Out-Null
 
@@ -7138,7 +7402,153 @@ $sync["Form"].Add_Closing({
     [System.GC]::Collect()
 })
 
-# Show the form
-$sync["Form"].ShowDialog() | out-null
+# add some shortcuts for people that don't like clicking
+$commonKeyEvents = {
+    if ($sync.ProcessRunning -eq $true) {
+        return
+    }
 
+    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
+    if ($_.Key -eq "Escape") {
+        if ($sync.CheckboxFilter.Text -eq "") {
+            $sync.WPFTab1BT.Focus()
+        }
+        else {
+            $sync.CheckboxFilter.Text = ""
+            return
+        }
+    }
+
+    # don't ask, I know what I'm doing, just go...
+    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
+    {
+        $this.Close()
+        return
+    }
+   
+    # Escape is easier to press by mistake, ask if they really want to leave
+    if($_.Key -eq "Escape") {
+
+        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
+        switch ($ret){
+            "Yes" {
+                $this.Close()
+            } 
+            "No" {
+                return
+            } 
+        }
+    }
+
+    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        Invoke-WPFButton "WPFTab1BT"
+    }
+    if ($_.Key -eq "T" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        Invoke-WPFButton "WPFTab2BT"
+    }
+    if ($_.Key -eq "C" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        Invoke-WPFButton "WPFTab3BT"
+    }
+    if ($_.Key -eq "U" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        Invoke-WPFButton "WPFTab4BT"
+    }
+    if ($_.Key -eq "M" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        Invoke-WPFButton "WPFTab5BT"
+    }
+    # shortcut to call Get Iso button for people that don't like clicking
+    if ($_.Key -eq "I" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+        if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
+            Invoke-WPFButton "WPFGetIso"
+        }
+    }
+    # shortcut for the filter box
+    if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+        $sync.CheckboxFilter.Focus()
+        if ($sync.CheckboxFilter.Text -eq "Filter") {
+            $sync.CheckboxFilter.SelectAll()
+            $sync.CheckboxFilter.Text = ""
+        }
+    }
+}
+$sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
+
+# adding some left mouse window move on drag capability
+$sync["Form"].Add_MouseLeftButtonDown({
+    $sync["Form"].DragMove()
+})
+
+# setting window icon to make it look more professional
+$sync["Form"].Add_Loaded({
+   
+    $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
+
+    Try { 
+        [Void][Window]
+    } Catch {
+        Add-Type @"
+        using System;
+        using System.Runtime.InteropServices;
+        public class Window {
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
+            [DllImport("user32.dll")]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool ShowWindow(IntPtr handle, int state);
+        }
+        public struct RECT {
+            public int Left;   // x position of upper-left corner
+            public int Top;    // y position of upper-left corner
+            public int Right;  // x position of lower-right corner
+            public int Bottom; // y position of lower-right corner
+        }
+"@
+    }
+    
+    $processId  = [System.Diagnostics.Process]::GetCurrentProcess().Id
+    $windowHandle  = (Get-Process -Id $processId).MainWindowHandle
+    $rect = New-Object RECT
+    [Void][Window]::GetWindowRect($windowHandle,[ref]$rect)
+    
+    # only snap upper edge don't move left to right, in case people have multimon setup
+    $x = $rect.Left
+    $y = 0
+    $width  = $rect.Right  - $rect.Left
+    $height = $rect.Bottom - $rect.Top
+    
+    # Move the window to that position...
+    [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+    Invoke-WPFTab "WPFTab1BT"
+})
+
+$sync["CheckboxFilter"].Add_TextChanged({
+    Write-host $sync.CheckboxFilter.Text
+
+    $filter = Get-WinUtilVariables -Type Checkbox
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+    $textToSearch = $sync.CheckboxFilter.Text
+    Foreach ($CheckBox in $CheckBoxes) {
+         #Write-Host "$($CheckBox.GetType().Name)"
+         Write-Host "$($sync.CheckboxFilter.Text)"
+         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+            continue
+        }
+         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+             $CheckBox.Value.Visibility = "Visible"
+         }
+         else {
+             $CheckBox.Value.Visibility = "Collapsed"
+         }
+     }
+})
+
+# show current windowsd Product ID
+Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+
+$sync["Form"].ShowDialog() | out-null
 Stop-Transcript
