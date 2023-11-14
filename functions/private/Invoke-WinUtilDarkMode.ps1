@@ -19,9 +19,9 @@ Function Invoke-WinUtilDarkMode {
             $DarkMoveValue = 1
         }
 
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
+        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
+        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"

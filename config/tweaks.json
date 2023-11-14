@@ -1909,17 +1909,6 @@
       }
     ]
   },
-  "WPFMiscTweaksExt": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "HideFileExt",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFMiscTweaksUTC": {
     "registry": [
       {
@@ -2163,28 +2152,6 @@
       "
     ]
   },
-  "WPFMiscTweaksLapNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "80000002",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
         "
@@ -2323,67 +2290,6 @@
         "OriginalValue": "5",
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksDisableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "0",
-        "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "1",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "6",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "10",
-        "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "Name": "VerboseStatus",
-        "Value": "1",
         "Type": "DWord"
       }
     ]
