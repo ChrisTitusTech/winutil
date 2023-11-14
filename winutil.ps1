@@ -2775,6 +2775,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>
@@ -3693,6 +3694,10 @@ $sync.configs.applications = '{
 	"WPFInstallttaskbar": {
 		"winget": "9PF4KZ2VN4W9",
 		"choco": "translucenttb"
+	},
+	"WPFInstallthunderbird": {
+		"winget": "Mozilla.Thunderbird",
+		"choco": "thunderbird"
 	},
 	"WPFInstalltwinkletray": {
 		"Winget": "xanderfrangos.twinkletray",
