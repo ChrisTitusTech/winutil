@@ -2870,6 +2870,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
+								<CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
@@ -2879,6 +2880,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
+								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
@@ -2897,6 +2899,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
+								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -2905,12 +2908,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
+								<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
+								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
@@ -3221,6 +3226,10 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.DotNet.DesktopRuntime.7",
 		"choco": "dotnet-7.0-runtime"
 	},
+	"WPFInstallduplicati": {
+		"winget": "Duplicati.Duplicati",
+		"choco": "duplicati"
+	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
 		"choco": "ea-app"
@@ -3389,6 +3398,10 @@ $sync.configs.applications = '{
 		"winget": "Joplin.Joplin",
 		"choco": "joplin"
 	},
+	"WPFInstallkdeconnect": {
+		"winget": "KDE.KDEConnect",
+		"choco": "kdeconnect-kde"
+	},
 	"WPFInstallkdenlive": {
 		"Winget": "KDE.Kdenlive",
 		"choco": "kdenlive"
@@ -3520,6 +3533,18 @@ $sync.configs.applications = '{
 	"WPFInstallopenshell": {
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
+	},
+	"WPFInstallOpenVPN": {
+		"winget": "OpenVPNTechnologies.OpenVPNConnect",
+		"choco": "openvpn-connect"
+	},
+	"WPFInstallOVirtualBox": {
+		"winget": "Oracle.VirtualBox",
+		"choco": "virtualbox"
+	},
+	"WPFInstallPaintdotnet": {
+		"winget": "dotPDNLLC.paintdotnet",
+		"choco": "paint.net"
 	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
