@@ -32,4 +32,43 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if($ToggleSwitch -eq "WPFToggleNumLock"){
+        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
+        if($numlockvalue -eq 2){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+        if($VerboseStatusvalue -eq 1){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
+    if($ToggleSwitch -eq "WPFToggleShowExt"){
+        $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
+        if($hideextvalue -eq 0){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
+    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
+        $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
+        $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
+        $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
+
+        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
 }

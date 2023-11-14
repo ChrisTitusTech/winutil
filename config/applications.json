@@ -99,6 +99,10 @@
 		"winget": "Microsoft.DotNet.DesktopRuntime.7",
 		"choco": "dotnet-7.0-runtime"
 	},
+	"WPFInstallduplicati": {
+		"winget": "Duplicati.Duplicati",
+		"choco": "duplicati"
+	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
 		"choco": "ea-app"
@@ -267,6 +271,10 @@
 		"winget": "Joplin.Joplin",
 		"choco": "joplin"
 	},
+	"WPFInstallkdeconnect": {
+		"winget": "KDE.KDEConnect",
+		"choco": "kdeconnect-kde"
+	},
 	"WPFInstallkdenlive": {
 		"Winget": "KDE.Kdenlive",
 		"choco": "kdenlive"
@@ -399,6 +407,18 @@
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
 	},
+	"WPFInstallOpenVPN": {
+		"winget": "OpenVPNTechnologies.OpenVPNConnect",
+		"choco": "openvpn-connect"
+	},
+	"WPFInstallOVirtualBox": {
+		"winget": "Oracle.VirtualBox",
+		"choco": "virtualbox"
+	},
+	"WPFInstallPaintdotnet": {
+		"winget": "dotPDNLLC.paintdotnet",
+		"choco": "paint.net"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
@@ -432,7 +452,7 @@
 		"choco": "putty"
 	},
 	"WPFInstallpython3": {
-		"winget": "Python.Python.3.11",
+		"winget": "Python.Python.3.12",
 		"choco": "python"
 	},
 	"WPFInstallqbittorrent": {
@@ -550,6 +570,10 @@
 	"WPFInstallttaskbar": {
 		"winget": "9PF4KZ2VN4W9",
 		"choco": "translucenttb"
+	},
+	"WPFInstallthunderbird": {
+		"winget": "Mozilla.Thunderbird",
+		"choco": "thunderbird"
 	},
 	"WPFInstalltwinkletray": {
 		"Winget": "xanderfrangos.twinkletray",

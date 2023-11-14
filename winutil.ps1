@@ -196,6 +196,45 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if($ToggleSwitch -eq "WPFToggleNumLock"){
+        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
+        if($numlockvalue -eq 2){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+        if($VerboseStatusvalue -eq 1){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
+    if($ToggleSwitch -eq "WPFToggleShowExt"){
+        $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
+        if($hideextvalue -eq 0){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }    
+    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
+        $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
+        $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
+        $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
+
+        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
+            return $true
+        }
+        else{
+            return $false
+        }
+    }
 }
 function Get-WinUtilVariables {
 
@@ -504,9 +543,9 @@ Function Invoke-WinUtilDarkMode {
             $DarkMoveValue = 1
         }
 
-        $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value $DarkMoveValue
+        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
+        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -572,6 +611,79 @@ function Invoke-WinUtilFeatureInstall {
         }
     }
 }
+Function Invoke-WinUtilMouseAcceleration {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Mouse Acceleration
+
+    .PARAMETER DarkMoveEnabled
+        Indicates the current Mouse Acceleration State
+
+    #>
+    Param($MouseAccelerationEnabled)
+    Try{
+        if ($MouseAccelerationEnabled -eq $false){
+            Write-Host "Enabling Mouse Acceleration"
+            $MouseSpeed = 1
+            $MouseThreshold1 = 6
+            $MouseThreshold2 = 10
+        } 
+        else {
+            Write-Host "Disabling Mouse Acceleration"
+            $MouseSpeed = 0
+            $MouseThreshold1 = 0
+            $MouseThreshold2 = 0 
+            
+        }
+
+        $Path = "HKCU:\Control Panel\Mouse"
+        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
+        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
+        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilNumLock {
+    <#
+    .SYNOPSIS
+        Disables/Enables NumLock on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Numlock on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Numlock on startup"
+            $value = 2
+        }
+        else {
+            Write-Host "Disabling Numlock on startup"
+            $value = 0
+        }
+        $Path = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Invoke-WinUtilScript {
     <#
 
@@ -620,6 +732,37 @@ function Invoke-WinUtilScript {
         Write-Warning $psitem.Exception.StackTrace
     }
 
+}
+function Invoke-WinUtilShowExt {
+    <#
+    .SYNOPSIS
+        Disables/Enables Show file Extentions
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Show file extentions
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Showing file extentions"
+            $value = 0
+        }
+        else {
+            Write-Host "hiding file extensions"
+            $value = 1
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
 }
 function Invoke-WinUtilTweaks {
     <#
@@ -685,6 +828,37 @@ function Invoke-WinUtilTweaks {
             }
         }
 
+    }
+}
+function Invoke-WinUtilVerboseLogon {
+    <#
+    .SYNOPSIS
+        Disables/Enables VerboseLogon Messages
+    .PARAMETER Enabled
+        Indicates whether to enable or disable VerboseLogon messages
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Verbose Logon Messages"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Verbose Logon Messages"
+            $value = 0
+        }
+        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
     }
 }
 function Remove-WinUtilAPPX {
@@ -1074,7 +1248,6 @@ function Invoke-WPFButton {
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
-        "WPFToggleDarkMode" {Invoke-WPFDarkMode -DarkMoveEnabled $(Get-WinUtilDarkMode)}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
         "WPFPanelDISM" {Invoke-WPFPanelDISM}
@@ -1634,7 +1807,7 @@ function Invoke-WPFShortcut {
 
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
             $IRM = 'irm https://christitus.com/win | iex'
             $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
             $ArgumentsToSourceExe = "$powershell '$IRM'"
@@ -1704,7 +1877,10 @@ function Invoke-WPFToggle {
 
         "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
         "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
-
+        "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
+        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
+        "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -2344,6 +2520,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
+               
                                 <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -2425,6 +2602,105 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid x:Name="toggleSwitch">
+                            <Border x:Name="Border" CornerRadius="10"
+                                    Background="#FFFFFFFF"
+                                    Width="70" Height="25">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
+                                </Border.Effect>
+                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
+                                        Margin="2 2 2 1"
+                                        Stroke="Gray" StrokeThickness="0.2"
+                                        HorizontalAlignment="Left" Width="22">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+
+                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
+                            <TextBlock x:Name="txtEnable" Text="    Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ToggleButton.IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#C2283B" />
+                                <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
+                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
+                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
+                            </Trigger>
+
+                            <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#34A543" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="56 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+
+                                <!-- Some out fading -->
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#C2283B" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="2 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+
+                                <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+            <Setter Property="Background" Value="{MainBackgroundColor}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
         <Viewbox Stretch="Uniform" VerticalAlignment="Top">
@@ -2500,6 +2776,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>
@@ -2595,6 +2872,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
+								<CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
@@ -2604,6 +2882,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
+								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
@@ -2622,6 +2901,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
+								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -2630,12 +2910,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
+								<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
+								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
@@ -2662,15 +2944,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                         <Grid Background="#333333">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".35*"/>
+                                <ColumnDefinition Width=".35*"/>
+                                <ColumnDefinition Width=".30*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height=".10*"/>
                                 <RowDefinition Height=".70*"/>
                                 <RowDefinition Height=".10*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center"  Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
                                 <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
@@ -2678,12 +2961,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFclear" Content=" Clear " Margin="7"/>
                                 <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
                                 <Button Name="WPFimport" Content=" Import " Margin="7"/>
                                 <Button Name="WPFexport" Content=" Export " Margin="7"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="3" Margin="10">
                                 <TextBlock Padding="10">
                                     Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                     <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
@@ -2703,18 +2986,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
                                 <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
                                 <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-                                <Label Content="Dark Theme" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Off" />
-                                    <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="On" />
-                                </StackPanel>
-                                <Label Content="Bing Search in Start Menu" />
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Off" />
-                                    <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ToggleSwitchStyle}" Margin="2.5,0"/>
-                                    <Label Content="On" />
-                                </StackPanel>
+                                
 							<Label Content="Performance Plans" />
                                 <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
                                 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
@@ -2724,9 +2996,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10,5">
                                 <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFMiscTweaksNum" Content="Enable NumLock on Startup" Margin="5,0" ToolTip="This creates a time vortex and sends you back to the past... or it simply turns numlock on at startup"/>
-                                <CheckBox Name="WPFMiscTweaksLapNum" Content="Disable Numlock on Startup" Margin="5,0" ToolTip="Disables Numlock... Very useful when you are on a laptop WITHOUT 9-key and this fixes that issue when the numlock is enabled!"/>
-                                <CheckBox Name="WPFMiscTweaksExt" Content="Show File Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
                                 <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                                 <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
@@ -2735,27 +3004,66 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
                                 <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
                                 <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFMiscTweaksDisableMouseAcceleration" Content="Disable Mouse Acceleration" Margin="5,0" ToolTip="Disables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableMouseAcceleration" Content="Enable Mouse Acceleration" Margin="5,0" ToolTip="Enables Mouse Acceleration."/>
-                                <CheckBox Name="WPFMiscTweaksEnableVerboselogon" Content="Enable Verbose logon messages" Margin="5,0" ToolTip="Enables verbose logon messages."/>
                                 <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
-                                <Label Content="DNS" />
-							    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
-								    <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                    <ComboBoxItem Content = "DHCP"/>
-								    <ComboBoxItem Content = "Google"/>
-								    <ComboBoxItem Content = "Cloudflare"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware"/>
-                                    <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
-								    <ComboBoxItem Content = "Level3"/>
-								    <ComboBoxItem Content = "Open_DNS"/>
-                                    <ComboBoxItem Content = "Quad9"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <Label Content="DNS" />
+                                    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
+                                        <ComboBoxItem IsSelected="True" Content = "Default"/>
+                                        <ComboBoxItem Content = "DHCP"/>
+                                        <ComboBoxItem Content = "Google"/>
+                                        <ComboBoxItem Content = "Cloudflare"/>
+                                        <ComboBoxItem Content = "Cloudflare_Malware"/>
+                                        <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
+                                        <ComboBoxItem Content = "Level3"/>
+                                        <ComboBoxItem Content = "Open_DNS"/>
+                                        <ComboBoxItem Content = "Quad9"/>
 							    </ComboBox>
-                                <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160"/>
-                                <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160"/>
+                                </StackPanel>
+                                
+                                    <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
+                                    <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
+                                
                             </StackPanel>
+
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10,5">
+                            <Label FontSize="16" Content="Customize Preferences"/>
+
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
+                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
+                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
+                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
+                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Show File Extentions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
+                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            </StackPanel> <!-- End of Customize Preferences Section -->
+                            
+
                         </Grid>
                     </TabItem>
                     <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
@@ -2919,6 +3227,10 @@ $sync.configs.applications = '{
 	"WPFInstalldotnet7": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.7",
 		"choco": "dotnet-7.0-runtime"
+	},
+	"WPFInstallduplicati": {
+		"winget": "Duplicati.Duplicati",
+		"choco": "duplicati"
 	},
 	"WPFInstalleaapp": {
 		"winget": "ElectronicArts.EADesktop",
@@ -3088,6 +3400,10 @@ $sync.configs.applications = '{
 		"winget": "Joplin.Joplin",
 		"choco": "joplin"
 	},
+	"WPFInstallkdeconnect": {
+		"winget": "KDE.KDEConnect",
+		"choco": "kdeconnect-kde"
+	},
 	"WPFInstallkdenlive": {
 		"Winget": "KDE.Kdenlive",
 		"choco": "kdenlive"
@@ -3220,6 +3536,18 @@ $sync.configs.applications = '{
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
 	},
+	"WPFInstallOpenVPN": {
+		"winget": "OpenVPNTechnologies.OpenVPNConnect",
+		"choco": "openvpn-connect"
+	},
+	"WPFInstallOVirtualBox": {
+		"winget": "Oracle.VirtualBox",
+		"choco": "virtualbox"
+	},
+	"WPFInstallPaintdotnet": {
+		"winget": "dotPDNLLC.paintdotnet",
+		"choco": "paint.net"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
@@ -3253,7 +3581,7 @@ $sync.configs.applications = '{
 		"choco": "putty"
 	},
 	"WPFInstallpython3": {
-		"winget": "Python.Python.3.11",
+		"winget": "Python.Python.3.12",
 		"choco": "python"
 	},
 	"WPFInstallqbittorrent": {
@@ -3371,6 +3699,10 @@ $sync.configs.applications = '{
 	"WPFInstallttaskbar": {
 		"winget": "9PF4KZ2VN4W9",
 		"choco": "translucenttb"
+	},
+	"WPFInstallthunderbird": {
+		"winget": "Mozilla.Thunderbird",
+		"choco": "thunderbird"
 	},
 	"WPFInstalltwinkletray": {
 		"Winget": "xanderfrangos.twinkletray",
@@ -3576,8 +3908,7 @@ $sync.configs.preset = '{
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksPower",
-    "WPFMiscTweaksNum"
+    "WPFMiscTweaksPower"
   ],
   "laptop": [
     "WPFEssTweaksAH",
@@ -3589,8 +3920,7 @@ $sync.configs.preset = '{
     "WPFEssTweaksStorage",
     "WPFEssTweaksTele",
     "WPFEssTweaksWifi",
-    "WPFMiscTweaksLapPower",
-    "WPFMiscTweaksLapNum"
+    "WPFMiscTweaksLapPower"
   ],
   "minimal": [
     "WPFEssTweaksHome",
@@ -5552,17 +5882,6 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFMiscTweaksExt": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Name": "HideFileExt",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFMiscTweaksUTC": {
     "registry": [
       {
@@ -5806,28 +6125,6 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFMiscTweaksLapNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksNum": {
-    "Registry": [
-      {
-        "Path": "HKU:\\.DEFAULT\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "InitialKeyboardIndicators",
-        "Value": "80000002",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFEssTweaksRemoveEdge": {
     "InvokeScript": [
         "
@@ -5966,67 +6263,6 @@ $sync.configs.tweaks = '{
         "OriginalValue": "5",
         "Name": "ConsentPromptBehaviorAdmin",
         "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFMiscTweaksDisableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "0",
-        "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableMouseAcceleration": {
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "1",
-        "Name": "MouseSpeed",
-        "Value": "1",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "6",
-        "Name": "MouseThreshold1",
-        "Value": "6",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "10",
-        "Name": "MouseThreshold2",
-        "Value": "10",
-        "Type": "String"
-      }
-    ]
-  },
-  "WPFMiscTweaksEnableVerboselogon": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\system",
-        "OriginalValue": "0",
-        "Name": "VerboseStatus",
-        "Value": "1",
         "Type": "DWord"
       }
     ]
