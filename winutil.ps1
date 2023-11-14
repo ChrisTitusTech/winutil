@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.19
+    Version        : 23.10.31
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.19"
+$sync.version = "23.10.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1634,7 +1634,7 @@ function Invoke-WPFShortcut {
 
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
             $IRM = 'irm https://christitus.com/win | iex'
             $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
             $ArgumentsToSourceExe = "$powershell '$IRM'"
@@ -3252,7 +3252,7 @@ $sync.configs.applications = '{
 		"choco": "putty"
 	},
 	"WPFInstallpython3": {
-		"winget": "Python.Python.3.11",
+		"winget": "Python.Python.3.12",
 		"choco": "python"
 	},
 	"WPFInstallqbittorrent": {
