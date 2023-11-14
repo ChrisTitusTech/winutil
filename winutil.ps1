@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.10.19
+    Version        : 23.11.14
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -21,7 +21,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.10.19"
+$sync.version = "23.11.14"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2494,6 +2494,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
+				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -3282,6 +3283,10 @@ $sync.configs.applications = '{
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
 		"choco": "sdio"
+	},
+	"WPFInstallsession": {
+		"winget": "Oxen.Session",
+		"choco": "session"
 	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",
