@@ -2770,6 +2770,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
+				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -3610,6 +3611,10 @@ $sync.configs.applications = '{
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
 		"choco": "sdio"
+	},
+	"WPFInstallsession": {
+		"winget": "Oxen.Session",
+		"choco": "session"
 	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",

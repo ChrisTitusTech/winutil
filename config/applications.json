@@ -483,6 +483,10 @@
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
 		"choco": "sdio"
 	},
+	"WPFInstallsession": {
+		"winget": "Oxen.Session",
+		"choco": "session"
+	},
 	"WPFInstallsharex": {
 		"winget": "ShareX.ShareX",
 		"choco": "sharex"
