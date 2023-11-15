@@ -2624,7 +2624,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Border>
 
                             <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="    Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
                         </Grid>
 
                         <ControlTemplate.Triggers>
@@ -2645,7 +2645,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="56 2 2 1" Duration="0:0:0.1" />
+                                                    To="46 2 2 1" Duration="0:0:0.1" />
 
                                             <DoubleAnimation Storyboard.TargetName="txtDisable"
                                                     Storyboard.TargetProperty="(TextBlock.Opacity)"
