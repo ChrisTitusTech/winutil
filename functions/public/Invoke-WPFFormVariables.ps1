@@ -29,7 +29,6 @@ Function Invoke-WPFFormVariables {
     Write-Host "====Chris Titus Tech====="
     Write-Host "=====Windows Toolbox====="
 
-
     #====DEBUG GUI Elements====
 
     #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
