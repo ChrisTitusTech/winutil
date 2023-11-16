@@ -20,9 +20,9 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 
 	foreach($feature in $appxlist)
 	{
-		$status = "Removing featue $feature"
+		$status = "Removing feature $feature"
 		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		Write-Debug "Removing featue $feature"
+		Write-Debug "Removing feature $feature"
 		dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
 	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
