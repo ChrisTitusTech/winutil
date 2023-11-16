@@ -27,4 +27,12 @@
         "Primary": "9.9.9.9",
         "Secondary": "149.112.112.112"
     }
+     "base.dns.mullvad.net":{
+        "Primary": "194.242.2.4",
+        "Secondary": "2a07:e340::4"
+    },
+    "all.dns.mullvad.net":{
+        "Primary": "194.242.2.9",
+        "Secondary": "2a07:e340::9"
+    }
 }
