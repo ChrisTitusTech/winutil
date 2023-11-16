@@ -298,7 +298,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
 })
 
 # show current windowsd Product ID
-Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+#Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
