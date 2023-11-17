@@ -2694,6 +2694,8 @@ function Invoke-WPFMicrowin {
 		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
 		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
 		reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
+		# Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
+		reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
 	} catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
