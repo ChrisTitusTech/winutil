@@ -139,14 +139,15 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-	
+
 	# special code, for some reason when you try to delete some inbox apps
 	# we have to get and delete log files directory. 
-	takeown /a /r /d Y /f "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" > $null
+	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
 	icacls "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" /q /c /t /reset > $null
-	takeown /a /r /d Y /f "$($scratchDir)\Windows\System32\WebThreatDefSvc" > $null
+	
+	Set-Owner -Path "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Recurse -Verbose
 	icacls "$($scratchDir)\Windows\System32\WebThreatDefSvc" /q /c /t /reset > $null
-
+	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
