@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.16
+    Version        : 23.11.17
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.16"
+$sync.version = "23.11.17"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1062,14 +1062,14 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-	
 	# special code, for some reason when you try to delete some inbox apps
 	# we have to get and delete log files directory. 
-	takeown /a /r /d Y /f "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" > $null
+	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
 	icacls "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" /q /c /t /reset > $null
-	takeown /a /r /d Y /f "$($scratchDir)\Windows\System32\WebThreatDefSvc" > $null
+	
+	Set-Owner -Path "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Recurse -Verbose
 	icacls "$($scratchDir)\Windows\System32\WebThreatDefSvc" /q /c /t /reset > $null
-
+	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
@@ -1374,6 +1374,212 @@ function Remove-WinUtilAPPX {
     Catch{
         Write-Warning "Unable to uninstall $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Set-Owner {
+    <#
+        .SYNOPSIS
+            Changes owner of a file or folder to another user or group.
+
+        .DESCRIPTION
+            Changes owner of a file or folder to another user or group.
+
+        .PARAMETER Path
+            The folder or file that will have the owner changed.
+
+        .PARAMETER Account
+            Optional parameter to change owner of a file or folder to specified account.
+
+            Default value is 'Builtin\Administrators'
+
+        .PARAMETER Recurse
+            Recursively set ownership on subfolders and files beneath given folder.
+
+        .NOTES
+            Name: Set-Owner
+            Author: Boe Prox
+            Version History:
+                 1.0 - Boe Prox
+                    - Initial Version
+
+        .EXAMPLE
+            Set-Owner -Path C:\temp\test.txt
+
+            Description
+            -----------
+            Changes the owner of test.txt to Builtin\Administrators
+
+        .EXAMPLE
+            Set-Owner -Path C:\temp\test.txt -Account 'Domain\bprox
+
+            Description
+            -----------
+            Changes the owner of test.txt to Domain\bprox
+
+        .EXAMPLE
+            Set-Owner -Path C:\temp -Recurse 
+
+            Description
+            -----------
+            Changes the owner of all files and folders under C:\Temp to Builtin\Administrators
+
+        .EXAMPLE
+            Get-ChildItem C:\Temp | Set-Owner -Recurse -Account 'Domain\bprox'
+
+            Description
+            -----------
+            Changes the owner of all files and folders under C:\Temp to Domain\bprox
+    #>
+    [cmdletbinding(
+        SupportsShouldProcess = $True
+    )]
+    Param (
+        [parameter(ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True)]
+        [Alias('FullName')]
+        [string[]]$Path,
+        [parameter()]
+        [string]$Account = 'Builtin\Administrators',
+        [parameter()]
+        [switch]$Recurse
+    )
+    Begin {
+        #Prevent Confirmation on each Write-Debug command when using -Debug
+        If ($PSBoundParameters['Debug']) {
+            $DebugPreference = 'Continue'
+        }
+        Try {
+            [void][TokenAdjuster]
+        } Catch {
+            $AdjustTokenPrivileges = @"
+            using System;
+            using System.Runtime.InteropServices;
+
+             public class TokenAdjuster
+             {
+              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+              internal static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall,
+              ref TokPriv1Luid newst, int len, IntPtr prev, IntPtr relen);
+              [DllImport("kernel32.dll", ExactSpelling = true)]
+              internal static extern IntPtr GetCurrentProcess();
+              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+              internal static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr
+              phtok);
+              [DllImport("advapi32.dll", SetLastError = true)]
+              internal static extern bool LookupPrivilegeValue(string host, string name,
+              ref long pluid);
+              [StructLayout(LayoutKind.Sequential, Pack = 1)]
+              internal struct TokPriv1Luid
+              {
+               public int Count;
+               public long Luid;
+               public int Attr;
+              }
+              internal const int SE_PRIVILEGE_DISABLED = 0x00000000;
+              internal const int SE_PRIVILEGE_ENABLED = 0x00000002;
+              internal const int TOKEN_QUERY = 0x00000008;
+              internal const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
+              public static bool AddPrivilege(string privilege)
+              {
+               try
+               {
+                bool retVal;
+                TokPriv1Luid tp;
+                IntPtr hproc = GetCurrentProcess();
+                IntPtr htok = IntPtr.Zero;
+                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
+                tp.Count = 1;
+                tp.Luid = 0;
+                tp.Attr = SE_PRIVILEGE_ENABLED;
+                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
+                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
+                return retVal;
+               }
+               catch (Exception ex)
+               {
+                throw ex;
+               }
+              }
+              public static bool RemovePrivilege(string privilege)
+              {
+               try
+               {
+                bool retVal;
+                TokPriv1Luid tp;
+                IntPtr hproc = GetCurrentProcess();
+                IntPtr htok = IntPtr.Zero;
+                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
+                tp.Count = 1;
+                tp.Luid = 0;
+                tp.Attr = SE_PRIVILEGE_DISABLED;
+                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
+                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
+                return retVal;
+               }
+               catch (Exception ex)
+               {
+                throw ex;
+               }
+              }
+             }
+"@
+            Add-Type $AdjustTokenPrivileges
+        }
+
+        #Activate necessary admin privileges to make changes without NTFS perms
+        [void][TokenAdjuster]::AddPrivilege("SeRestorePrivilege") #Necessary to set Owner Permissions
+        [void][TokenAdjuster]::AddPrivilege("SeBackupPrivilege") #Necessary to bypass Traverse Checking
+        [void][TokenAdjuster]::AddPrivilege("SeTakeOwnershipPrivilege") #Necessary to override FilePermissions
+    }
+    Process {
+        ForEach ($Item in $Path) {
+            Write-Verbose "FullName: $Item"
+            #The ACL objects do not like being used more than once, so re-create them on the Process block
+            $DirOwner = New-Object System.Security.AccessControl.DirectorySecurity
+            $DirOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
+            $FileOwner = New-Object System.Security.AccessControl.FileSecurity
+            $FileOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
+            $DirAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
+            $FileAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
+            $AdminACL = New-Object System.Security.AccessControl.FileSystemAccessRule('Builtin\Administrators','FullControl','ContainerInherit,ObjectInherit','InheritOnly','Allow')
+            $FileAdminAcl.AddAccessRule($AdminACL)
+            $DirAdminAcl.AddAccessRule($AdminACL)
+            Try {
+                $Item = Get-Item -LiteralPath $Item -Force -ErrorAction Stop
+                If (-NOT $Item.PSIsContainer) {
+                    If ($PSCmdlet.ShouldProcess($Item, 'Set File Owner')) {
+                        Try {
+                            $Item.SetAccessControl($FileOwner)
+                        } Catch {
+                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Directory.FullName)"
+                            $Item.Directory.SetAccessControl($FileAdminAcl)
+                            $Item.SetAccessControl($FileOwner)
+                        }
+                    }
+                } Else {
+                    If ($PSCmdlet.ShouldProcess($Item, 'Set Directory Owner')) {                        
+                        Try {
+                            $Item.SetAccessControl($DirOwner)
+                        } Catch {
+                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Parent.FullName)"
+                            $Item.Parent.SetAccessControl($DirAdminAcl) 
+                            $Item.SetAccessControl($DirOwner)
+                        }
+                    }
+                    If ($Recurse) {
+                        [void]$PSBoundParameters.Remove('Path')
+                        Get-ChildItem $Item -Force | Set-Owner @PSBoundParameters
+                    }
+                }
+            } Catch {
+                Write-Warning "$($Item): $($_.Exception.Message)"
+            }
+        }
+    }
+    End {  
+        #Remove priviledges that had been granted
+        [void][TokenAdjuster]::RemovePrivilege("SeRestorePrivilege") 
+        [void][TokenAdjuster]::RemovePrivilege("SeBackupPrivilege") 
+        [void][TokenAdjuster]::RemovePrivilege("SeTakeOwnershipPrivilege")     
     }
 }
 function Set-WinUtilDNS {
@@ -2298,16 +2504,16 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-    # xcopy we can verify files and also not copy files that already exist, but hard to measure
-    $mountDir = $sync.MicrowinMountDir.Text
-    $scratchDir = $sync.MicrowinScratchDir.Text
+  # xcopy we can verify files and also not copy files that already exist, but hard to measure
+  $mountDir = $sync.MicrowinMountDir.Text
+  $scratchDir = $sync.MicrowinScratchDir.Text
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
 	if (-not $mountDirExists -or -not $scratchDirExists) {
         Write-Error "Required directories do not exist."
         return
-    }
+  }
 	try {
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
@@ -7673,6 +7879,7 @@ $commonKeyEvents = {
         return
     }
 
+    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
     if ($_.Key -eq "Escape") {
         if ($sync.CheckboxFilter.IsFocused)
         {
@@ -7683,7 +7890,7 @@ $commonKeyEvents = {
         }
     }
 
-    # Exit WinUtil
+    # don't ask, I know what I'm doing, just go...
     if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
     {
         $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
