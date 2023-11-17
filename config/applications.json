@@ -41,7 +41,7 @@
 	},
 	"WPFInstallbluestacks": {
 		"winget": "BlueStack.BlueStacks",
-		"choco": "na"
+		"choco": "bluestacks"
 	},
 	"WPFInstallbrave": {
 		"winget": "Brave.Brave",
@@ -133,7 +133,7 @@
 	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
-		"choco": "na"
+		"choco": "flameshot"
 	},
 	"WPFInstallflux": {
 		"winget": "flux.flux",
@@ -437,7 +437,7 @@
 	},
 	"WPFInstallprismlauncher": {
 		"winget": "PrismLauncher.PrismLauncher",
-		"choco": "na"
+		"choco": "prismlauncher"
 	},
 	"WPFInstallprocesslasso": {
 		"winget": "BitSum.ProcessLasso",
@@ -493,7 +493,7 @@
 	},
 	"WPFInstallshell": {
 		"winget": "Nilesoft.Shell",
-		"choco": "na"
+		"choco": "nilesoft-shell"
 	},
 	"WPFInstallsignal": {
 		"winget": "OpenWhisperSystems.Signal",
