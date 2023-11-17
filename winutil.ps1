@@ -2301,6 +2301,7 @@ function Invoke-WPFMicrowin {
     # xcopy we can verify files and also not copy files that already exist, but hard to measure
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
+
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
 	if (-not $mountDirExists -or -not $scratchDirExists) {
@@ -7672,7 +7673,6 @@ $commonKeyEvents = {
         return
     }
 
-    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
     if ($_.Key -eq "Escape") {
         if ($sync.CheckboxFilter.IsFocused)
         {
@@ -7683,7 +7683,7 @@ $commonKeyEvents = {
         }
     }
 
-    # don't ask, I know what I'm doing, just go...
+    # Exit WinUtil
     if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
     {
         $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,

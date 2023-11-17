@@ -30,15 +30,16 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-    # xcopy we can verify files and also not copy files that already exist, but hard to measure
-    $mountDir = $sync.MicrowinMountDir.Text
-    $scratchDir = $sync.MicrowinScratchDir.Text
+  # xcopy we can verify files and also not copy files that already exist, but hard to measure
+  $mountDir = $sync.MicrowinMountDir.Text
+  $scratchDir = $sync.MicrowinScratchDir.Text
+
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
 	if (-not $mountDirExists -or -not $scratchDirExists) {
         Write-Error "Required directories do not exist."
         return
-    }
+  }
 	try {
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
