@@ -20,9 +20,9 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 
 	foreach($feature in $appxlist)
 	{
-		$status = "Removing featue $feature"
+		$status = "Removing feature $feature"
 		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		Write-Debug "Removing featue $feature"
+		Write-Debug "Removing feature $feature"
 		dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
 	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
@@ -139,7 +139,6 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-
 	# special code, for some reason when you try to delete some inbox apps
 	# we have to get and delete log files directory. 
 	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
