@@ -21,13 +21,15 @@ function Invoke-WPFGetIso {
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
     Write-Host "oscdimge.exe on system: $oscdImgFound"
     
-    if (!$oscdImgFound) {
+    if (!$oscdImgFound) 
+    {
         [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
         
         # the step below needs choco to download oscdimg
         $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
         Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) {
+        if (!$chocoFound) 
+        {
             [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
             return
         }
@@ -36,10 +38,6 @@ function Invoke-WPFGetIso {
         [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
         return
     }
-
-
-	New-FirstRun
-	New-Unattend
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -62,34 +60,30 @@ function Invoke-WPFGetIso {
         break
     }
 
-    Write-Host "MicroWin: Mounting Iso"
-
-    $mountedISO = Mount-DiskImage -PassThru $filePath
+    Write-Host "Mounting Iso. Please wait."
+    $mountedISO = Mount-DiskImage -PassThru "$filePath"
+    Write-Host "Done mounting Iso $mountedISO"
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
+    Write-Host "Iso mounted to $driveLetter."
+    # storing off values in hidden fields for further steps
+    # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
+
+    Write-Host "Setting up mount dir and scratch dirs"
+    $mountDir = "c:\microwin"
+    $scratchDir = "c:\microwinscratch"
+    $sync.MicrowinMountDir.Text = $mountDir
+    $sync.MicrowinScratchDir.Text = $scratchDir
+    Write-Host "Done setting up mount dir and scratch dirs"
 
     try {
         
         $data = @($driveLetter,$filePath)
-        Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
-            param($data)
-            $sync.ProcessRunning = $true
-            $sync.Form.Dispatcher.Invoke({
-                $sync.MicrowinIsoDrive.Text = $data[0]
-                $sync.MicrowinIsoLocation.Text = $data[1]
-            })
-        }
-
-        Write-Host "MicroWin: ISO is mounted to $($driveLetter) Installed"
-            
+        Write-Host "ISO is mounted to $($driveLetter)"
         Write-Host "Creating temp directories"
-        $mountDir = "c:\microwin"
-        $scratchDir = "c:\microwinscratch"
-        $sync.MicrowinMountDir.Text = $mountDir
-        $sync.MicrowinScratchDir.Text = $scratchDir
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
-        Write-Host "Copying Windows image..."
+        Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
         
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
@@ -115,15 +109,18 @@ function Invoke-WPFGetIso {
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
         $sync.MicrowinOptionsPanel.Visibility = 'Visible'
-    }
-    catch {
+    } catch {
         Write-Host "Dismounting bad image..."
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Remove-Item -Recurse -Force "$($scratchDir)"
         Remove-Item -Recurse -Force "$($mountDir)"
     }
 
-    Write-Host "Done reading and unpacking ISO..."
+    Write-Host "Done reading and unpacking ISO"
+    Write-Host ""
+    Write-Host "*********************************"
+    Write-Host "Check the UI for further steps!!!"
+
     $sync.ProcessRunning = $false
 }
 

@@ -23,8 +23,9 @@ function Invoke-WPFMicrowin {
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists) {
-        Write-Error "Required directories do not exist."
+	if (-not $mountDirExists -or -not $scratchDirExists) 
+	{
+        Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
         return
     }
 
@@ -91,23 +92,38 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
 		Write-Host "Removal complete!"
 
+		# *************************** Automation black ***************************
 		# this doesn't work for some reason, this script is not being run at the end of the install
 		# if someone knows how to fix this, feel free to modify
 		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		# this is just test, if this made to work properly, this is where final cleanup can happen
-		"wmic cpu get Name > C:\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Panther
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\System32\Sysprep
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
-		Copy-Item $env:temp\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
-		Copy-Item $pwd\winutil.ps1 $scratchDir\Windows\winutil.ps1 -force
 
+		Write-Host "Create unattend.xml"
+		New-Unattend
+		Write-Host "Done Create unattend.xml"
+		Write-Host "Copy unattend.xml file into the ISO"
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+		Write-Host "Done Copy unattend.xml"
+
+		Write-Host "Create FirstRun"
+		New-FirstRun
+		Write-Host "Done create FirstRun"
+		Write-Host "Copy FirstRun.ps1 into the ISO"
+		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+		Write-Host "Done copy FirstRun.ps1"
+
+		Write-Host "Copy winutil.ps1 into the ISO"
 		# in case we want to get the file from the internet instead?
 		# Write-Host "Download latest winutil.ps1"
-		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\system32\winutil.ps1"
+		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\winutil.ps1"
+		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
+		Write-Host "Done copy winutil.ps1"
+		# *************************** Automation black ***************************
 
 		Write-Host "Creating a directory that allows to bypass Wifi setup"
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
@@ -187,25 +203,35 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Unmounting image..."
 		dism /unmount-image /mountdir:$scratchDir /commit
-	} try {
 
-		Write-Host "Exporting image..."
-		dism /Export-Image /SourceImageFile:$mountDir\sources\install.wim /SourceIndex:$index /DestinationImageFile:$mountDir\sources\install2.wim /compress:max
-		Remove-Item $mountDir\sources\install.wim
-		Rename-Item $mountDir\sources\install2.wim install.wim
+	} 
+	
+	try {
 
+		Write-Host "Exporting image into $mountDir\sources\install2.wim"
+		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
+		Remove-Item "$mountDir\sources\install.wim"
+		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
+
+		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
+		{
+			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			return
+		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		Write-Host "Mounting boot image:"
-		dism /mount-image /imagefile:$mountDir\sources\boot.wim /index:2 /mountdir:$scratchDir
-
+		
+		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
+		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+	
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
 		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
 		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
 		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
 		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements on the setup image)"
+		Write-Host "Bypassing system requirements on the setup image"
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f

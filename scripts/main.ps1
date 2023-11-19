@@ -173,18 +173,21 @@ $commonKeyEvents = {
     # don't ask, I know what I'm doing, just go...
     if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
     {
-        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-            [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
-
-        switch ($ret) {
-            "Yes" {
-                $this.Close()
-            } 
-            "No" {
-                return
-            } 
-        }
+        $this.Close()
     }
+
+    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
+
+    # switch ($ret) {
+    #     "Yes" {
+    #         $this.Close()
+    #     } 
+    #     "No" {
+    #         return
+    #     } 
+    # }
+
 
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
         # this is an example how to handle shortcuts per tab

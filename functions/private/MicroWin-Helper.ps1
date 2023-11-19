@@ -138,8 +138,6 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	# icacls $directoryPath /setowner "*S-1-5-32-544"
 	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 	# Remove-Item -Path $directoryPath -Recurse -Force
-
-	Write-Host "Yes is $yesNo"
 	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
@@ -186,7 +184,32 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 
 function New-Unattend {
 
-	$unattend = @"
+	# later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
+	# Below is an example how to do it we probably should create a drop down with common locals
+	# 	<settings pass="specialize">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <SetupUILanguage>
+	#         <UILanguage>en-US</UILanguage>
+	#       </SetupUILanguage>
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+
+	#   <settings pass="oobeSystem">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+	# using here string to embedd unattend
+	$unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
@@ -248,13 +271,14 @@ function New-Unattend {
 			</component>
 		</settings>
 	</unattend>
-"@
+'@
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
 function New-FirstRun {
 
-	$firstRun = @"
+	# using here string to embedd firstrun
+	$firstRun = @'
 	# Set the global error action preference to continue
 	$ErrorActionPreference = "Continue"
 	function Remove-RegistryValue
@@ -292,7 +316,7 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @(
+		$servicesAuto = @'
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -360,11 +384,11 @@ function New-FirstRun {
 		{
 			Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
-			"Stopping service $service" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+			"Stopping service $service" | Out-File -FilePath c:\windows\LogProcess.txt -Append -NoClobber
 		}
 	}
 	
-	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogProcess.txt -Append -NoClobber
 	
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
@@ -409,6 +433,6 @@ function New-FirstRun {
 	#    Invoke-Expression -Command "winget install --id nomacs"
 		Invoke-Expression -Command "C:\Windows\winutil.ps1"
 	}
-"@
+'@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }

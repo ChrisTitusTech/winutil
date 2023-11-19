@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.18
+    Version        : 23.11.19
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.18"
+$sync.version = "23.11.19"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -93,39 +93,45 @@ function Copy-Files {
 }
 function Get-LocalizedYesNo {
     <#
-  .SYNOPSIS
-  This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
+    .SYNOPSIS
+    This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
+    
+    .DESCRIPTION
+    The function retrieves lines from the output of takeown.exe until there are at least 2 characters
+    captured in a specific format, such as "Yes=<first character>, No=<second character>".
+    
+    .EXAMPLE
+    $yesNoArray = Get-LocalizedYesNo
+    Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
+    #>
   
-  .DESCRIPTION
-  The function retrieves lines from the output of takeown.exe until there are at least 2 characters
-  captured in a specific format, such as "Yes=<first character>, No=<second character>".
-  
-  .EXAMPLE
-  $yesNoArray = Get-LocalizedYesNo
-  Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
-  #>
-  
-        # Run takeown.exe and capture its output
-      $takeownOutput = & takeown.exe  /? | Out-String
-  
-      # Parse the output and retrieve lines until there are at least 2 characters in the array
-       $found = $false
-      $charactersArray = @()
-      foreach ($line in $takeownOutput -split "`r`n") {
-          if ($found) {
-              $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
-              $charactersArray += $characters
-  
-              if ($charactersArray.Count -ge 2) {
-                  break
-              }    }
-          elseif ($line -match "/D   ") {
-              $found = $true
-          }
-      }
-  
-      # Return the array of characters
-      return $charactersArray
+    # Run takeown.exe and capture its output
+    $takeownOutput = & takeown.exe  /? | Out-String
+
+    # Parse the output and retrieve lines until there are at least 2 characters in the array
+    $found = $false
+    $charactersArray = @()
+    foreach ($line in $takeownOutput -split "`r`n") 
+    {
+        if ($found) 
+        {
+            $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
+            $charactersArray += $characters
+
+            if ($charactersArray.Count -ge 2) 
+            {
+                break
+            }    
+        }
+        elseif ($line -match "/D   ") 
+        {
+            $found = $true
+        }
+    }
+
+    Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
+    # Return the array of characters
+    return $charactersArray
   }
 Function Get-WinUtilCheckBoxes {
 
@@ -1097,8 +1103,6 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	# icacls $directoryPath /setowner "*S-1-5-32-544"
 	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 	# Remove-Item -Path $directoryPath -Recurse -Force
-
-	Write-Host "Yes is $yesNo"
 	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
@@ -1145,7 +1149,32 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 
 function New-Unattend {
 
-	$unattend = @"
+	# later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
+	# Below is an example how to do it we probably should create a drop down with common locals
+	# 	<settings pass="specialize">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <SetupUILanguage>
+	#         <UILanguage>en-US</UILanguage>
+	#       </SetupUILanguage>
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+
+	#   <settings pass="oobeSystem">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+	# using here string to embedd unattend
+	$unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
@@ -1207,13 +1236,14 @@ function New-Unattend {
 			</component>
 		</settings>
 	</unattend>
-"@
+'@
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
 function New-FirstRun {
 
-	$firstRun = @"
+	# using here string to embedd firstrun
+	$firstRun = @'
 	# Set the global error action preference to continue
 	$ErrorActionPreference = "Continue"
 	function Remove-RegistryValue
@@ -1251,7 +1281,7 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @(
+		$servicesAuto = @'
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -1368,7 +1398,7 @@ function New-FirstRun {
 	#    Invoke-Expression -Command "winget install --id nomacs"
 		Invoke-Expression -Command "C:\Windows\winutil.ps1"
 	}
-"@
+'@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
 function Remove-WinUtilAPPX {
@@ -2066,13 +2096,15 @@ function Invoke-WPFGetIso {
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
     Write-Host "oscdimge.exe on system: $oscdImgFound"
     
-    if (!$oscdImgFound) {
+    if (!$oscdImgFound) 
+    {
         [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
         
         # the step below needs choco to download oscdimg
         $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
         Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) {
+        if (!$chocoFound) 
+        {
             [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
             return
         }
@@ -2081,10 +2113,6 @@ function Invoke-WPFGetIso {
         [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
         return
     }
-
-
-	New-FirstRun
-	New-Unattend
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -2107,34 +2135,38 @@ function Invoke-WPFGetIso {
         break
     }
 
-    Write-Host "MicroWin: Mounting Iso"
-
-    $mountedISO = Mount-DiskImage -PassThru $filePath
+    Write-Host "Mounting Iso. Please wait."
+    $mountedISO = Mount-DiskImage -PassThru "$filePath"
+    Write-Host "Done mounting Iso $mountedISO"
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
+    Write-Host "Iso mounted to $driveLetter."
+    # storing off values in hidden fields for further steps
+    # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
+
+    Write-Host "Setting up mount dir and scratch dirs"
+    $mountDir = "c:\microwin"
+    $scratchDir = "c:\microwinscratch"
+    $sync.MicrowinMountDir.Text = $mountDir
+    $sync.MicrowinScratchDir.Text = $scratchDir
+    Write-Host "Done setting up mount dir and scratch dirs"
 
     try {
         
         $data = @($driveLetter,$filePath)
-        Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
-            param($data)
-            $sync.ProcessRunning = $true
-            $sync.Form.Dispatcher.Invoke({
-                $sync.MicrowinIsoDrive.Text = $data[0]
-                $sync.MicrowinIsoLocation.Text = $data[1]
-            })
-        }
-
-        Write-Host "MicroWin: ISO is mounted to $($driveLetter) Installed"
-            
+        # Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
+        #     param($data)
+        #     $sync.ProcessRunning = $true
+        #     $sync.Form.Dispatcher.Invoke({
+        #         $sync.MicrowinIsoDrive.Text = $data[0]
+        #         $sync.MicrowinIsoLocation.Text = $data[1]
+        #     })
+        # }
+        Write-Host "ISO is mounted to $($driveLetter)"
         Write-Host "Creating temp directories"
-        $mountDir = "c:\microwin"
-        $scratchDir = "c:\microwinscratch"
-        $sync.MicrowinMountDir.Text = $mountDir
-        $sync.MicrowinScratchDir.Text = $scratchDir
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
-        Write-Host "Copying Windows image..."
+        Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
         
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
@@ -2160,15 +2192,18 @@ function Invoke-WPFGetIso {
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
         $sync.MicrowinOptionsPanel.Visibility = 'Visible'
-    }
-    catch {
+    } catch {
         Write-Host "Dismounting bad image..."
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Remove-Item -Recurse -Force "$($scratchDir)"
         Remove-Item -Recurse -Force "$($mountDir)"
     }
 
-    Write-Host "Done reading and unpacking ISO..."
+    Write-Host "Done reading and unpacking ISO"
+    Write-Host ""
+    Write-Host "*********************************"
+    Write-Host "Check the UI for further steps!!!"
+
     $sync.ProcessRunning = $false
 }
 
@@ -2322,8 +2357,9 @@ function Invoke-WPFMicrowin {
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists) {
-        Write-Error "Required directories do not exist."
+	if (-not $mountDirExists -or -not $scratchDirExists) 
+	{
+        Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
         return
     }
 
@@ -2390,23 +2426,38 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
 		Write-Host "Removal complete!"
 
+		# *************************** Automation black ***************************
 		# this doesn't work for some reason, this script is not being run at the end of the install
 		# if someone knows how to fix this, feel free to modify
 		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		# this is just test, if this made to work properly, this is where final cleanup can happen
-		"wmic cpu get Name > C:\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Panther
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\System32\Sysprep
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
-		Copy-Item $env:temp\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
-		Copy-Item $pwd\winutil.ps1 $scratchDir\Windows\winutil.ps1 -force
 
+		Write-Host "Create unattend.xml"
+		New-Unattend
+		Write-Host "Done Create unattend.xml"
+		Write-Host "Copy unattend.xml file into the ISO"
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+		Write-Host "Done Copy unattend.xml"
+
+		Write-Host "Create FirstRun"
+		New-FirstRun
+		Write-Host "Done create FirstRun"
+		Write-Host "Copy FirstRun.ps1 into the ISO"
+		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+		Write-Host "Done copy FirstRun.ps1"
+
+		Write-Host "Copy winutil.ps1 into the ISO"
 		# in case we want to get the file from the internet instead?
 		# Write-Host "Download latest winutil.ps1"
-		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\system32\winutil.ps1"
+		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\winutil.ps1"
+		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
+		Write-Host "Done copy winutil.ps1"
+		# *************************** Automation black ***************************
 
 		Write-Host "Creating a directory that allows to bypass Wifi setup"
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
@@ -2486,17 +2537,32 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Unmounting image..."
 		dism /unmount-image /mountdir:$scratchDir /commit
-	} try {
 
-		Write-Host "Exporting image..."
-		dism /Export-Image /SourceImageFile:$mountDir\sources\install.wim /SourceIndex:$index /DestinationImageFile:$mountDir\sources\install2.wim /compress:max
-		Remove-Item $mountDir\sources\install.wim
-		Rename-Item $mountDir\sources\install2.wim install.wim
+	} 
+	
+	try {
 
+		Write-Host "Exporting image into $mountDir\sources\install2.wim"
+		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
+		Remove-Item "$mountDir\sources\install.wim"
+		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
+
+		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
+		{
+			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			return
+		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		Write-Host "Mounting boot image:"
-		dism /mount-image /imagefile:$mountDir\sources\boot.wim /index:2 /mountdir:$scratchDir
+		
+		Write-Host "Mounting boot image"
+		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+		pause
+
+
+
+
 
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
@@ -7718,18 +7784,21 @@ $commonKeyEvents = {
     # don't ask, I know what I'm doing, just go...
     if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
     {
-        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-            [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
-
-        switch ($ret) {
-            "Yes" {
-                $this.Close()
-            } 
-            "No" {
-                return
-            } 
-        }
+        $this.Close()
     }
+
+    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
+
+    # switch ($ret) {
+    #     "Yes" {
+    #         $this.Close()
+    #     } 
+    #     "No" {
+    #         return
+    #     } 
+    # }
+
 
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
         # this is an example how to handle shortcuts per tab
