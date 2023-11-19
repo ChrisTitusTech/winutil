@@ -232,7 +232,19 @@ $sync["Form"].Add_MouseLeftButtonDown({
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
    
-    $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
+    $downloadUrl = "https://christitus.com/images/logo-full.png"
+    $destinationPath = Join-Path $env:TEMP "cttlogo.png"
+    
+    # Check if the file already exists
+    if (-not (Test-Path $destinationPath)) {
+        # File does not exist, download it
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($downloadUrl, $destinationPath)
+        Write-Output "File downloaded to: $destinationPath"
+    } else {
+        Write-Output "File already exists at: $destinationPath"
+    }
+    $sync["Form"].Icon = $destinationPath
 
     Try { 
         [Void][Window]
@@ -296,6 +308,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
          }
      }
 })
+
+
+$downloadUrl = "https://christitus.com/images/logo-full.png"
+$destinationPath = Join-Path $env:TEMP "cttlogo.png"
+
+# Check if the file already exists
+if (-not (Test-Path $destinationPath)) {
+    # File does not exist, download it
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFile($downloadUrl, $destinationPath)
+    Write-Output "File downloaded to: $destinationPath"
+} else {
+    Write-Output "File already exists at: $destinationPath"
+}
 
 # show current windowsd Product ID
 #Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"

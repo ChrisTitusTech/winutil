@@ -1,10 +1,3 @@
-function ReadAllUIElements {
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem -like "WPFUpdatessec*"} 
-    Foreach ($CheckBox in $CheckBoxes) {
-        Write-Host "File path $($Checkbox.Name)"
-    }
-}
-
 function Invoke-WPFMicrowin {
     <#
         .DESCRIPTION
@@ -17,12 +10,6 @@ function Invoke-WPFMicrowin {
         return
     }
 
-	Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
-
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -30,17 +17,19 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-  # xcopy we can verify files and also not copy files that already exist, but hard to measure
-  $mountDir = $sync.MicrowinMountDir.Text
-  $scratchDir = $sync.MicrowinScratchDir.Text
+
+    $mountDir = $sync.MicrowinMountDir.Text
+    $scratchDir = $sync.MicrowinScratchDir.Text
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
 	if (-not $mountDirExists -or -not $scratchDirExists) {
         Write-Error "Required directories do not exist."
         return
-  }
+    }
+
 	try {
+
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
 		Write-Host "Mounting complete! Performing removal of applications..."
@@ -58,6 +47,13 @@ function Invoke-WPFMicrowin {
 		{
 			Remove-ProvisionedPackages
 		}
+
+		# special code, for some reason when you try to delete some inbox apps
+		# we have to get and delete log files directory. 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
+
+		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
 		if (!$keepDefender) 
 		{
 			Write-Host "Removing Defender"
@@ -72,20 +68,20 @@ function Invoke-WPFMicrowin {
 			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
 		}
 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
@@ -209,7 +205,7 @@ function Invoke-WPFMicrowin {
 		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
 		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
 		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements(on the setup image)"
+		Write-Host "Bypassing system requirements on the setup image)"
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
@@ -247,6 +243,8 @@ function Invoke-WPFMicrowin {
 		Write-Host "| |   | / _ \|  _ \ / _  )   "
 		Write-Host "| |__/ / |_| | | | ( (/ /    "
 		Write-Host "|_____/ \___/|_| |_|\____)   "
+
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
 		Write-Host "You new ISO image is located here: $env:temp\microwin.iso"

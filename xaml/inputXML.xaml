@@ -909,6 +909,12 @@
                                         Choose a Windows ISO file that you've downloaded. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
                                     <Button Name="WPFGetIso" Margin="2" Padding="15">
                                        <Button.Content>
                                             <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
@@ -926,12 +932,6 @@
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
-                                        Text="ISO location will be printed here"
-                                        IsReadOnly="True"
-                                        TextWrapping="Wrap"
-                                        Foreground="{LabelboxForegroundColor}"
-                                    />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                                     <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>

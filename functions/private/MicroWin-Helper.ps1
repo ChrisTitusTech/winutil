@@ -1,7 +1,17 @@
+function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
+<#
 
+    .SYNOPSIS
+        Removes certain features from ISO image
 
-function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false)
-{
+    .PARAMETER Name
+        dumpFeatures - Dumps all features found in the ISO into a file called allfeaturesdump.txt. This file can be examined and used to decide what to remove.
+		keepDefender - Should Defender be removed from the ISO?
+
+    .EXAMPLE
+        Remove-Features -keepDefender:$false
+
+#>
 	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
@@ -23,7 +33,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 		$status = "Removing feature $feature"
 		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		Write-Debug "Removing feature $feature"
-		dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
+		# dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
 	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
 }
@@ -74,7 +84,6 @@ function Remove-Packages
 	foreach ($appx in $appxlist)
 	{
 		$status = "Removing $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
@@ -100,7 +109,6 @@ function Remove-ProvisionedPackages
 	foreach ($appx in $appxProvisionedPackages)
 	{
 		$status = "Removing Provisioned $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
 		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
 								
@@ -108,50 +116,36 @@ function Remove-ProvisionedPackages
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
-function Disable-StartupApps
-{
-	$regStartList = Get-Item -path $32bit,$32bitRunOnce,$64bit,$64bitRunOnce,$currentLOU,$currentLOURunOnce | Where-Object {$_.ValueCount -ne 0} | Select-Object  property,name
-	
-	foreach ($regName in $regStartList.name) 
-	{
-		$regNumber = ($regName).IndexOf("\")
-		$regLocation = ($regName).Insert("$regNumber",":")
-		if ($regLocation -like "*HKEY_LOCAL_MACHINE*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_LOCAL_MACHINE","HKLM")
-			write-host $regLocation
-		}
-		if ($regLocation -like "*HKEY_CURRENT_USER*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_CURRENT_USER","HKCU")
-			write-host $regLocation
-		}
-		foreach ($disable in $disableList) 
-		{
-			if (Get-ItemProperty -Path "$reglocation" -name "$Disable" -ErrorAction SilentlyContinue) {
-				Write-host "yeah i exist"
-				#Remove-ItemProperty -Path "$location" -Name "$($startUp.name)" -whatif
-			}else {write-host "no exist"}
-		}   
-	}
-}
 function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-	# special code, for some reason when you try to delete some inbox apps
-	# we have to get and delete log files directory. 
-	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" /q /c /t /reset > $null
-	
-	Set-Owner -Path "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\WebThreatDefSvc" /q /c /t /reset > $null
+
+	$yesNo = Get-LocalizedYesNo
+
+	# Specify the path to the directory
+	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
+
+	# # Grant full control to BUILTIN\Administrators using icacls
+	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
+
+	Write-Host "Yes is $yesNo"
 	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
 	{
-		Write-Debug "!!!!!!Adding $($pathToDelete) to array!!!!!!"
+		Write-Debug "Adding $($pathToDelete) to array."
 		[void]$itemsToDelete.Add($pathToDelete)
 	}
 	else 
@@ -169,17 +163,21 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
 		{
 			$status = "Deleting directory: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /a /r /d Y /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /q /c /t /reset > $null
+
+			takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls $itemToDelete /setowner "*S-1-5-32-544"
+			icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force -Recurse "$($itemToDelete)"
 		}
 		elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf)
 		{
 			$status = "Deleting file: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /grant Administrators:F /t /c > $null
+
+			takeown /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
+			icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force "$($itemToDelete)"
 		}
 	}
@@ -295,9 +293,6 @@ function New-FirstRun {
 	function Stop-UnnecessaryServices
 	{
 		$servicesAuto = @(
-			"AudioEndpointBuilder",
-			"AudioSrv",
-			"Audiosrv",
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",

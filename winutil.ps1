@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.17
+    Version        : 23.11.18
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.17"
+$sync.version = "23.11.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -91,6 +91,42 @@ function Copy-Files {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Get-LocalizedYesNo {
+    <#
+  .SYNOPSIS
+  This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
+  
+  .DESCRIPTION
+  The function retrieves lines from the output of takeown.exe until there are at least 2 characters
+  captured in a specific format, such as "Yes=<first character>, No=<second character>".
+  
+  .EXAMPLE
+  $yesNoArray = Get-LocalizedYesNo
+  Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
+  #>
+  
+        # Run takeown.exe and capture its output
+      $takeownOutput = & takeown.exe  /? | Out-String
+  
+      # Parse the output and retrieve lines until there are at least 2 characters in the array
+       $found = $false
+      $charactersArray = @()
+      foreach ($line in $takeownOutput -split "`r`n") {
+          if ($found) {
+              $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
+              $charactersArray += $characters
+  
+              if ($charactersArray.Count -ge 2) {
+                  break
+              }    }
+          elseif ($line -match "/D   ") {
+              $found = $true
+          }
+      }
+  
+      # Return the array of characters
+      return $charactersArray
+  }
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -921,10 +957,20 @@ function Invoke-WinUtilVerboseLogon {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
+<#
 
+    .SYNOPSIS
+        Removes certain features from ISO image
 
-function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false)
-{
+    .PARAMETER Name
+        dumpFeatures - Dumps all features found in the ISO into a file called allfeaturesdump.txt. This file can be examined and used to decide what to remove.
+		keepDefender - Should Defender be removed from the ISO?
+
+    .EXAMPLE
+        Remove-Features -keepDefender:$false
+
+#>
 	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
@@ -946,7 +992,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 		$status = "Removing feature $feature"
 		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		Write-Debug "Removing feature $feature"
-		dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
+		# dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
 	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
 }
@@ -997,7 +1043,6 @@ function Remove-Packages
 	foreach ($appx in $appxlist)
 	{
 		$status = "Removing $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
@@ -1023,7 +1068,6 @@ function Remove-ProvisionedPackages
 	foreach ($appx in $appxProvisionedPackages)
 	{
 		$status = "Removing Provisioned $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
 		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
 								
@@ -1031,50 +1075,36 @@ function Remove-ProvisionedPackages
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
-function Disable-StartupApps
-{
-	$regStartList = Get-Item -path $32bit,$32bitRunOnce,$64bit,$64bitRunOnce,$currentLOU,$currentLOURunOnce | Where-Object {$_.ValueCount -ne 0} | Select-Object  property,name
-	
-	foreach ($regName in $regStartList.name) 
-	{
-		$regNumber = ($regName).IndexOf("\")
-		$regLocation = ($regName).Insert("$regNumber",":")
-		if ($regLocation -like "*HKEY_LOCAL_MACHINE*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_LOCAL_MACHINE","HKLM")
-			write-host $regLocation
-		}
-		if ($regLocation -like "*HKEY_CURRENT_USER*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_CURRENT_USER","HKCU")
-			write-host $regLocation
-		}
-		foreach ($disable in $disableList) 
-		{
-			if (Get-ItemProperty -Path "$reglocation" -name "$Disable" -ErrorAction SilentlyContinue) {
-				Write-host "yeah i exist"
-				#Remove-ItemProperty -Path "$location" -Name "$($startUp.name)" -whatif
-			}else {write-host "no exist"}
-		}   
-	}
-}
 function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-	# special code, for some reason when you try to delete some inbox apps
-	# we have to get and delete log files directory. 
-	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" /q /c /t /reset > $null
-	
-	Set-Owner -Path "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\WebThreatDefSvc" /q /c /t /reset > $null
+
+	$yesNo = Get-LocalizedYesNo
+
+	# Specify the path to the directory
+	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
+
+	# # Grant full control to BUILTIN\Administrators using icacls
+	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
+
+	Write-Host "Yes is $yesNo"
 	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
 	{
-		Write-Debug "!!!!!!Adding $($pathToDelete) to array!!!!!!"
+		Write-Debug "Adding $($pathToDelete) to array."
 		[void]$itemsToDelete.Add($pathToDelete)
 	}
 	else 
@@ -1092,17 +1122,21 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
 		{
 			$status = "Deleting directory: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /a /r /d Y /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /q /c /t /reset > $null
+
+			takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls $itemToDelete /setowner "*S-1-5-32-544"
+			icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force -Recurse "$($itemToDelete)"
 		}
 		elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf)
 		{
 			$status = "Deleting file: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /grant Administrators:F /t /c > $null
+
+			takeown /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
+			icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force "$($itemToDelete)"
 		}
 	}
@@ -1218,9 +1252,6 @@ function New-FirstRun {
 	function Stop-UnnecessaryServices
 	{
 		$servicesAuto = @(
-			"AudioEndpointBuilder",
-			"AudioSrv",
-			"Audiosrv",
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -1357,16 +1388,16 @@ function Remove-WinUtilAPPX {
         $Name
     )
 
-    Try{
+    Try {
         Write-Host "Removing $Name"
         Get-AppxPackage "*$Name*" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Name*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
     }
     Catch [System.Exception] {
-        if($psitem.Exception.Message -like "*The requested operation requires elevation*"){
+        if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
             Write-Warning "Unable to uninstall $name due to a Security Exception"
         }
-        Else{
+        else {
             Write-Warning "Unable to uninstall $name due to unhandled exception"
             Write-Warning $psitem.Exception.StackTrace
         }
@@ -1374,212 +1405,6 @@ function Remove-WinUtilAPPX {
     Catch{
         Write-Warning "Unable to uninstall $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
-    }
-}
-Function Set-Owner {
-    <#
-        .SYNOPSIS
-            Changes owner of a file or folder to another user or group.
-
-        .DESCRIPTION
-            Changes owner of a file or folder to another user or group.
-
-        .PARAMETER Path
-            The folder or file that will have the owner changed.
-
-        .PARAMETER Account
-            Optional parameter to change owner of a file or folder to specified account.
-
-            Default value is 'Builtin\Administrators'
-
-        .PARAMETER Recurse
-            Recursively set ownership on subfolders and files beneath given folder.
-
-        .NOTES
-            Name: Set-Owner
-            Author: Boe Prox
-            Version History:
-                 1.0 - Boe Prox
-                    - Initial Version
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp\test.txt
-
-            Description
-            -----------
-            Changes the owner of test.txt to Builtin\Administrators
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp\test.txt -Account 'Domain\bprox
-
-            Description
-            -----------
-            Changes the owner of test.txt to Domain\bprox
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp -Recurse 
-
-            Description
-            -----------
-            Changes the owner of all files and folders under C:\Temp to Builtin\Administrators
-
-        .EXAMPLE
-            Get-ChildItem C:\Temp | Set-Owner -Recurse -Account 'Domain\bprox'
-
-            Description
-            -----------
-            Changes the owner of all files and folders under C:\Temp to Domain\bprox
-    #>
-    [cmdletbinding(
-        SupportsShouldProcess = $True
-    )]
-    Param (
-        [parameter(ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True)]
-        [Alias('FullName')]
-        [string[]]$Path,
-        [parameter()]
-        [string]$Account = 'Builtin\Administrators',
-        [parameter()]
-        [switch]$Recurse
-    )
-    Begin {
-        #Prevent Confirmation on each Write-Debug command when using -Debug
-        If ($PSBoundParameters['Debug']) {
-            $DebugPreference = 'Continue'
-        }
-        Try {
-            [void][TokenAdjuster]
-        } Catch {
-            $AdjustTokenPrivileges = @"
-            using System;
-            using System.Runtime.InteropServices;
-
-             public class TokenAdjuster
-             {
-              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-              internal static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall,
-              ref TokPriv1Luid newst, int len, IntPtr prev, IntPtr relen);
-              [DllImport("kernel32.dll", ExactSpelling = true)]
-              internal static extern IntPtr GetCurrentProcess();
-              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-              internal static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr
-              phtok);
-              [DllImport("advapi32.dll", SetLastError = true)]
-              internal static extern bool LookupPrivilegeValue(string host, string name,
-              ref long pluid);
-              [StructLayout(LayoutKind.Sequential, Pack = 1)]
-              internal struct TokPriv1Luid
-              {
-               public int Count;
-               public long Luid;
-               public int Attr;
-              }
-              internal const int SE_PRIVILEGE_DISABLED = 0x00000000;
-              internal const int SE_PRIVILEGE_ENABLED = 0x00000002;
-              internal const int TOKEN_QUERY = 0x00000008;
-              internal const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
-              public static bool AddPrivilege(string privilege)
-              {
-               try
-               {
-                bool retVal;
-                TokPriv1Luid tp;
-                IntPtr hproc = GetCurrentProcess();
-                IntPtr htok = IntPtr.Zero;
-                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
-                tp.Count = 1;
-                tp.Luid = 0;
-                tp.Attr = SE_PRIVILEGE_ENABLED;
-                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
-                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-                return retVal;
-               }
-               catch (Exception ex)
-               {
-                throw ex;
-               }
-              }
-              public static bool RemovePrivilege(string privilege)
-              {
-               try
-               {
-                bool retVal;
-                TokPriv1Luid tp;
-                IntPtr hproc = GetCurrentProcess();
-                IntPtr htok = IntPtr.Zero;
-                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
-                tp.Count = 1;
-                tp.Luid = 0;
-                tp.Attr = SE_PRIVILEGE_DISABLED;
-                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
-                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-                return retVal;
-               }
-               catch (Exception ex)
-               {
-                throw ex;
-               }
-              }
-             }
-"@
-            Add-Type $AdjustTokenPrivileges
-        }
-
-        #Activate necessary admin privileges to make changes without NTFS perms
-        [void][TokenAdjuster]::AddPrivilege("SeRestorePrivilege") #Necessary to set Owner Permissions
-        [void][TokenAdjuster]::AddPrivilege("SeBackupPrivilege") #Necessary to bypass Traverse Checking
-        [void][TokenAdjuster]::AddPrivilege("SeTakeOwnershipPrivilege") #Necessary to override FilePermissions
-    }
-    Process {
-        ForEach ($Item in $Path) {
-            Write-Verbose "FullName: $Item"
-            #The ACL objects do not like being used more than once, so re-create them on the Process block
-            $DirOwner = New-Object System.Security.AccessControl.DirectorySecurity
-            $DirOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
-            $FileOwner = New-Object System.Security.AccessControl.FileSecurity
-            $FileOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
-            $DirAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
-            $FileAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
-            $AdminACL = New-Object System.Security.AccessControl.FileSystemAccessRule('Builtin\Administrators','FullControl','ContainerInherit,ObjectInherit','InheritOnly','Allow')
-            $FileAdminAcl.AddAccessRule($AdminACL)
-            $DirAdminAcl.AddAccessRule($AdminACL)
-            Try {
-                $Item = Get-Item -LiteralPath $Item -Force -ErrorAction Stop
-                If (-NOT $Item.PSIsContainer) {
-                    If ($PSCmdlet.ShouldProcess($Item, 'Set File Owner')) {
-                        Try {
-                            $Item.SetAccessControl($FileOwner)
-                        } Catch {
-                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Directory.FullName)"
-                            $Item.Directory.SetAccessControl($FileAdminAcl)
-                            $Item.SetAccessControl($FileOwner)
-                        }
-                    }
-                } Else {
-                    If ($PSCmdlet.ShouldProcess($Item, 'Set Directory Owner')) {                        
-                        Try {
-                            $Item.SetAccessControl($DirOwner)
-                        } Catch {
-                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Parent.FullName)"
-                            $Item.Parent.SetAccessControl($DirAdminAcl) 
-                            $Item.SetAccessControl($DirOwner)
-                        }
-                    }
-                    If ($Recurse) {
-                        [void]$PSBoundParameters.Remove('Path')
-                        Get-ChildItem $Item -Force | Set-Owner @PSBoundParameters
-                    }
-                }
-            } Catch {
-                Write-Warning "$($Item): $($_.Exception.Message)"
-            }
-        }
-    }
-    End {  
-        #Remove priviledges that had been granted
-        [void][TokenAdjuster]::RemovePrivilege("SeRestorePrivilege") 
-        [void][TokenAdjuster]::RemovePrivilege("SeBackupPrivilege") 
-        [void][TokenAdjuster]::RemovePrivilege("SeTakeOwnershipPrivilege")     
     }
 }
 function Set-WinUtilDNS {
@@ -2472,13 +2297,6 @@ function Invoke-WPFInstallUpgrade {
     Write-Host "-- You can close this window if desired ---"
     Write-Host "==========================================="
 }
-function ReadAllUIElements {
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem -like "WPFUpdatessec*"} 
-    Foreach ($CheckBox in $CheckBoxes) {
-        Write-Host "File path $($Checkbox.Name)"
-    }
-}
-
 function Invoke-WPFMicrowin {
     <#
         .DESCRIPTION
@@ -2491,12 +2309,6 @@ function Invoke-WPFMicrowin {
         return
     }
 
-	Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
-
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -2504,17 +2316,19 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-  # xcopy we can verify files and also not copy files that already exist, but hard to measure
-  $mountDir = $sync.MicrowinMountDir.Text
-  $scratchDir = $sync.MicrowinScratchDir.Text
+
+    $mountDir = $sync.MicrowinMountDir.Text
+    $scratchDir = $sync.MicrowinScratchDir.Text
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
 	if (-not $mountDirExists -or -not $scratchDirExists) {
         Write-Error "Required directories do not exist."
         return
-  }
+    }
+
 	try {
+
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
 		Write-Host "Mounting complete! Performing removal of applications..."
@@ -2532,6 +2346,13 @@ function Invoke-WPFMicrowin {
 		{
 			Remove-ProvisionedPackages
 		}
+
+		# special code, for some reason when you try to delete some inbox apps
+		# we have to get and delete log files directory. 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
+
+		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
 		if (!$keepDefender) 
 		{
 			Write-Host "Removing Defender"
@@ -2546,20 +2367,20 @@ function Invoke-WPFMicrowin {
 			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
 		}
 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
@@ -2683,7 +2504,7 @@ function Invoke-WPFMicrowin {
 		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
 		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
 		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements(on the setup image)"
+		Write-Host "Bypassing system requirements on the setup image)"
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
@@ -2721,6 +2542,8 @@ function Invoke-WPFMicrowin {
 		Write-Host "| |   | / _ \|  _ \ / _  )   "
 		Write-Host "| |__/ / |_| | | | ( (/ /    "
 		Write-Host "|_____/ \___/|_| |_|\____)   "
+
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
 		Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
@@ -4382,6 +4205,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         Choose a Windows ISO file that you''ve downloaded. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
                                     <Button Name="WPFGetIso" Margin="2" Padding="15">
                                        <Button.Content>
                                             <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
@@ -4399,12 +4228,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
-                                        Text="ISO location will be printed here"
-                                        IsReadOnly="True"
-                                        TextWrapping="Wrap"
-                                        Foreground="{LabelboxForegroundColor}"
-                                    />
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                                     <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
@@ -7954,7 +7777,19 @@ $sync["Form"].Add_MouseLeftButtonDown({
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
    
-    $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
+    $downloadUrl = "https://christitus.com/images/logo-full.png"
+    $destinationPath = Join-Path $env:TEMP "cttlogo.png"
+    
+    # Check if the file already exists
+    if (-not (Test-Path $destinationPath)) {
+        # File does not exist, download it
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($downloadUrl, $destinationPath)
+        Write-Output "File downloaded to: $destinationPath"
+    } else {
+        Write-Output "File already exists at: $destinationPath"
+    }
+    $sync["Form"].Icon = $destinationPath
 
     Try { 
         [Void][Window]
@@ -8018,6 +7853,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
          }
      }
 })
+
+
+$downloadUrl = "https://christitus.com/images/logo-full.png"
+$destinationPath = Join-Path $env:TEMP "cttlogo.png"
+
+# Check if the file already exists
+if (-not (Test-Path $destinationPath)) {
+    # File does not exist, download it
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFile($downloadUrl, $destinationPath)
+    Write-Output "File downloaded to: $destinationPath"
+} else {
+    Write-Output "File already exists at: $destinationPath"
+}
 
 # show current windowsd Product ID
 #Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
