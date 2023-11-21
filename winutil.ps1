@@ -796,14 +796,14 @@ function Invoke-WinUtilScript {
 function Invoke-WinUtilShowExt {
     <#
     .SYNOPSIS
-        Disables/Enables Show file Extentions
+        Disables/Enables Show file Extensions
     .PARAMETER Enabled
         Indicates whether to enable or disable Show file extentions
     #>
     Param($Enabled)
     Try{
         if ($Enabled -eq $false){
-            Write-Host "Showing file extentions"
+            Write-Host "Showing file extensions"
             $value = 0
         }
         else {
@@ -4298,7 +4298,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extentions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
