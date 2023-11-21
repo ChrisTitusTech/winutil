@@ -64,7 +64,7 @@ function Invoke-WPFGetIso {
     $mountedISO = Mount-DiskImage -PassThru "$filePath"
     Write-Host "Done mounting Iso $mountedISO"
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
-    Write-Host "Iso mounted to $driveLetter."
+    Write-Host "Iso mounted to '$driveLetter'"
     # storing off values in hidden fields for further steps
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
@@ -78,9 +78,7 @@ function Invoke-WPFGetIso {
 
     try {
         
-        $data = @($driveLetter,$filePath)
-        Write-Host "ISO is mounted to $($driveLetter)"
-        Write-Host "Creating temp directories"
+        $data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"

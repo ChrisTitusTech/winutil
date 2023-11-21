@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.19
+    Version        : 23.11.20
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.19"
+$sync.version = "23.11.20"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1081,6 +1081,20 @@ function Remove-ProvisionedPackages
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
+function Copy-ToUSB([string] $fileToCopy)
+{
+	foreach ($volume in Get-Volume) {
+		Write-Host "USB Drive inserted $($volume.FileSystemLabel)"
+		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
+			Copy-Item -Path $fileToCopy -Destination "$($volume.DriveLetter):\" -Force
+	
+			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			return
+		}
+	}
+	Write-Host "Ventoy USB Key is not inserted"
+}
+
 function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
@@ -1186,15 +1200,6 @@ function New-Unattend {
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
 			</component>
-			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<RunSynchronous>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>1</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogSpecialize.txt</Path>
-						<Description>Set date</Description>
-					</RunSynchronousCommand>
-				</RunSynchronous>
-			</component>
 		</settings>
 		<settings pass="auditUser">
 			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1205,15 +1210,26 @@ function New-Unattend {
 					</RunSynchronousCommand>
 					<RunSynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogAuditUser.txt</Path>
+						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
 						<Description>StartMenu</Description>
 					</RunSynchronousCommand>
 				</RunSynchronous>
 			</component>
 		</settings>
 		<settings pass="oobeSystem">
+			<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<InputLocale>en-US</InputLocale>
+				<SystemLocale>en-US</SystemLocale>
+				<UILanguage>en-US</UILanguage>
+				<UserLocale>en-US</UserLocale>
+				<SkipMachineOOBE>true</SkipMachineOOBE>
+				<TimeZone>UTC</TimeZone>
+			</component>
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				  <OOBE>
+				<OOBE>
+                	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+	                <SkipUserOOBE>true</SkipUserOOBE>
+                	<SkipMachineOOBE>true</SkipMachineOOBE>
 					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
 					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 					<HideEULAPage>true</HideEULAPage>
@@ -1226,11 +1242,11 @@ function New-Unattend {
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
+						<CommandLine>CMD /C echo LOS GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>3</Order>
-						<CommandLine>CMD /C date 0&lt;C:\Windows\LogOobeSystem.txt</CommandLine>
+						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
 					</SynchronousCommand>
 				</FirstLogonCommands>
 			</component>
@@ -1238,6 +1254,80 @@ function New-Unattend {
 	</unattend>
 '@
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+}
+
+function New-CheckInstall {
+
+	# using here string to embedd firstrun
+	$checkInstall = @'
+	@echo off
+	if exist "C:\windows\cpu.txt" (
+		echo C:\windows\cpu.txt exists
+	) else (
+		echo C:\windows\cpu.txt does not exist
+	)
+	if exist "C:\windows\SerialNumber.txt" (
+		echo C:\windows\SerialNumber.txt exists
+	) else (
+		echo C:\windows\SerialNumber.txt does not exist
+	)
+	if exist "C:\unattend.xml" (
+		echo C:\unattend.xml exists
+	) else (
+		echo C:\unattend.xml does not exist
+	)
+	if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
+	) else (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
+	)
+	if exist "C:\Windows\Panther\unattend.xml" (
+		echo C:\Windows\Panther\unattend.xml exists
+	) else (
+		echo C:\Windows\Panther\unattend.xml does not exist
+	)
+	if exist "C:\Windows\System32\Sysprep\unattend.xml" (
+		echo C:\Windows\System32\Sysprep\unattend.xml exists
+	) else (
+		echo C:\Windows\System32\Sysprep\unattend.xml does not exist
+	)
+	if exist "C:\Windows\FirstStartup.ps1" (
+		echo C:\Windows\FirstStartup.ps1 exists
+	) else (
+		echo C:\Windows\FirstStartup.ps1 does not exist
+	)
+	if exist "C:\Windows\winutil.ps1" (
+		echo C:\Windows\winutil.ps1 exists
+	) else (
+		echo C:\Windows\winutil.ps1 does not exist
+	)
+	if exist "C:\Windows\LogSpecialize.txt" (
+		echo C:\Windows\LogSpecialize.txt exists
+	) else (
+		echo C:\Windows\LogSpecialize.txt does not exist
+	)
+	if exist "C:\Windows\LogAuditUser.txt" (
+		echo C:\Windows\LogAuditUser.txt exists
+	) else (
+		echo C:\Windows\LogAuditUser.txt does not exist
+	)
+	if exist "C:\Windows\LogOobeSystem.txt" (
+		echo C:\Windows\LogOobeSystem.txt exists
+	) else (
+		echo C:\Windows\LogOobeSystem.txt does not exist
+	)
+	if exist "c:\windows\csup.txt" (
+		echo c:\windows\csup.txt exists
+	) else (
+		echo c:\windows\csup.txt does not exist
+	)
+	if exist "c:\windows\LogFirstRun.txt" (
+		echo c:\windows\LogFirstRun.txt exists
+	) else (
+		echo c:\windows\LogFirstRun.txt does not exist
+	)
+'@
+	$checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
 }
 
 function New-FirstRun {
@@ -1281,7 +1371,9 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @'
+		$servicesAuto = @"
+			"AudioSrv",
+			"AudioEndpointBuilder",
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -1342,18 +1434,18 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-		)
+"@		
 	
 		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
 		foreach($service in $allServices)
 		{
 			Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
-			"Stopping service $service" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
 	
-	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 	
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
@@ -2139,7 +2231,7 @@ function Invoke-WPFGetIso {
     $mountedISO = Mount-DiskImage -PassThru "$filePath"
     Write-Host "Done mounting Iso $mountedISO"
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
-    Write-Host "Iso mounted to $driveLetter."
+    Write-Host "Iso mounted to '$driveLetter'"
     # storing off values in hidden fields for further steps
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
@@ -2153,17 +2245,7 @@ function Invoke-WPFGetIso {
 
     try {
         
-        $data = @($driveLetter,$filePath)
-        # Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
-        #     param($data)
-        #     $sync.ProcessRunning = $true
-        #     $sync.Form.Dispatcher.Invoke({
-        #         $sync.MicrowinIsoDrive.Text = $data[0]
-        #         $sync.MicrowinIsoLocation.Text = $data[1]
-        #     })
-        # }
-        Write-Host "ISO is mounted to $($driveLetter)"
-        Write-Host "Creating temp directories"
+        $data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
@@ -2351,6 +2433,7 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
+	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -2442,6 +2525,7 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
 		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
 		Write-Host "Done Copy unattend.xml"
 
 		Write-Host "Create FirstRun"
@@ -2458,6 +2542,11 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
 		Write-Host "Done copy winutil.ps1"
 		# *************************** Automation black ***************************
+
+		Write-Host "Copy checkinstall.cmd into the ISO"
+		New-CheckInstall
+		Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+		Write-Host "Done copy checkinstall.cmd"
 
 		Write-Host "Creating a directory that allows to bypass Wifi setup"
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
@@ -2556,21 +2645,16 @@ function Invoke-WPFMicrowin {
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
 		
-		Write-Host "Mounting boot image"
+		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
 		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
-		pause
-
-
-
-
-
+	
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
 		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
 		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
 		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
 		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements on the setup image)"
+		Write-Host "Bypassing system requirements on the setup image"
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
@@ -2601,6 +2685,11 @@ function Invoke-WPFMicrowin {
 		Write-Host "Performing Cleanup"
 		Remove-Item -Recurse -Force "$($scratchDir)"
 		Remove-Item -Recurse -Force "$($mountDir)"
+
+		if ($copyToUSB)
+		{
+			Copy-ToUSB("$env:temp\microwin.iso")
+		}
 		
 		Write-Host " _____                       "
 		Write-Host "(____ \                      "
@@ -4293,6 +4382,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                                    <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
@@ -4328,7 +4418,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 / /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
 \/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                                     </TextBlock>
-                                    <TextBlock Margin="0" 
+                                    <TextBlock Margin="15" 
                                         Padding="8" 
                                         VerticalAlignment="Center" 
                                         TextWrapping="WrapWithOverflow" 
@@ -4348,21 +4438,18 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                                         <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
-                                            It will be processed and unpacked which could take <LineBreak/>
+                                            https://www.microsoft.com/software-download/windows11
                                             several minutes to process the ISO depending on your machine. <LineBreak/>
                                         - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
                                         - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
+                                            It will be processed and unpacked which could take some time <LineBreak/>
                                         - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
                                         - Chose which features you want to keep <LineBreak/>
                                         - Click Start Process button <LineBreak/>
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
-                                        Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
-                                        Use Ventoy on your USB key to boot to this image. gg,
-                                    </TextBlock>
-                                    <TextBlock Margin="0" Padding="8" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        <LineBreak/>
-                                        AFTER the process is done, final ISO will be put into the %TEMP% directory <LineBreak/>
+                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
+                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
                                     </TextBlock>
                                </StackPanel>
                             </Border>

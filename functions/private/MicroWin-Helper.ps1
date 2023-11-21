@@ -116,6 +116,20 @@ function Remove-ProvisionedPackages
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
+function Copy-ToUSB([string] $fileToCopy)
+{
+	foreach ($volume in Get-Volume) {
+		Write-Host "USB Drive inserted $($volume.FileSystemLabel)"
+		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
+			Copy-Item -Path $fileToCopy -Destination "$($volume.DriveLetter):\" -Force
+	
+			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			return
+		}
+	}
+	Write-Host "Ventoy USB Key is not inserted"
+}
+
 function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
@@ -221,15 +235,6 @@ function New-Unattend {
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
 			</component>
-			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<RunSynchronous>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>1</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogSpecialize.txt</Path>
-						<Description>Set date</Description>
-					</RunSynchronousCommand>
-				</RunSynchronous>
-			</component>
 		</settings>
 		<settings pass="auditUser">
 			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -240,15 +245,26 @@ function New-Unattend {
 					</RunSynchronousCommand>
 					<RunSynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogAuditUser.txt</Path>
+						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
 						<Description>StartMenu</Description>
 					</RunSynchronousCommand>
 				</RunSynchronous>
 			</component>
 		</settings>
 		<settings pass="oobeSystem">
+			<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<InputLocale>en-US</InputLocale>
+				<SystemLocale>en-US</SystemLocale>
+				<UILanguage>en-US</UILanguage>
+				<UserLocale>en-US</UserLocale>
+				<SkipMachineOOBE>true</SkipMachineOOBE>
+				<TimeZone>UTC</TimeZone>
+			</component>
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				  <OOBE>
+				<OOBE>
+                	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+	                <SkipUserOOBE>true</SkipUserOOBE>
+                	<SkipMachineOOBE>true</SkipMachineOOBE>
 					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
 					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 					<HideEULAPage>true</HideEULAPage>
@@ -261,11 +277,11 @@ function New-Unattend {
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
+						<CommandLine>CMD /C echo LOS GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>3</Order>
-						<CommandLine>CMD /C date 0&lt;C:\Windows\LogOobeSystem.txt</CommandLine>
+						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
 					</SynchronousCommand>
 				</FirstLogonCommands>
 			</component>
@@ -273,6 +289,80 @@ function New-Unattend {
 	</unattend>
 '@
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+}
+
+function New-CheckInstall {
+
+	# using here string to embedd firstrun
+	$checkInstall = @'
+	@echo off
+	if exist "C:\windows\cpu.txt" (
+		echo C:\windows\cpu.txt exists
+	) else (
+		echo C:\windows\cpu.txt does not exist
+	)
+	if exist "C:\windows\SerialNumber.txt" (
+		echo C:\windows\SerialNumber.txt exists
+	) else (
+		echo C:\windows\SerialNumber.txt does not exist
+	)
+	if exist "C:\unattend.xml" (
+		echo C:\unattend.xml exists
+	) else (
+		echo C:\unattend.xml does not exist
+	)
+	if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
+	) else (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
+	)
+	if exist "C:\Windows\Panther\unattend.xml" (
+		echo C:\Windows\Panther\unattend.xml exists
+	) else (
+		echo C:\Windows\Panther\unattend.xml does not exist
+	)
+	if exist "C:\Windows\System32\Sysprep\unattend.xml" (
+		echo C:\Windows\System32\Sysprep\unattend.xml exists
+	) else (
+		echo C:\Windows\System32\Sysprep\unattend.xml does not exist
+	)
+	if exist "C:\Windows\FirstStartup.ps1" (
+		echo C:\Windows\FirstStartup.ps1 exists
+	) else (
+		echo C:\Windows\FirstStartup.ps1 does not exist
+	)
+	if exist "C:\Windows\winutil.ps1" (
+		echo C:\Windows\winutil.ps1 exists
+	) else (
+		echo C:\Windows\winutil.ps1 does not exist
+	)
+	if exist "C:\Windows\LogSpecialize.txt" (
+		echo C:\Windows\LogSpecialize.txt exists
+	) else (
+		echo C:\Windows\LogSpecialize.txt does not exist
+	)
+	if exist "C:\Windows\LogAuditUser.txt" (
+		echo C:\Windows\LogAuditUser.txt exists
+	) else (
+		echo C:\Windows\LogAuditUser.txt does not exist
+	)
+	if exist "C:\Windows\LogOobeSystem.txt" (
+		echo C:\Windows\LogOobeSystem.txt exists
+	) else (
+		echo C:\Windows\LogOobeSystem.txt does not exist
+	)
+	if exist "c:\windows\csup.txt" (
+		echo c:\windows\csup.txt exists
+	) else (
+		echo c:\windows\csup.txt does not exist
+	)
+	if exist "c:\windows\LogFirstRun.txt" (
+		echo c:\windows\LogFirstRun.txt exists
+	) else (
+		echo c:\windows\LogFirstRun.txt does not exist
+	)
+'@
+	$checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
 }
 
 function New-FirstRun {
@@ -316,7 +406,9 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @'
+		$servicesAuto = @"
+			"AudioSrv",
+			"AudioEndpointBuilder",
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -377,18 +469,18 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-		)
+"@		
 	
 		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
 		foreach($service in $allServices)
 		{
 			Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
-			"Stopping service $service" | Out-File -FilePath c:\windows\LogProcess.txt -Append -NoClobber
+			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
 	
-	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogProcess.txt -Append -NoClobber
+	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 	
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1

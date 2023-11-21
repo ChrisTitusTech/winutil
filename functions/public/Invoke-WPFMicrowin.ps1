@@ -17,6 +17,7 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
+	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -108,6 +109,7 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
 		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
 		Write-Host "Done Copy unattend.xml"
 
 		Write-Host "Create FirstRun"
@@ -124,6 +126,11 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
 		Write-Host "Done copy winutil.ps1"
 		# *************************** Automation black ***************************
+
+		Write-Host "Copy checkinstall.cmd into the ISO"
+		New-CheckInstall
+		Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+		Write-Host "Done copy checkinstall.cmd"
 
 		Write-Host "Creating a directory that allows to bypass Wifi setup"
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
@@ -262,6 +269,11 @@ function Invoke-WPFMicrowin {
 		Write-Host "Performing Cleanup"
 		Remove-Item -Recurse -Force "$($scratchDir)"
 		Remove-Item -Recurse -Force "$($mountDir)"
+
+		if ($copyToUSB)
+		{
+			Copy-ToUSB("$env:temp\microwin.iso")
+		}
 		
 		Write-Host " _____                       "
 		Write-Host "(____ \                      "

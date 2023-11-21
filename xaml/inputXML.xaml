@@ -931,6 +931,7 @@
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                                    <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
@@ -966,7 +967,7 @@
 / /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
 \/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                                     </TextBlock>
-                                    <TextBlock Margin="0" 
+                                    <TextBlock Margin="15" 
                                         Padding="8" 
                                         VerticalAlignment="Center" 
                                         TextWrapping="WrapWithOverflow" 
@@ -986,21 +987,18 @@
 
                                         <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
-                                            It will be processed and unpacked which could take <LineBreak/>
+                                            https://www.microsoft.com/software-download/windows11
                                             several minutes to process the ISO depending on your machine. <LineBreak/>
                                         - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
                                         - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
+                                            It will be processed and unpacked which could take some time <LineBreak/>
                                         - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
                                         - Chose which features you want to keep <LineBreak/>
                                         - Click Start Process button <LineBreak/>
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
-                                        Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
-                                        Use Ventoy on your USB key to boot to this image. gg,
-                                    </TextBlock>
-                                    <TextBlock Margin="0" Padding="8" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
-                                        <LineBreak/>
-                                        AFTER the process is done, final ISO will be put into the %TEMP% directory <LineBreak/>
+                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
+                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
                                     </TextBlock>
                                </StackPanel>
                             </Border>
