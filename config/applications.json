@@ -99,6 +99,10 @@
 		"winget": "Microsoft.DotNet.DesktopRuntime.7",
 		"choco": "dotnet-7.0-runtime"
 	},
+	"WPFInstalldolphin": {
+		"winget": "KDE.Dolphin",
+		"choco": "na"
+	},
 	"WPFInstallduplicati": {
 		"winget": "Duplicati.Duplicati",
 		"choco": "duplicati"
@@ -523,7 +527,11 @@
 		"winget": "StrawberryMusicPlayer.Strawberry",
 		"choco": "strawberrymusicplayer"
 	},
-	"WPFInstallsublime": {
+	"WPFInstallsublimemerge": {
+		"winget": "SublimeHQ.SublimeMerge",
+		"choco": "sublimemerge"
+	},
+	"WPFInstallsublimetext": {
 		"winget": "SublimeHQ.SublimeText.4",
 		"choco": "sublimetext4"
 	},
