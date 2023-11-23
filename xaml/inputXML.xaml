@@ -909,7 +909,7 @@
                                         Choose a Windows ISO file that you've downloaded. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
                                         Text="ISO location will be printed here"
                                         IsReadOnly="True"
                                         TextWrapping="Wrap"
@@ -923,15 +923,28 @@
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
+                                <!-- Visibility="Hidden" -->
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
                                     <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                                    <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Margin="6"
+                                        Text=""
+                                        IsReadOnly="False"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                        ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
+                                    />
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                                     <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
@@ -967,8 +980,8 @@
 / /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
 \/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                                     </TextBlock>
-                                    <TextBlock Margin="15" 
-                                        Padding="8" 
+                                    <TextBlock Margin="15,15,15,0" 
+                                        Padding="8,8,8,0" 
                                         VerticalAlignment="Center" 
                                         TextWrapping="WrapWithOverflow" 
                                         Height = "Auto"
@@ -999,6 +1012,26 @@
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
                                         <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
                                         Copy this image to your Ventoy USB Stick, boot to this image. gg,
+                                        <LineBreak/>
+                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                    </TextBlock>
+                                    <TextBlock Margin="15,0,15,15" 
+                                        Padding = "1" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        VerticalAlignment = "Top"
+                                        Foreground = "{ComboBoxForegroundColor}"
+                                        xml:space = "preserve"
+                                    >
+C:\drivers\
+        |-- Driver1\
+        |   |-- Driver1.inf
+        |   |-- Driver1.sys
+        |-- Driver2\
+        |   |-- Driver2.inf
+        |   |-- Driver2.sys
+        |-- OtherFiles...
                                     </TextBlock>
                                </StackPanel>
                             </Border>

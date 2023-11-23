@@ -18,6 +18,7 @@ function Invoke-WPFMicrowin {
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
 	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -35,6 +36,20 @@ function Invoke-WPFMicrowin {
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
 		Write-Host "Mounting complete! Performing removal of applications..."
+
+		if ($injectDrivers)
+		{
+			$driverPath = $sync.MicrowinDriverLocation.Text
+			if (Test-Path $driverPath)
+			{
+				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+			}
+			else 
+			{
+				Write-Host "Path to drivers is invaliad continuing without driver injection"
+			}
+		}
 
 		Write-Host "Remove Features from the image"
 		Remove-Features -keepDefender:$keepDefender
@@ -82,8 +97,6 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
@@ -119,12 +132,32 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
 		Write-Host "Done copy FirstRun.ps1"
 
-		Write-Host "Copy winutil.ps1 into the ISO"
-		# in case we want to get the file from the internet instead?
-		# Write-Host "Download latest winutil.ps1"
-		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\winutil.ps1"
-		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
-		Write-Host "Done copy winutil.ps1"
+		Write-Host "Copy link to winutil.ps1 into the ISO"
+		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
+		New-Item -ItemType Directory -Force -Path "$desktopDir"
+	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+		$shortcutPath = "$desktopDir\WinUtil.lnk"
+		$shell = New-Object -ComObject WScript.Shell
+		$shortcut = $shell.CreateShortcut($shortcutPath)
+
+		if (Test-Path -Path "$env:TEMP\cttlogo.png")
+		{
+			$pngPath = "$env:TEMP\cttlogo.png"
+			$icoPath = "$env:TEMP\cttlogo.ico"
+			Add-Type -AssemblyName System.Drawing
+			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
+			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+			Write-Host "ICO file created at: $icoPath"
+			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
+			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
+			$shortcut.IconLocation = "c:\cttlogo.ico"
+		}
+
+		$shortcut.TargetPath = "powershell.exe"
+		$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+		$shortcut.Save()
+		Write-Host "Shortcut to winutil created at: $shortcutPath"
 		# *************************** Automation black ***************************
 
 		Write-Host "Copy checkinstall.cmd into the ISO"
@@ -194,6 +227,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Changing theme to dark. This only works on Activated Windows"
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+
 	} catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
@@ -210,7 +244,6 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Unmounting image..."
 		dism /unmount-image /mountdir:$scratchDir /commit
-
 	} 
 	
 	try {
@@ -228,7 +261,7 @@ function Invoke-WPFMicrowin {
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		
+		# Next step boot image		
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
 		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
 	
@@ -272,7 +305,9 @@ function Invoke-WPFMicrowin {
 
 		if ($copyToUSB)
 		{
+			Write-Host "Copying microwin.iso to the USB drive"
 			Copy-ToUSB("$env:temp\microwin.iso")
+			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
 		Write-Host " _____                       "
@@ -285,7 +320,7 @@ function Invoke-WPFMicrowin {
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-		Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
+		Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
 		$sync.ProcessRunning = $false
 	}
 }

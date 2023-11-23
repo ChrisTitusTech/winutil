@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.20
+    Version        : 23.11.22
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.20"
+$sync.version = "23.11.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1084,10 +1084,21 @@ function Remove-ProvisionedPackages
 function Copy-ToUSB([string] $fileToCopy)
 {
 	foreach ($volume in Get-Volume) {
-		Write-Host "USB Drive inserted $($volume.FileSystemLabel)"
 		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
-			Copy-Item -Path $fileToCopy -Destination "$($volume.DriveLetter):\" -Force
-	
+			$destinationPath = "$($volume.DriveLetter):\"
+			#Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
+			# Get the total size of the file
+			$totalSize = (Get-Item $fileToCopy).length
+
+			Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
+				ForEach-Object {
+					# Calculate the percentage completed
+					$completed = ($_.BytesTransferred / $totalSize) * 100
+
+					# Display the progress bar
+					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
+				}
+
 			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
 			return
 		}
@@ -1188,6 +1199,11 @@ function New-Unattend {
 	#     </component>
 	#   </settings>
 	# using here string to embedd unattend
+	# 	<RunSynchronousCommand wcm:action="add">
+	# 	<Order>1</Order>
+	# 	<Path>net user administrator /active:yes</Path>
+	# </RunSynchronousCommand>
+
 	$unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
@@ -1206,10 +1222,6 @@ function New-Unattend {
 				<RunSynchronous>
 					<RunSynchronousCommand wcm:action="add">
 						<Order>1</Order>
-						<Path>net user administrator /active:yes</Path>
-					</RunSynchronousCommand>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>2</Order>
 						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
 						<Description>StartMenu</Description>
 					</RunSynchronousCommand>
@@ -1217,19 +1229,11 @@ function New-Unattend {
 			</component>
 		</settings>
 		<settings pass="oobeSystem">
-			<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<InputLocale>en-US</InputLocale>
-				<SystemLocale>en-US</SystemLocale>
-				<UILanguage>en-US</UILanguage>
-				<UserLocale>en-US</UserLocale>
-				<SkipMachineOOBE>true</SkipMachineOOBE>
-				<TimeZone>UTC</TimeZone>
-			</component>
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<OOBE>
                 	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
-	                <SkipUserOOBE>true</SkipUserOOBE>
-                	<SkipMachineOOBE>true</SkipMachineOOBE>
+	                <SkipUserOOBE>false</SkipUserOOBE>
+                	<SkipMachineOOBE>false</SkipMachineOOBE>
 					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
 					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 					<HideEULAPage>true</HideEULAPage>
@@ -1242,7 +1246,7 @@ function New-Unattend {
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<CommandLine>CMD /C echo LOS GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
+						<CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>3</Order>
@@ -1450,7 +1454,7 @@ function New-FirstRun {
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
 	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
-	
+
 	# figure this out later how to set updates to security only
 	#Import-Module -Name PSWindowsUpdate; 
 	#Stop-Service -Name wuauserv
@@ -1460,15 +1464,21 @@ function New-FirstRun {
 	Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files in the Taskbar directory
+	# Delete all files on the Taskbar 
 	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
-	
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
 	
-	# Delete Edge Icon from desktop
-	$desktopPath = [Environment]::GetFolderPath('Desktop')
+	# Stop-Process -Name explorer -Force
+
+	$process = Get-Process -Name "explorer"
+	Stop-Process -InputObject $process
+	# Wait for the process to exit
+	Wait-Process -InputObject $process
+	Start-Sleep -Seconds 3
+
+	# Delete Edge Icon from the desktop
 	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
 	# Check if Edge shortcuts exist on the desktop
 	if ($edgeShortcutFiles) 
@@ -1480,16 +1490,40 @@ function New-FirstRun {
 			Write-Host "Edge shortcut '$($shortcutFile.Name)' removed from the desktop."
 		}
 	}
+	Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
+	Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
+
+	# ************************************************
+	# Create WinUtil shortcut on the desktop
+	#
+	$desktopPath = "$($env:USERPROFILE)\Desktop"
+	# Specify the target PowerShell command
+	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+	# Specify the path for the shortcut
+	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
+	# Create a shell object
+	$shell = New-Object -ComObject WScript.Shell
 	
-	# Restart the explorer process
-	Stop-Process -Name explorer -Force
+	# Create a shortcut object
+	$shortcut = $shell.CreateShortcut($shortcutPath)
+
+	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	{
+		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+	}
+	
+	# Set properties of the shortcut
+	$shortcut.TargetPath = "powershell.exe"
+	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+	# Save the shortcut
+	$shortcut.Save()
+	Write-Host "Shortcut created at: $shortcutPath"
+	# 
+	# Done create WinUtil shortcut on the desktop
+	# ************************************************
+
 	Start-Process explorer
 	
-	if (Test-Path 'C:\Windows\winutil.ps1') 
-	{ 
-	#    Invoke-Expression -Command "winget install --id nomacs"
-		Invoke-Expression -Command "C:\Windows\winutil.ps1"
-	}
 '@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
@@ -2434,6 +2468,7 @@ function Invoke-WPFMicrowin {
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
 	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -2451,6 +2486,20 @@ function Invoke-WPFMicrowin {
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
 		Write-Host "Mounting complete! Performing removal of applications..."
+
+		if ($injectDrivers)
+		{
+			$driverPath = $sync.MicrowinDriverLocation.Text
+			if (Test-Path $driverPath)
+			{
+				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+			}
+			else 
+			{
+				Write-Host "Path to drivers is invaliad continuing without driver injection"
+			}
+		}
 
 		Write-Host "Remove Features from the image"
 		Remove-Features -keepDefender:$keepDefender
@@ -2498,8 +2547,6 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
@@ -2535,12 +2582,32 @@ function Invoke-WPFMicrowin {
 		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
 		Write-Host "Done copy FirstRun.ps1"
 
-		Write-Host "Copy winutil.ps1 into the ISO"
-		# in case we want to get the file from the internet instead?
-		# Write-Host "Download latest winutil.ps1"
-		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\winutil.ps1"
-		Copy-Item "$pwd\winutil.ps1" "$($scratchDir)\Windows\winutil.ps1" -force
-		Write-Host "Done copy winutil.ps1"
+		Write-Host "Copy link to winutil.ps1 into the ISO"
+		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
+		New-Item -ItemType Directory -Force -Path "$desktopDir"
+	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+		$shortcutPath = "$desktopDir\WinUtil.lnk"
+		$shell = New-Object -ComObject WScript.Shell
+		$shortcut = $shell.CreateShortcut($shortcutPath)
+
+		if (Test-Path -Path "$env:TEMP\cttlogo.png")
+		{
+			$pngPath = "$env:TEMP\cttlogo.png"
+			$icoPath = "$env:TEMP\cttlogo.ico"
+			Add-Type -AssemblyName System.Drawing
+			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
+			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+			Write-Host "ICO file created at: $icoPath"
+			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
+			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
+			$shortcut.IconLocation = "c:\cttlogo.ico"
+		}
+
+		$shortcut.TargetPath = "powershell.exe"
+		$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+		$shortcut.Save()
+		Write-Host "Shortcut to winutil created at: $shortcutPath"
 		# *************************** Automation black ***************************
 
 		Write-Host "Copy checkinstall.cmd into the ISO"
@@ -2610,6 +2677,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Changing theme to dark. This only works on Activated Windows"
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+
 	} catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
@@ -2626,7 +2694,6 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Unmounting image..."
 		dism /unmount-image /mountdir:$scratchDir /commit
-
 	} 
 	
 	try {
@@ -2644,7 +2711,7 @@ function Invoke-WPFMicrowin {
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		
+		# Next step boot image		
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
 		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
 	
@@ -2688,7 +2755,9 @@ function Invoke-WPFMicrowin {
 
 		if ($copyToUSB)
 		{
+			Write-Host "Copying microwin.iso to the USB drive"
 			Copy-ToUSB("$env:temp\microwin.iso")
+			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
 		Write-Host " _____                       "
@@ -2701,7 +2770,7 @@ function Invoke-WPFMicrowin {
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-		Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
+		Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
 		$sync.ProcessRunning = $false
 	}
 }
@@ -4360,7 +4429,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         Choose a Windows ISO file that you''ve downloaded. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
                                         Text="ISO location will be printed here"
                                         IsReadOnly="True"
                                         TextWrapping="Wrap"
@@ -4374,15 +4443,28 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
+                                <!-- Visibility="Hidden" -->
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
                                     <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I''M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                                    <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Margin="6"
+                                        Text=""
+                                        IsReadOnly="False"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                        ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
+                                    />
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                                     <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                                     <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
@@ -4418,8 +4500,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 / /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
 \/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                                     </TextBlock>
-                                    <TextBlock Margin="15" 
-                                        Padding="8" 
+                                    <TextBlock Margin="15,15,15,0" 
+                                        Padding="8,8,8,0" 
                                         VerticalAlignment="Center" 
                                         TextWrapping="WrapWithOverflow" 
                                         Height = "Auto"
@@ -4450,6 +4532,26 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
                                         <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
                                         Copy this image to your Ventoy USB Stick, boot to this image. gg,
+                                        <LineBreak/>
+                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                    </TextBlock>
+                                    <TextBlock Margin="15,0,15,15" 
+                                        Padding = "1" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        VerticalAlignment = "Top"
+                                        Foreground = "{ComboBoxForegroundColor}"
+                                        xml:space = "preserve"
+                                    >
+C:\drivers\
+        |-- Driver1\
+        |   |-- Driver1.inf
+        |   |-- Driver1.sys
+        |-- Driver2\
+        |   |-- Driver2.inf
+        |   |-- Driver2.sys
+        |-- OtherFiles...
                                     </TextBlock>
                                </StackPanel>
                             </Border>

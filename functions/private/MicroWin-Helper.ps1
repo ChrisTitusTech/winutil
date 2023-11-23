@@ -119,10 +119,21 @@ function Remove-ProvisionedPackages
 function Copy-ToUSB([string] $fileToCopy)
 {
 	foreach ($volume in Get-Volume) {
-		Write-Host "USB Drive inserted $($volume.FileSystemLabel)"
 		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
-			Copy-Item -Path $fileToCopy -Destination "$($volume.DriveLetter):\" -Force
-	
+			$destinationPath = "$($volume.DriveLetter):\"
+			#Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
+			# Get the total size of the file
+			$totalSize = (Get-Item $fileToCopy).length
+
+			Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
+				ForEach-Object {
+					# Calculate the percentage completed
+					$completed = ($_.BytesTransferred / $totalSize) * 100
+
+					# Display the progress bar
+					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
+				}
+
 			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
 			return
 		}
@@ -223,6 +234,11 @@ function New-Unattend {
 	#     </component>
 	#   </settings>
 	# using here string to embedd unattend
+	# 	<RunSynchronousCommand wcm:action="add">
+	# 	<Order>1</Order>
+	# 	<Path>net user administrator /active:yes</Path>
+	# </RunSynchronousCommand>
+
 	$unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
@@ -241,10 +257,6 @@ function New-Unattend {
 				<RunSynchronous>
 					<RunSynchronousCommand wcm:action="add">
 						<Order>1</Order>
-						<Path>net user administrator /active:yes</Path>
-					</RunSynchronousCommand>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>2</Order>
 						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
 						<Description>StartMenu</Description>
 					</RunSynchronousCommand>
@@ -252,19 +264,11 @@ function New-Unattend {
 			</component>
 		</settings>
 		<settings pass="oobeSystem">
-			<component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<InputLocale>en-US</InputLocale>
-				<SystemLocale>en-US</SystemLocale>
-				<UILanguage>en-US</UILanguage>
-				<UserLocale>en-US</UserLocale>
-				<SkipMachineOOBE>true</SkipMachineOOBE>
-				<TimeZone>UTC</TimeZone>
-			</component>
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<OOBE>
                 	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
-	                <SkipUserOOBE>true</SkipUserOOBE>
-                	<SkipMachineOOBE>true</SkipMachineOOBE>
+	                <SkipUserOOBE>false</SkipUserOOBE>
+                	<SkipMachineOOBE>false</SkipMachineOOBE>
 					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
 					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 					<HideEULAPage>true</HideEULAPage>
@@ -277,7 +281,7 @@ function New-Unattend {
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<CommandLine>CMD /C echo LOS GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
+						<CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>3</Order>
@@ -485,7 +489,7 @@ function New-FirstRun {
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
 	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
-	
+
 	# figure this out later how to set updates to security only
 	#Import-Module -Name PSWindowsUpdate; 
 	#Stop-Service -Name wuauserv
@@ -495,15 +499,21 @@ function New-FirstRun {
 	Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files in the Taskbar directory
+	# Delete all files on the Taskbar 
 	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
-	
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
 	
-	# Delete Edge Icon from desktop
-	$desktopPath = [Environment]::GetFolderPath('Desktop')
+	# Stop-Process -Name explorer -Force
+
+	$process = Get-Process -Name "explorer"
+	Stop-Process -InputObject $process
+	# Wait for the process to exit
+	Wait-Process -InputObject $process
+	Start-Sleep -Seconds 3
+
+	# Delete Edge Icon from the desktop
 	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
 	# Check if Edge shortcuts exist on the desktop
 	if ($edgeShortcutFiles) 
@@ -515,16 +525,40 @@ function New-FirstRun {
 			Write-Host "Edge shortcut '$($shortcutFile.Name)' removed from the desktop."
 		}
 	}
+	Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
+	Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
+
+	# ************************************************
+	# Create WinUtil shortcut on the desktop
+	#
+	$desktopPath = "$($env:USERPROFILE)\Desktop"
+	# Specify the target PowerShell command
+	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+	# Specify the path for the shortcut
+	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
+	# Create a shell object
+	$shell = New-Object -ComObject WScript.Shell
 	
-	# Restart the explorer process
-	Stop-Process -Name explorer -Force
+	# Create a shortcut object
+	$shortcut = $shell.CreateShortcut($shortcutPath)
+
+	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	{
+		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+	}
+	
+	# Set properties of the shortcut
+	$shortcut.TargetPath = "powershell.exe"
+	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+	# Save the shortcut
+	$shortcut.Save()
+	Write-Host "Shortcut created at: $shortcutPath"
+	# 
+	# Done create WinUtil shortcut on the desktop
+	# ************************************************
+
 	Start-Process explorer
 	
-	if (Test-Path 'C:\Windows\winutil.ps1') 
-	{ 
-	#    Invoke-Expression -Command "winget install --id nomacs"
-		Invoke-Expression -Command "C:\Windows\winutil.ps1"
-	}
 '@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
