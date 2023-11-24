@@ -540,8 +540,9 @@
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -580,6 +581,7 @@
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
@@ -653,6 +655,8 @@
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
@@ -689,9 +693,12 @@
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>

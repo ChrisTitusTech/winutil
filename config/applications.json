@@ -15,6 +15,10 @@
 		"Winget": "Alacritty.Alacritty",
 		"choco": "alacritty"
 	},
+	"WPFInstallangryipscanner": {
+		"Winget": "angryziber.AngryIPScanner",
+		"choco": "angryip"
+	},
 	"WPFInstallanydesk": {
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
@@ -50,6 +54,10 @@
 	"WPFInstallbulkcrapuninstaller": {
 		"winget": "Klocman.BulkCrapUninstaller",
 		"choco": "bulk-crap-uninstaller"
+	},
+	"WPFInstallcalibre": {
+		"winget": "calibre.calibre",
+		"choco": "calibre"
 	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
@@ -199,6 +207,10 @@
 		"winget": "HandBrake.HandBrake",
 		"choco": "handbrake"
 	},
+	"WPFInstallheidisql": {
+		"winget": "HeidiSQL.HeidiSQL",
+		"choco": "heidisql"
+	},
 	"WPFInstallheroiclauncher": {
 		"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
 		"choco": "na"
@@ -307,6 +319,10 @@
 		"winget": "LibreWolf.LibreWolf",
 		"choco": "librewolf"
 	},
+	"WPFInstalllinphone": {
+		"winget": "BelledonneCommunications.Linphone",
+		"choco": "linphone"
+	},
 	"WPFInstallmalwarebytes": {
 		"winget": "Malwarebytes.Malwarebytes",
 		"choco": "malwarebytes"
@@ -350,6 +366,10 @@
 	"WPFInstallneovim": {
 		"winget": "Neovim.Neovim",
 		"choco": "neovim"
+	},
+	"WPFInstallnextclouddesktop": {
+		"winget": "Nextcloud.NextcloudDesktop",
+		"choco": "nextcloud-client"
 	},
 	"WPFInstallnglide": {
 		"winget": "ZeusSoftware.nGlide",
@@ -407,6 +427,10 @@
 		"winget": "Apache.OpenOffice",
 		"choco": "openoffice"
 	},
+	"WPFInstallopenrgb": {
+		"winget": "CalcProgrammer1.OpenRGB",
+		"choco": "openrgb"
+	},
 	"WPFInstallopenshell": {
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
@@ -418,6 +442,10 @@
 	"WPFInstallOVirtualBox": {
 		"winget": "Oracle.VirtualBox",
 		"choco": "virtualbox"
+	},
+	"WPFInstallownclouddesktop": {
+		"winget": "ownCloud.ownCloudDesktop",
+		"choco": "owncloud-client"
 	},
 	"WPFInstallPaintdotnet": {
 		"winget": "dotPDNLLC.paintdotnet",
@@ -676,9 +704,9 @@
 		"choco": "xdm"
 	},
 	"WPFInstallzerotierone": {
-    "winget": "ZeroTier.ZeroTierOne",
-    "choco": "zerotier-one"
-  },
+		"winget": "ZeroTier.ZeroTierOne",
+		"choco": "zerotier-one"
+  	},
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
