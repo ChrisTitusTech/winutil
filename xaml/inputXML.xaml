@@ -401,7 +401,7 @@
                                 <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsublime" Content="Sublime Text" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
