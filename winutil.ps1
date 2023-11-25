@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.17
+    Version        : 23.11.22
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.17"
+$sync.version = "23.11.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -91,6 +91,48 @@ function Copy-Files {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Get-LocalizedYesNo {
+    <#
+    .SYNOPSIS
+    This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
+    
+    .DESCRIPTION
+    The function retrieves lines from the output of takeown.exe until there are at least 2 characters
+    captured in a specific format, such as "Yes=<first character>, No=<second character>".
+    
+    .EXAMPLE
+    $yesNoArray = Get-LocalizedYesNo
+    Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
+    #>
+  
+    # Run takeown.exe and capture its output
+    $takeownOutput = & takeown.exe  /? | Out-String
+
+    # Parse the output and retrieve lines until there are at least 2 characters in the array
+    $found = $false
+    $charactersArray = @()
+    foreach ($line in $takeownOutput -split "`r`n") 
+    {
+        if ($found) 
+        {
+            $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
+            $charactersArray += $characters
+
+            if ($charactersArray.Count -ge 2) 
+            {
+                break
+            }    
+        }
+        elseif ($line -match "/D   ") 
+        {
+            $found = $true
+        }
+    }
+
+    Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
+    # Return the array of characters
+    return $charactersArray
+  }
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -921,10 +963,20 @@ function Invoke-WinUtilVerboseLogon {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
+<#
 
+    .SYNOPSIS
+        Removes certain features from ISO image
 
-function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false)
-{
+    .PARAMETER Name
+        dumpFeatures - Dumps all features found in the ISO into a file called allfeaturesdump.txt. This file can be examined and used to decide what to remove.
+		keepDefender - Should Defender be removed from the ISO?
+
+    .EXAMPLE
+        Remove-Features -keepDefender:$false
+
+#>
 	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
@@ -946,7 +998,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 		$status = "Removing feature $feature"
 		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		Write-Debug "Removing feature $feature"
-		dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
+		# dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
 	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
 }
@@ -997,7 +1049,6 @@ function Remove-Packages
 	foreach ($appx in $appxlist)
 	{
 		$status = "Removing $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
 		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
@@ -1023,7 +1074,6 @@ function Remove-ProvisionedPackages
 	foreach ($appx in $appxProvisionedPackages)
 	{
 		$status = "Removing Provisioned $appx"
-		$status | Out-File "microwin.log" -Append
 		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
 		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
 								
@@ -1031,50 +1081,59 @@ function Remove-ProvisionedPackages
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
-function Disable-StartupApps
+function Copy-ToUSB([string] $fileToCopy)
 {
-	$regStartList = Get-Item -path $32bit,$32bitRunOnce,$64bit,$64bitRunOnce,$currentLOU,$currentLOURunOnce | Where-Object {$_.ValueCount -ne 0} | Select-Object  property,name
-	
-	foreach ($regName in $regStartList.name) 
-	{
-		$regNumber = ($regName).IndexOf("\")
-		$regLocation = ($regName).Insert("$regNumber",":")
-		if ($regLocation -like "*HKEY_LOCAL_MACHINE*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_LOCAL_MACHINE","HKLM")
-			write-host $regLocation
+	foreach ($volume in Get-Volume) {
+		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
+			$destinationPath = "$($volume.DriveLetter):\"
+			#Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
+			# Get the total size of the file
+			$totalSize = (Get-Item $fileToCopy).length
+
+			Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
+				ForEach-Object {
+					# Calculate the percentage completed
+					$completed = ($_.BytesTransferred / $totalSize) * 100
+
+					# Display the progress bar
+					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
+				}
+
+			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			return
 		}
-		if ($regLocation -like "*HKEY_CURRENT_USER*")
-		{
-			$regLocation = $regLocation.Replace("HKEY_CURRENT_USER","HKCU")
-			write-host $regLocation
-		}
-		foreach ($disable in $disableList) 
-		{
-			if (Get-ItemProperty -Path "$reglocation" -name "$Disable" -ErrorAction SilentlyContinue) {
-				Write-host "yeah i exist"
-				#Remove-ItemProperty -Path "$location" -Name "$($startUp.name)" -whatif
-			}else {write-host "no exist"}
-		}   
 	}
+	Write-Host "Ventoy USB Key is not inserted"
 }
+
 function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
 {
 	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-	# special code, for some reason when you try to delete some inbox apps
-	# we have to get and delete log files directory. 
-	Set-Owner -Path "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" /q /c /t /reset > $null
-	
-	Set-Owner -Path "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Recurse -Verbose
-	icacls "$($scratchDir)\Windows\System32\WebThreatDefSvc" /q /c /t /reset > $null
+
+	$yesNo = Get-LocalizedYesNo
+
+	# Specify the path to the directory
+	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
+
+	# # Grant full control to BUILTIN\Administrators using icacls
+	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+	# icacls "$($directoryPath)" /q /c /t /reset > $null
+	# icacls $directoryPath /setowner "*S-1-5-32-544"
+	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+	# Remove-Item -Path $directoryPath -Recurse -Force
 	
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
 	{
-		Write-Debug "!!!!!!Adding $($pathToDelete) to array!!!!!!"
+		Write-Debug "Adding $($pathToDelete) to array."
 		[void]$itemsToDelete.Add($pathToDelete)
 	}
 	else 
@@ -1092,17 +1151,21 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
 		{
 			$status = "Deleting directory: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /a /r /d Y /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /q /c /t /reset > $null
+
+			takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls $itemToDelete /setowner "*S-1-5-32-544"
+			icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force -Recurse "$($itemToDelete)"
 		}
 		elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf)
 		{
 			$status = "Deleting file: $($itemToDelete)"
-			$status | Out-File "microwin.log" -Append
-			takeown /f "$($itemToDelete)" > $null
-			icacls "$($itemToDelete)" /grant Administrators:F /t /c > $null
+
+			takeown /a /f "$($itemToDelete)"
+			icacls "$($itemToDelete)" /q /c /t /reset
+			icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
+			icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 			Remove-Item -Force "$($itemToDelete)"
 		}
 	}
@@ -1111,7 +1174,37 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 
 function New-Unattend {
 
-	$unattend = @"
+	# later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
+	# Below is an example how to do it we probably should create a drop down with common locals
+	# 	<settings pass="specialize">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <SetupUILanguage>
+	#         <UILanguage>en-US</UILanguage>
+	#       </SetupUILanguage>
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+
+	#   <settings pass="oobeSystem">
+	#     <!-- Specify English (World) locale -->
+	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	#       <InputLocale>en-US</InputLocale>
+	#       <SystemLocale>en-US</SystemLocale>
+	#       <UILanguage>en-US</UILanguage>
+	#       <UserLocale>en-US</UserLocale>
+	#     </component>
+	#   </settings>
+	# using here string to embedd unattend
+	# 	<RunSynchronousCommand wcm:action="add">
+	# 	<Order>1</Order>
+	# 	<Path>net user administrator /active:yes</Path>
+	# </RunSynchronousCommand>
+
+	$unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
@@ -1123,26 +1216,13 @@ function New-Unattend {
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
 			</component>
-			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<RunSynchronous>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>1</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogSpecialize.txt</Path>
-						<Description>Set date</Description>
-					</RunSynchronousCommand>
-				</RunSynchronous>
-			</component>
 		</settings>
 		<settings pass="auditUser">
 			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<RunSynchronous>
 					<RunSynchronousCommand wcm:action="add">
 						<Order>1</Order>
-						<Path>net user administrator /active:yes</Path>
-					</RunSynchronousCommand>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>2</Order>
-						<Path>CMD /C date 0&lt;C:\Windows\LogAuditUser.txt</Path>
+						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
 						<Description>StartMenu</Description>
 					</RunSynchronousCommand>
 				</RunSynchronous>
@@ -1150,7 +1230,10 @@ function New-Unattend {
 		</settings>
 		<settings pass="oobeSystem">
 			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				  <OOBE>
+				<OOBE>
+                	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+	                <SkipUserOOBE>false</SkipUserOOBE>
+                	<SkipMachineOOBE>false</SkipMachineOOBE>
 					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
 					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
 					<HideEULAPage>true</HideEULAPage>
@@ -1163,23 +1246,98 @@ function New-Unattend {
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>2</Order>
-						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
+						<CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
 					</SynchronousCommand>
 					<SynchronousCommand wcm:action="add">
 						<Order>3</Order>
-						<CommandLine>CMD /C date 0&lt;C:\Windows\LogOobeSystem.txt</CommandLine>
+						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
 					</SynchronousCommand>
 				</FirstLogonCommands>
 			</component>
 		</settings>
 	</unattend>
-"@
+'@
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+}
+
+function New-CheckInstall {
+
+	# using here string to embedd firstrun
+	$checkInstall = @'
+	@echo off
+	if exist "C:\windows\cpu.txt" (
+		echo C:\windows\cpu.txt exists
+	) else (
+		echo C:\windows\cpu.txt does not exist
+	)
+	if exist "C:\windows\SerialNumber.txt" (
+		echo C:\windows\SerialNumber.txt exists
+	) else (
+		echo C:\windows\SerialNumber.txt does not exist
+	)
+	if exist "C:\unattend.xml" (
+		echo C:\unattend.xml exists
+	) else (
+		echo C:\unattend.xml does not exist
+	)
+	if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
+	) else (
+		echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
+	)
+	if exist "C:\Windows\Panther\unattend.xml" (
+		echo C:\Windows\Panther\unattend.xml exists
+	) else (
+		echo C:\Windows\Panther\unattend.xml does not exist
+	)
+	if exist "C:\Windows\System32\Sysprep\unattend.xml" (
+		echo C:\Windows\System32\Sysprep\unattend.xml exists
+	) else (
+		echo C:\Windows\System32\Sysprep\unattend.xml does not exist
+	)
+	if exist "C:\Windows\FirstStartup.ps1" (
+		echo C:\Windows\FirstStartup.ps1 exists
+	) else (
+		echo C:\Windows\FirstStartup.ps1 does not exist
+	)
+	if exist "C:\Windows\winutil.ps1" (
+		echo C:\Windows\winutil.ps1 exists
+	) else (
+		echo C:\Windows\winutil.ps1 does not exist
+	)
+	if exist "C:\Windows\LogSpecialize.txt" (
+		echo C:\Windows\LogSpecialize.txt exists
+	) else (
+		echo C:\Windows\LogSpecialize.txt does not exist
+	)
+	if exist "C:\Windows\LogAuditUser.txt" (
+		echo C:\Windows\LogAuditUser.txt exists
+	) else (
+		echo C:\Windows\LogAuditUser.txt does not exist
+	)
+	if exist "C:\Windows\LogOobeSystem.txt" (
+		echo C:\Windows\LogOobeSystem.txt exists
+	) else (
+		echo C:\Windows\LogOobeSystem.txt does not exist
+	)
+	if exist "c:\windows\csup.txt" (
+		echo c:\windows\csup.txt exists
+	) else (
+		echo c:\windows\csup.txt does not exist
+	)
+	if exist "c:\windows\LogFirstRun.txt" (
+		echo c:\windows\LogFirstRun.txt exists
+	) else (
+		echo c:\windows\LogFirstRun.txt does not exist
+	)
+'@
+	$checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
 }
 
 function New-FirstRun {
 
-	$firstRun = @"
+	# using here string to embedd firstrun
+	$firstRun = @'
 	# Set the global error action preference to continue
 	$ErrorActionPreference = "Continue"
 	function Remove-RegistryValue
@@ -1217,10 +1375,9 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @(
-			"AudioEndpointBuilder",
+		$servicesAuto = @"
 			"AudioSrv",
-			"Audiosrv",
+			"AudioEndpointBuilder",
 			"BFE",
 			"BITS",
 			"BrokerInfrastructure",
@@ -1281,23 +1438,23 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-		)
+"@		
 	
 		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
 		foreach($service in $allServices)
 		{
 			Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
-			"Stopping service $service" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
 	
-	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogProcess.txt -Append
+	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 	
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
 	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
-	
+
 	# figure this out later how to set updates to security only
 	#Import-Module -Name PSWindowsUpdate; 
 	#Stop-Service -Name wuauserv
@@ -1307,15 +1464,21 @@ function New-FirstRun {
 	Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files in the Taskbar directory
+	# Delete all files on the Taskbar 
 	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
-	
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
 	
-	# Delete Edge Icon from desktop
-	$desktopPath = [Environment]::GetFolderPath('Desktop')
+	# Stop-Process -Name explorer -Force
+
+	$process = Get-Process -Name "explorer"
+	Stop-Process -InputObject $process
+	# Wait for the process to exit
+	Wait-Process -InputObject $process
+	Start-Sleep -Seconds 3
+
+	# Delete Edge Icon from the desktop
 	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
 	# Check if Edge shortcuts exist on the desktop
 	if ($edgeShortcutFiles) 
@@ -1327,17 +1490,41 @@ function New-FirstRun {
 			Write-Host "Edge shortcut '$($shortcutFile.Name)' removed from the desktop."
 		}
 	}
+	Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
+	Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
+
+	# ************************************************
+	# Create WinUtil shortcut on the desktop
+	#
+	$desktopPath = "$($env:USERPROFILE)\Desktop"
+	# Specify the target PowerShell command
+	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+	# Specify the path for the shortcut
+	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
+	# Create a shell object
+	$shell = New-Object -ComObject WScript.Shell
 	
-	# Restart the explorer process
-	Stop-Process -Name explorer -Force
+	# Create a shortcut object
+	$shortcut = $shell.CreateShortcut($shortcutPath)
+
+	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	{
+		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+	}
+	
+	# Set properties of the shortcut
+	$shortcut.TargetPath = "powershell.exe"
+	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+	# Save the shortcut
+	$shortcut.Save()
+	Write-Host "Shortcut created at: $shortcutPath"
+	# 
+	# Done create WinUtil shortcut on the desktop
+	# ************************************************
+
 	Start-Process explorer
 	
-	if (Test-Path 'C:\Windows\winutil.ps1') 
-	{ 
-	#    Invoke-Expression -Command "winget install --id nomacs"
-		Invoke-Expression -Command "C:\Windows\winutil.ps1"
-	}
-"@
+'@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
 function Remove-WinUtilAPPX {
@@ -1357,16 +1544,16 @@ function Remove-WinUtilAPPX {
         $Name
     )
 
-    Try{
+    Try {
         Write-Host "Removing $Name"
         Get-AppxPackage "*$Name*" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Name*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
     }
     Catch [System.Exception] {
-        if($psitem.Exception.Message -like "*The requested operation requires elevation*"){
+        if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
             Write-Warning "Unable to uninstall $name due to a Security Exception"
         }
-        Else{
+        else {
             Write-Warning "Unable to uninstall $name due to unhandled exception"
             Write-Warning $psitem.Exception.StackTrace
         }
@@ -1374,212 +1561,6 @@ function Remove-WinUtilAPPX {
     Catch{
         Write-Warning "Unable to uninstall $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
-    }
-}
-Function Set-Owner {
-    <#
-        .SYNOPSIS
-            Changes owner of a file or folder to another user or group.
-
-        .DESCRIPTION
-            Changes owner of a file or folder to another user or group.
-
-        .PARAMETER Path
-            The folder or file that will have the owner changed.
-
-        .PARAMETER Account
-            Optional parameter to change owner of a file or folder to specified account.
-
-            Default value is 'Builtin\Administrators'
-
-        .PARAMETER Recurse
-            Recursively set ownership on subfolders and files beneath given folder.
-
-        .NOTES
-            Name: Set-Owner
-            Author: Boe Prox
-            Version History:
-                 1.0 - Boe Prox
-                    - Initial Version
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp\test.txt
-
-            Description
-            -----------
-            Changes the owner of test.txt to Builtin\Administrators
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp\test.txt -Account 'Domain\bprox
-
-            Description
-            -----------
-            Changes the owner of test.txt to Domain\bprox
-
-        .EXAMPLE
-            Set-Owner -Path C:\temp -Recurse 
-
-            Description
-            -----------
-            Changes the owner of all files and folders under C:\Temp to Builtin\Administrators
-
-        .EXAMPLE
-            Get-ChildItem C:\Temp | Set-Owner -Recurse -Account 'Domain\bprox'
-
-            Description
-            -----------
-            Changes the owner of all files and folders under C:\Temp to Domain\bprox
-    #>
-    [cmdletbinding(
-        SupportsShouldProcess = $True
-    )]
-    Param (
-        [parameter(ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True)]
-        [Alias('FullName')]
-        [string[]]$Path,
-        [parameter()]
-        [string]$Account = 'Builtin\Administrators',
-        [parameter()]
-        [switch]$Recurse
-    )
-    Begin {
-        #Prevent Confirmation on each Write-Debug command when using -Debug
-        If ($PSBoundParameters['Debug']) {
-            $DebugPreference = 'Continue'
-        }
-        Try {
-            [void][TokenAdjuster]
-        } Catch {
-            $AdjustTokenPrivileges = @"
-            using System;
-            using System.Runtime.InteropServices;
-
-             public class TokenAdjuster
-             {
-              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-              internal static extern bool AdjustTokenPrivileges(IntPtr htok, bool disall,
-              ref TokPriv1Luid newst, int len, IntPtr prev, IntPtr relen);
-              [DllImport("kernel32.dll", ExactSpelling = true)]
-              internal static extern IntPtr GetCurrentProcess();
-              [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
-              internal static extern bool OpenProcessToken(IntPtr h, int acc, ref IntPtr
-              phtok);
-              [DllImport("advapi32.dll", SetLastError = true)]
-              internal static extern bool LookupPrivilegeValue(string host, string name,
-              ref long pluid);
-              [StructLayout(LayoutKind.Sequential, Pack = 1)]
-              internal struct TokPriv1Luid
-              {
-               public int Count;
-               public long Luid;
-               public int Attr;
-              }
-              internal const int SE_PRIVILEGE_DISABLED = 0x00000000;
-              internal const int SE_PRIVILEGE_ENABLED = 0x00000002;
-              internal const int TOKEN_QUERY = 0x00000008;
-              internal const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
-              public static bool AddPrivilege(string privilege)
-              {
-               try
-               {
-                bool retVal;
-                TokPriv1Luid tp;
-                IntPtr hproc = GetCurrentProcess();
-                IntPtr htok = IntPtr.Zero;
-                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
-                tp.Count = 1;
-                tp.Luid = 0;
-                tp.Attr = SE_PRIVILEGE_ENABLED;
-                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
-                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-                return retVal;
-               }
-               catch (Exception ex)
-               {
-                throw ex;
-               }
-              }
-              public static bool RemovePrivilege(string privilege)
-              {
-               try
-               {
-                bool retVal;
-                TokPriv1Luid tp;
-                IntPtr hproc = GetCurrentProcess();
-                IntPtr htok = IntPtr.Zero;
-                retVal = OpenProcessToken(hproc, TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref htok);
-                tp.Count = 1;
-                tp.Luid = 0;
-                tp.Attr = SE_PRIVILEGE_DISABLED;
-                retVal = LookupPrivilegeValue(null, privilege, ref tp.Luid);
-                retVal = AdjustTokenPrivileges(htok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-                return retVal;
-               }
-               catch (Exception ex)
-               {
-                throw ex;
-               }
-              }
-             }
-"@
-            Add-Type $AdjustTokenPrivileges
-        }
-
-        #Activate necessary admin privileges to make changes without NTFS perms
-        [void][TokenAdjuster]::AddPrivilege("SeRestorePrivilege") #Necessary to set Owner Permissions
-        [void][TokenAdjuster]::AddPrivilege("SeBackupPrivilege") #Necessary to bypass Traverse Checking
-        [void][TokenAdjuster]::AddPrivilege("SeTakeOwnershipPrivilege") #Necessary to override FilePermissions
-    }
-    Process {
-        ForEach ($Item in $Path) {
-            Write-Verbose "FullName: $Item"
-            #The ACL objects do not like being used more than once, so re-create them on the Process block
-            $DirOwner = New-Object System.Security.AccessControl.DirectorySecurity
-            $DirOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
-            $FileOwner = New-Object System.Security.AccessControl.FileSecurity
-            $FileOwner.SetOwner([System.Security.Principal.NTAccount]$Account)
-            $DirAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
-            $FileAdminAcl = New-Object System.Security.AccessControl.DirectorySecurity
-            $AdminACL = New-Object System.Security.AccessControl.FileSystemAccessRule('Builtin\Administrators','FullControl','ContainerInherit,ObjectInherit','InheritOnly','Allow')
-            $FileAdminAcl.AddAccessRule($AdminACL)
-            $DirAdminAcl.AddAccessRule($AdminACL)
-            Try {
-                $Item = Get-Item -LiteralPath $Item -Force -ErrorAction Stop
-                If (-NOT $Item.PSIsContainer) {
-                    If ($PSCmdlet.ShouldProcess($Item, 'Set File Owner')) {
-                        Try {
-                            $Item.SetAccessControl($FileOwner)
-                        } Catch {
-                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Directory.FullName)"
-                            $Item.Directory.SetAccessControl($FileAdminAcl)
-                            $Item.SetAccessControl($FileOwner)
-                        }
-                    }
-                } Else {
-                    If ($PSCmdlet.ShouldProcess($Item, 'Set Directory Owner')) {                        
-                        Try {
-                            $Item.SetAccessControl($DirOwner)
-                        } Catch {
-                            Write-Warning "Couldn't take ownership of $($Item.FullName)! Taking FullControl of $($Item.Parent.FullName)"
-                            $Item.Parent.SetAccessControl($DirAdminAcl) 
-                            $Item.SetAccessControl($DirOwner)
-                        }
-                    }
-                    If ($Recurse) {
-                        [void]$PSBoundParameters.Remove('Path')
-                        Get-ChildItem $Item -Force | Set-Owner @PSBoundParameters
-                    }
-                }
-            } Catch {
-                Write-Warning "$($Item): $($_.Exception.Message)"
-            }
-        }
-    }
-    End {  
-        #Remove priviledges that had been granted
-        [void][TokenAdjuster]::RemovePrivilege("SeRestorePrivilege") 
-        [void][TokenAdjuster]::RemovePrivilege("SeBackupPrivilege") 
-        [void][TokenAdjuster]::RemovePrivilege("SeTakeOwnershipPrivilege")     
     }
 }
 function Set-WinUtilDNS {
@@ -2241,13 +2222,15 @@ function Invoke-WPFGetIso {
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
     Write-Host "oscdimge.exe on system: $oscdImgFound"
     
-    if (!$oscdImgFound) {
+    if (!$oscdImgFound) 
+    {
         [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
         
         # the step below needs choco to download oscdimg
         $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
         Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) {
+        if (!$chocoFound) 
+        {
             [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
             return
         }
@@ -2256,10 +2239,6 @@ function Invoke-WPFGetIso {
         [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
         return
     }
-
-
-	New-FirstRun
-	New-Unattend
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -2282,34 +2261,28 @@ function Invoke-WPFGetIso {
         break
     }
 
-    Write-Host "MicroWin: Mounting Iso"
-
-    $mountedISO = Mount-DiskImage -PassThru $filePath
+    Write-Host "Mounting Iso. Please wait."
+    $mountedISO = Mount-DiskImage -PassThru "$filePath"
+    Write-Host "Done mounting Iso $mountedISO"
     $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
+    Write-Host "Iso mounted to '$driveLetter'"
+    # storing off values in hidden fields for further steps
+    # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
+
+    Write-Host "Setting up mount dir and scratch dirs"
+    $mountDir = "c:\microwin"
+    $scratchDir = "c:\microwinscratch"
+    $sync.MicrowinMountDir.Text = $mountDir
+    $sync.MicrowinScratchDir.Text = $scratchDir
+    Write-Host "Done setting up mount dir and scratch dirs"
 
     try {
         
-        $data = @($driveLetter,$filePath)
-        Invoke-WPFRunspace -ArgumentList $data -ScriptBlock {
-            param($data)
-            $sync.ProcessRunning = $true
-            $sync.Form.Dispatcher.Invoke({
-                $sync.MicrowinIsoDrive.Text = $data[0]
-                $sync.MicrowinIsoLocation.Text = $data[1]
-            })
-        }
-
-        Write-Host "MicroWin: ISO is mounted to $($driveLetter) Installed"
-            
-        Write-Host "Creating temp directories"
-        $mountDir = "c:\microwin"
-        $scratchDir = "c:\microwinscratch"
-        $sync.MicrowinMountDir.Text = $mountDir
-        $sync.MicrowinScratchDir.Text = $scratchDir
+        $data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
-        Write-Host "Copying Windows image..."
+        Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
         
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
@@ -2335,15 +2308,18 @@ function Invoke-WPFGetIso {
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
         $sync.MicrowinOptionsPanel.Visibility = 'Visible'
-    }
-    catch {
+    } catch {
         Write-Host "Dismounting bad image..."
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Remove-Item -Recurse -Force "$($scratchDir)"
         Remove-Item -Recurse -Force "$($mountDir)"
     }
 
-    Write-Host "Done reading and unpacking ISO..."
+    Write-Host "Done reading and unpacking ISO"
+    Write-Host ""
+    Write-Host "*********************************"
+    Write-Host "Check the UI for further steps!!!"
+
     $sync.ProcessRunning = $false
 }
 
@@ -2472,13 +2448,6 @@ function Invoke-WPFInstallUpgrade {
     Write-Host "-- You can close this window if desired ---"
     Write-Host "==========================================="
 }
-function ReadAllUIElements {
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem -like "WPFUpdatessec*"} 
-    Foreach ($CheckBox in $CheckBoxes) {
-        Write-Host "File path $($Checkbox.Name)"
-    }
-}
-
 function Invoke-WPFMicrowin {
     <#
         .DESCRIPTION
@@ -2491,12 +2460,6 @@ function Invoke-WPFMicrowin {
         return
     }
 
-	Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
-
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -2504,20 +2467,39 @@ function Invoke-WPFMicrowin {
 	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
 	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-  # xcopy we can verify files and also not copy files that already exist, but hard to measure
-  $mountDir = $sync.MicrowinMountDir.Text
-  $scratchDir = $sync.MicrowinScratchDir.Text
+	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+
+    $mountDir = $sync.MicrowinMountDir.Text
+    $scratchDir = $sync.MicrowinScratchDir.Text
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists) {
-        Write-Error "Required directories do not exist."
+	if (-not $mountDirExists -or -not $scratchDirExists) 
+	{
+        Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
         return
-  }
+    }
+
 	try {
+
 		Write-Host "Mounting Windows image. This may take a while."
 		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
 		Write-Host "Mounting complete! Performing removal of applications..."
+
+		if ($injectDrivers)
+		{
+			$driverPath = $sync.MicrowinDriverLocation.Text
+			if (Test-Path $driverPath)
+			{
+				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+			}
+			else 
+			{
+				Write-Host "Path to drivers is invaliad continuing without driver injection"
+			}
+		}
 
 		Write-Host "Remove Features from the image"
 		Remove-Features -keepDefender:$keepDefender
@@ -2532,6 +2514,13 @@ function Invoke-WPFMicrowin {
 		{
 			Remove-ProvisionedPackages
 		}
+
+		# special code, for some reason when you try to delete some inbox apps
+		# we have to get and delete log files directory. 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
+
+		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
 		if (!$keepDefender) 
 		{
 			Write-Host "Removing Defender"
@@ -2546,20 +2535,18 @@ function Invoke-WPFMicrowin {
 			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
 		}
 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft"
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
@@ -2569,23 +2556,64 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
 		Write-Host "Removal complete!"
 
+		# *************************** Automation black ***************************
 		# this doesn't work for some reason, this script is not being run at the end of the install
 		# if someone knows how to fix this, feel free to modify
 		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		# this is just test, if this made to work properly, this is where final cleanup can happen
-		"wmic cpu get Name > C:\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Panther
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\Panther\unattend.xml -force
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\System32\Sysprep
-		Copy-Item $env:temp\unattend.xml $scratchDir\Windows\System32\Sysprep\unattend.xml -force
-		Copy-Item $env:temp\FirstStartup.ps1 $scratchDir\Windows\FirstStartup.ps1 -force
-		Copy-Item $pwd\winutil.ps1 $scratchDir\Windows\winutil.ps1 -force
 
-		# in case we want to get the file from the internet instead?
-		# Write-Host "Download latest winutil.ps1"
-		# Invoke-WebRequest -Uri "https://christitus.com/win" -OutFile "$($scratchDir)\Windows\system32\winutil.ps1"
+		Write-Host "Create unattend.xml"
+		New-Unattend
+		Write-Host "Done Create unattend.xml"
+		Write-Host "Copy unattend.xml file into the ISO"
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
+		Write-Host "Done Copy unattend.xml"
+
+		Write-Host "Create FirstRun"
+		New-FirstRun
+		Write-Host "Done create FirstRun"
+		Write-Host "Copy FirstRun.ps1 into the ISO"
+		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+		Write-Host "Done copy FirstRun.ps1"
+
+		Write-Host "Copy link to winutil.ps1 into the ISO"
+		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
+		New-Item -ItemType Directory -Force -Path "$desktopDir"
+	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+		$shortcutPath = "$desktopDir\WinUtil.lnk"
+		$shell = New-Object -ComObject WScript.Shell
+		$shortcut = $shell.CreateShortcut($shortcutPath)
+
+		if (Test-Path -Path "$env:TEMP\cttlogo.png")
+		{
+			$pngPath = "$env:TEMP\cttlogo.png"
+			$icoPath = "$env:TEMP\cttlogo.ico"
+			Add-Type -AssemblyName System.Drawing
+			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
+			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+			Write-Host "ICO file created at: $icoPath"
+			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
+			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
+			$shortcut.IconLocation = "c:\cttlogo.ico"
+		}
+
+		$shortcut.TargetPath = "powershell.exe"
+		$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+		$shortcut.Save()
+		Write-Host "Shortcut to winutil created at: $shortcutPath"
+		# *************************** Automation black ***************************
+
+		Write-Host "Copy checkinstall.cmd into the ISO"
+		New-CheckInstall
+		Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+		Write-Host "Done copy checkinstall.cmd"
 
 		Write-Host "Creating a directory that allows to bypass Wifi setup"
 		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
@@ -2649,6 +2677,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Changing theme to dark. This only works on Activated Windows"
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+
 	} catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
@@ -2665,25 +2694,34 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Unmounting image..."
 		dism /unmount-image /mountdir:$scratchDir /commit
-	} try {
+	} 
+	
+	try {
 
-		Write-Host "Exporting image..."
-		dism /Export-Image /SourceImageFile:$mountDir\sources\install.wim /SourceIndex:$index /DestinationImageFile:$mountDir\sources\install2.wim /compress:max
-		Remove-Item $mountDir\sources\install.wim
-		Rename-Item $mountDir\sources\install2.wim install.wim
+		Write-Host "Exporting image into $mountDir\sources\install2.wim"
+		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
+		Remove-Item "$mountDir\sources\install.wim"
+		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
 
+		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
+		{
+			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			return
+		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		Write-Host "Mounting boot image:"
-		dism /mount-image /imagefile:$mountDir\sources\boot.wim /index:2 /mountdir:$scratchDir
-
+		# Next step boot image		
+		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
+		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+	
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
 		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
 		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
 		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
 		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements(on the setup image)"
+		Write-Host "Bypassing system requirements on the setup image"
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
 		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
@@ -2714,6 +2752,13 @@ function Invoke-WPFMicrowin {
 		Write-Host "Performing Cleanup"
 		Remove-Item -Recurse -Force "$($scratchDir)"
 		Remove-Item -Recurse -Force "$($mountDir)"
+
+		if ($copyToUSB)
+		{
+			Write-Host "Copying microwin.iso to the USB drive"
+			Copy-ToUSB("$env:temp\microwin.iso")
+			Write-Host "Done Copying microwin.iso to USB drive!"
+		}
 		
 		Write-Host " _____                       "
 		Write-Host "(____ \                      "
@@ -2721,9 +2766,11 @@ function Invoke-WPFMicrowin {
 		Write-Host "| |   | / _ \|  _ \ / _  )   "
 		Write-Host "| |__/ / |_| | | | ( (/ /    "
 		Write-Host "|_____/ \___/|_| |_|\____)   "
+
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-		Write-Host "You new ISO image is located here: $env:temp\microwin.iso"
+		Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
 		$sync.ProcessRunning = $false
 	}
 }
@@ -4382,6 +4429,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         Choose a Windows ISO file that you''ve downloaded. <LineBreak/>
                                         Check for status in the console.
                                     </TextBlock>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
                                     <Button Name="WPFGetIso" Margin="2" Padding="15">
                                        <Button.Content>
                                             <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
@@ -4390,21 +4443,29 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         </Button.Content>
                                     </Button>
                                 </StackPanel>
+                                <!-- Visibility="Hidden" -->
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
                                     <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                                    <TextBlock Margin="2,0,2,0" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
                                     <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
-                                    <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
-                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="Yellow"
-                                        Text="ISO location will be printed here"
-                                        IsReadOnly="True"
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I''M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                                    <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Margin="6"
+                                        Text=""
+                                        IsReadOnly="False"
                                         TextWrapping="Wrap"
                                         Foreground="{LabelboxForegroundColor}"
+                                        ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                                     />
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                                 </StackPanel>
                                 <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
                                     <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
@@ -4439,8 +4500,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 / /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
 \/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                                     </TextBlock>
-                                    <TextBlock Margin="0" 
-                                        Padding="8" 
+                                    <TextBlock Margin="15,15,15,0" 
+                                        Padding="8,8,8,0" 
                                         VerticalAlignment="Center" 
                                         TextWrapping="WrapWithOverflow" 
                                         Height = "Auto"
@@ -4459,21 +4520,38 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                                         <Bold>INSTRUCTIONS</Bold> <LineBreak/>
                                         - Download latest Windows 11 image from Microsoft <LineBreak/>
-                                            It will be processed and unpacked which could take <LineBreak/>
+                                            https://www.microsoft.com/software-download/windows11
                                             several minutes to process the ISO depending on your machine. <LineBreak/>
                                         - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
                                         - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
+                                            It will be processed and unpacked which could take some time <LineBreak/>
                                         - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
                                         - Chose which features you want to keep <LineBreak/>
                                         - Click Start Process button <LineBreak/>
                                         NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
-                                        Once it is done the microwin.iso will be in the same directory where your winutil.ps1 is located <LineBreak/>
-                                        Use Ventoy on your USB key to boot to this image. gg,
-                                    </TextBlock>
-                                    <TextBlock Margin="0" Padding="8" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}">
+                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
+                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
                                         <LineBreak/>
-                                        AFTER the process is done, final ISO will be put into the %TEMP% directory <LineBreak/>
+                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                    </TextBlock>
+                                    <TextBlock Margin="15,0,15,15" 
+                                        Padding = "1" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        VerticalAlignment = "Top"
+                                        Foreground = "{ComboBoxForegroundColor}"
+                                        xml:space = "preserve"
+                                    >
+C:\drivers\
+        |-- Driver1\
+        |   |-- Driver1.inf
+        |   |-- Driver1.sys
+        |-- Driver2\
+        |   |-- Driver2.inf
+        |   |-- Driver2.sys
+        |-- OtherFiles...
                                     </TextBlock>
                                </StackPanel>
                             </Border>
@@ -7895,18 +7973,21 @@ $commonKeyEvents = {
     # don't ask, I know what I'm doing, just go...
     if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
     {
-        $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-            [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
-
-        switch ($ret) {
-            "Yes" {
-                $this.Close()
-            } 
-            "No" {
-                return
-            } 
-        }
+        $this.Close()
     }
+
+    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
+
+    # switch ($ret) {
+    #     "Yes" {
+    #         $this.Close()
+    #     } 
+    #     "No" {
+    #         return
+    #     } 
+    # }
+
 
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
         # this is an example how to handle shortcuts per tab
@@ -7954,7 +8035,19 @@ $sync["Form"].Add_MouseLeftButtonDown({
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
    
-    $sync["Form"].Icon = "https://christitus.com/images/logo-full.png"
+    $downloadUrl = "https://christitus.com/images/logo-full.png"
+    $destinationPath = Join-Path $env:TEMP "cttlogo.png"
+    
+    # Check if the file already exists
+    if (-not (Test-Path $destinationPath)) {
+        # File does not exist, download it
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($downloadUrl, $destinationPath)
+        Write-Output "File downloaded to: $destinationPath"
+    } else {
+        Write-Output "File already exists at: $destinationPath"
+    }
+    $sync["Form"].Icon = $destinationPath
 
     Try { 
         [Void][Window]
@@ -8018,6 +8111,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
          }
      }
 })
+
+
+$downloadUrl = "https://christitus.com/images/logo-full.png"
+$destinationPath = Join-Path $env:TEMP "cttlogo.png"
+
+# Check if the file already exists
+if (-not (Test-Path $destinationPath)) {
+    # File does not exist, download it
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFile($downloadUrl, $destinationPath)
+    Write-Output "File downloaded to: $destinationPath"
+} else {
+    Write-Output "File already exists at: $destinationPath"
+}
 
 # show current windowsd Product ID
 #Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
