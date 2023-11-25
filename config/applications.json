@@ -133,6 +133,7 @@
 	},
 	"WPFInstallfloorp": {
 		"winget": "Ablaze.Floorp",
+		"choco"; "na",
 	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
