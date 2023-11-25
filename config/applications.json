@@ -131,6 +131,9 @@
 		"winget": "Mozilla.Firefox",
 		"choco": "firefox"
 	},
+	"WPFInstallfloorp": {
+		"winget": "Ablaze.Floorp",
+	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
 		"choco": "na"
