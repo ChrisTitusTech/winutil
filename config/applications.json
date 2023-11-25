@@ -419,6 +419,10 @@
 		"winget": "dotPDNLLC.paintdotnet",
 		"choco": "paint.net"
 	},
+	"WPFInstallpdfsam": {
+		"winget": "PDFsam.PDFsam",
+		"choco": "pdfsam"
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
