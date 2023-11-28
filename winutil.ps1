@@ -4775,7 +4775,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallfloorp": {
 		"winget": "Ablaze.Floorp",
-		"choco": "na",
+		"choco": "na"
 	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
