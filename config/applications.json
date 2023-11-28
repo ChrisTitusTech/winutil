@@ -175,6 +175,10 @@
 		"winget": "Git.Git;GitHub.GitHubDesktop",
 		"choco": "git;github-desktop"
 	},
+	"WPFInstallgitextensions": {
+		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
+		"choco": "git;gitextensions"
+	},
 	"WPFInstallglaryutilities": {
 		"Winget": "Glarysoft.GlaryUtilities",
 		"choco": "glaryutilities-free"
