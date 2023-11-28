@@ -9,6 +9,7 @@
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # Load DLLs
+Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
 # Variable to sync between runspaces
@@ -18,9 +19,20 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
+$currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
+$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://christitus.com/win | iex"
+if ($principal.IsInRole($adminRole))
+{
+    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+    clear-host
+}
+else
+{
+    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
+    $newProcess.Arguments = $myInvocation.MyCommand.Definition;
+    $newProcess.Verb = "runas";
+    [System.Diagnostics.Process]::Start($newProcess);
     break
 }
