@@ -4657,7 +4657,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallbluestacks": {
 		"winget": "BlueStack.BlueStacks",
-		"choco": "na"
+		"choco": "bluestacks"
 	},
 	"WPFInstallbrave": {
 		"winget": "Brave.Brave",
@@ -4777,7 +4777,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
-		"choco": "na"
+		"choco": "flameshot"
 	},
 	"WPFInstallflux": {
 		"winget": "flux.flux",
@@ -5125,7 +5125,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallprismlauncher": {
 		"winget": "PrismLauncher.PrismLauncher",
-		"choco": "na"
+		"choco": "prismlauncher"
 	},
 	"WPFInstallprocesslasso": {
 		"winget": "BitSum.ProcessLasso",
@@ -5181,7 +5181,7 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallshell": {
 		"winget": "Nilesoft.Shell",
-		"choco": "na"
+		"choco": "nilesoft-shell"
 	},
 	"WPFInstallsignal": {
 		"winget": "OpenWhisperSystems.Signal",
