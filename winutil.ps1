@@ -459,6 +459,8 @@ function Install-WinUtilWinget {
     .SYNOPSIS
         Installs Winget if it is not already installed
 
+    .DESCRIPTION
+        This function will download the latest version of winget and install it. If winget is already installed, it will do nothing.
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."
@@ -838,14 +840,14 @@ function Invoke-WinUtilScript {
 function Invoke-WinUtilShowExt {
     <#
     .SYNOPSIS
-        Disables/Enables Show file Extensions
+        Disables/Enables Show file Extentions
     .PARAMETER Enabled
         Indicates whether to enable or disable Show file extentions
     #>
     Param($Enabled)
     Try{
         if ($Enabled -eq $false){
-            Write-Host "Showing file extensions"
+            Write-Host "Showing file extentions"
             $value = 0
         }
         else {
