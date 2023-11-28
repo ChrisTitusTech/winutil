@@ -1927,6 +1927,7 @@ function Invoke-WPFButton {
         "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
+        "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
@@ -2113,6 +2114,19 @@ Write-Host "12) Forcing discovery..."
     Write-Host "==============================================="
     Write-Host "-- Reset All Windows Update Settings to Stock -"
     Write-Host "==============================================="
+}
+function Invoke-WPFFixesWinget {
+
+    <#
+
+    .SYNOPSIS
+        Fixes Winget by running choco install winget 
+    .DESCRIPTION
+        BravoNorris for the fantastic idea of a button to reinstall winget
+    #>
+
+    Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
+
 }
 Function Invoke-WPFFormVariables {
     <#
@@ -2497,7 +2511,7 @@ function Invoke-WPFMicrowin {
 			}
 			else 
 			{
-				Write-Host "Path to drivers is invaliad continuing without driver injection"
+				Write-Host "Path to drivers is invalid continuing without driver injection"
 			}
 		}
 
@@ -4387,6 +4401,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
