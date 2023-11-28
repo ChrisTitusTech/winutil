@@ -4072,6 +4072,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
+				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
@@ -4722,6 +4723,10 @@ $sync.configs.applications = '{
 	"WPFInstallfirefox": {
 		"winget": "Mozilla.Firefox",
 		"choco": "firefox"
+	},
+	"WPFInstallfloorp": {
+		"winget": "Ablaze.Floorp",
+		"choco": "na",
 	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
