@@ -4134,6 +4134,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
                             </StackPanel>
@@ -5025,6 +5026,10 @@ $sync.configs.applications = '{
 	"WPFInstallPaintdotnet": {
 		"winget": "dotPDNLLC.paintdotnet",
 		"choco": "paint.net"
+	},
+	"WPFInstallpdfsam": {
+		"winget": "PDFsam.PDFsam",
+		"choco": "pdfsam"
 	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
