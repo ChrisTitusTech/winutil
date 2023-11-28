@@ -4101,6 +4101,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
@@ -4764,6 +4765,10 @@ $sync.configs.applications = '{
 	"WPFInstallgithubdesktop": {
 		"winget": "Git.Git;GitHub.GitHubDesktop",
 		"choco": "git;github-desktop"
+	},
+	"WPFInstallgitextensions": {
+		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
+		"choco": "git;gitextensions"
 	},
 	"WPFInstallglaryutilities": {
 		"Winget": "Glarysoft.GlaryUtilities",
