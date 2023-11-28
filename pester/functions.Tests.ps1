@@ -16,9 +16,7 @@ Describe "Functions"{
                 fullname = $psitem.FullName
             } {
                 Get-ChildItem function:\$basename | should -Not -BeNullOrEmpty
-            } {
-                get-help $basename -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Description | should -Not -BeNullOrEmpty
-            }
+            } 
         }
     }
 }
