@@ -10,6 +10,86 @@
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
 
     <Window.Resources>
+    <!--Scrollbar Thumbs-->
+    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="Grid">
+                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                        <Border x:Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="Horizontal">
+                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--ScrollBars-->
+    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.00001*" />
+                        </Grid.RowDefinitions>
+
+                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                            <Track.Thumb>
+                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                            <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                            <Setter Value="{ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Width" Value="Auto" />
+                            <Setter Property="Height" Value="8" />
+                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        </Style>
         <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
             <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
@@ -25,7 +105,8 @@
                                           ClickMode="Press">
                                 <TextBlock Text="{TemplateBinding SelectionBoxItem}"
                                            Foreground="{TemplateBinding Foreground}"
-                                           Background="{TemplateBinding Background}"
+                                           Background="Transparent"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
                                            />
                             </ToggleButton>
                             <Popup x:Name="Popup"
@@ -40,7 +121,7 @@
                                         BorderThickness="1"
                                         CornerRadius="4">
                                     <ScrollViewer>
-                                        <ItemsPresenter />
+                                        <ItemsPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
                                     </ScrollViewer>
                                 </Border>
                             </Popup>
@@ -53,14 +134,70 @@
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+        <!-- Toggle button template x:Key="TabToggleButton" -->
+        <Style TargetType="{x:Type ToggleButton}">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="ButtonGlow" 
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonForegroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                <Grid>
+                                    <Border x:Name="BackgroundBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonBackgroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Panel.ZIndex" Value="2000"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="{ButtonBorderThickness}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Button Template -->
         <Style TargetType="Button">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
             <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
-            <Setter Property="Margin" Value="{ButtonMargin}"/>
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -70,18 +207,18 @@
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{ButtonBorderThickness}"
                                     CornerRadius="{ButtonCornerRadius}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
                             </Trigger>
-                             <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="Gray"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Foreground" Value="DimGray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -89,6 +226,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
@@ -122,7 +260,6 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-               
                                 <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -226,7 +363,7 @@
                             </Border>
 
                             <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="    Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
                         </Grid>
 
                         <ControlTemplate.Triggers>
@@ -247,7 +384,7 @@
 
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="56 2 2 1" Duration="0:0:0.1" />
+                                                    To="46 2 2 1" Duration="0:0:0.1" />
 
                                             <DoubleAnimation Storyboard.TargetName="txtDisable"
                                                     Storyboard.TargetProperty="(TextBlock.Opacity)"
@@ -300,13 +437,9 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-
-
     </Window.Resources>
     <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
-        <Viewbox Stretch="Uniform" VerticalAlignment="Top">
-            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid">
+            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid"  Width="Auto" Height="Auto">
                 <Grid.RowDefinitions>
                     <RowDefinition Height=".1*"/>
                     <RowDefinition Height=".9*"/>
@@ -316,18 +449,54 @@
                 </Grid.ColumnDefinitions>
                 <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
                     <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <Button Content="Install" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonInstallBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab1BT"/>
-                    <Button Content="Tweaks" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab2BT"/>
-                    <Button Content="Config" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab3BT"/>
-                    <Button Content="Updates" HorizontalAlignment="Left" Height="40" Width="100"
-                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonInstallForegroundColor}" FontWeight="Bold" Name="WPFTab4BT"/>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
+                                <Underline>I</Underline>nstall
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
+                                <Underline>T</Underline>weaks
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
+                                <Underline>C</Underline>onfig
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                                <Underline>U</Underline>pdates
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                        Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                        <ToggleButton.Content>
+                            <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                                <Underline>M</Underline>icroWin
+                            </TextBlock>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+                    <TextBox VerticalContentAlignment="Center" HorizontalAlignment="Right" Name="CheckboxFilter" ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
+                        Height="25" Width="200" 
+                        Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}">Ctrl-F to filter</TextBox>
                 </DockPanel>
-                <TabControl Grid.Row="1" Padding="-1" Name="WPFTabNav" Background="#222222">
+                <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent">
+                <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
-                        <Grid Background="#222222">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -360,7 +529,9 @@
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
+				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
+				<CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
@@ -371,6 +542,7 @@
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
 				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
@@ -388,6 +560,7 @@
                                 <CheckBox Name="WPFInstallclink" Content="Clink" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
@@ -404,7 +577,8 @@
                                 <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstarship" Content="Starship (Shell Prompt)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsublime" Content="Sublime" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsublimemerge" Content="Sublime Merge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
@@ -414,6 +588,7 @@
                                 <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
@@ -423,6 +598,7 @@
                                 <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
                             </StackPanel>
@@ -490,6 +666,8 @@
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
@@ -511,6 +689,7 @@
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
 								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
 				<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
@@ -527,9 +706,12 @@
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
@@ -619,8 +801,8 @@
                                 <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <Label Content="DNS" />
-                                    <ComboBox Name="WPFchangedns"  Height = "20" Width = "160" HorizontalAlignment = "Left" Margin="5,5">
+                                    <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
                                         <ComboBoxItem IsSelected="True" Content = "Default"/>
                                         <ComboBoxItem Content = "DHCP"/>
                                         <ComboBoxItem Content = "Google"/>
@@ -663,7 +845,7 @@
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extentions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
@@ -696,6 +878,7 @@
                                 <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                                 <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                                <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="1" Margin="10,5">
                                 <Label Content="Legacy Windows Panels" FontSize="16"/>
@@ -728,13 +911,155 @@
                                 <Button Name="WPFUpdatesdisable" FontSize="16" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
                                 <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                                 <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-
                             </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
+                        <Grid Width="Auto" Height="Auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+			                    <ColumnDefinition Width="4*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+			                    <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
+                            <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                                <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                                    <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
+                                        Choose a Windows ISO file that you've downloaded. <LineBreak/>
+                                        Check for status in the console.
+                                    </TextBlock>
+                                    <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Text="ISO location will be printed here"
+                                        IsReadOnly="True"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                    />
+                                    <Button Name="WPFGetIso" Margin="2" Padding="15">
+                                       <Button.Content>
+                                            <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
+                                                Select Windows <Underline>I</Underline>SO
+                                            </TextBlock>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+                                <!-- Visibility="Hidden" -->
+                                <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
+                                    <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
+                                    <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
+                                    <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
+                                    <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                                    <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                        Margin="6"
+                                        Text=""
+                                        IsReadOnly="False"
+                                        TextWrapping="Wrap"
+                                        Foreground="{LabelboxForegroundColor}"
+                                        ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
+                                    />
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                                    <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                                    <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
+                                    <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                                    <TextBlock Name="MicrowinIsoLocation" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                                    <TextBlock Name="MicrowinMountDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                                    <TextBlock Name="MicrowinScratchDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            </Border>
+                            <Border Background="{MainBackgroundColor}" 
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                BorderBrush="Yellow" 
+                                CornerRadius="2" 
+                                BorderThickness="2"
+                                Grid.Row="0" Grid.Column="1"
+                                Margin="1">
+                                <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible" 
+                                    >
+                                    <TextBlock x:Name = "asciiTextBlock"
+                                        xml:space ="preserve"
+                                        HorizontalAlignment = "Center"
+                                        Margin = "0"
+                                        VerticalAlignment = "Top"
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        FontSize = "10"
+                                        FontFamily = "Courier New"
+                                    >
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
+ /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+                                    </TextBlock>
+                                    <TextBlock Margin="15,15,15,0" 
+                                        Padding="8,8,8,0" 
+                                        VerticalAlignment="Center" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        Foreground="{ComboBoxForegroundColor}">
+                                        <Bold>MicroWin features:</Bold><LineBreak/>
+                                        - Remove Telemetry and Tracking <LineBreak/>
+                                        - Add ability to use local accounts <LineBreak/>
+                                        - Remove Wifi requirement to finish install <LineBreak/>
+                                        - Ability to remove Edge <LineBreak/>
+                                        - Ability to remove Defender <LineBreak/>
+                                        - Remove Teams <LineBreak/>
+                                        - Apps debloat <LineBreak/>
+                                        <LineBreak/>
+                                        <LineBreak/>
 
+                                        <Bold>INSTRUCTIONS</Bold> <LineBreak/>
+                                        - Download latest Windows 11 image from Microsoft <LineBreak/>
+                                            https://www.microsoft.com/software-download/windows11
+                                            several minutes to process the ISO depending on your machine. <LineBreak/>
+                                        - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
+                                        - Launch WinUtil and MicroWin  <LineBreak/>
+                                        - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
+                                            It will be processed and unpacked which could take some time <LineBreak/>
+                                        - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
+                                        - Chose which features you want to keep <LineBreak/>
+                                        - Click Start Process button <LineBreak/>
+                                        NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
+                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
+                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
+                                        <LineBreak/>
+                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                    </TextBlock>
+                                    <TextBlock Margin="15,0,15,15" 
+                                        Padding = "1" 
+                                        TextWrapping="WrapWithOverflow" 
+                                        Height = "Auto"
+                                        Width = "Auto"
+                                        VerticalAlignment = "Top"
+                                        Foreground = "{ComboBoxForegroundColor}"
+                                        xml:space = "preserve"
+                                    >
+C:\drivers\
+        |-- Driver1\
+        |   |-- Driver1.inf
+        |   |-- Driver1.sys
+        |-- Driver2\
+        |   |-- Driver2.inf
+        |   |-- Driver2.sys
+        |-- OtherFiles...
+                                    </TextBlock>
+                               </StackPanel>
+                            </Border>
                         </Grid>
                     </TabItem>
                 </TabControl>
+                </ScrollViewer>
             </Grid>
-        </Viewbox>
     </Border>
 </Window>
