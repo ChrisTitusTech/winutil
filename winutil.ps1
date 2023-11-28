@@ -2497,7 +2497,7 @@ function Invoke-WPFMicrowin {
 			}
 			else 
 			{
-				Write-Host "Path to drivers is invaliad continuing without driver injection"
+				Write-Host "Path to drivers is invalid continuing without driver injection"
 			}
 		}
 
