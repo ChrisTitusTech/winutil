@@ -838,14 +838,14 @@ function Invoke-WinUtilScript {
 function Invoke-WinUtilShowExt {
     <#
     .SYNOPSIS
-        Disables/Enables Show file Extensions
+        Disables/Enables Show file Extentions
     .PARAMETER Enabled
         Indicates whether to enable or disable Show file extentions
     #>
     Param($Enabled)
     Try{
         if ($Enabled -eq $false){
-            Write-Host "Showing file extensions"
+            Write-Host "Showing file extentions"
             $value = 0
         }
         else {
