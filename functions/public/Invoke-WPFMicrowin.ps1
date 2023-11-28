@@ -47,7 +47,7 @@ function Invoke-WPFMicrowin {
 			}
 			else 
 			{
-				Write-Host "Path to drivers is invaliad continuing without driver injection"
+				Write-Host "Path to drivers is invalid continuing without driver injection"
 			}
 		}
 
@@ -298,7 +298,8 @@ function Invoke-WPFMicrowin {
 		dism /unmount-image /mountdir:$scratchDir /commit 
 
 		Write-Host "Creating ISO image"
-		& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
+		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
+		Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
 
 		if ($copyToUSB)
 		{
@@ -316,6 +317,7 @@ function Invoke-WPFMicrowin {
 
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
+			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
 			Write-Host "Performing Cleanup"
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
@@ -327,7 +329,7 @@ function Invoke-WPFMicrowin {
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-		Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
+
 		$sync.ProcessRunning = $false
 	}
 }
