@@ -23,6 +23,10 @@
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
 	},
+	"WPFInstallanki": {
+		"winget": "Anki.Anki",
+		"choco": "anki"
+	},
 	"WPFInstallaimp": {
 		"winget": "AIMP.AIMP",
 		"choco": "aimp"
@@ -63,6 +67,10 @@
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
 	},
+	"WPFInstallcopyq": {
+		"winget": "copyq",
+		"choco": "copyq"
+	},
 	"WPFInstallchromium": {
 		"winget": "eloston.ungoogled-chromium",
 		"choco": "chromium"
@@ -70,6 +78,14 @@
 	"WPFInstallcider": {
 		"winget": "CiderCollective.Cider",
 		"choco": "cider"
+	},
+	"WPFInstallclink": {
+		"winget": "chrisant996.Clink",
+		"choco": "clink"
+	},
+	"WPFInstallclipgrab": {
+		"winget": "na",
+		"choco": "clipgrab"
 	},
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
@@ -82,6 +98,10 @@
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
 		"choco": "deluge"
+	},
+	"WPFInstalldevtoys": {
+		"winget": "devtoys",
+		"choco": "devToys"
 	},
 	"WPFInstalldiscord": {
 		"winget": "Discord.Discord",
@@ -335,6 +355,10 @@
 		"winget": "Malwarebytes.Malwarebytes",
 		"choco": "malwarebytes"
 	},
+	"WPFInstallmasscode": {
+		"winget": "antonreshetov.massCode",
+		"choco": "na"
+	},
 	"WPFInstallmatrix": {
 		"winget": "Element.Element",
 		"choco": "element-desktop"
@@ -479,9 +503,17 @@
 		"winget": "Microsoft.PowerShell",
 		"choco": "powershell-core"
 	},
+	"WPFInstallposh": {
+		"winget": "JanDeDobbeleer.OhMyPosh",
+		"choco": "oh-my-posh"
+	},
 	"WPFInstallpowertoys": {
 		"winget": "Microsoft.PowerToys",
 		"choco": "powertoys"
+	},
+	"WPFInstallportmaster": {
+		"winget": "portmaster",
+		"choco": "portmaster"
 	},
 	"WPFInstallprismlauncher": {
 		"winget": "PrismLauncher.PrismLauncher",
@@ -566,6 +598,10 @@
 	"WPFInstallsteam": {
 		"winget": "Valve.Steam",
 		"choco": "steam-client"
+	},
+	"WPFInstallstarship": {
+		"winget": "starship",
+		"choco": "starship"
 	},
 	"WPFInstallstrawberry": {
 		"winget": "StrawberryMusicPlayer.Strawberry",
