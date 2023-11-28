@@ -14,6 +14,8 @@ function Install-WinUtilWinget {
     .SYNOPSIS
         Installs Winget if it is not already installed
 
+    .DESCRIPTION
+        This function will download the latest version of winget and install it. If winget is already installed, it will do nothing.
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."
