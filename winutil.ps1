@@ -4085,8 +4085,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -4126,6 +4127,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
@@ -4200,6 +4202,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
@@ -4236,9 +4240,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
@@ -4607,6 +4614,10 @@ $sync.configs.applications = '{
 		"Winget": "Alacritty.Alacritty",
 		"choco": "alacritty"
 	},
+	"WPFInstallangryipscanner": {
+		"Winget": "angryziber.AngryIPScanner",
+		"choco": "angryip"
+	},
 	"WPFInstallanydesk": {
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
 		"choco": "anydesk"
@@ -4642,6 +4653,10 @@ $sync.configs.applications = '{
 	"WPFInstallbulkcrapuninstaller": {
 		"winget": "Klocman.BulkCrapUninstaller",
 		"choco": "bulk-crap-uninstaller"
+	},
+	"WPFInstallcalibre": {
+		"winget": "calibre.calibre",
+		"choco": "calibre"
 	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
@@ -4799,6 +4814,10 @@ $sync.configs.applications = '{
 		"winget": "HandBrake.HandBrake",
 		"choco": "handbrake"
 	},
+	"WPFInstallheidisql": {
+		"winget": "HeidiSQL.HeidiSQL",
+		"choco": "heidisql"
+	},
 	"WPFInstallheroiclauncher": {
 		"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
 		"choco": "na"
@@ -4907,6 +4926,10 @@ $sync.configs.applications = '{
 		"winget": "LibreWolf.LibreWolf",
 		"choco": "librewolf"
 	},
+	"WPFInstalllinphone": {
+		"winget": "BelledonneCommunications.Linphone",
+		"choco": "linphone"
+	},
 	"WPFInstallmalwarebytes": {
 		"winget": "Malwarebytes.Malwarebytes",
 		"choco": "malwarebytes"
@@ -4954,6 +4977,10 @@ $sync.configs.applications = '{
 	"WPFInstallneovim": {
 		"winget": "Neovim.Neovim",
 		"choco": "neovim"
+	},
+	"WPFInstallnextclouddesktop": {
+		"winget": "Nextcloud.NextcloudDesktop",
+		"choco": "nextcloud-client"
 	},
 	"WPFInstallnglide": {
 		"winget": "ZeusSoftware.nGlide",
@@ -5011,6 +5038,10 @@ $sync.configs.applications = '{
 		"winget": "Apache.OpenOffice",
 		"choco": "openoffice"
 	},
+	"WPFInstallopenrgb": {
+		"winget": "CalcProgrammer1.OpenRGB",
+		"choco": "openrgb"
+	},
 	"WPFInstallopenshell": {
 		"winget": "Open-Shell.Open-Shell-Menu",
 		"choco": "open-shell"
@@ -5022,6 +5053,10 @@ $sync.configs.applications = '{
 	"WPFInstallOVirtualBox": {
 		"winget": "Oracle.VirtualBox",
 		"choco": "virtualbox"
+	},
+	"WPFInstallownclouddesktop": {
+		"winget": "ownCloud.ownCloudDesktop",
+		"choco": "owncloud-client"
 	},
 	"WPFInstallPaintdotnet": {
 		"winget": "dotPDNLLC.paintdotnet",
@@ -5284,9 +5319,9 @@ $sync.configs.applications = '{
 		"choco": "xdm"
 	},
 	"WPFInstallzerotierone": {
-    "winget": "ZeroTier.ZeroTierOne",
-    "choco": "zerotier-one"
-  },
+		"winget": "ZeroTier.ZeroTierOne",
+		"choco": "zerotier-one"
+  	},
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
