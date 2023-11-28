@@ -299,9 +299,6 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "Creating ISO image"
 		& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Write-Host "Performing Cleanup"
-		Remove-Item -Recurse -Force "$($scratchDir)"
-		Remove-Item -Recurse -Force "$($mountDir)"
 
 		if ($copyToUSB)
 		{
@@ -316,6 +313,16 @@ function Invoke-WPFMicrowin {
 		Write-Host "| |   | / _ \|  _ \ / _  )   "
 		Write-Host "| |__/ / |_| | | | ( (/ /    "
 		Write-Host "|_____/ \___/|_| |_|\____)   "
+
+		# Check if the ISO was successfully created - CTT edit
+		if ($LASTEXITCODE -eq 0) {
+			Write-Host "Performing Cleanup"
+				Remove-Item -Recurse -Force "$($scratchDir)"
+				Remove-Item -Recurse -Force "$($mountDir)"
+		} else {
+			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
+		}
+		
 
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
