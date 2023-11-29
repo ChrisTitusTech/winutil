@@ -1020,21 +1020,21 @@
                                         <LineBreak/>
 
                                         <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                        - Download latest Windows 11 image from Microsoft <LineBreak/>
+                                        - Download the latest Windows 11 image from Microsoft <LineBreak/>
                                             https://www.microsoft.com/software-download/windows11
-                                            several minutes to process the ISO depending on your machine. <LineBreak/>
-                                        - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
+                                            (may take several minutes to process the ISO depending on your machine) <LineBreak/>
+                                        - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
-                                        - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
+                                        - Click on the Get Iso image button and wait for WinUtil to process the image <LineBreak/>
                                             It will be processed and unpacked which could take some time <LineBreak/>
-                                        - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
-                                        - Chose which features you want to keep <LineBreak/>
-                                        - Click Start Process button <LineBreak/>
-                                        NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
-                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
-                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
+                                        - Once done, choose which Windows flavor you want to base your image on <LineBreak/>
+                                        - Choose which features you want to keep <LineBreak/>
+                                        - Click the Start Process button <LineBreak/>
+                                        NOTE: Process of creating Windows image will take a long time, please check the console and wait for it to say "Done" <LineBreak/>
+                                        <Bold>Once done, the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
+                                        Copy this image to your Ventoy USB Stick, boot to this image, gg
                                         <LineBreak/>
-                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                        If you are injecting drivers make sure to put all your inf, sys, and dll files for each driver into a separate directory. For example:
                                     </TextBlock>
                                     <TextBlock Margin="15,0,15,15" 
                                         Padding = "1" 
