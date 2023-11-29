@@ -431,6 +431,10 @@
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline"
 	},
+	"WPFInstallnushell": {
+		"winget": "Nushell.Nushell",
+		"choco": "nushell"
+	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
 		"choco": "na"

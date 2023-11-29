@@ -707,6 +707,7 @@
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />

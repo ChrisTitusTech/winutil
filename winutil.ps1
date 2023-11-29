@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.28
+    Version        : 23.11.29
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.28"
+$sync.version = "23.11.29"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4252,6 +4252,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
@@ -5040,6 +5041,10 @@ $sync.configs.applications = '{
 	"WPFInstallnuget": {
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline"
+	},
+	"WPFInstallnushell": {
+		"winget": "Nushell.Nushell",
+		"choco": "nushell"
 	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
