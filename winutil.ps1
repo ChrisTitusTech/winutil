@@ -6124,6 +6124,11 @@ $sync.configs.tweaks = '{
         "OriginalType": "Disabled"
       },
       {
+        "Name": "Netlogon",
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
+      },
+      {
         "Name": "Netman",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -6145,7 +6150,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "OneSyncSvc_dc2a4",
-        "StartupType": "Automatic",
+        "StartupType": "matic",
         "OriginalType": "Automatic"
       },
       {
