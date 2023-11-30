@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.11.28
+    Version        : 23.11.30
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.11.28"
+$sync.version = "23.11.30"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4252,6 +4252,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
@@ -4417,6 +4418,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
+                                <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                                 <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
                                 <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
@@ -4472,8 +4474,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                                 <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
                                     <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
-                                        Choose a Windows ISO file that you''ve downloaded. <LineBreak/>
-                                        Check for status in the console.
+                                        Choose a Windows ISO file that you''ve downloaded <LineBreak/>
+                                        Check the status in the console
                                     </TextBlock>
                                     <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
                                         Text="ISO location will be printed here"
@@ -4565,21 +4567,21 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         <LineBreak/>
 
                                         <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                        - Download latest Windows 11 image from Microsoft <LineBreak/>
-                                            https://www.microsoft.com/software-download/windows11
-                                            several minutes to process the ISO depending on your machine. <LineBreak/>
-                                        - Put it somewhere on the C: drive so it is easily accessible <LineBreak/>
+                                        - Download the latest Windows 11 image from Microsoft <LineBreak/>
+                                        LINK: https://www.microsoft.com/software-download/windows11 <LineBreak/>
+                                        NOTE: May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
+                                        - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                         - Launch WinUtil and MicroWin  <LineBreak/>
-                                        - Click on Get Iso image button and wait for WinUtil to process the Image <LineBreak/>
-                                            It will be processed and unpacked which could take some time <LineBreak/>
-                                        - Once done, chose which Windows flavor you want to base your image on <LineBreak/>
-                                        - Chose which features you want to keep <LineBreak/>
-                                        - Click Start Process button <LineBreak/>
-                                        NOTE: Process of creating Windows image will take a long time, please check the Console and wait for it to say "Done" <LineBreak/>
-                                        <Bold>Once it is done the microwin.iso will be in the %temp% directory</Bold> <LineBreak/>
-                                        Copy this image to your Ventoy USB Stick, boot to this image. gg,
+                                        - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
+                                        NOTE: It will be processed and unpacked which may take some time <LineBreak/>
+                                        - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
+                                        - Choose which features you want to keep <LineBreak/>
+                                        - Click the "Start Process" button <LineBreak/>
+                                        NOTE: The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
+                                        - Once complete, the microwin.iso will be in the %temp% directory <LineBreak/>
+                                        - Copy this image to your Ventoy USB Stick, boot to this image, gg
                                         <LineBreak/>
-                                        If you are injecting drivers make sure to put all your inf, sys and dll file for each driver into a separate directory. For example:
+                                        NOTE: If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
                                     </TextBlock>
                                     <TextBlock Margin="15,0,15,15" 
                                         Padding = "1" 
@@ -4590,7 +4592,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         Foreground = "{ComboBoxForegroundColor}"
                                         xml:space = "preserve"
                                     >
-C:\drivers\
+<Bold>Example:</Bold>
+    C:\drivers\
         |-- Driver1\
         |   |-- Driver1.inf
         |   |-- Driver1.sys
@@ -5041,6 +5044,10 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline"
 	},
+	"WPFInstallnushell": {
+		"winget": "Nushell.Nushell",
+		"choco": "nushell"
+	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
 		"choco": "na"
@@ -5444,6 +5451,14 @@ $sync.configs.feature = '{
     "feature": [
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeaturesandbox": {
+    "feature": [
+      "Containers-DisposableClientVM"
     ],
     "InvokeScript": [
 
