@@ -4418,6 +4418,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
                                 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
+                                <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                                 <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                                 <Label Content="Fixes" FontSize="16"/>
                                 <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
@@ -5449,6 +5450,14 @@ $sync.configs.feature = '{
     "feature": [
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
+  "WPFFeaturesandbox": {
+    "feature": [
+      "Containers-DisposableClientVM"
     ],
     "InvokeScript": [
 
