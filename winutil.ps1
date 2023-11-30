@@ -6140,8 +6140,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Netlogon",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Netman",
