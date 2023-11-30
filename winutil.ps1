@@ -4174,6 +4174,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
                             </StackPanel>
+                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
+                                <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" Margin="5,0"/>
@@ -4266,6 +4268,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
@@ -4275,6 +4278,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" Margin="5,0"/>
                             </StackPanel>
@@ -5240,6 +5244,10 @@ $sync.configs.applications = '{
 		"winget": "StefanSundin.Superf4",
 		"choco": "superf4"
 	},
+	"WPFInstallspacedrive": {
+		"winget": "spacedrive.Spacedrive",
+		"choco": "na"
+	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
@@ -5355,6 +5363,10 @@ $sync.configs.applications = '{
 	"WPFInstallwinrar": {
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
+	},
+	"WPFIntallwslmanager": {
+		"Winget": "Bostrot.WSLManager",
+		"choco": "wsl2-distro-manager"
 	},
 	"WPFInstallwinscp": {
 		"winget": "WinSCP.WinSCP",
