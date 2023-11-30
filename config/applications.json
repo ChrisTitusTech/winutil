@@ -627,6 +627,10 @@
 		"winget": "StefanSundin.Superf4",
 		"choco": "superf4"
 	},
+	"WPFInstallspacedrive": {
+		"winget": "spacedrive.Spacedrive",
+		"choco": "na"
+	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
 		"choco": "tcpview"
@@ -742,6 +746,10 @@
 	"WPFInstallwinrar": {
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
+	},
+	"WPFIntallwslmanager": {
+		"Winget": "Bostrot.WSLManager",
+		"choco": "wsl2-distro-manager"
 	},
 	"WPFInstallwinscp": {
 		"winget": "WinSCP.WinSCP",
