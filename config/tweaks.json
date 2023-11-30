@@ -574,6 +574,11 @@
         "OriginalType": "Disabled"
       },
       {
+        "Name": "Netlogon",
+        "StartupType": "Auto",
+        "OriginalType": "Auto"
+      },
+      {
         "Name": "Netman",
         "StartupType": "Manual",
         "OriginalType": "Manual"
