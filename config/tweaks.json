@@ -575,8 +575,8 @@
       },
       {
         "Name": "Netlogon",
-        "StartupType": "Auto",
-        "OriginalType": "Auto"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Netman",
