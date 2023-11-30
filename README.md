@@ -22,6 +22,8 @@ Courtesy of the issue raised at: [#144](/../../issues/144)
 
 ### Issues:
 
+- If WINGET says "Program Installed" but it was not, there is a bug in new Windows versions where winget is installed by default, but NOT functional. Run the toolbox and click the "Winget Reinstall" Button.
+
 - If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
 
 Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
