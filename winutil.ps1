@@ -6150,7 +6150,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "OneSyncSvc_dc2a4",
-        "StartupType": "matic",
+        "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
