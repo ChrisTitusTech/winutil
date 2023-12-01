@@ -28,23 +28,21 @@ $sync.ProcessRunning = $false
 
 $currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
-$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
+$adminRole = [System.Security.Principal.WindowsBuiltInRole]::Administrator
 
-if ($principal.IsInRole($adminRole))
-{
-    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-    clear-host
+if ($principal.IsInRole($adminRole)) {
+  $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+  clear-host
 }
-else
-{
-    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
-    $newProcess.Arguments = $myInvocation.MyCommand.Definition;
-    $newProcess.Verb = "runas";
-    [System.Diagnostics.Process]::Start($newProcess);
-    break
+else {
+  $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
+  $newProcess.Arguments = $myInvocation.MyCommand.Definition;
+  $newProcess.Verb = "runas";
+  [System.Diagnostics.Process]::Start($newProcess);
+  break
 }
 function Copy-Files {
-    <#
+  <#
     
         .DESCRIPTION
         This function will make all modifications to the registry
@@ -54,45 +52,42 @@ function Copy-Files {
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
     
     #>    
-    param (
-        [string] $Path, 
-        [string] $Destination, 
-        [switch] $Recurse = $false, 
-        [switch] $Force = $false
-    )
+  param (
+    [string] $Path, 
+    [string] $Destination, 
+    [switch] $Recurse = $false, 
+    [switch] $Force = $false
+  )
 
-    try {   
+  try {   
 
- 	$files = Get-ChildItem -Path $path -Recurse:$recurse
-	Write-Host "Copy $($files.Count)(s) from $path to $destination"
+    $files = Get-ChildItem -Path $path -Recurse:$recurse
+    Write-Host "Copy $($files.Count)(s) from $path to $destination"
 
-        foreach($file in $files)
-        {
-            $status = "Copy files {0} on {1}: {2}" -f $counter, $files.Count, $file.Name
-            Write-Progress -Activity "Copy Windows files" -Status $status -PercentComplete ($counter++/$files.count*100)
-            $restpath = $file.FullName -Replace $path, ''
+    foreach ($file in $files) {
+      $status = "Copy files {0} on {1}: {2}" -f $counter, $files.Count, $file.Name
+      Write-Progress -Activity "Copy Windows files" -Status $status -PercentComplete ($counter++ / $files.count * 100)
+      $restpath = $file.FullName -Replace $path, ''
 
-            if($file.PSIsContainer -eq $true)
-            {
-                Write-Debug "Creating $($destination + $restpath)"
-                New-Item ($destination+$restpath) -Force:$force -Type Directory -ErrorAction SilentlyContinue
-            }
-            else
-            {
-                Write-Debug "Copy from $($file.FullName) to $($destination+$restpath)"
-                Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force 
-                Set-ItemProperty -Path ($destination+$restpath) -Name IsReadOnly -Value $false
-            }        
-        }
-        Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
+      if ($file.PSIsContainer -eq $true) {
+        Write-Debug "Creating $($destination + $restpath)"
+        New-Item ($destination + $restpath) -Force:$force -Type Directory -ErrorAction SilentlyContinue
+      }
+      else {
+        Write-Debug "Copy from $($file.FullName) to $($destination+$restpath)"
+        Copy-Item $file.FullName ($destination + $restpath) -ErrorAction SilentlyContinue -Force:$force 
+        Set-ItemProperty -Path ($destination + $restpath) -Name IsReadOnly -Value $false
+      }        
     }
-    Catch{
-        Write-Warning "Unable to Copy all the files due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
+  }
+  Catch {
+    Write-Warning "Unable to Copy all the files due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Get-LocalizedYesNo {
-    <#
+  <#
     .SYNOPSIS
     This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
     
@@ -105,37 +100,33 @@ function Get-LocalizedYesNo {
     Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
     #>
   
-    # Run takeown.exe and capture its output
-    $takeownOutput = & takeown.exe  /? | Out-String
+  # Run takeown.exe and capture its output
+  $takeownOutput = & takeown.exe  /? | Out-String
 
-    # Parse the output and retrieve lines until there are at least 2 characters in the array
-    $found = $false
-    $charactersArray = @()
-    foreach ($line in $takeownOutput -split "`r`n") 
-    {
-        if ($found) 
-        {
-            $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
-            $charactersArray += $characters
+  # Parse the output and retrieve lines until there are at least 2 characters in the array
+  $found = $false
+  $charactersArray = @()
+  foreach ($line in $takeownOutput -split "`r`n") {
+    if ($found) {
+      $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
+      $charactersArray += $characters
 
-            if ($charactersArray.Count -ge 2) 
-            {
-                break
-            }    
-        }
-        elseif ($line -match "/D   ") 
-        {
-            $found = $true
-        }
+      if ($charactersArray.Count -ge 2) {
+        break
+      }    
     }
-
-    Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
-    # Return the array of characters
-    return $charactersArray
+    elseif ($line -match "/D   ") {
+      $found = $true
+    }
   }
+
+  Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
+  # Return the array of characters
+  return $charactersArray
+}
 Function Get-WinUtilCheckBoxes {
 
-    <#
+  <#
 
     .SYNOPSIS
         Finds all checkboxes that are checked on the specific tab and inputs them into a script.
@@ -154,62 +145,62 @@ Function Get-WinUtilCheckBoxes {
 
     #>
 
-    Param(
-        $Group,
-        [boolean]$unCheck = $true
-    )
+  Param(
+    $Group,
+    [boolean]$unCheck = $true
+  )
 
 
-    $Output = New-Object System.Collections.Generic.List[System.Object]
+  $Output = New-Object System.Collections.Generic.List[System.Object]
 
-    if($Group -eq "WPFInstall"){
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
-        Foreach ($CheckBox in $CheckBoxes){
-            if($CheckBox.value.ischecked -eq $true){
-                $sync.configs.applications.$($CheckBox.Name).winget -split ";" | ForEach-Object {
-                    $Output.Add($psitem)
-                }
-                if ($uncheck -eq $true){
-                    $CheckBox.value.ischecked = $false
-                }
-
-            }
+  if ($Group -eq "WPFInstall") {
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPFInstall*" }
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    Foreach ($CheckBox in $CheckBoxes) {
+      if ($CheckBox.value.ischecked -eq $true) {
+        $sync.configs.applications.$($CheckBox.Name).winget -split ";" | ForEach-Object {
+          $Output.Add($psitem)
         }
-    }
-
-    if($Group -eq "WPFTweaks"){
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
-        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
-        Foreach ($CheckBox in $CheckBoxes){
-            if($CheckBox.value.ischecked -eq $true){
-                $Output.Add($Checkbox.Name)
-
-                if ($uncheck -eq $true){
-                    $CheckBox.value.ischecked = $false
-                }
-            }
+        if ($uncheck -eq $true) {
+          $CheckBox.value.ischecked = $false
         }
+
+      }
     }
+  }
 
-    if($Group -eq "WPFFeature"){
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Feature*"}
-        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
-        Foreach ($CheckBox in $CheckBoxes){
-            if($CheckBox.value.ischecked -eq $true){
-                $Output.Add($Checkbox.Name)
+  if ($Group -eq "WPFTweaks") {
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPF*Tweaks*" }
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    Foreach ($CheckBox in $CheckBoxes) {
+      if ($CheckBox.value.ischecked -eq $true) {
+        $Output.Add($Checkbox.Name)
 
-                if ($uncheck -eq $true){
-                    $CheckBox.value.ischecked = $false
-                }
-            }
+        if ($uncheck -eq $true) {
+          $CheckBox.value.ischecked = $false
         }
+      }
     }
+  }
 
-    Write-Output $($Output | Select-Object -Unique)
+  if ($Group -eq "WPFFeature") {
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPF*Feature*" }
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    Foreach ($CheckBox in $CheckBoxes) {
+      if ($CheckBox.value.ischecked -eq $true) {
+        $Output.Add($Checkbox.Name)
+
+        if ($uncheck -eq $true) {
+          $CheckBox.value.ischecked = $false
+        }
+      }
+    }
+  }
+
+  Write-Output $($Output | Select-Object -Unique)
 }
 function Get-WinUtilInstallerProcess {
-    <#
+  <#
 
     .SYNOPSIS
         Checks if the given process is running
@@ -222,18 +213,18 @@ function Get-WinUtilInstallerProcess {
 
     #>
 
-    param($Process)
+  param($Process)
 
-    if ($Null -eq $Process){
-        return $false
-    }
-    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue){
-        return $true
-    }
+  if ($Null -eq $Process) {
     return $false
+  }
+  if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue) {
+    return $true
+  }
+  return $false
 }
 function Get-WinUtilRegistry {
-    <#
+  <#
 
     .SYNOPSIS
         Gets the value of a registry key
@@ -242,30 +233,30 @@ function Get-WinUtilRegistry {
         Get-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
 
     #>
-    param (
-        $Name,
-        $Path,
-        $Type,
-        $Value
-    )
+  param (
+    $Name,
+    $Path,
+    $Type,
+    $Value
+  )
 
-    Try{
-        $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
+  Try {
+    $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
 
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 Function Get-WinUtilToggleStatus {
-    <#
+  <#
 
     .SYNOPSIS
         Pulls the registry keys for the given toggle switch and checks whether the toggle should be checked or unchecked
@@ -278,69 +269,69 @@ Function Get-WinUtilToggleStatus {
 
     #>
 
-    Param($ToggleSwitch)
-    if($ToggleSwitch -eq "WPFToggleDarkMode"){
-        $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-        $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-        if($app -eq 0 -and $system -eq 0){
-            return $true
-        }
-        else{
-            return $false
-        }
+  Param($ToggleSwitch)
+  if ($ToggleSwitch -eq "WPFToggleDarkMode") {
+    $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+    $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+    if ($app -eq 0 -and $system -eq 0) {
+      return $true
     }
-    if($ToggleSwitch -eq "WPFToggleBingSearch"){
-        $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
-        if($bingsearch -eq 0){
-            return $false
-        }
-        else{
-            return $true
-        }
+    else {
+      return $false
     }
-    if($ToggleSwitch -eq "WPFToggleNumLock"){
-        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
-        if($numlockvalue -eq 2){
-            return $true
-        }
-        else{
-            return $false
-        }
+  }
+  if ($ToggleSwitch -eq "WPFToggleBingSearch") {
+    $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
+    if ($bingsearch -eq 0) {
+      return $false
     }
-    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
-        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
-        if($VerboseStatusvalue -eq 1){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }    
-    if($ToggleSwitch -eq "WPFToggleShowExt"){
-        $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
-        if($hideextvalue -eq 0){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }    
-    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
-        $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
-        $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
-        $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
+    else {
+      return $true
+    }
+  }
+  if ($ToggleSwitch -eq "WPFToggleNumLock") {
+    $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
+    if ($numlockvalue -eq 2) {
+      return $true
+    }
+    else {
+      return $false
+    }
+  }
+  if ($ToggleSwitch -eq "WPFToggleVerboseLogon") {
+    $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
+    if ($VerboseStatusvalue -eq 1) {
+      return $true
+    }
+    else {
+      return $false
+    }
+  }    
+  if ($ToggleSwitch -eq "WPFToggleShowExt") {
+    $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
+    if ($hideextvalue -eq 0) {
+      return $true
+    }
+    else {
+      return $false
+    }
+  }    
+  if ($ToggleSwitch -eq "WPFToggleMouseAcceleration") {
+    $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
+    $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
+    $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
 
-        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
-            return $true
-        }
-        else{
-            return $false
-        }
+    if ($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10) {
+      return $true
     }
+    else {
+      return $false
+    }
+  }
 }
 function Get-WinUtilVariables {
 
-    <#
+  <#
 
     .SYNOPSIS
         Gets every form object of the provided type
@@ -349,59 +340,59 @@ function Get-WinUtilVariables {
         List containing every object that matches the provided type
 
     #>
-    param (
-        [Parameter()]
-        [ValidateSet("CheckBox", "Button", "ToggleButton")]
-        [string]$Type
-    )
+  param (
+    [Parameter()]
+    [ValidateSet("CheckBox", "Button", "ToggleButton")]
+    [string]$Type
+  )
 
-    $keys = $sync.keys | Where-Object {$psitem -like "WPF*"}
+  $keys = $sync.keys | Where-Object { $psitem -like "WPF*" }
 
-    if($type){
-        $output = $keys | ForEach-Object {
-            Try{
-                if ($sync["$psitem"].GetType() -like "*$type*"){
-                    Write-Output $psitem
-                }
-            }
-            Catch{<#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>}
+  if ($type) {
+    $output = $keys | ForEach-Object {
+      Try {
+        if ($sync["$psitem"].GetType() -like "*$type*") {
+          Write-Output $psitem
         }
-        return $output
+      }
+      Catch { <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#> }
     }
-    return $keys
+    return $output
+  }
+  return $keys
 }
 function Install-WinUtilChoco {
 
-    <#
+  <#
 
     .SYNOPSIS
         Installs Chocolatey if it is not already installed
 
     #>
 
-    try {
-        Write-Host "Checking if Chocolatey is Installed..."
+  try {
+    Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Test-WinUtilPackageManager -choco)){
-            Write-Host "Chocolatey Already Installed"
-            return
-        }
-
-        Write-Host "Seems Chocolatey is not installed, installing now"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
-        powershell choco feature enable -n allowGlobalConfirmation
-
+    if ((Test-WinUtilPackageManager -choco)) {
+      Write-Host "Chocolatey Already Installed"
+      return
     }
-    Catch {
-        Write-Host "==========================================="
-        Write-Host "--     Chocolatey failed to install     ---"
-        Write-Host "==========================================="
-    }
+
+    Write-Host "Seems Chocolatey is not installed, installing now"
+    Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
+    powershell choco feature enable -n allowGlobalConfirmation
+
+  }
+  Catch {
+    Write-Host "==========================================="
+    Write-Host "--     Chocolatey failed to install     ---"
+    Write-Host "==========================================="
+  }
 
 }
 Function Install-WinUtilProgramWinget {
 
-    <#
+  <#
 
     .SYNOPSIS
         Manages the provided programs using Winget
@@ -417,44 +408,44 @@ Function Install-WinUtilProgramWinget {
 
     #>
 
-    param(
-        $ProgramsToInstall,
-        $manage = "Installing"
-    )
+  param(
+    $ProgramsToInstall,
+    $manage = "Installing"
+  )
 
-    $x = 0
-    $count = $($ProgramsToInstall -split ",").Count
+  $x = 0
+  $count = $($ProgramsToInstall -split ",").Count
 
-    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
+  Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
 
-    Foreach ($Program in $($ProgramsToInstall -split ",")){
+  Foreach ($Program in $($ProgramsToInstall -split ",")) {
 
-        Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
-        }
-        if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
-        }
-
-        $X++
+    Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x / $count * 100)
+    if ($manage -eq "Installing") {
+      Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+    }
+    if ($manage -eq "Uninstalling") {
+      Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
     }
 
-    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
+    $X++
+  }
+
+  Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
 }
 function Get-LatestHash {
-    $shaUrl = ((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt$' }).browser_download_url
+  $shaUrl = ((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt$' }).browser_download_url
 
-    $shaFile = Join-Path -Path $tempFolder -ChildPath 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt'
-    $WebClient.DownloadFile($shaUrl, $shaFile)
+  $shaFile = Join-Path -Path $tempFolder -ChildPath 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt'
+  $WebClient.DownloadFile($shaUrl, $shaFile)
 
-    Get-Content $shaFile
+  Get-Content $shaFile
 }
 
 function Install-WinUtilWinget {
 
-    <#
+  <#
 
     .SYNOPSIS
         Installs Winget if it is not already installed
@@ -462,39 +453,39 @@ function Install-WinUtilWinget {
     .DESCRIPTION
         This function will download the latest version of winget and install it. If winget is already installed, it will do nothing.
     #>
-    Try{
-        Write-Host "Checking if Winget is Installed..."
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Already Installed"
-            return
-        }
-
-        # Gets the computer's information
-        if ($null -eq $sync.ComputerInfo){
-            $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
-        }
-        Else {
-            $ComputerInfo = $sync.ComputerInfo
-        }
-
-        if (($ComputerInfo.WindowsVersion) -lt "1809") {
-            # Checks if Windows Version is too old for winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-            return
-        }
-
-        Write-Host "Running Alternative Installer and Direct Installing"
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
-
-        Write-Host "Winget Installed"
+  Try {
+    Write-Host "Checking if Winget is Installed..."
+    if (Test-WinUtilPackageManager -winget) {
+      # Checks if winget executable exists and if the Windows Version is 1809 or higher
+      Write-Host "Winget Already Installed"
+      return
     }
-    Catch{
-        throw [WingetFailedInstall]::new('Failed to install')
+
+    # Gets the computer's information
+    if ($null -eq $sync.ComputerInfo) {
+      $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
     }
+    Else {
+      $ComputerInfo = $sync.ComputerInfo
+    }
+
+    if (($ComputerInfo.WindowsVersion) -lt "1809") {
+      # Checks if Windows Version is too old for winget
+      Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+      return
+    }
+
+    Write-Host "Running Alternative Installer and Direct Installing"
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
+
+    Write-Host "Winget Installed"
+  }
+  Catch {
+    throw [WingetFailedInstall]::new('Failed to install')
+  }
 }
 function Invoke-WinUtilBingSearch {
-    <#
+  <#
 
     .SYNOPSIS
         Disables/Enables Bing Search
@@ -503,33 +494,33 @@ function Invoke-WinUtilBingSearch {
         Indicates whether to enable or disable Bing Search
 
     #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Bing Search"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Bing Search"
-            $value = 0
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
-        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
+  Param($Enabled)
+  Try {
+    if ($Enabled -eq $false) {
+      Write-Host "Enabling Bing Search"
+      $value = 1
     }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    else {
+      Write-Host "Disabling Bing Search"
+      $value = 0
     }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+    Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 Function Invoke-WinUtilCurrentSystem {
 
-    <#
+  <#
 
     .SYNOPSIS
         Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
@@ -539,95 +530,95 @@ Function Invoke-WinUtilCurrentSystem {
 
     #>
 
-    param(
-        $CheckBox
-    )
+  param(
+    $CheckBox
+  )
 
-    if ($checkbox -eq "winget"){
+  if ($checkbox -eq "winget") {
 
-        $originalEncoding = [Console]::OutputEncoding
-        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
-        [Console]::OutputEncoding = $originalEncoding
+    $originalEncoding = [Console]::OutputEncoding
+    [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+    $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+    [Console]::OutputEncoding = $originalEncoding
 
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPFInstall*" }
+    $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter } | ForEach-Object {
+      $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
 
-            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
-                Write-Output $psitem.name
-            }
-        }
+      if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
+        Write-Output $psitem.name
+      }
     }
+  }
 
-    if($CheckBox -eq "tweaks"){
+  if ($CheckBox -eq "tweaks") {
 
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
-        $ScheduledTasks = Get-ScheduledTask
+    if (!(Test-Path 'HKU:\')) { New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS }
+    $ScheduledTasks = Get-ScheduledTask
 
-        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
+    $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
-            $Config = $psitem.Name
-            #WPFEssTweaksTele
-            $registryKeys = $sync.configs.tweaks.$Config.registry
-            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
-            $serviceKeys = $sync.configs.tweaks.$Config.service
+      $Config = $psitem.Name
+      #WPFEssTweaksTele
+      $registryKeys = $sync.configs.tweaks.$Config.registry
+      $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
+      $serviceKeys = $sync.configs.tweaks.$Config.service
 
-            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
-                $Values = @()
+      if ($registryKeys -or $scheduledtaskKeys -or $serviceKeys) {
+        $Values = @()
 
 
-                Foreach ($tweaks in $registryKeys){
-                    Foreach($tweak in $tweaks){
+        Foreach ($tweaks in $registryKeys) {
+          Foreach ($tweak in $tweaks) {
 
-                        if(test-path $tweak.Path){
-                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $scheduledtaskKeys){
-                    Foreach($tweak in $tweaks){
-                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
-
-                        if($task){
-                            $actualValue = $task.State
-                            $expectedValue = $tweak.State
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $serviceKeys){
-                    Foreach($tweak in $tweaks){
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if($Service){
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                if($values -notcontains $false){
-                    Write-Output $Config
-                }
+            if (test-path $tweak.Path) {
+              $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+              $expectedValue = $tweak.Value
+              if ($expectedValue -notlike $actualValue) {
+                $values += $False
+              }
             }
+          }
         }
+
+        Foreach ($tweaks in $scheduledtaskKeys) {
+          Foreach ($tweak in $tweaks) {
+            $task = $ScheduledTasks | Where-Object { $($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)" }
+
+            if ($task) {
+              $actualValue = $task.State
+              $expectedValue = $tweak.State
+              if ($expectedValue -ne $actualValue) {
+                $values += $False
+              }
+            }
+          }
+        }
+
+        Foreach ($tweaks in $serviceKeys) {
+          Foreach ($tweak in $tweaks) {
+            $Service = Get-Service -Name $tweak.Name
+
+            if ($Service) {
+              $actualValue = $Service.StartType
+              $expectedValue = $tweak.StartupType
+              if ($expectedValue -ne $actualValue) {
+                $values += $False
+              }
+            }
+          }
+        }
+
+        if ($values -notcontains $false) {
+          Write-Output $Config
+        }
+      }
     }
+  }
 }
 
 Function Invoke-WinUtilDarkMode {
-    <#
+  <#
 
     .SYNOPSIS
         Enables/Disables Dark Mode
@@ -636,87 +627,87 @@ Function Invoke-WinUtilDarkMode {
         Indicates the current dark mode state
 
     #>
-    Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
-            Write-Host "Enabling Dark Mode"
-            $DarkMoveValue = 0
-        }
-        else {
-            Write-Host "Disabling Dark Mode"
-            $DarkMoveValue = 1
-        }
+  Param($DarkMoveEnabled)
+  Try {
+    if ($DarkMoveEnabled -eq $false) {
+      Write-Host "Enabling Dark Mode"
+      $DarkMoveValue = 0
+    }
+    else {
+      Write-Host "Disabling Dark Mode"
+      $DarkMoveValue = 1
+    }
 
-        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+    Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
+    Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Invoke-WinUtilFeatureInstall {
-    <#
+  <#
 
     .SYNOPSIS
         Converts all the values from the tweaks.json and routes them to the appropriate function
 
     #>
 
-    param(
-        $CheckBox
-    )
+  param(
+    $CheckBox
+  )
 
-    $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
-                    Write-Host "Installing $feature"
-                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
+  $CheckBox | ForEach-Object {
+    if ($sync.configs.feature.$psitem.feature) {
+      Foreach ( $feature in $sync.configs.feature.$psitem.feature ) {
+        Try {
+          Write-Host "Installing $feature"
+          Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
         }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
-                    $Scriptblock = [scriptblock]::Create($script)
+        Catch {
+          if ($psitem.Exception.Message -like "*requires elevation*") {
+            Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+          }
 
-                    Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
+          else {
+            Write-Warning "Unable to Install $feature due to unhandled exception"
+            Write-Warning $psitem.Exception.StackTrace
+          }
         }
+      }
     }
+    if ($sync.configs.feature.$psitem.InvokeScript) {
+      Foreach ( $script in $sync.configs.feature.$psitem.InvokeScript ) {
+        Try {
+          $Scriptblock = [scriptblock]::Create($script)
+
+          Write-Host "Running Script for $psitem"
+          Invoke-Command $scriptblock -ErrorAction stop
+        }
+        Catch {
+          if ($psitem.Exception.Message -like "*requires elevation*") {
+            Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+          }
+
+          else {
+            Write-Warning "Unable to Install $feature due to unhandled exception"
+            Write-Warning $psitem.Exception.StackTrace
+          }
+        }
+      }
+    }
+  }
 }
 Function Invoke-WinUtilMouseAcceleration {
-    <#
+  <#
 
     .SYNOPSIS
         Enables/Disables Mouse Acceleration
@@ -725,71 +716,71 @@ Function Invoke-WinUtilMouseAcceleration {
         Indicates the current Mouse Acceleration State
 
     #>
-    Param($MouseAccelerationEnabled)
-    Try{
-        if ($MouseAccelerationEnabled -eq $false){
-            Write-Host "Enabling Mouse Acceleration"
-            $MouseSpeed = 1
-            $MouseThreshold1 = 6
-            $MouseThreshold2 = 10
-        } 
-        else {
-            Write-Host "Disabling Mouse Acceleration"
-            $MouseSpeed = 0
-            $MouseThreshold1 = 0
-            $MouseThreshold2 = 0 
+  Param($MouseAccelerationEnabled)
+  Try {
+    if ($MouseAccelerationEnabled -eq $false) {
+      Write-Host "Enabling Mouse Acceleration"
+      $MouseSpeed = 1
+      $MouseThreshold1 = 6
+      $MouseThreshold2 = 10
+    } 
+    else {
+      Write-Host "Disabling Mouse Acceleration"
+      $MouseSpeed = 0
+      $MouseThreshold1 = 0
+      $MouseThreshold2 = 0 
             
-        }
+    }
 
-        $Path = "HKCU:\Control Panel\Mouse"
-        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
-        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
-        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKCU:\Control Panel\Mouse"
+    Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
+    Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
+    Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Invoke-WinUtilNumLock {
-    <#
+  <#
     .SYNOPSIS
         Disables/Enables NumLock on startup
     .PARAMETER Enabled
         Indicates whether to enable or disable Numlock on startup
     #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Numlock on startup"
-            $value = 2
-        }
-        else {
-            Write-Host "Disabling Numlock on startup"
-            $value = 0
-        }
-        $Path = "HKCU:\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+  Param($Enabled)
+  Try {
+    if ($Enabled -eq $false) {
+      Write-Host "Enabling Numlock on startup"
+      $value = 2
     }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    else {
+      Write-Host "Disabling Numlock on startup"
+      $value = 0
     }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKCU:\Control Panel\Keyboard"
+    Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Invoke-WinUtilScript {
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
@@ -805,71 +796,71 @@ function Invoke-WinUtilScript {
         Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
 
     #>
-    param (
-        $Name,
-        [scriptblock]$scriptblock
-    )
+  param (
+    $Name,
+    [scriptblock]$scriptblock
+  )
 
-    Try {
-        Write-Host "Running Script for $name"
-        Invoke-Command $scriptblock -ErrorAction Stop
-    }
-    Catch [System.Management.Automation.CommandNotFoundException] {
-        Write-Warning "The specified command was not found."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Management.Automation.RuntimeException] {
-        Write-Warning "A runtime exception occurred."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "A security exception occurred."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.UnauthorizedAccessException] {
-        Write-Warning "Access denied. You do not have permission to perform this operation."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch {
-        # Generic catch block to handle any other type of exception
-        Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+  Try {
+    Write-Host "Running Script for $name"
+    Invoke-Command $scriptblock -ErrorAction Stop
+  }
+  Catch [System.Management.Automation.CommandNotFoundException] {
+    Write-Warning "The specified command was not found."
+    Write-Warning $PSItem.Exception.message
+  }
+  Catch [System.Management.Automation.RuntimeException] {
+    Write-Warning "A runtime exception occurred."
+    Write-Warning $PSItem.Exception.message
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "A security exception occurred."
+    Write-Warning $PSItem.Exception.message
+  }
+  Catch [System.UnauthorizedAccessException] {
+    Write-Warning "Access denied. You do not have permission to perform this operation."
+    Write-Warning $PSItem.Exception.message
+  }
+  Catch {
+    # Generic catch block to handle any other type of exception
+    Write-Warning "Unable to run script for $name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 
 }
 function Invoke-WinUtilShowExt {
-    <#
+  <#
     .SYNOPSIS
         Disables/Enables Show file Extentions
     .PARAMETER Enabled
         Indicates whether to enable or disable Show file extentions
     #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Showing file extentions"
-            $value = 0
-        }
-        else {
-            Write-Host "hiding file extensions"
-            $value = 1
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-        Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+  Param($Enabled)
+  Try {
+    if ($Enabled -eq $false) {
+      Write-Host "Showing file extentions"
+      $value = 0
     }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    else {
+      Write-Host "hiding file extensions"
+      $value = 1
     }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Invoke-WinUtilTweaks {
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the function associated with each provided checkbox
@@ -882,91 +873,91 @@ function Invoke-WinUtilTweaks {
 
     #>
 
-    param(
-        $CheckBox,
-        $undo = $false
-    )
-    if($undo){
-        $Values = @{
-            Registry = "OriginalValue"
-            ScheduledTask = "OriginalState"
-            Service = "OriginalType"
-            ScriptType = "UndoScript"
-        }
-
-    }
-    Else{
-        $Values = @{
-            Registry = "Value"
-            ScheduledTask = "State"
-            Service = "StartupType"
-            ScriptType = "InvokeScript"
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
-            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
+  param(
+    $CheckBox,
+    $undo = $false
+  )
+  if ($undo) {
+    $Values = @{
+      Registry      = "OriginalValue"
+      ScheduledTask = "OriginalState"
+      Service       = "OriginalType"
+      ScriptType    = "UndoScript"
     }
 
-    if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
-            }
-        }
-
+  }
+  Else {
+    $Values = @{
+      Registry      = "Value"
+      ScheduledTask = "State"
+      Service       = "StartupType"
+      ScriptType    = "InvokeScript"
     }
+  }
+  if ($sync.configs.tweaks.$CheckBox.ScheduledTask) {
+    $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+      Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
+    }
+  }
+  if ($sync.configs.tweaks.$CheckBox.service) {
+    $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+      Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+    }
+  }
+  if ($sync.configs.tweaks.$CheckBox.registry) {
+    $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+      Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+    }
+  }
+  if ($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
+    $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+      $Scriptblock = [scriptblock]::Create($psitem)
+      Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+    }
+  }
+
+  if (!$undo) {
+    if ($sync.configs.tweaks.$CheckBox.appx) {
+      $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+        Remove-WinUtilAPPX -Name $psitem
+      }
+    }
+
+  }
 }
 function Invoke-WinUtilVerboseLogon {
-    <#
+  <#
     .SYNOPSIS
         Disables/Enables VerboseLogon Messages
     .PARAMETER Enabled
         Indicates whether to enable or disable VerboseLogon messages
     #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Verbose Logon Messages"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Verbose Logon Messages"
-            $value = 0
-        }
-        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
-        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
+  Param($Enabled)
+  Try {
+    if ($Enabled -eq $false) {
+      Write-Host "Enabling Verbose Logon Messages"
+      $value = 1
     }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    else {
+      Write-Host "Disabling Verbose Logon Messages"
+      $value = 0
     }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+    Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
-<#
+  <#
 
     .SYNOPSIS
         Removes certain features from ISO image
@@ -979,234 +970,221 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
-	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
-	if ($dumpFeatures)
-	{
-		$appxlist > allfeaturesdump.txt
-	}
+  $appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
+  $appxlist = $appxlist -split "Feature Name : " | Where-Object { $_ }
+  if ($dumpFeatures) {
+    $appxlist > allfeaturesdump.txt
+  }
 
-	$appxlist = $appxlist | Where-Object {
-		$_ -NotLike "*Printing*" -AND
-		$_ -NotLike "*TelnetClient*" -AND
-		$_ -NotLike "*PowerShell*" -AND
-		$_ -NotLike "*NetFx*"
-	}
+  $appxlist = $appxlist | Where-Object {
+    $_ -NotLike "*Printing*" -AND
+    $_ -NotLike "*TelnetClient*" -AND
+    $_ -NotLike "*PowerShell*" -AND
+    $_ -NotLike "*NetFx*"
+  }
 
-	if ($keepDefender) { $appxlist = $appxlist | Where-Object { $_ -NotLike "*Defender*" }}
+  if ($keepDefender) { $appxlist = $appxlist | Where-Object { $_ -NotLike "*Defender*" } }
 
-	foreach($feature in $appxlist)
-	{
-		$status = "Removing feature $feature"
-		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		Write-Debug "Removing feature $feature"
-		# dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
-	}
-	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
+  foreach ($feature in $appxlist) {
+    $status = "Removing feature $feature"
+    Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++ / $appxlist.Count * 100)
+    Write-Debug "Removing feature $feature"
+    # dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
+  }
+  Write-Progress -Activity "Removing features" -Status "Ready" -Completed
 }
 
-function Remove-Packages
-{
-	$appxlist = dism /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
-	$appxlist = $appxlist -split "Package Identity : " | Where-Object {$_}
+function Remove-Packages {
+  $appxlist = dism /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
+  $appxlist = $appxlist -split "Package Identity : " | Where-Object { $_ }
 
-	$appxlist = $appxlist | Where-Object {
-			$_ -NotLike "*ApplicationModel*" -AND
-			$_ -NotLike "*indows-Client-LanguagePack*" -AND
-			$_ -NotLike "*LanguageFeatures-Basic*" -AND
-			$_ -NotLike "*Package_for_ServicingStack*" -AND
-			$_ -NotLike "*.NET*" -AND
-			$_ -NotLike "*Store*" -AND
-			$_ -NotLike "*VCLibs*" -AND
-			$_ -NotLike "*AAD.BrokerPlugin",
-			$_ -NotLike "*LockApp*" -AND
-			$_ -NotLike "*Notepad*" -AND
-			$_ -NotLike "*immersivecontrolpanel*" -AND
-			$_ -NotLike "*ContentDeliveryManager*" -AND
-			$_ -NotLike "*PinningConfirMationDialog*" -AND
-			$_ -NotLike "*SecHealthUI*" -AND
-			$_ -NotLike "*SecureAssessmentBrowser*" -AND
-			$_ -NotLike "*PrintDialog*" -AND
-			$_ -NotLike "*AssignedAccessLockApp*" -AND
-			$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-			$_ -NotLike "*Apprep.ChxApp*" -AND
-			$_ -NotLike "*CBS*" -AND
-			$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-			$_ -NotLike "*PeopleExperienceHost*" -AND
-			$_ -NotLike "*ParentalControls*" -AND
-			$_ -NotLike "*Win32WebViewHost*" -AND
-			$_ -NotLike "*InputApp*" -AND
-			$_ -NotLike "*AccountsControl*" -AND
-			$_ -NotLike "*AsyncTextService*" -AND
-			$_ -NotLike "*CapturePicker*" -AND
-			$_ -NotLike "*CredDialogHost*" -AND
-			$_ -NotLike "*BioEnrollMent*" -AND
-			$_ -NotLike "*ShellExperienceHost*" -AND
-			$_ -NotLike "*DesktopAppInstaller*" -AND
-			$_ -NotLike "*WebMediaExtensions*" -AND
-			$_ -NotLike "*WMIC*" -AND
-			$_ -NotLike "*UI.XaML*"	
+  $appxlist = $appxlist | Where-Object {
+    $_ -NotLike "*ApplicationModel*" -AND
+    $_ -NotLike "*indows-Client-LanguagePack*" -AND
+    $_ -NotLike "*LanguageFeatures-Basic*" -AND
+    $_ -NotLike "*Package_for_ServicingStack*" -AND
+    $_ -NotLike "*.NET*" -AND
+    $_ -NotLike "*Store*" -AND
+    $_ -NotLike "*VCLibs*" -AND
+    $_ -NotLike "*AAD.BrokerPlugin",
+    $_ -NotLike "*LockApp*" -AND
+    $_ -NotLike "*Notepad*" -AND
+    $_ -NotLike "*immersivecontrolpanel*" -AND
+    $_ -NotLike "*ContentDeliveryManager*" -AND
+    $_ -NotLike "*PinningConfirMationDialog*" -AND
+    $_ -NotLike "*SecHealthUI*" -AND
+    $_ -NotLike "*SecureAssessmentBrowser*" -AND
+    $_ -NotLike "*PrintDialog*" -AND
+    $_ -NotLike "*AssignedAccessLockApp*" -AND
+    $_ -NotLike "*OOBENetworkConnectionFlow*" -AND
+    $_ -NotLike "*Apprep.ChxApp*" -AND
+    $_ -NotLike "*CBS*" -AND
+    $_ -NotLike "*OOBENetworkCaptivePortal*" -AND
+    $_ -NotLike "*PeopleExperienceHost*" -AND
+    $_ -NotLike "*ParentalControls*" -AND
+    $_ -NotLike "*Win32WebViewHost*" -AND
+    $_ -NotLike "*InputApp*" -AND
+    $_ -NotLike "*AccountsControl*" -AND
+    $_ -NotLike "*AsyncTextService*" -AND
+    $_ -NotLike "*CapturePicker*" -AND
+    $_ -NotLike "*CredDialogHost*" -AND
+    $_ -NotLike "*BioEnrollMent*" -AND
+    $_ -NotLike "*ShellExperienceHost*" -AND
+    $_ -NotLike "*DesktopAppInstaller*" -AND
+    $_ -NotLike "*WebMediaExtensions*" -AND
+    $_ -NotLike "*WMIC*" -AND
+    $_ -NotLike "*UI.XaML*"	
 		} 
 
-	foreach ($appx in $appxlist)
-	{
-		$status = "Removing $appx"
-		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
-	}
-	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+  foreach ($appx in $appxlist) {
+    $status = "Removing $appx"
+    Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++ / $appxlist.Count * 100)
+    dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
+  }
+  Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
 
-function Remove-ProvisionedPackages
-{
-	$appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object	{
-			$_.PackageName -NotLike "*AppInstaller*" -AND
-			$_.PackageName -NotLike "*Store*" -and
-			$_.PackageName -NotLike "*dism*" -and
-			$_.PackageName -NotLike "*Foundation*" -and
-			$_.PackageName -NotLike "*FodMetadata*" -and
-			$_.PackageName -NotLike "*LanguageFeatures*" -and
-			$_.PackageName -NotLike "*Notepad*" -and
-			$_.PackageName -NotLike "*Printing*" -and
-			$_.PackageName -NotLike "*Wifi*" -and
-			$_.PackageName -NotLike "*Foundation*" 
+function Remove-ProvisionedPackages {
+  $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object	{
+    $_.PackageName -NotLike "*AppInstaller*" -AND
+    $_.PackageName -NotLike "*Store*" -and
+    $_.PackageName -NotLike "*dism*" -and
+    $_.PackageName -NotLike "*Foundation*" -and
+    $_.PackageName -NotLike "*FodMetadata*" -and
+    $_.PackageName -NotLike "*LanguageFeatures*" -and
+    $_.PackageName -NotLike "*Notepad*" -and
+    $_.PackageName -NotLike "*Printing*" -and
+    $_.PackageName -NotLike "*Wifi*" -and
+    $_.PackageName -NotLike "*Foundation*" 
 		} 
 
-	$counter = 0
-	foreach ($appx in $appxProvisionedPackages)
-	{
-		$status = "Removing Provisioned $appx"
-		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
+  $counter = 0
+  foreach ($appx in $appxProvisionedPackages) {
+    $status = "Removing Provisioned $appx"
+    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++ / $appxProvisionedPackages.Count * 100)
+    dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
 								
-	}
-	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+  }
+  Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
-function Copy-ToUSB([string] $fileToCopy)
-{
-	foreach ($volume in Get-Volume) {
-		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
-			$destinationPath = "$($volume.DriveLetter):\"
-			#Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
-			# Get the total size of the file
-			$totalSize = (Get-Item $fileToCopy).length
+function Copy-ToUSB([string] $fileToCopy) {
+  foreach ($volume in Get-Volume) {
+    if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
+      $destinationPath = "$($volume.DriveLetter):\"
+      #Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
+      # Get the total size of the file
+      $totalSize = (Get-Item $fileToCopy).length
 
-			Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
-				ForEach-Object {
-					# Calculate the percentage completed
-					$completed = ($_.BytesTransferred / $totalSize) * 100
+      Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
+      ForEach-Object {
+        # Calculate the percentage completed
+        $completed = ($_.BytesTransferred / $totalSize) * 100
 
-					# Display the progress bar
-					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
-				}
+        # Display the progress bar
+        Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
+      }
 
-			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
-			return
-		}
-	}
-	Write-Host "Ventoy USB Key is not inserted"
+      Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+      return
+    }
+  }
+  Write-Host "Ventoy USB Key is not inserted"
 }
 
-function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
-{
-	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
-	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
+function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false) {
+  if (([string]::IsNullOrEmpty($pathToDelete))) { return }
+  if (-not (Test-Path -Path "$($pathToDelete)")) { return }
 
-	$yesNo = Get-LocalizedYesNo
+  $yesNo = Get-LocalizedYesNo
 
-	# Specify the path to the directory
-	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
-	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-	# icacls "$($directoryPath)" /q /c /t /reset > $null
-	# icacls $directoryPath /setowner "*S-1-5-32-544"
-	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-	# Remove-Item -Path $directoryPath -Recurse -Force
+  # Specify the path to the directory
+  # $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
+  # takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+  # icacls "$($directoryPath)" /q /c /t /reset > $null
+  # icacls $directoryPath /setowner "*S-1-5-32-544"
+  # icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+  # Remove-Item -Path $directoryPath -Recurse -Force
 
-	# # Grant full control to BUILTIN\Administrators using icacls
-	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
-	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-	# icacls "$($directoryPath)" /q /c /t /reset > $null
-	# icacls $directoryPath /setowner "*S-1-5-32-544"
-	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-	# Remove-Item -Path $directoryPath -Recurse -Force
+  # # Grant full control to BUILTIN\Administrators using icacls
+  # $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+  # takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
+  # icacls "$($directoryPath)" /q /c /t /reset > $null
+  # icacls $directoryPath /setowner "*S-1-5-32-544"
+  # icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+  # Remove-Item -Path $directoryPath -Recurse -Force
 	
-	$itemsToDelete = [System.Collections.ArrayList]::new()
+  $itemsToDelete = [System.Collections.ArrayList]::new()
 
-	if ($mask -eq "")
-	{
-		Write-Debug "Adding $($pathToDelete) to array."
-		[void]$itemsToDelete.Add($pathToDelete)
-	}
-	else 
-	{
-		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)" 
-		if ($Directory)	{ $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory }
-		else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
-	}
+  if ($mask -eq "") {
+    Write-Debug "Adding $($pathToDelete) to array."
+    [void]$itemsToDelete.Add($pathToDelete)
+  }
+  else {
+    Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)" 
+    if ($Directory)	{ $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory }
+    else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
+  }
 
-	foreach($itemToDelete in $itemsToDelete)
-	{
-		$status = "Deleteing $($itemToDelete)"
-		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
+  foreach ($itemToDelete in $itemsToDelete) {
+    $status = "Deleteing $($itemToDelete)"
+    Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++ / $itemsToDelete.Count * 100)
 
-		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
-		{
-			$status = "Deleting directory: $($itemToDelete)"
+    if (Test-Path -Path "$($itemToDelete)" -PathType Container) {
+      $status = "Deleting directory: $($itemToDelete)"
 
-			takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
-			icacls "$($itemToDelete)" /q /c /t /reset
-			icacls $itemToDelete /setowner "*S-1-5-32-544"
-			icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-			Remove-Item -Force -Recurse "$($itemToDelete)"
-		}
-		elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf)
-		{
-			$status = "Deleting file: $($itemToDelete)"
+      takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
+      icacls "$($itemToDelete)" /q /c /t /reset
+      icacls $itemToDelete /setowner "*S-1-5-32-544"
+      icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+      Remove-Item -Force -Recurse "$($itemToDelete)"
+    }
+    elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf) {
+      $status = "Deleting file: $($itemToDelete)"
 
-			takeown /a /f "$($itemToDelete)"
-			icacls "$($itemToDelete)" /q /c /t /reset
-			icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
-			icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-			Remove-Item -Force "$($itemToDelete)"
-		}
-	}
-	Write-Progress -Activity "Removing Items" -Status "Ready" -Completed
+      takeown /a /f "$($itemToDelete)"
+      icacls "$($itemToDelete)" /q /c /t /reset
+      icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
+      icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+      Remove-Item -Force "$($itemToDelete)"
+    }
+  }
+  Write-Progress -Activity "Removing Items" -Status "Ready" -Completed
 }
 
 function New-Unattend {
 
-	# later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
-	# Below is an example how to do it we probably should create a drop down with common locals
-	# 	<settings pass="specialize">
-	#     <!-- Specify English (World) locale -->
-	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	#       <SetupUILanguage>
-	#         <UILanguage>en-US</UILanguage>
-	#       </SetupUILanguage>
-	#       <InputLocale>en-US</InputLocale>
-	#       <SystemLocale>en-US</SystemLocale>
-	#       <UILanguage>en-US</UILanguage>
-	#       <UserLocale>en-US</UserLocale>
-	#     </component>
-	#   </settings>
+  # later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
+  # Below is an example how to do it we probably should create a drop down with common locals
+  # 	<settings pass="specialize">
+  #     <!-- Specify English (World) locale -->
+  #     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  #       <SetupUILanguage>
+  #         <UILanguage>en-US</UILanguage>
+  #       </SetupUILanguage>
+  #       <InputLocale>en-US</InputLocale>
+  #       <SystemLocale>en-US</SystemLocale>
+  #       <UILanguage>en-US</UILanguage>
+  #       <UserLocale>en-US</UserLocale>
+  #     </component>
+  #   </settings>
 
-	#   <settings pass="oobeSystem">
-	#     <!-- Specify English (World) locale -->
-	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	#       <InputLocale>en-US</InputLocale>
-	#       <SystemLocale>en-US</SystemLocale>
-	#       <UILanguage>en-US</UILanguage>
-	#       <UserLocale>en-US</UserLocale>
-	#     </component>
-	#   </settings>
-	# using here string to embedd unattend
-	# 	<RunSynchronousCommand wcm:action="add">
-	# 	<Order>1</Order>
-	# 	<Path>net user administrator /active:yes</Path>
-	# </RunSynchronousCommand>
+  #   <settings pass="oobeSystem">
+  #     <!-- Specify English (World) locale -->
+  #     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  #       <InputLocale>en-US</InputLocale>
+  #       <SystemLocale>en-US</SystemLocale>
+  #       <UILanguage>en-US</UILanguage>
+  #       <UserLocale>en-US</UserLocale>
+  #     </component>
+  #   </settings>
+  # using here string to embedd unattend
+  # 	<RunSynchronousCommand wcm:action="add">
+  # 	<Order>1</Order>
+  # 	<Path>net user administrator /active:yes</Path>
+  # </RunSynchronousCommand>
 
-	$unattend = @'
+  $unattend = @'
 	<?xml version="1.0" encoding="utf-8"?>
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
@@ -1259,13 +1237,13 @@ function New-Unattend {
 		</settings>
 	</unattend>
 '@
-	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+  $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
 function New-CheckInstall {
 
-	# using here string to embedd firstrun
-	$checkInstall = @'
+  # using here string to embedd firstrun
+  $checkInstall = @'
 	@echo off
 	if exist "C:\windows\cpu.txt" (
 		echo C:\windows\cpu.txt exists
@@ -1333,13 +1311,13 @@ function New-CheckInstall {
 		echo c:\windows\LogFirstRun.txt does not exist
 	)
 '@
-	$checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
+  $checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
 }
 
 function New-FirstRun {
 
-	# using here string to embedd firstrun
-	$firstRun = @'
+  # using here string to embedd firstrun
+  $firstRun = @'
 	# Set the global error action preference to continue
 	$ErrorActionPreference = "Continue"
 	function Remove-RegistryValue
@@ -1527,10 +1505,10 @@ function New-FirstRun {
 	Start-Process explorer
 	
 '@
-	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
+  $firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
 function Remove-WinUtilAPPX {
-    <#
+  <#
 
     .SYNOPSIS
         Removes all APPX packages that match the given name
@@ -1542,31 +1520,31 @@ function Remove-WinUtilAPPX {
         Remove-WinUtilAPPX -Name "Microsoft.Microsoft3DViewer"
 
     #>
-    param (
-        $Name
-    )
+  param (
+    $Name
+  )
 
-    Try {
-        Write-Host "Removing $Name"
-        Get-AppxPackage "*$Name*" | Remove-AppxPackage -ErrorAction SilentlyContinue
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Name*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+  Try {
+    Write-Host "Removing $Name"
+    Get-AppxPackage "*$Name*" | Remove-AppxPackage -ErrorAction SilentlyContinue
+    Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Name*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+  }
+  Catch [System.Exception] {
+    if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
+      Write-Warning "Unable to uninstall $name due to a Security Exception"
     }
-    Catch [System.Exception] {
-        if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
-            Write-Warning "Unable to uninstall $name due to a Security Exception"
-        }
-        else {
-            Write-Warning "Unable to uninstall $name due to unhandled exception"
-            Write-Warning $psitem.Exception.StackTrace
-        }
+    else {
+      Write-Warning "Unable to uninstall $name due to unhandled exception"
+      Write-Warning $psitem.Exception.StackTrace
     }
-    Catch{
-        Write-Warning "Unable to uninstall $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+  }
+  Catch {
+    Write-Warning "Unable to uninstall $name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Set-WinUtilDNS {
-    <#
+  <#
 
     .SYNOPSIS
         Sets the DNS of all interfaces that are in the "Up" state. It will lookup the values from the DNS.Json file
@@ -1578,29 +1556,29 @@ function Set-WinUtilDNS {
         Set-WinUtilDNS -DNSProvider "google"
 
     #>
-    param($DNSProvider)
-    if($DNSProvider -eq "Default"){return}
-    Try{
-        $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
-        Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
-        Write-Host $($Adapters | Out-String)
+  param($DNSProvider)
+  if ($DNSProvider -eq "Default") { return }
+  Try {
+    $Adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" }
+    Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
+    Write-Host $($Adapters | Out-String)
 
-        Foreach ($Adapter in $Adapters){
-            if($DNSProvider -eq "DHCP"){
-                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
-            }
-            Else{
-                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
-            }
-        }
+    Foreach ($Adapter in $Adapters) {
+      if ($DNSProvider -eq "DHCP") {
+        Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
+      }
+      Else {
+        Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
+      }
     }
-    Catch{
-        Write-Warning "Unable to set DNS Provider due to an unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+  }
+  Catch {
+    Write-Warning "Unable to set DNS Provider due to an unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Set-WinUtilRegistry {
-    <#
+  <#
 
     .SYNOPSIS
         Modifies the registry based on the given inputs
@@ -1621,77 +1599,78 @@ function Set-WinUtilRegistry {
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
 
     #>
-    param (
-        $Name,
-        $Path,
-        $Type,
-        $Value
-    )
+  param (
+    $Name,
+    $Path,
+    $Type,
+    $Value
+  )
 
-    Try{
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+  Try {
+    if (!(Test-Path 'HKU:\')) { New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS }
 
-        If (!(Test-Path $Path)) {
-            Write-Host "$Path was not found, Creating..."
-            New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
-        }
+    If (!(Test-Path $Path)) {
+      Write-Host "$Path was not found, Creating..."
+      New-Item -Path $Path -Force -ErrorAction Stop | Out-Null
+    }
 
-        Write-Host "Set $Path\$Name to $Value"
-        Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+    Write-Host "Set $Path\$Name to $Value"
+    Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
+  }
+  Catch [System.Security.SecurityException] {
+    Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+    Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Set-WinUtilRestorePoint {
-    <#
+  <#
 
     .SYNOPSIS
         Creates a Restore Point
 
     #>
 
-    # Check if the user has administrative privileges
-    if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Host "Please run this script as an administrator."
-        return
-    }
+  # Check if the user has administrative privileges
+  if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run this script as an administrator."
+    return
+  }
 
-    # Check if System Restore is enabled for the main drive
-    try {
-        # Try getting restore points to check if System Restore is enabled
-        Enable-ComputerRestore -Drive "$env:SystemDrive"
-    } catch {
-        Write-Host "An error occurred while enabling System Restore: $_"
-    }
+  # Check if System Restore is enabled for the main drive
+  try {
+    # Try getting restore points to check if System Restore is enabled
+    Enable-ComputerRestore -Drive "$env:SystemDrive"
+  }
+  catch {
+    Write-Host "An error occurred while enabling System Restore: $_"
+  }
 
-    # Check if the SystemRestorePointCreationFrequency value exists
-    $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
-    if($null -eq $exists){
-        write-host 'Changing system to allow multiple restore points per day'
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null
-    }
+  # Check if the SystemRestorePointCreationFrequency value exists
+  $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
+  if ($null -eq $exists) {
+    write-host 'Changing system to allow multiple restore points per day'
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null
+  }
 
-    # Get all the restore points for the current day
-    $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+  # Get all the restore points for the current day
+  $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
 
-    # Check if there is already a restore point created today
-    if ($existingRestorePoints.Count -eq 0) {
-        $description = "System Restore Point created by WinUtil"
+  # Check if there is already a restore point created today
+  if ($existingRestorePoints.Count -eq 0) {
+    $description = "System Restore Point created by WinUtil"
 
-        Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
-        Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
-    }
+    Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
+    Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
+  }
 }
 function Set-WinUtilScheduledTask {
-    <#
+  <#
 
     .SYNOPSIS
         Enables/Disables the provided Scheduled Task
@@ -1706,37 +1685,37 @@ function Set-WinUtilScheduledTask {
         Set-WinUtilScheduledTask -Name "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -State "Disabled"
 
     #>
-    param (
-        $Name,
-        $State
-    )
+  param (
+    $Name,
+    $State
+  )
 
-    Try{
-        if($State -eq "Disabled"){
-            Write-Host "Disabling Scheduled Task $Name"
-            Disable-ScheduledTask -TaskName $Name -ErrorAction Stop
-        }
-        if($State -eq "Enabled"){
-            Write-Host "Enabling Scheduled Task $Name"
-            Enable-ScheduledTask -TaskName $Name -ErrorAction Stop
-        }
+  Try {
+    if ($State -eq "Disabled") {
+      Write-Host "Disabling Scheduled Task $Name"
+      Disable-ScheduledTask -TaskName $Name -ErrorAction Stop
     }
-    Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*The system cannot find the file specified*"){
-            Write-Warning "Scheduled Task $name was not Found"
-        }
-        Else{
-            Write-Warning "Unable to set $Name due to unhandled exception"
-            Write-Warning $psitem.Exception.Message
-        }
+    if ($State -eq "Enabled") {
+      Write-Host "Enabling Scheduled Task $Name"
+      Enable-ScheduledTask -TaskName $Name -ErrorAction Stop
     }
-    Catch{
-        Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+  }
+  Catch [System.Exception] {
+    if ($psitem.Exception.Message -like "*The system cannot find the file specified*") {
+      Write-Warning "Scheduled Task $name was not Found"
     }
+    Else {
+      Write-Warning "Unable to set $Name due to unhandled exception"
+      Write-Warning $psitem.Exception.Message
+    }
+  }
+  Catch {
+    Write-Warning "Unable to run script for $name due to unhandled exception"
+    Write-Warning $psitem.Exception.StackTrace
+  }
 }
 Function Set-WinUtilService {
-    <#
+  <#
 
     .SYNOPSIS
         Changes the startup type of the given service
@@ -1751,30 +1730,30 @@ Function Set-WinUtilService {
         Set-WinUtilService -Name "HomeGroupListener" -StartupType "Manual"
 
     #>
-    param (
-        $Name,
-        $StartupType
-    )
-    try {
-        Write-Host "Setting Service $Name to $StartupType"
+  param (
+    $Name,
+    $StartupType
+  )
+  try {
+    Write-Host "Setting Service $Name to $StartupType"
 
-        # Check if the service exists
-        $service = Get-Service -Name $Name -ErrorAction Stop
+    # Check if the service exists
+    $service = Get-Service -Name $Name -ErrorAction Stop
 
-        # Service exists, proceed with changing properties
-        $service | Set-Service -StartupType $StartupType -ErrorAction Stop
-    }
-    catch [System.ServiceProcess.ServiceNotFoundException] {
-        Write-Warning "Service $Name was not found"
-    }
-    catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $_.Exception.Message
-    }
+    # Service exists, proceed with changing properties
+    $service | Set-Service -StartupType $StartupType -ErrorAction Stop
+  }
+  catch [System.ServiceProcess.ServiceNotFoundException] {
+    Write-Warning "Service $Name was not found"
+  }
+  catch {
+    Write-Warning "Unable to set $Name due to unhandled exception"
+    Write-Warning $_.Exception.Message
+  }
 
 }
 function Set-WinUtilUITheme {
-    <#
+  <#
 
     .SYNOPSIS
         Sets the theme of the XAML file
@@ -1789,45 +1768,45 @@ function Set-WinUtilUITheme {
         Set-WinUtilUITheme -inputXAML $inputXAML
 
     #>
-    param
-    (
-         [Parameter(Mandatory=$true, Position=0)]
-         [string] $inputXML,
-         [Parameter(Mandatory=$false, Position=1)]
-         [string] $themeName = 'matrix'
-    )
+  param
+  (
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string] $inputXML,
+    [Parameter(Mandatory = $false, Position = 1)]
+    [string] $themeName = 'matrix'
+  )
 
-    try {
-        # Convert the JSON to a PowerShell object
-        $themes = $sync.configs.themes
-        # Select the specified theme
-        $selectedTheme = $themes.$themeName
+  try {
+    # Convert the JSON to a PowerShell object
+    $themes = $sync.configs.themes
+    # Select the specified theme
+    $selectedTheme = $themes.$themeName
 
-        if ($selectedTheme) {
-            # Loop through all key-value pairs in the selected theme
-            foreach ($property in $selectedTheme.PSObject.Properties) {
-                $key = $property.Name
-                $value = $property.Value
-                # Add curly braces around the key
-                $formattedKey = "{$key}"
-                # Replace the key with the value in the input XML
-                $inputXML = $inputXML.Replace($formattedKey, $value)
-            }
-        }
-        else {
-            Write-Host "Theme '$themeName' not found."
-        }
-
+    if ($selectedTheme) {
+      # Loop through all key-value pairs in the selected theme
+      foreach ($property in $selectedTheme.PSObject.Properties) {
+        $key = $property.Name
+        $value = $property.Value
+        # Add curly braces around the key
+        $formattedKey = "{$key}"
+        # Replace the key with the value in the input XML
+        $inputXML = $inputXML.Replace($formattedKey, $value)
+      }
     }
-    catch {
-        Write-Warning "Unable to apply theme"
-        Write-Warning $psitem.Exception.StackTrace
+    else {
+      Write-Host "Theme '$themeName' not found."
     }
 
-    return $inputXML;
+  }
+  catch {
+    Write-Warning "Unable to apply theme"
+    Write-Warning $psitem.Exception.StackTrace
+  }
+
+  return $inputXML;
 }
 function Test-WinUtilPackageManager {
-    <#
+  <#
 
     .SYNOPSIS
         Checks if Winget and/or Choco are installed
@@ -1840,50 +1819,50 @@ function Test-WinUtilPackageManager {
 
     #>
 
-    Param(
-        [System.Management.Automation.SwitchParameter]$winget,
-        [System.Management.Automation.SwitchParameter]$choco
-    )
+  Param(
+    [System.Management.Automation.SwitchParameter]$winget,
+    [System.Management.Automation.SwitchParameter]$choco
+  )
 
-    if($winget){
-        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
-            return $true
-        }
+  if ($winget) {
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+      return $true
     }
+  }
 
-    if($choco){
-        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)){
-            return $true
-        }
+  if ($choco) {
+    if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
+      return $true
     }
+  }
 
-    return $false
+  return $false
 }
 Function Update-WinUtilProgramWinget {
 
-    <#
+  <#
 
     .SYNOPSIS
         This will update all programs using Winget
 
     #>
 
-    [ScriptBlock]$wingetinstall = {
+  [ScriptBlock]$wingetinstall = {
 
-        $host.ui.RawUI.WindowTitle = """Winget Install"""
+    $host.ui.RawUI.WindowTitle = """Winget Install"""
 
-        Start-Transcript $ENV:TEMP\winget-update.log -Append
-        winget upgrade --all
+    Start-Transcript $ENV:TEMP\winget-update.log -Append
+    winget upgrade --all
 
-        Pause
-    }
+    Pause
+  }
 
-    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
+  $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
 function Invoke-WPFButton {
 
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the function associated with the clicked button
@@ -1893,55 +1872,55 @@ function Invoke-WPFButton {
 
     #>
 
-    Param ([string]$Button)
+  Param ([string]$Button)
 
-    # Use this to get the name of the button
-    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+  # Use this to get the name of the button
+  #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
-    Switch -Wildcard ($Button){
+  Switch -Wildcard ($Button) {
 
-        "WPFTab?BT" {Invoke-WPFTab $Button}
-        "WPFinstall" {Invoke-WPFInstall}
-        "WPFuninstall" {Invoke-WPFUnInstall}
-        "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
-        "WPFdesktop" {Invoke-WPFPresets "Desktop"}
-        "WPFlaptop" {Invoke-WPFPresets "laptop"}
-        "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFexport" {Invoke-WPFImpex -type "export" -CheckBox "WPFTweaks"}
-        "WPFimport" {Invoke-WPFImpex -type "import" -CheckBox "WPFTweaks"}
-        "WPFexportWinget" {Invoke-WPFImpex -type "export" -CheckBox "WPFInstall"}
-        "WPFimportWinget" {Invoke-WPFImpex -type "import" -CheckBox "WPFInstall"}
-        "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
-        "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
-        "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
-        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
-        "WPFundoall" {Invoke-WPFundoall}
-        "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFPanelDISM" {Invoke-WPFPanelDISM}
-        "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
-        "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelregion" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsound" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
-        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
-        "WPFFixesWinget" {Invoke-WPFFixesWinget}
-        "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
-        "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
-        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
-        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
-        "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
-        "WPFGetIso" {Invoke-WPFGetIso}
-        "WPFMicrowin" {Invoke-WPFMicrowin}
-    }
+    "WPFTab?BT" { Invoke-WPFTab $Button }
+    "WPFinstall" { Invoke-WPFInstall }
+    "WPFuninstall" { Invoke-WPFUnInstall }
+    "WPFInstallUpgrade" { Invoke-WPFInstallUpgrade }
+    "WPFdesktop" { Invoke-WPFPresets "Desktop" }
+    "WPFlaptop" { Invoke-WPFPresets "laptop" }
+    "WPFminimal" { Invoke-WPFPresets "minimal" }
+    "WPFexport" { Invoke-WPFImpex -type "export" -CheckBox "WPFTweaks" }
+    "WPFimport" { Invoke-WPFImpex -type "import" -CheckBox "WPFTweaks" }
+    "WPFexportWinget" { Invoke-WPFImpex -type "export" -CheckBox "WPFInstall" }
+    "WPFimportWinget" { Invoke-WPFImpex -type "import" -CheckBox "WPFInstall" }
+    "WPFclear" { Invoke-WPFPresets -preset $null -imported $true }
+    "WPFclearWinget" { Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall" }
+    "WPFtweaksbutton" { Invoke-WPFtweaksbutton }
+    "WPFAddUltPerf" { Invoke-WPFUltimatePerformance -State "Enabled" }
+    "WPFRemoveUltPerf" { Invoke-WPFUltimatePerformance -State "Disabled" }
+    "WPFundoall" { Invoke-WPFundoall }
+    "WPFFeatureInstall" { Invoke-WPFFeatureInstall }
+    "WPFPanelDISM" { Invoke-WPFPanelDISM }
+    "WPFPanelAutologin" { Invoke-WPFPanelAutologin }
+    "WPFPanelcontrol" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPanelnetwork" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPanelpower" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPanelregion" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPanelsound" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPanelsystem" { Invoke-WPFControlPanel -Panel $button }
+    "WPFPaneluser" { Invoke-WPFControlPanel -Panel $button }
+    "WPFUpdatesdefault" { Invoke-WPFUpdatesdefault }
+    "WPFFixesUpdate" { Invoke-WPFFixesUpdate }
+    "WPFFixesWinget" { Invoke-WPFFixesWinget }
+    "WPFFixesNetwork" { Invoke-WPFFixesNetwork }
+    "WPFUpdatesdisable" { Invoke-WPFUpdatesdisable }
+    "WPFUpdatessecurity" { Invoke-WPFUpdatessecurity }
+    "WPFWinUtilShortcut" { Invoke-WPFShortcut -ShortcutToAdd "WinUtil" }
+    "WPFGetInstalled" { Invoke-WPFGetInstalled -CheckBox "winget" }
+    "WPFGetInstalledTweaks" { Invoke-WPFGetInstalled -CheckBox "tweaks" }
+    "WPFGetIso" { Invoke-WPFGetIso }
+    "WPFMicrowin" { Invoke-WPFMicrowin }
+  }
 }
 function Invoke-WPFControlPanel {
-    <#
+  <#
 
     .SYNOPSIS
         Opens the requested legacy panel
@@ -1950,116 +1929,116 @@ function Invoke-WPFControlPanel {
         The panel to open
 
     #>
-    param($Panel)
+  param($Panel)
 
-    switch ($Panel){
-        "WPFPanelcontrol" {cmd /c control}
-        "WPFPanelnetwork" {cmd /c ncpa.cpl}
-        "WPFPanelpower"   {cmd /c powercfg.cpl}
-        "WPFPanelregion"  {cmd /c intl.cpl}
-        "WPFPanelsound"   {cmd /c mmsys.cpl}
-        "WPFPanelsystem"  {cmd /c sysdm.cpl}
-        "WPFPaneluser"    {cmd /c "control userpasswords2"}
-    }
+  switch ($Panel) {
+    "WPFPanelcontrol" { cmd /c control }
+    "WPFPanelnetwork" { cmd /c ncpa.cpl }
+    "WPFPanelpower" { cmd /c powercfg.cpl }
+    "WPFPanelregion" { cmd /c intl.cpl }
+    "WPFPanelsound" { cmd /c mmsys.cpl }
+    "WPFPanelsystem" { cmd /c sysdm.cpl }
+    "WPFPaneluser" { cmd /c "control userpasswords2" }
+  }
 }
 function Invoke-WPFFeatureInstall {
-    <#
+  <#
 
     .SYNOPSIS
         Installs selected Windows Features
 
     #>
 
-    if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
+  if ($sync.ProcessRunning) {
+    $msg = "Install process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
 
-    $Features = Get-WinUtilCheckBoxes -Group "WPFFeature"
+  $Features = Get-WinUtilCheckBoxes -Group "WPFFeature"
 
-    Invoke-WPFRunspace -ArgumentList $Features -ScriptBlock {
-        param($Features)
+  Invoke-WPFRunspace -ArgumentList $Features -ScriptBlock {
+    param($Features)
 
-        $sync.ProcessRunning = $true
+    $sync.ProcessRunning = $true
 
-        Invoke-WinUtilFeatureInstall $Features
+    Invoke-WinUtilFeatureInstall $Features
 
-        $sync.ProcessRunning = $false
-        Write-Host "==================================="
-        Write-Host "---   Features are Installed    ---"
-        Write-Host "---  A Reboot may be required   ---"
-        Write-Host "==================================="
+    $sync.ProcessRunning = $false
+    Write-Host "==================================="
+    Write-Host "---   Features are Installed    ---"
+    Write-Host "---  A Reboot may be required   ---"
+    Write-Host "==================================="
 
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "All features are now installed "
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "All features are now installed "
+    $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    }
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  }
 }
 function Invoke-WPFFixesNetwork {
-    <#
+  <#
 
     .SYNOPSIS
         Resets various network configurations
 
     #>
 
-    Write-Host "Resetting Network with netsh"
+  Write-Host "Resetting Network with netsh"
 
-    # Reset WinSock catalog to a clean state
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
-    # Resets WinHTTP proxy setting to DIRECT
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
-    # Removes all user configured IP settings
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
+  # Reset WinSock catalog to a clean state
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+  # Resets WinHTTP proxy setting to DIRECT
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+  # Removes all user configured IP settings
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
 
-    Write-Host "Process complete. Please reboot your computer."
+  Write-Host "Process complete. Please reboot your computer."
 
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Network Reset "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+  $ButtonType = [System.Windows.MessageBoxButton]::OK
+  $MessageboxTitle = "Network Reset "
+  $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+  $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "=========================================="
-    Write-Host "-- Network Configuration has been Reset --"
-    Write-Host "=========================================="
+  [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  Write-Host "=========================================="
+  Write-Host "-- Network Configuration has been Reset --"
+  Write-Host "=========================================="
 }
 function Invoke-WPFFixesUpdate {
 
-    <#
+  <#
 
     .SYNOPSIS
         Performs various tasks in an attempt to repair Windows Update
 
     #>
 
-    # Reset Windows Update Script - reregister dlls, services, and remove registry entries
-Write-Host "1. Stopping Windows Update Services..."
-    Stop-Service -Name BITS
-    Stop-Service -Name wuauserv
-    Stop-Service -Name appidsvc
-    Stop-Service -Name cryptsvc
-Write-Host "2. Remove QMGR Data file..."
-    Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue
+  # Reset Windows Update Script - reregister dlls, services, and remove registry entries
+  Write-Host "1. Stopping Windows Update Services..."
+  Stop-Service -Name BITS
+  Stop-Service -Name wuauserv
+  Stop-Service -Name appidsvc
+  Stop-Service -Name cryptsvc
+  Write-Host "2. Remove QMGR Data file..."
+  Remove-Item "$env:allusersprofile\Application Data\Microsoft\Network\Downloader\qmgr*.dat" -ErrorAction SilentlyContinue
 
-Write-Host "3. Renaming the Software Distribution and CatRoot Folder..."
-    Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue
-    Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
+  Write-Host "3. Renaming the Software Distribution and CatRoot Folder..."
+  Rename-Item $env:systemroot\SoftwareDistribution SoftwareDistribution.bak -ErrorAction SilentlyContinue
+  Rename-Item $env:systemroot\System32\Catroot2 catroot2.bak -ErrorAction SilentlyContinue
 
-Write-Host "4. Removing old Windows Update log..."
-    Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
+  Write-Host "4. Removing old Windows Update log..."
+  Remove-Item $env:systemroot\WindowsUpdate.log -ErrorAction SilentlyContinue
 
-Write-Host "5. Resetting the Windows Update Services to default settings..."
-    Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
-    Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
-    Set-Location $env:systemroot\system32
+  Write-Host "5. Resetting the Windows Update Services to default settings..."
+  Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "bits", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+  Start-Process -NoNewWindow -FilePath "sc.exe" -ArgumentList "sdset", "wuauserv", "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)"
+  Set-Location $env:systemroot\system32
 
-Write-Host "6. Registering some DLLs..."
-$DLLs = @(
+  Write-Host "6. Registering some DLLs..."
+  $DLLs = @(
     "atl.dll", "urlmon.dll", "mshtml.dll", "shdocvw.dll", "browseui.dll",
     "jscript.dll", "vbscript.dll", "scrrun.dll", "msxml.dll", "msxml3.dll",
     "msxml6.dll", "actxprxy.dll", "softpub.dll", "wintrust.dll", "dssenh.dll",
@@ -2067,59 +2046,59 @@ $DLLs = @(
     "oleaut32.dll", "ole32.dll", "shell32.dll", "initpki.dll", "wuapi.dll",
     "wuaueng.dll", "wuaueng1.dll", "wucltui.dll", "wups.dll", "wups2.dll",
     "wuweb.dll", "qmgr.dll", "qmgrprxy.dll", "wucltux.dll", "muweb.dll", "wuwebv.dll"
-)
-foreach ($dll in $DLLs) {
+  )
+  foreach ($dll in $DLLs) {
     Start-Process -NoNewWindow -FilePath "regsvr32.exe" -ArgumentList "/s", $dll
-}
+  }
 
-Write-Host "7) Removing WSUS client settings..."
-if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate") {
+  Write-Host "7) Removing WSUS client settings..."
+  if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate") {
     Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "AccountDomainSid", "/f"
     Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "PingID", "/f"
     Start-Process -NoNewWindow -FilePath "REG" -ArgumentList "DELETE", "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate", "/v", "SusClientId", "/f"
-}
+  }
 
-Write-Host "8) Resetting the WinSock..."
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
-    Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
+  Write-Host "8) Resetting the WinSock..."
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winsock", "reset"
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "winhttp", "reset", "proxy"
+  Start-Process -NoNewWindow -FilePath "netsh" -ArgumentList "int", "ip", "reset"
 
-Write-Host "9) Delete all BITS jobs..."
-    Get-BitsTransfer | Remove-BitsTransfer
+  Write-Host "9) Delete all BITS jobs..."
+  Get-BitsTransfer | Remove-BitsTransfer
 
-Write-Host "10) Attempting to install the Windows Update Agent..."
-If ([System.Environment]::Is64BitOperatingSystem) {
+  Write-Host "10) Attempting to install the Windows Update Agent..."
+  If ([System.Environment]::Is64BitOperatingSystem) {
     Start-Process -NoNewWindow -FilePath "wusa" -ArgumentList "Windows8-RT-KB2937636-x64", "/quiet"
-}
-else {
+  }
+  else {
     Start-Process -NoNewWindow -FilePath "wusa" -ArgumentList "Windows8-RT-KB2937636-x86", "/quiet"
-}
+  }
 
-Write-Host "11) Starting Windows Update Services..."
-    Start-Service -Name BITS
-    Start-Service -Name wuauserv
-    Start-Service -Name appidsvc
-    Start-Service -Name cryptsvc
+  Write-Host "11) Starting Windows Update Services..."
+  Start-Service -Name BITS
+  Start-Service -Name wuauserv
+  Start-Service -Name appidsvc
+  Start-Service -Name cryptsvc
 
-Write-Host "12) Forcing discovery..."
-    Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
+  Write-Host "12) Forcing discovery..."
+  Start-Process -NoNewWindow -FilePath "wuauclt" -ArgumentList "/resetauthorization", "/detectnow"
 
 
-    Write-Host "Process complete. Please reboot your computer."
+  Write-Host "Process complete. Please reboot your computer."
 
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Reset Windows Update "
-    $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+  $ButtonType = [System.Windows.MessageBoxButton]::OK
+  $MessageboxTitle = "Reset Windows Update "
+  $Messageboxbody = ("Stock settings loaded.`n Please reboot your computer")
+  $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    Write-Host "==============================================="
-    Write-Host "-- Reset All Windows Update Settings to Stock -"
-    Write-Host "==============================================="
+  [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  Write-Host "==============================================="
+  Write-Host "-- Reset All Windows Update Settings to Stock -"
+  Write-Host "==============================================="
 }
 function Invoke-WPFFixesWinget {
 
-    <#
+  <#
 
     .SYNOPSIS
         Fixes Winget by running choco install winget 
@@ -2127,47 +2106,47 @@ function Invoke-WPFFixesWinget {
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
 
-    Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
+  Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
 
 }
 Function Invoke-WPFFormVariables {
-    <#
+  <#
 
     .SYNOPSIS
         Prints the logo
 
     #>
-    #If ($global:ReadmeDisplay -ne $true) { Write-Host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
+  #If ($global:ReadmeDisplay -ne $true) { Write-Host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
 
 
-    Write-Host ""
-    Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
-    Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
-    Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
-    Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
-    Write-Host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
-    Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
-    Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-    Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
-    Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
-    Write-Host ""
-    Write-Host "====Chris Titus Tech====="
-    Write-Host "=====Windows Toolbox====="
+  Write-Host ""
+  Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
+  Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
+  Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
+  Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
+  Write-Host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C                     T:::::T                T:::::T        "
+  Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
+  Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
+  Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
+  Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+  Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
+  Write-Host ""
+  Write-Host "====Chris Titus Tech====="
+  Write-Host "=====Windows Toolbox====="
 
-    #====DEBUG GUI Elements====
+  #====DEBUG GUI Elements====
 
-    #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
-    #get-variable WPF*
+  #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
+  #get-variable WPF*
 }
 function Invoke-WPFGetInstalled {
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the function that gets the checkboxes to check in a new runspace
@@ -2176,172 +2155,185 @@ function Invoke-WPFGetInstalled {
         Indicates whether to check for installed 'winget' programs or applied 'tweaks'
 
     #>
+  param($checkbox)
+
+  if ($sync.ProcessRunning) {
+    $msg = "Install process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  if (!(Test-WinUtilPackageManager -winget) -and $checkbox -eq "winget") {
+    Write-Host "==========================================="
+    Write-Host "--       Winget is not installed        ---"
+    Write-Host "==========================================="
+    return
+  }
+
+  Invoke-WPFRunspace -ArgumentList $checkbox -ScriptBlock {
     param($checkbox)
 
-    if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+    $sync.ProcessRunning = $true
+
+    if ($checkbox -eq "winget") {
+      Write-Host "Getting Installed Programs..."
+    }
+    if ($checkbox -eq "tweaks") {
+      Write-Host "Getting Installed Tweaks..."
     }
 
-    if(!(Test-WinUtilPackageManager -winget) -and $checkbox -eq "winget"){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
-        return
-    }
+    $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
 
-    Invoke-WPFRunspace -ArgumentList $checkbox -ScriptBlock {
-        param($checkbox)
-
-        $sync.ProcessRunning = $true
-
-        if($checkbox -eq "winget"){
-            Write-Host "Getting Installed Programs..."
+    $sync.form.Dispatcher.invoke({
+        foreach ($checkbox in $Checkboxes) {
+          $sync.$checkbox.ischecked = $True
         }
-        if($checkbox -eq "tweaks"){
-            Write-Host "Getting Installed Tweaks..."
-        }
+      })
 
-        $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
-
-        $sync.form.Dispatcher.invoke({
-            foreach($checkbox in $Checkboxes){
-                $sync.$checkbox.ischecked = $True
-            }
-        })
-
-        Write-Host "Done..."
-        $sync.ProcessRunning = $false
-    }
+    Write-Host "Done..."
+    $sync.ProcessRunning = $false
+  }
 }
 function Invoke-WPFGetIso {
-    <#
+  <#
     .DESCRIPTION
     Function to get the path to Iso file for MicroWin, unpack that isom=, read basic information and populate the UI Options
     #>
 
-    Write-Host "Invoking WPFGetIso"
+  Write-Host "Invoking WPFGetIso"
 
-    if($sync.ProcessRunning){
-        $msg = "GetIso process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
+  if ($sync.ProcessRunning) {
+    $msg = "GetIso process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
 
-    Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
+  Write-Host "         _                     __    __  _         "
+  Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
+  Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
+  Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
+  Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
-    Write-Host "oscdimge.exe on system: $oscdImgFound"
+  $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
+  Write-Host "oscdimge.exe on system: $oscdImgFound"
     
-    if (!$oscdImgFound) 
-    {
-        [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
+  if (!$oscdImgFound) {
+    [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
         
-        # the step below needs choco to download oscdimg
-        $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-        Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) 
-        {
-            [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
-            return
-        }
-
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-        [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
-        return
+    # the step below needs choco to download oscdimg
+    $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
+    Write-Host "choco on system: $oscdImgFound"
+    if (!$chocoFound) {
+      [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+      return
     }
 
-    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
-    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-    $openFileDialog.initialDirectory = $initialDirectory
-    $openFileDialog.filter = "ISO files (*.iso)| *.iso"
-    $openFileDialog.ShowDialog() | Out-Null
-    $filePath = $openFileDialog.FileName
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
+    [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
+    return
+  }
 
-    if ([string]::IsNullOrEmpty($filePath))
-    {
-        Write-Host "No ISO is chosen"
-        break
-    }
+  [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+  $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+  $openFileDialog.initialDirectory = $initialDirectory
+  $openFileDialog.filter = "ISO files (*.iso)| *.iso"
+  $openFileDialog.ShowDialog() | Out-Null
+  $filePath = $openFileDialog.FileName
 
-    Write-Host "File path $($filePath)"
-    if (-not (Test-Path -Path $filePath -PathType Leaf))
-    {
-        $msg = "File you've chosen doesn't exist"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-        break
-    }
+  if ([string]::IsNullOrEmpty($filePath)) {
+    Write-Host "No ISO is chosen"
+    break
+  }
 
-    Write-Host "Mounting Iso. Please wait."
-    $mountedISO = Mount-DiskImage -PassThru "$filePath"
-    Write-Host "Done mounting Iso $mountedISO"
-    $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
-    Write-Host "Iso mounted to '$driveLetter'"
-    # storing off values in hidden fields for further steps
-    # there is probably a better way of doing this, I don't have time to figure this out
-    $sync.MicrowinIsoDrive.Text = $driveLetter
+  Write-Host "File path $($filePath)"
+  if (-not (Test-Path -Path $filePath -PathType Leaf)) {
+    $msg = "File you've chosen doesn't exist"
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+    break
+  }
 
-    Write-Host "Setting up mount dir and scratch dirs"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
-    $sync.MicrowinMountDir.Text = $mountDir
-    $sync.MicrowinScratchDir.Text = $scratchDir
-    Write-Host "Done setting up mount dir and scratch dirs"
+  # Mount the ISO file
+  Mount-DiskImage -ImagePath $filePath -PassThru
+  Write-Host "Mounting Iso. Please wait."
 
-    try {
+  # Prompt user to enter the drive letter
+  $driveLetter = Read-Host "Please enter the drive letter of the mounted ISO without the : (e.g., 'E')"
+
+  # Validate the input format
+  if ($driveLetter -match "^[a-zA-Z]$") {
+    Write-Host "You entered drive letter: $driveLetter"
+  }
+  else {
+    Write-Host "Invalid drive letter format. Please enter in the format 'X:' where X is the drive letter."
+  }
+
+  Write-Host "Reading ISO from: '$driveLetter'"
+  # storing off values in hidden fields for further steps
+  # there is probably a better way of doing this, I don't have time to figure this out
+  $sync.MicrowinIsoDrive.Text = $driveLetter
+
+  Write-Host "Setting up mount dir and scratch dirs"
+  $mountDir = "c:\microwin"
+  $scratchDir = "c:\microwinscratch"
+  $sync.MicrowinMountDir.Text = $mountDir
+  $sync.MicrowinScratchDir.Text = $scratchDir
+  Write-Host "Done setting up mount dir and scratch dirs"
+
+  try {
         
-        $data = @($driveLetter, $filePath)
-        New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
-        New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
-        Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
+    $data = @($driveLetter, $filePath)
+    New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
+    New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
+    Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
         
-        # xcopy we can verify files and also not copy files that already exist, but hard to measure
-        # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
-        $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
-        Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
+    # xcopy we can verify files and also not copy files that already exist, but hard to measure
+    # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
+    $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
+    Write-Host "Copy complete! Total Time: $($totalTime.Minutes)m$($totalTime.Seconds)s"
 
-        $wimFile = "$mountDir\sources\install.wim"
-        Write-Host "Getting image information $wimFile"
+    $wimFile = "$mountDir\sources\install.wim"
+    Write-Host "Getting image information $wimFile"
 
-        if (-not (Test-Path -Path $wimFile -PathType Leaf))
-        {
-            $msg = "install wim file doesn't exist in the image, are you sure you used Windows image??"
-            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-            throw
-        }
-        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
-            $imageIdx = $_.ImageIndex
-            $imageName = $_.ImageName
-            $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
-        }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
-        Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
-        Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
-
-        $sync.MicrowinOptionsPanel.Visibility = 'Visible'
-    } catch {
-        Write-Host "Dismounting bad image..."
-        Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
-        Remove-Item -Recurse -Force "$($scratchDir)"
-        Remove-Item -Recurse -Force "$($mountDir)"
+    if (-not (Test-Path -Path $wimFile -PathType Leaf)) {
+      $msg = "install wim file doesn't exist in the image, are you sure you used Windows image??"
+      [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+      throw
     }
+    Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+      $imageIdx = $_.ImageIndex
+      $imageName = $_.ImageName
+      $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
+    }
+    $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+    $driveLetterParse = $driveLetter += ":"
+    Write-Host $driveLetterParse
+    $driveEject = New-Object -comObject Shell.Application
+    $driveEject.Namespace(17).ParseName($driveLetterParse).InvokeVerb("Eject")
+    Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
-    Write-Host "Done reading and unpacking ISO"
-    Write-Host ""
-    Write-Host "*********************************"
-    Write-Host "Check the UI for further steps!!!"
+    $sync.MicrowinOptionsPanel.Visibility = 'Visible'
+  }
+  catch {
+    Write-Host "Dismounting bad image..."
+    $driveLetterParse = $driveLetter += ":"
+    Write-Host $driveLetterParse
+    $driveEject = New-Object -comObject Shell.Application
+    $driveEject.Namespace(17).ParseName($driveLetterParse).InvokeVerb("Eject")
+    Remove-Item -Recurse -Force "$($scratchDir)"
+    Remove-Item -Recurse -Force "$($mountDir)"
+  }
 
-    $sync.ProcessRunning = $false
+  Write-Host "Done reading and unpacking ISO"
+  Write-Host ""
+  Write-Host "*********************************"
+  Write-Host "Check the UI for further steps!!!"
+
+  $sync.ProcessRunning = $false
 }
 
 
 function Invoke-WPFImpex {
-    <#
+  <#
 
     .SYNOPSIS
         Handles importing and exporting of the checkboxes checked for the tweaks section
@@ -2356,461 +2348,454 @@ function Invoke-WPFImpex {
         Invoke-WPFImpex -type "export"
 
     #>
-    param(
-        $type,
-        $checkbox
-    )
+  param(
+    $type,
+    $checkbox
+  )
 
-    if ($type -eq "export"){
-        $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
-    }
-    if ($type -eq "import"){
-        $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
-    }
+  if ($type -eq "export") {
+    $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
+  }
+  if ($type -eq "import") {
+    $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
+  }
 
-    $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-    $FileBrowser.Filter = "JSON Files (*.json)|*.json"
-    $FileBrowser.ShowDialog() | Out-Null
+  $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+  $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+  $FileBrowser.ShowDialog() | Out-Null
 
-    if($FileBrowser.FileName -eq ""){
-        return
-    }
+  if ($FileBrowser.FileName -eq "") {
+    return
+  }
 
-    if ($type -eq "export"){
-        $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
-        $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
-    }
-    if ($type -eq "import"){
-        $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
-        Invoke-WPFPresets -preset $jsonFile -imported $true -CheckBox $checkbox
-    }
+  if ($type -eq "export") {
+    $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
+    $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
+  }
+  if ($type -eq "import") {
+    $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
+    Invoke-WPFPresets -preset $jsonFile -imported $true -CheckBox $checkbox
+  }
 }
 function Invoke-WPFInstall {
-    <#
+  <#
 
     .SYNOPSIS
         Installs the selected programs using winget
 
     #>
 
-    if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+  if ($sync.ProcessRunning) {
+    $msg = "Install process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
+
+  if ($wingetinstall.Count -eq 0) {
+    $WarningMsg = "Please select the program(s) to install"
+    [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
+    param($WingetInstall)
+    try {
+      $sync.ProcessRunning = $true
+
+      # Ensure winget is installed
+      Install-WinUtilWinget
+
+      # Install all selected programs in new window
+      Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
+
+      $ButtonType = [System.Windows.MessageBoxButton]::OK
+      $MessageboxTitle = "Installs are Finished "
+      $Messageboxbody = ("Done")
+      $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+      [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+      Write-Host "==========================================="
+      Write-Host "--      Installs have finished          ---"
+      Write-Host "==========================================="
     }
-
-    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
-
-    if ($wingetinstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install"
-        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+    Catch {
+      Write-Host "==========================================="
+      Write-Host "--      Winget failed to install        ---"
+      Write-Host "==========================================="
     }
-
-    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
-        param($WingetInstall)
-        try{
-            $sync.ProcessRunning = $true
-
-            # Ensure winget is installed
-            Install-WinUtilWinget
-
-            # Install all selected programs in new window
-            Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
-
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Installs are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-
-            Write-Host "==========================================="
-            Write-Host "--      Installs have finished          ---"
-            Write-Host "==========================================="
-        }
-        Catch {
-            Write-Host "==========================================="
-            Write-Host "--      Winget failed to install        ---"
-            Write-Host "==========================================="
-        }
-        $sync.ProcessRunning = $False
-    }
+    $sync.ProcessRunning = $False
+  }
 }
 function Invoke-WPFInstallUpgrade {
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if(!(Test-WinUtilPackageManager -winget)){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
-        return
-    }
-
-    if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
-        $msg = "Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    Update-WinUtilProgramWinget
-
+  if (!(Test-WinUtilPackageManager -winget)) {
     Write-Host "==========================================="
-    Write-Host "--           Updates started            ---"
-    Write-Host "-- You can close this window if desired ---"
+    Write-Host "--       Winget is not installed        ---"
     Write-Host "==========================================="
+    return
+  }
+
+  if (Get-WinUtilInstallerProcess -Process $global:WinGetInstall) {
+    $msg = "Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  Update-WinUtilProgramWinget
+
+  Write-Host "==========================================="
+  Write-Host "--           Updates started            ---"
+  Write-Host "-- You can close this window if desired ---"
+  Write-Host "==========================================="
 }
 function Invoke-WPFMicrowin {
-    <#
+  <#
         .DESCRIPTION
         Invoke MicroWin routines...
     #>
 
-	if($sync.ProcessRunning) {
-        $msg = "GetIso process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+  if ($sync.ProcessRunning) {
+    $msg = "GetIso process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
+  Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
+
+  $keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
+  $keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
+  $keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
+  $keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
+  $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+  $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+
+  $mountDir = $sync.MicrowinMountDir.Text
+  $scratchDir = $sync.MicrowinScratchDir.Text
+
+  $mountDirExists = Test-Path $mountDir
+  $scratchDirExists = Test-Path $scratchDir
+  if (-not $mountDirExists -or -not $scratchDirExists) {
+    Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+    return
+  }
+
+  try {
+
+    Write-Host "Mounting Windows image. This may take a while."
+    dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
+    Write-Host "Mounting complete! Performing removal of applications..."
+
+    if ($injectDrivers) {
+      $driverPath = $sync.MicrowinDriverLocation.Text
+      if (Test-Path $driverPath) {
+        Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+        dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+      }
+      else {
+        Write-Host "Path to drivers is invalid continuing without driver injection"
+      }
     }
 
-	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
-	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
+    Write-Host "Remove Features from the image"
+    Remove-Features -keepDefender:$keepDefender
+    Write-Host "Removing features complete!"
 
-	$keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
-	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
-	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
-	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
-	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
-
-    $mountDir = $sync.MicrowinMountDir.Text
-    $scratchDir = $sync.MicrowinScratchDir.Text
-
-	$mountDirExists = Test-Path $mountDir
-    $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists) 
-	{
-        Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
-        return
+    Write-Host "Removing Appx Bloat"
+    if (!$keepPackages) {
+      Remove-Packages
+    }
+    if (!$keepProvisionedPackages) {
+      Remove-ProvisionedPackages
     }
 
-	try {
+    # special code, for some reason when you try to delete some inbox apps
+    # we have to get and delete log files directory. 
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
 
-		Write-Host "Mounting Windows image. This may take a while."
-		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
-		Write-Host "Mounting complete! Performing removal of applications..."
+    # Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
+    if (!$keepDefender) {
+      Write-Host "Removing Defender"
+      Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
+      Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
+    }
+    if (!$keepEdge) {
+      Write-Host "Removing Edge"
+      Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
+      Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
+      Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
+    }
 
-		if ($injectDrivers)
-		{
-			$driverPath = $sync.MicrowinDriverLocation.Text
-			if (Test-Path $driverPath)
-			{
-				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-			}
-			else 
-			{
-				Write-Host "Path to drivers is invalid continuing without driver injection"
-			}
-		}
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Windows.Search*" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
+    Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
+    Write-Host "Removal complete!"
 
-		Write-Host "Remove Features from the image"
-		Remove-Features -keepDefender:$keepDefender
-		Write-Host "Removing features complete!"
+    # *************************** Automation black ***************************
+    # this doesn't work for some reason, this script is not being run at the end of the install
+    # if someone knows how to fix this, feel free to modify
+    New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
+    "wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+    "wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+    "devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 
-		Write-Host "Removing Appx Bloat"
-		if (!$keepPackages)
-		{
-			Remove-Packages
-		}
-		if (!$keepProvisionedPackages)
-		{
-			Remove-ProvisionedPackages
-		}
+    Write-Host "Create unattend.xml"
+    New-Unattend
+    Write-Host "Done Create unattend.xml"
+    Write-Host "Copy unattend.xml file into the ISO"
+    New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
+    Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+    New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
+    Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+    Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
+    Write-Host "Done Copy unattend.xml"
 
-		# special code, for some reason when you try to delete some inbox apps
-		# we have to get and delete log files directory. 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
+    Write-Host "Create FirstRun"
+    New-FirstRun
+    Write-Host "Done create FirstRun"
+    Write-Host "Copy FirstRun.ps1 into the ISO"
+    Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+    Write-Host "Done copy FirstRun.ps1"
 
-		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
-		if (!$keepDefender) 
-		{
-			Write-Host "Removing Defender"
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
-		}
-		if (!$keepEdge)
-		{
-			Write-Host "Removing Edge"
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
-		}
+    Write-Host "Copy link to winutil.ps1 into the ISO"
+    $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
+    New-Item -ItemType Directory -Force -Path "$desktopDir"
+    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+    $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+    $shortcutPath = "$desktopDir\WinUtil.lnk"
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut($shortcutPath)
 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Windows.Search*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
-		Write-Host "Removal complete!"
+    if (Test-Path -Path "$env:TEMP\cttlogo.png") {
+      $pngPath = "$env:TEMP\cttlogo.png"
+      $icoPath = "$env:TEMP\cttlogo.ico"
+      Add-Type -AssemblyName System.Drawing
+      $pngImage = [System.Drawing.Image]::FromFile($pngPath)
+      $pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+      Write-Host "ICO file created at: $icoPath"
+      Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
+      Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
+      $shortcut.IconLocation = "c:\cttlogo.ico"
+    }
 
-		# *************************** Automation black ***************************
-		# this doesn't work for some reason, this script is not being run at the end of the install
-		# if someone knows how to fix this, feel free to modify
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
+    $shortcut.TargetPath = "powershell.exe"
+    $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+    $shortcut.Save()
+    Write-Host "Shortcut to winutil created at: $shortcutPath"
+    # *************************** Automation black ***************************
 
-		Write-Host "Create unattend.xml"
-		New-Unattend
-		Write-Host "Done Create unattend.xml"
-		Write-Host "Copy unattend.xml file into the ISO"
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
-		Write-Host "Done Copy unattend.xml"
+    Write-Host "Copy checkinstall.cmd into the ISO"
+    New-CheckInstall
+    Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+    Write-Host "Done copy checkinstall.cmd"
 
-		Write-Host "Create FirstRun"
-		New-FirstRun
-		Write-Host "Done create FirstRun"
-		Write-Host "Copy FirstRun.ps1 into the ISO"
-		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
-		Write-Host "Done copy FirstRun.ps1"
+    Write-Host "Creating a directory that allows to bypass Wifi setup"
+    New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
 
-		Write-Host "Copy link to winutil.ps1 into the ISO"
-		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
-		New-Item -ItemType Directory -Force -Path "$desktopDir"
-	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-		$shortcutPath = "$desktopDir\WinUtil.lnk"
-		$shell = New-Object -ComObject WScript.Shell
-		$shortcut = $shell.CreateShortcut($shortcutPath)
+    Write-Host "Loading registry"
+    reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
+    reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
+    reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
+    reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+    reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
 
-		if (Test-Path -Path "$env:TEMP\cttlogo.png")
-		{
-			$pngPath = "$env:TEMP\cttlogo.png"
-			$icoPath = "$env:TEMP\cttlogo.ico"
-			Add-Type -AssemblyName System.Drawing
-			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
-			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
-			Write-Host "ICO file created at: $icoPath"
-			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
-			$shortcut.IconLocation = "c:\cttlogo.ico"
-		}
+    Write-Host "Disabling Teams"
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
+    reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
+    reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1  
+    reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
+    # Write-Host Error code $LASTEXITCODE
+    Write-Host "Done disabling Teams"
 
-		$shortcut.TargetPath = "powershell.exe"
-		$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-		$shortcut.Save()
-		Write-Host "Shortcut to winutil created at: $shortcutPath"
-		# *************************** Automation black ***************************
+    Write-Host "Bypassing system requirements (system image)"
+    reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
-		Write-Host "Copy checkinstall.cmd into the ISO"
-		New-CheckInstall
-		Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
-		Write-Host "Done copy checkinstall.cmd"
+    if (!$keepEdge) {
+      Write-Host "Removing Edge icon from taskbar"
+      reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Favorites" /f 		  >$null 2>&1
+      reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "FavoritesChanges" /f   >$null 2>&1
+      reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
+      reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
+      Write-Host "Edge icon removed from taskbar"
+    }
 
-		Write-Host "Creating a directory that allows to bypass Wifi setup"
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
+    Write-Host "Setting all services to start manually"
+    reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
+    # Write-Host $LASTEXITCODE
 
-		Write-Host "Loading registry"
-		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
-		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
-		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
-		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
-		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+    Write-Host "Enabling Local Accounts on OOBE"
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
 
-		Write-Host "Disabling Teams"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
-		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1  
-		reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-		# Write-Host Error code $LASTEXITCODE
-		Write-Host "Done disabling Teams"
-
-		Write-Host "Bypassing system requirements (system image)"
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-
-		if (!$keepEdge)
-		{
-			Write-Host "Removing Edge icon from taskbar"
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Favorites" /f 		  >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "FavoritesChanges" /f   >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
-			Write-Host "Edge icon removed from taskbar"
-		}
-
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
-		Write-Host "Setting all services to start manually"
-		reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
-		# Write-Host $LASTEXITCODE
-
-		Write-Host "Enabling Local Accounts on OOBE"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
-
-		Write-Host "Disabling Sponsored Apps"
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OemPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
-		Write-Host "Done removing Sponsored Apps"
+    Write-Host "Disabling Sponsored Apps"
+    reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OemPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
+    Write-Host "Done removing Sponsored Apps"
 		
-		Write-Host "Disabling Reserved Storage"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
+    Write-Host "Disabling Reserved Storage"
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
 
-		Write-Host "Changing theme to dark. This only works on Activated Windows"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
+    Write-Host "Changing theme to dark. This only works on Activated Windows"
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
 
-	} catch {
-        Write-Error "An unexpected error occurred: $_"
-    } finally {
-		Write-Host "Unmounting Registry..."
-		reg unload HKLM\zCOMPONENTS
-		reg unload HKLM\zDEFAULT
-		reg unload HKLM\zNTUSER
-		reg unload HKLM\zSOFTWARE
-		reg unload HKLM\zSYSTEM
+  }
+  catch {
+    Write-Error "An unexpected error occurred: $_"
+  }
+  finally {
+    Write-Host "Unmounting Registry..."
+    reg unload HKLM\zCOMPONENTS
+    reg unload HKLM\zDEFAULT
+    reg unload HKLM\zNTUSER
+    reg unload HKLM\zSOFTWARE
+    reg unload HKLM\zSYSTEM
 
-		Write-Host "Cleaning up image..."
-		dism /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
-		Write-Host "Cleanup complete."
+    Write-Host "Cleaning up image..."
+    dism /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+    Write-Host "Cleanup complete."
 
-		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit
-	} 
+    Write-Host "Unmounting image..."
+    dism /unmount-image /mountdir:$scratchDir /commit
+  } 
 	
-	try {
+  try {
 
-		Write-Host "Exporting image into $mountDir\sources\install2.wim"
-		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
-		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
-		Remove-Item "$mountDir\sources\install.wim"
-		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
+    Write-Host "Exporting image into $mountDir\sources\install2.wim"
+    dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+    Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
+    Remove-Item "$mountDir\sources\install.wim"
+    Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
 
-		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
-		{
-			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
-			return
-		}
-		Write-Host "Windows image completed. Continuing with boot.wim."
+    if (-not (Test-Path -Path "$mountDir\sources\install.wim")) {
+      Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+      return
+    }
+    Write-Host "Windows image completed. Continuing with boot.wim."
 
-		# Next step boot image		
-		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
-		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+    # Next step boot image		
+    Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
+    dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
 	
-		Write-Host "Loading registry..."
-		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
-		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
-		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
-		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
-		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements on the setup image"
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-		# Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
-		reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
-	} catch {
-        Write-Error "An unexpected error occurred: $_"
-    } finally {
-		Write-Host "Unmounting Registry..."
-		reg unload HKLM\zCOMPONENTS
-		reg unload HKLM\zDEFAULT
-		reg unload HKLM\zNTUSER
-		reg unload HKLM\zSOFTWARE
-		reg unload HKLM\zSYSTEM
+    Write-Host "Loading registry..."
+    reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
+    reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
+    reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
+    reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
+    reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
+    Write-Host "Bypassing system requirements on the setup image"
+    reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+    reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
+    # Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
+    reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
+  }
+  catch {
+    Write-Error "An unexpected error occurred: $_"
+  }
+  finally {
+    Write-Host "Unmounting Registry..."
+    reg unload HKLM\zCOMPONENTS
+    reg unload HKLM\zDEFAULT
+    reg unload HKLM\zNTUSER
+    reg unload HKLM\zSOFTWARE
+    reg unload HKLM\zSYSTEM
 
-		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit 
+    Write-Host "Unmounting image..."
+    dism /unmount-image /mountdir:$scratchDir /commit 
 
-		Write-Host "Creating ISO image"
-		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+    Write-Host "Creating ISO image"
+    #& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
+    Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
 
-		if ($copyToUSB)
-		{
-			Write-Host "Copying microwin.iso to the USB drive"
-			Copy-ToUSB("$env:temp\microwin.iso")
-			Write-Host "Done Copying microwin.iso to USB drive!"
-		}
+    if ($copyToUSB) {
+      Write-Host "Copying microwin.iso to the USB drive"
+      Copy-ToUSB("$env:temp\microwin.iso")
+      Write-Host "Done Copying microwin.iso to USB drive!"
+    }
 		
-		Write-Host " _____                       "
-		Write-Host "(____ \                      "
-		Write-Host " _   \ \ ___  ____   ____    "
-		Write-Host "| |   | / _ \|  _ \ / _  )   "
-		Write-Host "| |__/ / |_| | | | ( (/ /    "
-		Write-Host "|_____/ \___/|_| |_|\____)   "
+    Write-Host " _____                       "
+    Write-Host "(____ \                      "
+    Write-Host " _   \ \ ___  ____   ____    "
+    Write-Host "| |   | / _ \|  _ \ / _  )   "
+    Write-Host "| |__/ / |_| | | | ( (/ /    "
+    Write-Host "|_____/ \___/|_| |_|\____)   "
 
-		# Check if the ISO was successfully created - CTT edit
-		if ($LASTEXITCODE -eq 0) {
-			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
-			Write-Host "Performing Cleanup"
-				Remove-Item -Recurse -Force "$($scratchDir)"
-				Remove-Item -Recurse -Force "$($mountDir)"
-		} else {
-			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
-		}
+    # Check if the ISO was successfully created - CTT edit
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
+      Write-Host "Performing Cleanup"
+      Remove-Item -Recurse -Force "$($scratchDir)"
+      Remove-Item -Recurse -Force "$($mountDir)"
+    }
+    else {
+      Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
+    }
 		
 
-		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+    $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
-		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+    $sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
 
-		$sync.ProcessRunning = $false
-	}
+    $sync.ProcessRunning = $false
+  }
 }
 function Invoke-WPFPanelAutologin {
-    <#
+  <#
 
     .SYNOPSIS
         Enables autologin using Sysinternals Autologon.exe
 
     #>
-    curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-    cmd /c $env:temp\autologin.exe /accepteula
+  curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+  cmd /c $env:temp\autologin.exe /accepteula
 }
 function Invoke-WPFPanelDISM {
-    <#
+  <#
 
     .SYNOPSIS
         Checks for system corruption using Chkdsk, SFC, and DISM
@@ -2833,14 +2818,14 @@ function Invoke-WPFPanelDISM {
                 /Restorehealth - Performs a scan of the image and fixes any corruption
 
     #>
-    Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan;
+  Start-Process PowerShell -ArgumentList "Write-Host '(1/4) Chkdsk' -ForegroundColor Green; Chkdsk /scan;
     Write-Host '`n(2/4) SFC - 1st scan' -ForegroundColor Green; sfc /scannow;
     Write-Host '`n(3/4) DISM' -ForegroundColor Green; DISM /Online /Cleanup-Image /Restorehealth;
     Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow;
     Read-Host '`nPress Enter to Continue'" -verb runas
 }
 function Invoke-WPFPresets {
-    <#
+  <#
 
     .SYNOPSIS
         Sets the options in the tweaks panel to the given preset
@@ -2856,42 +2841,42 @@ function Invoke-WPFPresets {
 
     #>
 
-    param(
-        $preset,
-        [bool]$imported = $false,
-        $checkbox = "WPFTweaks"
-    )
+  param(
+    $preset,
+    [bool]$imported = $false,
+    $checkbox = "WPFTweaks"
+  )
 
-    if($imported -eq $true){
-        $CheckBoxesToCheck = $preset
-    }
-    Else{
-        $CheckBoxesToCheck = $sync.configs.preset.$preset
-    }
+  if ($imported -eq $true) {
+    $CheckBoxesToCheck = $preset
+  }
+  Else {
+    $CheckBoxesToCheck = $sync.configs.preset.$preset
+  }
 
-    if($checkbox -eq "WPFTweaks"){
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            if ($CheckBoxesToCheck -contains $PSItem.name){
-                $sync.$($PSItem.name).ischecked = $true
-            }
-            else{$sync.$($PSItem.name).ischecked = $false}
-        }
+  if ($checkbox -eq "WPFTweaks") {
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "*tweaks*" }
+    $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter } | ForEach-Object {
+      if ($CheckBoxesToCheck -contains $PSItem.name) {
+        $sync.$($PSItem.name).ischecked = $true
+      }
+      else { $sync.$($PSItem.name).ischecked = $false }
     }
-    if($checkbox -eq "WPFInstall"){
+  }
+  if ($checkbox -eq "WPFInstall") {
 
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            if($($sync.configs.applications.$($psitem.name).winget) -in $CheckBoxesToCheck){
-                $sync.$($PSItem.name).ischecked = $true
-            }
-            else{$sync.$($PSItem.name).ischecked = $false}
-        }
+    $filter = Get-WinUtilVariables -Type Checkbox | Where-Object { $psitem -like "WPFInstall*" }
+    $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter } | ForEach-Object {
+      if ($($sync.configs.applications.$($psitem.name).winget) -in $CheckBoxesToCheck) {
+        $sync.$($PSItem.name).ischecked = $true
+      }
+      else { $sync.$($PSItem.name).ischecked = $false }
     }
+  }
 }
 function Invoke-WPFRunspace {
 
-    <#
+  <#
 
     .SYNOPSIS
         Creates and invokes a runspace using the given scriptblock and argumentlist
@@ -2909,35 +2894,34 @@ function Invoke-WPFRunspace {
 
     #>
 
-    [CmdletBinding()]
-    Param (
-        $ScriptBlock,
-        $ArgumentList
-    )
+  [CmdletBinding()]
+  Param (
+    $ScriptBlock,
+    $ArgumentList
+  )
 
-    # Create a PowerShell instance
-    $script:powershell = [powershell]::Create()
+  # Create a PowerShell instance
+  $script:powershell = [powershell]::Create()
 
-    # Add Scriptblock and Arguments to runspace
-    $script:powershell.AddScript($ScriptBlock)
-    $script:powershell.AddArgument($ArgumentList)
-    $script:powershell.RunspacePool = $sync.runspace
+  # Add Scriptblock and Arguments to runspace
+  $script:powershell.AddScript($ScriptBlock)
+  $script:powershell.AddArgument($ArgumentList)
+  $script:powershell.RunspacePool = $sync.runspace
 
-    # Execute the RunspacePool
-    $script:handle = $script:powershell.BeginInvoke()
+  # Execute the RunspacePool
+  $script:handle = $script:powershell.BeginInvoke()
 
-    # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted)
-    {
-        $script:powershell.EndInvoke($script:handle)
-        $script:powershell.Dispose()
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
-    }
+  # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
+  if ($script:handle.IsCompleted) {
+    $script:powershell.EndInvoke($script:handle)
+    $script:powershell.Dispose()
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+  }
 }
 function Invoke-WPFShortcut {
-    <#
+  <#
 
     .SYNOPSIS
         Creates a shortcut and prompts for a save location
@@ -2946,35 +2930,35 @@ function Invoke-WPFShortcut {
         The name of the shortcut to add
 
     #>
-    param($ShortcutToAdd)
+  param($ShortcutToAdd)
 
-    Switch ($ShortcutToAdd) {
-        "WinUtil" {
-            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-            $IRM = 'irm https://christitus.com/win | iex'
-            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-            $ArgumentsToSourceExe = "$powershell '$IRM'"
-            $DestinationName = "WinUtil.lnk"
-        }
+  Switch ($ShortcutToAdd) {
+    "WinUtil" {
+      $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+      $IRM = 'irm https://christitus.com/win | iex'
+      $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
+      $ArgumentsToSourceExe = "$powershell '$IRM'"
+      $DestinationName = "WinUtil.lnk"
     }
+  }
 
-    $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
-    $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-    $FileBrowser.Filter = "Shortcut Files (*.lnk)|*.lnk"
-    $FileBrowser.FileName = $DestinationName
-    $FileBrowser.ShowDialog() | Out-Null
+  $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
+  $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+  $FileBrowser.Filter = "Shortcut Files (*.lnk)|*.lnk"
+  $FileBrowser.FileName = $DestinationName
+  $FileBrowser.ShowDialog() | Out-Null
 
-    $WshShell = New-Object -comObject WScript.Shell
-    $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
-    $Shortcut.Save()
+  $WshShell = New-Object -comObject WScript.Shell
+  $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
+  $Shortcut.TargetPath = $SourceExe
+  $Shortcut.Arguments = $ArgumentsToSourceExe
+  $Shortcut.Save()
 
-    Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"
+  Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"
 }
 function Invoke-WPFTab {
 
-    <#
+  <#
 
     .SYNOPSIS
         Sets the selected tab to the tab that was clicked
@@ -2984,28 +2968,28 @@ function Invoke-WPFTab {
 
     #>
 
-    Param ($ClickedTab)
+  Param ($ClickedTab)
 
-    $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-    $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
+  $tabNav = Get-WinUtilVariables | Where-Object { $psitem -like "WPFTabNav" }
+  $tabNumber = [int]($ClickedTab -replace "WPFTab", "" -replace "BT", "") - 1
 
-    $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
-    $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-        if ($ClickedTab -ne $PSItem.name) {
-            $sync[$PSItem.Name].IsChecked = $false
-            # $tabNumber = [int]($PSItem.Name -replace "WPFTab","" -replace "BT","") - 1
-            # $sync.$tabNav.Items[$tabNumber].IsSelected = $false
-        }
-        else {
-            $sync["$ClickedTab"].IsChecked = $true
-            $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
-            $sync.$tabNav.Items[$tabNumber].IsSelected = $true
-        }
+  $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object { $psitem -like "WPFTab?BT" }
+  $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter } | ForEach-Object {
+    if ($ClickedTab -ne $PSItem.name) {
+      $sync[$PSItem.Name].IsChecked = $false
+      # $tabNumber = [int]($PSItem.Name -replace "WPFTab","" -replace "BT","") - 1
+      # $sync.$tabNav.Items[$tabNumber].IsSelected = $false
     }
+    else {
+      $sync["$ClickedTab"].IsChecked = $true
+      $tabNumber = [int]($ClickedTab -replace "WPFTab", "" -replace "BT", "") - 1
+      $sync.$tabNav.Items[$tabNumber].IsSelected = $true
+    }
+  }
 }
 function Invoke-WPFToggle {
 
-    <#
+  <#
 
     .SYNOPSIS
         Invokes the scriptblock for the given toggle
@@ -3015,20 +2999,20 @@ function Invoke-WPFToggle {
 
     #>
 
-    Param ([string]$Button)
+  Param ([string]$Button)
 
-    # Use this to get the name of the button
-    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
+  # Use this to get the name of the button
+  #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
-    Switch -Wildcard ($Button){
+  Switch -Wildcard ($Button) {
 
-        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
-        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
-        "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
-        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
-        "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
-        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
-    }
+    "WPFToggleDarkMode" { Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode) }
+    "WPFToggleBingSearch" { Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch) }
+    "WPFToggleNumLock" { Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock) }
+    "WPFToggleVerboseLogon" { Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon) }
+    "WPFToggleShowExt" { Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt) }
+    "WPFToggleMouseAcceleration" { Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration) }
+  }
 }
 function Invoke-WPFtweaksbutton {
   <#
@@ -3038,7 +3022,7 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning){
+  if ($sync.ProcessRunning) {
     $msg = "Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -3048,7 +3032,7 @@ function Invoke-WPFtweaksbutton {
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  if ($tweaks.count -eq 0 -and $sync["WPFchangedns"].text -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -3061,8 +3045,8 @@ function Invoke-WPFtweaksbutton {
 
     Set-WinUtilRestorePoint
 
-    Foreach ($tweak in $tweaks){
-        Invoke-WinUtilTweaks $tweak
+    Foreach ($tweak in $tweaks) {
+      Invoke-WinUtilTweaks $tweak
     }
 
     $sync.ProcessRunning = $false
@@ -3079,7 +3063,7 @@ function Invoke-WPFtweaksbutton {
   }
 }
 Function Invoke-WPFUltimatePerformance {
-    <#
+  <#
 
     .SYNOPSIS
         Creates or removes the Ultimate Performance power scheme
@@ -3088,119 +3072,119 @@ Function Invoke-WPFUltimatePerformance {
         Indicates whether to enable or disable the Ultimate Performance power scheme
 
     #>
-    param($State)
-    Try{
+  param($State)
+  Try {
 
-        if($state -eq "Enabled"){
-            # Define the name and GUID of the power scheme
-            $powerSchemeName = "Ultimate Performance"
-            $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
+    if ($state -eq "Enabled") {
+      # Define the name and GUID of the power scheme
+      $powerSchemeName = "Ultimate Performance"
+      $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
 
-            # Get all power schemes
-            $schemes = powercfg /list | Out-String -Stream
+      # Get all power schemes
+      $schemes = powercfg /list | Out-String -Stream
 
-            # Check if the power scheme already exists
-            $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+      # Check if the power scheme already exists
+      $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
 
-            if ($null -eq $ultimateScheme) {
-                Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
+      if ($null -eq $ultimateScheme) {
+        Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
 
-                # Add the power scheme
-                powercfg /duplicatescheme $powerSchemeGuid
-                powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
-                powercfg -setactive $powerSchemeGuid
-                powercfg -change -monitor-timeout-ac 0
+        # Add the power scheme
+        powercfg /duplicatescheme $powerSchemeGuid
+        powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
+        powercfg -setactive $powerSchemeGuid
+        powercfg -change -monitor-timeout-ac 0
 
 
-                Write-Host "Power scheme added successfully."
-            }
-            else {
-                Write-Host "Power scheme '$powerSchemeName' already exists."
-            }
+        Write-Host "Power scheme added successfully."
+      }
+      else {
+        Write-Host "Power scheme '$powerSchemeName' already exists."
+      }
+    }
+    elseif ($state -eq "Disabled") {
+      # Define the name of the power scheme
+      $powerSchemeName = "Ultimate Performance"
+
+      # Get all power schemes
+      $schemes = powercfg /list | Out-String -Stream
+
+      # Find the scheme to be removed
+      $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+
+      # If the scheme exists, remove it
+      if ($null -ne $ultimateScheme) {
+        # Extract the GUID of the power scheme
+        $guid = ($ultimateScheme -split '\s+')[3]
+
+        if ($null -ne $guid) {
+          Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
+
+          # Remove the power scheme
+          powercfg /delete $guid
+
+          Write-Host "Power scheme removed successfully."
         }
-        elseif($state -eq "Disabled"){
-                # Define the name of the power scheme
-                $powerSchemeName = "Ultimate Performance"
-
-                # Get all power schemes
-                $schemes = powercfg /list | Out-String -Stream
-
-                # Find the scheme to be removed
-                $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
-
-                # If the scheme exists, remove it
-                if ($null -ne $ultimateScheme) {
-                    # Extract the GUID of the power scheme
-                    $guid = ($ultimateScheme -split '\s+')[3]
-
-                    if($null -ne $guid){
-                        Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
-
-                        # Remove the power scheme
-                        powercfg /delete $guid
-
-                        Write-Host "Power scheme removed successfully."
-                    }
-                    else {
-                        Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
-                    }
-                }
-                else {
-                    Write-Host "Power scheme '$powerSchemeName' not found."
-                }
-
-            }
+        else {
+          Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
+        }
+      }
+      else {
+        Write-Host "Power scheme '$powerSchemeName' not found."
+      }
 
     }
-    Catch{
-        Write-Warning $psitem.Exception.Message
-    }
+
+  }
+  Catch {
+    Write-Warning $psitem.Exception.Message
+  }
 }
 function Invoke-WPFundoall {
-    <#
+  <#
 
     .SYNOPSIS
         Undoes every selected tweak
 
     #>
 
-    if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+  if ($sync.ProcessRunning) {
+    $msg = "Install process is currently running."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+
+  if ($tweaks.count -eq 0) {
+    $msg = "Please check the tweaks you wish to undo."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
+    param($Tweaks)
+
+    $sync.ProcessRunning = $true
+
+    Foreach ($tweak in $tweaks) {
+      Invoke-WinUtilTweaks $tweak -undo $true
     }
 
-    $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+    $sync.ProcessRunning = $false
+    Write-Host "=================================="
+    Write-Host "---  Undo Tweaks are Finished  ---"
+    Write-Host "=================================="
 
-    if ($tweaks.count -eq 0){
-        $msg = "Please check the tweaks you wish to undo."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "Tweaks are Finished "
+    $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
-        param($Tweaks)
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  }
 
-        $sync.ProcessRunning = $true
-
-        Foreach ($tweak in $tweaks){
-            Invoke-WinUtilTweaks $tweak -undo $true
-        }
-
-        $sync.ProcessRunning = $false
-        Write-Host "=================================="
-        Write-Host "---  Undo Tweaks are Finished  ---"
-        Write-Host "=================================="
-
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Tweaks are Finished "
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-    }
-
-<#
+  <#
 
     Write-Host "Creating Restore Point in case something bad happens"
     Enable-ComputerRestore -Drive "$env:SystemDrive"
@@ -3353,110 +3337,110 @@ function Invoke-WPFundoall {
     #>
 }
 function Invoke-WPFUnInstall {
-    <#
+  <#
 
     .SYNOPSIS
         Uninstalls the selected programs
 
     #>
 
-    if($sync.ProcessRunning){
-        $msg = "Install process is currently running"
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+  if ($sync.ProcessRunning) {
+    $msg = "Install process is currently running"
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
+
+  if ($wingetinstall.Count -eq 0) {
+    $WarningMsg = "Please select the program(s) to install"
+    [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
+  $ButtonType = [System.Windows.MessageBoxButton]::YesNo
+  $MessageboxTitle = "Are you sure?"
+  $Messageboxbody = ("This will uninstall the following applications: `n $WingetInstall")
+  $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+  $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+  if ($confirm -eq "No") { return }
+
+  Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
+    param($WingetInstall)
+    try {
+      $sync.ProcessRunning = $true
+
+      # Install all selected programs in new window
+      Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall -Manage "Uninstalling"
+
+      $ButtonType = [System.Windows.MessageBoxButton]::OK
+      $MessageboxTitle = "Uninstalls are Finished "
+      $Messageboxbody = ("Done")
+      $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+      [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+      Write-Host "==========================================="
+      Write-Host "--       Uninstalls have finished       ---"
+      Write-Host "==========================================="
     }
-
-    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
-
-    if ($wingetinstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install"
-        [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
+    Catch {
+      Write-Host "==========================================="
+      Write-Host "--       Winget failed to install       ---"
+      Write-Host "==========================================="
     }
-
-    $ButtonType = [System.Windows.MessageBoxButton]::YesNo
-    $MessageboxTitle = "Are you sure?"
-    $Messageboxbody = ("This will uninstall the following applications: `n $WingetInstall")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-
-    if($confirm -eq "No"){return}
-
-    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
-        param($WingetInstall)
-        try{
-            $sync.ProcessRunning = $true
-
-            # Install all selected programs in new window
-            Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall -Manage "Uninstalling"
-
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Uninstalls are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-
-            Write-Host "==========================================="
-            Write-Host "--       Uninstalls have finished       ---"
-            Write-Host "==========================================="
-        }
-        Catch {
-            Write-Host "==========================================="
-            Write-Host "--       Winget failed to install       ---"
-            Write-Host "==========================================="
-        }
-        $sync.ProcessRunning = $False
-    }
+    $sync.ProcessRunning = $False
+  }
 }
 function Invoke-WPFUpdatesdefault {
-    <#
+  <#
 
     .SYNOPSIS
         Resets Windows Update settings to default
 
     #>
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 0
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 3
+  If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 1
 
-    $services = @(
-        "BITS"
-        "wuauserv"
-    )
+  $services = @(
+    "BITS"
+    "wuauserv"
+  )
 
-    foreach ($service in $services) {
-        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+  foreach ($service in $services) {
+    # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
 
-        Write-Host "Setting $service StartupType to Automatic"
-        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
-    }
-    Write-Host "Enabling driver offering through Windows Update..."
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
-    Write-Host "Enabling Windows Update automatic restart..."
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
-    Write-Host "Enabled driver offering through Windows Update"
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
-    Write-Host "==================================================="
-    Write-Host "---  Windows Update Settings Reset to Default   ---"
-    Write-Host "==================================================="
+    Write-Host "Setting $service StartupType to Automatic"
+    Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Automatic
+  }
+  Write-Host "Enabling driver offering through Windows Update..."
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+  Write-Host "Enabling Windows Update automatic restart..."
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+  Write-Host "Enabled driver offering through Windows Update"
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -ErrorAction SilentlyContinue
+  Write-Host "==================================================="
+  Write-Host "---  Windows Update Settings Reset to Default   ---"
+  Write-Host "==================================================="
 }
 function Invoke-WPFUpdatesdisable {
-    <#
+  <#
 
     .SYNOPSIS
         Disables Windows Update
@@ -3465,33 +3449,33 @@ function Invoke-WPFUpdatesdisable {
         Disabling Windows Update is not recommended. This is only for advanced users who know what they are doing.
 
     #>
-    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
-    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
-        New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Type DWord -Value 1
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Type DWord -Value 1
+  If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config")) {
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" -Name "DODownloadMode" -Type DWord -Value 0
 
-    $services = @(
-        "BITS"
-        "wuauserv"
-    )
+  $services = @(
+    "BITS"
+    "wuauserv"
+  )
 
-    foreach ($service in $services) {
-        # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
+  foreach ($service in $services) {
+    # -ErrorAction SilentlyContinue is so it doesn't write an error to stdout if a service doesn't exist
 
-        Write-Host "Setting $service StartupType to Disabled"
-        Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
-    }
-    Write-Host "================================="
-    Write-Host "---   Updates ARE DISABLED    ---"
-    Write-Host "================================="
+    Write-Host "Setting $service StartupType to Disabled"
+    Get-Service -Name $service -ErrorAction SilentlyContinue | Set-Service -StartupType Disabled
+  }
+  Write-Host "================================="
+  Write-Host "---   Updates ARE DISABLED    ---"
+  Write-Host "================================="
 }
 function Invoke-WPFUpdatessecurity {
-    <#
+  <#
 
     .SYNOPSIS
         Sets Windows Update to recommended settings
@@ -3504,44 +3488,44 @@ function Invoke-WPFUpdatessecurity {
         5. Defers quality updates for 4 days
 
     #>
-    Write-Host "Disabling driver offering through Windows Update..."
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
-        Write-Host "Disabling Windows Update automatic restart..."
-        If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
-        Write-Host "Disabled driver offering through Windows Update"
-        If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings")) {
-            New-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Force | Out-Null
-        }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -Type DWord -Value 4
+  Write-Host "Disabling driver offering through Windows Update..."
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
+  Write-Host "Disabling Windows Update automatic restart..."
+  If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
+  Write-Host "Disabled driver offering through Windows Update"
+  If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings")) {
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Force | Out-Null
+  }
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "BranchReadinessLevel" -Type DWord -Value 20
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferFeatureUpdatesPeriodInDays" -Type DWord -Value 365
+  Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Name "DeferQualityUpdatesPeriodInDays" -Type DWord -Value 4
 
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Set Security Updates"
-        $Messageboxbody = ("Recommended Update settings loaded")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+  $ButtonType = [System.Windows.MessageBoxButton]::OK
+  $MessageboxTitle = "Set Security Updates"
+  $Messageboxbody = ("Recommended Update settings loaded")
+  $MessageIcon = [System.Windows.MessageBoxImage]::Information
 
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-        Write-Host "================================="
-        Write-Host "-- Updates Set to Recommended ---"
-        Write-Host "================================="
+  [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+  Write-Host "================================="
+  Write-Host "-- Updates Set to Recommended ---"
+  Write-Host "================================="
 }
 $inputXML = '<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7930,27 +7914,27 @@ $sync.configs.tweaks = '{
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
-$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync',$sync,$Null
+$hashVars = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'sync', $sync, $Null
 $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
 # Add the variable to the session state
 $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
-foreach ($function in $functions){
-    $functionDefinition = Get-Content function:\$($function.name)
-    $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
+$functions = Get-ChildItem function:\ | Where-Object { $_.name -like "*winutil*" -or $_.name -like "*WPF*" }
+foreach ($function in $functions) {
+  $functionDefinition = Get-Content function:\$($function.name)
+  $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
 
-    $initialSessionState.Commands.Add($functionEntry)
+  $initialSessionState.Commands.Add($functionEntry)
 }
 
 # Create the runspace pool
 $sync.runspace = [runspacefactory]::CreateRunspacePool(
-    1,                      # Minimum thread count
-    $maxthreads,            # Maximum thread count
-    $InitialSessionState,   # Initial session state
-    $Host                   # Machine to create runspaces on
+  1, # Minimum thread count
+  $maxthreads, # Maximum thread count
+  $InitialSessionState, # Initial session state
+  $Host                   # Machine to create runspaces on
 )
 
 # Open the RunspacePool instance
@@ -7958,32 +7942,32 @@ $sync.runspace.Open()
 
 # Create classes for different exceptions
 
-    class WingetFailedInstall : Exception {
-        [string] $additionalData
+class WingetFailedInstall : Exception {
+  [string] $additionalData
 
-        WingetFailedInstall($Message) : base($Message) {}
-    }
+  WingetFailedInstall($Message) : base($Message) {}
+}
 
-    class ChocoFailedInstall : Exception {
-        [string] $additionalData
+class ChocoFailedInstall : Exception {
+  [string] $additionalData
 
-        ChocoFailedInstall($Message) : base($Message) {}
-    }
+  ChocoFailedInstall($Message) : base($Message) {}
+}
 
-    class GenericException : Exception {
-        [string] $additionalData
+class GenericException : Exception {
+  [string] $additionalData
 
-        GenericException($Message) : base($Message) {}
-    }
+  GenericException($Message) : base($Message) {}
+}
 
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
-    $ctttheme = 'Matrix'
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+  $ctttheme = 'Matrix'
 }
-Else{
-    $ctttheme = 'Classic'
+Else {
+  $ctttheme = 'Classic'
 }
 
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
@@ -7995,58 +7979,58 @@ $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try { $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader ) }
 catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
-    Write-Host $error[0].Exception.Message -ForegroundColor Red
-    If ($error[0].Exception.Message -like "*button*") {
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
-    }
+  Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+  Write-Host $error[0].Exception.Message -ForegroundColor Red
+  If ($error[0].Exception.Message -like "*button*") {
+    write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
+  }
 }
 catch {
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+  Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
 
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object { $sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name) }
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
+  if ($sync.$psitem) {
+    if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
+      $sync["$psitem"].Add_Click({
+          [System.Object]$Sender = $args[0]
+          Invoke-WPFButton $Sender.name
+        })
     }
+  }
 }
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
+  if ($sync.$psitem) {
+    if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
+      $sync["$psitem"].Add_Click({
+          [System.Object]$Sender = $args[0]
+          Invoke-WPFButton $Sender.name
+        })
     }
+  }
 }
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if(
-            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-            -and $sync["$psitem"].Name -like "WPFToggle*"
-        ){
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
+  if ($sync.$psitem) {
+    if (
+      $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+        -and $sync["$psitem"].Name -like "WPFToggle*"
+    ) {
+      $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
 
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
-            })
-        }
+      $sync["$psitem"].Add_Click({
+          [System.Object]$Sender = $args[0]
+          Invoke-WPFToggle $Sender.name
+        })
     }
+  }
 }
 
 #===========================================================================
@@ -8055,9 +8039,9 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    $sync.ConfigLoaded = $False
-    $sync.ComputerInfo = Get-ComputerInfo
-    $sync.ConfigLoaded = $True
+  $sync.ConfigLoaded = $False
+  $sync.ComputerInfo = Get-ComputerInfo
+  $sync.ConfigLoaded = $True
 } | Out-Null
 
 #===========================================================================
@@ -8077,86 +8061,84 @@ $sync["Form"].Add_Closing({
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
-})
+  })
 
 # add some shortcuts for people that don't like clicking
 $commonKeyEvents = {
-    if ($sync.ProcessRunning -eq $true) {
-        return
+  if ($sync.ProcessRunning -eq $true) {
+    return
+  }
+
+  # Escape removes focus from the searchbox that way all shortcuts will start workinf again
+  if ($_.Key -eq "Escape") {
+    if ($sync.CheckboxFilter.IsFocused) {
+      $sync.CheckboxFilter.SelectAll()
+      $sync.CheckboxFilter.Text = ""
+      $sync.CheckboxFilter.Focus()
+      return
     }
+  }
 
-    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
-    if ($_.Key -eq "Escape") {
-        if ($sync.CheckboxFilter.IsFocused)
-        {
-            $sync.CheckboxFilter.SelectAll()
-            $sync.CheckboxFilter.Text = ""
-            $sync.CheckboxFilter.Focus()
-            return
-        }
-    }
+  # don't ask, I know what I'm doing, just go...
+  if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl")) {
+    $this.Close()
+  }
 
-    # don't ask, I know what I'm doing, just go...
-    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
-    {
-        $this.Close()
-    }
+  # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
+  # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
 
-    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
+  # switch ($ret) {
+  #     "Yes" {
+  #         $this.Close()
+  #     } 
+  #     "No" {
+  #         return
+  #     } 
+  # }
 
-    # switch ($ret) {
-    #     "Yes" {
-    #         $this.Close()
-    #     } 
-    #     "No" {
-    #         return
-    #     } 
+
+  if ($_.KeyboardDevice.Modifiers -eq "Alt") {
+    # this is an example how to handle shortcuts per tab
+    # Alt-I on the MicroWin tab (4) would press GetIso Button
+    # NOTE: All per tab shortcuts have to be handled *before* regular tab keys
+    # if ($_.SystemKey -eq "I") {
+    #     $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+    #     if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
+    #         Invoke-WPFButton "WPFGetIso"
+    #         break
+    #     }
     # }
-
-
-    if ($_.KeyboardDevice.Modifiers -eq "Alt") {
-        # this is an example how to handle shortcuts per tab
-        # Alt-I on the MicroWin tab (4) would press GetIso Button
-        # NOTE: All per tab shortcuts have to be handled *before* regular tab keys
-        # if ($_.SystemKey -eq "I") {
-        #     $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-        #     if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
-        #         Invoke-WPFButton "WPFGetIso"
-        #         break
-        #     }
-        # }
-        if ($_.SystemKey -eq "I") {
-            Invoke-WPFButton "WPFTab1BT"
-        }
-        if ($_.SystemKey -eq "T") {
-            Invoke-WPFButton "WPFTab2BT"
-        }
-        if ($_.SystemKey -eq "C") {
-            Invoke-WPFButton "WPFTab3BT"
-        }
-        if ($_.SystemKey -eq "U") {
-            Invoke-WPFButton "WPFTab4BT"
-        }
-        if ($_.SystemKey -eq "M") {
-            Invoke-WPFButton "WPFTab5BT"
-        }
+    if ($_.SystemKey -eq "I") {
+      Invoke-WPFButton "WPFTab1BT"
     }
-    # shortcut for the filter box
-    if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
-        if ($sync.CheckboxFilter.Text -eq "Ctrl-F to filter") {
-            $sync.CheckboxFilter.SelectAll()
-            $sync.CheckboxFilter.Text = ""
-        }
-        $sync.CheckboxFilter.Focus()
+    if ($_.SystemKey -eq "T") {
+      Invoke-WPFButton "WPFTab2BT"
     }
+    if ($_.SystemKey -eq "C") {
+      Invoke-WPFButton "WPFTab3BT"
+    }
+    if ($_.SystemKey -eq "U") {
+      Invoke-WPFButton "WPFTab4BT"
+    }
+    if ($_.SystemKey -eq "M") {
+      Invoke-WPFButton "WPFTab5BT"
+    }
+  }
+  # shortcut for the filter box
+  if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
+    if ($sync.CheckboxFilter.Text -eq "Ctrl-F to filter") {
+      $sync.CheckboxFilter.SelectAll()
+      $sync.CheckboxFilter.Text = ""
+    }
+    $sync.CheckboxFilter.Focus()
+  }
 }
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 # adding some left mouse window move on drag capability
 $sync["Form"].Add_MouseLeftButtonDown({
     $sync["Form"].DragMove()
-})
+  })
 
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
@@ -8166,19 +8148,21 @@ $sync["Form"].Add_Loaded({
     
     # Check if the file already exists
     if (-not (Test-Path $destinationPath)) {
-        # File does not exist, download it
-        $wc = New-Object System.Net.WebClient
-        $wc.DownloadFile($downloadUrl, $destinationPath)
-        Write-Output "File downloaded to: $destinationPath"
-    } else {
-        Write-Output "File already exists at: $destinationPath"
+      # File does not exist, download it
+      $wc = New-Object System.Net.WebClient
+      $wc.DownloadFile($downloadUrl, $destinationPath)
+      Write-Output "File downloaded to: $destinationPath"
+    }
+    else {
+      Write-Output "File already exists at: $destinationPath"
     }
     $sync["Form"].Icon = $destinationPath
 
     Try { 
-        [Void][Window]
-    } Catch {
-        Add-Type @"
+      [Void][Window]
+    }
+    Catch {
+      Add-Type @"
         using System;
         using System.Runtime.InteropServices;
         public class Window {
@@ -8201,42 +8185,42 @@ $sync["Form"].Add_Loaded({
 "@
     }
     
-    $processId  = [System.Diagnostics.Process]::GetCurrentProcess().Id
-    $windowHandle  = (Get-Process -Id $processId).MainWindowHandle
+    $processId = [System.Diagnostics.Process]::GetCurrentProcess().Id
+    $windowHandle = (Get-Process -Id $processId).MainWindowHandle
     $rect = New-Object RECT
-    [Void][Window]::GetWindowRect($windowHandle,[ref]$rect)
+    [Void][Window]::GetWindowRect($windowHandle, [ref]$rect)
     
     # only snap upper edge don't move left to right, in case people have multimon setup
     $x = $rect.Left
     $y = 0
-    $width  = $rect.Right  - $rect.Left
+    $width = $rect.Right - $rect.Left
     $height = $rect.Bottom - $rect.Top
     
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
-})
+  })
 
 $sync["CheckboxFilter"].Add_TextChanged({
     #Write-host $sync.CheckboxFilter.Text
 
     $filter = Get-WinUtilVariables -Type Checkbox
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
     $textToSearch = $sync.CheckboxFilter.Text
     Foreach ($CheckBox in $CheckBoxes) {
-        #Write-Host "$($sync.CheckboxFilter.Text)"
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
-            continue
-        }
-         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
-             $CheckBox.Value.Visibility = "Visible"
-         }
-         else {
-             $CheckBox.Value.Visibility = "Collapsed"
-         }
-     }
-})
+      #Write-Host "$($sync.CheckboxFilter.Text)"
+      if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+        continue
+      }
+      if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+        $CheckBox.Value.Visibility = "Visible"
+      }
+      else {
+        $CheckBox.Value.Visibility = "Collapsed"
+      }
+    }
+  })
 
 
 $downloadUrl = "https://christitus.com/images/logo-full.png"
@@ -8244,12 +8228,13 @@ $destinationPath = Join-Path $env:TEMP "cttlogo.png"
 
 # Check if the file already exists
 if (-not (Test-Path $destinationPath)) {
-    # File does not exist, download it
-    $wc = New-Object System.Net.WebClient
-    $wc.DownloadFile($downloadUrl, $destinationPath)
-    Write-Output "File downloaded to: $destinationPath"
-} else {
-    Write-Output "File already exists at: $destinationPath"
+  # File does not exist, download it
+  $wc = New-Object System.Net.WebClient
+  $wc.DownloadFile($downloadUrl, $destinationPath)
+  Write-Output "File downloaded to: $destinationPath"
+}
+else {
+  Write-Output "File already exists at: $destinationPath"
 }
 
 # show current windowsd Product ID
