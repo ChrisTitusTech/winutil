@@ -26,7 +26,7 @@ Courtesy of the issue raised at: [#144](/../../issues/144)
   ![image](https://github.com/ChrisTitusTech/winutil/assets/7896101/f16b0f74-870d-4827-87e1-38ad119e6b3f)
 
 
-- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
+- If you are unable to resolve https://christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
 
 Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
 
@@ -46,7 +46,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
 ## Tutorial
 
-[![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+[![Watch the video](https://i.ytimg.com/vi/XQAIYCT4f8Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=XQAIYCT4f8Q)
 
 ## Overview
 
@@ -98,7 +98,7 @@ If you encounter any challenges or problems with the script, I kindly request th
 
 ## Contribute Code
 
-To contribute new code, please ensure that it is submitted to the **TEST BRANCH**. Please note that merges will not be performed directly on the MAIN branch.
+To contribute new code, please ensure that it is submitted to the `test-yyyy-mm-dd` branch. Please note that all pull requests will be closed if done on the `main` branch.
 
 When creating pull requests, it is essential to thoroughly document all changes made. This includes documenting any additions made to the tweaks section and ensuring that corresponding undo measures are in place to remove the newly added tweaks if necessary. Failure to adhere to this format may result in denial of the pull request. Additionally, comprehensive documentation is required for all code changes. Any code lacking sufficient documentation may also be denied.
 
