@@ -20,13 +20,14 @@ irm https://christitus.com/win | iex
 ```
 Courtesy of the issue raised at: [#144](/../../issues/144)
 
-### Issues:
+<details>
+  <summary>Known issues</summary>
 
 - If WINGET says "Program Installed" but it was not, there is a bug in new Windows versions where winget is installed by default, but NOT functional. Run the toolbox and click the "Winget Reinstall" Button.
   ![image](https://github.com/ChrisTitusTech/winutil/assets/7896101/f16b0f74-870d-4827-87e1-38ad119e6b3f)
 
 
-- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
+- If you are unable to resolve https://christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
 
 Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
 
@@ -34,11 +35,51 @@ Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-
 
 - If you are having TLS 1.2 issues, or are having trouble resolving `christitus.com/win` then run with the following command:
 
-```
+```PowerShell
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1')
 ```
 
-If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.0.1 or 8.8.8.8 || 8.8.4.4
+If you are still having issues try changing your DNS provider to Cloudflare's:  <kbd>1.1.1.1</kbd> || <kbd>1.0.0.1</kbd> or Google's: <kbd>8.8.8.8</kbd> || <kbd>8.8.4.4</kbd>
+
+
+### Running winutil offline (.ps1 file)
+
+winutil features breaking with no internet connection:
+
+* ``Install`` tab won't be able to download anything, same for the ``Config`` tab's "features" section.
+* ADK and other dependencies for ``Microwin`` will not be able to be downloaded.
+
+If running it remotely (in a `iex <url> | iex` fashion) fails or you do not have an internet connection on the computer you wish to use winutil on:
+
+You can save the compiled [`winutil.ps1`](https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winget.ps1) as a .ps1 file on your computer.
+
+Do note some browsers will download it as ``.ps1.txt`` (see [showing file extensions](https://www.thewindowsclub.com/show-file-extensions-in-windowshttps://www.thewindowsclub.com/show-file-extensions-in-windows) to be able to rename it as PowerShell won't support running it)
+
+Open PowerShell (as an Administrator) in that directory, you'll most likely need to set the execution policy (per default PowerShell disallows running .ps1 files for "security measures")
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force
+```
+(This will allow you running scripts for only this session, see [about_Execution_Policies](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-5.1))
+
+I won't be explaining the many ways to [`cd`](https://learn.microsoft.com/en-us/powershell/scripting/samples/managing-current-location?view=powershell-5.1) to a folder, the safest way is to simply get the absolute path of the file:
+
+* Open the File Explorer
+* Navigate to where you saved `winutil.ps1` (most likely Downloads)
+* <kbd>SHIFT+Right click</kbd> the `winutil.ps1` file
+* Click `Copy as Path`, the full path will be copied to your clipboard.
+
+Then back to your PowerShell window, type the `&` character, a <kbd>SPACE</kbd> and paste with <kbd>CTRL+V</kbd>, example:
+
+```
+& "C:\Users\notchris\Downloads\winutil.ps1"
+```
+
+Then to run winutil.ps1, shift right click the file 
+
+See also the [winutil.ps1 execution video guide](https://i.imgur.com/keJSiMS.mp4)
+
+</details>
 
 ## Support
 - To morally and mentally support the project, make sure to leave a ⭐️!
@@ -46,7 +87,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
 ## Tutorial
 
-[![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+[![Watch the video](https://i.ytimg.com/vi/XQAIYCT4f8Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=XQAIYCT4f8Q)
 
 ## Overview
 
@@ -98,11 +139,13 @@ If you encounter any challenges or problems with the script, I kindly request th
 
 ## Contribute Code
 
-To contribute new code, please ensure that it is submitted to the **TEST BRANCH**. Please note that merges will not be performed directly on the MAIN branch.
+To contribute new code, please ensure that it is submitted to the `test-yyyy-mm-dd` branch. Please note that all pull requests will be closed if done on the `main` branch.
 
 When creating pull requests, it is essential to thoroughly document all changes made. This includes documenting any additions made to the tweaks section and ensuring that corresponding undo measures are in place to remove the newly added tweaks if necessary. Failure to adhere to this format may result in denial of the pull request. Additionally, comprehensive documentation is required for all code changes. Any code lacking sufficient documentation may also be denied.
 
 By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
+
+You can learn more about contributing on Git and GitHub [here](https://github.com/firstcontributions/first-contributions#readme)
 
 ## Thanks to all Contributors
 Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
