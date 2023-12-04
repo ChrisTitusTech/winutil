@@ -601,7 +601,7 @@
                                 <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-								<Checkbox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
@@ -674,7 +674,7 @@
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-				                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>

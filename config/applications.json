@@ -545,7 +545,7 @@
 	},
 	"WPFInstallprucaslicer": {
 		"winget": "Prusa3d.PrusaSlicer",
-		"choco": "prucaslicer"
+		"choco": "prusaslicer"
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
