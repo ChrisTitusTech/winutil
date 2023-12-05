@@ -4693,7 +4693,7 @@ $sync.configs.applications = '{
 		"choco": "googlechrome"
 	},
 	"WPFInstallcopyq": {
-		"winget": "copyq",
+		"winget": "hluk.CopyQ",
 		"choco": "copyq"
 	},
 	"WPFInstallchromium": {
