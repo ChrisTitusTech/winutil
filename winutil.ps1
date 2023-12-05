@@ -371,33 +371,29 @@ function Get-WinUtilVariables {
     return $keys
 }
 function Install-WinUtilChoco {
-
-    <#
-
-    .SYNOPSIS
-        Installs Chocolatey if it is not already installed
-
-    #>
-
-    try {
-        Write-Host "Checking if Chocolatey is Installed..."
-
-        if((Test-WinUtilPackageManager -choco)){
-            Write-Host "Chocolatey Already Installed"
-            return
-        }
-
-        Write-Host "Seems Chocolatey is not installed, installing now"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
-        powershell choco feature enable -n allowGlobalConfirmation
-
-    }
-    Catch {
-        Write-Host "==========================================="
-        Write-Host "--     Chocolatey failed to install     ---"
-        Write-Host "==========================================="
-    }
-
+	# Check if Chocolatey is installed
+	if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+   	 # If not installed, install Chocolatey
+   	 Write-Host "Chocolatey is not installed. Installing Chocolatey..."
+    
+  	  # Set execution policy and download/install Chocolatey
+  	  Set-ExecutionPolicy Bypass -Scope Process -Force
+ 	   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+ 	   Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+	   choco feature enable -n=allowGlobalConfirmation -y
+	} else {
+	    # If installed, display a message
+	    Write-Host "Chocolatey is already installed. Run 'choco update' to get the latest version."
+	}
+	# Check if ChocolateyGUI is installed
+	if (-not (Get-Command chocolateygui -ErrorAction SilentlyContinue)) {
+   	 # If not installed, install ChocolateyGUI
+   	 Write-Host "ChocolateyGUI is not installed. Installing ChocolateyGUI..."
+   	 choco install chocolateygui -y
+	} else {
+   	 # If installed, display a message
+   	 Write-Host "ChocolateyGUI is already installed."
+	}
 }
 Function Install-WinUtilProgramWinget {
 
@@ -453,44 +449,50 @@ function Get-LatestHash {
 }
 
 function Install-WinUtilWinget {
+    # GUI Specs
+    Write-Host "Checking winget..."
 
-    <#
-
-    .SYNOPSIS
-        Installs Winget if it is not already installed
-
-    .DESCRIPTION
-        This function will download the latest version of winget and install it. If winget is already installed, it will do nothing.
-    #>
-    Try{
-        Write-Host "Checking if Winget is Installed..."
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Already Installed"
-            return
-        }
-
-        # Gets the computer's information
-        if ($null -eq $sync.ComputerInfo){
-            $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
-        }
-        Else {
-            $ComputerInfo = $sync.ComputerInfo
-        }
-
-        if (($ComputerInfo.WindowsVersion) -lt "1809") {
-            # Checks if Windows Version is too old for winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
-            return
-        }
-
-        Write-Host "Running Alternative Installer and Direct Installing"
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
-
-        Write-Host "Winget Installed"
+    # Check if winget is installed
+    if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){
+        'Winget Already Installed'
+    }  
+    else{
+        # Installing winget using Chocolatey
+        Write-Host "Winget not found, installing it now."
+        $ResultText.text = "`r`n" + "`r`n" + "Installing Winget... Please Wait"
+        choco install winget -y
+        Write-Host Winget Installed
+        $ResultText.text = "`r`n" + "`r`n" + "Winget Installed"
     }
-    Catch{
-        throw [WingetFailedInstall]::new('Failed to install')
+}
+function Install-Scoop {
+	# Check if Scoop is installed
+	if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+   	 # If not installed, install Scoop
+ 	   Write-Host "Scoop is not installed. Installing Scoop..."
+ 	   iex "& { $(irm get.scoop.sh) } -RunAsAdmin"
+	} else {
+ 	   # If installed, display a message
+ 	   Write-Host "Scoop is already installed. Run 'scoop update' to get the latest version."
+	}
+    scoop install git
+    scoop bucket add extras
+    Write-Output "Scoop is now installed"
+    scoop install sudo aria2 wget git grep
+    Write-Output "Sudo, Aria2, Wget, and Git are now installed"
+}
+
+
+function Install-WindowsUpdateCli {
+    # Check if PSWindowsUpdate module is installed
+    if (-not (Get-Module -Name PSWindowsUpdate -ListAvailable)) {
+        Install-Module -Name PSWindowsUpdate -Force -Confirm:$false
+    }
+
+    # Check if WUServiceManager has Microsoft Update configured
+    $wuService = Get-WUServiceManager
+    if (-not ($wuService.MicrosoftUpdate -eq $true)) {
+        Add-WUServiceManager -MicrosoftUpdate -Confirm:$false
     }
 }
 function Invoke-WinUtilBingSearch {
@@ -8069,6 +8071,9 @@ Invoke-WPFFormVariables
 
 # Check if Chocolatey is installed
 Install-WinUtilChoco
+Install-Winget
+Install-Scoop
+Install-WindowsUpdateCli
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
