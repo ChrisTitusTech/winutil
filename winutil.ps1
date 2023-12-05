@@ -4332,6 +4332,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFEssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
                                 <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
                                 <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
+                                <CheckBox Name="WPFEssTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latancy."/>
                                 <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
                                 
 							<Label Content="Performance Plans" />
@@ -7481,6 +7482,12 @@ $sync.configs.tweaks = '{
         }
         Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
 
+        # Fix Managed by your organization in Edge if regustry path exists then remove it
+
+        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
+            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
+        }
+
         # Group svchost.exe processes
         $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
         Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
@@ -7949,6 +7956,23 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Type": "DWord"
       }
+    ]
+  },
+  "WPFEssTweaksTeredo": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "33",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "netsh interface teredo set state disabled"
+    ],
+    "UndoScript": [
+      "netsh interface teredo set state default"
     ]
   },
   "WPFBingSearch": {
