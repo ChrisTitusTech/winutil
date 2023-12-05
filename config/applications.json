@@ -63,6 +63,10 @@
 		"winget": "calibre.calibre",
 		"choco": "calibre"
 	},
+	"WPFInstallcarnac": {
+		"winget": "code52.Carnac",
+		"choco": "carnac"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
@@ -251,6 +255,10 @@
 		"winget": "REALiX.HWiNFO",
 		"choco": "hwinfo"
 	},
+	"WPFInstallimgburn": {
+		"winget": "LIGHTNINGUK.ImgBurn",
+		"choco": "imgburn"
+	},
 	"WPFInstallimageglass": {
 		"winget": "DuongDieuPhap.ImageGlass",
 		"choco": "imageglass"
@@ -411,6 +419,10 @@
 		"winget": "ZeusSoftware.nGlide",
 		"choco": "na"
 	},
+	"WPFInstallnmap": {
+		"winget": "Insecure.Nmap",
+		"choco": "nmap"
+	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
 		"choco": "nodejs"
@@ -531,6 +543,10 @@
 		"winget": "Microsoft.Sysinternals.ProcessMonitor",
 		"choco": "procexp"
 	},
+	"WPFInstallprucaslicer": {
+		"winget": "Prusa3d.PrusaSlicer",
+		"choco": "prusaslicer"
+	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
 		"choco": "putty"
@@ -630,6 +646,10 @@
 	"WPFInstallspacedrive": {
 		"winget": "spacedrive.Spacedrive",
 		"choco": "na"
+	},
+	"WPFInstalltailscale": {
+		"winget": "tailscale.tailscale",
+		"choco": "tailscale"
 	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
@@ -774,5 +794,9 @@
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
+	},
+	"WPFInstallzotero": {
+		"winget": "DigitalScholar.Zotero",
+		"choco": "zotero"
 	}
 }

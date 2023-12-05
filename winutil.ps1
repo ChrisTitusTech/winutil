@@ -4146,6 +4146,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
@@ -4189,6 +4190,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallimgburn" Content="ImgBurn" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
@@ -4214,6 +4216,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
 				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
@@ -4231,6 +4234,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcarnac" Content="Carnac" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
@@ -4260,6 +4264,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallprucaslicer" Content="Prusa Slicer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
@@ -4268,6 +4273,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltailscale" Content="Tailscale" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
@@ -4678,6 +4684,10 @@ $sync.configs.applications = '{
 		"winget": "calibre.calibre",
 		"choco": "calibre"
 	},
+	"WPFInstallcarnac": {
+		"winget": "code52.Carnac",
+		"choco": "carnac"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
@@ -4866,6 +4876,10 @@ $sync.configs.applications = '{
 		"winget": "REALiX.HWiNFO",
 		"choco": "hwinfo"
 	},
+	"WPFInstallimgburn": {
+		"winget": "LIGHTNINGUK.ImgBurn",
+		"choco": "imgburn"
+	},
 	"WPFInstallimageglass": {
 		"winget": "DuongDieuPhap.ImageGlass",
 		"choco": "imageglass"
@@ -5026,6 +5040,10 @@ $sync.configs.applications = '{
 		"winget": "ZeusSoftware.nGlide",
 		"choco": "na"
 	},
+	"WPFInstallnmap": {
+		"winget": "Insecure.Nmap",
+		"choco": "nmap"
+	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
 		"choco": "nodejs"
@@ -5146,6 +5164,10 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.Sysinternals.ProcessMonitor",
 		"choco": "procexp"
 	},
+	"WPFInstallprucaslicer": {
+		"winget": "Prusa3d.PrusaSlicer",
+		"choco": "prusaslicer"
+	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
 		"choco": "putty"
@@ -5245,6 +5267,10 @@ $sync.configs.applications = '{
 	"WPFInstallspacedrive": {
 		"winget": "spacedrive.Spacedrive",
 		"choco": "na"
+	},
+	"WPFInstalltailscale": {
+		"winget": "tailscale.tailscale",
+		"choco": "tailscale"
 	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
@@ -5389,6 +5415,10 @@ $sync.configs.applications = '{
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
+	},
+	"WPFInstallzotero": {
+		"winget": "DigitalScholar.Zotero",
+		"choco": "zotero"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
