@@ -31,6 +31,10 @@
 		"winget": "AIMP.AIMP",
 		"choco": "aimp"
 	},
+	"WPFInstallarch": {
+		"winget": "9MZNMNKSM73X",
+		"choco": "na"
+	},
 	"WPFInstallaudacity": {
 		"winget": "Audacity.Audacity",
 		"choco": "audacity"
@@ -127,6 +131,10 @@
 		"winget": "ddu",
 		"choco": "ddu"
 	},
+	"WPFInstalldebian": {
+		"winget": "Debian.Debian",
+		"choco": "na"
+	},
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
 		"choco": "deluge"
@@ -214,6 +222,10 @@
 	"WPFInstallfalkon": {
 		"winget": "KDE.Falkon",
 		"choco": "falkon"
+	},
+	"WPFInstallfedora": {
+		"winget": "whitewaterfoundry.fedora-remix-for-wsl",
+		"choco": "na"
 	},
 	"WPFInstallferdium": {
 		"winget": "Ferdium.Ferdium",
@@ -575,6 +587,14 @@
 		"winget": "OpenSCAD.OpenSCAD",
 		"choco": "openscad"
 	},
+	"WPFInstallopensuseleap": {
+		"winget": "9NJGLDP5G04B",
+		"choco": "na"
+	},
+	"WPFInstallopensusetw": {
+		"winget": "9MSSK2ZXXN11",
+		"choco": "na"
+	},
 	"WPFInstallopenoffice": {
 		"winget": "Apache.OpenOffice",
 		"choco": "openoffice"
@@ -830,6 +850,10 @@
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
+	},
+	"WPFInstallubuntu2204": {
+		"winget": "Canonical.Ubuntu.2204",
+		"choco": "na"
 	},
 	"WPFInstallunity": {
 		"winget": "Unity.UnityHub",
