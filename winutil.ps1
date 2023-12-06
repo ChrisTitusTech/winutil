@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.05
+    Version        : 23.12.06
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.05"
+$sync.version = "23.12.06"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4073,7 +4073,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfalkon" Content="Edge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfirefox" Content="Falkon" Margin="5,0"/>
 				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
 				<CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
@@ -4084,24 +4085,29 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallferdium" Content="Ferdium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
 				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallqtox" Content="QTox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalltweeten" Content="FOSS Twitter Client" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzulip" Content="Zulip" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="1" Margin="10">
                                 <Label Content="Development" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallclink" Content="Clink" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
@@ -4109,6 +4115,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmspaintide" Content="MS Paint IDE" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
@@ -4126,8 +4133,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallvagrant" Content="Vagrant" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallyarn" Content="Yarn" Margin="5,0"/>
 
                                 <Label Content="Document" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
@@ -4146,19 +4155,31 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallxournal" Content="Xournal++" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzim" Content="Zim Desktop Wiki" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallznote" Content="Znote" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="2" Margin="10">
                                 <Label Content="Games" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcemu" Content="Cemu" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallclonehero" Content="Clone Hero" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallemulationstation" Content="Emulation Station" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallitch" Content="Itch.io" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmoonlight" Content="Moonlight/GameStream Client" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallplaynite" Content="Playnite" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallSidequest" Content="SideQuestVR" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsunshine" Content="Sunshine/GameStream Server" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallxemu" Content="XEMU" Margin="5,0"/>
 
                                 <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
@@ -4174,6 +4195,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
+
+                                <Label Content="WSL Apps" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallarch" Content="Arch" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldebian" Content="Debian" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfedora" Content="Fedora WSL Remix" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopensuseleap" Content="OpenSUSE Leap 15.5" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallopensusetw" Content="OpenSUSE Tumbleweed" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu2204" Content="Ubuntu 22.04 LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="3" Margin="10">
                                 <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
@@ -4181,9 +4211,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallclementine" Content="Clementine" Margin="5,0"/>
+                                <CheckBox Name="WPFInstall" Content="Carnac" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallclipgrab" Content="Clipgrab" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcopyq" Content="Copyq (Clipboard Manager)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalldigikam" Content="DigiKam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalleartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfreecad" Content="FreeCAD" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfirealpaca" Content="Fire Alpaca" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
@@ -4199,24 +4234,29 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
+                                <CheckBox Name="WPFInstalllbry" Content="LBRY" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
-								<CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
+								<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallspotify" Content="Spotify" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
                                 <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
+                                
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
 				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
@@ -4224,7 +4264,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwireguard" Content="WireGuard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallxpipe" Content="X-Pipe" Margin="5,0"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="4" Margin="10">
                                 <Label Content="Utilities" FontSize="16" Margin="5,0"/>
@@ -4232,17 +4274,24 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbarrier" Content="Barrier" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallbat" Content="Bat (Cat)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcarnac" Content="Carnac" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcrystaldiskinfo" Content="Crystal Disk Info" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallcrystaldiskmark" Content="Crystal Disk Mark" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
-								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
+								<CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
 				<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfiles" Content="Files File Explorer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
@@ -4252,9 +4301,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 								<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallmeld" Content="Meld" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallneofetchwin" Content="Neofetch" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
@@ -4266,6 +4317,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprucaslicer" Content="Prusa Slicer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallrainmeter" Content="Rainmeter" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
@@ -4278,13 +4330,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwmwareplayer" Content="VMWare Workstation Player" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwinpaletter" Content="WinPaletter" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallwisetoys" Content="WiseToys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallzoxide" Content="Zoxide" Margin="5,0"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -4653,6 +4708,10 @@ $sync.configs.applications = '{
 		"winget": "AIMP.AIMP",
 		"choco": "aimp"
 	},
+	"WPFInstallarch": {
+		"winget": "9MZNMNKSM73X",
+		"choco": "na"
+	},
 	"WPFInstallaudacity": {
 		"winget": "Audacity.Audacity",
 		"choco": "audacity"
@@ -4660,6 +4719,14 @@ $sync.configs.applications = '{
 	"WPFInstallautohotkey": {
 		"winget": "AutoHotkey.AutoHotkey",
 		"choco": "autohotkey"
+	},
+	"WPFInstallbarrier": {
+		"winget": "DebaucheeOpenSourceGroup.Barrier",
+		"choco": "barrier"
+	},
+	"WPFInstallbat": {
+		"winget": "sharkdp.bat",
+		"choco": "bat"
 	},
 	"WPFInstallbitwarden": {
 		"winget": "Bitwarden.Bitwarden",
@@ -4689,6 +4756,10 @@ $sync.configs.applications = '{
 		"winget": "code52.Carnac",
 		"choco": "carnac"
 	},
+	"WPFInstallcemu": {
+		"winget": "Cemu.Cemu",
+		"choco": "cemu"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
@@ -4705,6 +4776,10 @@ $sync.configs.applications = '{
 		"winget": "CiderCollective.Cider",
 		"choco": "cider"
 	},
+	"WPFInstallclementine": {
+		"winget": "Clementine.Clementine",
+		"choco": "clementine"
+	},
 	"WPFInstallclink": {
 		"winget": "chrisant996.Clink",
 		"choco": "clink"
@@ -4713,13 +4788,29 @@ $sync.configs.applications = '{
 		"winget": "na",
 		"choco": "clipgrab"
 	},
+	"WPFInstallclonehero": {
+		"winget": "CloneHeroTeam.CloneHero",
+		"choco": "na"
+	},
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
 		"choco": "cpu-z"
 	},
+	"WPFInstallcrystaldiskinfo": {
+		"winget": "CrystalDewWorld.CrystalDiskInfo",
+		"choco": "crystaldiskinfo"
+	},
+	"WPFInstallcrystaldiskmark": {
+		"winget": "CrystalDewWorld.CrystalDiskMark",
+		"choco": "crystaldiskmark"
+	},
 	"WPFInstallddu": {
 		"winget": "ddu",
 		"choco": "ddu"
+	},
+	"WPFInstalldebian": {
+		"winget": "Debian.Debian",
+		"choco": "na"
 	},
 	"WPFInstalldeluge": {
 		"winget": "DelugeTeam.Deluge",
@@ -4728,6 +4819,10 @@ $sync.configs.applications = '{
 	"WPFInstalldevtoys": {
 		"winget": "devtoys",
 		"choco": "devToys"
+	},
+	"WPFInstalldigikam": {
+		"winget": "KDE.digikam",
+		"choco": "digikam"
 	},
 	"WPFInstalldiscord": {
 		"winget": "Discord.Discord",
@@ -4757,6 +4852,10 @@ $sync.configs.applications = '{
 		"winget": "KDE.Dolphin",
 		"choco": "na"
 	},
+	"WPFInstalldoxbox": {
+		"winget": "DOSBox.DOSBox",
+		"choco": "dosbox"
+	},
 	"WPFInstallduplicati": {
 		"winget": "Duplicati.Duplicati",
 		"choco": "duplicati"
@@ -4773,9 +4872,21 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.Edge",
 		"choco": "microsoft-edge"
 	},
+	"WPFInstallefibooteditor": {
+		"winget": "EFIBootEditor.EFIBootEditor",
+		"choco": "na"
+	},
+	"WPFInstallemulationstation": {
+		"winget": "Emulationstation.Emulationstation",
+		"choco": "emulationstation"
+	},
 	"WPFInstallepicgames": {
 		"winget": "EpicGames.EpicGamesLauncher",
 		"choco": "epicgameslauncher"
+	},
+	"WPFInstallerrorlookup": {
+		"winget": "Henry++.ErrorLookup",
+		"choco": "na"
 	},
 	"WPFInstallesearch": {
 		"winget": "voidtools.Everything",
@@ -4784,6 +4895,26 @@ $sync.configs.applications = '{
 	"WPFInstalletcher": {
 		"winget": "Balena.Etcher",
 		"choco": "etcher"
+	},
+	"WPFInstallfalkon": {
+		"winget": "KDE.Falkon",
+		"choco": "falkon"
+	},
+	"WPFInstallfedora": {
+		"winget": "whitewaterfoundry.fedora-remix-for-wsl",
+		"choco": "na"
+	},
+	"WPFInstallferdium": {
+		"winget": "Ferdium.Ferdium",
+		"choco": "ferdium"
+	},
+	"WPFInstallfiles": {
+		"winget": "YairAichenbaum.Files",
+		"choco": "files"
+	},
+	"WPFInstallfirealpaca": {
+		"winget": "FireAlpaca.FireAlpaca",
+		"choco": "firealpaca"
 	},
 	"WPFInstallfirefox": {
 		"winget": "Mozilla.Firefox",
@@ -4808,6 +4939,10 @@ $sync.configs.applications = '{
 	"WPFInstallfoxpdf": {
 		"winget": "Foxit.PhantomPDF",
 		"choco": "na"
+	},
+	"WPFInstallfreecad": {
+		"winget": "FreeCAD.FreeCAD",
+		"choco": "freecad"
 	},
 	"WPFInstallgeforcenow": {
 		"winget": "Nvidia.GeForceNow",
@@ -4889,6 +5024,10 @@ $sync.configs.applications = '{
 		"winget": "Inkscape.Inkscape",
 		"choco": "inkscape"
 	},
+	"WPFInstallitch": {
+		"winget": "ItchIo.Itch",
+		"choco": "itch"
+	},
 	"WPFInstallitunes": {
 		"winget": "Apple.iTunes",
 		"choco": "itunes"
@@ -4933,6 +5072,10 @@ $sync.configs.applications = '{
 		"winget": "Azul.Zulu.20.JDK",
 		"choco": "na"
 	},
+	"WPFInstalljava21": {
+		"winget": "Azul.Zulu.21.JDK",
+		"choco": "na"
+	},
 	"WPFInstalljdownloader": {
 		"winget": "AppWork.JDownloader",
 		"choco": "jdownloader"
@@ -4969,6 +5112,10 @@ $sync.configs.applications = '{
 		"winget": "KDE.Krita",
 		"choco": "krita"
 	},
+	"WPFInstalllbry": {
+		"winget": "LBRY.LBRY",
+		"choco": "lbry"
+	},
 	"WPFInstalllibreoffice": {
 		"winget": "TheDocumentFoundation.LibreOffice",
 		"choco": "libreoffice-fresh"
@@ -4993,9 +5140,17 @@ $sync.configs.applications = '{
 		"winget": "Element.Element",
 		"choco": "element-desktop"
 	},
+	"WPFInstallmeld": {
+		"winget": "Meld.Meld",
+		"choco": "meld"
+	},
 	"WPFInstallmercury": {
 		"winget": "Alex313031.Mercury",
 		"choco": "na"
+	},
+	"WPFInstallmoonlight": {
+		"winget": "MoonlightGameStreamingProject.Moonlight",
+		"choco": "moonlight-qt"
 	},
 	"WPFInstallmonitorian": {
 		"winget": "emoacht.Monitorian",
@@ -5008,6 +5163,10 @@ $sync.configs.applications = '{
 	"WPFInstallmremoteng": {
 		"winget": "mRemoteNG.mRemoteNG",
 		"choco": "mremoteng"
+	},
+	"WPFInstallmspaintide": {
+		"winget": "MSPaintIDE.MSPaintIDE",
+		"choco": "na"
 	},
 	"WPFInstallmsiafterburner": {
 		"winget": "Guru3D.Afterburner",
@@ -5028,6 +5187,10 @@ $sync.configs.applications = '{
 	"WPFInstallnaps2": {
 		"winget": "Cyanfish.NAPS2",
 		"choco": "naps2"
+	},
+	"WPFInstallneofetchwin": {
+		"winget": "nepnep.neofetch-win",
+		"choco": "na"
 	},
 	"WPFInstallneovim": {
 		"winget": "Neovim.Neovim",
@@ -5097,6 +5260,18 @@ $sync.configs.applications = '{
 		"winget": "ONLYOFFICE.DesktopEditors",
 		"choco": "onlyoffice"
 	},
+	"WPFInstallopenscad": {
+		"winget": "OpenSCAD.OpenSCAD",
+		"choco": "openscad"
+	},
+	"WPFInstallopensuseleap": {
+		"winget": "9NJGLDP5G04B",
+		"choco": "na"
+	},
+	"WPFInstallopensusetw": {
+		"winget": "9MSSK2ZXXN11",
+		"choco": "na"
+	},
 	"WPFInstallopenoffice": {
 		"winget": "Apache.OpenOffice",
 		"choco": "openoffice"
@@ -5132,6 +5307,10 @@ $sync.configs.applications = '{
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip"
+	},
+	"WPFInstallplaynite": {
+		"winget": "Playnite.Playnite",
+		"choco": "playnite"
 	},
 	"WPFInstallpostman": {
 		"winget": "Postman.Postman",
@@ -5181,6 +5360,14 @@ $sync.configs.applications = '{
 		"winget": "qBittorrent.qBittorrent",
 		"choco": "qbittorrent"
 	},
+	"WPFInstallqtox": {
+		"winget": "Tox.QTox",
+		"choco": "qtox"
+	},
+	"WPFInstallrainmeter": {
+		"winget": "Rainmeter.Rainmeter",
+		"choco": "na"
+	},
 	"WPFInstallrevo": {
 		"winget": "RevoUninstaller.RevoUninstaller",
 		"choco": "revo-uninstaller"
@@ -5217,6 +5404,10 @@ $sync.configs.applications = '{
 		"winget": "Nilesoft.Shell",
 		"choco": "nilesoft-shell"
 	},
+	"WPFInstallsidequest": {
+		"winget": "SideQuestVR.SideQuest",
+		"choco": "sidequest"
+	},
 	"WPFInstallsignal": {
 		"winget": "OpenWhisperSystems.Signal",
 		"choco": "signal"
@@ -5232,6 +5423,10 @@ $sync.configs.applications = '{
 	"WPFInstallslack": {
 		"winget": "SlackTechnologies.Slack",
 		"choco": "slack"
+	},
+	"WPFInstallspotify": {
+		"winget": "Spotify.Spotify",
+		"choco": "spotify"
 	},
 	"WPFInstallsqlstudio": {
 		"winget": "Microsoft.SQLServerManagementStudio",
@@ -5260,6 +5455,10 @@ $sync.configs.applications = '{
 	"WPFInstallsumatra": {
 		"winget": "SumatraPDF.SumatraPDF",
 		"choco": "sumatrapdf"
+	},
+	"WPFInstallsunshine": {
+		"winget": "LizardByte.Sunshine",
+		"choco": "sunshine"
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
@@ -5313,6 +5512,10 @@ $sync.configs.applications = '{
 		"winget": "Mozilla.Thunderbird",
 		"choco": "thunderbird"
 	},
+	"WPFInstalltweeten": {
+		"winget": "MehediHassan.Tweeten",
+		"choco": "na"
+	},
 	"WPFInstalltwinkletray": {
 		"Winget": "xanderfrangos.twinkletray",
 		"choco": "na"
@@ -5325,9 +5528,17 @@ $sync.configs.applications = '{
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
 	},
+	"WPFInstallubuntu2204": {
+		"winget": "Canonical.Ubuntu.2204",
+		"choco": "na"
+	},
 	"WPFInstallunity": {
 		"winget": "Unity.UnityHub",
 		"choco": "unityhub"
+	},
+	"WPFInstallvagrant": {
+		"winget": "Hashicorp.Vagrant",
+		"choco": "vagrant"
 	},
 	"WPFInstallvc2015_32": {
 		"winget": "Microsoft.VCRedist.2015+.x86",
@@ -5357,6 +5568,10 @@ $sync.configs.applications = '{
 		"winget": "VideoLAN.VLC",
 		"choco": "vlc"
 	},
+	"WPFInstallvmwareplayer": {
+		"winget": "VMware.WorkstationPlayer",
+		"choco": "vmware-workstation-player"
+	},
 	"WPFInstallvoicemeeter": {
 		"winget": "VB-Audio.Voicemeeter",
 		"choco": "voicemeeter"
@@ -5385,6 +5600,10 @@ $sync.configs.applications = '{
 		"winget": "WinMerge.WinMerge",
 		"choco": "winmerge"
 	},
+	"WPFInstallwinpaletter": {
+		"winget": "Abdelrhman-AK.WinPaletter",
+		"choco": "WinPaletter"
+	},
 	"WPFInstallwinrar": {
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
@@ -5397,9 +5616,17 @@ $sync.configs.applications = '{
 		"winget": "WinSCP.WinSCP",
 		"choco": "winscp"
 	},
+	"WPFInstallwireguard": {
+		"winget": "WireGuard.WireGuard",
+		"choco": "wireguard"
+	},
 	"WPFInstallwireshark": {
 		"winget": "WiresharkFoundation.Wireshark",
 		"choco": "wireshark"
+	},
+	"WPFInstallwisetoys": {
+		"winget": "WiseCleaner.WiseToys",
+		"choco": "na"
 	},
 	"WPFInstallwiztree": {
 		"Winget": "AntibodySoftware.WizTree",
@@ -5409,10 +5636,34 @@ $sync.configs.applications = '{
 		"winget": "subhra74.XtremeDownloadManager",
 		"choco": "xdm"
 	},
+	"WPFInstallxemu": {
+		"winget": "xemu-project.xemu",
+		"choco": "na"
+	},
+	"WPFInstallxournal": {
+		"winget": "Xournal++.Xournal++",
+		"choco": "xournalplusplus"
+	},
+	"WPFInstallxpipe": {
+		"winget": "xpipe-io.xpipe",
+		"choco": "xpipe"
+	},
+	"WPFInstallyarn": {
+		"winget": "Yarn.Yarn",
+		"choco": "yarn"
+	},
 	"WPFInstallzerotierone": {
 		"winget": "ZeroTier.ZeroTierOne",
 		"choco": "zerotier-one"
   	},
+	"WPFInstallzim": {
+		"winget": "Zimwiki.Zim",
+		"choco": "zim"
+	},
+	"WPFInstallznote": {
+		"winget": "alagrede.znote",
+		"choco": "na"
+	},
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
@@ -5420,6 +5671,14 @@ $sync.configs.applications = '{
 	"WPFInstallzotero": {
 		"winget": "DigitalScholar.Zotero",
 		"choco": "zotero"
+	},
+	"WPFInstallzoxide": {
+		"winget": "ajeetdsouza.zoxide",
+		"choco": "zoxide"
+	},
+	"WPFInstallzulip": {
+		"winget": "Zulip.Zulip",
+		"choco": "zulip"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
