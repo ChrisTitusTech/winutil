@@ -696,11 +696,11 @@
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
-								<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>                                <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
+								<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallspotify" Content="Spotify" Margin="5,0"/>                                <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallspotify" Content="Spotify" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
 
