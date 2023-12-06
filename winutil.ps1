@@ -4265,6 +4265,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsteelseries" Content="Steelseries GG" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
@@ -5213,6 +5214,10 @@ $sync.configs.applications = '{
 		"winget": "starship",
 		"choco": "starship"
 	},
+  "WPFInstallsteelseries": {
+    "winget": "SteelSeries.GG",
+    "choco": "steelseries-engine"
+  },
 	"WPFInstallstrawberry": {
 		"winget": "StrawberryMusicPlayer.Strawberry",
 		"choco": "strawberrymusicplayer"
