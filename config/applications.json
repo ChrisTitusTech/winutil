@@ -63,12 +63,16 @@
 		"winget": "calibre.calibre",
 		"choco": "calibre"
 	},
+	"WPFInstallcarnac": {
+		"winget": "code52.Carnac",
+		"choco": "carnac"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
 	},
 	"WPFInstallcopyq": {
-		"winget": "copyq",
+		"winget": "hluk.CopyQ",
 		"choco": "copyq"
 	},
 	"WPFInstallchromium": {
@@ -251,6 +255,10 @@
 		"winget": "REALiX.HWiNFO",
 		"choco": "hwinfo"
 	},
+	"WPFInstallimgburn": {
+		"winget": "LIGHTNINGUK.ImgBurn",
+		"choco": "imgburn"
+	},
 	"WPFInstallimageglass": {
 		"winget": "DuongDieuPhap.ImageGlass",
 		"choco": "imageglass"
@@ -411,6 +419,10 @@
 		"winget": "ZeusSoftware.nGlide",
 		"choco": "na"
 	},
+	"WPFInstallnmap": {
+		"winget": "Insecure.Nmap",
+		"choco": "nmap"
+	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
 		"choco": "nodejs"
@@ -430,6 +442,10 @@
 	"WPFInstallnuget": {
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline"
+	},
+	"WPFInstallnushell": {
+		"winget": "Nushell.Nushell",
+		"choco": "nushell"
 	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
@@ -526,6 +542,10 @@
 	"WPFInstallprocessmonitor": {
 		"winget": "Microsoft.Sysinternals.ProcessMonitor",
 		"choco": "procexp"
+	},
+	"WPFInstallprucaslicer": {
+		"winget": "Prusa3d.PrusaSlicer",
+		"choco": "prusaslicer"
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
@@ -626,6 +646,14 @@
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
 		"choco": "superf4"
+	},
+	"WPFInstallspacedrive": {
+		"winget": "spacedrive.Spacedrive",
+		"choco": "na"
+	},
+	"WPFInstalltailscale": {
+		"winget": "tailscale.tailscale",
+		"choco": "tailscale"
 	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
@@ -743,6 +771,10 @@
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
 	},
+	"WPFIntallwslmanager": {
+		"Winget": "Bostrot.WSLManager",
+		"choco": "wsl2-distro-manager"
+	},
 	"WPFInstallwinscp": {
 		"winget": "WinSCP.WinSCP",
 		"choco": "winscp"
@@ -766,5 +798,9 @@
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
+	},
+	"WPFInstallzotero": {
+		"winget": "DigitalScholar.Zotero",
+		"choco": "zotero"
 	}
 }

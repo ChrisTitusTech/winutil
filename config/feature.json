@@ -43,6 +43,14 @@
 
     ]
   },
+  "WPFFeaturesandbox": {
+    "feature": [
+      "Containers-DisposableClientVM"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
   "WPFFeaturenfs": {
     "feature": [
       "ServicesForNFS-ClientOnly",
