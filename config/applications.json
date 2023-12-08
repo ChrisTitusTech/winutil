@@ -359,6 +359,10 @@
 		"winget": "BelledonneCommunications.Linphone",
 		"choco": "linphone"
 	},
+	"WPFInstalllmms": {
+		"winget": "LMMS.LMMS",
+		"choco": "lmms"
+	},
 	"WPFInstallmalwarebytes": {
 		"winget": "Malwarebytes.Malwarebytes",
 		"choco": "malwarebytes"
