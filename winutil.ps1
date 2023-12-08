@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.05
+    Version        : 23.12.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.05"
+$sync.version = "23.12.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4199,6 +4199,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
+                                <Checkbox Name="WPFInstalllmms" Content="LMMS (DAW)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
@@ -4980,6 +4981,10 @@ $sync.configs.applications = '{
 	"WPFInstalllinphone": {
 		"winget": "BelledonneCommunications.Linphone",
 		"choco": "linphone"
+	},
+	"WPFInstalllmms": {
+		"winget": "LMMS.LMMS",
+		"choco": "lmms"
 	},
 	"WPFInstallmalwarebytes": {
 		"winget": "Malwarebytes.Malwarebytes",
