@@ -496,7 +496,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	Stop-UnnecessaryServices
+	#Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -544,7 +544,7 @@ function New-FirstRun {
 
 	if (Test-Path -Path "c:\Windows\cttlogo.png")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		#$shortcut.IconLocation = "c:\Windows\cttlogo.png"
 	}
 	
 	# Set properties of the shortcut
