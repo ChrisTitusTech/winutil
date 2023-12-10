@@ -957,7 +957,7 @@
                                 </StackPanel>
                                 <!-- Visibility="Hidden" -->
                                 <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Chose Windows SKU</TextBlock>
+                                    <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                                     <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                                     <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
                                     <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
