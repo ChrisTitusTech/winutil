@@ -264,7 +264,7 @@
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                     <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                    <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                                    <Setter Property="Foreground" Value="{CheckboxMouseOverColor}"/>
                                 </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -511,16 +511,16 @@
 
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
                                 <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFinstall" Content=" Install Selection " Margin="7"/>
-                                <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="7"/>
-                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="7"/>
-                                <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
-                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="7"/>
+                                <Button Name="WPFinstall" Content=" Install Selection " Margin="1"/>
+                                <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="1"/>
+                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="1"/>
+                                <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="1"/>
+                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="1"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFimportWinget" Content=" Import " Margin="7"/>
-                                <Button Name="WPFexportWinget" Content=" Export " Margin="7"/>
+                                <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
+                                <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
@@ -529,9 +529,9 @@
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
-				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-				<CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
@@ -544,7 +544,7 @@
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -674,7 +674,7 @@
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
@@ -695,7 +695,7 @@
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
 								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
-				<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
+				                <CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -751,24 +751,24 @@
                                 <ColumnDefinition Width=".30*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height=".10*"/>
+                                <RowDefinition Height="55"/>
                                 <RowDefinition Height=".70*"/>
                                 <RowDefinition Height=".10*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center"  Grid.ColumnSpan="2" Margin="10">
-                                <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
-                                <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
-                                <Button Name="WPFminimal" Content=" Minimal " Margin="7"/>
-                                <Button Name="WPFclear" Content=" Clear " Margin="7"/>
-                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left"  Grid.ColumnSpan="2" Margin="10">
+                                <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
+                                <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
+                                <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
+                                <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
+                                <Button Name="WPFclear" Content=" Clear " Margin="1"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="2" Margin="10">
-                                <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFimport" Content=" Import " Margin="7"/>
-                                <Button Name="WPFexport" Content=" Export " Margin="7"/>
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="2" Margin="10">
+                                <Label Content="Configuration File:" FontSize="14" VerticalAlignment="Center"/>
+                                <Button Name="WPFimport" Content=" Import " Margin="1"/>
+                                <Button Name="WPFexport" Content=" Export " Margin="1"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="3" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="10">
                                 <TextBlock Padding="10">
                                     Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                     <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
