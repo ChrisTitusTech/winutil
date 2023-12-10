@@ -13,17 +13,27 @@ function Get-LocalizedYesNo {
     #>
   
     # Run takeown.exe and capture its output
-    $takeownOutput = & takeown.exe  /? | Out-String
+    $takeownOutput = & takeown.exe /? | Out-String
 
     # Parse the output and retrieve lines until there are at least 2 characters in the array
     $found = $false
     $charactersArray = @()
     foreach ($line in $takeownOutput -split "`r`n") 
     {
+        # skip everything before /D flag help
         if ($found) 
         {
-            $characters = $line -split '(")([A-Za-z])(")' | Where-Object { $_ -match '^[A-Za-z]$' }
-            $charactersArray += $characters
+            # now that /D is found start looking for a single character in double quotes
+            # in help text there is another string in double quotes but it is not a single character
+            $regexPattern = '"([a-zA-Z])"'
+
+            $charactersArray = [regex]::Matches($line, $regexPattern) | ForEach-Object { $_.Groups[1].Value }
+            
+            # if ($charactersArray.Count -gt 0) {
+            #     Write-Output "Extracted symbols: $($matches -join ', ')"
+            # } else {
+            #     Write-Output "No matches found."
+            # }
 
             if ($charactersArray.Count -ge 2) 
             {

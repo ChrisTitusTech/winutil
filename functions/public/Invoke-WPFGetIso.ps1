@@ -18,8 +18,8 @@ function Invoke-WPFGetIso {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
-    Write-Host "oscdimge.exe on system: $oscdImgFound"
+    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe)
+    Write-Host "oscdimg.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) 
     {
@@ -70,15 +70,21 @@ function Invoke-WPFGetIso {
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
     Write-Host "Setting up mount dir and scratch dirs"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $randomNumber = Get-Random -Minimum 1 -Maximum 9999
+    $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
+    $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
+    Write-Host "Scratch dir is $scratchDir"
+    Write-Host "Image dir is $mountDir"
 
     try {
         
-        $data = @($driveLetter, $filePath)
+        #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
@@ -93,7 +99,8 @@ function Invoke-WPFGetIso {
 
         if (-not (Test-Path -Path $wimFile -PathType Leaf))
         {
-            $msg = "install wim file doesn't exist in the image, are you sure you used Windows image??"
+            $msg = "Install.wim file doesn't exist in the image, this could happen if you use unofficial Windows images, or a Media creation tool, which creates a final image that can not be modified. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
+            Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
         }

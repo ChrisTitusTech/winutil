@@ -147,6 +147,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
 
 	$yesNo = Get-LocalizedYesNo
+	Write-Host "[INFO] In Your local takeown expects '$($yesNo[0])' as a Yes answer."
 
 	# Specify the path to the directory
 	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
@@ -496,7 +497,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	Stop-UnnecessaryServices
+	#Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -542,9 +543,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	if (Test-Path -Path "c:\Windows\cttlogo.ico")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 	}
 	
 	# Set properties of the shortcut
