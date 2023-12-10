@@ -542,9 +542,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	if (Test-Path -Path "c:\Windows\cttlogo.ico")
 	{
-		#$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 	}
 	
 	# Set properties of the shortcut

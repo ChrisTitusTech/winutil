@@ -1,5 +1,5 @@
 {
-    "Classic":  {
+    "ClassicOld":  {
                     "ComboBoxBackgroundColor":  "#777777",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -23,12 +23,38 @@
                     "ButtonMargin":  "0,3,0,3",
                     "ButtonCornerRadius": "0"
                 },
+        "Classic":  {
+                    "ComboBoxBackgroundColor":  "#FFFFFF",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#FFFFFF",
+                    "LabelBackgroundColor":  "#FAFAFA",
+                    "GroupBorderBackgroundColor":  "#000000",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#FFFFFF",
+                    "ButtonTweaksBackgroundColor":  "#FFFFFF",
+                    "ButtonConfigBackgroundColor":  "#FFFFFF",
+                    "ButtonUpdatesBackgroundColor":  "#FFFFFF",
+                    "ButtonInstallForegroundColor":  "#000000",
+                    "ButtonTweaksForegroundColor":  "#000000",
+                    "ButtonConfigForegroundColor":  "#000000",
+                    "ButtonUpdatesForegroundColor":  "#000000",
+                    "ButtonBackgroundColor":  "#F5F5F5",
+                    "ButtonBackgroundPressedColor":  "#FAFAFA",
+                    "ButtonBackgroundMouseoverColor":  "#F5F5F5",
+                    "ButtonBackgroundSelectedColor":  "#F0F0F0",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "1",
+                    "ButtonMargin":  "1",
+                    "ButtonCornerRadius": "2"
+                },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
                    "LabelboxForegroundColor":  "#FFEE58",
                    "MainForegroundColor":  "#9CCC65",
                    "MainBackgroundColor":  "#000000",
                    "LabelBackgroundColor":  "#000000",
+                   "GroupBorderBackgroundColor":  "Yellow",
                    "ComboBoxForegroundColor":  "#FFEE58",
                    "ButtonInstallBackgroundColor":  "#222222",
                    "ButtonTweaksBackgroundColor":  "#333333",

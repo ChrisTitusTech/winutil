@@ -1463,7 +1463,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	Stop-UnnecessaryServices
+	#Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -1509,9 +1509,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	if (Test-Path -Path "c:\Windows\cttlogo.ico")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 	}
 	
 	# Set properties of the shortcut
@@ -2774,13 +2774,6 @@ function Invoke-WPFMicrowin {
 			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
-		Write-Host " _____                       "
-		Write-Host "(____ \                      "
-		Write-Host " _   \ \ ___  ____   ____    "
-		Write-Host "| |   | / _ \|  _ \ / _  )   "
-		Write-Host "| |__/ / |_| | | | ( (/ /    "
-		Write-Host "|_____/ \___/|_| |_|\____)   "
-
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
 			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
@@ -2791,11 +2784,11 @@ function Invoke-WPFMicrowin {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-
-		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
+		$sync.MicrowinWindowsFlavors.ItemsSource = $null;
+		# return UI to its original state less chances for people to mess up
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-
 		$sync.ProcessRunning = $false
 	}
 }
@@ -4039,7 +4032,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}">Ctrl-F to filter</TextBox>
                 </DockPanel>
                 <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent">
-                <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
+                <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                         <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
@@ -4289,7 +4282,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                        <Grid Background="#333333">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width=".35*"/>
                                 <ColumnDefinition Width=".35*"/>
@@ -4415,7 +4408,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                        <Grid Background="#444444">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -4449,7 +4442,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                        <Grid Background="#555555">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -4471,7 +4464,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
-                        <Grid Width="Auto" Height="Auto">
+                        <Grid Width="Auto" Height="Auto" Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
 			                    <ColumnDefinition Width="4*"/>
@@ -4479,7 +4472,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Grid.RowDefinitions>
 			                    <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
+                            <Border BorderBrush="{GroupBorderBackgroundColor}" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
                             <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                                 <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
                                     <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
@@ -4535,7 +4528,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Border Background="{MainBackgroundColor}" 
                                 VerticalAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
-                                BorderBrush="Yellow" 
+                                BorderBrush="{GroupBorderBackgroundColor}" 
                                 CornerRadius="2" 
                                 BorderThickness="2"
                                 Grid.Row="0" Grid.Column="1"
@@ -5555,7 +5548,7 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-    "Classic":  {
+    "ClassicOld":  {
                     "ComboBoxBackgroundColor":  "#777777",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -5579,12 +5572,38 @@ $sync.configs.themes = '{
                     "ButtonMargin":  "0,3,0,3",
                     "ButtonCornerRadius": "0"
                 },
+        "Classic":  {
+                    "ComboBoxBackgroundColor":  "#FFFFFF",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#FFFFFF",
+                    "LabelBackgroundColor":  "#FAFAFA",
+                    "GroupBorderBackgroundColor":  "#000000",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#FFFFFF",
+                    "ButtonTweaksBackgroundColor":  "#FFFFFF",
+                    "ButtonConfigBackgroundColor":  "#FFFFFF",
+                    "ButtonUpdatesBackgroundColor":  "#FFFFFF",
+                    "ButtonInstallForegroundColor":  "#000000",
+                    "ButtonTweaksForegroundColor":  "#000000",
+                    "ButtonConfigForegroundColor":  "#000000",
+                    "ButtonUpdatesForegroundColor":  "#000000",
+                    "ButtonBackgroundColor":  "#F5F5F5",
+                    "ButtonBackgroundPressedColor":  "#FAFAFA",
+                    "ButtonBackgroundMouseoverColor":  "#F5F5F5",
+                    "ButtonBackgroundSelectedColor":  "#F0F0F0",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "1",
+                    "ButtonMargin":  "1",
+                    "ButtonCornerRadius": "2"
+                },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
                    "LabelboxForegroundColor":  "#FFEE58",
                    "MainForegroundColor":  "#9CCC65",
                    "MainBackgroundColor":  "#000000",
                    "LabelBackgroundColor":  "#000000",
+                   "GroupBorderBackgroundColor":  "Yellow",
                    "ComboBoxForegroundColor":  "#FFEE58",
                    "ButtonInstallBackgroundColor":  "#222222",
                    "ButtonTweaksBackgroundColor":  "#333333",
