@@ -417,7 +417,7 @@ function New-FirstRun {
 			"BITS",
 			"BrokerInfrastructure",
 			"CDPSvc",
-			"CDPUserSvc_dc2a4",
+			"CDPUserSvc_*",
 			"CoreMessagingRegistrar",
 			"CryptSvc",
 			"DPS",
@@ -435,7 +435,7 @@ function New-FirstRun {
 			"LanmanWorkstation",
 			"MapsBroker",
 			"MpsSvc",
-			"OneSyncSvc_dc2a4",
+			"OneSyncSvc_*",
 			"Power",
 			"ProfSvc",
 			"RpcEptMapper",
@@ -461,8 +461,8 @@ function New-FirstRun {
 			"Winmgmt",
 			"WlanSvc",
 			"WpnService",
-			"WpnUserService_dc2a4",
-			"cbdhsvc_dc2a4",
+			"WpnUserService_*",
+			"cbdhsvc_*",
 			"edgeupdate",
 			"gpsvc",
 			"iphlpsvc",
@@ -471,7 +471,7 @@ function New-FirstRun {
 			"sppsvc",
 			"tiledatamodelsvc",
 			"vm3dservice",
-			"webthreatdefusersvc_dc2a4",
+			"webthreatdefusersvc_*",
 			"wscsvc"
 "@		
 	
