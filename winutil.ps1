@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.13
+    Version        : 23.12.14
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.13"
+$sync.version = "23.12.14"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4069,8 +4069,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
 				                <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-				                <CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
@@ -4986,10 +4984,7 @@ $sync.configs.applications = '{
 		"winget": "Element.Element",
 		"choco": "element-desktop"
 	},
-	"WPFInstallmercury": {
-		"winget": "Alex313031.Mercury",
-		"choco": "na"
-	},
+	
 	"WPFInstallmonitorian": {
 		"winget": "emoacht.Monitorian",
 		"choco": "monitorian"
@@ -5285,10 +5280,6 @@ $sync.configs.applications = '{
 	"WPFInstallterminal": {
 		"winget": "Microsoft.WindowsTerminal",
 		"choco": "microsoft-windows-terminal"
-	},
-	"WPFInstallthorium": {
-		"winget": "Alex313031.Thorium",
-		"choco": "na"
 	},
 	"WPFInstalltor": {
 		"Winget": "TorProject.TorBrowser",

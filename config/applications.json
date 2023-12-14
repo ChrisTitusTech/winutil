@@ -371,10 +371,7 @@
 		"winget": "Element.Element",
 		"choco": "element-desktop"
 	},
-	"WPFInstallmercury": {
-		"winget": "Alex313031.Mercury",
-		"choco": "na"
-	},
+	
 	"WPFInstallmonitorian": {
 		"winget": "emoacht.Monitorian",
 		"choco": "monitorian"
