@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.11
+    Version        : 23.12.13
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.11"
+$sync.version = "23.12.13"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1463,7 +1463,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	Stop-UnnecessaryServices
+	#Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -1509,9 +1509,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	if (Test-Path -Path "c:\Windows\cttlogo.ico")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 	}
 	
 	# Set properties of the shortcut
@@ -2774,13 +2774,6 @@ function Invoke-WPFMicrowin {
 			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
-		Write-Host " _____                       "
-		Write-Host "(____ \                      "
-		Write-Host " _   \ \ ___  ____   ____    "
-		Write-Host "| |   | / _ \|  _ \ / _  )   "
-		Write-Host "| |__/ / |_| | | | ( (/ /    "
-		Write-Host "|_____/ \___/|_| |_|\____)   "
-
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
 			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
@@ -2791,11 +2784,11 @@ function Invoke-WPFMicrowin {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-
-		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
+		$sync.MicrowinWindowsFlavors.ItemsSource = $null;
+		# return UI to its original state less chances for people to mess up
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-
 		$sync.ProcessRunning = $false
 	}
 }
@@ -3809,7 +3802,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                     <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                    <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                                    <Setter Property="Foreground" Value="{CheckboxMouseOverColor}"/>
                                 </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -4039,7 +4032,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}">Ctrl-F to filter</TextBox>
                 </DockPanel>
                 <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent">
-                <TabControl Name="WPFTabNav" Background="#222222" Width="Auto" Height="Auto">
+                <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto">
                     <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                         <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
@@ -4056,16 +4049,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Margin="10">
                                 <Label Content="Winget:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFinstall" Content=" Install Selection " Margin="7"/>
-                                <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="7"/>
-                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="7"/>
-                                <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="7"/>
-                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="7"/>
+                                <Button Name="WPFinstall" Content=" Install Selection " Margin="1"/>
+                                <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="1"/>
+                                <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="1"/>
+                                <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="1"/>
+                                <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="1"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="2" Margin="10">
                                 <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFimportWinget" Content=" Import " Margin="7"/>
-                                <Button Name="WPFexportWinget" Content=" Export " Margin="7"/>
+                                <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
+                                <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                             </StackPanel>
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="1" Grid.Column="0" Margin="10">
                                 <Label Content="Browsers" FontSize="16" Margin="5,0"/>
@@ -4074,9 +4067,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
-				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-				<CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
@@ -4089,7 +4082,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
@@ -4219,7 +4212,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
 								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
@@ -4240,7 +4233,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
 								<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
-				<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
+				                <CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
@@ -4289,31 +4282,31 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                        <Grid Background="#333333">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width=".35*"/>
                                 <ColumnDefinition Width=".35*"/>
                                 <ColumnDefinition Width=".30*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height=".10*"/>
+                                <RowDefinition Height="55"/>
                                 <RowDefinition Height=".70*"/>
                                 <RowDefinition Height=".10*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center"  Grid.ColumnSpan="2" Margin="10">
-                                <Label Content="Recommended Selections:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFdesktop" Content=" Desktop " Margin="7"/>
-                                <Button Name="WPFlaptop" Content=" Laptop " Margin="7"/>
-                                <Button Name="WPFminimal" Content=" Minimal " Margin="7"/>
-                                <Button Name="WPFclear" Content=" Clear " Margin="7"/>
-                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="7"/>
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left"  Grid.ColumnSpan="2" Margin="10">
+                                <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
+                                <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
+                                <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
+                                <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
+                                <Button Name="WPFclear" Content=" Clear " Margin="1"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="2" Margin="10">
-                                <Label Content="Configuration File:" FontSize="17" VerticalAlignment="Center"/>
-                                <Button Name="WPFimport" Content=" Import " Margin="7"/>
-                                <Button Name="WPFexport" Content=" Export " Margin="7"/>
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="2" Margin="10">
+                                <Label Content="Configuration File:" FontSize="14" VerticalAlignment="Center"/>
+                                <Button Name="WPFimport" Content=" Import " Margin="1"/>
+                                <Button Name="WPFexport" Content=" Export " Margin="1"/>
                             </StackPanel>
-                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Grid.ColumnSpan="3" Margin="10">
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="10">
                                 <TextBlock Padding="10">
                                     Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                     <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
@@ -4415,7 +4408,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                        <Grid Background="#444444">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -4449,7 +4442,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                        <Grid Background="#555555">
+                        <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -4471,7 +4464,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </TabItem>
                     <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
-                        <Grid Width="Auto" Height="Auto">
+                        <Grid Width="Auto" Height="Auto" Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
 			                    <ColumnDefinition Width="4*"/>
@@ -4479,7 +4472,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Grid.RowDefinitions>
 			                    <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border BorderBrush="Yellow" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
+                            <Border BorderBrush="{GroupBorderBackgroundColor}" CornerRadius="2" BorderThickness="2" Margin="1" Grid.Row="0" Grid.Column="0">
                             <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                                 <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
                                     <TextBlock Margin="1" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
@@ -4535,7 +4528,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Border Background="{MainBackgroundColor}" 
                                 VerticalAlignment="Stretch"
                                 HorizontalAlignment="Stretch"
-                                BorderBrush="Yellow" 
+                                BorderBrush="{GroupBorderBackgroundColor}" 
                                 CornerRadius="2" 
                                 BorderThickness="2"
                                 Grid.Row="0" Grid.Column="1"
@@ -5555,7 +5548,7 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-    "Classic":  {
+    "ClassicOld":  {
                     "ComboBoxBackgroundColor":  "#777777",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -5572,6 +5565,7 @@ $sync.configs.themes = '{
                     "ButtonUpdatesForegroundColor":  "#FFFFFF",
                     "ButtonBackgroundColor":  "#CACACA",
                     "ButtonBackgroundPressedColor":  "#FFFFFF",
+                    "CheckboxMouseOverColor": "#FFFFFF",
                     "ButtonBackgroundMouseoverColor":  "#A55A64",
                     "ButtonBackgroundSelectedColor":  "#BADFFF",
                     "ButtonForegroundColor":  "#000000",
@@ -5579,12 +5573,39 @@ $sync.configs.themes = '{
                     "ButtonMargin":  "0,3,0,3",
                     "ButtonCornerRadius": "0"
                 },
+        "Classic":  {
+                    "ComboBoxBackgroundColor":  "#FFFFFF",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#FFFFFF",
+                    "LabelBackgroundColor":  "#FAFAFA",
+                    "GroupBorderBackgroundColor":  "#000000",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#FFFFFF",
+                    "ButtonTweaksBackgroundColor":  "#FFFFFF",
+                    "ButtonConfigBackgroundColor":  "#FFFFFF",
+                    "ButtonUpdatesBackgroundColor":  "#FFFFFF",
+                    "ButtonInstallForegroundColor":  "#000000",
+                    "ButtonTweaksForegroundColor":  "#000000",
+                    "ButtonConfigForegroundColor":  "#000000",
+                    "ButtonUpdatesForegroundColor":  "#000000",
+                    "ButtonBackgroundColor":  "#F5F5F5",
+                    "ButtonBackgroundPressedColor":  "#1A1A1A",
+                    "CheckboxMouseOverColor": "#999999",
+                    "ButtonBackgroundMouseoverColor":  "#C2C2C2",
+                    "ButtonBackgroundSelectedColor":  "#F0F0F0",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "1",
+                    "ButtonMargin":  "1",
+                    "ButtonCornerRadius": "2"
+                },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
                    "LabelboxForegroundColor":  "#FFEE58",
                    "MainForegroundColor":  "#9CCC65",
                    "MainBackgroundColor":  "#000000",
                    "LabelBackgroundColor":  "#000000",
+                   "GroupBorderBackgroundColor":  "Yellow",
                    "ComboBoxForegroundColor":  "#FFEE58",
                    "ButtonInstallBackgroundColor":  "#222222",
                    "ButtonTweaksBackgroundColor":  "#333333",
@@ -5596,6 +5617,7 @@ $sync.configs.themes = '{
                    "ButtonUpdatesForegroundColor":  "#FFFFFF",
                    "ButtonBackgroundColor":  "#000019",
                    "ButtonBackgroundPressedColor":  "#FFFFFF",
+                   "CheckboxMouseOverColor": "#FFFFFF",
                    "ButtonBackgroundMouseoverColor":  "#A55A64",
                    "ButtonBackgroundSelectedColor":  "#FF5733",
                    "ButtonForegroundColor":  "#9CCC65",
