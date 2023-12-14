@@ -671,10 +671,6 @@
 		"winget": "Microsoft.WindowsTerminal",
 		"choco": "microsoft-windows-terminal"
 	},
-	"WPFInstallthorium": {
-		"winget": "Alex313031.Thorium",
-		"choco": "na"
-	},
 	"WPFInstalltor": {
 		"Winget": "TorProject.TorBrowser",
 		"choco": "tor-browser"
