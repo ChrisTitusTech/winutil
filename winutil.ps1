@@ -1384,7 +1384,7 @@ function New-FirstRun {
 			"BITS",
 			"BrokerInfrastructure",
 			"CDPSvc",
-			"CDPUserSvc_dc2a4",
+			"CDPUserSvc_*",
 			"CoreMessagingRegistrar",
 			"CryptSvc",
 			"DPS",
@@ -1402,7 +1402,7 @@ function New-FirstRun {
 			"LanmanWorkstation",
 			"MapsBroker",
 			"MpsSvc",
-			"OneSyncSvc_dc2a4",
+			"OneSyncSvc_*",
 			"Power",
 			"ProfSvc",
 			"RpcEptMapper",
@@ -1428,8 +1428,8 @@ function New-FirstRun {
 			"Winmgmt",
 			"WlanSvc",
 			"WpnService",
-			"WpnUserService_dc2a4",
-			"cbdhsvc_dc2a4",
+			"WpnUserService_*",
+			"cbdhsvc_*",
 			"edgeupdate",
 			"gpsvc",
 			"iphlpsvc",
@@ -1438,7 +1438,7 @@ function New-FirstRun {
 			"sppsvc",
 			"tiledatamodelsvc",
 			"vm3dservice",
-			"webthreatdefusersvc_dc2a4",
+			"webthreatdefusersvc_*",
 			"wscsvc"
 "@		
 	
@@ -5866,12 +5866,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "BcastDVRUserService_dc2a4",
+        "Name": "BcastDVRUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "BluetoothUserService_dc2a4",
+        "Name": "BluetoothUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -5901,7 +5901,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CDPUserSvc_dc2a4",
+        "Name": "CDPUserSvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -5911,7 +5911,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "CaptureService_dc2a4",
+        "Name": "CaptureService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -5926,7 +5926,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "ConsentUxUserSvc_dc2a4",
+        "Name": "ConsentUxUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -5936,7 +5936,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "Name": "CredentialEnrollmentManagerUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -5971,7 +5971,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "Name": "DeviceAssociationBrokerSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -5986,12 +5986,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicePickerUserSvc_dc2a4",
+        "Name": "DevicePickerUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicesFlowUserSvc_dc2a4",
+        "Name": "DevicesFlowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6201,7 +6201,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "MessagingService_dc2a4",
+        "Name": "MessagingService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6226,7 +6226,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Disabled"
       },
       {
-        "Name": "NPSMSvc_dc2a4",
+        "Name": "NPSMSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6286,12 +6286,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "OneSyncSvc_dc2a4",
+        "Name": "OneSyncSvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
-        "Name": "P9RdrService_dc2a4",
+        "Name": "P9RdrService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6316,7 +6316,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PenService_dc2a4",
+        "Name": "PenService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6331,7 +6331,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "Name": "PimIndexMaintenanceSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6356,7 +6356,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PrintWorkflowUserSvc_dc2a4",
+        "Name": "PrintWorkflowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6631,7 +6631,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UdkUserSvc_dc2a4",
+        "Name": "UdkUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6646,12 +6646,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UnistoreSvc_dc2a4",
+        "Name": "UnistoreSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "UserDataSvc_dc2a4",
+        "Name": "UserDataSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6831,7 +6831,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WpnUserService_dc2a4",
+        "Name": "WpnUserService_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -6876,7 +6876,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "cbdhsvc_dc2a4",
+        "Name": "cbdhsvc_*",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
@@ -7146,7 +7146,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "webthreatdefusersvc_dc2a4",
+        "Name": "webthreatdefusersvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
