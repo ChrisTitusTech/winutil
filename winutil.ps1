@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.10
+    Version        : 23.12.14
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.10"
+$sync.version = "23.12.14"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1938,7 +1938,20 @@ function Invoke-WPFButton {
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
+        "WPFCloseButton" {Invoke-CloseButton}
     }
+}
+function Invoke-CloseButton {
+
+    <#
+
+    .SYNOPSIS
+        Close application
+
+    .PARAMETER Button
+    #>
+    $sync["Form"].Close()
+    Write-Host "Bye bye!"
 }
 function Invoke-WPFControlPanel {
     <#
@@ -2287,15 +2300,21 @@ function Invoke-WPFGetIso {
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
     Write-Host "Setting up mount dir and scratch dirs"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $randomNumber = Get-Random -Minimum 1 -Maximum 9999
+    $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
+    $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
+    Write-Host "Scratch dir is $scratchDir"
+    Write-Host "Image dir is $mountDir"
 
     try {
         
-        $data = @($driveLetter, $filePath)
+        #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
@@ -3545,8 +3564,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         mc:Ignorable="d"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1200">
-
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="10"/>
+    </WindowChrome.WindowChrome>
     <Window.Resources>
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
@@ -3681,6 +3703,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         <Style TargetType="{x:Type ToggleButton}">
             <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Content" Value=""/>
+            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
@@ -3696,7 +3719,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         BorderBrush="{ButtonBackgroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                            Margin="10,2,10,2"/>
                                     </Border>
                                 </Grid>
                             </Border>
@@ -3976,18 +4000,19 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1">
-            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid"  Width="Auto" Height="Auto">
+    <!-- <Border Name="WPFdummy" Grid.Column="0" Grid.Row="1"> -->
+            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height=".1*"/>
+                    <RowDefinition Height="50px"/>
                     <RowDefinition Height=".9*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <DockPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="1100">
-                    <Image Height="50" Width="50" Name="WPFIcon" SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="0,10,0,10"/>
-                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
+                    <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
+                        SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
+                    <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                         Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                         <ToggleButton.Content>
                             <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
@@ -3995,7 +4020,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                    <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                         Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                         <ToggleButton.Content>
                             <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
@@ -4003,7 +4028,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                    <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                         Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                         <ToggleButton.Content>
                             <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
@@ -4011,7 +4036,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                    <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                         <ToggleButton.Content>
                             <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
@@ -4019,7 +4044,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <ToggleButton HorizontalAlignment="Left" Height="40" Width="100"
+                    <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                         Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                         <ToggleButton.Content>
                             <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
@@ -4027,9 +4052,40 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                         </ToggleButton.Content>
                     </ToggleButton>
-                    <TextBox VerticalContentAlignment="Center" HorizontalAlignment="Right" Name="CheckboxFilter" ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
-                        Height="25" Width="200" 
-                        Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}">Ctrl-F to filter</TextBox>
+                    <Grid>
+                        <TextBox Width="200" 
+                            FontSize="14"
+                            Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
+                            Name="CheckboxFilter"
+                            Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
+                            ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
+                        >
+                            <TextBox.Effect>
+                                <DropShadowEffect ShadowDepth="2" Color="#555555" Opacity="0.2"/>
+                            </TextBox.Effect>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="5">
+                                                    <ScrollViewer x:Name="PART_ContentHost"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                            FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
+                    </Grid>
+                    <Button Content="&#xD7;" BorderThickness="0" 
+                        BorderBrush="Transparent"
+                        Background="{MainBackgroundColor}"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0" 
+                        FontFamily="Arial"
+                        Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
                 </DockPanel>
                 <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent">
                 <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto">
@@ -4611,7 +4667,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </TabControl>
                 </ScrollViewer>
             </Grid>
-    </Border>
+  <!-- </Border> -->
 </Window>'
 $sync.configs.applications = '{
 	"WPFInstall7zip": {
@@ -5571,7 +5627,8 @@ $sync.configs.themes = '{
                     "ButtonForegroundColor":  "#000000",
                     "ButtonBorderThickness":  "0",
                     "ButtonMargin":  "0,3,0,3",
-                    "ButtonCornerRadius": "0"
+                    "ButtonCornerRadius": "0",
+                    "ToggleButtonHeight": "40"
                 },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -5597,7 +5654,8 @@ $sync.configs.themes = '{
                     "ButtonForegroundColor":  "#000000",
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
-                    "ButtonCornerRadius": "2"
+                    "ButtonCornerRadius": "2",
+                    "ToggleButtonHeight": "25"
                 },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
@@ -5623,7 +5681,8 @@ $sync.configs.themes = '{
                    "ButtonForegroundColor":  "#9CCC65",
                    "ButtonBorderThickness":  "1",
                    "ButtonMargin":  "1",
-                   "ButtonCornerRadius": "2"
+                   "ButtonCornerRadius": "2",
+                   "ToggleButtonHeight": "25"
                }
 }' | convertfrom-json
 $sync.configs.tweaks = '{

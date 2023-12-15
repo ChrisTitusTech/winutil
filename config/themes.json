@@ -22,7 +22,8 @@
                     "ButtonForegroundColor":  "#000000",
                     "ButtonBorderThickness":  "0",
                     "ButtonMargin":  "0,3,0,3",
-                    "ButtonCornerRadius": "0"
+                    "ButtonCornerRadius": "0",
+                    "ToggleButtonHeight": "40"
                 },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -48,7 +49,8 @@
                     "ButtonForegroundColor":  "#000000",
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
-                    "ButtonCornerRadius": "2"
+                    "ButtonCornerRadius": "2",
+                    "ToggleButtonHeight": "25"
                 },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
@@ -74,6 +76,7 @@
                    "ButtonForegroundColor":  "#9CCC65",
                    "ButtonBorderThickness":  "1",
                    "ButtonMargin":  "1",
-                   "ButtonCornerRadius": "2"
+                   "ButtonCornerRadius": "2",
+                   "ToggleButtonHeight": "25"
                }
 }

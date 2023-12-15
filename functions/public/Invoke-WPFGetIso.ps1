@@ -70,15 +70,21 @@ function Invoke-WPFGetIso {
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
     Write-Host "Setting up mount dir and scratch dirs"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $randomNumber = Get-Random -Minimum 1 -Maximum 9999
+    $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
+    $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
+    Write-Host "Scratch dir is $scratchDir"
+    Write-Host "Image dir is $mountDir"
 
     try {
         
-        $data = @($driveLetter, $filePath)
+        #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
