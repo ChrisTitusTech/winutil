@@ -688,7 +688,7 @@
 		"choco": "qbittorrent"
 	},
 	"WPFInstallqtox": {
-		"winget": "Tox.QTox",
+		"winget": "Tox.qTox",
 		"choco": "qtox"
 	},
 	"WPFInstallrainmeter": {
