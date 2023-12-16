@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.08
+    Version        : 23.12.16
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.08"
+$sync.version = "23.12.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4084,6 +4084,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallchatterino" Content="Chatterino" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallferdium" Content="Ferdium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
@@ -4197,11 +4198,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
 
                                 <Label Content="WSL Apps" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallarch" Content="Arch" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallarch" Content="Arch (From Win Store)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldebian" Content="Debian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfedora" Content="Fedora WSL Remix" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopensuseleap" Content="OpenSUSE Leap 15.5" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopensusetw" Content="OpenSUSE Tumbleweed" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu1604" Content="Ubuntu 16.04 LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu1804" Content="Ubuntu 18.04 LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu2004" Content="Ubuntu 20.04 LTS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubuntu2204" Content="Ubuntu 22.04 LTS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
                             </StackPanel>
@@ -4759,13 +4763,13 @@ $sync.configs.applications = '{
 		"winget": "Cemu.Cemu",
 		"choco": "cemu"
 	},
+	"WPFInstallchatterino": {
+		"winget": "ChatterinoTeam.Chatterino",
+		"choco": "chatterino"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
-	},
-	"WPFInstallcopyq": {
-		"winget": "hluk.CopyQ",
-		"choco": "copyq"
 	},
 	"WPFInstallchromium": {
 		"winget": "eloston.ungoogled-chromium",
@@ -4790,6 +4794,10 @@ $sync.configs.applications = '{
 	"WPFInstallclonehero": {
 		"winget": "CloneHeroTeam.CloneHero",
 		"choco": "na"
+	},
+	"WPFInstallcopyq": {
+		"winget": "hluk.CopyQ",
+		"choco": "copyq"
 	},
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
@@ -5526,6 +5534,18 @@ $sync.configs.applications = '{
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
+	},
+	"WPFInstallubuntu1604": {
+		"winget": " Canonical.Ubuntu.1604",
+		"choco": "na"
+	},
+	"WPFInstallubuntu1804": {
+		"winget": " Canonical.Ubuntu.1804",
+		"choco": "na"
+	},
+	"WPFInstallubuntu2004": {
+		"winget": " Canonical.Ubuntu.2004",
+		"choco": "na"
 	},
 	"WPFInstallubuntu2204": {
 		"winget": "Canonical.Ubuntu.2204",
