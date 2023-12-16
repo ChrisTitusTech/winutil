@@ -44,9 +44,18 @@ else
     break
 }
 function ConvertTo-Icon { 
+    <#
+    
+        .DESCRIPTION
+        This function will convert PNG to ICO file
+
+        .EXAMPLE
+        ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
+    #>
     param( [Parameter(Mandatory=$true)] 
-    $bitmapPath, 
-    $iconPath = "$env:temp\newicon.ico" ) 
+        $bitmapPath, 
+        $iconPath = "$env:temp\newicon.ico"
+    ) 
     
     Add-Type -AssemblyName System.Drawing 
     
@@ -57,10 +66,10 @@ function ConvertTo-Icon {
         $icon.Save($file) 
         $file.Close() 
         $icon.Dispose() 
-        explorer "/SELECT,$iconpath" 
+        #explorer "/SELECT,$iconpath" 
     } 
     else { Write-Warning "$BitmapPath does not exist" } 
-} 
+}
 function Copy-Files {
     <#
     
@@ -161,6 +170,33 @@ function Get-LocalizedYesNo {
     # Return the array of characters
     return $charactersArray
   }
+function Get-Oscdimg { 
+    <#
+    
+        .DESCRIPTION
+        This function will get oscdimg file for from github Release foldersand put it into env:temp
+
+        .EXAMPLE
+        Get-Oscdimg
+    #>
+    param( [Parameter(Mandatory=$true)] 
+        $oscdimgPath = "$env:TEMP\oscdimg.exe"
+    ) 
+
+    $downloadUrl = "https://github.com/KonTy/archi/releases/download/oscdimg/oscdimg.exe"
+    Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
+    $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
+    $sha256Hash = $hashResult.Hash
+
+    Write-Host "[INFO] oscdimg.exe SHA-256 Hash: $sha256Hash"
+
+    $expectedHash = "F62B91A06F94019A878DD9D1713FFBA2140B863C131EB78A329B4CCD6102960E"  # Replace with the actual expected hash
+    if ($sha256Hash -eq $expectedHash) {
+        Write-Host "Hashes match. File is verified."
+    } else {
+        Write-Host "Hashes do not match. File may be corrupted or tampered with."
+    }
+} 
 Function Get-WinUtilCheckBoxes {
 
     <#
@@ -2280,22 +2316,42 @@ function Invoke-WPFGetIso {
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+    $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf    
+
     if (!$oscdImgFound) 
     {
-        [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
+        [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
         
-        # the step below needs choco to download oscdimg
-        $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-        Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) 
+        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+
+        if (!$downloadFromGitHub) 
         {
-            [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+            # the step below needs choco to download oscdimg
+            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
+            Write-Host "choco on system: $oscdImgFound"
+            if (!$chocoFound) 
+            {
+                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+                return
+            }
+
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
+            [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
             return
         }
-
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-        [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
-        return
+        else {
+            Get-Oscdimg -oscdimgPath $oscdimgPath
+            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+            if (!$oscdImgFound) {
+                $msg = "oscdimg was not downloaded can not proceed"
+                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+                return
+            }
+            else {
+                Write-Host "oscdimg.exe was successfully downloaded from github"
+            }
+        }
     }
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
@@ -2308,7 +2364,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
-        break
+        return
     }
 
     Write-Host "File path $($filePath)"
@@ -2316,7 +2372,7 @@ function Invoke-WPFGetIso {
     {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-        break
+        return
     }
 
     Write-Host "Mounting Iso. Please wait."
@@ -2812,8 +2868,19 @@ function Invoke-WPFMicrowin {
 		dism /unmount-image /mountdir:$scratchDir /commit 
 
 		Write-Host "Creating ISO image"
+
+		# if we downloaded oscdimg from github it will be in the temp directory so use it
+		# if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
+		$oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+		$oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+		if (!$oscdImgFound)
+		{
+			$oscdimgPath = "oscdimg.exe"
+		}
+
+		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
 
 		if ($copyToUSB)
 		{
@@ -4217,10 +4284,45 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
                             <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                             <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
+
+                            <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>                            
+
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
+                            <Label Content="Document" FontSize="16" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
+                            <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallmasscode" Content="massCode (Snippet Manager)" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
+
                             <Label Content="Development" FontSize="16" Margin="5,0"/>
                             <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
                             <CheckBox Name="WPFInstallclink" Content="Clink" Margin="5,0"/>
@@ -4249,25 +4351,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-
-                            <Label Content="Document" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmasscode" Content="massCode (Snippet Manager)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
+                        
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="2">
@@ -4283,24 +4367,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                             <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
 
-                            <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
                             <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" Margin="5,0"/>
                             <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
@@ -4335,7 +4401,10 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
                             <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
                             <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
@@ -4350,10 +4419,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+
                             <Label Content="Utilities" FontSize="16" Margin="5,0"/>
                             <CheckBox Name="WPFInstall7zip" Content="7-Zip" Margin="5,0"/>
                             <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
@@ -4385,6 +4451,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                             <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                             <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
+                        
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="4">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                             <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
                             <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
@@ -4626,6 +4697,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you''ve downloaded <LineBreak/>
                                 Check the status in the console

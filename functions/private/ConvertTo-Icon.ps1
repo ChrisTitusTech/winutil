@@ -1,7 +1,16 @@
 function ConvertTo-Icon { 
+    <#
+    
+        .DESCRIPTION
+        This function will convert PNG to ICO file
+
+        .EXAMPLE
+        ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
+    #>
     param( [Parameter(Mandatory=$true)] 
-    $bitmapPath, 
-    $iconPath = "$env:temp\newicon.ico" ) 
+        $bitmapPath, 
+        $iconPath = "$env:temp\newicon.ico"
+    ) 
     
     Add-Type -AssemblyName System.Drawing 
     
@@ -12,7 +21,7 @@ function ConvertTo-Icon {
         $icon.Save($file) 
         $file.Close() 
         $icon.Dispose() 
-        explorer "/SELECT,$iconpath" 
+        #explorer "/SELECT,$iconpath" 
     } 
     else { Write-Warning "$BitmapPath does not exist" } 
-} 
+}

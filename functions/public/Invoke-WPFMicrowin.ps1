@@ -297,8 +297,19 @@ function Invoke-WPFMicrowin {
 		dism /unmount-image /mountdir:$scratchDir /commit 
 
 		Write-Host "Creating ISO image"
+
+		# if we downloaded oscdimg from github it will be in the temp directory so use it
+		# if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
+		$oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+		$oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+		if (!$oscdImgFound)
+		{
+			$oscdimgPath = "oscdimg.exe"
+		}
+
+		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
 
 		if ($copyToUSB)
 		{
