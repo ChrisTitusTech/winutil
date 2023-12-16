@@ -83,13 +83,13 @@
 		"winget": "Cemu.Cemu",
 		"choco": "cemu"
 	},
+	"WPFInstallchatterino": {
+		"winget": "ChatterinoTeam.Chatterino",
+		"choco": "chatterino"
+	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
-	},
-	"WPFInstallcopyq": {
-		"winget": "hluk.CopyQ",
-		"choco": "copyq"
 	},
 	"WPFInstallchromium": {
 		"winget": "eloston.ungoogled-chromium",
@@ -114,6 +114,10 @@
 	"WPFInstallclonehero": {
 		"winget": "CloneHeroTeam.CloneHero",
 		"choco": "na"
+	},
+	"WPFInstallcopyq": {
+		"winget": "hluk.CopyQ",
+		"choco": "copyq"
 	},
 	"WPFInstallcpuz": {
 		"winget": "CPUID.CPU-Z",
@@ -850,6 +854,18 @@
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect"
+	},
+	"WPFInstallubuntu1604": {
+		"winget": " Canonical.Ubuntu.1604",
+		"choco": "na"
+	},
+	"WPFInstallubuntu1804": {
+		"winget": " Canonical.Ubuntu.1804",
+		"choco": "na"
+	},
+	"WPFInstallubuntu2004": {
+		"winget": " Canonical.Ubuntu.2004",
+		"choco": "na"
 	},
 	"WPFInstallubuntu2204": {
 		"winget": "Canonical.Ubuntu.2204",

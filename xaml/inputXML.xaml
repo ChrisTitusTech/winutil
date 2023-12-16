@@ -539,6 +539,7 @@
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallchatterino" Content="Chatterino" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallferdium" Content="Ferdium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
@@ -652,11 +653,14 @@
                                 <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
 
                                 <Label Content="WSL Apps" FontSize="16" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallarch" Content="Arch" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallarch" Content="Arch (From Win Store)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldebian" Content="Debian" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfedora" Content="Fedora WSL Remix" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopensuseleap" Content="OpenSUSE Leap 15.5" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopensusetw" Content="OpenSUSE Tumbleweed" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu1604" Content="Ubuntu 16.04 LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu1804" Content="Ubuntu 18.04 LTS" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallubuntu2004" Content="Ubuntu 20.04 LTS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubuntu2204" Content="Ubuntu 22.04 LTS" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
                             </StackPanel>
