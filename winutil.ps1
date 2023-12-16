@@ -4092,7 +4092,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-				<CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
+				                <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallqtox" Content="QTox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
@@ -5368,7 +5368,7 @@ $sync.configs.applications = '{
 		"choco": "qbittorrent"
 	},
 	"WPFInstallqtox": {
-		"winget": "Tox.QTox",
+		"winget": "Tox.qTox",
 		"choco": "qtox"
 	},
 	"WPFInstallrainmeter": {
