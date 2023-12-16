@@ -23,7 +23,9 @@
                     "ButtonBorderThickness":  "0",
                     "ButtonMargin":  "0,3,0,3",
                     "ButtonCornerRadius": "0",
-                    "ToggleButtonHeight": "40"
+                    "ToggleButtonHeight": "40",
+                    "BorderColor": "#000000",
+                    "BorderOpacity": "0.2"
                 },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -50,7 +52,9 @@
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
                     "ButtonCornerRadius": "2",
-                    "ToggleButtonHeight": "25"
+                    "ToggleButtonHeight": "25",
+                    "BorderColor": "#000000",
+                    "BorderOpacity": "0.2"
                 },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
@@ -77,6 +81,8 @@
                    "ButtonBorderThickness":  "1",
                    "ButtonMargin":  "1",
                    "ButtonCornerRadius": "2",
-                   "ToggleButtonHeight": "25"
+                   "ToggleButtonHeight": "25",
+                   "BorderColor": "#FFAC1C",
+                   "BorderOpacity": "0.8"
                }
 }

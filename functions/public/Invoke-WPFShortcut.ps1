@@ -1,3 +1,4 @@
+
 function Invoke-WPFShortcut {
     <#
 
@@ -10,13 +11,19 @@ function Invoke-WPFShortcut {
     #>
     param($ShortcutToAdd)
 
-    Switch ($ShortcutToAdd) {
+        $iconPath = $null
+        Switch ($ShortcutToAdd) {
         "WinUtil" {
             $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
             $IRM = 'irm https://christitus.com/win | iex'
             $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
             $ArgumentsToSourceExe = "$powershell '$IRM'"
             $DestinationName = "WinUtil.lnk"
+
+            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
+                $iconPath = "$env:SystempRoot\cttlogo.ico"
+                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
+            }
         }
     }
 
@@ -30,6 +37,9 @@ function Invoke-WPFShortcut {
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
     $Shortcut.TargetPath = $SourceExe
     $Shortcut.Arguments = $ArgumentsToSourceExe
+    if ($iconPath -ne $null) {
+        $shortcut.IconLocation = $iconPath
+    }
     $Shortcut.Save()
 
     Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"

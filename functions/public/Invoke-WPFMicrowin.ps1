@@ -10,6 +10,7 @@ function Invoke-WPFMicrowin {
         return
     }
 
+	
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -145,13 +146,11 @@ function Invoke-WPFMicrowin {
 		{
 			$pngPath = "$env:TEMP\cttlogo.png"
 			$icoPath = "$env:TEMP\cttlogo.ico"
-			Add-Type -AssemblyName System.Drawing
-			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
-			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+			ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
 			Write-Host "ICO file created at: $icoPath"
 			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
-			$shortcut.IconLocation = "c:\cttlogo.ico"
+			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
+			$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 		}
 
 		$shortcut.TargetPath = "powershell.exe"

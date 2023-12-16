@@ -161,7 +161,7 @@ $commonKeyEvents = {
 
     # Escape removes focus from the searchbox that way all shortcuts will start workinf again
     if ($_.Key -eq "Escape") {
-        if ($sync.CheckboxFilter.IsFocused)
+        #if ($sync.CheckboxFilter.IsFocused)
         {
             $sync.CheckboxFilter.SelectAll()
             $sync.CheckboxFilter.Text = ""
@@ -243,7 +243,7 @@ $sync["Form"].Add_Loaded({
         # File does not exist, download it
         $wc = New-Object System.Net.WebClient
         $wc.DownloadFile($downloadUrl, $destinationPath)
-        Write-Output "File downloaded to: $destinationPath"
+        Write-Host "File downloaded to: $destinationPath"
     } else {
         Write-Output "File already exists at: $destinationPath"
     }
@@ -311,20 +311,6 @@ $sync["CheckboxFilter"].Add_TextChanged({
          }
      }
 })
-
-
-$downloadUrl = "https://christitus.com/images/logo-full.png"
-$destinationPath = Join-Path $env:TEMP "cttlogo.png"
-
-# Check if the file already exists
-if (-not (Test-Path $destinationPath)) {
-    # File does not exist, download it
-    $wc = New-Object System.Net.WebClient
-    $wc.DownloadFile($downloadUrl, $destinationPath)
-    Write-Output "File downloaded to: $destinationPath"
-} else {
-    Write-Output "File already exists at: $destinationPath"
-}
 
 # show current windowsd Product ID
 #Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
