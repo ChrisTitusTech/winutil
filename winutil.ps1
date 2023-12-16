@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.06
+    Version        : 23.12.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.06"
+$sync.version = "23.12.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4073,8 +4073,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallfalkon" Content="Edge" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallfirefox" Content="Falkon" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfalkon" Content="Falkon" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
 				<CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
 				<CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
@@ -4175,7 +4175,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmoonlight" Content="Moonlight/GameStream Client" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallplaynite" Content="Playnite" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallSidequest" Content="SideQuestVR" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallsidequest" Content="SideQuestVR" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsunshine" Content="Sunshine/GameStream Server" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
@@ -4212,7 +4212,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallclementine" Content="Clementine" Margin="5,0"/>
-                                <CheckBox Name="WPFInstall" Content="Carnac" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallclipgrab" Content="Clipgrab" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallcopyq" Content="Copyq (Clipboard Manager)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldigikam" Content="DigiKam" Margin="5,0"/>
@@ -4241,7 +4240,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
-								<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
+				<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
@@ -4257,7 +4256,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
                                 
-								<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
+				<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
 				<CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
@@ -4285,7 +4284,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
-								<CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
+				<CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
 				<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
@@ -4298,7 +4297,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
-								<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
+				<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmeld" Content="Meld" Margin="5,0"/>
@@ -4309,7 +4308,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
-								<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
+				<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
                                 <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
