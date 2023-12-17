@@ -264,6 +264,20 @@ function Invoke-WPFMicrowin {
 		# Next step boot image		
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
 		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+
+		if ($injectDrivers)
+		{
+			$driverPath = $sync.MicrowinDriverLocation.Text
+			if (Test-Path $driverPath)
+			{
+				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+			}
+			else 
+			{
+				Write-Host "Path to drivers is invalid continuing without driver injection"
+			}
+		}
 	
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
