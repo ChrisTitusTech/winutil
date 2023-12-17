@@ -26,15 +26,16 @@ function Invoke-WPFGetIso {
 
     if (!$oscdImgFound) 
     {
-        [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
-        
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
 
         if (!$downloadFromGitHub) 
         {
+            # only show the message to people who did check the box to download from github, if you check the box 
+            # you consent to downloading it, no need to show extra dialogs
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
             # the step below needs choco to download oscdimg
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-            Write-Host "choco on system: $oscdImgFound"
+            Write-Host "choco on system: $chocoFound"
             if (!$chocoFound) 
             {
                 [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
@@ -42,7 +43,7 @@ function Invoke-WPFGetIso {
             }
 
             Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-            [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
+            [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1")
             return
         }
         else {
