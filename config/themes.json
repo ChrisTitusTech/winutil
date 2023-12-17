@@ -25,7 +25,8 @@
                     "ButtonCornerRadius": "0",
                     "ToggleButtonHeight": "40",
                     "BorderColor": "#000000",
-                    "BorderOpacity": "0.2"
+                    "BorderOpacity": "0.2",
+                    "ShadowPulse": "Forever"
                 },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -54,7 +55,8 @@
                     "ButtonCornerRadius": "2",
                     "ToggleButtonHeight": "25",
                     "BorderColor": "#000000",
-                    "BorderOpacity": "0.2"
+                    "BorderOpacity": "0.2",
+                    "ShadowPulse": "Forever"
                 },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
@@ -83,6 +85,7 @@
                    "ButtonCornerRadius": "2",
                    "ToggleButtonHeight": "25",
                    "BorderColor": "#FFAC1C",
-                   "BorderOpacity": "0.8"
+                   "BorderOpacity": "0.8",
+                   "ShadowPulse": "0:0:3"
                }
 }

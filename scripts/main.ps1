@@ -232,6 +232,19 @@ $sync["Form"].Add_MouseLeftButtonDown({
     $sync["Form"].DragMove()
 })
 
+$sync["Form"].Add_MouseDoubleClick({
+    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal)
+    {
+        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
+    }
+    else
+    {
+        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
+    }
+})
+
+
+
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
    
@@ -288,6 +301,7 @@ $sync["Form"].Add_Loaded({
     
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+    
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 })

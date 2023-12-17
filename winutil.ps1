@@ -4123,6 +4123,26 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <!-- <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.ShadowDepth)"
+                                From="6" To="15" Duration="{ShadowPulse}" AutoReverse="True"/> -->
+                            <!-- <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Direction)"
+                                From="0" To="360" Duration="Forever"/> -->
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Opacity)"
+                                From="0.5" To="0.94" Duration="{ShadowPulse}" AutoReverse="True"/>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.BlurRadius)"
+                                From="5" To="15" Duration="{ShadowPulse}" AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="TextBox">
@@ -4150,7 +4170,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             </Setter>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect ShadowDepth="2" BlurRadius="5" Opacity="0.2" Color="{MainForegroundColor}"/>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -4254,7 +4274,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
                         <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                     </StackPanel>
-                    <Border Grid.Row="1" Grid.Column="0">
+                    <Border Grid.Row="1" Grid.Column="0" >
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Label Content="Browsers" FontSize="16" Margin="5,0"/>
                             <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
@@ -4818,14 +4838,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 xml:space = "preserve"
                             >
 <Bold>Example:</Bold>
-C:\drivers\
-|-- Driver1\
-|   |-- Driver1.inf
-|   |-- Driver1.sys
-|-- Driver2\
-|   |-- Driver2.inf
-|   |-- Driver2.sys
-|-- OtherFiles...
+     C:\drivers\
+          |-- Driver1\
+          |   |-- Driver1.inf
+          |   |-- Driver1.sys
+          |-- Driver2\
+          |   |-- Driver2.inf
+          |   |-- Driver2.sys
+          |-- OtherFiles...
                             </TextBlock>
                         </StackPanel>
                     </Border>
@@ -5796,7 +5816,8 @@ $sync.configs.themes = '{
                     "ButtonCornerRadius": "0",
                     "ToggleButtonHeight": "40",
                     "BorderColor": "#000000",
-                    "BorderOpacity": "0.2"
+                    "BorderOpacity": "0.2",
+                    "ShadowPulse": "Forever"
                 },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -5825,7 +5846,8 @@ $sync.configs.themes = '{
                     "ButtonCornerRadius": "2",
                     "ToggleButtonHeight": "25",
                     "BorderColor": "#000000",
-                    "BorderOpacity": "0.2"
+                    "BorderOpacity": "0.2",
+                    "ShadowPulse": "Forever"
                 },                
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
@@ -5854,7 +5876,8 @@ $sync.configs.themes = '{
                    "ButtonCornerRadius": "2",
                    "ToggleButtonHeight": "25",
                    "BorderColor": "#FFAC1C",
-                   "BorderOpacity": "0.8"
+                   "BorderOpacity": "0.8",
+                   "ShadowPulse": "0:0:3"
                }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
@@ -8490,6 +8513,19 @@ $sync["Form"].Add_MouseLeftButtonDown({
     $sync["Form"].DragMove()
 })
 
+$sync["Form"].Add_MouseDoubleClick({
+    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal)
+    {
+        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
+    }
+    else
+    {
+        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
+    }
+})
+
+
+
 # setting window icon to make it look more professional
 $sync["Form"].Add_Loaded({
    
@@ -8546,6 +8582,7 @@ $sync["Form"].Add_Loaded({
     
     # Move the window to that position...
     [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+    
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 })
