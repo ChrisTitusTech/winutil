@@ -538,6 +538,7 @@
                                 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
                                 <Label Content="Communications" FontSize="16" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallBetterbird" Content="Betterbird" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
@@ -551,7 +552,6 @@
                                 <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallBetterbird" Content="BetterBird" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
                             </StackPanel>

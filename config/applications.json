@@ -39,6 +39,10 @@
 		"winget": "AutoHotkey.AutoHotkey",
 		"choco": "autohotkey"
 	},
+	"WPFInstallBetterbird": {
+		"winget": "Betterbird.Betterbird",
+		"choco": "betterbird"
+	},
 	"WPFInstallbitwarden": {
 		"winget": "Bitwarden.Bitwarden",
 		"choco": "bitwarden"
@@ -798,9 +802,5 @@
 	"WPFInstallzotero": {
 		"winget": "DigitalScholar.Zotero",
 		"choco": "zotero"
-	},
-	"WPFInstallBetterBird": {
-		"winget": "Betterbird.Betterbird",
-		"choco": "betterbird"
 	}
 }
