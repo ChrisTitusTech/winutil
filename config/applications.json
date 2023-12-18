@@ -798,5 +798,9 @@
 	"WPFInstallzotero": {
 		"winget": "DigitalScholar.Zotero",
 		"choco": "zotero"
+	},
+	"WPFInstallBetterBird": {
+		"winget": "Betterbird.Betterbird",
+		"choco": "betterbird"
 	}
 }
