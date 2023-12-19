@@ -616,8 +616,6 @@
                             <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
                             <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                             <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmercury" Content="Mercury" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallthorium" Content="Thorium Browser" Margin="5,0"/>
                             <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
