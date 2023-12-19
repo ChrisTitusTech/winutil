@@ -308,13 +308,6 @@ function Invoke-WPFMicrowin {
 			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
-		Write-Host " _____                       "
-		Write-Host "(____ \                      "
-		Write-Host " _   \ \ ___  ____   ____    "
-		Write-Host "| |   | / _ \|  _ \ / _  )   "
-		Write-Host "| |__/ / |_| | | | ( (/ /    "
-		Write-Host "|_____/ \___/|_| |_|\____)   "
-
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
 			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
@@ -325,11 +318,11 @@ function Invoke-WPFMicrowin {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-
-		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
+		$sync.MicrowinWindowsFlavors.ItemsSource = $null;
+		# return UI to its original state less chances for people to mess up
+		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-
 		$sync.ProcessRunning = $false
 	}
 }
