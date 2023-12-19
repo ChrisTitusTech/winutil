@@ -6335,12 +6335,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "BcastDVRUserService_dc2a4",
+        "Name": "BcastDVRUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "BluetoothUserService_dc2a4",
+        "Name": "BluetoothUserService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6370,7 +6370,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CDPUserSvc_dc2a4",
+        "Name": "CDPUserSvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -6380,7 +6380,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "CaptureService_dc2a4",
+        "Name": "CaptureService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6395,7 +6395,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "ConsentUxUserSvc_dc2a4",
+        "Name": "ConsentUxUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6405,7 +6405,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
+        "Name": "CredentialEnrollmentManagerUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6440,7 +6440,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DeviceAssociationBrokerSvc_dc2a4",
+        "Name": "DeviceAssociationBrokerSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6455,12 +6455,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicePickerUserSvc_dc2a4",
+        "Name": "DevicePickerUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicesFlowUserSvc_dc2a4",
+        "Name": "DevicesFlowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6670,7 +6670,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "MessagingService_dc2a4",
+        "Name": "MessagingService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6695,7 +6695,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Disabled"
       },
       {
-        "Name": "NPSMSvc_dc2a4",
+        "Name": "NPSMSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6731,8 +6731,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Netlogon",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
+        "StartupType": "Automatic",
+        "OriginalType": "Automatic"
       },
       {
         "Name": "Netman",
@@ -6755,12 +6755,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "OneSyncSvc_dc2a4",
+        "Name": "OneSyncSvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
-        "Name": "P9RdrService_dc2a4",
+        "Name": "P9RdrService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6785,7 +6785,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PenService_dc2a4",
+        "Name": "PenService_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6800,7 +6800,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PimIndexMaintenanceSvc_dc2a4",
+        "Name": "PimIndexMaintenanceSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6825,7 +6825,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PrintWorkflowUserSvc_dc2a4",
+        "Name": "PrintWorkflowUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -7100,7 +7100,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UdkUserSvc_dc2a4",
+        "Name": "UdkUserSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -7115,12 +7115,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UnistoreSvc_dc2a4",
+        "Name": "UnistoreSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "UserDataSvc_dc2a4",
+        "Name": "UserDataSvc_*",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -7300,7 +7300,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WpnUserService_dc2a4",
+        "Name": "WpnUserService_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -7345,7 +7345,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "cbdhsvc_dc2a4",
+        "Name": "cbdhsvc_*",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
@@ -7615,7 +7615,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "webthreatdefusersvc_dc2a4",
+        "Name": "webthreatdefusersvc_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -8031,6 +8031,12 @@ $sync.configs.tweaks = '{
             Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
         }
         Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
+
+        # Fix Managed by your organization in Edge if regustry path exists then remove it
+
+        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
+            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
+        }
 
         # Group svchost.exe processes
         $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
@@ -8500,6 +8506,23 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Type": "DWord"
       }
+    ]
+  },
+  "WPFEssTweaksTeredo": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "netsh interface teredo set state disabled"
+    ],
+    "UndoScript": [
+      "netsh interface teredo set state default"
     ]
   },
   "WPFBingSearch": {
