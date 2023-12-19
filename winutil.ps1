@@ -4228,14 +4228,14 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
-                                <CheckBox Name="WPFInstalllbry" Content="LBRY" Margin="5,0"/>
+                                <Checkbox Name="WPFInstalllmms" Content="LMMS (DAW)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
-				<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
+				                        <CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
@@ -4250,10 +4250,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
-                                
-				<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
+				                        <CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-				                <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
+				                        <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
@@ -5126,6 +5125,10 @@ $sync.configs.applications = '{
 	"WPFInstalllinphone": {
 		"winget": "BelledonneCommunications.Linphone",
 		"choco": "linphone"
+	},
+	"WPFInstalllmms": {
+		"winget": "LMMS.LMMS",
+		"choco": "lmms"
 	},
 	"WPFInstallmalwarebytes": {
 		"winget": "Malwarebytes.Malwarebytes",
