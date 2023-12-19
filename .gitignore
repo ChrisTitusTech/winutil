@@ -16,7 +16,6 @@ winutil.pdb
 [Dd]esktop.ini
 
 # Executables and Configs
-*.exe
 winget.msixbundle
 pester.ps1
 *.psd*
