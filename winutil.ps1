@@ -5435,10 +5435,10 @@ $sync.configs.applications = '{
 		"winget": "starship",
 		"choco": "starship"
 	},
-  "WPFInstallsteelseries": {
-    "winget": "SteelSeries.GG",
-    "choco": "steelseries-engine"
-  },
+	"WPFInstallsteelseries": {
+		"winget": "SteelSeries.GG",
+		"choco": "steelseries-engine"
+	},
 	"WPFInstallstrawberry": {
 		"winget": "StrawberryMusicPlayer.Strawberry",
 		"choco": "strawberrymusicplayer"
