@@ -11,8 +11,8 @@ function Get-Oscdimg {
         $oscdimgPath = "$env:TEMP\oscdimg.exe"
     )
     
-    $githubUserName = "KonTy"
-    $downloadUrl = "https://github.com/$githubUserName/winutil/releases/download/oscdimg/oscdimg.exe"
+    $githubUserName = "ChrisTitusTech"
+    $downloadUrl = "https://github.com/$githubUserName/winutil/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
     $sha256Hash = $hashResult.Hash
