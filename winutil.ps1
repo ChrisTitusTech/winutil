@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.16
+    Version        : 23.12.19
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.16"
+$sync.version = "23.12.19"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -160,7 +160,7 @@ function Get-LocalizedYesNo {
                 break
             }    
         }
-        elseif ($line -match "/D\s+") 
+        elseif ($line -match "/D   ") 
         {
             $found = $true
         }
@@ -183,8 +183,8 @@ function Get-Oscdimg {
         $oscdimgPath = "$env:TEMP\oscdimg.exe"
     )
     
-    $githubUserName = "KonTy"
-    $downloadUrl = "https://github.com/$githubUserName/winutil/releases/download/oscdimg/oscdimg.exe"
+    $githubUserName = "ChrisTitusTech"
+    $downloadUrl = "https://github.com/$githubUserName/winutil/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
     $sha256Hash = $hashResult.Hash
@@ -1450,7 +1450,7 @@ function New-FirstRun {
 			"BITS",
 			"BrokerInfrastructure",
 			"CDPSvc",
-			"CDPUserSvc_*",
+			"CDPUserSvc_dc2a4",
 			"CoreMessagingRegistrar",
 			"CryptSvc",
 			"DPS",
@@ -1468,7 +1468,7 @@ function New-FirstRun {
 			"LanmanWorkstation",
 			"MapsBroker",
 			"MpsSvc",
-			"OneSyncSvc_*",
+			"OneSyncSvc_dc2a4",
 			"Power",
 			"ProfSvc",
 			"RpcEptMapper",
@@ -1494,8 +1494,8 @@ function New-FirstRun {
 			"Winmgmt",
 			"WlanSvc",
 			"WpnService",
-			"WpnUserService_*",
-			"cbdhsvc_*",
+			"WpnUserService_dc2a4",
+			"cbdhsvc_dc2a4",
 			"edgeupdate",
 			"gpsvc",
 			"iphlpsvc",
@@ -1504,7 +1504,7 @@ function New-FirstRun {
 			"sppsvc",
 			"tiledatamodelsvc",
 			"vm3dservice",
-			"webthreatdefusersvc_*",
+			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
 "@		
 	
@@ -1529,7 +1529,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	#Stop-UnnecessaryServices
+	Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -1575,9 +1575,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.ico")
+	if (Test-Path -Path "c:\Windows\cttlogo.png")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
 	}
 	
 	# Set properties of the shortcut
@@ -2891,6 +2891,13 @@ function Invoke-WPFMicrowin {
 			Write-Host "Done Copying microwin.iso to USB drive!"
 		}
 		
+		Write-Host " _____                       "
+		Write-Host "(____ \                      "
+		Write-Host " _   \ \ ___  ____   ____    "
+		Write-Host "| |   | / _ \|  _ \ / _  )   "
+		Write-Host "| |__/ / |_| | | | ( (/ /    "
+		Write-Host "|_____/ \___/|_| |_|\____)   "
+
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
 			Write-Host "`n`nPerforming Cleanup..."
@@ -2903,11 +2910,11 @@ function Invoke-WPFMicrowin {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-		
-		$sync.MicrowinWindowsFlavors.ItemsSource = $null;
-		# return UI to its original state less chances for people to mess up
+
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+		
 		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+
 		$sync.ProcessRunning = $false
 	}
 }
@@ -3937,7 +3944,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                     <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                    <Setter Property="Foreground" Value="{CheckboxMouseOverColor}"/>
+                                    <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
                                 </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -4260,7 +4267,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         <RowDefinition Height=".10*"/>
                         <RowDefinition Height=".90*"/>
                     </Grid.RowDefinitions>
-
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
                         <Label Content="Winget:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFinstall" Content=" Install Selection " Margin="1" />
@@ -4920,16 +4926,12 @@ $sync.configs.applications = '{
 		"winget": "calibre.calibre",
 		"choco": "calibre"
 	},
-	"WPFInstallcarnac": {
-		"winget": "code52.Carnac",
-		"choco": "carnac"
-	},
 	"WPFInstallchrome": {
 		"winget": "Google.Chrome",
 		"choco": "googlechrome"
 	},
 	"WPFInstallcopyq": {
-		"winget": "hluk.CopyQ",
+		"winget": "copyq",
 		"choco": "copyq"
 	},
 	"WPFInstallchromium": {
@@ -5112,10 +5114,6 @@ $sync.configs.applications = '{
 		"winget": "REALiX.HWiNFO",
 		"choco": "hwinfo"
 	},
-	"WPFInstallimgburn": {
-		"winget": "LIGHTNINGUK.ImgBurn",
-		"choco": "imgburn"
-	},
 	"WPFInstallimageglass": {
 		"winget": "DuongDieuPhap.ImageGlass",
 		"choco": "imageglass"
@@ -5276,10 +5274,6 @@ $sync.configs.applications = '{
 		"winget": "ZeusSoftware.nGlide",
 		"choco": "na"
 	},
-	"WPFInstallnmap": {
-		"winget": "Insecure.Nmap",
-		"choco": "nmap"
-	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
 		"choco": "nodejs"
@@ -5299,10 +5293,6 @@ $sync.configs.applications = '{
 	"WPFInstallnuget": {
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline"
-	},
-	"WPFInstallnushell": {
-		"winget": "Nushell.Nushell",
-		"choco": "nushell"
 	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
@@ -5400,10 +5390,6 @@ $sync.configs.applications = '{
 		"winget": "Microsoft.Sysinternals.ProcessMonitor",
 		"choco": "procexp"
 	},
-	"WPFInstallprucaslicer": {
-		"winget": "Prusa3d.PrusaSlicer",
-		"choco": "prusaslicer"
-	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
 		"choco": "putty"
@@ -5499,14 +5485,6 @@ $sync.configs.applications = '{
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
 		"choco": "superf4"
-	},
-	"WPFInstallspacedrive": {
-		"winget": "spacedrive.Spacedrive",
-		"choco": "na"
-	},
-	"WPFInstalltailscale": {
-		"winget": "tailscale.tailscale",
-		"choco": "tailscale"
 	},
 	"WPFInstalltcpview": {
 		"winget": "Microsoft.Sysinternals.TCPView",
@@ -5624,10 +5602,6 @@ $sync.configs.applications = '{
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
 	},
-	"WPFIntallwslmanager": {
-		"Winget": "Bostrot.WSLManager",
-		"choco": "wsl2-distro-manager"
-	},
 	"WPFInstallwinscp": {
 		"winget": "WinSCP.WinSCP",
 		"choco": "winscp"
@@ -5651,10 +5625,6 @@ $sync.configs.applications = '{
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
-	},
-	"WPFInstallzotero": {
-		"winget": "DigitalScholar.Zotero",
-		"choco": "zotero"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -5732,14 +5702,6 @@ $sync.configs.feature = '{
 
     ]
   },
-  "WPFFeaturesandbox": {
-    "feature": [
-      "Containers-DisposableClientVM"
-    ],
-    "InvokeScript": [
-
-    ]
-  },
   "WPFFeaturenfs": {
     "feature": [
       "ServicesForNFS-ClientOnly",
@@ -5790,7 +5752,7 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-    "ClassicOld":  {
+    "Classic":  {
                     "ComboBoxBackgroundColor":  "#777777",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -5807,7 +5769,6 @@ $sync.configs.themes = '{
                     "ButtonUpdatesForegroundColor":  "#FFFFFF",
                     "ButtonBackgroundColor":  "#CACACA",
                     "ButtonBackgroundPressedColor":  "#FFFFFF",
-                    "CheckboxMouseOverColor": "#FFFFFF",
                     "ButtonBackgroundMouseoverColor":  "#A55A64",
                     "ButtonBackgroundSelectedColor":  "#BADFFF",
                     "ButtonForegroundColor":  "#000000",
@@ -5855,7 +5816,6 @@ $sync.configs.themes = '{
                    "MainForegroundColor":  "#9CCC65",
                    "MainBackgroundColor":  "#000000",
                    "LabelBackgroundColor":  "#000000",
-                   "GroupBorderBackgroundColor":  "Yellow",
                    "ComboBoxForegroundColor":  "#FFEE58",
                    "ButtonInstallBackgroundColor":  "#222222",
                    "ButtonTweaksBackgroundColor":  "#333333",
@@ -5867,7 +5827,6 @@ $sync.configs.themes = '{
                    "ButtonUpdatesForegroundColor":  "#FFFFFF",
                    "ButtonBackgroundColor":  "#000019",
                    "ButtonBackgroundPressedColor":  "#FFFFFF",
-                   "CheckboxMouseOverColor": "#FFFFFF",
                    "ButtonBackgroundMouseoverColor":  "#A55A64",
                    "ButtonBackgroundSelectedColor":  "#FF5733",
                    "ButtonForegroundColor":  "#9CCC65",
@@ -6061,12 +6020,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "BcastDVRUserService_*",
+        "Name": "BcastDVRUserService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "BluetoothUserService_*",
+        "Name": "BluetoothUserService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6096,7 +6055,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CDPUserSvc_*",
+        "Name": "CDPUserSvc_dc2a4",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -6106,7 +6065,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "CaptureService_*",
+        "Name": "CaptureService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6121,7 +6080,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "ConsentUxUserSvc_*",
+        "Name": "ConsentUxUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6131,7 +6090,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "CredentialEnrollmentManagerUserSvc_*",
+        "Name": "CredentialEnrollmentManagerUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6166,7 +6125,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DeviceAssociationBrokerSvc_*",
+        "Name": "DeviceAssociationBrokerSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6181,12 +6140,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicePickerUserSvc_*",
+        "Name": "DevicePickerUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "DevicesFlowUserSvc_*",
+        "Name": "DevicesFlowUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6396,7 +6355,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "MessagingService_*",
+        "Name": "MessagingService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6421,7 +6380,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Disabled"
       },
       {
-        "Name": "NPSMSvc_*",
+        "Name": "NPSMSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6457,8 +6416,8 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Netlogon",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
+        "StartupType": "Manual",
+        "OriginalType": "Manual"
       },
       {
         "Name": "Netman",
@@ -6481,12 +6440,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "OneSyncSvc_*",
+        "Name": "OneSyncSvc_dc2a4",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
       {
-        "Name": "P9RdrService_*",
+        "Name": "P9RdrService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6511,7 +6470,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PenService_*",
+        "Name": "PenService_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6526,7 +6485,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PimIndexMaintenanceSvc_*",
+        "Name": "PimIndexMaintenanceSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6551,7 +6510,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "PrintWorkflowUserSvc_*",
+        "Name": "PrintWorkflowUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6826,7 +6785,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UdkUserSvc_*",
+        "Name": "UdkUserSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -6841,12 +6800,12 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "UnistoreSvc_*",
+        "Name": "UnistoreSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
       {
-        "Name": "UserDataSvc_*",
+        "Name": "UserDataSvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Manual"
       },
@@ -7026,7 +6985,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WpnUserService_*",
+        "Name": "WpnUserService_dc2a4",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -7071,7 +7030,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "cbdhsvc_*",
+        "Name": "cbdhsvc_dc2a4",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       },
@@ -7341,7 +7300,7 @@ $sync.configs.tweaks = '{
         "OriginalType": "Manual"
       },
       {
-        "Name": "webthreatdefusersvc_*",
+        "Name": "webthreatdefusersvc_dc2a4",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
       },
@@ -7757,12 +7716,6 @@ $sync.configs.tweaks = '{
             Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
         }
         Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
-
-        # Fix Managed by your organization in Edge if regustry path exists then remove it
-
-        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
-            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
-        }
 
         # Group svchost.exe processes
         $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
@@ -8232,23 +8185,6 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Type": "DWord"
       }
-    ]
-  },
-  "WPFEssTweaksTeredo": {
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "33",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "netsh interface teredo set state disabled"
-    ],
-    "UndoScript": [
-      "netsh interface teredo set state default"
     ]
   },
   "WPFBingSearch": {
