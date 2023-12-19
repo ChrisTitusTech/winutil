@@ -10,6 +10,7 @@ function Invoke-WPFMicrowin {
         return
     }
 
+	
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -145,13 +146,11 @@ function Invoke-WPFMicrowin {
 		{
 			$pngPath = "$env:TEMP\cttlogo.png"
 			$icoPath = "$env:TEMP\cttlogo.ico"
-			Add-Type -AssemblyName System.Drawing
-			$pngImage = [System.Drawing.Image]::FromFile($pngPath)
-			$pngImage.Save($icoPath, [System.Drawing.Imaging.ImageFormat]::Icon)
+			ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
 			Write-Host "ICO file created at: $icoPath"
 			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\cttlogo.ico" -force
-			$shortcut.IconLocation = "c:\cttlogo.ico"
+			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
+			$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 		}
 
 		$shortcut.TargetPath = "powershell.exe"
@@ -298,8 +297,19 @@ function Invoke-WPFMicrowin {
 		dism /unmount-image /mountdir:$scratchDir /commit 
 
 		Write-Host "Creating ISO image"
+
+		# if we downloaded oscdimg from github it will be in the temp directory so use it
+		# if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
+		$oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+		$oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+		if (!$oscdImgFound)
+		{
+			$oscdimgPath = "oscdimg.exe"
+		}
+
+		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath "oscdimg.exe" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
 
 		if ($copyToUSB)
 		{
@@ -317,10 +327,12 @@ function Invoke-WPFMicrowin {
 
 		# Check if the ISO was successfully created - CTT edit
 		if ($LASTEXITCODE -eq 0) {
-			Write-Host "Done. ISO image is located here: $env:temp\microwin.iso"
-			Write-Host "Performing Cleanup"
+			Write-Host "`n`nPerforming Cleanup..."
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
+			$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
+			Write-Host $msg
+			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}

@@ -147,6 +147,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
 
 	$yesNo = Get-LocalizedYesNo
+	Write-Host "[INFO] In Your local takeown expects '$($yesNo[0])' as a Yes answer."
 
 	# Specify the path to the directory
 	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
