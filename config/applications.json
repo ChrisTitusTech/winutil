@@ -762,5 +762,9 @@
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
+	},
+	"WPFInstallgnumake": {
+		"winget": "GnuWin32.Make",
+		"choco": "make"
 	}
 }

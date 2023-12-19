@@ -4276,6 +4276,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallgnumake" Content="GNU Make" Margin="5,0"/>
                             </StackPanel>
                         </Grid>
                     </TabItem>
@@ -5372,6 +5373,10 @@ $sync.configs.applications = '{
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom"
+	},
+	"WPFInstallgnumake": {
+		"winget": "GnuWin32.Make",
+		"choco": "make"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
