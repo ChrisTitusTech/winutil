@@ -30,7 +30,7 @@ function Get-LocalizedYesNo {
                 break
             }    
         }
-        elseif ($line -match "/D   ") 
+        elseif ($line -match "/D\s+") 
         {
             $found = $true
         }

@@ -471,10 +471,6 @@
 		"winget": "Meld.Meld",
 		"choco": "meld"
 	},
-	"WPFInstallmercury": {
-		"winget": "Alex313031.Mercury",
-		"choco": "na"
-	},
 	"WPFInstallmoonlight": {
 		"winget": "MoonlightGameStreamingProject.Moonlight",
 		"choco": "moonlight-qt"
@@ -818,10 +814,6 @@
 	"WPFInstallterminal": {
 		"winget": "Microsoft.WindowsTerminal",
 		"choco": "microsoft-windows-terminal"
-	},
-	"WPFInstallthorium": {
-		"winget": "Alex313031.Thorium",
-		"choco": "na"
 	},
 	"WPFInstalltor": {
 		"Winget": "TorProject.TorBrowser",
