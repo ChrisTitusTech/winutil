@@ -18,25 +18,46 @@ function Invoke-WPFGetIso {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg)
-    Write-Host "oscdimge.exe on system: $oscdImgFound"
+    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe)
+    Write-Host "oscdimg.exe on system: $oscdImgFound"
     
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+    $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf    
+
     if (!$oscdImgFound) 
     {
-        [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, you need to download it first before running this function!")
-        
-        # the step below needs choco to download oscdimg
-        $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
-        Write-Host "choco on system: $oscdImgFound"
-        if (!$chocoFound) 
+        $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+
+        if (!$downloadFromGitHub) 
         {
-            [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+            # only show the message to people who did check the box to download from github, if you check the box 
+            # you consent to downloading it, no need to show extra dialogs
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
+            # the step below needs choco to download oscdimg
+            $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
+            Write-Host "choco on system: $chocoFound"
+            if (!$chocoFound) 
+            {
+                [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
+                return
+            }
+
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
+            [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1")
             return
         }
-
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
-        [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1 !!!")
-        return
+        else {
+            Get-Oscdimg -oscdimgPath $oscdimgPath
+            $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+            if (!$oscdImgFound) {
+                $msg = "oscdimg was not downloaded can not proceed"
+                [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+                return
+            }
+            else {
+                Write-Host "oscdimg.exe was successfully downloaded from github"
+            }
+        }
     }
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
@@ -49,7 +70,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
-        break
+        return
     }
 
     Write-Host "File path $($filePath)"
@@ -57,7 +78,7 @@ function Invoke-WPFGetIso {
     {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-        break
+        return
     }
 
     Write-Host "Mounting Iso. Please wait."
@@ -70,15 +91,21 @@ function Invoke-WPFGetIso {
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
     Write-Host "Setting up mount dir and scratch dirs"
-    $mountDir = "c:\microwin"
-    $scratchDir = "c:\microwinscratch"
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $randomNumber = Get-Random -Minimum 1 -Maximum 9999
+    $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
+    $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $mountDir = Join-Path $env:TEMP $randomMicrowin
+    $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
+    Write-Host "Scratch dir is $scratchDir"
+    Write-Host "Image dir is $mountDir"
 
     try {
         
-        $data = @($driveLetter, $filePath)
+        #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
@@ -93,7 +120,8 @@ function Invoke-WPFGetIso {
 
         if (-not (Test-Path -Path $wimFile -PathType Leaf))
         {
-            $msg = "install wim file doesn't exist in the image, are you sure you used Windows image??"
+            $msg = "Install.wim file doesn't exist in the image, this could happen if you use unofficial Windows images, or a Media creation tool, which creates a final image that can not be modified. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
+            Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
         }
