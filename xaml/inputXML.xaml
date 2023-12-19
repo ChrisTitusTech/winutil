@@ -593,7 +593,6 @@
                         <RowDefinition Height=".10*"/>
                         <RowDefinition Height=".90*"/>
                     </Grid.RowDefinitions>
-
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
                         <Label Content="Winget:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFinstall" Content=" Install Selection " Margin="1" />
