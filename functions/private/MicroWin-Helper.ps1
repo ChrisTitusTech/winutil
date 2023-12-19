@@ -417,7 +417,7 @@ function New-FirstRun {
 			"BITS",
 			"BrokerInfrastructure",
 			"CDPSvc",
-			"CDPUserSvc_dc2a4",
+			"CDPUserSvc_*",
 			"CoreMessagingRegistrar",
 			"CryptSvc",
 			"DPS",
@@ -435,7 +435,7 @@ function New-FirstRun {
 			"LanmanWorkstation",
 			"MapsBroker",
 			"MpsSvc",
-			"OneSyncSvc_dc2a4",
+			"OneSyncSvc_*",
 			"Power",
 			"ProfSvc",
 			"RpcEptMapper",
@@ -461,8 +461,8 @@ function New-FirstRun {
 			"Winmgmt",
 			"WlanSvc",
 			"WpnService",
-			"WpnUserService_dc2a4",
-			"cbdhsvc_dc2a4",
+			"WpnUserService_*",
+			"cbdhsvc_*",
 			"edgeupdate",
 			"gpsvc",
 			"iphlpsvc",
@@ -471,7 +471,7 @@ function New-FirstRun {
 			"sppsvc",
 			"tiledatamodelsvc",
 			"vm3dservice",
-			"webthreatdefusersvc_dc2a4",
+			"webthreatdefusersvc_*",
 			"wscsvc"
 "@		
 	
@@ -496,7 +496,7 @@ function New-FirstRun {
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
 	
-	Stop-UnnecessaryServices
+	#Stop-UnnecessaryServices
 	
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
 	# Delete all files on the Taskbar 
@@ -542,9 +542,9 @@ function New-FirstRun {
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
+	if (Test-Path -Path "c:\Windows\cttlogo.ico")
 	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
+		$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
 	}
 	
 	# Set properties of the shortcut
