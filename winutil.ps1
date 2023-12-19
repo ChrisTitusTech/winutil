@@ -4280,9 +4280,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
 				                        <CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
-                                <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
-								                <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
 				                        <CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
+                                <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
                                 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
                                 <CheckBox Name="WPFInstallfiles" Content="Files File Explorer" Margin="5,0"/>
