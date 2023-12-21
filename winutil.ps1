@@ -2327,7 +2327,7 @@ function Invoke-WPFGetIso {
         {
             # only show the message to people who did check the box to download from github, if you check the box 
             # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
+            [System.Windows.MessageBox]::Show("oscdimg.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
             # the step below needs choco to download oscdimg
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
