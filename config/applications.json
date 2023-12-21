@@ -92,7 +92,7 @@
 		"choco": "googlechrome"
 	},
 	"WPFInstallchromium": {
-		"winget": "eloston.ungoogled-chromium",
+		"winget": "Hibbiki.Chromium",
 		"choco": "chromium"
 	},
 	"WPFInstallcider": {
@@ -862,6 +862,10 @@
 	"WPFInstallubuntu2204": {
 		"winget": "Canonical.Ubuntu.2204",
 		"choco": "na"
+	},
+	"WPFInstallungoogled": {
+		"winget": "eloston.ungoogled-chromium",
+		"choco": "ungoogled-chromium"
 	},
 	"WPFInstallunity": {
 		"winget": "Unity.UnityHub",
