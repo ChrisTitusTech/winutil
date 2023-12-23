@@ -881,7 +881,7 @@
                             <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
                             <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
                             <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwmwareplayer" Content="VMWare Workstation Player" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallvmwareplayer" Content="VMWare Workstation Player" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>

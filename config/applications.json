@@ -179,7 +179,7 @@
 		"winget": "KDE.Dolphin",
 		"choco": "na"
 	},
-	"WPFInstalldoxbox": {
+	"WPFInstalldosbox": {
 		"winget": "DOSBox.DOSBox",
 		"choco": "dosbox"
 	},
@@ -943,7 +943,7 @@
 		"winget": "RARLab.WinRAR",
 		"choco": "winrar"
 	},
-	"WPFIntallwslmanager": {
+	"WPFInstallwslmanager": {
 		"Winget": "Bostrot.WSLManager",
 		"choco": "wsl2-distro-manager"
 	},
