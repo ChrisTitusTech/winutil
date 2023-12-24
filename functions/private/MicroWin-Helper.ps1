@@ -108,10 +108,9 @@ function Remove-ProvisionedPackages
 	$counter = 0
 	foreach ($appx in $appxProvisionedPackages)
 	{
-		$status = "Removing Provisioned $appx"
+		$status = "Removing Provisioned $($appx.PackageName)"
 		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
-								
+		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
 	}
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
