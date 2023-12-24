@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.20
+    Version        : 23.12.24
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.20"
+$sync.version = "23.12.24"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1139,10 +1139,9 @@ function Remove-ProvisionedPackages
 	$counter = 0
 	foreach ($appx in $appxProvisionedPackages)
 	{
-		$status = "Removing Provisioned $appx"
+		$status = "Removing Provisioned $($appx.PackageName)"
 		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
-								
+		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
 	}
 	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
@@ -4304,6 +4303,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
                             <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
                             <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
+                            <CheckBox Name="WPFInstallungoogled" Content="Ungoogled" Margin="5,0"/>
                             <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
                             <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
@@ -5020,7 +5020,7 @@ $sync.configs.applications = '{
 		"choco": "googlechrome"
 	},
 	"WPFInstallchromium": {
-		"winget": "eloston.ungoogled-chromium",
+		"winget": "Hibbiki.Chromium",
 		"choco": "chromium"
 	},
 	"WPFInstallcider": {
@@ -5790,6 +5790,10 @@ $sync.configs.applications = '{
 	"WPFInstallubuntu2204": {
 		"winget": "Canonical.Ubuntu.2204",
 		"choco": "na"
+	},
+	"WPFInstallungoogled": {
+		"winget": "eloston.ungoogled-chromium",
+		"choco": "ungoogled-chromium"
 	},
 	"WPFInstallunity": {
 		"winget": "Unity.UnityHub",
