@@ -104,15 +104,22 @@ function Remove-ProvisionedPackages
 			$_.PackageName -NotLike "*Wifi*" -and
 			$_.PackageName -NotLike "*Foundation*" 
 		} 
-
-	$counter = 0
-	foreach ($appx in $appxProvisionedPackages)
-	{
-		$status = "Removing Provisioned $($appx.PackageName)"
-		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
-	}
-	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    
+    if ($?)
+    {
+	    $counter = 0
+	    foreach ($appx in $appxProvisionedPackages)
+	    {
+		    $status = "Removing Provisioned $($appx.PackageName)"
+		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
+		    dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+	    }
+	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    }
+    else
+    {
+        Write-Host "Could not get Provisioned App information. Skipping process..."
+    }
 }
 
 function Copy-ToUSB([string] $fileToCopy)
