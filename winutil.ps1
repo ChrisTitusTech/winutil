@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.30
+    Version        : 24.01.01
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.30"
+$sync.version = "24.01.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1043,7 +1043,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
 	{
@@ -1071,7 +1071,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 
 function Remove-Packages
 {
-	$appxlist = dism /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Package Identity : " | Where-Object {$_}
 
 	$appxlist = $appxlist | Where-Object {
@@ -1116,7 +1116,7 @@ function Remove-Packages
 	{
 		$status = "Removing $appx"
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
+		dism /English /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
 	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
@@ -1143,7 +1143,7 @@ function Remove-ProvisionedPackages
 	    {
 		    $status = "Removing Provisioned $($appx.PackageName)"
 		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		    dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+		    dism /English /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
 	    }
 	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }
@@ -2621,7 +2621,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -2713,7 +2713,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Copy link to winutil.ps1 into the ISO"
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
-	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
 		$shortcutPath = "$desktopDir\WinUtil.lnk"
 		$shell = New-Object -ComObject WScript.Shell
@@ -2815,7 +2815,7 @@ function Invoke-WPFMicrowin {
 		reg unload HKLM\zSYSTEM
 
 		Write-Host "Cleaning up image..."
-		dism /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+		dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
 		Write-Host "Cleanup complete."
 
 		Write-Host "Unmounting image..."
@@ -2847,7 +2847,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
