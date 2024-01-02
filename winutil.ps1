@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 23.12.19
+    Version        : 24.01.02
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "23.12.19"
+$sync.version = "24.01.02"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -190,7 +190,7 @@ function Get-Oscdimg {
 
     Write-Host "[INFO] oscdimg.exe SHA-256 Hash: $sha256Hash"
 
-    $expectedHash = "F62B91A06F94019A878DD9D1713FFBA2140B863C131EB78A329B4CCD6102960E"  # Replace with the actual expected hash
+    $expectedHash = "AB9E161049D293B544961BFDF2D61244ADE79376D6423DF4F60BF9B147D3C78D"  # Replace with the actual expected hash
     if ($sha256Hash -eq $expectedHash) {
         Write-Host "Hashes match. File is verified."
     } else {
@@ -1043,7 +1043,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
 	{
@@ -1071,7 +1071,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 
 function Remove-Packages
 {
-	$appxlist = dism /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Package Identity : " | Where-Object {$_}
 
 	$appxlist = $appxlist | Where-Object {
@@ -1116,7 +1116,7 @@ function Remove-Packages
 	{
 		$status = "Removing $appx"
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
+		dism /English /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
 	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
@@ -1135,16 +1135,22 @@ function Remove-ProvisionedPackages
 			$_.PackageName -NotLike "*Wifi*" -and
 			$_.PackageName -NotLike "*Foundation*" 
 		} 
-
-	$counter = 0
-	foreach ($appx in $appxProvisionedPackages)
-	{
-		$status = "Removing Provisioned $appx"
-		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
-								
-	}
-	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    
+    if ($?)
+    {
+	    $counter = 0
+	    foreach ($appx in $appxProvisionedPackages)
+	    {
+		    $status = "Removing Provisioned $($appx.PackageName)"
+		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
+		    dism /English /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+	    }
+	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    }
+    else
+    {
+        Write-Host "Could not get Provisioned App information. Skipping process..."
+    }
 }
 
 function Copy-ToUSB([string] $fileToCopy)
@@ -2313,12 +2319,10 @@ function Invoke-WPFGetIso {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe)
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+    $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
-    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-    $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf    
-
     if (!$oscdImgFound) 
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
@@ -2327,7 +2331,7 @@ function Invoke-WPFGetIso {
         {
             # only show the message to people who did check the box to download from github, if you check the box 
             # you consent to downloading it, no need to show extra dialogs
-            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco or github. This might take a long time.")
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
@@ -2342,6 +2346,7 @@ function Invoke-WPFGetIso {
             return
         }
         else {
+            [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
             Get-Oscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
             if (!$oscdImgFound) {
@@ -2616,7 +2621,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -2708,7 +2713,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Copy link to winutil.ps1 into the ISO"
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
-	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
 		$shortcutPath = "$desktopDir\WinUtil.lnk"
 		$shell = New-Object -ComObject WScript.Shell
@@ -2810,7 +2815,7 @@ function Invoke-WPFMicrowin {
 		reg unload HKLM\zSYSTEM
 
 		Write-Host "Cleaning up image..."
-		dism /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+		dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
 		Write-Host "Cleanup complete."
 
 		Write-Host "Unmounting image..."
@@ -2842,7 +2847,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -4265,320 +4270,66 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
         </DockPanel>
-        <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
-        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0">
+       
+        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Grid Background="Transparent" >
+                   
                     <Grid.RowDefinitions>
-                        <RowDefinition Height=".10*"/>
-                        <RowDefinition Height=".90*"/>
+                        <RowDefinition Height="45px"/>
+                        <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
                         <Label Content="Winget:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFinstall" Content=" Install Selection " Margin="1" />
                         <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="1"/>
                         <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="1"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="1"/>
                         <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="1"/>
-                    </StackPanel>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="3" Grid.ColumnSpan="2" Margin="5">
+                  
                         <Label Content="Configuration File:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
                         <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                     </StackPanel>
-                    <Border Grid.Row="1" Grid.Column="0" >
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Browsers" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfalkon" Content="Falkon" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
-                            <Label Content="Communications" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchatterino" Content="Chatterino" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallferdium" Content="Ferdium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
-                            <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallqtox" Content="QTox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltweeten" Content="FOSS Twitter Client" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzulip" Content="Zulip" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                            <Border Grid.Row="1" Grid.Column="0">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel0}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
+                                    {{InstallPanel1}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="2">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel2}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="3">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel3}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="4">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel4}}
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
 
-                            <Label Content="Development" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclink" Content="Clink" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmspaintide" Content="MS Paint IDE" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallstarship" Content="Starship (Shell Prompt)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsublimemerge" Content="Sublime Merge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvagrant" Content="Vagrant" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallyarn" Content="Yarn" Margin="5,0"/>
-                        
-                            <Label Content="Document" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmasscode" Content="massCode (Snippet Manager)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxournal" Content="Xournal++" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzim" Content="Zim Desktop Wiki" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallznote" Content="Znote" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Games" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcemu" Content="Cemu" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclonehero" Content="Clone Hero" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallemulationstation" Content="Emulation Station" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallitch" Content="Itch.io" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmoonlight" Content="Moonlight/GameStream Client" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallplaynite" Content="Playnite" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsidequest" Content="SideQuestVR" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsunshine" Content="Sunshine/GameStream Server" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxemu" Content="XEMU" Margin="5,0"/>
-
-                            <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-
-                            <Label Content="WSL Apps" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallarch" Content="Arch (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldebian" Content="Debian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfedora" Content="Fedora WSL Remix" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopensuseleap" Content="OpenSUSE Leap 15.5 (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopensusetw" Content="OpenSUSE Tumbleweed (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu1604" Content="Ubuntu 16.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu1804" Content="Ubuntu 18.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu2004" Content="Ubuntu 20.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu2204" Content="Ubuntu 22.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
-                            
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-
-                        <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclementine" Content="Clementine" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclipgrab" Content="Clipgrab" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcopyq" Content="Copyq (Clipboard Manager)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldigikam" Content="DigiKam" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalleartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfreecad" Content="FreeCAD" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfirealpaca" Content="Fire Alpaca" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallimgburn" Content="ImgBurn" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
-				            <CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
-                            <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
-                            <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwireguard" Content="WireGuard" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxpipe" Content="X-Pipe" Margin="5,0"/>
-                        
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                        <Label Content="Utilities" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstall7zip" Content="7-Zip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbarrier" Content="Barrier" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbat" Content="Bat (Cat)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcarnac" Content="Carnac" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcrystaldiskinfo" Content="Crystal Disk Info" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcrystaldiskmark" Content="Crystal Disk Mark" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfiles" Content="Files File Explorer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmeld" Content="Meld" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallneofetchwin" Content="Neofetch" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
-                            <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprucaslicer" Content="Prusa Slicer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrainmeter" Content="Rainmeter" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltailscale" Content="Tailscale" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwmwareplayer" Content="VMWare Workstation Player" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinpaletter" Content="WinPaletter" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwisetoys" Content="WiseToys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzoxide" Content="Zoxide" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
@@ -4924,1021 +4675,1723 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Grid>
             </TabItem>
         </TabControl>
-        </ScrollViewer>
     </Grid>
 </Window>'
 $sync.configs.applications = '{
-	"WPFInstall7zip": {
-		"winget": "7zip.7zip",
-		"choco": "7zip"
-	},
-	"WPFInstalladobe": {
-		"winget": "Adobe.Acrobat.Reader.64-bit",
-		"choco": "adobereader"
-	},
-	"WPFInstalladvancedip": {
-		"winget": "Famatech.AdvancedIPScanner",
-		"choco": "advanced-ip-scanner"
-	},
-	"WPFInstallalacritty": {
-		"Winget": "Alacritty.Alacritty",
-		"choco": "alacritty"
-	},
-	"WPFInstallangryipscanner": {
-		"Winget": "angryziber.AngryIPScanner",
-		"choco": "angryip"
-	},
-	"WPFInstallanydesk": {
-		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
-		"choco": "anydesk"
-	},
-	"WPFInstallanki": {
-		"winget": "Anki.Anki",
-		"choco": "anki"
-	},
-	"WPFInstallaimp": {
-		"winget": "AIMP.AIMP",
-		"choco": "aimp"
-	},
-	"WPFInstallarch": {
-		"winget": "9MZNMNKSM73X",
-		"choco": "na"
-	},
-	"WPFInstallaudacity": {
-		"winget": "Audacity.Audacity",
-		"choco": "audacity"
-	},
-	"WPFInstallautohotkey": {
-		"winget": "AutoHotkey.AutoHotkey",
-		"choco": "autohotkey"
-	},
-	"WPFInstallbarrier": {
-		"winget": "DebaucheeOpenSourceGroup.Barrier",
-		"choco": "barrier"
-	},
-	"WPFInstallbat": {
-		"winget": "sharkdp.bat",
-		"choco": "bat"
-	},
-	"WPFInstallbitwarden": {
-		"winget": "Bitwarden.Bitwarden",
-		"choco": "bitwarden"
-	},
-	"WPFInstallblender": {
-		"winget": "BlenderFoundation.Blender",
-		"choco": "blender"
-	},
-	"WPFInstallbluestacks": {
-		"winget": "BlueStack.BlueStacks",
-		"choco": "bluestacks"
-	},
-	"WPFInstallbrave": {
-		"winget": "Brave.Brave",
-		"choco": "brave"
-	},
-	"WPFInstallbulkcrapuninstaller": {
-		"winget": "Klocman.BulkCrapUninstaller",
-		"choco": "bulk-crap-uninstaller"
-	},
-	"WPFInstallcalibre": {
-		"winget": "calibre.calibre",
-		"choco": "calibre"
-	},
-	"WPFInstallcarnac": {
-		"winget": "code52.Carnac",
-		"choco": "carnac"
-	},
-	"WPFInstallcemu": {
-		"winget": "Cemu.Cemu",
-		"choco": "cemu"
-	},
-	"WPFInstallchatterino": {
-		"winget": "ChatterinoTeam.Chatterino",
-		"choco": "chatterino"
-	},
-	"WPFInstallchrome": {
-		"winget": "Google.Chrome",
-		"choco": "googlechrome"
-	},
-	"WPFInstallchromium": {
-		"winget": "eloston.ungoogled-chromium",
-		"choco": "chromium"
-	},
-	"WPFInstallcider": {
-		"winget": "CiderCollective.Cider",
-		"choco": "cider"
-	},
-	"WPFInstallclementine": {
-		"winget": "Clementine.Clementine",
-		"choco": "clementine"
-	},
-	"WPFInstallclink": {
-		"winget": "chrisant996.Clink",
-		"choco": "clink"
-	},
-	"WPFInstallclipgrab": {
-		"winget": "na",
-		"choco": "clipgrab"
-	},
-	"WPFInstallclonehero": {
-		"winget": "CloneHeroTeam.CloneHero",
-		"choco": "na"
-	},
-	"WPFInstallcopyq": {
-		"winget": "hluk.CopyQ",
-		"choco": "copyq"
-	},
-	"WPFInstallcpuz": {
-		"winget": "CPUID.CPU-Z",
-		"choco": "cpu-z"
-	},
-	"WPFInstallcrystaldiskinfo": {
-		"winget": "CrystalDewWorld.CrystalDiskInfo",
-		"choco": "crystaldiskinfo"
-	},
-	"WPFInstallcrystaldiskmark": {
-		"winget": "CrystalDewWorld.CrystalDiskMark",
-		"choco": "crystaldiskmark"
-	},
-	"WPFInstallddu": {
-		"winget": "ddu",
-		"choco": "ddu"
-	},
-	"WPFInstalldebian": {
-		"winget": "Debian.Debian",
-		"choco": "na"
-	},
-	"WPFInstalldeluge": {
-		"winget": "DelugeTeam.Deluge",
-		"choco": "deluge"
-	},
-	"WPFInstalldevtoys": {
-		"winget": "devtoys",
-		"choco": "devToys"
-	},
-	"WPFInstalldigikam": {
-		"winget": "KDE.digikam",
-		"choco": "digikam"
-	},
-	"WPFInstalldiscord": {
-		"winget": "Discord.Discord",
-		"choco": "discord"
-	},
-	"WPFInstalldockerdesktop": {
-		"winget": "Docker.DockerDesktop",
-		"choco": "docker-desktop"
-	},
-	"WPFInstalldotnet3": {
-		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
-		"choco": "dotnetcore3-desktop-runtime"
-	},
-	"WPFInstalldotnet5": {
-		"winget": "Microsoft.DotNet.DesktopRuntime.5",
-		"choco": "dotnet-5.0-runtime"
-	},
-	"WPFInstalldotnet6": {
-		"winget": "Microsoft.DotNet.DesktopRuntime.6",
-		"choco": "dotnet-6.0-runtime"
-	},
-	"WPFInstalldotnet7": {
-		"winget": "Microsoft.DotNet.DesktopRuntime.7",
-		"choco": "dotnet-7.0-runtime"
-	},
-	"WPFInstalldolphin": {
-		"winget": "KDE.Dolphin",
-		"choco": "na"
-	},
-	"WPFInstalldoxbox": {
-		"winget": "DOSBox.DOSBox",
-		"choco": "dosbox"
-	},
-	"WPFInstallduplicati": {
-		"winget": "Duplicati.Duplicati",
-		"choco": "duplicati"
-	},
-	"WPFInstalleaapp": {
-		"winget": "ElectronicArts.EADesktop",
-		"choco": "ea-app"
-	},
-	"WPFInstalleartrumpet": {
-		"winget": "File-New-Project.EarTrumpet",
-		"choco": "eartrumpet"
-	},
-	"WPFInstalledge": {
-		"winget": "Microsoft.Edge",
-		"choco": "microsoft-edge"
-	},
-	"WPFInstallefibooteditor": {
-		"winget": "EFIBootEditor.EFIBootEditor",
-		"choco": "na"
-	},
-	"WPFInstallemulationstation": {
-		"winget": "Emulationstation.Emulationstation",
-		"choco": "emulationstation"
-	},
-	"WPFInstallepicgames": {
-		"winget": "EpicGames.EpicGamesLauncher",
-		"choco": "epicgameslauncher"
-	},
-	"WPFInstallerrorlookup": {
-		"winget": "Henry++.ErrorLookup",
-		"choco": "na"
-	},
-	"WPFInstallesearch": {
-		"winget": "voidtools.Everything",
-		"choco": "everything"
-	},
-	"WPFInstalletcher": {
-		"winget": "Balena.Etcher",
-		"choco": "etcher"
-	},
-	"WPFInstallfalkon": {
-		"winget": "KDE.Falkon",
-		"choco": "falkon"
-	},
-	"WPFInstallfedora": {
-		"winget": "whitewaterfoundry.fedora-remix-for-wsl",
-		"choco": "na"
-	},
-	"WPFInstallferdium": {
-		"winget": "Ferdium.Ferdium",
-		"choco": "ferdium"
-	},
-	"WPFInstallfiles": {
-		"winget": "YairAichenbaum.Files",
-		"choco": "files"
-	},
-	"WPFInstallfirealpaca": {
-		"winget": "FireAlpaca.FireAlpaca",
-		"choco": "firealpaca"
-	},
-	"WPFInstallfirefox": {
-		"winget": "Mozilla.Firefox",
-		"choco": "firefox"
-	},
-	"WPFInstallfloorp": {
-		"winget": "Ablaze.Floorp",
-		"choco": "na"
-	},
-	"WPFInstallflameshot": {
-		"winget": "Flameshot.Flameshot",
-		"choco": "flameshot"
-	},
-	"WPFInstallflux": {
-		"winget": "flux.flux",
-		"choco": "flux"
-	},
-	"WPFInstallfoobar": {
-		"winget": "PeterPawlowski.foobar2000",
-		"choco": "foobar2000"
-	},
-	"WPFInstallfoxpdf": {
-		"winget": "Foxit.PhantomPDF",
-		"choco": "na"
-	},
-	"WPFInstallfreecad": {
-		"winget": "FreeCAD.FreeCAD",
-		"choco": "freecad"
-	},
-	"WPFInstallgeforcenow": {
-		"winget": "Nvidia.GeForceNow",
-		"choco": "nvidia-geforce-now"
-	},
-	"WPFInstallgimp": {
-		"winget": "GIMP.GIMP",
-		"choco": "gimp"
-	},
-	"WPFInstallguilded": {
-		"winget": "Guilded.Guilded",
-		"choco": ""
-	},
-	"WPFInstallgit": {
-		"Winget": "Git.Git",
-		"choco": "git"
-	},
-	"WPFInstallgithubdesktop": {
-		"winget": "Git.Git;GitHub.GitHubDesktop",
-		"choco": "git;github-desktop"
-	},
-	"WPFInstallgitextensions": {
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
-		"choco": "git;gitextensions"
-	},
-	"WPFInstallglaryutilities": {
-		"Winget": "Glarysoft.GlaryUtilities",
-		"choco": "glaryutilities-free"
-	},
-	"WPFInstallgog": {
-		"winget": "GOG.Galaxy",
-		"choco": "goggalaxy"
-	},
-	"WPFInstallgolang": {
-		"Winget": "GoLang.Go",
-		"choco": "golang"
-	},
-	"WPFInstallgpuz": {
-		"winget": "TechPowerUp.GPU-Z",
-		"choco": "gpu-z"
-	},
-	"WPFInstallgreenshot": {
-		"winget": "Greenshot.Greenshot",
-		"choco": "greenshot"
-	},
-	"WPFInstallgsudo": {
-		"winget": "gerardog.gsudo",
-		"choco": "gsudo"
-	},
-	"WPFInstallhandbrake": {
-		"winget": "HandBrake.HandBrake",
-		"choco": "handbrake"
-	},
-	"WPFInstallheidisql": {
-		"winget": "HeidiSQL.HeidiSQL",
-		"choco": "heidisql"
-	},
-	"WPFInstallheroiclauncher": {
-		"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
-		"choco": "na"
-	},
-	"WPFInstallhexchat": {
-		"winget": "HexChat.HexChat",
-		"choco": "hexchat"
-	},
-	"WPFInstallhwinfo": {
-		"winget": "REALiX.HWiNFO",
-		"choco": "hwinfo"
-	},
-	"WPFInstallimgburn": {
-		"winget": "LIGHTNINGUK.ImgBurn",
-		"choco": "imgburn"
-	},
-	"WPFInstallimageglass": {
-		"winget": "DuongDieuPhap.ImageGlass",
-		"choco": "imageglass"
-	},
-	"WPFInstallinkscape": {
-		"winget": "Inkscape.Inkscape",
-		"choco": "inkscape"
-	},
-	"WPFInstallitch": {
-		"winget": "ItchIo.Itch",
-		"choco": "itch"
-	},
-	"WPFInstallitunes": {
-		"winget": "Apple.iTunes",
-		"choco": "itunes"
-	},
-	"WPFInstalljellyfinmediaplayer": {
-		"winget": "Jellyfin.JellyfinMediaPlayer",
-		"choco": "jellyfin-media-player"
-	},
-	"WPFInstalljellyfinserver": {
-		"winget": "Jellyfin.Server",
-		"choco": "jellyfin"
-	},
-	"WPFInstalljami": {
-		"winget": "SFLinux.Jami",
-		"choco": "jami"
-	},
-	"WPFInstalljava8": {
-		"winget": "EclipseAdoptium.Temurin.8.JRE",
-		"choco": "temurin8jre"
-	},
-	"WPFInstalljava11": {
-		"winget": "EclipseAdoptium.Temurin.11.JRE",
-		"choco": "javaruntime"
-	},
-	"WPFInstalljava16": {
-		"winget": "AdoptOpenJDK.OpenJDK.16",
-		"choco": "temurin16jre"
-	},
-	"WPFInstalljava17": {
-		"winget": "EclipseAdoptium.Temurin.17.JRE",
-		"choco": "temurin17jre"
-	},
-	"WPFInstalljava18": {
-		"winget": "EclipseAdoptium.Temurin.18.JRE",
-		"choco": "temurin18jre"
-	},
-	"WPFInstalljava19": {
-		"winget": "EclipseAdoptium.Temurin.19.JRE",
-		"choco": "temurin19jre"
-	},
-	"WPFInstalljava20": {
-		"winget": "Azul.Zulu.20.JDK",
-		"choco": "na"
-	},
-	"WPFInstalljava21": {
-		"winget": "Azul.Zulu.21.JDK",
-		"choco": "na"
-	},
-	"WPFInstalljdownloader": {
-		"winget": "AppWork.JDownloader",
-		"choco": "jdownloader"
-	},
-	"WPFInstalljetbrains": {
-		"winget": "JetBrains.Toolbox",
-		"choco": "jetbrainstoolbox"
-	},
-	"WPFInstalljoplin": {
-		"winget": "Joplin.Joplin",
-		"choco": "joplin"
-	},
-	"WPFInstallkdeconnect": {
-		"winget": "KDE.KDEConnect",
-		"choco": "kdeconnect-kde"
-	},
-	"WPFInstallkdenlive": {
-		"Winget": "KDE.Kdenlive",
-		"choco": "kdenlive"
-	},
-	"WPFInstallkeepass": {
-		"winget": "KeePassXCTeam.KeePassXC",
-		"choco": "keepassxc"
-	},
-	"WPFInstallklite": {
-		"winget": "CodecGuide.K-LiteCodecPack.Standard",
-		"choco": "k-litecodecpack-standard"
-	},
-	"WPFInstallkodi": {
-		"winget": "XBMCFoundation.Kodi",
-		"choco": "kodi"
-	},
-	"WPFInstallkrita": {
-		"winget": "KDE.Krita",
-		"choco": "krita"
-	},
-	"WPFInstalllbry": {
-		"winget": "LBRY.LBRY",
-		"choco": "lbry"
-	},
-	"WPFInstalllibreoffice": {
-		"winget": "TheDocumentFoundation.LibreOffice",
-		"choco": "libreoffice-fresh"
-	},
-	"WPFInstalllibrewolf": {
-		"winget": "LibreWolf.LibreWolf",
-		"choco": "librewolf"
-	},
-	"WPFInstalllinphone": {
-		"winget": "BelledonneCommunications.Linphone",
-		"choco": "linphone"
-	},
-	"WPFInstallmalwarebytes": {
-		"winget": "Malwarebytes.Malwarebytes",
-		"choco": "malwarebytes"
-	},
-	"WPFInstallmasscode": {
-		"winget": "antonreshetov.massCode",
-		"choco": "na"
-	},
-	"WPFInstallmatrix": {
-		"winget": "Element.Element",
-		"choco": "element-desktop"
-	},
-	"WPFInstallmeld": {
-		"winget": "Meld.Meld",
-		"choco": "meld"
-	},
-	"WPFInstallmoonlight": {
-		"winget": "MoonlightGameStreamingProject.Moonlight",
-		"choco": "moonlight-qt"
-	},
-	"WPFInstallmonitorian": {
-		"winget": "emoacht.Monitorian",
-		"choco": "monitorian"
-	},
-	"WPFInstallmpc": {
-		"winget": "clsid2.mpc-hc",
-		"choco": "mpc-hc"
-	},
-	"WPFInstallmremoteng": {
-		"winget": "mRemoteNG.mRemoteNG",
-		"choco": "mremoteng"
-	},
-	"WPFInstallmspaintide": {
-		"winget": "MSPaintIDE.MSPaintIDE",
-		"choco": "na"
-	},
-	"WPFInstallmsiafterburner": {
-		"winget": "Guru3D.Afterburner",
-		"choco": "msiafterburner"
-	},
-	"WPFInstallmusicbee": {
-		"winget": "MusicBee.MusicBee",
-		"choco": "musicbee"
-	},
-	"WPFInstallnanazip": {
-		"winget": "M2Team.NanaZip",
-		"choco": "nanazip"
-	},
-	"WPFInstallnano": {
-		"winget": "GNU.Nano",
-		"choco": "nano"
-	},
-	"WPFInstallnaps2": {
-		"winget": "Cyanfish.NAPS2",
-		"choco": "naps2"
-	},
-	"WPFInstallneofetchwin": {
-		"winget": "nepnep.neofetch-win",
-		"choco": "na"
-	},
-	"WPFInstallneovim": {
-		"winget": "Neovim.Neovim",
-		"choco": "neovim"
-	},
-	"WPFInstallnextclouddesktop": {
-		"winget": "Nextcloud.NextcloudDesktop",
-		"choco": "nextcloud-client"
-	},
-	"WPFInstallnglide": {
-		"winget": "ZeusSoftware.nGlide",
-		"choco": "na"
-	},
-	"WPFInstallnmap": {
-		"winget": "Insecure.Nmap",
-		"choco": "nmap"
-	},
-	"WPFInstallnodejs": {
-		"winget": "OpenJS.NodeJS",
-		"choco": "nodejs"
-	},
-	"WPFInstallnodejslts": {
-		"winget": "OpenJS.NodeJS.LTS",
-		"choco": "nodejs-lts"
-	},
-	"WPFInstallnomacs": {
-		"winget": "nomacs.nomacs",
-		"choco": "nomacs"
-	},
-	"WPFInstallnotepadplus": {
-		"winget": "Notepad++.Notepad++",
-		"choco": "notepadplusplus"
-	},
-	"WPFInstallnuget": {
-		"winget": "Microsoft.NuGet",
-		"choco": "nuget.commandline"
-	},
-	"WPFInstallnushell": {
-		"winget": "Nushell.Nushell",
-		"choco": "nushell"
-	},
-	"WPFInstallnvclean": {
-		"winget": "TechPowerUp.NVCleanstall",
-		"choco": "na"
-	},
-	"WPFInstallnvm": {
-		"winget": "CoreyButler.NVMforWindows",
-		"choco": "nvm"
-	},
-	"WPFInstallobs": {
-		"winget": "OBSProject.OBSStudio",
-		"choco": "obs-studio"
-	},
-	"WPFInstallobsidian": {
-		"winget": "Obsidian.Obsidian",
-		"choco": "obsidian"
-	},
-	"WPFInstallokular": {
-		"winget": "KDE.Okular",
-		"choco": "okular"
-	},
-	"WPFInstallonedrive": {
-		"winget": "Microsoft.OneDrive",
-		"choco": "onedrive"
-	},
-	"WPFInstallonlyoffice": {
-		"winget": "ONLYOFFICE.DesktopEditors",
-		"choco": "onlyoffice"
-	},
-	"WPFInstallopenscad": {
-		"winget": "OpenSCAD.OpenSCAD",
-		"choco": "openscad"
-	},
-	"WPFInstallopensuseleap": {
-		"winget": "9NJGLDP5G04B",
-		"choco": "na"
-	},
-	"WPFInstallopensusetw": {
-		"winget": "9MSSK2ZXXN11",
-		"choco": "na"
-	},
-	"WPFInstallopenoffice": {
-		"winget": "Apache.OpenOffice",
-		"choco": "openoffice"
-	},
-	"WPFInstallopenrgb": {
-		"winget": "CalcProgrammer1.OpenRGB",
-		"choco": "openrgb"
-	},
-	"WPFInstallopenshell": {
-		"winget": "Open-Shell.Open-Shell-Menu",
-		"choco": "open-shell"
-	},
-	"WPFInstallOpenVPN": {
-		"winget": "OpenVPNTechnologies.OpenVPNConnect",
-		"choco": "openvpn-connect"
-	},
-	"WPFInstallOVirtualBox": {
-		"winget": "Oracle.VirtualBox",
-		"choco": "virtualbox"
-	},
-	"WPFInstallownclouddesktop": {
-		"winget": "ownCloud.ownCloudDesktop",
-		"choco": "owncloud-client"
-	},
-	"WPFInstallPaintdotnet": {
-		"winget": "dotPDNLLC.paintdotnet",
-		"choco": "paint.net"
-	},
-	"WPFInstallpdfsam": {
-		"winget": "PDFsam.PDFsam",
-		"choco": "pdfsam"
-	},
-	"WPFInstallpeazip": {
-		"winget": "Giorgiotani.Peazip",
-		"choco": "peazip"
-	},
-	"WPFInstallplaynite": {
-		"winget": "Playnite.Playnite",
-		"choco": "playnite"
-	},
-	"WPFInstallpostman": {
-		"winget": "Postman.Postman",
-		"choco": "postman"
-	},
-	"WPFInstallpowershell": {
-		"winget": "Microsoft.PowerShell",
-		"choco": "powershell-core"
-	},
-	"WPFInstallposh": {
-		"winget": "JanDeDobbeleer.OhMyPosh",
-		"choco": "oh-my-posh"
-	},
-	"WPFInstallpowertoys": {
-		"winget": "Microsoft.PowerToys",
-		"choco": "powertoys"
-	},
-	"WPFInstallportmaster": {
-		"winget": "portmaster",
-		"choco": "portmaster"
-	},
-	"WPFInstallprismlauncher": {
-		"winget": "PrismLauncher.PrismLauncher",
-		"choco": "prismlauncher"
-	},
-	"WPFInstallprocesslasso": {
-		"winget": "BitSum.ProcessLasso",
-		"choco": "plasso"
-	},
-	"WPFInstallprocessmonitor": {
-		"winget": "Microsoft.Sysinternals.ProcessMonitor",
-		"choco": "procexp"
-	},
-	"WPFInstallprucaslicer": {
-		"winget": "Prusa3d.PrusaSlicer",
-		"choco": "prusaslicer"
-	},
-	"WPFInstallputty": {
-		"winget": "PuTTY.PuTTY",
-		"choco": "putty"
-	},
-	"WPFInstallpython3": {
-		"winget": "Python.Python.3.12",
-		"choco": "python"
-	},
-	"WPFInstallqbittorrent": {
-		"winget": "qBittorrent.qBittorrent",
-		"choco": "qbittorrent"
-	},
-	"WPFInstallqtox": {
-		"winget": "Tox.qTox",
-		"choco": "qtox"
-	},
-	"WPFInstallrainmeter": {
-		"winget": "Rainmeter.Rainmeter",
-		"choco": "na"
-	},
-	"WPFInstallrevo": {
-		"winget": "RevoUninstaller.RevoUninstaller",
-		"choco": "revo-uninstaller"
-	},
-	"WPFInstallrufus": {
-		"winget": "Rufus.Rufus",
-		"choco": "rufus"
-	},
-	"WPFInstallrustdesk": {
-		"winget": "RustDesk.RustDesk",
-		"choco": "rustdesk.portable"
-	},
-	"WPFInstallrustlang": {
-		"Winget": "Rustlang.Rust.MSVC",
-		"choco": "rust"
-	},
-	"WPFInstallsandboxie": {
-		"winget": "Sandboxie.Plus",
-		"choco": "sandboxie"
-	},
-	"WPFInstallsdio": {
-		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-		"choco": "sdio"
-	},
-	"WPFInstallsession": {
-		"winget": "Oxen.Session",
-		"choco": "session"
-	},
-	"WPFInstallsharex": {
-		"winget": "ShareX.ShareX",
-		"choco": "sharex"
-	},
-	"WPFInstallshell": {
-		"winget": "Nilesoft.Shell",
-		"choco": "nilesoft-shell"
-	},
-	"WPFInstallsidequest": {
-		"winget": "SideQuestVR.SideQuest",
-		"choco": "sidequest"
-	},
-	"WPFInstallsignal": {
-		"winget": "OpenWhisperSystems.Signal",
-		"choco": "signal"
-	},
-	"WPFInstallsimplewall": {
-		"Winget": "Henry++.simplewall",
-		"choco": "simplewall"
-	},
-	"WPFInstallskype": {
-		"winget": "Microsoft.Skype",
-		"choco": "skype"
-	},
-	"WPFInstallslack": {
-		"winget": "SlackTechnologies.Slack",
-		"choco": "slack"
-	},
-	"WPFInstallspotify": {
-		"winget": "Spotify.Spotify",
-		"choco": "spotify"
-	},
-	"WPFInstallsqlstudio": {
-		"winget": "Microsoft.SQLServerManagementStudio",
-		"choco": "sql-server-management-studio"
-	},
-	"WPFInstallsteam": {
-		"winget": "Valve.Steam",
-		"choco": "steam-client"
-	},
-	"WPFInstallstarship": {
-		"winget": "starship",
-		"choco": "starship"
-	},
-	"WPFInstallstrawberry": {
-		"winget": "StrawberryMusicPlayer.Strawberry",
-		"choco": "strawberrymusicplayer"
-	},
-	"WPFInstallsublimemerge": {
-		"winget": "SublimeHQ.SublimeMerge",
-		"choco": "sublimemerge"
-	},
-	"WPFInstallsublimetext": {
-		"winget": "SublimeHQ.SublimeText.4",
-		"choco": "sublimetext4"
-	},
-	"WPFInstallsumatra": {
-		"winget": "SumatraPDF.SumatraPDF",
-		"choco": "sumatrapdf"
-	},
-	"WPFInstallsunshine": {
-		"winget": "LizardByte.Sunshine",
-		"choco": "sunshine"
-	},
-	"WPFInstallsuperf4": {
-		"winget": "StefanSundin.Superf4",
-		"choco": "superf4"
-	},
-	"WPFInstallspacedrive": {
-		"winget": "spacedrive.Spacedrive",
-		"choco": "na"
-	},
-	"WPFInstalltailscale": {
-		"winget": "tailscale.tailscale",
-		"choco": "tailscale"
-	},
-	"WPFInstalltcpview": {
-		"winget": "Microsoft.Sysinternals.TCPView",
-		"choco": "tcpview"
-	},
-	"WPFInstallteams": {
-		"winget": "Microsoft.Teams",
-		"choco": "microsoft-teams"
-	},
-	"WPFInstallteamviewer": {
-		"winget": "TeamViewer.TeamViewer",
-		"choco": "teamviewer9"
-	},
-	"WPFInstalltelegram": {
-		"winget": "Telegram.TelegramDesktop",
-		"choco": "telegram"
-	},
-	"WPFInstallterminal": {
-		"winget": "Microsoft.WindowsTerminal",
-		"choco": "microsoft-windows-terminal"
-	},
-	"WPFInstalltor": {
-		"Winget": "TorProject.TorBrowser",
-		"choco": "tor-browser"
-	},
-	"WPFInstalltreesize": {
-		"winget": "JAMSoftware.TreeSize.Free",
-		"choco": "treesizefree"
-	},
-	"WPFInstallttaskbar": {
-		"winget": "9PF4KZ2VN4W9",
-		"choco": "translucenttb"
-	},
-	"WPFInstallthunderbird": {
-		"winget": "Mozilla.Thunderbird",
-		"choco": "thunderbird"
-	},
-	"WPFInstalltweeten": {
-		"winget": "MehediHassan.Tweeten",
-		"choco": "na"
-	},
-	"WPFInstalltwinkletray": {
-		"Winget": "xanderfrangos.twinkletray",
-		"choco": "na"
-	},
-	"WPFInstalltidal": {
-		"Winget": "9NNCB5BS59PH",
-		"choco": "na"
-	},
-	"WPFInstallubisoft": {
-		"winget": "Ubisoft.Connect",
-		"choco": "ubisoft-connect"
-	},
-	"WPFInstallubuntu1604": {
-		"winget": " Canonical.Ubuntu.1604",
-		"choco": "na"
-	},
-	"WPFInstallubuntu1804": {
-		"winget": " Canonical.Ubuntu.1804",
-		"choco": "na"
-	},
-	"WPFInstallubuntu2004": {
-		"winget": " Canonical.Ubuntu.2004",
-		"choco": "na"
-	},
-	"WPFInstallubuntu2204": {
-		"winget": "Canonical.Ubuntu.2204",
-		"choco": "na"
-	},
-	"WPFInstallunity": {
-		"winget": "Unity.UnityHub",
-		"choco": "unityhub"
-	},
-	"WPFInstallvagrant": {
-		"winget": "Hashicorp.Vagrant",
-		"choco": "vagrant"
-	},
-	"WPFInstallvc2015_32": {
-		"winget": "Microsoft.VCRedist.2015+.x86",
-		"choco": "na"
-	},
-	"WPFInstallvc2015_64": {
-		"winget": "Microsoft.VCRedist.2015+.x64",
-		"choco": "na"
-	},
-	"WPFInstallventoy": {
-		"winget": "na",
-		"choco": "ventoy"
-	},
-	"WPFInstallviber": {
-		"Winget": "Viber.Viber",
-		"choco": "viber"
-	},
-	"WPFInstallvisualstudio": {
-		"winget": "Microsoft.VisualStudio.2022.Community",
-		"choco": "visualstudio2022community"
-	},
-	"WPFInstallvivaldi": {
-		"winget": "VivaldiTechnologies.Vivaldi",
-		"choco": "vivaldi"
-	},
-	"WPFInstallvlc": {
-		"winget": "VideoLAN.VLC",
-		"choco": "vlc"
-	},
-	"WPFInstallvmwareplayer": {
-		"winget": "VMware.WorkstationPlayer",
-		"choco": "vmware-workstation-player"
-	},
-	"WPFInstallvoicemeeter": {
-		"winget": "VB-Audio.Voicemeeter",
-		"choco": "voicemeeter"
-	},
-	"WPFInstallvscode": {
-		"winget": "Git.Git;Microsoft.VisualStudioCode",
-		"choco": "vscode"
-	},
-	"WPFInstallvscodium": {
-		"winget": "Git.Git;VSCodium.VSCodium",
-		"choco": "vscodium"
-	},
-	"WPFInstallwaterfox": {
-		"winget": "Waterfox.Waterfox",
-		"choco": "waterfox"
-	},
-	"WPFInstallwindirstat": {
-		"winget": "WinDirStat.WinDirStat",
-		"choco": "windirstat"
-	},
-	"WPFInstallwingetui": {
-		"winget": "SomePythonThings.WingetUIStore",
-		"choco": "na"
-	},
-	"WPFInstallwinmerge": {
-		"winget": "WinMerge.WinMerge",
-		"choco": "winmerge"
-	},
-	"WPFInstallwinpaletter": {
-		"winget": "Abdelrhman-AK.WinPaletter",
-		"choco": "WinPaletter"
-	},
-	"WPFInstallwinrar": {
-		"winget": "RARLab.WinRAR",
-		"choco": "winrar"
-	},
-	"WPFIntallwslmanager": {
-		"Winget": "Bostrot.WSLManager",
-		"choco": "wsl2-distro-manager"
-	},
-	"WPFInstallwinscp": {
-		"winget": "WinSCP.WinSCP",
-		"choco": "winscp"
-	},
-	"WPFInstallwireguard": {
-		"winget": "WireGuard.WireGuard",
-		"choco": "wireguard"
-	},
-	"WPFInstallwireshark": {
-		"winget": "WiresharkFoundation.Wireshark",
-		"choco": "wireshark"
-	},
-	"WPFInstallwisetoys": {
-		"winget": "WiseCleaner.WiseToys",
-		"choco": "na"
-	},
-	"WPFInstallwiztree": {
-		"Winget": "AntibodySoftware.WizTree",
-		"choco": "wiztree"
-	},
-	"WPFInstallxdm": {
-		"winget": "subhra74.XtremeDownloadManager",
-		"choco": "xdm"
-	},
-	"WPFInstallxemu": {
-		"winget": "xemu-project.xemu",
-		"choco": "na"
-	},
-	"WPFInstallxournal": {
-		"winget": "Xournal++.Xournal++",
-		"choco": "xournalplusplus"
-	},
-	"WPFInstallxpipe": {
-		"winget": "xpipe-io.xpipe",
-		"choco": "xpipe"
-	},
-	"WPFInstallyarn": {
-		"winget": "Yarn.Yarn",
-		"choco": "yarn"
-	},
-	"WPFInstallzerotierone": {
-		"winget": "ZeroTier.ZeroTierOne",
-		"choco": "zerotier-one"
-  	},
-	"WPFInstallzim": {
-		"winget": "Zimwiki.Zim",
-		"choco": "zim"
-	},
-	"WPFInstallznote": {
-		"winget": "alagrede.znote",
-		"choco": "na"
-	},
-	"WPFInstallzoom": {
-		"winget": "Zoom.Zoom",
-		"choco": "zoom"
-	},
-	"WPFInstallzotero": {
-		"winget": "DigitalScholar.Zotero",
-		"choco": "zotero"
-	},
-	"WPFInstallzoxide": {
-		"winget": "ajeetdsouza.zoxide",
-		"choco": "zoxide"
-	},
-	"WPFInstallzulip": {
-		"winget": "Zulip.Zulip",
-		"choco": "zulip"
+"WPFInstallbrave": {
+	"winget": "Brave.Brave",
+	"choco": "brave",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Brave"
+	},
+"WPFInstallchrome": {
+	"winget": "Google.Chrome",
+	"choco": "googlechrome",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Chrome"
+	},
+"WPFInstallchromium": {
+	"winget": "Hibbiki.Chromium",
+	"choco": "chromium",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Chromium"
+	},
+"WPFInstalledge": {
+	"winget": "Microsoft.Edge",
+	"choco": "microsoft-edge",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Edge"
+	},
+"WPFInstallfalkon": {
+	"winget": "KDE.Falkon",
+	"choco": "falkon",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Falkon"
+	},
+"WPFInstallfirefox": {
+	"winget": "Mozilla.Firefox",
+	"choco": "firefox",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Firefox"
+	},
+"WPFInstallfloorp": {
+	"winget": "Ablaze.Floorp",
+	"choco": "na",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Floorp"
+	},
+"WPFInstalllibrewolf": {
+	"winget": "LibreWolf.LibreWolf",
+	"choco": "librewolf",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "LibreWolf"
+	},
+"WPFInstalltor": {
+	"winget": "TorProject.TorBrowser",
+	"choco": "tor-browser",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Tor Browser"
+	},
+"WPFInstallungoogled": {
+	"winget": "eloston.ungoogled-chromium",
+	"choco": "ungoogled-chromium",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Ungoogled"
+	},
+"WPFInstallvivaldi": {
+	"winget": "VivaldiTechnologies.Vivaldi",
+	"choco": "vivaldi",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Vivaldi"
+	},
+"WPFInstallwaterfox": {
+	"winget": "Waterfox.Waterfox",
+	"choco": "waterfox",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Waterfox"
+	},
+"WPFInstallchatterino": {
+	"winget": "ChatterinoTeam.Chatterino",
+	"choco": "chatterino",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Chatterino"
+	},
+"WPFInstalldiscord": {
+	"winget": "Discord.Discord",
+	"choco": "discord",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Discord"
+	},
+"WPFInstallferdium": {
+	"winget": "Ferdium.Ferdium",
+	"choco": "ferdium",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Ferdium"
+	},
+"WPFInstallguilded": {
+	"winget": "Guilded.Guilded",
+	"choco": "na",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Guilded"
+	},
+"WPFInstallhexchat": {
+	"winget": "HexChat.HexChat",
+	"choco": "hexchat",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Hexchat"
+	},
+"WPFInstalljami": {
+	"winget": "SFLinux.Jami",
+	"choco": "jami",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Jami"
+	},
+"WPFInstalllinphone": {
+	"winget": "BelledonneCommunications.Linphone",
+	"choco": "linphone",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Linphone"
+	},
+"WPFInstallmatrix": {
+	"winget": "Element.Element",
+	"choco": "element-desktop",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Matrix"
+	},
+"WPFInstallsession": {
+	"winget": "Oxen.Session",
+	"choco": "session",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Session"
+	},
+"WPFInstallqtox": {
+	"winget": "Tox.qTox",
+	"choco": "qtox",
+	"category": "Communications",
+	"panel": "0",
+	"content": "QTox"
+	},
+"WPFInstallsignal": {
+	"winget": "OpenWhisperSystems.Signal",
+	"choco": "signal",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Signal"
+	},
+"WPFInstallskype": {
+	"winget": "Microsoft.Skype",
+	"choco": "skype",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Skype"
+	},
+"WPFInstallslack": {
+	"winget": "SlackTechnologies.Slack",
+	"choco": "slack",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Slack"
+	},
+"WPFInstallteams": {
+	"winget": "Microsoft.Teams",
+	"choco": "microsoft-teams",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Teams"
+	},
+"WPFInstalltelegram": {
+	"winget": "Telegram.TelegramDesktop",
+	"choco": "telegram",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Telegram"
+	},
+"WPFInstallthunderbird": {
+	"winget": "Mozilla.Thunderbird",
+	"choco": "thunderbird",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Thunderbird"
+	},
+"WPFInstalltweeten": {
+	"winget": "MehediHassan.Tweeten",
+	"choco": "na",
+	"category": "Communications",
+	"panel": "0",
+	"content": "FOSS Twitter Client"
+	},
+"WPFInstallviber": {
+	"winget": "Viber.Viber",
+	"choco": "viber",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Viber"
+	},
+"WPFInstallzoom": {
+	"winget": "Zoom.Zoom",
+	"choco": "zoom",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Zoom"
+	},
+"WPFInstallzulip": {
+	"winget": "Zulip.Zulip",
+	"choco": "zulip",
+	"category": "Communications",
+	"panel": "0",
+	"content": "Zulip"
+	},
+"WPFInstalljava20": {
+	"winget": "Azul.Zulu.20.JDK",
+	"choco": "na",
+	"category": "Development",
+	"panel": "1",
+	"content": "Azul Zulu JDK 20"
+	},
+"WPFInstalljava21": {
+	"winget": "Azul.Zulu.21.JDK",
+	"choco": "na",
+	"category": "Development",
+	"panel": "1",
+	"content": "Azul Zulu JDK 21"
+	},
+"WPFInstallclink": {
+	"winget": "chrisant996.Clink",
+	"choco": "clink",
+	"category": "Development",
+	"panel": "1",
+	"content": "Clink"
+	},
+"WPFInstalldockerdesktop": {
+	"winget": "Docker.DockerDesktop",
+	"choco": "docker-desktop",
+	"category": "Development",
+	"panel": "1",
+	"content": "Docker Desktop"
+	},
+"WPFInstallgit": {
+	"winget": "Git.Git",
+	"choco": "git",
+	"category": "Development",
+	"panel": "1",
+	"content": "Git"
+	},
+"WPFInstallgitextensions": {
+	"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
+	"choco": "git;gitextensions",
+	"category": "Development",
+	"panel": "1",
+	"content": "Git Extensions"
+	},
+"WPFInstallgithubdesktop": {
+	"winget": "Git.Git;GitHub.GitHubDesktop",
+	"choco": "git;github-desktop",
+	"category": "Development",
+	"panel": "1",
+	"content": "GitHub Desktop"
+	},
+"WPFInstallgolang": {
+	"winget": "GoLang.Go",
+	"choco": "golang",
+	"category": "Development",
+	"panel": "1",
+	"content": "GoLang"
+	},
+"WPFInstalljetbrains": {
+	"winget": "JetBrains.Toolbox",
+	"choco": "jetbrainstoolbox",
+	"category": "Development",
+	"panel": "1",
+	"content": "Jetbrains Toolbox"
+	},
+"WPFInstallmspaintide": {
+	"winget": "MSPaintIDE.MSPaintIDE",
+	"choco": "na",
+	"category": "Development",
+	"panel": "1",
+	"content": "MS Paint IDE"
+	},
+"WPFInstallnano": {
+	"winget": "GNU.Nano",
+	"choco": "nano",
+	"category": "Development",
+	"panel": "1",
+	"content": "Nano"
+	},
+"WPFInstallneovim": {
+	"winget": "Neovim.Neovim",
+	"choco": "neovim",
+	"category": "Development",
+	"panel": "1",
+	"content": "Neovim"
+	},
+"WPFInstallnodejs": {
+	"winget": "OpenJS.NodeJS",
+	"choco": "nodejs",
+	"category": "Development",
+	"panel": "1",
+	"content": "NodeJS"
+	},
+"WPFInstallnodejslts": {
+	"winget": "OpenJS.NodeJS.LTS",
+	"choco": "nodejs-lts",
+	"category": "Development",
+	"panel": "1",
+	"content": "NodeJS LTS"
+	},
+"WPFInstallnvm": {
+	"winget": "CoreyButler.NVMforWindows",
+	"choco": "nvm",
+	"category": "Development",
+	"panel": "1",
+	"content": "Node Version Manager"
+	},
+"WPFInstalljava8": {
+	"winget": "EclipseAdoptium.Temurin.8.JRE",
+	"choco": "temurin8jre",
+	"category": "Development",
+	"panel": "1",
+	"content": "OpenJDK Java 8"
+	},
+"WPFInstalljava16": {
+	"winget": "AdoptOpenJDK.OpenJDK.16",
+	"choco": "temurin16jre",
+	"category": "Development",
+	"panel": "1",
+	"content": "OpenJDK Java 16"
+	},
+"WPFInstalljava18": {
+	"winget": "EclipseAdoptium.Temurin.18.JRE",
+	"choco": "temurin18jre",
+	"category": "Development",
+	"panel": "1",
+	"content": "Oracle Java 18"
+	},
+"WPFInstallposh": {
+	"winget": "JanDeDobbeleer.OhMyPosh",
+	"choco": "oh-my-posh",
+	"category": "Development",
+	"panel": "1",
+	"content": "Oh My Posh (Prompt)"
+	},
+"WPFInstallpython3": {
+	"winget": "Python.Python.3.12",
+	"choco": "python",
+	"category": "Development",
+	"panel": "1",
+	"content": "Python3"
+	},
+"WPFInstallpostman": {
+	"winget": "Postman.Postman",
+	"choco": "postman",
+	"category": "Development",
+	"panel": "1",
+	"content": "Postman"
+	},
+"WPFInstallrustlang": {
+	"winget": "Rustlang.Rust.MSVC",
+	"choco": "rust",
+	"category": "Development",
+	"panel": "1",
+	"content": "Rust"
+	},
+"WPFInstallstarship": {
+	"winget": "starship",
+	"choco": "starship",
+	"category": "Development",
+	"panel": "1",
+	"content": "Starship (Shell Prompt)"
+	},
+"WPFInstallsublimemerge": {
+	"winget": "SublimeHQ.SublimeMerge",
+	"choco": "sublimemerge",
+	"category": "Development",
+	"panel": "1",
+	"content": "Sublime Merge"
+	},
+"WPFInstallsublimetext": {
+	"winget": "SublimeHQ.SublimeText.4",
+	"choco": "sublimetext4",
+	"category": "Development",
+	"panel": "1",
+	"content": "Sublime Text"
+	},
+"WPFInstallunity": {
+	"winget": "Unity.UnityHub",
+	"choco": "unityhub",
+	"category": "Development",
+	"panel": "1",
+	"content": "Unity Game Engine"
+	},
+"WPFInstallvisualstudio": {
+	"winget": "Microsoft.VisualStudio.2022.Community",
+	"choco": "visualstudio2022community",
+	"category": "Development",
+	"panel": "1",
+	"content": "Visual Studio 2022"
+	},
+"WPFInstallvagrant": {
+	"winget": "Hashicorp.Vagrant",
+	"choco": "vagrant",
+	"category": "Development",
+	"panel": "1",
+	"content": "Vagrant"
+	},
+"WPFInstallvscode": {
+	"winget": "Git.Git;Microsoft.VisualStudioCode",
+	"choco": "vscode",
+	"category": "Development",
+	"panel": "1",
+	"content": "VS Code"
+	},
+"WPFInstallvscodium": {
+	"winget": "Git.Git;VSCodium.VSCodium",
+	"choco": "vscodium",
+	"category": "Development",
+	"panel": "1",
+	"content": "VS Codium"
+	},
+"WPFInstallyarn": {
+	"winget": "Yarn.Yarn",
+	"choco": "yarn",
+	"category": "Development",
+	"panel": "1",
+	"content": "Yarn"
+	},
+"WPFInstallanki": {
+	"winget": "Anki.Anki",
+	"choco": "anki",
+	"category": "Document",
+	"panel": "1",
+	"content": "Anki"
+	},
+"WPFInstalladobe": {
+	"winget": "Adobe.Acrobat.Reader.64-bit",
+	"choco": "adobereader",
+	"category": "Document",
+	"panel": "1",
+	"content": "Adobe Reader DC"
+	},
+"WPFInstallopenoffice": {
+	"winget": "Apache.OpenOffice",
+	"choco": "openoffice",
+	"category": "Document",
+	"panel": "1",
+	"content": "Apache OpenOffice"
+	},
+"WPFInstallcalibre": {
+	"winget": "calibre.calibre",
+	"choco": "calibre",
+	"category": "Document",
+	"panel": "1",
+	"content": "Calibre"
+	},
+"WPFInstallfoxpdf": {
+	"winget": "Foxit.PhantomPDF",
+	"choco": "na",
+	"category": "Document",
+	"panel": "1",
+	"content": "Foxit PDF"
+	},
+"WPFInstalljoplin": {
+	"winget": "Joplin.Joplin",
+	"choco": "joplin",
+	"category": "Document",
+	"panel": "1",
+	"content": "Joplin (FOSS Notes)"
+	},
+"WPFInstalllibreoffice": {
+	"winget": "TheDocumentFoundation.LibreOffice",
+	"choco": "libreoffice-fresh",
+	"category": "Document",
+	"panel": "1",
+	"content": "LibreOffice"
+	},
+"WPFInstallmasscode": {
+	"winget": "antonreshetov.massCode",
+	"choco": "na",
+	"category": "Document",
+	"panel": "1",
+	"content": "massCode (Snippet Manager)"
+	},
+"WPFInstallnaps2": {
+	"winget": "Cyanfish.NAPS2",
+	"choco": "naps2",
+	"category": "Document",
+	"panel": "1",
+	"content": "NAPS2 (Document Scanner)"
+	},
+"WPFInstallnotepadplus": {
+	"winget": "Notepad++.Notepad++",
+	"choco": "notepadplusplus",
+	"category": "Document",
+	"panel": "1",
+	"content": "Notepad++"
+	},
+"WPFInstallobsidian": {
+	"winget": "Obsidian.Obsidian",
+	"choco": "obsidian",
+	"category": "Document",
+	"panel": "1",
+	"content": "Obsidian"
+	},
+"WPFInstallokular": {
+	"winget": "KDE.Okular",
+	"choco": "okular",
+	"category": "Document",
+	"panel": "1",
+	"content": "Okular"
+	},
+"WPFInstallonlyoffice": {
+	"winget": "ONLYOFFICE.DesktopEditors",
+	"choco": "onlyoffice",
+	"category": "Document",
+	"panel": "1",
+	"content": "ONLYOffice Desktop"
+	},
+"WPFInstallpdfsam": {
+	"winget": "PDFsam.PDFsam",
+	"choco": "pdfsam",
+	"category": "Document",
+	"panel": "1",
+	"content": "PDFsam Basic"
+	},
+"WPFInstallsumatra": {
+	"winget": "SumatraPDF.SumatraPDF",
+	"choco": "sumatrapdf",
+	"category": "Document",
+	"panel": "1",
+	"content": "Sumatra PDF"
+	},
+"WPFInstallwinmerge": {
+	"winget": "WinMerge.WinMerge",
+	"choco": "winmerge",
+	"category": "Document",
+	"panel": "1",
+	"content": "WinMerge"
+	},
+"WPFInstallxournal": {
+	"winget": "Xournal++.Xournal++",
+	"choco": "xournalplusplus",
+	"category": "Document",
+	"panel": "1",
+	"content": "Xournal++"
+	},
+"WPFInstallzim": {
+	"winget": "Zimwiki.Zim",
+	"choco": "zim",
+	"category": "Document",
+	"panel": "1",
+	"content": "Zim Desktop Wiki"
+	},
+"WPFInstallznote": {
+	"winget": "alagrede.znote",
+	"choco": "na",
+	"category": "Document",
+	"panel": "1",
+	"content": "Znote"
+	},
+"WPFInstallzotero": {
+	"winget": "DigitalScholar.Zotero",
+	"choco": "zotero",
+	"category": "Document",
+	"panel": "1",
+	"content": "Zotero"
+	},
+"WPFInstallbluestacks": {
+	"winget": "BlueStack.BlueStacks",
+	"choco": "bluestacks",
+	"category": "Games",
+	"panel": "2",
+	"content": "Bluestacks"
+	},
+"WPFInstallcemu": {
+	"winget": "Cemu.Cemu",
+	"choco": "cemu",
+	"category": "Games",
+	"panel": "2",
+	"content": "Cemu"
+	},
+"WPFInstallclonehero": {
+	"winget": "CloneHeroTeam.CloneHero",
+	"choco": "na",
+	"category": "Games",
+	"panel": "2",
+	"content": "Clone Hero"
+	},
+"WPFInstalleaapp": {
+	"winget": "ElectronicArts.EADesktop",
+	"choco": "ea-app",
+	"category": "Games",
+	"panel": "2",
+	"content": "EA App"
+	},
+"WPFInstallemulationstation": {
+	"winget": "Emulationstation.Emulationstation",
+	"choco": "emulationstation",
+	"category": "Games",
+	"panel": "2",
+	"content": "Emulation Station"
+	},
+"WPFInstallepicgames": {
+	"winget": "EpicGames.EpicGamesLauncher",
+	"choco": "epicgameslauncher",
+	"category": "Games",
+	"panel": "2",
+	"content": "Epic Games Launcher"
+	},
+"WPFInstallgeforcenow": {
+	"winget": "Nvidia.GeForceNow",
+	"choco": "nvidia-geforce-now",
+	"category": "Games",
+	"panel": "2",
+	"content": "GeForce NOW"
+	},
+"WPFInstallgog": {
+	"winget": "GOG.Galaxy",
+	"choco": "goggalaxy",
+	"category": "Games",
+	"panel": "2",
+	"content": "GOG Galaxy"
+	},
+"WPFInstallheroiclauncher": {
+	"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+	"choco": "na",
+	"category": "Games",
+	"panel": "2",
+	"content": "Heroic Games Launcher"
+	},
+"WPFInstallitch": {
+	"winget": "ItchIo.Itch",
+	"choco": "itch",
+	"category": "Games",
+	"panel": "2",
+	"content": "Itch.io"
+	},
+"WPFInstallmoonlight": {
+	"winget": "MoonlightGameStreamingProject.Moonlight",
+	"choco": "moonlight-qt",
+	"category": "Games",
+	"panel": "2",
+	"content": "Moonlight/GameStream Client"
+	},
+"WPFInstallplaynite": {
+	"winget": "Playnite.Playnite",
+	"choco": "playnite",
+	"category": "Games",
+	"panel": "2",
+	"content": "Playnite"
+	},
+"WPFInstallprismlauncher": {
+	"winget": "PrismLauncher.PrismLauncher",
+	"choco": "prismlauncher",
+	"category": "Games",
+	"panel": "2",
+	"content": "Prism Launcher"
+	},
+"WPFInstallsidequest": {
+	"winget": "SideQuestVR.SideQuest",
+	"choco": "sidequest",
+	"category": "Games",
+	"panel": "2",
+	"content": "SideQuestVR"
+	},
+"WPFInstallsteam": {
+	"winget": "Valve.Steam",
+	"choco": "steam-client",
+	"category": "Games",
+	"panel": "2",
+	"content": "Steam"
+	},
+"WPFInstallsunshine": {
+	"winget": "LizardByte.Sunshine",
+	"choco": "sunshine",
+	"category": "Games",
+	"panel": "2",
+	"content": "Sunshine/GameStream Server"
+	},
+"WPFInstallubisoft": {
+	"winget": "Ubisoft.Connect",
+	"choco": "ubisoft-connect",
+	"category": "Games",
+	"panel": "2",
+	"content": "Ubisoft Connect"
+	},
+"WPFInstallxemu": {
+	"winget": "xemu-project.xemu",
+	"choco": "na",
+	"category": "Games",
+	"panel": "2",
+	"content": "XEMU"
+	},
+"WPFInstalldotnet3": {
+	"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
+	"choco": "dotnetcore3-desktop-runtime",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": ".NET Desktop Runtime 3.1"
+	},
+"WPFInstalldotnet5": {
+	"winget": "Microsoft.DotNet.DesktopRuntime.5",
+	"choco": "dotnet-5.0-runtime",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": ".NET Desktop Runtime 5"
+	},
+"WPFInstalldotnet6": {
+	"winget": "Microsoft.DotNet.DesktopRuntime.6",
+	"choco": "dotnet-6.0-runtime",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": ".NET Desktop Runtime 6"
+	},
+"WPFInstalldotnet7": {
+	"winget": "Microsoft.DotNet.DesktopRuntime.7",
+	"choco": "dotnet-7.0-runtime",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": ".NET Desktop Runtime 7"
+	},
+"WPFInstallnuget": {
+	"winget": "Microsoft.NuGet",
+	"choco": "nuget.commandline",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "Nuget"
+	},
+"WPFInstallonedrive": {
+	"winget": "Microsoft.OneDrive",
+	"choco": "onedrive",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "OneDrive"
+	},
+"WPFInstallpowershell": {
+	"winget": "Microsoft.PowerShell",
+	"choco": "powershell-core",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "PowerShell"
+	},
+"WPFInstallpowertoys": {
+	"winget": "Microsoft.PowerToys",
+	"choco": "powertoys",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "Powertoys"
+	},
+"WPFInstallprocessmonitor": {
+	"winget": "Microsoft.Sysinternals.ProcessMonitor",
+	"choco": "procexp",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "SysInternals Process Monitor"
+	},
+"WPFInstalltcpview": {
+	"winget": "Microsoft.Sysinternals.TCPView",
+	"choco": "tcpview",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "SysInternals TCPView"
+	},
+"WPFInstallvc2015_64": {
+	"winget": "Microsoft.VCRedist.2015+.x64",
+	"choco": "na",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "Visual C++ 2015-2022 64-bit"
+	},
+"WPFInstallvc2015_32": {
+	"winget": "Microsoft.VCRedist.2015+.x86",
+	"choco": "na",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "Visual C++ 2015-2022 32-bit"
+	},
+"WPFInstallterminal": {
+	"winget": "Microsoft.WindowsTerminal",
+	"choco": "microsoft-windows-terminal",
+	"category": "Microsoft Tools",
+	"panel": "2",
+	"content": "Windows Terminal"
+	},
+"WPFInstallarch": {
+	"winget": "9MZNMNKSM73X",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Arch (Win Store)"
+	},
+"WPFInstalldebian": {
+	"winget": "Debian.Debian",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Debian"
+	},
+"WPFInstallfedora": {
+	"winget": "whitewaterfoundry.fedora-remix-for-wsl",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Fedora WSL Remix"
+	},
+"WPFInstallopensuseleap": {
+	"winget": "9NJGLDP5G04B",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "OpenSUSE Leap 15.5 (Win Store)"
+	},
+"WPFInstallopensusetw": {
+	"winget": "9MSSK2ZXXN11",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "OpenSUSE Tumbleweed (Win Store)"
+	},
+"WPFInstallubuntu1604": {
+	"winget": "Canonical.Ubuntu.1604",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Ubuntu 16.04 LTS"
+	},
+"WPFInstallubuntu1804": {
+	"winget": "Canonical.Ubuntu.1804",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Ubuntu 18.04 LTS"
+	},
+"WPFInstallubuntu2004": {
+	"winget": "Canonical.Ubuntu.2004",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Ubuntu 20.04 LTS"
+	},
+"WPFInstallubuntu2204": {
+	"winget": "Canonical.Ubuntu.2204",
+	"choco": "na",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Ubuntu 22.04 LTS"
+	},
+"WPFInstallaimp": {
+	"winget": "AIMP.AIMP",
+	"choco": "aimp",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "AIMP (Music Player)"
+	},
+"WPFInstallaudacity": {
+	"winget": "Audacity.Audacity",
+	"choco": "audacity",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Audacity"
+	},
+"WPFInstallblender": {
+	"winget": "BlenderFoundation.Blender",
+	"choco": "blender",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Blender (3D Graphics)"
+	},
+"WPFInstallcider": {
+	"winget": "CiderCollective.Cider",
+	"choco": "cider",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Cider (FOSS Music Player)"
+	},
+"WPFInstallclementine": {
+	"winget": "Clementine.Clementine",
+	"choco": "clementine",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Clementine"
+	},
+"WPFInstallclipgrab": {
+	"winget": "na",
+	"choco": "clipgrab",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Clipgrab"
+	},
+"WPFInstallcopyq": {
+	"winget": "hluk.CopyQ",
+	"choco": "copyq",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Copyq (Clipboard Manager)"
+	},
+"WPFInstalldigikam": {
+	"winget": "KDE.digikam",
+	"choco": "digikam",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "DigiKam"
+	},
+"WPFInstalleartrumpet": {
+	"winget": "File-New-Project.EarTrumpet",
+	"choco": "eartrumpet",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Eartrumpet (Audio)"
+	},
+"WPFInstallfreecad": {
+	"winget": "FreeCAD.FreeCAD",
+	"choco": "freecad",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "FreeCAD"
+	},
+"WPFInstallfirealpaca": {
+	"winget": "FireAlpaca.FireAlpaca",
+	"choco": "firealpaca",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Fire Alpaca"
+	},
+"WPFInstallflameshot": {
+	"winget": "Flameshot.Flameshot",
+	"choco": "flameshot",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Flameshot (Screenshots)"
+	},
+"WPFInstallfoobar": {
+	"winget": "PeterPawlowski.foobar2000",
+	"choco": "foobar2000",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Foobar2000 (Music Player)"
+	},
+"WPFInstallgimp": {
+	"winget": "GIMP.GIMP",
+	"choco": "gimp",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "GIMP (Image Editor)"
+	},
+"WPFInstallgreenshot": {
+	"winget": "Greenshot.Greenshot",
+	"choco": "greenshot",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Greenshot (Screenshots)"
+	},
+"WPFInstallhandbrake": {
+	"winget": "HandBrake.HandBrake",
+	"choco": "handbrake",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "HandBrake"
+	},
+"WPFInstallimageglass": {
+	"winget": "DuongDieuPhap.ImageGlass",
+	"choco": "imageglass",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "ImageGlass (Image Viewer)"
+	},
+"WPFInstallimgburn": {
+	"winget": "LIGHTNINGUK.ImgBurn",
+	"choco": "imgburn",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "ImgBurn"
+	},
+"WPFInstallinkscape": {
+	"winget": "Inkscape.Inkscape",
+	"choco": "inkscape",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Inkscape"
+	},
+"WPFInstallitunes": {
+	"winget": "Apple.iTunes",
+	"choco": "itunes",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "iTunes"
+	},
+"WPFInstalljellyfinmediaplayer": {
+	"winget": "Jellyfin.JellyfinMediaPlayer",
+	"choco": "jellyfin-media-player",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Jellyfin Media Player"
+	},
+"WPFInstalljellyfinserver": {
+	"winget": "Jellyfin.Server",
+	"choco": "jellyfin",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Jellyfin Server"
+	},
+"WPFInstallkdenlive": {
+	"winget": "KDE.Kdenlive",
+	"choco": "kdenlive",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Kdenlive (Video Editor)"
+	},
+"WPFInstallkodi": {
+	"winget": "XBMCFoundation.Kodi",
+	"choco": "kodi",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Kodi Media Center"
+	},
+"WPFInstallklite": {
+	"winget": "CodecGuide.K-LiteCodecPack.Standard",
+	"choco": "k-litecodecpack-standard",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "K-Lite Codec Standard"
+	},
+"WPFInstallkrita": {
+	"winget": "KDE.Krita",
+	"choco": "krita",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Krita (Image Editor)"
+	},
+"WPFInstallmusicbee": {
+	"winget": "MusicBee.MusicBee",
+	"choco": "musicbee",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "MusicBee (Music Player)"
+	},
+"WPFInstallmpc": {
+	"winget": "clsid2.mpc-hc",
+	"choco": "mpc-hc",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Media Player Classic (Video Player)"
+	},
+"WPFInstallnglide": {
+	"winget": "ZeusSoftware.nGlide",
+	"choco": "na",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "nGlide (3dfx compatibility)"
+	},
+"WPFInstallnomacs": {
+	"winget": "nomacs.nomacs",
+	"choco": "nomacs",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Nomacs (Image viewer)"
+	},
+"WPFInstallobs": {
+	"winget": "OBSProject.OBSStudio",
+	"choco": "obs-studio",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "OBS Studio"
+	},
+"WPFInstallPaintdotnet": {
+	"winget": "dotPDNLLC.paintdotnet",
+	"choco": "paint.net",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Paint.net"
+	},
+"WPFInstallopenscad": {
+	"winget": "OpenSCAD.OpenSCAD",
+	"choco": "openscad",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "OpenSCAD"
+	},
+"WPFInstallsharex": {
+	"winget": "ShareX.ShareX",
+	"choco": "sharex",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "ShareX (Screenshots)"
+	},
+"WPFInstallstrawberry": {
+	"winget": "StrawberryMusicPlayer.Strawberry",
+	"choco": "strawberrymusicplayer",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Strawberry (Music Player)"
+	},
+"WPFInstalltidal": {
+	"winget": "9NNCB5BS59PH",
+	"choco": "na",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Tidal"
+	},
+"WPFInstallvlc": {
+	"winget": "VideoLAN.VLC",
+	"choco": "vlc",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "VLC (Video Player)"
+	},
+"WPFInstallvoicemeeter": {
+	"winget": "VB-Audio.Voicemeeter",
+	"choco": "voicemeeter",
+	"category": "Multimedia Tools",
+	"panel": "3",
+	"content": "Voicemeeter (Audio)"
+	},
+"WPFInstalladvancedip": {
+	"winget": "Famatech.AdvancedIPScanner",
+	"choco": "advanced-ip-scanner",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Advanced IP Scanner"
+	},
+"WPFInstallangryipscanner": {
+	"winget": "angryziber.AngryIPScanner",
+	"choco": "angryip",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Angry IP Scanner"
+	},
+"WPFInstallefibooteditor": {
+	"winget": "EFIBootEditor.EFIBootEditor",
+	"choco": "na",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "EFI Boot Editor"
+	},
+"WPFInstallheidisql": {
+	"winget": "HeidiSQL.HeidiSQL",
+	"choco": "heidisql",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "HeidiSQL"
+	},
+"WPFInstallmremoteng": {
+	"winget": "mRemoteNG.mRemoteNG",
+	"choco": "mremoteng",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "mRemoteNG"
+	},
+"WPFInstallnmap": {
+	"winget": "Insecure.Nmap",
+	"choco": "nmap",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Nmap"
+	},
+"WPFInstallOpenVPN": {
+	"winget": "OpenVPNTechnologies.OpenVPNConnect",
+	"choco": "openvpn-connect",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "OpenVPN Connect"
+	},
+"WPFInstallportmaster": {
+	"winget": "portmaster",
+	"choco": "portmaster",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Portmaster"
+	},
+"WPFInstallputty": {
+	"winget": "PuTTY.PuTTY",
+	"choco": "putty",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Putty"
+	},
+"WPFInstallrustdesk": {
+	"winget": "RustDesk.RustDesk",
+	"choco": "rustdesk.portable",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Rust Remote Desktop (FOSS)"
+	},
+"WPFInstallsimplewall": {
+	"winget": "Henry++.simplewall",
+	"choco": "simplewall",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "SimpleWall"
+	},
+"WPFInstallventoy": {
+	"winget": "na",
+	"choco": "ventoy",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "Ventoy"
+	},
+"WPFInstallwinscp": {
+	"winget": "WinSCP.WinSCP",
+	"choco": "winscp",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "WinSCP"
+	},
+"WPFInstallwireguard": {
+	"winget": "WireGuard.WireGuard",
+	"choco": "wireguard",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "WireGuard"
+	},
+"WPFInstallwireshark": {
+	"winget": "WiresharkFoundation.Wireshark",
+	"choco": "wireshark",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "WireShark"
+	},
+"WPFInstallxpipe": {
+	"winget": "xpipe-io.xpipe",
+	"choco": "xpipe",
+	"category": "Pro Tools",
+	"panel": "3",
+	"content": "X-Pipe"
+	},
+"WPFInstall7zip": {
+	"winget": "7zip.7zip",
+	"choco": "7zip",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "7-Zip"
+	},
+"WPFInstallalacritty": {
+	"winget": "Alacritty.Alacritty",
+	"choco": "alacritty",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Alacritty Terminal"
+	},
+"WPFInstallanydesk": {
+	"winget": "AnyDeskSoftwareGmbH.AnyDesk",
+	"choco": "anydesk",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "AnyDesk"
+	},
+"WPFInstallautohotkey": {
+	"winget": "AutoHotkey.AutoHotkey",
+	"choco": "autohotkey",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "AutoHotkey"
+	},
+"WPFInstallbarrier": {
+	"winget": "DebaucheeOpenSourceGroup.Barrier",
+	"choco": "barrier",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Barrier"
+	},
+"WPFInstallbat": {
+	"winget": "sharkdp.bat",
+	"choco": "bat",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Bat (Cat)"
+	},
+"WPFInstallbitwarden": {
+	"winget": "Bitwarden.Bitwarden",
+	"choco": "bitwarden",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Bitwarden"
+	},
+"WPFInstallbulkcrapuninstaller": {
+	"winget": "Klocman.BulkCrapUninstaller",
+	"choco": "bulk-crap-uninstaller",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Bulk Crap Uninstaller"
+	},
+"WPFInstallcarnac": {
+	"winget": "code52.Carnac",
+	"choco": "carnac",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Carnac"
+	},
+"WPFInstallcpuz": {
+	"winget": "CPUID.CPU-Z",
+	"choco": "cpu-z",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "CPU-Z"
+	},
+"WPFInstallcrystaldiskinfo": {
+	"winget": "CrystalDewWorld.CrystalDiskInfo",
+	"choco": "crystaldiskinfo",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Crystal Disk Info"
+	},
+"WPFInstallcrystaldiskmark": {
+	"winget": "CrystalDewWorld.CrystalDiskMark",
+	"choco": "crystaldiskmark",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Crystal Disk Mark"
+	},
+"WPFInstallddu": {
+	"winget": "ddu",
+	"choco": "ddu",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Display Driver Uninstaller"
+	},
+"WPFInstalldeluge": {
+	"winget": "DelugeTeam.Deluge",
+	"choco": "deluge",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Deluge"
+	},
+"WPFInstalldolphin": {
+	"winget": "KDE.Dolphin",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Dolphin File manager"
+	},
+"WPFInstallduplicati": {
+	"winget": "Duplicati.Duplicati",
+	"choco": "duplicati",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Duplicati 2"
+	},
+"WPFInstalldevtoys": {
+	"winget": "devtoys",
+	"choco": "devToys",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Devtoys"
+	},
+"WPFInstallerrorlookup": {
+	"winget": "Henry++.ErrorLookup",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Windows Error Code Lookup"
+	},
+"WPFInstalletcher": {
+	"winget": "Balena.Etcher",
+	"choco": "etcher",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Etcher USB Creator"
+	},
+"WPFInstallesearch": {
+	"winget": "voidtools.Everything",
+	"choco": "everything",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Everything Search"
+	},
+"WPFInstallfiles": {
+	"winget": "YairAichenbaum.Files",
+	"choco": "files",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Files File Explorer"
+	},
+"WPFInstallflux": {
+	"winget": "flux.flux",
+	"choco": "flux",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "f.lux Redshift"
+	},
+"WPFInstallglaryutilities": {
+	"winget": "Glarysoft.GlaryUtilities",
+	"choco": "glaryutilities-free",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Glary Utilities"
+	},
+"WPFInstallgpuz": {
+	"winget": "TechPowerUp.GPU-Z",
+	"choco": "gpu-z",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "GPU-Z"
+	},
+"WPFInstallgsudo": {
+	"winget": "gerardog.gsudo",
+	"choco": "gsudo",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Gsudo"
+	},
+"WPFInstallhwinfo": {
+	"winget": "REALiX.HWiNFO",
+	"choco": "hwinfo",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "HWInfo"
+	},
+"WPFInstalljdownloader": {
+	"winget": "AppWork.JDownloader",
+	"choco": "jdownloader",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "J Download Manager"
+	},
+"WPFInstallkdeconnect": {
+	"winget": "KDE.KDEConnect",
+	"choco": "kdeconnect-kde",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "KDE Connect"
+	},
+"WPFInstallkeepass": {
+	"winget": "KeePassXCTeam.KeePassXC",
+	"choco": "keepassxc",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "KeePassXC"
+	},
+"WPFInstallmalwarebytes": {
+	"winget": "Malwarebytes.Malwarebytes",
+	"choco": "malwarebytes",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "MalwareBytes"
+	},
+"WPFInstallmeld": {
+	"winget": "Meld.Meld",
+	"choco": "meld",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Meld"
+	},
+"WPFInstallmonitorian": {
+	"winget": "emoacht.Monitorian",
+	"choco": "monitorian",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Monitorian"
+	},
+"WPFInstallmsiafterburner": {
+	"winget": "Guru3D.Afterburner",
+	"choco": "msiafterburner",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "MSI Afterburner"
+	},
+"WPFInstallnanazip": {
+	"winget": "M2Team.NanaZip",
+	"choco": "nanazip",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "NanaZip"
+	},
+"WPFInstallneofetchwin": {
+	"winget": "nepnep.neofetch-win",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Neofetch"
+	},
+"WPFInstallnextclouddesktop": {
+	"winget": "Nextcloud.NextcloudDesktop",
+	"choco": "nextcloud-client",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Nextcloud Desktop"
+	},
+"WPFInstallnushell": {
+	"winget": "Nushell.Nushell",
+	"choco": "nushell",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Nushell"
+	},
+"WPFInstallnvclean": {
+	"winget": "TechPowerUp.NVCleanstall",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "NVCleanstall"
+	},
+"WPFInstallOVirtualBox": {
+	"winget": "Oracle.VirtualBox",
+	"choco": "virtualbox",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Oracle VirtualBox"
+	},
+"WPFInstallopenrgb": {
+	"winget": "CalcProgrammer1.OpenRGB",
+	"choco": "openrgb",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "OpenRGB"
+	},
+"WPFInstallopenshell": {
+	"winget": "Open-Shell.Open-Shell-Menu",
+	"choco": "open-shell",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Open Shell (Start Menu)"
+	},
+"WPFInstallownclouddesktop": {
+	"winget": "ownCloud.ownCloudDesktop",
+	"choco": "owncloud-client",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "ownCloud Desktop"
+	},
+"WPFInstallpeazip": {
+	"winget": "Giorgiotani.Peazip",
+	"choco": "peazip",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Peazip"
+	},
+"WPFInstallprocesslasso": {
+	"winget": "BitSum.ProcessLasso",
+	"choco": "plasso",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Process Lasso"
+	},
+"WPFInstallprucaslicer": {
+	"winget": "Prusa3d.PrusaSlicer",
+	"choco": "prusaslicer",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Prusa Slicer"
+	},
+"WPFInstallqbittorrent": {
+	"winget": "qBittorrent.qBittorrent",
+	"choco": "qbittorrent",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "qBittorrent"
+	},
+"WPFInstallrainmeter": {
+	"winget": "Rainmeter.Rainmeter",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Rainmeter"
+	},
+"WPFInstallrevo": {
+	"winget": "RevoUninstaller.RevoUninstaller",
+	"choco": "revo-uninstaller",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "RevoUninstaller"
+	},
+"WPFInstallrufus": {
+	"winget": "Rufus.Rufus",
+	"choco": "rufus",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Rufus Imager"
+	},
+"WPFInstallsandboxie": {
+	"winget": "Sandboxie.Plus",
+	"choco": "sandboxie",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Sandboxie Plus"
+	},
+"WPFInstallshell": {
+	"winget": "Nilesoft.Shell",
+	"choco": "nilesoft-shell",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Shell (Expanded Context Menu)"
+	},
+"WPFInstallsdio": {
+	"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
+	"choco": "sdio",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Snappy Driver Installer Origin"
+	},
+"WPFInstallspacedrive": {
+	"winget": "spacedrive.Spacedrive",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Spacedrive File Manager"
+	},
+"WPFInstallsuperf4": {
+	"winget": "StefanSundin.Superf4",
+	"choco": "superf4",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "SuperF4"
+	},
+"WPFInstalltailscale": {
+	"winget": "tailscale.tailscale",
+	"choco": "tailscale",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Tailscale"
+	},
+"WPFInstallteamviewer": {
+	"winget": "TeamViewer.TeamViewer",
+	"choco": "teamviewer9",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "TeamViewer"
+	},
+"WPFInstallttaskbar": {
+	"winget": "9PF4KZ2VN4W9",
+	"choco": "translucenttb",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Translucent Taskbar"
+	},
+"WPFInstalltreesize": {
+	"winget": "JAMSoftware.TreeSize.Free",
+	"choco": "treesizefree",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "TreeSize Free"
+	},
+"WPFInstalltwinkletray": {
+	"winget": "xanderfrangos.twinkletray",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Twinkle Tray"
+	},
+"WPFInstallwindirstat": {
+	"winget": "WinDirStat.WinDirStat",
+	"choco": "windirstat",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WinDirStat"
+	},
+"WPFInstallwingetui": {
+	"winget": "SomePythonThings.WingetUIStore",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WingetUI"
+	},
+"WPFInstallwiztree": {
+	"winget": "AntibodySoftware.WizTree",
+	"choco": "wiztree",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WizTree"
+	},
+"WPFInstallwinrar": {
+	"winget": "RARLab.WinRAR",
+	"choco": "winrar",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WinRAR"
+	},
+"WPFInstallwinpaletter": {
+	"winget": "Abdelrhman-AK.WinPaletter",
+	"choco": "WinPaletter",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WinPaletter"
+	},
+"WPFInstallwisetoys": {
+	"winget": "WiseCleaner.WiseToys",
+	"choco": "na",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "WiseToys"
+	},
+"WPFInstallxdm": {
+	"winget": "subhra74.XtremeDownloadManager",
+	"choco": "xdm",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Xtreme Download Manager"
+	},
+"WPFInstallzerotierone": {
+	"winget": "ZeroTier.ZeroTierOne",
+	"choco": "zerotier-one",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "ZeroTier One"
+	},
+"WPFInstallzoxide": {
+	"winget": "ajeetdsouza.zoxide",
+	"choco": "zoxide",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "Zoxide"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -8607,13 +9060,55 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
-    $ctttheme = 'Matrix'
-}
-Else{
-    $ctttheme = 'Classic'
+$organizedData = @{}
+# Iterate through JSON data and organize by panel and category
+foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
+    $appInfo = $sync.configs.applications.$appName
+
+    # Create an object for the application
+    $appObject = [PSCustomObject]@{
+        Name = $appName
+        Category = $appInfo.Category
+        Content = $appInfo.Content
+        Choco = $appInfo.choco
+        Winget = $appInfo.winget
+        Panel = $appInfo.panel
+    }
+
+    if (-not $organizedData.ContainsKey($appInfo.panel)) {
+        $organizedData[$appInfo.panel] = @{}
+    }
+
+    if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
+        $organizedData[$appInfo.panel][$appInfo.Category] = @{}
+    }
+
+    # Store application data in a sub-array under the category
+    $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
 }
 
+# Iterate through organizedData by panel, category, and application
+foreach ($panel in $organizedData.Keys) {
+    foreach ($category in $organizedData[$panel].Keys) {
+        $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
+        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+        foreach ($appName in $sortedApps) {
+            $appInfo = $organizedData[$panel][$category][$appName]
+
+            $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)""/>`n"
+        }
+    }
+
+    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
+    $blockXml = ""
+}
+
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+    $ctttheme = 'Matrix'
+}
+else {
+    $ctttheme = 'Classic'
+}
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -8632,6 +9127,8 @@ catch [System.Management.Automation.MethodInvocationException] {
 catch {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
+
+
 
 #===========================================================================
 # Store Form Objects In PowerShell

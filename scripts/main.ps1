@@ -53,13 +53,55 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True){
-    $ctttheme = 'Matrix'
-}
-Else{
-    $ctttheme = 'Classic'
+$organizedData = @{}
+# Iterate through JSON data and organize by panel and category
+foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
+    $appInfo = $sync.configs.applications.$appName
+
+    # Create an object for the application
+    $appObject = [PSCustomObject]@{
+        Name = $appName
+        Category = $appInfo.Category
+        Content = $appInfo.Content
+        Choco = $appInfo.choco
+        Winget = $appInfo.winget
+        Panel = $appInfo.panel
+    }
+
+    if (-not $organizedData.ContainsKey($appInfo.panel)) {
+        $organizedData[$appInfo.panel] = @{}
+    }
+
+    if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
+        $organizedData[$appInfo.panel][$appInfo.Category] = @{}
+    }
+
+    # Store application data in a sub-array under the category
+    $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
 }
 
+# Iterate through organizedData by panel, category, and application
+foreach ($panel in $organizedData.Keys) {
+    foreach ($category in $organizedData[$panel].Keys) {
+        $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
+        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+        foreach ($appName in $sortedApps) {
+            $appInfo = $organizedData[$panel][$category][$appName]
+
+            $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)""/>`n"
+        }
+    }
+
+    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
+    $blockXml = ""
+}
+
+if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+    $ctttheme = 'Matrix'
+}
+else {
+    $ctttheme = 'Classic'
+}
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -78,6 +120,8 @@ catch [System.Management.Automation.MethodInvocationException] {
 catch {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
+
+
 
 #===========================================================================
 # Store Form Objects In PowerShell

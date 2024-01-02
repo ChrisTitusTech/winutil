@@ -18,7 +18,7 @@ function Get-Oscdimg {
 
     Write-Host "[INFO] oscdimg.exe SHA-256 Hash: $sha256Hash"
 
-    $expectedHash = "F62B91A06F94019A878DD9D1713FFBA2140B863C131EB78A329B4CCD6102960E"  # Replace with the actual expected hash
+    $expectedHash = "AB9E161049D293B544961BFDF2D61244ADE79376D6423DF4F60BF9B147D3C78D"  # Replace with the actual expected hash
     if ($sha256Hash -eq $expectedHash) {
         Write-Host "Hashes match. File is verified."
     } else {

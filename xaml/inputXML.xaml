@@ -578,320 +578,66 @@
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
         </DockPanel>
-        <ScrollViewer Grid.Row="1" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
-        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0">
+       
+        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Grid Background="Transparent" >
+                   
                     <Grid.RowDefinitions>
-                        <RowDefinition Height=".10*"/>
-                        <RowDefinition Height=".90*"/>
+                        <RowDefinition Height="45px"/>
+                        <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
                         <Label Content="Winget:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFinstall" Content=" Install Selection " Margin="1" />
                         <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="1"/>
                         <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="1"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="1"/>
                         <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="1"/>
-                    </StackPanel>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" Grid.Column="3" Grid.ColumnSpan="2" Margin="5">
+                  
                         <Label Content="Configuration File:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
                         <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                     </StackPanel>
-                    <Border Grid.Row="1" Grid.Column="0" >
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Browsers" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbrave" Content="Brave" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchrome" Content="Chrome" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchromium" Content="Chromium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalledge" Content="Edge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfalkon" Content="Falkon" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfirefox" Content="Firefox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfloorp" Content="Floorp" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltor" Content="Tor Browser" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" Margin="5,0"/>
 
-                            <Label Content="Communications" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallchatterino" Content="Chatterino" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldiscord" Content="Discord" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallferdium" Content="Ferdium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallguilded" Content="Guilded" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhexchat" Content="Hexchat" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljami" Content="Jami" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllinphone" Content="Linphone" Margin="5,0" />
-                            <CheckBox Name="WPFInstallmatrix" Content="Matrix" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsession" Content="Session" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallqtox" Content="QTox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsignal" Content="Signal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallskype" Content="Skype" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallslack" Content="Slack" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallteams" Content="Teams" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltelegram" Content="Telegram" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltweeten" Content="FOSS Twitter Client" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallviber" Content="Viber" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzoom" Content="Zoom" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzulip" Content="Zulip" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                            <Border Grid.Row="1" Grid.Column="0">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel0}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
+                                    {{InstallPanel1}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="2">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel2}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="3">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel3}}
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="4">
+                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                                    {{InstallPanel4}}
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
 
-                            <Label Content="Development" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclink" Content="Clink" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgit" Content="Git" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgolang" Content="GoLang" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmspaintide" Content="MS Paint IDE" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnano" Content="Nano" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallneovim" Content="Neovim" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnodejs" Content="NodeJS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpython3" Content="Python3" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpostman" Content="Postman" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrustlang" Content="Rust" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallstarship" Content="Starship (Shell Prompt)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsublimemerge" Content="Sublime Merge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallunity" Content="Unity Game Engine" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvagrant" Content="Vagrant" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvscode" Content="VS Code" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvscodium" Content="VS Codium" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallyarn" Content="Yarn" Margin="5,0"/>
-                        
-                            <Label Content="Document" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallanki" Content="Anki" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcalibre" Content="Calibre" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfoxpdf" Content="Foxit PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmasscode" Content="massCode (Snippet Manager)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallobsidian" Content="Obsidian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallokular" Content="Okular" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinmerge" Content="WinMerge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxournal" Content="Xournal++" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzim" Content="Zim Desktop Wiki" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallznote" Content="Znote" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzotero" Content="Zotero" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Games" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcemu" Content="Cemu" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclonehero" Content="Clone Hero" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalleaapp" Content="EA App" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallemulationstation" Content="Emulation Station" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgog" Content="GOG Galaxy" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallitch" Content="Itch.io" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmoonlight" Content="Moonlight/GameStream Client" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallplaynite" Content="Playnite" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsidequest" Content="SideQuestVR" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsteam" Content="Steam" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsunshine" Content="Sunshine/GameStream Server" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxemu" Content="XEMU" Margin="5,0"/>
-
-                            <Label Content="Microsoft Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnuget" Content="Nuget" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallonedrive" Content="OneDrive" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowershell" Content="PowerShell" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpowertoys" Content="Powertoys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallterminal" Content="Windows Terminal" Margin="5,0"/>
-
-                            <Label Content="WSL Apps" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallarch" Content="Arch (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldebian" Content="Debian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfedora" Content="Fedora WSL Remix" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopensuseleap" Content="OpenSUSE Leap 15.5 (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopensusetw" Content="OpenSUSE Tumbleweed (Win Store)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu1604" Content="Ubuntu 16.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu1804" Content="Ubuntu 18.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu2004" Content="Ubuntu 20.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallubuntu2204" Content="Ubuntu 22.04 LTS" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwslmanager" Content="WSL Manager" Margin="5,0"/>
-                            
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-
-                        <Label Content="Multimedia Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallaudacity" Content="Audacity" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcider" Content="Cider (FOSS Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclementine" Content="Clementine" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallclipgrab" Content="Clipgrab" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcopyq" Content="Copyq (Clipboard Manager)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldigikam" Content="DigiKam" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalleartrumpet" Content="Eartrumpet (Audio)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfreecad" Content="FreeCAD" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfirealpaca" Content="Fire Alpaca" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallflameshot" Content="Flameshot (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfoobar" Content="Foobar2000 (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallimgburn" Content="ImgBurn" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallinkscape" Content="Inkscape" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallitunes" Content="iTunes" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallobs" Content="OBS Studio" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" Margin="5,0"/>
-				            <CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltidal" Content="Tidal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" Margin="5,0"/>
-
-                            <Label Content="Pro Tools" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" Margin="5,0" />
-                            <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnmap" Content="Nmap" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallportmaster" Content="Portmaster" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallputty" Content="Putty" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallventoy" Content="Ventoy" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinscp" Content="WinSCP" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwireguard" Content="WireGuard" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwireshark" Content="WireShark" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxpipe" Content="X-Pipe" Margin="5,0"/>
-                        
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                        <Label Content="Utilities" FontSize="16" Margin="5,0"/>
-                            <CheckBox Name="WPFInstall7zip" Content="7-Zip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbarrier" Content="Barrier" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbat" Content="Bat (Cat)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcarnac" Content="Carnac" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcrystaldiskinfo" Content="Crystal Disk Info" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallcrystaldiskmark" Content="Crystal Disk Mark" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldeluge" Content="Deluge" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldolphin" Content="Dolphin File manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldosbox" Content="DOSBox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalldevtoys" Content="Devtoys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallesearch" Content="Everything Search" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallfiles" Content="Files File Explorer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallflux" Content="f.lux Redshift" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallgsudo" Content="Gsudo" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallhwinfo" Content="HWInfo" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmeld" Content="Meld" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnanazip" Content="NanaZip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallneofetchwin" Content="Neofetch" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnushell" Content="Nushell" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" Margin="5,0" />
-                            <CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallpeazip" Content="Peazip" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallprucaslicer" Content="Prusa Slicer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrainmeter" Content="Rainmeter" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallshell" Content="Shell (Expanded Context Menu)" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltailscale" Content="Tailscale" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" Margin="5,0"/>
-                            <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwmwareplayer" Content="VMWare Workstation Player" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwingetui" Content="WingetUI" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwiztree" Content="WizTree" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinrar" Content="WinRAR" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwinpaletter" Content="WinPaletter" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallwisetoys" Content="WiseToys" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" Margin="5,0"/>
-                            <CheckBox Name="WPFInstallzoxide" Content="Zoxide" Margin="5,0"/>
-                        </StackPanel>
-                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
@@ -1237,6 +983,5 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        </ScrollViewer>
     </Grid>
 </Window>
