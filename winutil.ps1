@@ -4263,12 +4263,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
             </Grid>
+            <TextBlock Text="Version: 24.01.02" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                    Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0" 
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
+            
         </DockPanel>
        
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
