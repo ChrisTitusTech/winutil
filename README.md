@@ -22,7 +22,7 @@ Courtesy of the issue raised at: [#144](/../../issues/144)
 
 ### Issues:
 
-- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You'll be required to use a VPN to tunnel out of India.
+- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You may use a VPN or change your DNS provider to Google/Cloudflare/etc.
 
 Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
 
