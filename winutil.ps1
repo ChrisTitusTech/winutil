@@ -4336,6 +4336,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width=".50*"/>
@@ -4462,8 +4463,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 
 
                         </StackPanel> <!-- End of Customize Preferences Section -->
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <Grid Background="Transparent">
