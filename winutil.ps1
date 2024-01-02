@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.01
+    Version        : 24.01.02
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.01"
+$sync.version = "24.01.02"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -9083,16 +9083,18 @@ foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
         $organizedData[$appInfo.panel][$appInfo.Category] = @{}
     }
 
+    # Store application data in a sub-array under the category
     $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
 }
-$blockXml = ""
+
 # Iterate through organizedData by panel, category, and application
 foreach ($panel in $organizedData.Keys) {
     foreach ($category in $organizedData[$panel].Keys) {
         $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
-        foreach ($appName in $organizedData[$panel][$category].Keys) {
+        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+        foreach ($appName in $sortedApps) {
             $appInfo = $organizedData[$panel][$category][$appName]
-     
+
             $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)""/>`n"
         }
     }
@@ -9100,7 +9102,6 @@ foreach ($panel in $organizedData.Keys) {
     $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
     $blockXml = ""
 }
-
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Matrix'
