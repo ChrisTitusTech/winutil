@@ -44,7 +44,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -136,7 +136,7 @@ function Invoke-WPFMicrowin {
 		Write-Host "Copy link to winutil.ps1 into the ISO"
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
-	    dism /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
 		$shortcutPath = "$desktopDir\WinUtil.lnk"
 		$shell = New-Object -ComObject WScript.Shell
@@ -238,7 +238,7 @@ function Invoke-WPFMicrowin {
 		reg unload HKLM\zSYSTEM
 
 		Write-Host "Cleaning up image..."
-		dism /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+		dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
 		Write-Host "Cleanup complete."
 
 		Write-Host "Unmounting image..."
@@ -270,7 +270,7 @@ function Invoke-WPFMicrowin {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{

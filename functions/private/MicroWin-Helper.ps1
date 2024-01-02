@@ -12,7 +12,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$appxlist = dism /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
 	if ($dumpFeatures)
 	{
@@ -40,7 +40,7 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
 
 function Remove-Packages
 {
-	$appxlist = dism /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
+	$appxlist = dism /English /Image:$scratchDir /Get-Packages | Select-String -Pattern "Package Identity : " -CaseSensitive -SimpleMatch
 	$appxlist = $appxlist -split "Package Identity : " | Where-Object {$_}
 
 	$appxlist = $appxlist | Where-Object {
@@ -85,7 +85,7 @@ function Remove-Packages
 	{
 		$status = "Removing $appx"
 		Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
-		dism /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
+		dism /English /image:$scratchDir /Remove-Package /PackageName:$appx /NoRestart
 	}
 	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
@@ -104,16 +104,22 @@ function Remove-ProvisionedPackages
 			$_.PackageName -NotLike "*Wifi*" -and
 			$_.PackageName -NotLike "*Foundation*" 
 		} 
-
-	$counter = 0
-	foreach ($appx in $appxProvisionedPackages)
-	{
-		$status = "Removing Provisioned $appx"
-		Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		dism /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$appx /NoRestart
-								
-	}
-	Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    
+    if ($?)
+    {
+	    $counter = 0
+	    foreach ($appx in $appxProvisionedPackages)
+	    {
+		    $status = "Removing Provisioned $($appx.PackageName)"
+		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
+		    dism /English /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+	    }
+	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    }
+    else
+    {
+        Write-Host "Could not get Provisioned App information. Skipping process..."
+    }
 }
 
 function Copy-ToUSB([string] $fileToCopy)
