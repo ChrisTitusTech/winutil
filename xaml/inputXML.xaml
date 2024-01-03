@@ -776,6 +776,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -810,10 +811,12 @@
                             <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                             <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -838,10 +841,12 @@
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                             <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -982,10 +987,11 @@
           |   |-- Driver2.inf
           |   |-- Driver2.sys
           |-- OtherFiles...
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>

@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.02
+    Version        : 24.01.03
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.02"
+$sync.version = "24.01.03"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4263,7 +4263,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
             </Grid>
-            <TextBlock Text="Version: 24.01.02" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            <TextBlock Text="Version: 24.01.03" VerticalAlignment="Center" HorizontalAlignment="Center" 
                     Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
@@ -4468,6 +4468,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -4502,10 +4503,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                             <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -4530,10 +4533,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                             <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -4547,7 +4552,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" />
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" Width="300" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you''ve downloaded <LineBreak/>
                                 Check the status in the console
@@ -4674,10 +4679,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
           |   |-- Driver2.inf
           |   |-- Driver2.sys
           |-- OtherFiles...
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>
