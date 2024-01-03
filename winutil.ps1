@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.02
+    Version        : 24.01.03
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.02"
+$sync.version = "24.01.03"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1121,8 +1121,20 @@ function Remove-Packages
 	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
 
-function Remove-ProvisionedPackages
+function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 {
+<#
+
+    .SYNOPSIS
+        Removes AppX packages from a Windows image during MicroWin processing
+
+    .PARAMETER Name
+        keepSecurity - Boolean that determines whether to keep "Microsoft.SecHealthUI" (Windows Security) in the Windows image
+
+    .EXAMPLE
+        Remove-ProvisionedPackages -keepSecurity:$false
+
+#>
 	$appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object	{
 			$_.PackageName -NotLike "*AppInstaller*" -AND
 			$_.PackageName -NotLike "*Store*" -and
@@ -1138,6 +1150,7 @@ function Remove-ProvisionedPackages
     
     if ($?)
     {
+        if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
 	    $counter = 0
 	    foreach ($appx in $appxProvisionedPackages)
 	    {
@@ -2640,7 +2653,7 @@ function Invoke-WPFMicrowin {
 		}
 		if (!$keepProvisionedPackages)
 		{
-			Remove-ProvisionedPackages
+			Remove-ProvisionedPackages -keepSecurity:$keepDefender
 		}
 
 		# special code, for some reason when you try to delete some inbox apps
@@ -4263,7 +4276,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
             </Grid>
-            <TextBlock Text="Version: 24.01.02" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            <TextBlock Text="Version: 24.01.03" VerticalAlignment="Center" HorizontalAlignment="Center" 
                     Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"

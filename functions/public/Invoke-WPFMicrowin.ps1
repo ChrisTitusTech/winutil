@@ -63,7 +63,7 @@ function Invoke-WPFMicrowin {
 		}
 		if (!$keepProvisionedPackages)
 		{
-			Remove-ProvisionedPackages
+			Remove-ProvisionedPackages -keepSecurity:$keepDefender
 		}
 
 		# special code, for some reason when you try to delete some inbox apps
