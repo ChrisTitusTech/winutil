@@ -23,8 +23,9 @@ Get-ChildItem .\functions -Recurse -File | ForEach-Object {
 
 Get-ChildItem .\xaml | ForEach-Object {
     $xaml = (Get-Content $psitem.FullName).replace("'","''")
+    $newXaml = $xaml -replace 'CTTVersion', (Get-Date -Format 'yy.MM.dd')
 
-    Write-output "`$$($psitem.BaseName) = '$xaml'" | Out-File ./$scriptname -Append -Encoding ascii
+    Write-output "`$$($psitem.BaseName) = '$newXaml'" | Out-File ./$scriptname -Append -Encoding ascii
 }
 
 Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {

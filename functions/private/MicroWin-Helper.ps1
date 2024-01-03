@@ -90,8 +90,20 @@ function Remove-Packages
 	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
 }
 
-function Remove-ProvisionedPackages
+function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 {
+<#
+
+    .SYNOPSIS
+        Removes AppX packages from a Windows image during MicroWin processing
+
+    .PARAMETER Name
+        keepSecurity - Boolean that determines whether to keep "Microsoft.SecHealthUI" (Windows Security) in the Windows image
+
+    .EXAMPLE
+        Remove-ProvisionedPackages -keepSecurity:$false
+
+#>
 	$appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object	{
 			$_.PackageName -NotLike "*AppInstaller*" -AND
 			$_.PackageName -NotLike "*Store*" -and
@@ -107,6 +119,7 @@ function Remove-ProvisionedPackages
     
     if ($?)
     {
+        if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
 	    $counter = 0
 	    foreach ($appx in $appxProvisionedPackages)
 	    {
