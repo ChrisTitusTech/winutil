@@ -8,7 +8,7 @@
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1200">
+        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
@@ -891,7 +891,7 @@
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
