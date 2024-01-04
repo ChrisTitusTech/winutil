@@ -1,30 +1,30 @@
 function Get-WinUtilVariables {
 
     <#
-
     .SYNOPSIS
         Gets every form object of the provided type
 
     .OUTPUTS
         List containing every object that matches the provided type
-
     #>
     param (
         [Parameter()]
-        [ValidateSet("CheckBox", "Button", "ToggleButton")]
-        [string]$Type
+        [string[]]$Type
     )
 
-    $keys = $sync.keys | Where-Object {$psitem -like "WPF*"}
+    $keys = $sync.keys | Where-Object { $_ -like "WPF*" }
 
-    if($type){
+    if ($Type) {
         $output = $keys | ForEach-Object {
-            Try{
-                if ($sync["$psitem"].GetType() -like "*$type*"){
+            Try {
+                $objType = $sync["$psitem"].GetType().Name
+                if ($Type -contains $objType) {
                     Write-Output $psitem
                 }
             }
-            Catch{<#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>}
+            Catch {
+                <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>
+            }
         }
         return $output
     }
