@@ -498,14 +498,9 @@ function New-FirstRun {
 		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
 		foreach($service in $allServices)
 		{
-            # This is a temporary workaround to prevent Explorer freezing due to the Event Log service being set to Manual
-            # More information on issue #1276 (https://github.com/ChrisTitusTech/winutil/issues/1276)
-            if ($service.Name -ne "EventLog")
-            {
-			    Stop-Service -Name $service.Name -PassThru
-			    Set-Service $service.Name -StartupType Manual
-			    "Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-            }
+            Stop-Service -Name $service.Name -PassThru
+			Set-Service $service.Name -StartupType Manual
+			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
 	
