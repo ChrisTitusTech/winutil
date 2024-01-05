@@ -2429,11 +2429,19 @@ function Invoke-WPFGetIso {
         return
     }
 
-    Write-Host "Mounting Iso. Please wait."
-    $mountedISO = Mount-DiskImage -PassThru "$filePath"
-    Write-Host "Done mounting Iso $mountedISO"
-    $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
-    Write-Host "Iso mounted to '$driveLetter'"
+    try {
+        Write-Host "Mounting Iso. Please wait."
+        $mountedISO = Mount-DiskImage -PassThru "$filePath"
+        Write-Host "Done mounting Iso $mountedISO"
+        $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
+        Write-Host "Iso mounted to '$driveLetter'"
+    } catch {
+        # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
+        Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
+        Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
+        Write-Error "Please refer to this wiki for more details https://github.com/KonTy/winutil/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting"
+        return
+    }
     # storing off values in hidden fields for further steps
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
