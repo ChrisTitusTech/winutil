@@ -498,7 +498,7 @@ function New-FirstRun {
 		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
 		foreach($service in $runningServices)
 		{
-			Stop-Service -Name $service.Name -PassThru
+            Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
 			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
