@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.03
+    Version        : 24.01.04
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.03"
+$sync.version = "24.01.04"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -119,6 +119,41 @@ function Copy-Files {
     }
 }
 function Get-LocalizedYesNo {
+    <#
+    .SYNOPSIS
+    This function runs choice.exe and captures its output to extract yes no in a localized Windows 
+    
+    .DESCRIPTION
+    The function retrieves the output of the command 'cmd /c "choice <nul 2>nul"' and converts the default output for Yes and No
+    in the localized format, such as "Yes=<first character>, No=<second character>".
+    
+    .EXAMPLE
+    $yesNoArray = Get-LocalizedYesNo
+    Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
+    #>
+  
+    # Run choice and capture its options as output
+    # The output shows the options for Yes and No as "[Y,N]?" in the (partitially) localized format.
+    # eg. English: [Y,N]?
+    # Dutch: [Y,N]?
+    # German: [J,N]?
+    # French: [O,N]?
+    # Spanish: [S,N]?
+    # Italian: [S,N]?
+    # Russian: [Y,N]?
+    
+    $line = cmd /c "choice <nul 2>nul"
+    $charactersArray = @()
+    $regexPattern = '([a-zA-Z])'
+    $charactersArray = [regex]::Matches($line, $regexPattern) | ForEach-Object { $_.Groups[1].Value }
+
+    Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
+    # Return the array of characters
+    return $charactersArray
+  }
+  
+
+function Get-LocalizedYesNoTakeown {
     <#
     .SYNOPSIS
     This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
@@ -405,30 +440,30 @@ Function Get-WinUtilToggleStatus {
 function Get-WinUtilVariables {
 
     <#
-
     .SYNOPSIS
         Gets every form object of the provided type
 
     .OUTPUTS
         List containing every object that matches the provided type
-
     #>
     param (
         [Parameter()]
-        [ValidateSet("CheckBox", "Button", "ToggleButton")]
-        [string]$Type
+        [string[]]$Type
     )
 
-    $keys = $sync.keys | Where-Object {$psitem -like "WPF*"}
+    $keys = $sync.keys | Where-Object { $_ -like "WPF*" }
 
-    if($type){
+    if ($Type) {
         $output = $keys | ForEach-Object {
-            Try{
-                if ($sync["$psitem"].GetType() -like "*$type*"){
+            Try {
+                $objType = $sync["$psitem"].GetType().Name
+                if ($Type -contains $objType) {
                     Write-Output $psitem
                 }
             }
-            Catch{<#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>}
+            Catch {
+                <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>
+            }
         }
         return $output
     }
@@ -1461,7 +1496,7 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @"
+		$servicesToExclude = @(
 			"AudioSrv",
 			"AudioEndpointBuilder",
 			"BFE",
@@ -1524,10 +1559,10 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-"@		
+)	
 	
-		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
-		foreach($service in $allServices)
+		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
+		foreach($service in $runningServices)
 		{
 			Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
@@ -2394,11 +2429,19 @@ function Invoke-WPFGetIso {
         return
     }
 
-    Write-Host "Mounting Iso. Please wait."
-    $mountedISO = Mount-DiskImage -PassThru "$filePath"
-    Write-Host "Done mounting Iso $mountedISO"
-    $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
-    Write-Host "Iso mounted to '$driveLetter'"
+    try {
+        Write-Host "Mounting Iso. Please wait."
+        $mountedISO = Mount-DiskImage -PassThru "$filePath"
+        Write-Host "Done mounting Iso $mountedISO"
+        $driveLetter = (Get-Volume -DiskImage $mountedISO).DriveLetter
+        Write-Host "Iso mounted to '$driveLetter'"
+    } catch {
+        # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
+        Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
+        Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
+        Write-Error "Please refer to this wiki for more details https://github.com/KonTy/winutil/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting"
+        return
+    }
     # storing off values in hidden fields for further steps
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
@@ -3713,11 +3756,20 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1200">
+        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
+
+        <Storyboard x:Key="FireworksAnimation">
+            <!-- Firework Burst -->
+            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5"/>
+            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="ScaleX" From="0" To="1" Duration="0:0:0.5"/>
+            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="ScaleY" From="0" To="1" Duration="0:0:0.5"/>
+            <ColorAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)" To="Red" Duration="0:0:0.5"/>
+        </Storyboard>
+
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -3736,6 +3788,18 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
+        <Setter Property="Foreground" Value="{LinkForegroundColor}" />
+        <Setter Property="TextDecorations" Value="Underline" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
+                <Setter Property="TextDecorations" Value="Underline" />
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!--ScrollBars-->
@@ -3851,7 +3915,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         <Style TargetType="{x:Type ToggleButton}">
             <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Content" Value=""/>
-            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
@@ -3908,7 +3971,6 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
             <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
             <Setter Property="Height" Value="{ToggleButtonHeight}"/>
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -3937,11 +3999,33 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ClearButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Content" Value="X"/>
+            <Setter Property="Height" Value="14"/>
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="10"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="Template">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextElement.FontFamily" Value="Arial, sans-serif"/>
+             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <Grid Background="{TemplateBinding Background}">
@@ -3974,9 +4058,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                    <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                    <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
-                                </Trigger>
+                                <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
+                                <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                  </Setter.Value>
@@ -4267,17 +4351,18 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Grid>
                 <TextBox Width="200" 
                     FontSize="14"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
                     Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
                     Name="CheckboxFilter"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
-                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter"
-                >
+                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
+                
+                <Button Name="CheckboxFilterClear" Style="{StaticResource ClearButtonStyle}" Margin="184,0,0,0" Visibility="Collapsed"/>
             </Grid>
-            <TextBlock Text="Version: 24.01.03" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                    Margin="10,0,0,0"/>
+            <TextBlock Text="Version: 24.01.04" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
@@ -4296,14 +4381,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
-                        <Label Content="Winget:" FontSize="15" VerticalAlignment="Center"/>
-                        <Button Name="WPFinstall" Content=" Install Selection " Margin="1" />
-                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All " Margin="1"/>
-                        <Button Name="WPFuninstall" Content=" Uninstall Selection " Margin="1"/>
-                        <Button Name="WPFGetInstalled" Content=" Get Installed " Margin="1"/>
-                        <Button Name="WPFclearWinget" Content=" Clear Selection " Margin="1"/>
+                        <Button Name="WPFinstall" Content=" Install Selected" Margin="2" />
+                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
+                        <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
+                        <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
+                        <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                   
-                        <Label Content="Configuration File:" FontSize="15" VerticalAlignment="Center"/>
+                        <Label Content="Configuration:" FontSize="15" VerticalAlignment="Center"/>
                         <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
                         <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                     </StackPanel>
@@ -4555,7 +4639,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -4702,1720 +4786,2133 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
     </Grid>
 </Window>'
 $sync.configs.applications = '{
-"WPFInstallbrave": {
-	"winget": "Brave.Brave",
-	"choco": "brave",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Brave"
-	},
-"WPFInstallchrome": {
-	"winget": "Google.Chrome",
-	"choco": "googlechrome",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Chrome"
-	},
-"WPFInstallchromium": {
-	"winget": "Hibbiki.Chromium",
-	"choco": "chromium",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Chromium"
-	},
-"WPFInstalledge": {
-	"winget": "Microsoft.Edge",
-	"choco": "microsoft-edge",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Edge"
-	},
-"WPFInstallfalkon": {
-	"winget": "KDE.Falkon",
-	"choco": "falkon",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Falkon"
-	},
-"WPFInstallfirefox": {
-	"winget": "Mozilla.Firefox",
-	"choco": "firefox",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Firefox"
-	},
-"WPFInstallfloorp": {
-	"winget": "Ablaze.Floorp",
-	"choco": "na",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Floorp"
-	},
-"WPFInstalllibrewolf": {
-	"winget": "LibreWolf.LibreWolf",
-	"choco": "librewolf",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "LibreWolf"
-	},
-"WPFInstalltor": {
-	"winget": "TorProject.TorBrowser",
-	"choco": "tor-browser",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Tor Browser"
-	},
-"WPFInstallungoogled": {
-	"winget": "eloston.ungoogled-chromium",
-	"choco": "ungoogled-chromium",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Ungoogled"
-	},
-"WPFInstallvivaldi": {
-	"winget": "VivaldiTechnologies.Vivaldi",
-	"choco": "vivaldi",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Vivaldi"
-	},
-"WPFInstallwaterfox": {
-	"winget": "Waterfox.Waterfox",
-	"choco": "waterfox",
-	"category": "Browsers",
-	"panel": "0",
-	"content": "Waterfox"
-	},
-"WPFInstallchatterino": {
-	"winget": "ChatterinoTeam.Chatterino",
-	"choco": "chatterino",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Chatterino"
-	},
-"WPFInstalldiscord": {
-	"winget": "Discord.Discord",
-	"choco": "discord",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Discord"
-	},
-"WPFInstallferdium": {
-	"winget": "Ferdium.Ferdium",
-	"choco": "ferdium",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Ferdium"
-	},
-"WPFInstallguilded": {
-	"winget": "Guilded.Guilded",
-	"choco": "na",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Guilded"
-	},
-"WPFInstallhexchat": {
-	"winget": "HexChat.HexChat",
-	"choco": "hexchat",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Hexchat"
-	},
-"WPFInstalljami": {
-	"winget": "SFLinux.Jami",
-	"choco": "jami",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Jami"
-	},
-"WPFInstalllinphone": {
-	"winget": "BelledonneCommunications.Linphone",
-	"choco": "linphone",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Linphone"
-	},
-"WPFInstallmatrix": {
-	"winget": "Element.Element",
-	"choco": "element-desktop",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Matrix"
-	},
-"WPFInstallsession": {
-	"winget": "Oxen.Session",
-	"choco": "session",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Session"
-	},
-"WPFInstallqtox": {
-	"winget": "Tox.qTox",
-	"choco": "qtox",
-	"category": "Communications",
-	"panel": "0",
-	"content": "QTox"
-	},
-"WPFInstallsignal": {
-	"winget": "OpenWhisperSystems.Signal",
-	"choco": "signal",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Signal"
-	},
-"WPFInstallskype": {
-	"winget": "Microsoft.Skype",
-	"choco": "skype",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Skype"
-	},
-"WPFInstallslack": {
-	"winget": "SlackTechnologies.Slack",
-	"choco": "slack",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Slack"
-	},
-"WPFInstallteams": {
-	"winget": "Microsoft.Teams",
-	"choco": "microsoft-teams",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Teams"
-	},
-"WPFInstalltelegram": {
-	"winget": "Telegram.TelegramDesktop",
-	"choco": "telegram",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Telegram"
-	},
-"WPFInstallthunderbird": {
-	"winget": "Mozilla.Thunderbird",
-	"choco": "thunderbird",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Thunderbird"
-	},
-"WPFInstalltweeten": {
-	"winget": "MehediHassan.Tweeten",
-	"choco": "na",
-	"category": "Communications",
-	"panel": "0",
-	"content": "FOSS Twitter Client"
-	},
-"WPFInstallviber": {
-	"winget": "Viber.Viber",
-	"choco": "viber",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Viber"
-	},
-"WPFInstallzoom": {
-	"winget": "Zoom.Zoom",
-	"choco": "zoom",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Zoom"
-	},
-"WPFInstallzulip": {
-	"winget": "Zulip.Zulip",
-	"choco": "zulip",
-	"category": "Communications",
-	"panel": "0",
-	"content": "Zulip"
-	},
-"WPFInstalljava20": {
-	"winget": "Azul.Zulu.20.JDK",
-	"choco": "na",
-	"category": "Development",
-	"panel": "1",
-	"content": "Azul Zulu JDK 20"
-	},
-"WPFInstalljava21": {
-	"winget": "Azul.Zulu.21.JDK",
-	"choco": "na",
-	"category": "Development",
-	"panel": "1",
-	"content": "Azul Zulu JDK 21"
-	},
-"WPFInstallclink": {
-	"winget": "chrisant996.Clink",
-	"choco": "clink",
-	"category": "Development",
-	"panel": "1",
-	"content": "Clink"
-	},
-"WPFInstalldockerdesktop": {
-	"winget": "Docker.DockerDesktop",
-	"choco": "docker-desktop",
-	"category": "Development",
-	"panel": "1",
-	"content": "Docker Desktop"
-	},
-"WPFInstallgit": {
-	"winget": "Git.Git",
-	"choco": "git",
-	"category": "Development",
-	"panel": "1",
-	"content": "Git"
-	},
-"WPFInstallgitextensions": {
-	"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
-	"choco": "git;gitextensions",
-	"category": "Development",
-	"panel": "1",
-	"content": "Git Extensions"
-	},
-"WPFInstallgithubdesktop": {
-	"winget": "Git.Git;GitHub.GitHubDesktop",
-	"choco": "git;github-desktop",
-	"category": "Development",
-	"panel": "1",
-	"content": "GitHub Desktop"
-	},
-"WPFInstallgolang": {
-	"winget": "GoLang.Go",
-	"choco": "golang",
-	"category": "Development",
-	"panel": "1",
-	"content": "GoLang"
-	},
-"WPFInstalljetbrains": {
-	"winget": "JetBrains.Toolbox",
-	"choco": "jetbrainstoolbox",
-	"category": "Development",
-	"panel": "1",
-	"content": "Jetbrains Toolbox"
-	},
-"WPFInstallmspaintide": {
-	"winget": "MSPaintIDE.MSPaintIDE",
-	"choco": "na",
-	"category": "Development",
-	"panel": "1",
-	"content": "MS Paint IDE"
-	},
-"WPFInstallnano": {
-	"winget": "GNU.Nano",
-	"choco": "nano",
-	"category": "Development",
-	"panel": "1",
-	"content": "Nano"
-	},
-"WPFInstallneovim": {
-	"winget": "Neovim.Neovim",
-	"choco": "neovim",
-	"category": "Development",
-	"panel": "1",
-	"content": "Neovim"
-	},
-"WPFInstallnodejs": {
-	"winget": "OpenJS.NodeJS",
-	"choco": "nodejs",
-	"category": "Development",
-	"panel": "1",
-	"content": "NodeJS"
-	},
-"WPFInstallnodejslts": {
-	"winget": "OpenJS.NodeJS.LTS",
-	"choco": "nodejs-lts",
-	"category": "Development",
-	"panel": "1",
-	"content": "NodeJS LTS"
-	},
-"WPFInstallnvm": {
-	"winget": "CoreyButler.NVMforWindows",
-	"choco": "nvm",
-	"category": "Development",
-	"panel": "1",
-	"content": "Node Version Manager"
-	},
-"WPFInstalljava8": {
-	"winget": "EclipseAdoptium.Temurin.8.JRE",
-	"choco": "temurin8jre",
-	"category": "Development",
-	"panel": "1",
-	"content": "OpenJDK Java 8"
-	},
-"WPFInstalljava16": {
-	"winget": "AdoptOpenJDK.OpenJDK.16",
-	"choco": "temurin16jre",
-	"category": "Development",
-	"panel": "1",
-	"content": "OpenJDK Java 16"
-	},
-"WPFInstalljava18": {
-	"winget": "EclipseAdoptium.Temurin.18.JRE",
-	"choco": "temurin18jre",
-	"category": "Development",
-	"panel": "1",
-	"content": "Oracle Java 18"
-	},
-"WPFInstallposh": {
-	"winget": "JanDeDobbeleer.OhMyPosh",
-	"choco": "oh-my-posh",
-	"category": "Development",
-	"panel": "1",
-	"content": "Oh My Posh (Prompt)"
-	},
-"WPFInstallpython3": {
-	"winget": "Python.Python.3.12",
-	"choco": "python",
-	"category": "Development",
-	"panel": "1",
-	"content": "Python3"
-	},
-"WPFInstallpostman": {
-	"winget": "Postman.Postman",
-	"choco": "postman",
-	"category": "Development",
-	"panel": "1",
-	"content": "Postman"
-	},
-"WPFInstallrustlang": {
-	"winget": "Rustlang.Rust.MSVC",
-	"choco": "rust",
-	"category": "Development",
-	"panel": "1",
-	"content": "Rust"
-	},
-"WPFInstallstarship": {
-	"winget": "starship",
-	"choco": "starship",
-	"category": "Development",
-	"panel": "1",
-	"content": "Starship (Shell Prompt)"
-	},
-"WPFInstallsublimemerge": {
-	"winget": "SublimeHQ.SublimeMerge",
-	"choco": "sublimemerge",
-	"category": "Development",
-	"panel": "1",
-	"content": "Sublime Merge"
-	},
-"WPFInstallsublimetext": {
-	"winget": "SublimeHQ.SublimeText.4",
-	"choco": "sublimetext4",
-	"category": "Development",
-	"panel": "1",
-	"content": "Sublime Text"
-	},
-"WPFInstallunity": {
-	"winget": "Unity.UnityHub",
-	"choco": "unityhub",
-	"category": "Development",
-	"panel": "1",
-	"content": "Unity Game Engine"
-	},
-"WPFInstallvisualstudio": {
-	"winget": "Microsoft.VisualStudio.2022.Community",
-	"choco": "visualstudio2022community",
-	"category": "Development",
-	"panel": "1",
-	"content": "Visual Studio 2022"
-	},
-"WPFInstallvagrant": {
-	"winget": "Hashicorp.Vagrant",
-	"choco": "vagrant",
-	"category": "Development",
-	"panel": "1",
-	"content": "Vagrant"
-	},
-"WPFInstallvscode": {
-	"winget": "Git.Git;Microsoft.VisualStudioCode",
-	"choco": "vscode",
-	"category": "Development",
-	"panel": "1",
-	"content": "VS Code"
-	},
-"WPFInstallvscodium": {
-	"winget": "Git.Git;VSCodium.VSCodium",
-	"choco": "vscodium",
-	"category": "Development",
-	"panel": "1",
-	"content": "VS Codium"
-	},
-"WPFInstallyarn": {
-	"winget": "Yarn.Yarn",
-	"choco": "yarn",
-	"category": "Development",
-	"panel": "1",
-	"content": "Yarn"
-	},
-"WPFInstallanki": {
-	"winget": "Anki.Anki",
-	"choco": "anki",
-	"category": "Document",
-	"panel": "1",
-	"content": "Anki"
-	},
-"WPFInstalladobe": {
-	"winget": "Adobe.Acrobat.Reader.64-bit",
-	"choco": "adobereader",
-	"category": "Document",
-	"panel": "1",
-	"content": "Adobe Reader DC"
-	},
-"WPFInstallopenoffice": {
-	"winget": "Apache.OpenOffice",
-	"choco": "openoffice",
-	"category": "Document",
-	"panel": "1",
-	"content": "Apache OpenOffice"
-	},
-"WPFInstallcalibre": {
-	"winget": "calibre.calibre",
-	"choco": "calibre",
-	"category": "Document",
-	"panel": "1",
-	"content": "Calibre"
-	},
-"WPFInstallfoxpdf": {
-	"winget": "Foxit.PhantomPDF",
-	"choco": "na",
-	"category": "Document",
-	"panel": "1",
-	"content": "Foxit PDF"
-	},
-"WPFInstalljoplin": {
-	"winget": "Joplin.Joplin",
-	"choco": "joplin",
-	"category": "Document",
-	"panel": "1",
-	"content": "Joplin (FOSS Notes)"
-	},
-"WPFInstalllibreoffice": {
-	"winget": "TheDocumentFoundation.LibreOffice",
-	"choco": "libreoffice-fresh",
-	"category": "Document",
-	"panel": "1",
-	"content": "LibreOffice"
-	},
-"WPFInstallmasscode": {
-	"winget": "antonreshetov.massCode",
-	"choco": "na",
-	"category": "Document",
-	"panel": "1",
-	"content": "massCode (Snippet Manager)"
-	},
-"WPFInstallnaps2": {
-	"winget": "Cyanfish.NAPS2",
-	"choco": "naps2",
-	"category": "Document",
-	"panel": "1",
-	"content": "NAPS2 (Document Scanner)"
-	},
-"WPFInstallnotepadplus": {
-	"winget": "Notepad++.Notepad++",
-	"choco": "notepadplusplus",
-	"category": "Document",
-	"panel": "1",
-	"content": "Notepad++"
-	},
-"WPFInstallobsidian": {
-	"winget": "Obsidian.Obsidian",
-	"choco": "obsidian",
-	"category": "Document",
-	"panel": "1",
-	"content": "Obsidian"
-	},
-"WPFInstallokular": {
-	"winget": "KDE.Okular",
-	"choco": "okular",
-	"category": "Document",
-	"panel": "1",
-	"content": "Okular"
-	},
-"WPFInstallonlyoffice": {
-	"winget": "ONLYOFFICE.DesktopEditors",
-	"choco": "onlyoffice",
-	"category": "Document",
-	"panel": "1",
-	"content": "ONLYOffice Desktop"
-	},
-"WPFInstallpdfsam": {
-	"winget": "PDFsam.PDFsam",
-	"choco": "pdfsam",
-	"category": "Document",
-	"panel": "1",
-	"content": "PDFsam Basic"
-	},
-"WPFInstallsumatra": {
-	"winget": "SumatraPDF.SumatraPDF",
-	"choco": "sumatrapdf",
-	"category": "Document",
-	"panel": "1",
-	"content": "Sumatra PDF"
-	},
-"WPFInstallwinmerge": {
-	"winget": "WinMerge.WinMerge",
-	"choco": "winmerge",
-	"category": "Document",
-	"panel": "1",
-	"content": "WinMerge"
-	},
-"WPFInstallxournal": {
-	"winget": "Xournal++.Xournal++",
-	"choco": "xournalplusplus",
-	"category": "Document",
-	"panel": "1",
-	"content": "Xournal++"
-	},
-"WPFInstallzim": {
-	"winget": "Zimwiki.Zim",
-	"choco": "zim",
-	"category": "Document",
-	"panel": "1",
-	"content": "Zim Desktop Wiki"
-	},
-"WPFInstallznote": {
-	"winget": "alagrede.znote",
-	"choco": "na",
-	"category": "Document",
-	"panel": "1",
-	"content": "Znote"
-	},
-"WPFInstallzotero": {
-	"winget": "DigitalScholar.Zotero",
-	"choco": "zotero",
-	"category": "Document",
-	"panel": "1",
-	"content": "Zotero"
-	},
-"WPFInstallbluestacks": {
-	"winget": "BlueStack.BlueStacks",
-	"choco": "bluestacks",
-	"category": "Games",
-	"panel": "2",
-	"content": "Bluestacks"
-	},
-"WPFInstallcemu": {
-	"winget": "Cemu.Cemu",
-	"choco": "cemu",
-	"category": "Games",
-	"panel": "2",
-	"content": "Cemu"
-	},
-"WPFInstallclonehero": {
-	"winget": "CloneHeroTeam.CloneHero",
-	"choco": "na",
-	"category": "Games",
-	"panel": "2",
-	"content": "Clone Hero"
-	},
-"WPFInstalleaapp": {
-	"winget": "ElectronicArts.EADesktop",
-	"choco": "ea-app",
-	"category": "Games",
-	"panel": "2",
-	"content": "EA App"
-	},
-"WPFInstallemulationstation": {
-	"winget": "Emulationstation.Emulationstation",
-	"choco": "emulationstation",
-	"category": "Games",
-	"panel": "2",
-	"content": "Emulation Station"
-	},
-"WPFInstallepicgames": {
-	"winget": "EpicGames.EpicGamesLauncher",
-	"choco": "epicgameslauncher",
-	"category": "Games",
-	"panel": "2",
-	"content": "Epic Games Launcher"
-	},
-"WPFInstallgeforcenow": {
-	"winget": "Nvidia.GeForceNow",
-	"choco": "nvidia-geforce-now",
-	"category": "Games",
-	"panel": "2",
-	"content": "GeForce NOW"
-	},
-"WPFInstallgog": {
-	"winget": "GOG.Galaxy",
-	"choco": "goggalaxy",
-	"category": "Games",
-	"panel": "2",
-	"content": "GOG Galaxy"
-	},
-"WPFInstallheroiclauncher": {
-	"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
-	"choco": "na",
-	"category": "Games",
-	"panel": "2",
-	"content": "Heroic Games Launcher"
-	},
-"WPFInstallitch": {
-	"winget": "ItchIo.Itch",
-	"choco": "itch",
-	"category": "Games",
-	"panel": "2",
-	"content": "Itch.io"
-	},
-"WPFInstallmoonlight": {
-	"winget": "MoonlightGameStreamingProject.Moonlight",
-	"choco": "moonlight-qt",
-	"category": "Games",
-	"panel": "2",
-	"content": "Moonlight/GameStream Client"
-	},
-"WPFInstallplaynite": {
-	"winget": "Playnite.Playnite",
-	"choco": "playnite",
-	"category": "Games",
-	"panel": "2",
-	"content": "Playnite"
-	},
-"WPFInstallprismlauncher": {
-	"winget": "PrismLauncher.PrismLauncher",
-	"choco": "prismlauncher",
-	"category": "Games",
-	"panel": "2",
-	"content": "Prism Launcher"
-	},
-"WPFInstallsidequest": {
-	"winget": "SideQuestVR.SideQuest",
-	"choco": "sidequest",
-	"category": "Games",
-	"panel": "2",
-	"content": "SideQuestVR"
-	},
-"WPFInstallsteam": {
-	"winget": "Valve.Steam",
-	"choco": "steam-client",
-	"category": "Games",
-	"panel": "2",
-	"content": "Steam"
-	},
-"WPFInstallsunshine": {
-	"winget": "LizardByte.Sunshine",
-	"choco": "sunshine",
-	"category": "Games",
-	"panel": "2",
-	"content": "Sunshine/GameStream Server"
-	},
-"WPFInstallubisoft": {
-	"winget": "Ubisoft.Connect",
-	"choco": "ubisoft-connect",
-	"category": "Games",
-	"panel": "2",
-	"content": "Ubisoft Connect"
-	},
-"WPFInstallxemu": {
-	"winget": "xemu-project.xemu",
-	"choco": "na",
-	"category": "Games",
-	"panel": "2",
-	"content": "XEMU"
-	},
-"WPFInstalldotnet3": {
-	"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
-	"choco": "dotnetcore3-desktop-runtime",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": ".NET Desktop Runtime 3.1"
-	},
-"WPFInstalldotnet5": {
-	"winget": "Microsoft.DotNet.DesktopRuntime.5",
-	"choco": "dotnet-5.0-runtime",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": ".NET Desktop Runtime 5"
-	},
-"WPFInstalldotnet6": {
-	"winget": "Microsoft.DotNet.DesktopRuntime.6",
-	"choco": "dotnet-6.0-runtime",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": ".NET Desktop Runtime 6"
-	},
-"WPFInstalldotnet7": {
-	"winget": "Microsoft.DotNet.DesktopRuntime.7",
-	"choco": "dotnet-7.0-runtime",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": ".NET Desktop Runtime 7"
-	},
-"WPFInstallnuget": {
-	"winget": "Microsoft.NuGet",
-	"choco": "nuget.commandline",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "Nuget"
-	},
-"WPFInstallonedrive": {
-	"winget": "Microsoft.OneDrive",
-	"choco": "onedrive",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "OneDrive"
-	},
-"WPFInstallpowershell": {
-	"winget": "Microsoft.PowerShell",
-	"choco": "powershell-core",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "PowerShell"
-	},
-"WPFInstallpowertoys": {
-	"winget": "Microsoft.PowerToys",
-	"choco": "powertoys",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "Powertoys"
-	},
-"WPFInstallprocessmonitor": {
-	"winget": "Microsoft.Sysinternals.ProcessMonitor",
-	"choco": "procexp",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "SysInternals Process Monitor"
-	},
-"WPFInstalltcpview": {
-	"winget": "Microsoft.Sysinternals.TCPView",
-	"choco": "tcpview",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "SysInternals TCPView"
-	},
-"WPFInstallvc2015_64": {
-	"winget": "Microsoft.VCRedist.2015+.x64",
-	"choco": "na",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "Visual C++ 2015-2022 64-bit"
-	},
-"WPFInstallvc2015_32": {
-	"winget": "Microsoft.VCRedist.2015+.x86",
-	"choco": "na",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "Visual C++ 2015-2022 32-bit"
-	},
-"WPFInstallterminal": {
-	"winget": "Microsoft.WindowsTerminal",
-	"choco": "microsoft-windows-terminal",
-	"category": "Microsoft Tools",
-	"panel": "2",
-	"content": "Windows Terminal"
-	},
-"WPFInstallarch": {
-	"winget": "9MZNMNKSM73X",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Arch (Win Store)"
-	},
-"WPFInstalldebian": {
-	"winget": "Debian.Debian",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Debian"
-	},
-"WPFInstallfedora": {
-	"winget": "whitewaterfoundry.fedora-remix-for-wsl",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Fedora WSL Remix"
-	},
-"WPFInstallopensuseleap": {
-	"winget": "9NJGLDP5G04B",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "OpenSUSE Leap 15.5 (Win Store)"
-	},
-"WPFInstallopensusetw": {
-	"winget": "9MSSK2ZXXN11",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "OpenSUSE Tumbleweed (Win Store)"
-	},
-"WPFInstallubuntu1604": {
-	"winget": "Canonical.Ubuntu.1604",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Ubuntu 16.04 LTS"
-	},
-"WPFInstallubuntu1804": {
-	"winget": "Canonical.Ubuntu.1804",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Ubuntu 18.04 LTS"
-	},
-"WPFInstallubuntu2004": {
-	"winget": "Canonical.Ubuntu.2004",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Ubuntu 20.04 LTS"
-	},
-"WPFInstallubuntu2204": {
-	"winget": "Canonical.Ubuntu.2204",
-	"choco": "na",
-	"category": "WSL Apps",
-	"panel": "2",
-	"content": "Ubuntu 22.04 LTS"
-	},
-"WPFInstallaimp": {
-	"winget": "AIMP.AIMP",
-	"choco": "aimp",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "AIMP (Music Player)"
-	},
-"WPFInstallaudacity": {
-	"winget": "Audacity.Audacity",
-	"choco": "audacity",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Audacity"
-	},
-"WPFInstallblender": {
-	"winget": "BlenderFoundation.Blender",
-	"choco": "blender",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Blender (3D Graphics)"
-	},
-"WPFInstallcider": {
-	"winget": "CiderCollective.Cider",
-	"choco": "cider",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Cider (FOSS Music Player)"
-	},
-"WPFInstallclementine": {
-	"winget": "Clementine.Clementine",
-	"choco": "clementine",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Clementine"
-	},
-"WPFInstallclipgrab": {
-	"winget": "na",
-	"choco": "clipgrab",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Clipgrab"
-	},
-"WPFInstallcopyq": {
-	"winget": "hluk.CopyQ",
-	"choco": "copyq",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Copyq (Clipboard Manager)"
-	},
-"WPFInstalldigikam": {
-	"winget": "KDE.digikam",
-	"choco": "digikam",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "DigiKam"
-	},
-"WPFInstalleartrumpet": {
-	"winget": "File-New-Project.EarTrumpet",
-	"choco": "eartrumpet",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Eartrumpet (Audio)"
-	},
-"WPFInstallfreecad": {
-	"winget": "FreeCAD.FreeCAD",
-	"choco": "freecad",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "FreeCAD"
-	},
-"WPFInstallfirealpaca": {
-	"winget": "FireAlpaca.FireAlpaca",
-	"choco": "firealpaca",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Fire Alpaca"
-	},
-"WPFInstallflameshot": {
-	"winget": "Flameshot.Flameshot",
-	"choco": "flameshot",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Flameshot (Screenshots)"
-	},
-"WPFInstallfoobar": {
-	"winget": "PeterPawlowski.foobar2000",
-	"choco": "foobar2000",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Foobar2000 (Music Player)"
-	},
-"WPFInstallgimp": {
-	"winget": "GIMP.GIMP",
-	"choco": "gimp",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "GIMP (Image Editor)"
-	},
-"WPFInstallgreenshot": {
-	"winget": "Greenshot.Greenshot",
-	"choco": "greenshot",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Greenshot (Screenshots)"
-	},
-"WPFInstallhandbrake": {
-	"winget": "HandBrake.HandBrake",
-	"choco": "handbrake",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "HandBrake"
-	},
-"WPFInstallimageglass": {
-	"winget": "DuongDieuPhap.ImageGlass",
-	"choco": "imageglass",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "ImageGlass (Image Viewer)"
-	},
-"WPFInstallimgburn": {
-	"winget": "LIGHTNINGUK.ImgBurn",
-	"choco": "imgburn",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "ImgBurn"
-	},
-"WPFInstallinkscape": {
-	"winget": "Inkscape.Inkscape",
-	"choco": "inkscape",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Inkscape"
-	},
-"WPFInstallitunes": {
-	"winget": "Apple.iTunes",
-	"choco": "itunes",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "iTunes"
-	},
-"WPFInstalljellyfinmediaplayer": {
-	"winget": "Jellyfin.JellyfinMediaPlayer",
-	"choco": "jellyfin-media-player",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Jellyfin Media Player"
-	},
-"WPFInstalljellyfinserver": {
-	"winget": "Jellyfin.Server",
-	"choco": "jellyfin",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Jellyfin Server"
-	},
-"WPFInstallkdenlive": {
-	"winget": "KDE.Kdenlive",
-	"choco": "kdenlive",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Kdenlive (Video Editor)"
-	},
-"WPFInstallkodi": {
-	"winget": "XBMCFoundation.Kodi",
-	"choco": "kodi",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Kodi Media Center"
-	},
-"WPFInstallklite": {
-	"winget": "CodecGuide.K-LiteCodecPack.Standard",
-	"choco": "k-litecodecpack-standard",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "K-Lite Codec Standard"
-	},
-"WPFInstallkrita": {
-	"winget": "KDE.Krita",
-	"choco": "krita",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Krita (Image Editor)"
-	},
-"WPFInstallmusicbee": {
-	"winget": "MusicBee.MusicBee",
-	"choco": "musicbee",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "MusicBee (Music Player)"
-	},
-"WPFInstallmpc": {
-	"winget": "clsid2.mpc-hc",
-	"choco": "mpc-hc",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Media Player Classic (Video Player)"
-	},
-"WPFInstallnglide": {
-	"winget": "ZeusSoftware.nGlide",
-	"choco": "na",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "nGlide (3dfx compatibility)"
-	},
-"WPFInstallnomacs": {
-	"winget": "nomacs.nomacs",
-	"choco": "nomacs",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Nomacs (Image viewer)"
-	},
-"WPFInstallobs": {
-	"winget": "OBSProject.OBSStudio",
-	"choco": "obs-studio",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "OBS Studio"
-	},
-"WPFInstallPaintdotnet": {
-	"winget": "dotPDNLLC.paintdotnet",
-	"choco": "paint.net",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Paint.net"
-	},
-"WPFInstallopenscad": {
-	"winget": "OpenSCAD.OpenSCAD",
-	"choco": "openscad",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "OpenSCAD"
-	},
-"WPFInstallsharex": {
-	"winget": "ShareX.ShareX",
-	"choco": "sharex",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "ShareX (Screenshots)"
-	},
-"WPFInstallstrawberry": {
-	"winget": "StrawberryMusicPlayer.Strawberry",
-	"choco": "strawberrymusicplayer",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Strawberry (Music Player)"
-	},
-"WPFInstalltidal": {
-	"winget": "9NNCB5BS59PH",
-	"choco": "na",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Tidal"
-	},
-"WPFInstallvlc": {
-	"winget": "VideoLAN.VLC",
-	"choco": "vlc",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "VLC (Video Player)"
-	},
-"WPFInstallvoicemeeter": {
-	"winget": "VB-Audio.Voicemeeter",
-	"choco": "voicemeeter",
-	"category": "Multimedia Tools",
-	"panel": "3",
-	"content": "Voicemeeter (Audio)"
-	},
-"WPFInstalladvancedip": {
-	"winget": "Famatech.AdvancedIPScanner",
-	"choco": "advanced-ip-scanner",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Advanced IP Scanner"
-	},
-"WPFInstallangryipscanner": {
-	"winget": "angryziber.AngryIPScanner",
-	"choco": "angryip",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Angry IP Scanner"
-	},
-"WPFInstallefibooteditor": {
-	"winget": "EFIBootEditor.EFIBootEditor",
-	"choco": "na",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "EFI Boot Editor"
-	},
-"WPFInstallheidisql": {
-	"winget": "HeidiSQL.HeidiSQL",
-	"choco": "heidisql",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "HeidiSQL"
-	},
-"WPFInstallmremoteng": {
-	"winget": "mRemoteNG.mRemoteNG",
-	"choco": "mremoteng",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "mRemoteNG"
-	},
-"WPFInstallnmap": {
-	"winget": "Insecure.Nmap",
-	"choco": "nmap",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Nmap"
-	},
-"WPFInstallOpenVPN": {
-	"winget": "OpenVPNTechnologies.OpenVPNConnect",
-	"choco": "openvpn-connect",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "OpenVPN Connect"
-	},
-"WPFInstallportmaster": {
-	"winget": "portmaster",
-	"choco": "portmaster",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Portmaster"
-	},
-"WPFInstallputty": {
-	"winget": "PuTTY.PuTTY",
-	"choco": "putty",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Putty"
-	},
-"WPFInstallrustdesk": {
-	"winget": "RustDesk.RustDesk",
-	"choco": "rustdesk.portable",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Rust Remote Desktop (FOSS)"
-	},
-"WPFInstallsimplewall": {
-	"winget": "Henry++.simplewall",
-	"choco": "simplewall",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "SimpleWall"
-	},
-"WPFInstallventoy": {
-	"winget": "na",
-	"choco": "ventoy",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "Ventoy"
-	},
-"WPFInstallwinscp": {
-	"winget": "WinSCP.WinSCP",
-	"choco": "winscp",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "WinSCP"
-	},
-"WPFInstallwireguard": {
-	"winget": "WireGuard.WireGuard",
-	"choco": "wireguard",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "WireGuard"
-	},
-"WPFInstallwireshark": {
-	"winget": "WiresharkFoundation.Wireshark",
-	"choco": "wireshark",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "WireShark"
-	},
-"WPFInstallxpipe": {
-	"winget": "xpipe-io.xpipe",
-	"choco": "xpipe",
-	"category": "Pro Tools",
-	"panel": "3",
-	"content": "X-Pipe"
-	},
-"WPFInstall7zip": {
-	"winget": "7zip.7zip",
-	"choco": "7zip",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "7-Zip"
-	},
-"WPFInstallalacritty": {
-	"winget": "Alacritty.Alacritty",
-	"choco": "alacritty",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Alacritty Terminal"
-	},
-"WPFInstallanydesk": {
-	"winget": "AnyDeskSoftwareGmbH.AnyDesk",
-	"choco": "anydesk",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "AnyDesk"
-	},
-"WPFInstallautohotkey": {
-	"winget": "AutoHotkey.AutoHotkey",
-	"choco": "autohotkey",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "AutoHotkey"
-	},
-"WPFInstallbarrier": {
-	"winget": "DebaucheeOpenSourceGroup.Barrier",
-	"choco": "barrier",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Barrier"
-	},
-"WPFInstallbat": {
-	"winget": "sharkdp.bat",
-	"choco": "bat",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Bat (Cat)"
-	},
-"WPFInstallbitwarden": {
-	"winget": "Bitwarden.Bitwarden",
-	"choco": "bitwarden",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Bitwarden"
-	},
-"WPFInstallbulkcrapuninstaller": {
-	"winget": "Klocman.BulkCrapUninstaller",
-	"choco": "bulk-crap-uninstaller",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Bulk Crap Uninstaller"
-	},
-"WPFInstallcarnac": {
-	"winget": "code52.Carnac",
-	"choco": "carnac",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Carnac"
-	},
-"WPFInstallcpuz": {
-	"winget": "CPUID.CPU-Z",
-	"choco": "cpu-z",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "CPU-Z"
-	},
-"WPFInstallcrystaldiskinfo": {
-	"winget": "CrystalDewWorld.CrystalDiskInfo",
-	"choco": "crystaldiskinfo",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Crystal Disk Info"
-	},
-"WPFInstallcrystaldiskmark": {
-	"winget": "CrystalDewWorld.CrystalDiskMark",
-	"choco": "crystaldiskmark",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Crystal Disk Mark"
-	},
-"WPFInstallddu": {
-	"winget": "ddu",
-	"choco": "ddu",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Display Driver Uninstaller"
-	},
-"WPFInstalldeluge": {
-	"winget": "DelugeTeam.Deluge",
-	"choco": "deluge",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Deluge"
-	},
-"WPFInstalldolphin": {
-	"winget": "KDE.Dolphin",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Dolphin File manager"
-	},
-"WPFInstallduplicati": {
-	"winget": "Duplicati.Duplicati",
-	"choco": "duplicati",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Duplicati 2"
-	},
-"WPFInstalldevtoys": {
-	"winget": "devtoys",
-	"choco": "devToys",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Devtoys"
-	},
-"WPFInstallerrorlookup": {
-	"winget": "Henry++.ErrorLookup",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Windows Error Code Lookup"
-	},
-"WPFInstalletcher": {
-	"winget": "Balena.Etcher",
-	"choco": "etcher",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Etcher USB Creator"
-	},
-"WPFInstallesearch": {
-	"winget": "voidtools.Everything",
-	"choco": "everything",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Everything Search"
-	},
-"WPFInstallfiles": {
-	"winget": "YairAichenbaum.Files",
-	"choco": "files",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Files File Explorer"
-	},
-"WPFInstallflux": {
-	"winget": "flux.flux",
-	"choco": "flux",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "f.lux Redshift"
-	},
-"WPFInstallglaryutilities": {
-	"winget": "Glarysoft.GlaryUtilities",
-	"choco": "glaryutilities-free",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Glary Utilities"
-	},
-"WPFInstallgpuz": {
-	"winget": "TechPowerUp.GPU-Z",
-	"choco": "gpu-z",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "GPU-Z"
-	},
-"WPFInstallgsudo": {
-	"winget": "gerardog.gsudo",
-	"choco": "gsudo",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Gsudo"
-	},
-"WPFInstallhwinfo": {
-	"winget": "REALiX.HWiNFO",
-	"choco": "hwinfo",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "HWInfo"
-	},
-"WPFInstalljdownloader": {
-	"winget": "AppWork.JDownloader",
-	"choco": "jdownloader",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "J Download Manager"
-	},
-"WPFInstallkdeconnect": {
-	"winget": "KDE.KDEConnect",
-	"choco": "kdeconnect-kde",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "KDE Connect"
-	},
-"WPFInstallkeepass": {
-	"winget": "KeePassXCTeam.KeePassXC",
-	"choco": "keepassxc",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "KeePassXC"
-	},
-"WPFInstallmalwarebytes": {
-	"winget": "Malwarebytes.Malwarebytes",
-	"choco": "malwarebytes",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "MalwareBytes"
-	},
-"WPFInstallmeld": {
-	"winget": "Meld.Meld",
-	"choco": "meld",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Meld"
-	},
-"WPFInstallmonitorian": {
-	"winget": "emoacht.Monitorian",
-	"choco": "monitorian",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Monitorian"
-	},
-"WPFInstallmsiafterburner": {
-	"winget": "Guru3D.Afterburner",
-	"choco": "msiafterburner",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "MSI Afterburner"
-	},
-"WPFInstallnanazip": {
-	"winget": "M2Team.NanaZip",
-	"choco": "nanazip",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "NanaZip"
-	},
-"WPFInstallneofetchwin": {
-	"winget": "nepnep.neofetch-win",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Neofetch"
-	},
-"WPFInstallnextclouddesktop": {
-	"winget": "Nextcloud.NextcloudDesktop",
-	"choco": "nextcloud-client",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Nextcloud Desktop"
-	},
-"WPFInstallnushell": {
-	"winget": "Nushell.Nushell",
-	"choco": "nushell",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Nushell"
-	},
-"WPFInstallnvclean": {
-	"winget": "TechPowerUp.NVCleanstall",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "NVCleanstall"
-	},
-"WPFInstallOVirtualBox": {
-	"winget": "Oracle.VirtualBox",
-	"choco": "virtualbox",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Oracle VirtualBox"
-	},
-"WPFInstallopenrgb": {
-	"winget": "CalcProgrammer1.OpenRGB",
-	"choco": "openrgb",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "OpenRGB"
-	},
-"WPFInstallopenshell": {
-	"winget": "Open-Shell.Open-Shell-Menu",
-	"choco": "open-shell",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Open Shell (Start Menu)"
-	},
-"WPFInstallownclouddesktop": {
-	"winget": "ownCloud.ownCloudDesktop",
-	"choco": "owncloud-client",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "ownCloud Desktop"
-	},
-"WPFInstallpeazip": {
-	"winget": "Giorgiotani.Peazip",
-	"choco": "peazip",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Peazip"
-	},
-"WPFInstallprocesslasso": {
-	"winget": "BitSum.ProcessLasso",
-	"choco": "plasso",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Process Lasso"
-	},
-"WPFInstallprucaslicer": {
-	"winget": "Prusa3d.PrusaSlicer",
-	"choco": "prusaslicer",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Prusa Slicer"
-	},
-"WPFInstallqbittorrent": {
-	"winget": "qBittorrent.qBittorrent",
-	"choco": "qbittorrent",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "qBittorrent"
-	},
-"WPFInstallrainmeter": {
-	"winget": "Rainmeter.Rainmeter",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Rainmeter"
-	},
-"WPFInstallrevo": {
-	"winget": "RevoUninstaller.RevoUninstaller",
-	"choco": "revo-uninstaller",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "RevoUninstaller"
-	},
-"WPFInstallrufus": {
-	"winget": "Rufus.Rufus",
-	"choco": "rufus",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Rufus Imager"
-	},
-"WPFInstallsandboxie": {
-	"winget": "Sandboxie.Plus",
-	"choco": "sandboxie",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Sandboxie Plus"
-	},
-"WPFInstallshell": {
-	"winget": "Nilesoft.Shell",
-	"choco": "nilesoft-shell",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Shell (Expanded Context Menu)"
-	},
-"WPFInstallsdio": {
-	"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
-	"choco": "sdio",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Snappy Driver Installer Origin"
-	},
-"WPFInstallspacedrive": {
-	"winget": "spacedrive.Spacedrive",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Spacedrive File Manager"
-	},
-"WPFInstallsuperf4": {
-	"winget": "StefanSundin.Superf4",
-	"choco": "superf4",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "SuperF4"
-	},
-"WPFInstalltailscale": {
-	"winget": "tailscale.tailscale",
-	"choco": "tailscale",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Tailscale"
-	},
-"WPFInstallteamviewer": {
-	"winget": "TeamViewer.TeamViewer",
-	"choco": "teamviewer9",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "TeamViewer"
-	},
-"WPFInstallttaskbar": {
-	"winget": "9PF4KZ2VN4W9",
-	"choco": "translucenttb",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Translucent Taskbar"
-	},
-"WPFInstalltreesize": {
-	"winget": "JAMSoftware.TreeSize.Free",
-	"choco": "treesizefree",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "TreeSize Free"
-	},
-"WPFInstalltwinkletray": {
-	"winget": "xanderfrangos.twinkletray",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Twinkle Tray"
-	},
-"WPFInstallwindirstat": {
-	"winget": "WinDirStat.WinDirStat",
-	"choco": "windirstat",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WinDirStat"
-	},
-"WPFInstallwingetui": {
-	"winget": "SomePythonThings.WingetUIStore",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WingetUI"
-	},
-"WPFInstallwiztree": {
-	"winget": "AntibodySoftware.WizTree",
-	"choco": "wiztree",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WizTree"
-	},
-"WPFInstallwinrar": {
-	"winget": "RARLab.WinRAR",
-	"choco": "winrar",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WinRAR"
-	},
-"WPFInstallwinpaletter": {
-	"winget": "Abdelrhman-AK.WinPaletter",
-	"choco": "WinPaletter",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WinPaletter"
-	},
-"WPFInstallwisetoys": {
-	"winget": "WiseCleaner.WiseToys",
-	"choco": "na",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "WiseToys"
-	},
-"WPFInstallxdm": {
-	"winget": "subhra74.XtremeDownloadManager",
-	"choco": "xdm",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Xtreme Download Manager"
-	},
-"WPFInstallzerotierone": {
-	"winget": "ZeroTier.ZeroTierOne",
-	"choco": "zerotier-one",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "ZeroTier One"
-	},
-"WPFInstallzoxide": {
-	"winget": "ajeetdsouza.zoxide",
-	"choco": "zoxide",
-	"category": "Utilities",
-	"panel": "4",
-	"content": "Zoxide"
+	"WPFInstallbrave": {
+		"winget": "Brave.Brave",
+		"choco": "brave",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Brave",
+		"link": "https://www.brave.com",
+		"description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience."
+	},
+	"WPFInstallchrome": {
+		"winget": "Google.Chrome",
+		"choco": "googlechrome",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Chrome",
+		"link": "https://www.google.com/chrome/",
+		"description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services."
+	},
+	"WPFInstallchromium": {
+		"winget": "Hibbiki.Chromium",
+		"choco": "chromium",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Chromium",
+		"link": "https://github.com/Hibbiki/chromium-win64",
+		"description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome."
+	},
+	"WPFInstalledge": {
+		"winget": "Microsoft.Edge",
+		"choco": "microsoft-edge",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Edge",
+		"link": "https://www.microsoft.com/edge",
+		"description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services."
+	},
+	"WPFInstallfalkon": {
+		"winget": "KDE.Falkon",
+		"choco": "falkon",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Falkon",
+		"link": "https://www.falkon.org/",
+		"description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency."
+	},
+	"WPFInstallfirefox": {
+		"winget": "Mozilla.Firefox",
+		"choco": "firefox",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Firefox",
+		"link": "https://www.mozilla.org/en-US/firefox/new/",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions."
+	},
+	"WPFInstallfloorp": {
+		"winget": "Ablaze.Floorp",
+		"choco": "na",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Floorp",
+		"link": "https://github.com/Floorp-Projects/Floorp",
+		"description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience."
+	},
+	"WPFInstalllibrewolf": {
+		"winget": "LibreWolf.LibreWolf",
+		"choco": "librewolf",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "LibreWolf",
+		"link": "https://librewolf-community.gitlab.io/",
+		"description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements."
+	},
+	"WPFInstalltor": {
+		"winget": "TorProject.TorBrowser",
+		"choco": "tor-browser",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Tor Browser",
+		"link": "https://www.torproject.org/",
+		"description": "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security."
+	},
+	"WPFInstallungoogled": {
+		"winget": "eloston.ungoogled-chromium",
+		"choco": "ungoogled-chromium",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Ungoogled",
+		"link": "https://github.com/Eloston/ungoogled-chromium",
+		"description": "Ungoogled Chromium is a version of Chromium without Google''s integration for enhanced privacy and control."
+	},
+	"WPFInstallvivaldi": {
+		"winget": "VivaldiTechnologies.Vivaldi",
+		"choco": "vivaldi",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Vivaldi",
+		"link": "https://vivaldi.com/",
+		"description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features."
+	},
+	"WPFInstallwaterfox": {
+		"winget": "Waterfox.Waterfox",
+		"choco": "waterfox",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Waterfox",
+		"link": "https://www.waterfox.net/",
+		"description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy."
+	},
+	"WPFInstallchatterino": {
+		"winget": "ChatterinoTeam.Chatterino",
+		"choco": "chatterino",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Chatterino",
+		"link": "https://www.chatterino.com/",
+		"description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience."
+	},
+	"WPFInstalldiscord": {
+		"winget": "Discord.Discord",
+		"choco": "discord",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Discord",
+		"link": "https://discord.com/",
+		"description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities."
+	},
+	"WPFInstallferdium": {
+		"winget": "Ferdium.Ferdium",
+		"choco": "ferdium",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Ferdium",
+		"link": "https://www.ferdiapp.com/",
+		"description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management."
+	},
+	"WPFInstallguilded": {
+		"winget": "Guilded.Guilded",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Guilded",
+		"description": "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities."
+	},
+	"WPFInstallhexchat": {
+		"winget": "HexChat.HexChat",
+		"choco": "hexchat",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Hexchat",
+		"link": "https://hexchat.github.io/",
+		"description": "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication."
+	},
+	"WPFInstalljami": {
+		"winget": "SFLinux.Jami",
+		"choco": "jami",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Jami",
+		"link": "https://jami.net/",
+		"description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing."
+	},
+	"WPFInstalllinphone": {
+		"winget": "BelledonneCommunications.Linphone",
+		"choco": "linphone",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Linphone",
+		"link": "https://www.linphone.org/",
+		"description": "Linphone is an open-source voice over IP (VoIP) service that allows for audio and video calls, messaging, and more."
+	},
+	"WPFInstallmatrix": {
+		"winget": "Element.Element",
+		"choco": "element-desktop",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Matrix",
+		"link": "https://element.io/",
+		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools."
+	},
+	"WPFInstallsession": {
+		"winget": "Oxen.Session",
+		"choco": "session",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Session",
+		"link": "https://getsession.org/",
+		"description": "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection."
+	},
+	"WPFInstallqtox": {
+		"winget": "Tox.qTox",
+		"choco": "qtox",
+		"category": "Communications",
+		"panel": "0",
+		"content": "QTox",
+		"link": "https://qtox.github.io/",
+		"description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design."
+	},
+	"WPFInstallsignal": {
+		"winget": "OpenWhisperSystems.Signal",
+		"choco": "signal",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Signal",
+		"link": "https://signal.org/",
+		"description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication."
+	},
+	"WPFInstallskype": {
+		"winget": "Microsoft.Skype",
+		"choco": "skype",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Skype",
+		"link": "https://www.skype.com/",
+		"description": "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services."
+	},
+	"WPFInstallslack": {
+		"winget": "SlackTechnologies.Slack",
+		"choco": "slack",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Slack",
+		"link": "https://slack.com/",
+		"description": "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing."
+	},
+	"WPFInstallteams": {
+		"winget": "Microsoft.Teams",
+		"choco": "microsoft-teams",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Teams",
+		"link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
+		"description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more."
+	},
+	"WPFInstalltelegram": {
+		"winget": "Telegram.TelegramDesktop",
+		"choco": "telegram",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Telegram",
+		"link": "https://telegram.org/",
+		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity."
+	},
+	"WPFInstallthunderbird": {
+		"winget": "Mozilla.Thunderbird",
+		"choco": "thunderbird",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Thunderbird",
+		"link": "https://www.thunderbird.net/",
+		"description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features."
+	},
+	"WPFInstalltweeten": {
+		"winget": "MehediHassan.Tweeten",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "FOSS Twitter Client",
+		"description": "Tweeten is a free and open-source Twitter client for Windows with a clean and customizable interface."
+	},
+	"WPFInstallviber": {
+		"winget": "Viber.Viber",
+		"choco": "viber",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Viber",
+		"link": "https://www.viber.com/",
+		"description": "Viber is a free messaging and calling app with features like group chats, video calls, and more."
+	},
+	"WPFInstallzoom": {
+		"winget": "Zoom.Zoom",
+		"choco": "zoom",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Zoom",
+		"link": "https://zoom.us/",
+		"description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects."
+	},
+	"WPFInstallzulip": {
+		"winget": "Zulip.Zulip",
+		"choco": "zulip",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Zulip",
+		"link": "https://zulipchat.com/",
+		"description": "Zulip is an open-source team collaboration tool with chat streams for productive and organized communication."
+	},
+	"WPFInstalljava20": {
+		"winget": "Azul.Zulu.20.JDK",
+		"choco": "na",
+		"category": "Development",
+		"panel": "1",
+		"content": "Azul Zulu JDK 20",
+		"link": "https://www.azul.com/downloads/zulu-community/",
+		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates."
+	},
+	"WPFInstalljava21": {
+		"winget": "Azul.Zulu.21.JDK",
+		"choco": "na",
+		"category": "Development",
+		"panel": "1",
+		"content": "Azul Zulu JDK 21",
+		"link": "https://www.azul.com/downloads/zulu-community/",
+		"description": "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates."
+	},
+	"WPFInstallclink": {
+		"winget": "chrisant996.Clink",
+		"choco": "clink",
+		"category": "Development",
+		"panel": "1",
+		"content": "Clink",
+		"link": "https://mridgers.github.io/clink/",
+		"description": "Clink is a powerful Bash-compatible command-line interface (CLI) enhancement for Windows, adding features like syntax highlighting and improved history."
+	},
+	"WPFInstalldockerdesktop": {
+		"winget": "Docker.DockerDesktop",
+		"choco": "docker-desktop",
+		"category": "Development",
+		"panel": "1",
+		"content": "Docker Desktop",
+		"link": "https://www.docker.com/products/docker-desktop",
+		"description": "Docker Desktop is a powerful tool for containerized application development and deployment."
+	},
+	"WPFInstallgit": {
+		"winget": "Git.Git",
+		"choco": "git",
+		"category": "Development",
+		"panel": "1",
+		"content": "Git",
+		"link": "https://git-scm.com/",
+		"description": "Git is a distributed version control system widely used for tracking changes in source code during software development."
+	},
+	"WPFInstallgitextensions": {
+		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
+		"choco": "git;gitextensions",
+		"category": "Development",
+		"panel": "1",
+		"content": "Git Extensions",
+		"link": "https://gitextensions.github.io/",
+		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management."
+	},
+	"WPFInstallgithubdesktop": {
+		"winget": "Git.Git;GitHub.GitHubDesktop",
+		"choco": "git;github-desktop",
+		"category": "Development",
+		"panel": "1",
+		"content": "GitHub Desktop",
+		"link": "https://desktop.github.com/",
+		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface."
+	},
+	"WPFInstallgolang": {
+		"winget": "GoLang.Go",
+		"choco": "golang",
+		"category": "Development",
+		"panel": "1",
+		"content": "GoLang",
+		"link": "https://golang.org/",
+		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
+	},
+	"WPFInstalljetbrains": {
+		"winget": "JetBrains.Toolbox",
+		"choco": "jetbrainstoolbox",
+		"category": "Development",
+		"panel": "1",
+		"content": "Jetbrains Toolbox",
+		"link": "https://www.jetbrains.com/toolbox/",
+		"description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools."
+	},
+	"WPFInstallnano": {
+		"winget": "GNU.Nano",
+		"choco": "nano",
+		"category": "Development",
+		"panel": "1",
+		"content": "Nano",
+		"link": "https://www.nano-editor.org/",
+		"description": "Nano is a text editor for Unix-like computing systems or operating environments using a command-line interface."
+	},
+	"WPFInstallneovim": {
+		"winget": "Neovim.Neovim",
+		"choco": "neovim",
+		"category": "Development",
+		"panel": "1",
+		"content": "Neovim",
+		"link": "https://neovim.io/",
+		"description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor."
+	},
+	"WPFInstallnodejs": {
+		"winget": "OpenJS.NodeJS",
+		"choco": "nodejs",
+		"category": "Development",
+		"panel": "1",
+		"content": "NodeJS",
+		"link": "https://nodejs.org/",
+		"description": "NodeJS is a JavaScript runtime built on Chrome''s V8 JavaScript engine for building server-side and networking applications."
+	},
+	"WPFInstallnodejslts": {
+		"winget": "OpenJS.NodeJS.LTS",
+		"choco": "nodejs-lts",
+		"category": "Development",
+		"panel": "1",
+		"content": "NodeJS LTS",
+		"link": "https://nodejs.org/",
+		"description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development."
+	},
+	"WPFInstallnvm": {
+		"winget": "CoreyButler.NVMforWindows",
+		"choco": "nvm",
+		"category": "Development",
+		"panel": "1",
+		"content": "Node Version Manager",
+		"link": "https://github.com/coreybutler/nvm-windows",
+		"description": "Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions."
+	},
+	"WPFInstalljava8": {
+		"winget": "EclipseAdoptium.Temurin.8.JRE",
+		"choco": "temurin8jre",
+		"category": "Development",
+		"panel": "1",
+		"content": "OpenJDK Java 8",
+		"link": "https://adoptopenjdk.net/",
+		"description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition."
+	},
+	"WPFInstalljava16": {
+		"winget": "AdoptOpenJDK.OpenJDK.16",
+		"choco": "temurin16jre",
+		"category": "Development",
+		"panel": "1",
+		"content": "OpenJDK Java 16",
+		"link": "https://adoptopenjdk.net/",
+		"description": "OpenJDK Java 16 is the latest version of the open-source Java development kit."
+	},
+	"WPFInstalljava18": {
+		"winget": "EclipseAdoptium.Temurin.18.JRE",
+		"choco": "temurin18jre",
+		"category": "Development",
+		"panel": "1",
+		"content": "Oracle Java 18",
+		"link": "https://www.oracle.com/java/",
+		"description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle."
+	},
+	"WPFInstallposh": {
+		"winget": "JanDeDobbeleer.OhMyPosh",
+		"choco": "oh-my-posh",
+		"category": "Development",
+		"panel": "1",
+		"content": "Oh My Posh (Prompt)",
+		"link": "https://ohmyposh.dev/",
+		"description": "Oh My Posh is a cross-platform prompt theme engine for any shell."
+	},
+	"WPFInstallpython3": {
+		"winget": "Python.Python.3.12",
+		"choco": "python",
+		"category": "Development",
+		"panel": "1",
+		"content": "Python3",
+		"link": "https://www.python.org/",
+		"description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more."
+	},
+	"WPFInstallpostman": {
+		"winget": "Postman.Postman",
+		"choco": "postman",
+		"category": "Development",
+		"panel": "1",
+		"content": "Postman",
+		"link": "https://www.postman.com/",
+		"description": "Postman is a collaboration platform for API development that simplifies the process of developing APIs."
+	},
+	"WPFInstallrustlang": {
+		"winget": "Rustlang.Rust.MSVC",
+		"choco": "rust",
+		"category": "Development",
+		"panel": "1",
+		"content": "Rust",
+		"link": "https://www.rust-lang.org/",
+		"description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming."
+	},
+	"WPFInstallstarship": {
+		"winget": "starship",
+		"choco": "starship",
+		"category": "Development",
+		"panel": "1",
+		"content": "Starship (Shell Prompt)",
+		"link": "https://starship.rs/",
+		"description": "Starship is a minimal, fast, and customizable prompt for any shell."
+	},
+	"WPFInstallsublimemerge": {
+		"winget": "SublimeHQ.SublimeMerge",
+		"choco": "sublimemerge",
+		"category": "Development",
+		"panel": "1",
+		"content": "Sublime Merge",
+		"link": "https://www.sublimemerge.com/",
+		"description": "Sublime Merge is a Git client with advanced features and a beautiful interface."
+	},
+	"WPFInstallsublimetext": {
+		"winget": "SublimeHQ.SublimeText.4",
+		"choco": "sublimetext4",
+		"category": "Development",
+		"panel": "1",
+		"content": "Sublime Text",
+		"link": "https://www.sublimetext.com/",
+		"description": "Sublime Text is a sophisticated text editor for code, markup, and prose."
+	},
+	"WPFInstallunity": {
+		"winget": "Unity.UnityHub",
+		"choco": "unityhub",
+		"category": "Development",
+		"panel": "1",
+		"content": "Unity Game Engine",
+		"link": "https://unity.com/",
+		"description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games."
+	},
+	"WPFInstallvisualstudio": {
+		"winget": "Microsoft.VisualStudio.2022.Community",
+		"choco": "visualstudio2022community",
+		"category": "Development",
+		"panel": "1",
+		"content": "Visual Studio 2022",
+		"link": "https://visualstudio.microsoft.com/",
+		"description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications."
+	},
+	"WPFInstallvagrant": {
+		"winget": "Hashicorp.Vagrant",
+		"choco": "vagrant",
+		"category": "Development",
+		"panel": "1",
+		"content": "Vagrant",
+		"link": "https://www.vagrantup.com/",
+		"description": "Vagrant is an open-source tool for building and managing virtualized development environments."
+	},
+	"WPFInstallvscode": {
+		"winget": "Git.Git;Microsoft.VisualStudioCode",
+		"choco": "vscode",
+		"category": "Development",
+		"panel": "1",
+		"content": "VS Code",
+		"link": "https://code.visualstudio.com/",
+		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages."
+	},
+	"WPFInstallvscodium": {
+		"winget": "Git.Git;VSCodium.VSCodium",
+		"choco": "vscodium",
+		"category": "Development",
+		"panel": "1",
+		"content": "VS Codium",
+		"link": "https://vscodium.com/",
+		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft''s VS Code."
+	},
+	"WPFInstallyarn": {
+		"winget": "Yarn.Yarn",
+		"choco": "yarn",
+		"category": "Development",
+		"panel": "1",
+		"content": "Yarn",
+		"link": "https://yarnpkg.com/",
+		"description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects."
+	},
+	"WPFInstallanki": {
+		"winget": "Anki.Anki",
+		"choco": "anki",
+		"category": "Document",
+		"panel": "1",
+		"content": "Anki",
+		"link": "https://apps.ankiweb.net/",
+		"description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition."
+	},
+	"WPFInstalladobe": {
+		"winget": "Adobe.Acrobat.Reader.64-bit",
+		"choco": "adobereader",
+		"category": "Document",
+		"panel": "1",
+		"content": "Adobe Reader DC",
+		"link": "https://acrobat.adobe.com/",
+		"description": "Adobe Reader DC is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents."
+	},
+	"WPFInstallopenoffice": {
+		"winget": "Apache.OpenOffice",
+		"choco": "openoffice",
+		"category": "Document",
+		"panel": "1",
+		"content": "Apache OpenOffice",
+		"link": "https://www.openoffice.org/",
+		"description": "Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more."
+	},
+	"WPFInstallcalibre": {
+		"winget": "calibre.calibre",
+		"choco": "calibre",
+		"category": "Document",
+		"panel": "1",
+		"content": "Calibre",
+		"link": "https://calibre-ebook.com/",
+		"description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter."
+	},
+	"WPFInstallfoxpdf": {
+		"winget": "Foxit.PhantomPDF",
+		"choco": "na",
+		"category": "Document",
+		"panel": "1",
+		"content": "Foxit PDF",
+		"link": "https://www.foxitsoftware.com/",
+		"description": "Foxit PDF is a feature-rich PDF editor and viewer with a familiar ribbon-style interface."
+	},
+	"WPFInstalljoplin": {
+		"winget": "Joplin.Joplin",
+		"choco": "joplin",
+		"category": "Document",
+		"panel": "1",
+		"content": "Joplin (FOSS Notes)",
+		"link": "https://joplinapp.org/",
+		"description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities."
+	},
+	"WPFInstalllibreoffice": {
+		"winget": "TheDocumentFoundation.LibreOffice",
+		"choco": "libreoffice-fresh",
+		"category": "Document",
+		"panel": "1",
+		"content": "LibreOffice",
+		"link": "https://www.libreoffice.org/",
+		"description": "LibreOffice is a powerful and free office suite, compatible with other major office suites."
+	},
+	"WPFInstallmasscode": {
+		"winget": "antonreshetov.massCode",
+		"choco": "na",
+		"category": "Document",
+		"panel": "1",
+		"content": "massCode (Snippet Manager)",
+		"link": "https://masscode.io/",
+		"description": "massCode is a fast and efficient open-source code snippet manager for developers."
+	},
+	"WPFInstallnaps2": {
+		"winget": "Cyanfish.NAPS2",
+		"choco": "naps2",
+		"category": "Document",
+		"panel": "1",
+		"content": "NAPS2 (Document Scanner)",
+		"link": "https://www.naps2.com/",
+		"description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents."
+	},
+	"WPFInstallnotepadplus": {
+		"winget": "Notepad++.Notepad++",
+		"choco": "notepadplusplus",
+		"category": "Document",
+		"panel": "1",
+		"content": "Notepad++",
+		"link": "https://notepad-plus-plus.org/",
+		"description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages."
+	},
+	"WPFInstalllogseq": {
+		"winget": "Logseq.Logseq",
+		"choco": "logseq",
+		"category": "Document",
+		"panel": "1",
+		"content": "Logseq",
+		"link": "https://github.com/logseq/logseq/releases",
+		"description": "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights."
+	},
+	"WPFInstallobsidian": {
+		"winget": "Obsidian.Obsidian",
+		"choco": "obsidian",
+		"category": "Document",
+		"panel": "1",
+		"content": "Obsidian",
+		"link": "https://obsidian.md/",
+		"description": "Obsidian is a powerful note-taking and knowledge management application."
+	},
+	"WPFInstallokular": {
+		"winget": "KDE.Okular",
+		"choco": "okular",
+		"category": "Document",
+		"panel": "1",
+		"content": "Okular",
+		"link": "https://okular.kde.org/",
+		"description": "Okular is a versatile document viewer with advanced features."
+	},
+	"WPFInstallonlyoffice": {
+		"winget": "ONLYOFFICE.DesktopEditors",
+		"choco": "onlyoffice",
+		"category": "Document",
+		"panel": "1",
+		"content": "ONLYOffice Desktop",
+		"link": "https://www.onlyoffice.com/desktop.aspx",
+		"description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration."
+	},
+	"WPFInstallpdfsam": {
+		"winget": "PDFsam.PDFsam",
+		"choco": "pdfsam",
+		"category": "Document",
+		"panel": "1",
+		"content": "PDFsam Basic",
+		"link": "https://pdfsam.org/",
+		"description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files."
+	},
+	"WPFInstallsumatra": {
+		"winget": "SumatraPDF.SumatraPDF",
+		"choco": "sumatrapdf",
+		"category": "Document",
+		"panel": "1",
+		"content": "Sumatra PDF",
+		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
+		"description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design."
+	},
+	"WPFInstallwinmerge": {
+		"winget": "WinMerge.WinMerge",
+		"choco": "winmerge",
+		"category": "Document",
+		"panel": "1",
+		"content": "WinMerge",
+		"link": "https://winmerge.org/",
+		"description": "WinMerge is a visual text file and directory comparison tool for Windows."
+	},
+	"WPFInstallxournal": {
+		"winget": "Xournal++.Xournal++",
+		"choco": "xournalplusplus",
+		"category": "Document",
+		"panel": "1",
+		"content": "Xournal++",
+		"link": "https://xournalpp.github.io/",
+		"description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities."
+	},
+	"WPFInstallzim": {
+		"winget": "Zimwiki.Zim",
+		"choco": "zim",
+		"category": "Document",
+		"panel": "1",
+		"content": "Zim Desktop Wiki",
+		"link": "https://zim-wiki.org/",
+		"description": "Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages."
+	},
+	"WPFInstallznote": {
+		"winget": "alagrede.znote",
+		"choco": "na",
+		"category": "Document",
+		"panel": "1",
+		"content": "Znote",
+		"description": "Znote is a note-taking application."
+	},
+	"WPFInstallzotero": {
+		"winget": "DigitalScholar.Zotero",
+		"choco": "zotero",
+		"category": "Document",
+		"panel": "1",
+		"content": "Zotero",
+		"link": "https://www.zotero.org/",
+		"description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials."
+	},
+	"WPFInstallbluestacks": {
+		"winget": "BlueStack.BlueStacks",
+		"choco": "bluestacks",
+		"category": "Games",
+		"panel": "2",
+		"content": "Bluestacks",
+		"link": "https://www.bluestacks.com/",
+		"description": "Bluestacks is an Android emulator for running mobile apps and games on a PC."
+	},
+	"WPFInstallcemu": {
+		"winget": "Cemu.Cemu",
+		"choco": "cemu",
+		"category": "Games",
+		"panel": "2",
+		"content": "Cemu",
+		"link": "https://cemu.info/",
+		"description": "Cemu is a highly experimental software to emulate Wii U applications on PC."
+	},
+	"WPFInstallclonehero": {
+		"winget": "CloneHeroTeam.CloneHero",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "Clone Hero",
+		"description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller."
+	},
+	"WPFInstalleaapp": {
+		"winget": "ElectronicArts.EADesktop",
+		"choco": "ea-app",
+		"category": "Games",
+		"panel": "2",
+		"content": "EA App",
+		"link": "https://www.ea.com/",
+		"description": "EA App is a platform for accessing and playing Electronic Arts games."
+	},
+	"WPFInstallemulationstation": {
+		"winget": "Emulationstation.Emulationstation",
+		"choco": "emulationstation",
+		"category": "Games",
+		"panel": "2",
+		"content": "Emulation Station",
+		"link": "https://emulationstation.org/",
+		"description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place."
+	},
+	"WPFInstallepicgames": {
+		"winget": "EpicGames.EpicGamesLauncher",
+		"choco": "epicgameslauncher",
+		"category": "Games",
+		"panel": "2",
+		"content": "Epic Games Launcher",
+		"link": "https://www.epicgames.com/store/en-US/",
+		"description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store."
+	},
+	"WPFInstallgeforcenow": {
+		"winget": "Nvidia.GeForceNow",
+		"choco": "nvidia-geforce-now",
+		"category": "Games",
+		"panel": "2",
+		"content": "GeForce NOW",
+		"link": "https://www.nvidia.com/en-us/geforce-now/",
+		"description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device."
+	},
+	"WPFInstallgog": {
+		"winget": "GOG.Galaxy",
+		"choco": "goggalaxy",
+		"category": "Games",
+		"panel": "2",
+		"content": "GOG Galaxy",
+		"link": "https://www.gog.com/galaxy",
+		"description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more."
+	},
+	"WPFInstallheroiclauncher": {
+		"winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "Heroic Games Launcher",
+		"description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store."
+	},
+	"WPFInstallitch": {
+		"winget": "ItchIo.Itch",
+		"choco": "itch",
+		"category": "Games",
+		"panel": "2",
+		"content": "Itch.io",
+		"link": "https://itch.io/",
+		"description": "Itch.io is a digital distribution platform for indie games and creative projects."
+	},
+	"WPFInstallmoonlight": {
+		"winget": "MoonlightGameStreamingProject.Moonlight",
+		"choco": "moonlight-qt",
+		"category": "Games",
+		"panel": "2",
+		"content": "Moonlight/GameStream Client",
+		"link": "https://moonlight-stream.org/",
+		"description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network."
+	},
+	"WPFInstallplaynite": {
+		"winget": "Playnite.Playnite",
+		"choco": "playnite",
+		"category": "Games",
+		"panel": "2",
+		"content": "Playnite",
+		"description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+		"link": "https://playnite.link/"
+	},
+	"WPFInstallprismlauncher": {
+		"winget": "PrismLauncher.PrismLauncher",
+		"choco": "prismlauncher",
+		"category": "Games",
+		"panel": "2",
+		"content": "Prism Launcher",
+		"description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
+		"link": "https://prismlauncher.com/"
+	},
+	"WPFInstallsidequest": {
+		"winget": "SideQuestVR.SideQuest",
+		"choco": "sidequest",
+		"category": "Games",
+		"panel": "2",
+		"content": "SideQuestVR",
+		"description": "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
+		"link": "https://sidequestvr.com/"
+	},
+	"WPFInstallsteam": {
+		"winget": "Valve.Steam",
+		"choco": "steam-client",
+		"category": "Games",
+		"panel": "2",
+		"content": "Steam",
+		"description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
+		"link": "https://store.steampowered.com/"
+	},
+	"WPFInstallsunshine": {
+		"winget": "LizardByte.Sunshine",
+		"choco": "sunshine",
+		"category": "Games",
+		"panel": "2",
+		"content": "Sunshine/GameStream Server",
+		"description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
+		"link": "https://github.com/LoLBoy25/Sunshine"
+	},
+	"WPFInstallubisoft": {
+		"winget": "Ubisoft.Connect",
+		"choco": "ubisoft-connect",
+		"category": "Games",
+		"panel": "2",
+		"content": "Ubisoft Connect",
+		"description": "Ubisoft Connect is Ubisoft''s digital distribution and online gaming service, providing access to Ubisoft''s games and services.",
+		"link": "https://ubisoftconnect.com/"
+	},
+	"WPFInstallxemu": {
+		"winget": "xemu-project.xemu",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "XEMU",
+		"description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
+		"link": "https://xemu.app/"
+	},
+	"WPFInstalldotnet3": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
+		"choco": "dotnetcore3-desktop-runtime",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": ".NET Desktop Runtime 3.1",
+		"description": ".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1.",
+		"link": "https://dotnet.microsoft.com/download/dotnet/3.1"
+	},
+	"WPFInstalldotnet5": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.5",
+		"choco": "dotnet-5.0-runtime",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": ".NET Desktop Runtime 5",
+		"description": ".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5.",
+		"link": "https://dotnet.microsoft.com/download/dotnet/5.0"
+	},
+	"WPFInstalldotnet6": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.6",
+		"choco": "dotnet-6.0-runtime",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": ".NET Desktop Runtime 6",
+		"description": ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
+		"link": "https://dotnet.microsoft.com/download/dotnet/6.0"
+	},
+	"WPFInstalldotnet7": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.7",
+		"choco": "dotnet-7.0-runtime",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": ".NET Desktop Runtime 7",
+		"description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
+		"link": "https://dotnet.microsoft.com/download/dotnet/7.0"
+	},
+	"WPFInstallnuget": {
+		"winget": "Microsoft.NuGet",
+		"choco": "nuget.commandline",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "NuGet",
+		"description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
+		"link": "https://www.nuget.org/"
+	},
+	"WPFInstallonedrive": {
+		"winget": "Microsoft.OneDrive",
+		"choco": "onedrive",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "OneDrive",
+		"description": "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
+		"link": "https://onedrive.live.com/"
+	},
+	"WPFInstallpowershell": {
+		"winget": "Microsoft.PowerShell",
+		"choco": "powershell-core",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "PowerShell",
+		"description": "PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities.",
+		"link": "https://github.com/PowerShell/PowerShell"
+	},
+	"WPFInstallpowertoys": {
+		"winget": "Microsoft.PowerToys",
+		"choco": "powertoys",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Powertoys",
+		"description": "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
+		"link": "https://github.com/microsoft/PowerToys"
+	},
+	"WPFInstallprocessmonitor": {
+		"winget": "Microsoft.Sysinternals.ProcessMonitor",
+		"choco": "procexp",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "SysInternals Process Monitor",
+		"description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
+		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon"
+	},
+	"WPFInstalltcpview": {
+		"winget": "Microsoft.Sysinternals.TCPView",
+		"choco": "tcpview",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "SysInternals TCPView",
+		"description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
+		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview"
+	},
+	"WPFInstallvc2015_64": {
+		"winget": "Microsoft.VCRedist.2015+.x64",
+		"choco": "na",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Visual C++ 2015-2022 64-bit",
+		"description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
+		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads"
+	},
+	"WPFInstallvc2015_32": {
+		"winget": "Microsoft.VCRedist.2015+.x86",
+		"choco": "na",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Visual C++ 2015-2022 32-bit",
+		"description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
+		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads"
+	},
+	"WPFInstallterminal": {
+		"winget": "Microsoft.WindowsTerminal",
+		"choco": "microsoft-windows-terminal",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Windows Terminal",
+		"description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
+		"link": "https://aka.ms/terminal"
+	},
+	"WPFInstallaimp": {
+		"winget": "AIMP.AIMP",
+		"choco": "aimp",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "AIMP (Music Player)",
+		"description": "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
+		"link": "https://www.aimp.ru/"
+	},
+	"WPFInstallaudacity": {
+		"winget": "Audacity.Audacity",
+		"choco": "audacity",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Audacity",
+		"description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
+		"link": "https://www.audacityteam.org/"
+	},
+	"WPFInstallblender": {
+		"winget": "BlenderFoundation.Blender",
+		"choco": "blender",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Blender (3D Graphics)",
+		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
+		"link": "https://www.blender.org/"
+	},
+	"WPFInstallcider": {
+		"winget": "CiderCollective.Cider",
+		"choco": "cider",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Cider (FOSS Music Player)",
+		"description": "Cider is a free and open-source music player that focuses on simplicity, providing a clean interface for enjoying your music.",
+		"link": "https://getcider.io/"
+	},
+	"WPFInstallclementine": {
+		"winget": "Clementine.Clementine",
+		"choco": "clementine",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Clementine",
+		"description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
+		"link": "https://www.clementine-player.org/"
+	},
+	"WPFInstallclipgrab": {
+		"winget": "na",
+		"choco": "clipgrab",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Clipgrab",
+		"description": "Clipgrab is a free downloader and converter for YouTube, Vimeo, Facebook, and many other online video sites.",
+		"link": "https://clipgrab.org/"
+	},
+	"WPFInstallcopyq": {
+		"winget": "hluk.CopyQ",
+		"choco": "copyq",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Copyq (Clipboard Manager)",
+		"description": "Copyq is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
+		"link": "https://copyq.readthedocs.io/"
+	},
+	"WPFInstalldigikam": {
+		"winget": "KDE.digikam",
+		"choco": "digikam",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "DigiKam",
+		"description": "DigiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
+		"link": "https://www.digikam.org/"
+	},
+	"WPFInstalleartrumpet": {
+		"winget": "File-New-Project.EarTrumpet",
+		"choco": "eartrumpet",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Eartrumpet (Audio)",
+		"description": "Eartrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
+		"link": "https://eartrumpet.app/"
+	},
+	"WPFInstallfreecad": {
+		"winget": "FreeCAD.FreeCAD",
+		"choco": "freecad",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "FreeCAD",
+		"description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
+		"link": "https://www.freecadweb.org/"
+	},
+	"WPFInstallfirealpaca": {
+		"winget": "FireAlpaca.FireAlpaca",
+		"choco": "firealpaca",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Fire Alpaca",
+		"description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
+		"link": "https://firealpaca.com/"
+	},
+	"WPFInstallflameshot": {
+		"winget": "Flameshot.Flameshot",
+		"choco": "flameshot",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Flameshot (Screenshots)",
+		"description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
+		"link": "https://flameshot.org/"
+	},
+	"WPFInstallfoobar": {
+		"winget": "PeterPawlowski.foobar2000",
+		"choco": "foobar2000",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Foobar2000 (Music Player)",
+		"description": "Foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+		"link": "https://www.foobar2000.org/"
+	},
+	"WPFInstallgimp": {
+		"winget": "GIMP.GIMP",
+		"choco": "gimp",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "GIMP (Image Editor)",
+		"description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
+		"link": "https://www.gimp.org/"
+	},
+	"WPFInstallgreenshot": {
+		"winget": "Greenshot.Greenshot",
+		"choco": "greenshot",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Greenshot (Screenshots)",
+		"description": "Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options.",
+		"link": "https://getgreenshot.org/"
+	},
+	"WPFInstallhandbrake": {
+		"winget": "HandBrake.HandBrake",
+		"choco": "handbrake",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "HandBrake",
+		"description": "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
+		"link": "https://handbrake.fr/"
+	},
+	"WPFInstallimageglass": {
+		"winget": "DuongDieuPhap.ImageGlass",
+		"choco": "imageglass",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ImageGlass (Image Viewer)",
+		"description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
+		"link": "https://imageglass.org/"
+	},
+	"WPFInstallimgburn": {
+		"winget": "LIGHTNINGUK.ImgBurn",
+		"choco": "imgburn",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ImgBurn",
+		"description": "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
+		"link": "http://www.imgburn.com/"
+	},
+	"WPFInstallinkscape": {
+		"winget": "Inkscape.Inkscape",
+		"choco": "inkscape",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Inkscape",
+		"description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
+		"link": "https://inkscape.org/"
+	},
+	"WPFInstallitunes": {
+		"winget": "Apple.iTunes",
+		"choco": "itunes",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "iTunes",
+		"description": "iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc.",
+		"link": "https://www.apple.com/itunes/"
+	},
+	"WPFInstalljellyfinmediaplayer": {
+		"winget": "Jellyfin.JellyfinMediaPlayer",
+		"choco": "jellyfin-media-player",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Jellyfin Media Player",
+		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
+		"link": "https://jellyfin.org/"
+	},
+	"WPFInstalljellyfinserver": {
+		"winget": "Jellyfin.Server",
+		"choco": "jellyfin",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Jellyfin Server",
+		"description": "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
+		"link": "https://jellyfin.org/"
+	},
+	"WPFInstallkdenlive": {
+		"winget": "KDE.Kdenlive",
+		"choco": "kdenlive",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Kdenlive (Video Editor)",
+		"description": "Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos.",
+		"link": "https://kdenlive.org/"
+	},
+	"WPFInstallkodi": {
+		"winget": "XBMCFoundation.Kodi",
+		"choco": "kodi",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Kodi Media Center",
+		"description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
+		"link": "https://kodi.tv/"
+	},
+	"WPFInstallklite": {
+		"winget": "CodecGuide.K-LiteCodecPack.Standard",
+		"choco": "k-litecodecpack-standard",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "K-Lite Codec Standard",
+		"description": "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
+		"link": "https://www.codecguide.com/"
+	},
+	"WPFInstallkrita": {
+		"winget": "KDE.Krita",
+		"choco": "krita",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Krita (Image Editor)",
+		"link": "https://krita.org/en/download/krita-desktop/",
+		"description": "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry."
+	},
+	"WPFInstallmusicbee": {
+		"winget": "MusicBee.MusicBee",
+		"choco": "musicbee",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "MusicBee (Music Player)",
+		"link": "https://getmusicbee.com/",
+		"description": "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more."
+	},
+	"WPFInstallmpc": {
+		"winget": "clsid2.mpc-hc",
+		"choco": "mpc-hc",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Media Player Classic (Video Player)",
+		"link": "https://mpc-hc.org/",
+		"description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles."
+	},
+	"WPFInstallnglide": {
+		"winget": "ZeusSoftware.nGlide",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "nGlide (3dfx compatibility)",
+		"link": "http://www.zeus-software.com/downloads/nglide",
+		"description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card."
+	},
+	"WPFInstallnomacs": {
+		"winget": "nomacs.nomacs",
+		"choco": "nomacs",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Nomacs (Image viewer)",
+		"link": "https://github.com/nomacs/nomacs/releases/",
+		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats."
+	},
+	"WPFInstalldarktable": {
+		"winget": "darktable.darktable",
+		"choco": "darktable",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "DarkTable",
+		"link": "https://www.darktable.org/install/",
+		"description": "Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement."
+	},
+	"WPFInstallobs": {
+		"winget": "OBSProject.OBSStudio",
+		"choco": "obs-studio",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "OBS Studio",
+		"link": "https://obsproject.com/",
+		"description": "OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators."
+	},
+	"WPFInstallPaintdotnet": {
+		"winget": "dotPDNLLC.paintdotnet",
+		"choco": "paint.net",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Paint.net",
+		"link": "https://www.getpaint.net/",
+		"description": "Paint.net is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools."
+	},
+	"WPFInstallopenscad": {
+		"winget": "OpenSCAD.OpenSCAD",
+		"choco": "openscad",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "OpenSCAD",
+		"link": "https://www.openscad.org/",
+		"description": "OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing."
+	},
+	"WPFInstallsharex": {
+		"winget": "ShareX.ShareX",
+		"choco": "sharex",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ShareX (Screenshots)",
+		"link": "https://getsharex.com/",
+		"description": "ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots."
+	},
+	"WPFInstallstrawberry": {
+		"winget": "StrawberryMusicPlayer.Strawberry",
+		"choco": "strawberrymusicplayer",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Strawberry (Music Player)",
+		"link": "https://strawberry.rocks/",
+		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface."
+	},
+	"WPFInstalltidal": {
+		"winget": "9NNCB5BS59PH",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Tidal",
+		"link": "https://tidal.com/",
+		"description": "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists."
+	},
+	"WPFInstallvlc": {
+		"winget": "VideoLAN.VLC",
+		"choco": "vlc",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "VLC (Video Player)",
+		"link": "https://www.videolan.org/vlc/",
+		"description": "VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility."
+	},
+	"WPFInstallvoicemeeter": {
+		"winget": "VB-Audio.Voicemeeter",
+		"choco": "voicemeeter",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Voicemeeter (Audio)",
+		"link": "https://www.vb-audio.com/Voicemeeter/",
+		"description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes."
+	},
+	"WPFInstalladvancedip": {
+		"winget": "Famatech.AdvancedIPScanner",
+		"choco": "advanced-ip-scanner",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Advanced IP Scanner",
+		"link": "https://www.advanced-ip-scanner.com/",
+		"description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices."
+	},
+	"WPFInstallangryipscanner": {
+		"winget": "angryziber.AngryIPScanner",
+		"choco": "angryip",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Angry IP Scanner",
+		"link": "https://angryip.org/",
+		"description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity."
+	},
+	"WPFInstallefibooteditor": {
+		"winget": "EFIBootEditor.EFIBootEditor",
+		"choco": "na",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "EFI Boot Editor",
+		"link": "https://www.easyuefi.com/",
+		"description": "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer."
+	},
+	"WPFInstallheidisql": {
+		"winget": "HeidiSQL.HeidiSQL",
+		"choco": "heidisql",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "HeidiSQL",
+		"link": "https://www.heidisql.com/",
+		"description": "HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development."
+	},
+	"WPFInstallmremoteng": {
+		"winget": "mRemoteNG.mRemoteNG",
+		"choco": "mremoteng",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "mRemoteNG",
+		"link": "https://mremoteng.org/",
+		"description": "mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface."
+	},
+	"WPFInstallnmap": {
+		"winget": "Insecure.Nmap",
+		"choco": "nmap",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Nmap",
+		"link": "https://nmap.org/",
+		"description": "Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services."
+	},
+	"WPFInstallOpenVPN": {
+		"winget": "OpenVPNTechnologies.OpenVPNConnect",
+		"choco": "openvpn-connect",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "OpenVPN Connect",
+		"link": "https://openvpn.net/",
+		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy."
+	},
+	"WPFInstallportmaster": {
+		"winget": "portmaster",
+		"choco": "portmaster",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Portmaster",
+		"link": "https://github.com/freebsd/portmaster",
+		"description": "Portmaster is a FreeBSD package management tool. It simplifies the process of managing software packages and dependencies on FreeBSD systems."
+	},
+	"WPFInstallputty": {
+		"winget": "PuTTY.PuTTY",
+		"choco": "putty",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Putty",
+		"link": "https://www.putty.org/",
+		"description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP."
+	},
+	"WPFInstallrustdesk": {
+		"winget": "RustDesk.RustDesk",
+		"choco": "rustdesk.portable",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Rust Remote Desktop (FOSS)",
+		"link": "https://rustdesk.com/",
+		"description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments."
+	},
+	"WPFInstallsimplewall": {
+		"winget": "Henry++.simplewall",
+		"choco": "simplewall",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "SimpleWall",
+		"link": "https://www.henrypp.org/product/simplewall",
+		"description": "SimpleWall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications."
+	},
+	"WPFInstallventoy": {
+		"winget": "na",
+		"choco": "ventoy",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "Ventoy",
+		"link": "https://www.ventoy.net/",
+		"description": "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems."
+	},
+	"WPFInstallwinscp": {
+		"winget": "WinSCP.WinSCP",
+		"choco": "winscp",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "WinSCP",
+		"link": "https://winscp.net/",
+		"description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer."
+	},
+	"WPFInstallwireguard": {
+		"winget": "WireGuard.WireGuard",
+		"choco": "wireguard",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "WireGuard",
+		"link": "https://www.wireguard.com/",
+		"description": "WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections."
+	},
+	"WPFInstallwireshark": {
+		"winget": "WiresharkFoundation.Wireshark",
+		"choco": "wireshark",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "WireShark",
+		"link": "https://www.wireshark.org/",
+		"description": "Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities."
+	},
+	"WPFInstallxpipe": {
+		"winget": "xpipe-io.xpipe",
+		"choco": "xpipe",
+		"category": "Pro Tools",
+		"panel": "3",
+		"content": "X-Pipe",
+		"link": "https://xpipe.io/",
+		"description": "X-Pipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment."
+	},
+	"WPFInstall7zip": {
+		"winget": "7zip.7zip",
+		"choco": "7zip",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "7-Zip",
+		"link": "https://www.7-zip.org/",
+		"description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression."
+	},
+	"WPFInstallalacritty": {
+		"winget": "Alacritty.Alacritty",
+		"choco": "alacritty",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Alacritty Terminal",
+		"link": "https://github.com/alacritty/alacritty",
+		"description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available."
+	},
+	"WPFInstallanydesk": {
+		"winget": "AnyDeskSoftwareGmbH.AnyDesk",
+		"choco": "anydesk",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "AnyDesk",
+		"link": "https://anydesk.com/",
+		"description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency."
+	},
+	"WPFInstallautohotkey": {
+		"winget": "AutoHotkey.AutoHotkey",
+		"choco": "autohotkey",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "AutoHotkey",
+		"link": "https://www.autohotkey.com/",
+		"description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts."
+	},
+	"WPFInstallbarrier": {
+		"winget": "DebaucheeOpenSourceGroup.Barrier",
+		"choco": "barrier",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Barrier",
+		"link": "https://github.com/debauchee/barrier",
+		"description": "Barrier is an open-source software KVM (keyboard, video, and mouse) switch. It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems."
+	},
+	"WPFInstallbat": {
+		"winget": "sharkdp.bat",
+		"choco": "bat",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Bat (Cat)",
+		"link": "https://github.com/sharkdp/bat",
+		"description": "Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files."
+	},
+	"WPFInstallbitwarden": {
+		"winget": "Bitwarden.Bitwarden",
+		"choco": "bitwarden",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Bitwarden",
+		"link": "https://bitwarden.com/",
+		"description": "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices."
+	},
+	"WPFInstallbulkcrapuninstaller": {
+		"winget": "Klocman.BulkCrapUninstaller",
+		"choco": "bulk-crap-uninstaller",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Bulk Crap Uninstaller",
+		"link": "https://www.bcuninstaller.com/",
+		"description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once."
+	},
+	"WPFInstallcarnac": {
+		"winget": "code52.Carnac",
+		"choco": "carnac",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Carnac",
+		"link": "https://github.com/Code52/carnac",
+		"description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations."
+	},
+	"WPFInstallcpuz": {
+		"winget": "CPUID.CPU-Z",
+		"choco": "cpu-z",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "CPU-Z",
+		"link": "https://www.cpuid.com/softwares/cpu-z.html",
+		"description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer''s hardware components, including the CPU, memory, and motherboard."
+	},
+	"WPFInstallcrystaldiskinfo": {
+		"winget": "CrystalDewWorld.CrystalDiskInfo",
+		"choco": "crystaldiskinfo",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Crystal Disk Info",
+		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
+		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health."
+	},
+	"WPFInstallcrystaldiskmark": {
+		"winget": "CrystalDewWorld.CrystalDiskMark",
+		"choco": "crystaldiskmark",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Crystal Disk Mark",
+		"link": "https://crystalmark.info/en/software/crystaldiskmark/",
+		"description": "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs."
+	},
+	"WPFInstallddu": {
+		"winget": "ddu",
+		"choco": "ddu",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Display Driver Uninstaller",
+		"link": "https://www.wagnardsoft.com/",
+		"description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues."
+	},
+	"WPFInstalldeluge": {
+		"winget": "DelugeTeam.Deluge",
+		"choco": "deluge",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Deluge",
+		"link": "https://deluge-torrent.org/",
+		"description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely."
+	},
+	"WPFInstalldolphin": {
+		"winget": "KDE.Dolphin",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Dolphin File manager",
+		"link": "https://apps.kde.org/en/dolphin/",
+		"description": "Dolphin is a file manager for the KDE desktop environment. It provides a powerful and intuitive interface for managing files and folders on Linux systems."
+	},
+	"WPFInstallduplicati": {
+		"winget": "Duplicati.Duplicati",
+		"choco": "duplicati",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Duplicati 2",
+		"link": "https://www.duplicati.com/",
+		"description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services."
+	},
+	"WPFInstalldevtoys": {
+		"winget": "devtoys",
+		"choco": "devToys",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Devtoys",
+		"link": "https://dev.to/devtoys",
+		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers."
+	},
+	"WPFInstallerrorlookup": {
+		"winget": "Henry++.ErrorLookup",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Windows Error Code Lookup",
+		"link": "https://github.com/HenryPP/ErrorLookup",
+		"description": "ErrorLookup is a tool for looking up Windows error codes and their descriptions."
+	},
+	"WPFInstalletcher": {
+		"winget": "Balena.Etcher",
+		"choco": "etcher",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Etcher USB Creator",
+		"link": "https://www.balena.io/etcher/",
+		"description": "Etcher is a powerful tool for creating bootable USB drives with ease."
+	},
+	"WPFInstallesearch": {
+		"winget": "voidtools.Everything",
+		"choco": "everything",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Everything Search",
+		"link": "https://www.voidtools.com/",
+		"description": "Everything Search is a fast and efficient file search utility for Windows."
+	},
+	"WPFInstallfiles": {
+		"winget": "YairAichenbaum.Files",
+		"choco": "files",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Files File Explorer",
+		"link": "https://www.yairaichenbaum.com/files",
+		"description": "Files is a feature-rich file explorer providing a user-friendly interface for file management."
+	},
+	"WPFInstallflux": {
+		"winget": "flux.flux",
+		"choco": "flux",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "f.lux Redshift",
+		"link": "https://justgetflux.com/",
+		"description": "f.lux Redshift adjusts the color temperature of your screen to reduce eye strain during nighttime use."
+	},
+	"WPFInstallglaryutilities": {
+		"winget": "Glarysoft.GlaryUtilities",
+		"choco": "glaryutilities-free",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Glary Utilities",
+		"link": "https://www.glarysoft.com/glary-utilities/",
+		"description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows."
+	},
+	"WPFInstallgpuz": {
+		"winget": "TechPowerUp.GPU-Z",
+		"choco": "gpu-z",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "GPU-Z",
+		"link": "https://www.techpowerup.com/gpuz/",
+		"description": "GPU-Z provides detailed information about your graphics card and GPU."
+	},
+	"WPFInstallgsudo": {
+		"winget": "gerardog.gsudo",
+		"choco": "gsudo",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Gsudo",
+		"link": "https://github.com/gerardog/gsudo",
+		"description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution."
+	},
+	"WPFInstallhwinfo": {
+		"winget": "REALiX.HWiNFO",
+		"choco": "hwinfo",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "HWInfo",
+		"link": "https://www.hwinfo.com/",
+		"description": "HWInfo provides comprehensive hardware information and diagnostics for Windows."
+	},
+	"WPFInstalljdownloader": {
+		"winget": "AppWork.JDownloader",
+		"choco": "jdownloader",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "J Download Manager",
+		"link": "http://jdownloader.org/",
+		"description": "JDownloader is a feature-rich download manager with support for various file hosting services."
+	},
+	"WPFInstallkdeconnect": {
+		"winget": "KDE.KDEConnect",
+		"choco": "kdeconnect-kde",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "KDE Connect",
+		"link": "https://community.kde.org/KDEConnect",
+		"description": "KDE Connect allows seamless integration between your KDE desktop and mobile devices."
+	},
+	"WPFInstallkeepass": {
+		"winget": "KeePassXCTeam.KeePassXC",
+		"choco": "keepassxc",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "KeePassXC",
+		"link": "https://keepassxc.org/",
+		"description": "KeePassXC is a cross-platform, open-source password manager with strong encryption features."
+	},
+	"WPFInstallmalwarebytes": {
+		"winget": "Malwarebytes.Malwarebytes",
+		"choco": "malwarebytes",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "MalwareBytes",
+		"link": "https://www.malwarebytes.com/",
+		"description": "MalwareBytes is an anti-malware software that provides real-time protection against threats."
+	},
+	"WPFInstallmeld": {
+		"winget": "Meld.Meld",
+		"choco": "meld",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Meld",
+		"link": "https://meldmerge.org/",
+		"description": "Meld is a visual diff and merge tool for files and directories."
+	},
+	"WPFInstallmonitorian": {
+		"winget": "emoacht.Monitorian",
+		"choco": "monitorian",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Monitorian",
+		"link": "https://www.monitorian.com/",
+		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows."
+	},
+	"WPFInstallmsiafterburner": {
+		"winget": "Guru3D.Afterburner",
+		"choco": "msiafterburner",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "MSI Afterburner",
+		"link": "https://www.msi.com/Landing/afterburner",
+		"description": "MSI Afterburner is a graphics card overclocking utility with advanced features."
+	},
+	"WPFInstallnanazip": {
+		"winget": "M2Team.NanaZip",
+		"choco": "nanazip",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "NanaZip",
+		"link": "https://nanazip.codeplex.com/",
+		"description": "NanaZip is a fast and efficient file compression and decompression tool."
+	},
+	"WPFInstallneofetchwin": {
+		"winget": "nepnep.neofetch-win",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Neofetch",
+		"link": "https://github.com/dylanaraps/neofetch",
+		"description": "Neofetch is a command-line utility for displaying system information in a visually appealing way."
+	},
+	"WPFInstallnextclouddesktop": {
+		"winget": "Nextcloud.NextcloudDesktop",
+		"choco": "nextcloud-client",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Nextcloud Desktop",
+		"link": "https://nextcloud.com/install/#install-clients",
+		"description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform."
+	},
+	"WPFInstallnushell": {
+		"winget": "Nushell.Nushell",
+		"choco": "nushell",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Nushell",
+		"link": "https://www.nushell.sh/",
+		"description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience."
+	},
+	"WPFInstallnvclean": {
+		"winget": "TechPowerUp.NVCleanstall",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "NVCleanstall",
+		"link": "https://www.techpowerup.com/nvcleanstall/",
+		"description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process."
+	},
+	"WPFInstallOVirtualBox": {
+		"winget": "Oracle.VirtualBox",
+		"choco": "virtualbox",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Oracle VirtualBox",
+		"link": "https://www.virtualbox.org/",
+		"description": "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures."
+	},
+	"WPFInstallopenrgb": {
+		"winget": "CalcProgrammer1.OpenRGB",
+		"choco": "openrgb",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "OpenRGB",
+		"link": "https://openrgb.org/",
+		"description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals."
+	},
+	"WPFInstallopenshell": {
+		"winget": "Open-Shell.Open-Shell-Menu",
+		"choco": "open-shell",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Open Shell (Start Menu)",
+		"link": "https://github.com/Open-Shell/Open-Shell-Menu",
+		"description": "Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options."
+	},
+	"WPFInstallownclouddesktop": {
+		"winget": "ownCloud.ownCloudDesktop",
+		"choco": "owncloud-client",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "ownCloud Desktop",
+		"link": "https://owncloud.com/desktop-app/",
+		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
+	},
+	"WPFInstallpeazip": {
+		"winget": "Giorgiotani.Peazip",
+		"choco": "peazip",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Peazip",
+		"link": "https://peazip.github.io/",
+		"description": "Peazip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features."
+	},
+	"WPFInstallprocesslasso": {
+		"winget": "BitSum.ProcessLasso",
+		"choco": "plasso",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Process Lasso",
+		"link": "https://bitsum.com/",
+		"description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities."
+	},
+	"WPFInstallprucaslicer": {
+		"winget": "Prusa3d.PrusaSlicer",
+		"choco": "prusaslicer",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Prusa Slicer",
+		"link": "https://www.prusa3d.com/prusaslicer/",
+		"description": "Prusa Slicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers."
+	},
+	"WPFInstallqbittorrent": {
+		"winget": "qBittorrent.qBittorrent",
+		"choco": "qbittorrent",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "qBittorrent",
+		"link": "https://www.qbittorrent.org/",
+		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients."
+	},
+	"WPFInstallrainmeter": {
+		"winget": "Rainmeter.Rainmeter",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Rainmeter",
+		"link": "https://www.rainmeter.net/",
+		"description": "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop."
+	},
+	"WPFInstallrevo": {
+		"winget": "RevoUninstaller.RevoUninstaller",
+		"choco": "revo-uninstaller",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "RevoUninstaller",
+		"link": "https://www.revouninstaller.com/",
+		"description": "RevoUninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system."
+	},
+	"WPFInstallrufus": {
+		"winget": "Rufus.Rufus",
+		"choco": "rufus",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Rufus Imager",
+		"link": "https://rufus.ie/",
+		"description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives."
+	},
+	"WPFInstallsandboxie": {
+		"winget": "Sandboxie.Plus",
+		"choco": "sandboxie",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Sandboxie Plus",
+		"link": "https://www.sandboxie.com/",
+		"description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment."
+	},
+	"WPFInstallshell": {
+		"winget": "Nilesoft.Shell",
+		"choco": "nilesoft-shell",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Shell (Expanded Context Menu)",
+		"link": "https://www.nilesoft.com/shell/",
+		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu."
+	},
+	"WPFInstallsdio": {
+		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
+		"choco": "sdio",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Snappy Driver Installer Origin",
+		"link": "https://github.com/snappy-driver/snappy-driver-installer",
+		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows."
+	},
+	"WPFInstallspacedrive": {
+		"winget": "spacedrive.Spacedrive",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Spacedrive File Manager",
+		"link": "https://spacedrive.org/",
+		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
+	},
+	"WPFInstallsuperf4": {
+		"winget": "StefanSundin.Superf4",
+		"choco": "superf4",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "SuperF4",
+		"link": "https://stefansundin.github.io/superf4/",
+		"description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey."
+	},
+	"WPFInstalltailscale": {
+		"winget": "tailscale.tailscale",
+		"choco": "tailscale",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Tailscale",
+		"link": "https://tailscale.com/",
+		"description": "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks."
+	},
+	"WPFInstallteamviewer": {
+		"winget": "TeamViewer.TeamViewer",
+		"choco": "teamviewer9",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "TeamViewer",
+		"link": "https://www.teamviewer.com/",
+		"description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices."
+	},
+	"WPFInstallttaskbar": {
+		"winget": "9PF4KZ2VN4W9",
+		"choco": "translucenttb",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Translucent Taskbar",
+		"link": "https://github.com/TranslucentTB/TranslucentTB",
+		"description": "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar."
+	},
+	"WPFInstalltreesize": {
+		"winget": "JAMSoftware.TreeSize.Free",
+		"choco": "treesizefree",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "TreeSize Free",
+		"link": "https://www.jam-software.com/treesize_free/",
+		"description": "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives."
+	},
+	"WPFInstalltwinkletray": {
+		"winget": "xanderfrangos.twinkletray",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Twinkle Tray",
+		"link": "https://github.com/xanderfrangos/TwinkleTray",
+		"description": "Twinkle Tray is a small utility that allows you to customize the system tray icons on your Windows taskbar."
+	},
+	"WPFInstallwindirstat": {
+		"winget": "WinDirStat.WinDirStat",
+		"choco": "windirstat",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WinDirStat",
+		"link": "https://windirstat.net/",
+		"description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows."
+	},
+	"WPFInstallwingetui": {
+		"winget": "SomePythonThings.WingetUIStore",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WingetUI",
+		"link": "https://github.com/lostindark/WingetUIStore",
+		"description": "WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)."
+	},
+	"WPFInstallwiztree": {
+		"winget": "AntibodySoftware.WizTree",
+		"choco": "wiztree",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WizTree",
+		"link": "https://wiztreefree.com/",
+		"description": "WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive."
+	},
+	"WPFInstallwinrar": {
+		"winget": "RARLab.WinRAR",
+		"choco": "winrar",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WinRAR",
+		"link": "https://www.win-rar.com/",
+		"description": "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files."
+	},
+	"WPFInstallwinpaletter": {
+		"winget": "Abdelrhman-AK.WinPaletter",
+		"choco": "WinPaletter",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WinPaletter",
+		"link": "https://github.com/Abdelrhman-AK/WinPaletter",
+		"description": "WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors."
+	},
+	"WPFInstallwisetoys": {
+		"winget": "WiseCleaner.WiseToys",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "WiseToys",
+		"link": "https://www.wisecleaner.com/wisetoys.html",
+		"description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience."
+	},
+	"WPFInstallxdm": {
+		"winget": "subhra74.XtremeDownloadManager",
+		"choco": "xdm",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Xtreme Download Manager",
+		"link": "https://github.com/subhra74/xdm",
+		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers."
+	},
+	"WPFInstallzerotierone": {
+		"winget": "ZeroTier.ZeroTierOne",
+		"choco": "zerotier-one",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "ZeroTier One",
+		"link": "https://zerotier.com/",
+		"description": "ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks."
+	},
+	"WPFInstallzoxide": {
+		"winget": "ajeetdsouza.zoxide",
+		"choco": "zoxide",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Zoxide",
+		"link": "https://github.com/ajeetdsouza/zoxide",
+		"description": "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease."
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -6543,40 +7040,14 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-    "Classic":  {
-                    "ComboBoxBackgroundColor":  "#777777",
-                    "LabelboxForegroundColor":  "#000000",
-                    "MainForegroundColor":  "#000000",
-                    "MainBackgroundColor":  "#777777",
-                    "LabelBackgroundColor":  "#777777",
-                    "ComboBoxForegroundColor":  "#000000",
-                    "ButtonInstallBackgroundColor":  "#222222",
-                    "ButtonTweaksBackgroundColor":  "#333333",
-                    "ButtonConfigBackgroundColor":  "#444444",
-                    "ButtonUpdatesBackgroundColor":  "#555555",
-                    "ButtonInstallForegroundColor":  "#FFFFFF",
-                    "ButtonTweaksForegroundColor":  "#FFFFFF",
-                    "ButtonConfigForegroundColor":  "#FFFFFF",
-                    "ButtonUpdatesForegroundColor":  "#FFFFFF",
-                    "ButtonBackgroundColor":  "#CACACA",
-                    "ButtonBackgroundPressedColor":  "#FFFFFF",
-                    "ButtonBackgroundMouseoverColor":  "#A55A64",
-                    "ButtonBackgroundSelectedColor":  "#BADFFF",
-                    "ButtonForegroundColor":  "#000000",
-                    "ButtonBorderThickness":  "0",
-                    "ButtonMargin":  "0,3,0,3",
-                    "ButtonCornerRadius": "0",
-                    "ToggleButtonHeight": "40",
-                    "BorderColor": "#000000",
-                    "BorderOpacity": "0.2",
-                    "ShadowPulse": "Forever"
-                },
         "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
                     "MainBackgroundColor":  "#FFFFFF",
                     "LabelBackgroundColor":  "#FAFAFA",
+                    "LinkForegroundColor":  "#000000",
+                    "LinkHoverForegroundColor":  "#000000",                    
                     "GroupBorderBackgroundColor":  "#000000",
                     "ComboBoxForegroundColor":  "#000000",
                     "ButtonInstallBackgroundColor":  "#FFFFFF",
@@ -6607,6 +7078,8 @@ $sync.configs.themes = '{
                    "MainForegroundColor":  "#9CCC65",
                    "MainBackgroundColor":  "#000000",
                    "LabelBackgroundColor":  "#000000",
+                   "LinkForegroundColor":  "#add8e6",
+                   "LinkHoverForegroundColor":  "#FFFFFF",
                    "ComboBoxForegroundColor":  "#FFEE58",
                    "ButtonInstallBackgroundColor":  "#222222",
                    "ButtonTweaksBackgroundColor":  "#333333",
@@ -9097,6 +9570,8 @@ foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
         Choco = $appInfo.choco
         Winget = $appInfo.winget
         Panel = $appInfo.panel
+        Link = $appInfo.link
+        Description = $appInfo.description
     }
 
     if (-not $organizedData.ContainsKey($appInfo.panel)) {
@@ -9118,8 +9593,14 @@ foreach ($panel in $organizedData.Keys) {
         $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
         foreach ($appName in $sortedApps) {
             $appInfo = $organizedData[$panel][$category][$appName]
-
-            $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)""/>`n"
+            if ($null -eq $appInfo.Link)
+            {
+                $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
+            }
+            else 
+            {
+                $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
+            }
         }
     }
 
@@ -9162,38 +9643,39 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
-    }
-}
-
-$sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
-    }
-}
-
-$sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if(
-            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-            -and $sync["$psitem"].Name -like "WPFToggle*"
-        ){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+                -and $sync["$psitem"].Name -like "WPFToggle*"){
             $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
 
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFToggle $Sender.name
             })
+        }
+
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+
+        if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
+            if ($sync["$psitem"].Name.EndsWith("Link")) {
+                $sync["$psitem"].Add_MouseUp({
+                    [System.Object]$Sender = $args[0]
+                    Start-Process $Sender.ToolTip -ErrorAction Stop
+                    Write-Host "Let's go: $($Sender.ToolTip)"
+                })
+            }
+       
         }
     }
 }
@@ -9228,21 +9710,25 @@ $sync["Form"].Add_Closing({
     [System.GC]::Collect()
 })
 
+
+# Attach the event handler to the Click event
+$sync.CheckboxFilterClear.Add_Click({
+    $sync.CheckboxFilter.Text = ""
+    $sync.CheckboxFilterClear.Visibility = "Collapsed"
+})
+
 # add some shortcuts for people that don't like clicking
 $commonKeyEvents = {
     if ($sync.ProcessRunning -eq $true) {
         return
     }
 
-    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
-    if ($_.Key -eq "Escape") {
-        #if ($sync.CheckboxFilter.IsFocused)
-        {
-            $sync.CheckboxFilter.SelectAll()
-            $sync.CheckboxFilter.Text = ""
-            $sync.CheckboxFilter.Focus()
-            return
-        }
+    if ($_.Key -eq "Escape")
+    {
+        $sync.CheckboxFilter.SelectAll()
+        $sync.CheckboxFilter.Text = ""
+        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+        return
     }
 
     # don't ask, I know what I'm doing, just go...
@@ -9250,31 +9736,7 @@ $commonKeyEvents = {
     {
         $this.Close()
     }
-
-    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
-
-    # switch ($ret) {
-    #     "Yes" {
-    #         $this.Close()
-    #     } 
-    #     "No" {
-    #         return
-    #     } 
-    # }
-
-
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
-        # this is an example how to handle shortcuts per tab
-        # Alt-I on the MicroWin tab (4) would press GetIso Button
-        # NOTE: All per tab shortcuts have to be handled *before* regular tab keys
-        # if ($_.SystemKey -eq "I") {
-        #     $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-        #     if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
-        #         Invoke-WPFButton "WPFGetIso"
-        #         break
-        #     }
-        # }
         if ($_.SystemKey -eq "I") {
             Invoke-WPFButton "WPFTab1BT"
         }
@@ -9290,6 +9752,9 @@ $commonKeyEvents = {
         if ($_.SystemKey -eq "M") {
             Invoke-WPFButton "WPFTab5BT"
         }
+        if ($_.SystemKey -eq "P") {
+            Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+        }
     }
     # shortcut for the filter box
     if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
@@ -9300,6 +9765,7 @@ $commonKeyEvents = {
         $sync.CheckboxFilter.Focus()
     }
 }
+
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 # adding some left mouse window move on drag capability
@@ -9317,7 +9783,6 @@ $sync["Form"].Add_MouseDoubleClick({
         $sync["Form"].WindowState = [Windows.WindowState]::Normal;
     }
 })
-
 
 
 # setting window icon to make it look more professional
@@ -9382,27 +9847,47 @@ $sync["Form"].Add_Loaded({
 })
 
 $sync["CheckboxFilter"].Add_TextChanged({
-    #Write-host $sync.CheckboxFilter.Text
 
-    $filter = Get-WinUtilVariables -Type Checkbox
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
-    $textToSearch = $sync.CheckboxFilter.Text
-    Foreach ($CheckBox in $CheckBoxes) {
-        #Write-Host "$($sync.CheckboxFilter.Text)"
+    if ($sync.CheckboxFilter.Text -ne "") {
+        $sync.CheckboxFilterClear.Visibility = "Visible"
+    }
+    else {
+        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+    }
+
+    $filter = Get-WinUtilVariables -Type CheckBox
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    
+    foreach ($CheckBox in $CheckBoxes) {
+        # Check if the checkbox is null or if it doesn't have content
         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
             continue
         }
-         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
-             $CheckBox.Value.Visibility = "Visible"
-         }
-         else {
+    
+        $textToSearch = $sync.CheckboxFilter.Text
+        $checkBoxName = $CheckBox.Key
+        $textBlockName = $checkBoxName + "Link"
+    
+        # Retrieve the corresponding text block based on the generated name
+        $textBlock = $sync[$textBlockName]
+    
+        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+            $CheckBox.Value.Visibility = "Visible"
+             # Set the corresponding text block visibility
+            if ($textBlock -ne $null) {
+                $textBlock.Visibility = "Visible"
+            }
+        }
+        else {
              $CheckBox.Value.Visibility = "Collapsed"
-         }
-     }
+            # Set the corresponding text block visibility
+            if ($textBlock -ne $null) {
+                $textBlock.Visibility = "Collapsed"
+            }
+        }
+    }
+    
 })
-
-# show current windowsd Product ID
-#Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
