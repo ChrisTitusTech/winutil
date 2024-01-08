@@ -430,7 +430,7 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @"
+		$servicesToExclude = @(
 			"AudioSrv",
 			"AudioEndpointBuilder",
 			"BFE",
@@ -493,10 +493,10 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-"@		
+)	
 	
-		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
-		foreach($service in $allServices)
+		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
+		foreach($service in $runningServices)
 		{
             Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
