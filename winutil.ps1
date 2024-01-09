@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.04
+    Version        : 24.01.08
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.04"
+$sync.version = "24.01.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4362,7 +4362,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 
                 <Button Name="CheckboxFilterClear" Style="{StaticResource ClearButtonStyle}" Margin="184,0,0,0" Visibility="Collapsed"/>
             </Grid>
-            <TextBlock Text="Version: 24.01.04" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <TextBlock Text="Version: 24.01.08" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
@@ -9784,27 +9784,18 @@ $sync["Form"].Add_MouseDoubleClick({
     }
 })
 
+$sync["Form"].Add_ContentRendered({
 
-# setting window icon to make it look more professional
-$sync["Form"].Add_Loaded({
-   
-    $downloadUrl = "https://christitus.com/images/logo-full.png"
-    $destinationPath = Join-Path $env:TEMP "cttlogo.png"
-    
-    # Check if the file already exists
-    if (-not (Test-Path $destinationPath)) {
-        # File does not exist, download it
-        $wc = New-Object System.Net.WebClient
-        $wc.DownloadFile($downloadUrl, $destinationPath)
-        Write-Host "File downloaded to: $destinationPath"
-    } else {
-        Write-Output "File already exists at: $destinationPath"
+    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*tit*" })) {
+        if ($proc.Id -ne [System.IntPtr]::Zero) {
+            Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
+            $windowHandle = $proc.MainWindowHandle
+        }
     }
-    $sync["Form"].Icon = $destinationPath
 
-    Try { 
-        [Void][Window]
-    } Catch {
+    try { 
+        [void][Window]
+    } catch {
         Add-Type @"
         using System;
         using System.Runtime.InteropServices;
@@ -9816,8 +9807,7 @@ $sync["Form"].Add_Loaded({
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
             [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool ShowWindow(IntPtr handle, int state);
+            public static extern int GetSystemMetrics(int nIndex);
         }
         public struct RECT {
             public int Left;   // x position of upper-left corner
@@ -9827,20 +9817,37 @@ $sync["Form"].Add_Loaded({
         }
 "@
     }
-    
-    $processId  = [System.Diagnostics.Process]::GetCurrentProcess().Id
-    $windowHandle  = (Get-Process -Id $processId).MainWindowHandle
+
     $rect = New-Object RECT
-    [Void][Window]::GetWindowRect($windowHandle,[ref]$rect)
-    
-    # only snap upper edge don't move left to right, in case people have multimon setup
-    $x = $rect.Left
-    $y = 0
+    [void][Window]::GetWindowRect($windowHandle, [ref]$rect)
     $width  = $rect.Right  - $rect.Left
     $height = $rect.Bottom - $rect.Top
-    
-    # Move the window to that position...
-    [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+
+    Write-Debug "UpperLeft:$($rect.Left),$($rect.Top) LowerBottom:$($rect.Right),$($rect.Bottom). Width:$($width) Height:$($height)"
+
+    # Load the Windows Forms assembly
+    Add-Type -AssemblyName System.Windows.Forms
+    $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
+    # Check if the primary screen is found
+    if ($primaryScreen) {
+        # Extract screen width and height for the primary monitor
+        $screenWidth = $primaryScreen.Bounds.Width
+        $screenHeight = $primaryScreen.Bounds.Height
+
+        # Print the screen size
+        Write-Debug "Primary Monitor Width: $screenWidth pixels"
+        Write-Debug "Primary Monitor Height: $screenHeight pixels"
+
+        # Compare with the primary monitor size
+        if ($width -gt $screenWidth -or $height -gt $screenHeight) {
+            Write-Debug "The specified width and/or height is greater than the primary monitor size."
+            [void][Window]::MoveWindow($windowHandle, 0, 0, $screenWidth, $screenHeight, $True)
+        } else {
+            Write-Debug "The specified width and height are within the primary monitor size limits."
+        }
+    } else {
+        Write-Debug "Unable to retrieve information about the primary monitor."
+    }
     
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
