@@ -76,6 +76,12 @@
 	"panel": "0",
 	"content": "LibreWolf"
 	},
+"WPFInstallpalemoon": {
+	"winget": "MoonchildProductions.PaleMoon",
+	"choco": "palemoon",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Pale Moon"
 "WPFInstallqutebrowser": {
 	"winget": "qutebrowser.qutebrowser",
 	"choco": "qutebrowser",
