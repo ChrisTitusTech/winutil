@@ -1564,7 +1564,7 @@ function New-FirstRun {
 		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
 		foreach($service in $runningServices)
 		{
-			Stop-Service -Name $service.Name -PassThru
+            Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
 			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
@@ -2643,7 +2643,19 @@ function Invoke-WPFMicrowin {
         return
     }
 
-	
+    # Ask the user where to save the file
+    $SaveDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $SaveDialog.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+    $SaveDialog.Filter = "ISO images (*.iso)|*.iso"
+    $SaveDialog.ShowDialog() | Out-Null
+
+    if ($SaveDialog.FileName -eq "") {
+        Write-Host "No file name for the target image was specified"
+        return
+    }
+
+    Write-Host "Target ISO location: $($SaveDialog.FileName)"
+
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -2888,7 +2900,7 @@ function Invoke-WPFMicrowin {
 
 		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
 		{
-			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
 			return
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
@@ -2956,13 +2968,23 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		#Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		#Start-Process -FilePath $oscdimgPath -ArgumentList '-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`"' -NoNewWindow -Wait
+        $oscdimgProc = New-Object System.Diagnostics.Process
+        $oscdimgProc.StartInfo.FileName = $oscdimgPath
+        $oscdimgProc.StartInfo.Arguments = "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`""
+        $oscdimgProc.StartInfo.CreateNoWindow = $True
+        $oscdimgProc.StartInfo.WindowStyle = "Hidden"
+        $oscdimgProc.StartInfo.UseShellExecute = $False
+        $oscdimgProc.Start()
+        $oscdimgProc.WaitForExit()
 
 		if ($copyToUSB)
 		{
-			Write-Host "Copying microwin.iso to the USB drive"
-			Copy-ToUSB("$env:temp\microwin.iso")
-			Write-Host "Done Copying microwin.iso to USB drive!"
+			Write-Host "Copying target ISO to the USB drive"
+			#Copy-ToUSB("$env:temp\microwin.iso")
+			Copy-ToUSB("$($SaveDialog.FileName)")
+			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
 		}
 		
 		Write-Host " _____                       "
@@ -2977,7 +2999,8 @@ function Invoke-WPFMicrowin {
 			Write-Host "`n`nPerforming Cleanup..."
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
-			$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
+			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
+			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
@@ -2987,7 +3010,8 @@ function Invoke-WPFMicrowin {
 
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
-		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+		#$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+        $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
 
 		$sync.ProcessRunning = $false
 	}
@@ -4753,7 +4777,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 - Choose which features you want to keep <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>
                                 The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
-                                - Once complete, the microwin.iso will be in the %temp% directory <LineBreak/>
+                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
                                 - Copy this image to your Ventoy USB Stick, boot to this image, gg
                                 <LineBreak/>
                                 If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory

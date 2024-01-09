@@ -1005,7 +1005,7 @@
                                 - Choose which features you want to keep <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>
                                 The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
-                                - Once complete, the microwin.iso will be in the %temp% directory <LineBreak/>
+                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
                                 - Copy this image to your Ventoy USB Stick, boot to this image, gg
                                 <LineBreak/>
                                 If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
