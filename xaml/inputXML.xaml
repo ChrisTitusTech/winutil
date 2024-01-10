@@ -834,6 +834,7 @@
                             <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                             <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                             <Label Content="Fixes" FontSize="16"/>
+                            <Button Name="WPFCreateRestorePoint" FontSize="14" Content="Create System Restore Point" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>

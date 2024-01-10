@@ -36,6 +36,7 @@ function Invoke-WPFButton {
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
         "WPFPanelDISM" {Invoke-WPFPanelDISM}
+        "WPFCreateRestorePoint" {Invoke-WPFCreateRestorePoint}
         "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}

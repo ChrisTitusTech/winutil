@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.08
+    Version        : 24.01.10
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.08"
+$sync.version = "24.01.10"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2038,6 +2038,7 @@ function Invoke-WPFButton {
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
         "WPFPanelDISM" {Invoke-WPFPanelDISM}
+        "WPFCreateRestorePoint" {Invoke-WPFCreateRestorePoint}
         "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
         "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
         "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
@@ -2092,6 +2093,30 @@ function Invoke-WPFControlPanel {
         "WPFPanelsound"   {cmd /c mmsys.cpl}
         "WPFPanelsystem"  {cmd /c sysdm.cpl}
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
+    }
+}
+function Invoke-WPFCreateRestorePoint {
+    <#
+    .SYNOPSIS
+        Enables the ability to create Windows Restore Points
+    #>
+    
+    $restorePointTypes = @("APPLICATION_INSTALL", "MODIFY_SETTINGS", "APPLICATION_UNINSTALL", "DEVICE_DRIVER_INSTALL", "CANCELLED_OPERATION")
+    $selectedRestorePointType = $restorePointTypes | Out-GridView -Title "Select Restore Point Type" -PassThru
+
+    if ($selectedRestorePointType) {
+        try {
+            $restorePointName = "Pre-WinUtil_$selectedRestorePointType"
+        
+            Checkpoint-Computer -Description $restorePointName -RestorePointType $selectedRestorePointType
+
+            Write-Output "Restore Point '$restorePointName' created successfully."
+        }
+        catch {
+            Write-Output "Error creating restore point: $_.Exception.Message"
+        }
+    } else {
+        Write-Output "No restore point type selected."
     }
 }
 function Invoke-WPFFeatureInstall {
@@ -4386,7 +4411,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 
                 <Button Name="CheckboxFilterClear" Style="{StaticResource ClearButtonStyle}" Margin="184,0,0,0" Visibility="Collapsed"/>
             </Grid>
-            <TextBlock Text="Version: 24.01.08" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <TextBlock Text="Version: 24.01.10" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
@@ -4606,6 +4631,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                             <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
                             <Label Content="Fixes" FontSize="16"/>
+                            <Button Name="WPFCreateRestorePoint" FontSize="14" Content="Create System Restore Point" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
