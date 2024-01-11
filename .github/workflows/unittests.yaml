@@ -25,7 +25,8 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Create logs directory
-        run: mkdir -p ${{ github.workspace }}/logs
+        run: New-Item -Path ${{ github.workspace }}\logs -ItemType Directory -Force
+        shell: pwsh
       - name: pester_tests
         id: pester_tests
         uses: zyborg/pester-tests-report@v1
