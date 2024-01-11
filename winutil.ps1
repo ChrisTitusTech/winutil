@@ -4822,7 +4822,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         </TabControl>
     </Grid>
 </Window>'
-$sync.configs.applications = '??????{
+$sync.configs.applications = '{
 	"WPFInstallbrave": {
 		"winget": "Brave.Brave",
 		"choco": "brave",
