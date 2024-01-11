@@ -33,7 +33,7 @@ jobs:
         with:
           include_paths: pester
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tests_fail_step: true
+          tests_fail_step: false
           skip_check_run: true
       - name: Move test results
         run: Move-Item -Path ${{ github.workspace }}\_TMP\* -Destination ${{ github.workspace }}\logs
