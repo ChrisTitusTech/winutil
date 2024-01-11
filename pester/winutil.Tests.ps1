@@ -4,7 +4,7 @@
 
 $script = Get-Content .\winutil.ps1
 # Remove the part of the script that shows the form, leaving only the variable and function declarations
-$script[0..($script.count - 21)] | Out-File .\pester.ps1
+$script[0..($script.count - 3)] | Out-File .\pester.ps1
 
 
 BeforeAll {
