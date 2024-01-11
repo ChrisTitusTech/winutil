@@ -1,4 +1,4 @@
-function Invoke-MicroWinHelper {
+function Invoke-MicroWin-Helper {
 <#
 
     .SYNOPSIS
