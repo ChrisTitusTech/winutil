@@ -82,6 +82,7 @@
 	"category": "Browsers",
 	"panel": "0",
 	"content": "Pale Moon"
+},
 "WPFInstallqutebrowser": {
 	"winget": "qutebrowser.qutebrowser",
 	"choco": "qutebrowser",
