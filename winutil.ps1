@@ -3851,6 +3851,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
                 <Setter Property="TextDecorations" Value="Underline" />
+                <Setter Property="Cursor" Value="Hand" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -4063,6 +4064,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="Red"/>
