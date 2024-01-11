@@ -1,3 +1,20 @@
+function Invoke-MicroWinHelper {
+<#
+
+    .SYNOPSIS
+        checking unit tests
+
+    .PARAMETER Name
+        no parameters
+
+    .EXAMPLE
+        placeholder
+
+#>
+
+}
+
+
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
 <#
 
