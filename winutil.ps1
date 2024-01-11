@@ -5134,7 +5134,7 @@ $sync.configs.applications = '{
 		"panel": "1",
 		"content": "Clink",
 		"link": "https://mridgers.github.io/clink/",
-		"description": "Clink is a powerful Bash-compatible command-line interface (CLI) enhancement for Windows, adding features like syntax highlighting and improved history."
+		"description": "Clink is a powerful Bash-compatible command-line interface (CLI) enhancement for Windows, adding features like syntax highlighting and improved history)."
 	},
 	"WPFInstalldockerdesktop": {
 		"winget": "Docker.DockerDesktop",
@@ -6295,7 +6295,7 @@ $sync.configs.applications = '{
 		"description": "SimpleWall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications."
 	},
 	"WPFInstallventoy": {
-		"winget": "na",
+		"winget": "Ventoy.Ventoy",
 		"choco": "ventoy",
 		"category": "Pro Tools",
 		"panel": "3",
@@ -6382,7 +6382,7 @@ $sync.configs.applications = '{
 		"panel": "4",
 		"content": "Barrier",
 		"link": "https://github.com/debauchee/barrier",
-		"description": "Barrier is an open-source software KVM (keyboard, video, and mouse) switch. It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems."
+		"description": "Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems."
 	},
 	"WPFInstallbat": {
 		"winget": "sharkdp.bat",
