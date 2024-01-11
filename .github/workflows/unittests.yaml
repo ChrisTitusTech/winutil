@@ -32,7 +32,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tests_fail_step: true
           skip_check_run: true
-          test_results_path: './logs/'
+          test_results_path: 'logs'
       - name: dump test results
         shell: pwsh
         run: |
