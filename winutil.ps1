@@ -7015,7 +7015,7 @@ $sync.configs.applications = '{
 		"content": "Raspberry Pi Imager",
 		"link": "https://www.raspberrypi.com/software/"
 		},
-	"WPFInstall1passwordr": {
+	"WPFInstall1password": {
 		"winget": "AgileBits.1Password",
 		"choco": "1password",
 		"category": "Utilities",
