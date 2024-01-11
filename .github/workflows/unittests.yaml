@@ -35,7 +35,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tests_fail_step: true
           skip_check_run: true
-          test_results_path: '${{ github.workspace }}/logs'
+      - name: Move test results
+        run: Move-Item -Path ${{ github.workspace }}\_TMP\* -Destination ${{ github.workspace }}\logs
+        shell: pwsh
       - name: dump test results
         shell: pwsh
         run: |
