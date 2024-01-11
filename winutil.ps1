@@ -6989,7 +6989,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Windows PC Health Check",
-		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844"
+		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
+		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11."
 		},
 	"WPFInstallsamsungmagician": {
 		"winget": "Samsung.SamsungMagician",
@@ -6997,7 +6998,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Samsung Magician",
-		"link": "https://semiconductor.samsung.com/consumer-storage/magician/"
+		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
+		"description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs."
 		},
 	"WPFInstallbitcomet": {
 		"winget": "CometNetwork.BitComet",
@@ -7005,7 +7007,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "BitComet",
-		"link": "https://www.bitcomet.com/"
+		"link": "https://www.bitcomet.com/",
+		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features."
 		},
 	"WPFInstallpiimager": {
 		"winget": "RaspberryPiFoundation.RaspberryPiImager",
@@ -7013,7 +7016,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Raspberry Pi Imager",
-		"link": "https://www.raspberrypi.com/software/"
+		"link": "https://www.raspberrypi.com/software/",
+		"description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices."
 		},
 	"WPFInstall1password": {
 		"winget": "AgileBits.1Password",
@@ -7021,7 +7025,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "1Password",
-		"link": "https://1password.com/"
+		"link": "https://1password.com/",
+		"description": "1Password is a password manager that allows you to store and manage your passwords securely."
 		},
 	"WPFInstalltotalcommander": {
 		"winget": "Ghisler.TotalCommander",
@@ -7029,7 +7034,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Total Commander",
-		"link": "https://www.ghisler.com/"
+		"link": "https://www.ghisler.com/",
+		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
 		}
 }' | convertfrom-json
 $sync.configs.dns = '{
