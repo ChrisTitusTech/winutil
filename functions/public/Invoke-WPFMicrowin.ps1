@@ -10,6 +10,27 @@ function Invoke-WPFMicrowin {
         return
     }
 
+	# Define the constants for Windows API
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+
+public class PowerManagement {
+	[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+	public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+	[FlagsAttribute]
+	public enum EXECUTION_STATE : uint {
+		ES_SYSTEM_REQUIRED = 0x00000001,
+		ES_DISPLAY_REQUIRED = 0x00000002,
+		ES_CONTINUOUS = 0x80000000,
+	}
+}
+"@
+
+	# Prevent the machine from sleeping
+	[PowerManagement]::SetThreadExecutionState([PowerManagement]::EXECUTION_STATE::ES_CONTINUOUS -bor [PowerManagement]::EXECUTION_STATE::ES_SYSTEM_REQUIRED -bor [PowerManagement]::EXECUTION_STATE::ES_DISPLAY_REQUIRED)
+
     # Ask the user where to save the file
     $SaveDialog = New-Object System.Windows.Forms.SaveFileDialog
     $SaveDialog.InitialDirectory = [Environment]::GetFolderPath('Desktop')
@@ -118,14 +139,6 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
 		Write-Host "Removal complete!"
-
-		# *************************** Automation black ***************************
-		# this doesn't work for some reason, this script is not being run at the end of the install
-		# if someone knows how to fix this, feel free to modify
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 
 		Write-Host "Create unattend.xml"
 		New-Unattend
@@ -374,12 +387,12 @@ function Invoke-WPFMicrowin {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
 		#$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
-
+		# Allow the machine to sleep again (optional)
+		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
 	}
 }
