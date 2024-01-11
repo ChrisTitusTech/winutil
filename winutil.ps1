@@ -592,7 +592,7 @@ function Install-WinUtilWinget {
         throw [WingetFailedInstall]::new('Failed to install')
     }
 }
-function Invoke-MicroWinHelper {
+function Invoke-MicroWin-Helper {
 <#
 
     .SYNOPSIS
