@@ -1,4 +1,4 @@
-function Invoke-CloseButton {
+function Invoke-WPFCloseButton {
 
     <#
 

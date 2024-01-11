@@ -55,6 +55,6 @@ function Invoke-WPFButton {
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
-        "WPFCloseButton" {Invoke-CloseButton}
+        "WPFCloseButton" {Invoke-WPFCloseButton}
     }
 }
