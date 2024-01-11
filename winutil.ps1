@@ -4964,6 +4964,7 @@ $sync.configs.applications = '{
 		"category": "Communications",
 		"panel": "0",
 		"content": "Guilded",
+		"link": "https://www.guilded.gg/",
 		"description": "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities."
 	},
 	"WPFInstallhexchat": {
@@ -5073,14 +5074,6 @@ $sync.configs.applications = '{
 		"content": "Thunderbird",
 		"link": "https://www.thunderbird.net/",
 		"description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features."
-	},
-	"WPFInstalltweeten": {
-		"winget": "MehediHassan.Tweeten",
-		"choco": "na",
-		"category": "Communications",
-		"panel": "0",
-		"content": "FOSS Twitter Client",
-		"description": "Tweeten is a free and open-source Twitter client for Windows with a clean and customizable interface."
 	},
 	"WPFInstallviber": {
 		"winget": "Viber.Viber",
@@ -5385,7 +5378,8 @@ $sync.configs.applications = '{
 		"category": "Development",
 		"panel": "1",
 		"content": "HxD Hex Editor",
-		"link": "https://mh-nexus.de/en/hxd/"
+		"link": "https://mh-nexus.de/en/hxd/",
+		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files."
 		},
 	"WPFInstallanki": {
 		"winget": "Anki.Anki",
@@ -5564,6 +5558,7 @@ $sync.configs.applications = '{
 		"category": "Document",
 		"panel": "1",
 		"content": "Znote",
+		"link": "https://znote.io/",
 		"description": "Znote is a note-taking application."
 	},
 	"WPFInstallzotero": {
@@ -5599,6 +5594,7 @@ $sync.configs.applications = '{
 		"category": "Games",
 		"panel": "2",
 		"content": "Clone Hero",
+		"link": "https://clonehero.net/",
 		"description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller."
 	},
 	"WPFInstalleaapp": {
@@ -5652,6 +5648,7 @@ $sync.configs.applications = '{
 		"category": "Games",
 		"panel": "2",
 		"content": "Heroic Games Launcher",
+		"link": "https://heroicgameslauncher.com/",
 		"description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store."
 	},
 	"WPFInstallitch": {
@@ -5741,7 +5738,8 @@ $sync.configs.applications = '{
 		"category": "Games",
 		"panel": "2",
 		"content": "PS Remote Play",
-		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/"
+		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
+		"description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device."
 		},
 	"WPFInstallvrdesktopstreamer": {
 		"winget": "VirtualDesktop.Streamer",
@@ -5749,7 +5747,8 @@ $sync.configs.applications = '{
 		"category": "Games",
 		"panel": "2",
 		"content": "Virtual Desktop Streamer",
-		"link": "https://www.vrdesktop.net/"
+		"link": "https://www.vrdesktop.net/",
+		"description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices."
 		},
 	"WPFInstalldotnet3": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
@@ -6225,7 +6224,8 @@ $sync.configs.applications = '{
 		"category": "Multimedia Tools",
 		"panel": "3",
 		"content": "Plex Media Server",
-		"link": "https://www.plex.tv/your-media/"
+		"link": "https://www.plex.tv/your-media/",
+		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features."
 		},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
