@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.03
+    Version        : 24.01.11
 #>
 
 Start-Transcript $ENV:TEMP\Winutil.log -Append
@@ -22,7 +22,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.03"
+$sync.version = "24.01.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4276,7 +4276,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
             </Grid>
-            <TextBlock Text="Version: 24.01.03" VerticalAlignment="Center" HorizontalAlignment="Center" 
+            <TextBlock Text="Version: 24.01.11" VerticalAlignment="Center" HorizontalAlignment="Center" 
                     Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
@@ -4742,7 +4742,21 @@ $sync.configs.applications = '{
 	"choco": "firefox",
 	"category": "Browsers",
 	"panel": "0",
-	"content": "Firefox"
+	"content": "FireFox"
+	},
+"WPFInstallfirefoxdev": {
+	"winget": "Mozilla.Firefox.DeveloperEdition",
+	"choco": "na",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "FireFox Developer"
+	},
+"WPFInstallfirefoxesr": {
+	"winget": "Mozilla.Firefox.ESR",
+	"choco": "na",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "FireFox ESR"
 	},
 "WPFInstallfloorp": {
 	"winget": "Ablaze.Floorp",
@@ -4751,12 +4765,33 @@ $sync.configs.applications = '{
 	"panel": "0",
 	"content": "Floorp"
 	},
+"WPFInstallicecat": {
+	"winget": "na",
+	"choco": "icecat",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "GNU IceCat"
+	},	 
 "WPFInstalllibrewolf": {
 	"winget": "LibreWolf.LibreWolf",
 	"choco": "librewolf",
 	"category": "Browsers",
 	"panel": "0",
 	"content": "LibreWolf"
+	},
+"WPFInstallpalemoon": {
+	"winget": "MoonchildProductions.PaleMoon",
+	"choco": "palemoon",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Pale Moon"
+},
+"WPFInstallqutebrowser": {
+	"winget": "qutebrowser.qutebrowser",
+	"choco": "qutebrowser",
+	"category": "Browsers",
+	"panel": "0",
+	"content": "Qute Browser"
 	},
 "WPFInstalltor": {
 	"winget": "TorProject.TorBrowser",
@@ -4784,7 +4819,7 @@ $sync.configs.applications = '{
 	"choco": "waterfox",
 	"category": "Browsers",
 	"panel": "0",
-	"content": "Waterfox"
+	"content": "WaterFox"
 	},
 "WPFInstallchatterino": {
 	"winget": "ChatterinoTeam.Chatterino",
@@ -5395,6 +5430,20 @@ $sync.configs.applications = '{
 	"panel": "2",
 	"content": "Sunshine/GameStream Server"
 	},
+"WPFInstallsupertux": {
+	"winget": "SuperTux.SuperTux",
+	"choco": "na",
+	"category": "Games",
+	"panel": "2",
+	"content": "SuperTux"
+	},
+"WPFInstallsupertuxkart": {
+	"winget": "SuperTuxKart.SuperTuxKart",
+	"choco": "supertuxkart",
+	"category": "Games",
+	"panel": "2",
+	"content": "SuperTuxKart"
+	},
 "WPFInstallubisoft": {
 	"winget": "Ubisoft.Connect",
 	"choco": "ubisoft-connect",
@@ -5502,24 +5551,31 @@ $sync.configs.applications = '{
 	},
 "WPFInstallarch": {
 	"winget": "9MZNMNKSM73X",
-	"choco": "na",
+	"choco": "wsl-archlinux",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Arch (Win Store)"
 	},
 "WPFInstalldebian": {
 	"winget": "Debian.Debian",
-	"choco": "na",
+	"choco": "wsl-debiangnulinux",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Debian"
 	},
 "WPFInstallfedora": {
 	"winget": "whitewaterfoundry.fedora-remix-for-wsl",
-	"choco": "na",
+	"choco": "wsl-fedoraremix",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Fedora WSL Remix"
+	},
+"WPFInstallkali": {
+	"winget": "kalilinux.kalilinux",
+	"choco": "wsl-kalilinux",
+	"category": "WSL Apps",
+	"panel": "2",
+	"content": "Kali Linux (Win Store)"
 	},
 "WPFInstallopensuseleap": {
 	"winget": "9NJGLDP5G04B",
@@ -5537,28 +5593,28 @@ $sync.configs.applications = '{
 	},
 "WPFInstallubuntu1604": {
 	"winget": "Canonical.Ubuntu.1604",
-	"choco": "na",
+	"choco": "wsl-ubuntu-1604",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Ubuntu 16.04 LTS"
 	},
 "WPFInstallubuntu1804": {
 	"winget": "Canonical.Ubuntu.1804",
-	"choco": "na",
+	"choco": "wsl-ubuntu-1804",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Ubuntu 18.04 LTS"
 	},
 "WPFInstallubuntu2004": {
 	"winget": "Canonical.Ubuntu.2004",
-	"choco": "na",
+	"choco": "wsl-ubuntu-2004",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Ubuntu 20.04 LTS"
 	},
 "WPFInstallubuntu2204": {
 	"winget": "Canonical.Ubuntu.2204",
-	"choco": "na",
+	"choco": "wsl-ubuntu-2204",
 	"category": "WSL Apps",
 	"panel": "2",
 	"content": "Ubuntu 22.04 LTS"
@@ -6276,6 +6332,13 @@ $sync.configs.applications = '{
 	"category": "Utilities",
 	"panel": "4",
 	"content": "RevoUninstaller"
+	},
+"WPFInstallripgrep": {
+	"winget": "BurntSushi.ripgrep.MSVC",
+	"choco": "ripgrep",
+	"category": "Utilities",
+	"panel": "4",
+	"content": "RipGrep"
 	},
 "WPFInstallrufus": {
 	"winget": "Rufus.Rufus",
