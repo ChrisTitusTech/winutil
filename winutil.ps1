@@ -5379,6 +5379,14 @@ $sync.configs.applications = '{
 		"link": "https://yarnpkg.com/",
 		"description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects."
 	},
+	"WPFInstallxeheditor": {
+		"winget": "MHNexus.HxD",
+		"choco": "HxD",
+		"category": "Development",
+		"panel": "1",
+		"content": "HxD Hex Editor",
+		"link": "https://mh-nexus.de/en/hxd/"
+		},
 	"WPFInstallanki": {
 		"winget": "Anki.Anki",
 		"choco": "anki",
@@ -5727,6 +5735,22 @@ $sync.configs.applications = '{
 		"description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
 		"link": "https://xemu.app/"
 	},
+	"WPFInstallpsremoteplay": {
+		"winget": "PlayStation.PSRemotePlay",
+		"choco": "ps-remote-play",
+		"category": "Games",
+		"panel": "2",
+		"content": "PS Remote Play",
+		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/"
+		},
+	"WPFInstallvrdesktopstreamer": {
+		"winget": "VirtualDesktop.Streamer",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "Virtual Desktop Streamer",
+		"link": "https://www.vrdesktop.net/"
+		},
 	"WPFInstalldotnet3": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
 		"choco": "dotnetcore3-desktop-runtime",
@@ -6195,6 +6219,14 @@ $sync.configs.applications = '{
 		"link": "https://www.vb-audio.com/Voicemeeter/",
 		"description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes."
 	},
+	"WPFInstallplex": {
+		"winget": "Plex.PlexMediaServer",
+		"choco": "plexmediaserver",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Plex Media Server",
+		"link": "https://www.plex.tv/your-media/"
+		},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
 		"choco": "advanced-ip-scanner",
@@ -6950,7 +6982,55 @@ $sync.configs.applications = '{
 		"content": "Zoxide",
 		"link": "https://github.com/ajeetdsouza/zoxide",
 		"description": "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease."
-	}
+	},
+	"WPFInstallwindowspchealth": {
+		"winget": "Microsoft.WindowsPCHealthCheck",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Windows PC Health Check",
+		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844"
+		},
+	"WPFInstallsamsungmagician": {
+		"winget": "Samsung.SamsungMagician",
+		"choco": "samsung-magician",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Samsung Magician",
+		"link": "https://semiconductor.samsung.com/consumer-storage/magician/"
+		},
+	"WPFInstallbitcomet": {
+		"winget": "CometNetwork.BitComet",
+		"choco": "bitcomet",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "BitComet",
+		"link": "https://www.bitcomet.com/"
+		},
+	"WPFInstallpiimager": {
+		"winget": "RaspberryPiFoundation.RaspberryPiImager",
+		"choco": "rpi-imager",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Raspberry Pi Imager",
+		"link": "https://www.raspberrypi.com/software/"
+		},
+	"WPFInstall1passwordr": {
+		"winget": "AgileBits.1Password",
+		"choco": "1password",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "1Password",
+		"link": "https://1password.com/"
+		},
+	"WPFInstalltotalcommander": {
+		"winget": "Ghisler.TotalCommander",
+		"choco": "TotalCommander",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Total Commander",
+		"link": "https://www.ghisler.com/"
+		}
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
