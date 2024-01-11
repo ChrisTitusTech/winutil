@@ -4822,7 +4822,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         </TabControl>
     </Grid>
 </Window>'
-$sync.configs.applications = '{
+$sync.configs.applications = '??????{
 	"WPFInstallbrave": {
 		"winget": "Brave.Brave",
 		"choco": "brave",
@@ -4991,7 +4991,7 @@ $sync.configs.applications = '{
 		"panel": "0",
 		"content": "Linphone",
 		"link": "https://www.linphone.org/",
-		"description": "Linphone is an open-source voice over IP (VoIP) service that allows for audio and video calls, messaging, and more."
+		"description": "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more."
 	},
 	"WPFInstallmatrix": {
 		"winget": "Element.Element",
@@ -5134,7 +5134,7 @@ $sync.configs.applications = '{
 		"panel": "1",
 		"content": "Clink",
 		"link": "https://mridgers.github.io/clink/",
-		"description": "Clink is a powerful Bash-compatible command-line interface (CLI) enhancement for Windows, adding features like syntax highlighting and improved history)."
+		"description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history)."
 	},
 	"WPFInstalldockerdesktop": {
 		"winget": "Docker.DockerDesktop",
@@ -5179,7 +5179,7 @@ $sync.configs.applications = '{
 		"panel": "1",
 		"content": "GoLang",
 		"link": "https://golang.org/",
-		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
+		"description": "GoLang (or Golangis a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
 	},
 	"WPFInstalljetbrains": {
 		"winget": "JetBrains.Toolbox",
