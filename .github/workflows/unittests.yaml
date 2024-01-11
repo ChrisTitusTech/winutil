@@ -32,8 +32,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tests_fail_step: true
           skip_check_run: true
-          xml_path: './logs/test-results.nunit.xml'
-          md_path: './logs/test-results.md'
+          test_results_path: './logs/'
       - name: dump test results
         shell: pwsh
         run: |
