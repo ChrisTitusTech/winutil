@@ -592,478 +592,23 @@ function Install-WinUtilWinget {
         throw [WingetFailedInstall]::new('Failed to install')
     }
 }
-function Invoke-WinUtilBingSearch {
-    <#
+function Invoke-MicroWinHelper {
+<#
 
     .SYNOPSIS
-        Disables/Enables Bing Search
-
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Bing Search
-
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Bing Search"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Bing Search"
-            $value = 0
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
-        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-Function Invoke-WinUtilCurrentSystem {
-
-    <#
-
-    .SYNOPSIS
-        Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
-
-    .EXAMPLE
-        Get-WinUtilCheckBoxes "WPFInstall"
-
-    #>
-
-    param(
-        $CheckBox
-    )
-
-    if ($checkbox -eq "winget"){
-
-        $originalEncoding = [Console]::OutputEncoding
-        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
-        [Console]::OutputEncoding = $originalEncoding
-
-        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
-        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
-            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
-
-            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
-                Write-Output $psitem.name
-            }
-        }
-    }
-
-    if($CheckBox -eq "tweaks"){
-
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
-        $ScheduledTasks = Get-ScheduledTask
-
-        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
-
-            $Config = $psitem.Name
-            #WPFEssTweaksTele
-            $registryKeys = $sync.configs.tweaks.$Config.registry
-            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
-            $serviceKeys = $sync.configs.tweaks.$Config.service
-
-            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
-                $Values = @()
-
-
-                Foreach ($tweaks in $registryKeys){
-                    Foreach($tweak in $tweaks){
-
-                        if(test-path $tweak.Path){
-                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $scheduledtaskKeys){
-                    Foreach($tweak in $tweaks){
-                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
-
-                        if($task){
-                            $actualValue = $task.State
-                            $expectedValue = $tweak.State
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $serviceKeys){
-                    Foreach($tweak in $tweaks){
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if($Service){
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                if($values -notcontains $false){
-                    Write-Output $Config
-                }
-            }
-        }
-    }
-}
-
-Function Invoke-WinUtilDarkMode {
-    <#
-
-    .SYNOPSIS
-        Enables/Disables Dark Mode
-
-    .PARAMETER DarkMoveEnabled
-        Indicates the current dark mode state
-
-    #>
-    Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
-            Write-Host "Enabling Dark Mode"
-            $DarkMoveValue = 0
-        }
-        else {
-            Write-Host "Disabling Dark Mode"
-            $DarkMoveValue = 1
-        }
-
-        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilFeatureInstall {
-    <#
-
-    .SYNOPSIS
-        Converts all the values from the tweaks.json and routes them to the appropriate function
-
-    #>
-
-    param(
-        $CheckBox
-    )
-
-    $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
-                    Write-Host "Installing $feature"
-                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
-        }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
-                    $Scriptblock = [scriptblock]::Create($script)
-
-                    Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
-        }
-    }
-}
-Function Invoke-WinUtilMouseAcceleration {
-    <#
-
-    .SYNOPSIS
-        Enables/Disables Mouse Acceleration
-
-    .PARAMETER DarkMoveEnabled
-        Indicates the current Mouse Acceleration State
-
-    #>
-    Param($MouseAccelerationEnabled)
-    Try{
-        if ($MouseAccelerationEnabled -eq $false){
-            Write-Host "Enabling Mouse Acceleration"
-            $MouseSpeed = 1
-            $MouseThreshold1 = 6
-            $MouseThreshold2 = 10
-        } 
-        else {
-            Write-Host "Disabling Mouse Acceleration"
-            $MouseSpeed = 0
-            $MouseThreshold1 = 0
-            $MouseThreshold2 = 0 
-            
-        }
-
-        $Path = "HKCU:\Control Panel\Mouse"
-        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
-        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
-        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilNumLock {
-    <#
-    .SYNOPSIS
-        Disables/Enables NumLock on startup
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Numlock on startup
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Numlock on startup"
-            $value = 2
-        }
-        else {
-            Write-Host "Disabling Numlock on startup"
-            $value = 0
-        }
-        $Path = "HKCU:\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilScript {
-    <#
-
-    .SYNOPSIS
-        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
+        checking unit tests
 
     .PARAMETER Name
-        The name of the scriptblock being invoked
-
-    .PARAMETER scriptblock
-        The scriptblock to be invoked
+        no parameters
 
     .EXAMPLE
-        $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
-        Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
+        placeholder
 
-    #>
-    param (
-        $Name,
-        [scriptblock]$scriptblock
-    )
-
-    Try {
-        Write-Host "Running Script for $name"
-        Invoke-Command $scriptblock -ErrorAction Stop
-    }
-    Catch [System.Management.Automation.CommandNotFoundException] {
-        Write-Warning "The specified command was not found."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Management.Automation.RuntimeException] {
-        Write-Warning "A runtime exception occurred."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "A security exception occurred."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.UnauthorizedAccessException] {
-        Write-Warning "Access denied. You do not have permission to perform this operation."
-        Write-Warning $PSItem.Exception.message
-    }
-    Catch {
-        # Generic catch block to handle any other type of exception
-        Write-Warning "Unable to run script for $name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
+#>
 
 }
-function Invoke-WinUtilShowExt {
-    <#
-    .SYNOPSIS
-        Disables/Enables Show file Extentions
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Show file extentions
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Showing file extentions"
-            $value = 0
-        }
-        else {
-            Write-Host "hiding file extensions"
-            $value = 1
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-        Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilTweaks {
-    <#
 
-    .SYNOPSIS
-        Invokes the function associated with each provided checkbox
 
-    .PARAMETER CheckBox
-        The checkbox to invoke
-
-    .PARAMETER undo
-        Indicates whether to undo the operation contained in the checkbox
-
-    #>
-
-    param(
-        $CheckBox,
-        $undo = $false
-    )
-    if($undo){
-        $Values = @{
-            Registry = "OriginalValue"
-            ScheduledTask = "OriginalState"
-            Service = "OriginalType"
-            ScriptType = "UndoScript"
-        }
-
-    }
-    Else{
-        $Values = @{
-            Registry = "Value"
-            ScheduledTask = "State"
-            Service = "StartupType"
-            ScriptType = "InvokeScript"
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
-            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
-            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
-    }
-
-    if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
-                Remove-WinUtilAPPX -Name $psitem
-            }
-        }
-
-    }
-}
-function Invoke-WinUtilVerboseLogon {
-    <#
-    .SYNOPSIS
-        Disables/Enables VerboseLogon Messages
-    .PARAMETER Enabled
-        Indicates whether to enable or disable VerboseLogon messages
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Verbose Logon Messages"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Verbose Logon Messages"
-            $value = 0
-        }
-        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
-        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
 <#
 
@@ -1647,6 +1192,478 @@ function New-FirstRun {
 	
 '@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
+}
+function Invoke-WinUtilBingSearch {
+    <#
+
+    .SYNOPSIS
+        Disables/Enables Bing Search
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Bing Search
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Bing Search"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Bing Search"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
+        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Invoke-WinUtilCurrentSystem {
+
+    <#
+
+    .SYNOPSIS
+        Checks to see what tweaks have already been applied and what programs are installed, and checks the according boxes
+
+    .EXAMPLE
+        Get-WinUtilCheckBoxes "WPFInstall"
+
+    #>
+
+    param(
+        $CheckBox
+    )
+
+    if ($checkbox -eq "winget"){
+
+        $originalEncoding = [Console]::OutputEncoding
+        [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+        $Sync.InstalledPrograms = winget list -s winget | Select-Object -skip 3 | ConvertFrom-String -PropertyNames "Name", "Id", "Version", "Available" -Delimiter '\s{2,}'
+        [Console]::OutputEncoding = $originalEncoding
+
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            $dependencies = @($sync.configs.applications.$($psitem.Key).winget -split ";")
+
+            if ($dependencies[-1] -in $sync.InstalledPrograms.Id) {
+                Write-Output $psitem.name
+            }
+        }
+    }
+
+    if($CheckBox -eq "tweaks"){
+
+        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+        $ScheduledTasks = Get-ScheduledTask
+
+        $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
+
+            $Config = $psitem.Name
+            #WPFEssTweaksTele
+            $registryKeys = $sync.configs.tweaks.$Config.registry
+            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
+            $serviceKeys = $sync.configs.tweaks.$Config.service
+
+            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
+                $Values = @()
+
+
+                Foreach ($tweaks in $registryKeys){
+                    Foreach($tweak in $tweaks){
+
+                        if(test-path $tweak.Path){
+                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                            $expectedValue = $tweak.Value
+                            if ($expectedValue -notlike $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                Foreach ($tweaks in $scheduledtaskKeys){
+                    Foreach($tweak in $tweaks){
+                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
+
+                        if($task){
+                            $actualValue = $task.State
+                            $expectedValue = $tweak.State
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                Foreach ($tweaks in $serviceKeys){
+                    Foreach($tweak in $tweaks){
+                        $Service = Get-Service -Name $tweak.Name
+
+                        if($Service){
+                            $actualValue = $Service.StartType
+                            $expectedValue = $tweak.StartupType
+                            if ($expectedValue -ne $actualValue){
+                                $values += $False
+                            }
+                        }
+                    }
+                }
+
+                if($values -notcontains $false){
+                    Write-Output $Config
+                }
+            }
+        }
+    }
+}
+
+Function Invoke-WinUtilDarkMode {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Dark Mode
+
+    .PARAMETER DarkMoveEnabled
+        Indicates the current dark mode state
+
+    #>
+    Param($DarkMoveEnabled)
+    Try{
+        if ($DarkMoveEnabled -eq $false){
+            Write-Host "Enabling Dark Mode"
+            $DarkMoveValue = 0
+        }
+        else {
+            Write-Host "Disabling Dark Mode"
+            $DarkMoveValue = 1
+        }
+
+        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
+        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilFeatureInstall {
+    <#
+
+    .SYNOPSIS
+        Converts all the values from the tweaks.json and routes them to the appropriate function
+
+    #>
+
+    param(
+        $CheckBox
+    )
+
+    $CheckBox | ForEach-Object {
+        if($sync.configs.feature.$psitem.feature){
+            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
+                Try{
+                    Write-Host "Installing $feature"
+                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace
+                    }
+                }
+            }
+        }
+        if($sync.configs.feature.$psitem.InvokeScript){
+            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
+                Try{
+                    $Scriptblock = [scriptblock]::Create($script)
+
+                    Write-Host "Running Script for $psitem"
+                    Invoke-Command $scriptblock -ErrorAction stop
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace
+                    }
+                }
+            }
+        }
+    }
+}
+Function Invoke-WinUtilMouseAcceleration {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Mouse Acceleration
+
+    .PARAMETER DarkMoveEnabled
+        Indicates the current Mouse Acceleration State
+
+    #>
+    Param($MouseAccelerationEnabled)
+    Try{
+        if ($MouseAccelerationEnabled -eq $false){
+            Write-Host "Enabling Mouse Acceleration"
+            $MouseSpeed = 1
+            $MouseThreshold1 = 6
+            $MouseThreshold2 = 10
+        } 
+        else {
+            Write-Host "Disabling Mouse Acceleration"
+            $MouseSpeed = 0
+            $MouseThreshold1 = 0
+            $MouseThreshold2 = 0 
+            
+        }
+
+        $Path = "HKCU:\Control Panel\Mouse"
+        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
+        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
+        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilNumLock {
+    <#
+    .SYNOPSIS
+        Disables/Enables NumLock on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Numlock on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Numlock on startup"
+            $value = 2
+        }
+        else {
+            Write-Host "Disabling Numlock on startup"
+            $value = 0
+        }
+        $Path = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilScript {
+    <#
+
+    .SYNOPSIS
+        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
+
+    .PARAMETER Name
+        The name of the scriptblock being invoked
+
+    .PARAMETER scriptblock
+        The scriptblock to be invoked
+
+    .EXAMPLE
+        $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
+        Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
+
+    #>
+    param (
+        $Name,
+        [scriptblock]$scriptblock
+    )
+
+    Try {
+        Write-Host "Running Script for $name"
+        Invoke-Command $scriptblock -ErrorAction Stop
+    }
+    Catch [System.Management.Automation.CommandNotFoundException] {
+        Write-Warning "The specified command was not found."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.Management.Automation.RuntimeException] {
+        Write-Warning "A runtime exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "A security exception occurred."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch [System.UnauthorizedAccessException] {
+        Write-Warning "Access denied. You do not have permission to perform this operation."
+        Write-Warning $PSItem.Exception.message
+    }
+    Catch {
+        # Generic catch block to handle any other type of exception
+        Write-Warning "Unable to run script for $name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+
+}
+function Invoke-WinUtilShowExt {
+    <#
+    .SYNOPSIS
+        Disables/Enables Show file Extentions
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Show file extentions
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Showing file extentions"
+            $value = 0
+        }
+        else {
+            Write-Host "hiding file extensions"
+            $value = 1
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilTweaks {
+    <#
+
+    .SYNOPSIS
+        Invokes the function associated with each provided checkbox
+
+    .PARAMETER CheckBox
+        The checkbox to invoke
+
+    .PARAMETER undo
+        Indicates whether to undo the operation contained in the checkbox
+
+    #>
+
+    param(
+        $CheckBox,
+        $undo = $false
+    )
+    if($undo){
+        $Values = @{
+            Registry = "OriginalValue"
+            ScheduledTask = "OriginalState"
+            Service = "OriginalType"
+            ScriptType = "UndoScript"
+        }
+
+    }
+    Else{
+        $Values = @{
+            Registry = "Value"
+            ScheduledTask = "State"
+            Service = "StartupType"
+            ScriptType = "InvokeScript"
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
+        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+            Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.service){
+        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.registry){
+        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+            Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        }
+    }
+
+    if(!$undo){
+        if($sync.configs.tweaks.$CheckBox.appx){
+            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+                Remove-WinUtilAPPX -Name $psitem
+            }
+        }
+
+    }
+}
+function Invoke-WinUtilVerboseLogon {
+    <#
+    .SYNOPSIS
+        Disables/Enables VerboseLogon Messages
+    .PARAMETER Enabled
+        Indicates whether to enable or disable VerboseLogon messages
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Verbose Logon Messages"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Verbose Logon Messages"
+            $value = 0
+        }
+        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
 }
 function Remove-WinUtilAPPX {
     <#
