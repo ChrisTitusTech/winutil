@@ -434,35 +434,7 @@ function Get-WinUtilVariables {
     }
     return $keys
 }
-function Install-WinUtilChoco {
 
-    <#
-
-    .SYNOPSIS
-        Installs Chocolatey if it is not already installed
-
-    #>
-
-    try {
-        Write-Host "Checking if Chocolatey is Installed..."
-
-        if((Test-WinUtilPackageManager -choco)){
-            Write-Host "Chocolatey Already Installed"
-            return
-        }
-
-        Write-Host "Seems Chocolatey is not installed, installing now"
-        Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
-        powershell choco feature enable -n allowGlobalConfirmation
-
-    }
-    Catch {
-        Write-Host "==========================================="
-        Write-Host "--     Chocolatey failed to install     ---"
-        Write-Host "==========================================="
-    }
-
-}
 Function Install-WinUtilProgramWinget {
 
     <#
@@ -1734,8 +1706,7 @@ function Set-WinUtilRegistry {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
-function Set-WinUtilRestorePoint {
-}
+
 function Set-WinUtilScheduledTask {
     <#
 
@@ -3181,8 +3152,6 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
-    Set-WinUtilRestorePoint
-
     Foreach ($tweak in $tweaks){
         Invoke-WinUtilTweaks $tweak
     }
@@ -3324,9 +3293,6 @@ function Invoke-WPFundoall {
 
 <#
 
-    Write-Host "Creating Restore Point in case something bad happens"
-    Enable-ComputerRestore -Drive "$env:SystemDrive"
-    Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
 
     Write-Host "Enabling Telemetry..."
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
@@ -9031,12 +8997,6 @@ $sync.runspace.Open()
         WingetFailedInstall($Message) : base($Message) {}
     }
 
-    class ChocoFailedInstall : Exception {
-        [string] $additionalData
-
-        ChocoFailedInstall($Message) : base($Message) {}
-    }
-
     class GenericException : Exception {
         [string] $additionalData
 
@@ -9056,7 +9016,6 @@ foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
         Name = $appName
         Category = $appInfo.Category
         Content = $appInfo.Content
-        Choco = $appInfo.choco
         Winget = $appInfo.winget
         Panel = $appInfo.panel
     }
@@ -9177,9 +9136,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-
-# Check if Chocolatey is installed
-Install-WinUtilChoco
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
