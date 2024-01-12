@@ -71,6 +71,15 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements."
 	},
+	"WPFInstallthorium": {
+		"winget": "Alex313031.Thorium.AVX2",
+		"choco": "na",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Thorium Browser AVX2",
+		"link": "http://thorium.rocks/",
+		"description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market."
+	},
 	"WPFInstalltor": {
 		"winget": "TorProject.TorBrowser",
 		"choco": "tor-browser",
