@@ -11,8 +11,23 @@ BeforeAll {
     # Execute the truncated script, bringing the variables into the current scope
     . .\pester.ps1
 
-    # Fix CursorPosition error on Unit Tests
+    # Fix GUI errors on Unit Tests
     Mock -CommandName 'UI.RawUI.WindowTitle' -MockWith {}
+    Mock -CommandName 'UI.RawUI.CursorPosition' -MockWith {}
+    Mock -CommandName 'UI.RawUI.WindowSize' -MockWith {}
+    Mock -CommandName 'UI.RawUI.ForegroundColor' -MockWith {}
+    Mock -CommandName 'UI.RawUI.BackgroundColor' -MockWith {}
+    Mock -CommandName 'UI.RawUI.BufferSize' -MockWith {}
+    Mock -CommandName 'UI.RawUI.KeyAvailable' -MockWith {}
+    Mock -CommandName 'UI.RawUI.ReadKey' -MockWith {}
+    Mock -CommandName 'Write-Progress' -MockWith {}
+    Mock -CommandName 'Write-Host' -MockWith {}
+    Mock -CommandName 'Write-Verbose' -MockWith {}
+    Mock -CommandName 'Write-Warning' -MockWith {}
+    Mock -CommandName 'Write-Error' -MockWith {}
+    Mock -CommandName 'Write-Debug' -MockWith {}
+    Mock -CommandName 'Write-Output' -MockWith {}
+    Mock -CommandName 'Write-Information' -MockWith {}
 }
 
 AfterAll {
