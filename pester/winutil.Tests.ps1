@@ -13,7 +13,9 @@ Describe "Syntax" {
                 . ./pester.ps1
             }
             catch {
-                Write-Host "Error: $_"
+                if ([System.Console]::IsOutputRedirected -eq $false) {
+                    Write-Host "Error: $_"
+                }
                 throw $_
             }
         }
