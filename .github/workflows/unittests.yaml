@@ -37,6 +37,6 @@ jobs:
     - name: Run Pester tests
       run: |
         # Change the path to your test file and script file accordingly
-        pwsh -Command "Invoke-Pester -Path 'pester/*.Tests.ps1'"
+        pwsh -Command "Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit"
         
       shell: bash
