@@ -13,6 +13,10 @@
     Version        : 24.01.12
 #>
 
+if (!(Test-Path -Path $ENV:TEMP)) {
+    New-Item -ItemType Directory -Force -Path $ENV:TEMP
+}
+
 Start-Transcript $ENV:TEMP\Winutil.log -Append
 
 # Load DLLs
