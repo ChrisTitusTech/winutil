@@ -8,8 +8,17 @@ $script[0..($script.count - 3)] | Out-File .\pester.ps1 -ErrorAction Stop
 
 
 BeforeAll {
-    # Execute the truncated script, bringing the variabes into the current scope
+    # Start the transcript
+    $transcriptPath = "./Winutil.log"
+    Start-Transcript -Path $transcriptPath -NoClobber -Append
+
+    # Execute the truncated script, bringing the variables into the current scope
     . .\pester.ps1
+}
+
+AfterAll {
+    # Stop the transcript
+    Stop-Transcript
 }
 
 Describe "GUI" {
