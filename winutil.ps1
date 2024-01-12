@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.11
+    Version        : 24.01.12
 #>
 
 if (!(Test-Path -Path $ENV:TEMP)) {
@@ -26,7 +26,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.11"
+$sync.version = "24.01.12"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4386,7 +4386,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 
                 <Button Name="CheckboxFilterClear" Style="{StaticResource ClearButtonStyle}" Margin="184,0,0,0" Visibility="Collapsed"/>
             </Grid>
-            <TextBlock Text="Version: 24.01.11" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+            <TextBlock Text="Version: 24.01.12" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
             <Button Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
