@@ -33,7 +33,6 @@ jobs:
     - name: Run Pester tests
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        Mock -CommandName 'UI.RawUI.WindowTitle' -MockWith {}
         Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit
         
       shell: pwsh

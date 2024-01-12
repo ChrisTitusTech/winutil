@@ -8,12 +8,11 @@ $script[0..($script.count - 3)] | Out-File .\pester.ps1 -ErrorAction Stop
 
 
 BeforeAll {
-    # Start the transcript
-    $transcriptPath = "./Winutil.log"
-    Start-Transcript -Path $transcriptPath -NoClobber -Append
-
     # Execute the truncated script, bringing the variables into the current scope
     . .\pester.ps1
+
+    # Fix CursorPosition error on Unit Tests
+    Mock -CommandName 'UI.RawUI.WindowTitle' -MockWith {}
 }
 
 AfterAll {
