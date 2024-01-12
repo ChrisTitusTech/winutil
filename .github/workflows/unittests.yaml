@@ -18,30 +18,25 @@ jobs:
         failOnWarnings: false
         failOnInfos: false
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - name: Create logs directory
-        run: New-Item -Path ${{ github.workspace }}\logs -ItemType Directory -Force
-        shell: pwsh
-      - name: pester_tests
-        id: pester_tests
-        uses: zyborg/pester-tests-report@v1
-        with:
-          include_paths: pester
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tests_fail_step: true
-          skip_check_run: true
-        continue-on-error: true
-      - name: Move test results
-        run: Move-Item -Path ${{ github.workspace }}\_TMP\* -Destination ${{ github.workspace }}\logs
-        shell: pwsh
-      - name: dump test results
-        shell: pwsh
-        run: |
-          Write-Host 'Total Tests Executed...:  ${{ steps.pester_tests.outputs.total_count }}'
-          Write-Host 'Total Tests PASSED.....:  ${{ steps.pester_tests.outputs.passed_count }}'
-          Write-Host 'Total Tests FAILED.....:  ${{ steps.pester_tests.outputs.failed_count }}'
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up PowerShell
+      uses: PowerShell/setup-powershell@v1
+      with:
+        powershell-version: '7.0' # Specify the desired PowerShell version
+
+    - name: Install Pester
+      run: |
+        Install-Module -Name Pester -Force -AllowClobber
+      shell: pwsh
+
+    - name: Run Pester tests
+      run: |
+        # Change the path to your test file and script file accordingly
+        Invoke-Pester -Path 'pester/*.Tests.ps1'
+        
+      shell: pwsh
