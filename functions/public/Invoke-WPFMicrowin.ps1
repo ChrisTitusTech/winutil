@@ -10,7 +10,40 @@ function Invoke-WPFMicrowin {
         return
     }
 
-	
+	# Define the constants for Windows API
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+
+public class PowerManagement {
+	[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+	public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+	[FlagsAttribute]
+	public enum EXECUTION_STATE : uint {
+		ES_SYSTEM_REQUIRED = 0x00000001,
+		ES_DISPLAY_REQUIRED = 0x00000002,
+		ES_CONTINUOUS = 0x80000000,
+	}
+}
+"@
+
+	# Prevent the machine from sleeping
+	[PowerManagement]::SetThreadExecutionState([PowerManagement]::EXECUTION_STATE::ES_CONTINUOUS -bor [PowerManagement]::EXECUTION_STATE::ES_SYSTEM_REQUIRED -bor [PowerManagement]::EXECUTION_STATE::ES_DISPLAY_REQUIRED)
+
+    # Ask the user where to save the file
+    $SaveDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $SaveDialog.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+    $SaveDialog.Filter = "ISO images (*.iso)|*.iso"
+    $SaveDialog.ShowDialog() | Out-Null
+
+    if ($SaveDialog.FileName -eq "") {
+        Write-Host "No file name for the target image was specified"
+        return
+    }
+
+    Write-Host "Target ISO location: $($SaveDialog.FileName)"
+
 	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
 	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
@@ -106,14 +139,6 @@ function Invoke-WPFMicrowin {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
 		Write-Host "Removal complete!"
-
-		# *************************** Automation black ***************************
-		# this doesn't work for some reason, this script is not being run at the end of the install
-		# if someone knows how to fix this, feel free to modify
-		New-Item -ItemType Directory -Force -Path $scratchDir\Windows\Setup\Scripts\
-		"wmic cpu get Name > C:\windows\cpu.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"wmic bios get serialnumber > C:\windows\SerialNumber.txt" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
-		"devmgmt.msc /s" | Out-File -FilePath "$($scratchDir)\Windows\Setup\Scripts\SetupComplete.cmd" -NoClobber -Append
 
 		Write-Host "Create unattend.xml"
 		New-Unattend
@@ -255,7 +280,7 @@ function Invoke-WPFMicrowin {
 
 		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
 		{
-			Write-Error "Somethig went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
 			return
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
@@ -323,13 +348,23 @@ function Invoke-WPFMicrowin {
 
 		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		#Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
+		#Start-Process -FilePath $oscdimgPath -ArgumentList '-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`"' -NoNewWindow -Wait
+        $oscdimgProc = New-Object System.Diagnostics.Process
+        $oscdimgProc.StartInfo.FileName = $oscdimgPath
+        $oscdimgProc.StartInfo.Arguments = "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`""
+        $oscdimgProc.StartInfo.CreateNoWindow = $True
+        $oscdimgProc.StartInfo.WindowStyle = "Hidden"
+        $oscdimgProc.StartInfo.UseShellExecute = $False
+        $oscdimgProc.Start()
+        $oscdimgProc.WaitForExit()
 
 		if ($copyToUSB)
 		{
-			Write-Host "Copying microwin.iso to the USB drive"
-			Copy-ToUSB("$env:temp\microwin.iso")
-			Write-Host "Done Copying microwin.iso to USB drive!"
+			Write-Host "Copying target ISO to the USB drive"
+			#Copy-ToUSB("$env:temp\microwin.iso")
+			Copy-ToUSB("$($SaveDialog.FileName)")
+			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
 		}
 		
 		Write-Host " _____                       "
@@ -344,18 +379,20 @@ function Invoke-WPFMicrowin {
 			Write-Host "`n`nPerforming Cleanup..."
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
-			$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
+			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
+			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
 		
-
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
 		
-		$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
-
+		#$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+        $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
+		# Allow the machine to sleep again (optional)
+		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
 	}
 }

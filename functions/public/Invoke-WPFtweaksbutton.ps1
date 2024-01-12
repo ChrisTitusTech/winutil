@@ -27,10 +27,16 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
-    Set-WinUtilRestorePoint
+    # Executes first if selected
+    if ("WPFEssTweaksRestorePoint" -in $Tweaks) {
+      Invoke-WinUtilTweaks "WPFEssTweaksRestorePoint"
+  }
 
-    Foreach ($tweak in $tweaks){
-        Invoke-WinUtilTweaks $tweak
+    # Execute other selected tweaks
+    foreach ($tweak in $tweaks) {
+        if ($tweak -ne "WPFEssTweaksRestorePoint") {
+            Invoke-WinUtilTweaks $tweak
+        }
     }
 
     $sync.ProcessRunning = $false

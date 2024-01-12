@@ -19,22 +19,22 @@ jobs:
         failOnInfos: false
   test:
     runs-on: windows-latest
+
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-      - name: pester_tests
-        id: pester_tests
-        uses: zyborg/pester-tests-report@v1
-        with:
-          include_paths: pester
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tests_fail_step: true
-          skip_check_run: true
-      - name: dump test results
-        shell: pwsh
-        run: |
-          Write-Host 'Total Tests Executed...:  ${{ steps.pester_tests.outputs.total_count }}'
-          Write-Host 'Total Tests PASSED.....:  ${{ steps.pester_tests.outputs.passed_count }}'
-          Write-Host 'Total Tests FAILED.....:  ${{ steps.pester_tests.outputs.failed_count }}'
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Pester
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+        Install-Module -Name Pester -Force -AllowClobber
+      shell: pwsh
+
+    - name: Run Pester tests
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+        Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit
+        
+      shell: pwsh
+      env:
+        TEMP: ${{ runner.temp }}

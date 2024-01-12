@@ -66,6 +66,8 @@ foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
         Choco = $appInfo.choco
         Winget = $appInfo.winget
         Panel = $appInfo.panel
+        Link = $appInfo.link
+        Description = $appInfo.description
     }
 
     if (-not $organizedData.ContainsKey($appInfo.panel)) {
@@ -87,8 +89,14 @@ foreach ($panel in $organizedData.Keys) {
         $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
         foreach ($appName in $sortedApps) {
             $appInfo = $organizedData[$panel][$category][$appName]
-
-            $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)""/>`n"
+            if ($null -eq $appInfo.Link)
+            {
+                $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
+            }
+            else 
+            {
+                $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
+            }
         }
     }
 
@@ -131,38 +139,39 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
-    }
-}
-
-$sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
-        }
-    }
-}
-
-$sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if(
-            $($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-            -and $sync["$psitem"].Name -like "WPFToggle*"
-        ){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
+                -and $sync["$psitem"].Name -like "WPFToggle*"){
             $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
 
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFToggle $Sender.name
             })
+        }
+
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+            $sync["$psitem"].Add_Click({
+                [System.Object]$Sender = $args[0]
+                Invoke-WPFButton $Sender.name
+            })
+        }
+
+        if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
+            if ($sync["$psitem"].Name.EndsWith("Link")) {
+                $sync["$psitem"].Add_MouseUp({
+                    [System.Object]$Sender = $args[0]
+                    Start-Process $Sender.ToolTip -ErrorAction Stop
+                    Write-Host "Let's go: $($Sender.ToolTip)"
+                })
+            }
+       
         }
     }
 }
@@ -197,21 +206,25 @@ $sync["Form"].Add_Closing({
     [System.GC]::Collect()
 })
 
+
+# Attach the event handler to the Click event
+$sync.CheckboxFilterClear.Add_Click({
+    $sync.CheckboxFilter.Text = ""
+    $sync.CheckboxFilterClear.Visibility = "Collapsed"
+})
+
 # add some shortcuts for people that don't like clicking
 $commonKeyEvents = {
     if ($sync.ProcessRunning -eq $true) {
         return
     }
 
-    # Escape removes focus from the searchbox that way all shortcuts will start workinf again
-    if ($_.Key -eq "Escape") {
-        #if ($sync.CheckboxFilter.IsFocused)
-        {
-            $sync.CheckboxFilter.SelectAll()
-            $sync.CheckboxFilter.Text = ""
-            $sync.CheckboxFilter.Focus()
-            return
-        }
+    if ($_.Key -eq "Escape")
+    {
+        $sync.CheckboxFilter.SelectAll()
+        $sync.CheckboxFilter.Text = ""
+        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+        return
     }
 
     # don't ask, I know what I'm doing, just go...
@@ -219,31 +232,7 @@ $commonKeyEvents = {
     {
         $this.Close()
     }
-
-    # $ret = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to Exit?", "Winutil", [System.Windows.Forms.MessageBoxButtons]::YesNo,
-    # [System.Windows.Forms.MessageBoxIcon]::Question, [System.Windows.Forms.MessageBoxDefaultButton]::Button2) 
-
-    # switch ($ret) {
-    #     "Yes" {
-    #         $this.Close()
-    #     } 
-    #     "No" {
-    #         return
-    #     } 
-    # }
-
-
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
-        # this is an example how to handle shortcuts per tab
-        # Alt-I on the MicroWin tab (4) would press GetIso Button
-        # NOTE: All per tab shortcuts have to be handled *before* regular tab keys
-        # if ($_.SystemKey -eq "I") {
-        #     $TabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-        #     if ($sync.$TabNav.Items[4].IsSelected -eq $true) {
-        #         Invoke-WPFButton "WPFGetIso"
-        #         break
-        #     }
-        # }
         if ($_.SystemKey -eq "I") {
             Invoke-WPFButton "WPFTab1BT"
         }
@@ -259,6 +248,9 @@ $commonKeyEvents = {
         if ($_.SystemKey -eq "M") {
             Invoke-WPFButton "WPFTab5BT"
         }
+        if ($_.SystemKey -eq "P") {
+            Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
+        }
     }
     # shortcut for the filter box
     if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
@@ -269,6 +261,7 @@ $commonKeyEvents = {
         $sync.CheckboxFilter.Focus()
     }
 }
+
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
 # adding some left mouse window move on drag capability
@@ -287,28 +280,18 @@ $sync["Form"].Add_MouseDoubleClick({
     }
 })
 
+$sync["Form"].Add_ContentRendered({
 
-
-# setting window icon to make it look more professional
-$sync["Form"].Add_Loaded({
-   
-    $downloadUrl = "https://christitus.com/images/logo-full.png"
-    $destinationPath = Join-Path $env:TEMP "cttlogo.png"
-    
-    # Check if the file already exists
-    if (-not (Test-Path $destinationPath)) {
-        # File does not exist, download it
-        $wc = New-Object System.Net.WebClient
-        $wc.DownloadFile($downloadUrl, $destinationPath)
-        Write-Host "File downloaded to: $destinationPath"
-    } else {
-        Write-Output "File already exists at: $destinationPath"
+    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*tit*" })) {
+        if ($proc.Id -ne [System.IntPtr]::Zero) {
+            Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
+            $windowHandle = $proc.MainWindowHandle
+        }
     }
-    $sync["Form"].Icon = $destinationPath
 
-    Try { 
-        [Void][Window]
-    } Catch {
+    try { 
+        [void][Window]
+    } catch {
         Add-Type @"
         using System;
         using System.Runtime.InteropServices;
@@ -320,8 +303,7 @@ $sync["Form"].Add_Loaded({
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
             [DllImport("user32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool ShowWindow(IntPtr handle, int state);
+            public static extern int GetSystemMetrics(int nIndex);
         }
         public struct RECT {
             public int Left;   // x position of upper-left corner
@@ -331,47 +313,84 @@ $sync["Form"].Add_Loaded({
         }
 "@
     }
-    
-    $processId  = [System.Diagnostics.Process]::GetCurrentProcess().Id
-    $windowHandle  = (Get-Process -Id $processId).MainWindowHandle
+
     $rect = New-Object RECT
-    [Void][Window]::GetWindowRect($windowHandle,[ref]$rect)
-    
-    # only snap upper edge don't move left to right, in case people have multimon setup
-    $x = $rect.Left
-    $y = 0
+    [void][Window]::GetWindowRect($windowHandle, [ref]$rect)
     $width  = $rect.Right  - $rect.Left
     $height = $rect.Bottom - $rect.Top
-    
-    # Move the window to that position...
-    [Void][Window]::MoveWindow($windowHandle, $x, $y, $width, $height, $True)
+
+    Write-Debug "UpperLeft:$($rect.Left),$($rect.Top) LowerBottom:$($rect.Right),$($rect.Bottom). Width:$($width) Height:$($height)"
+
+    # Load the Windows Forms assembly
+    Add-Type -AssemblyName System.Windows.Forms
+    $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
+    # Check if the primary screen is found
+    if ($primaryScreen) {
+        # Extract screen width and height for the primary monitor
+        $screenWidth = $primaryScreen.Bounds.Width
+        $screenHeight = $primaryScreen.Bounds.Height
+
+        # Print the screen size
+        Write-Debug "Primary Monitor Width: $screenWidth pixels"
+        Write-Debug "Primary Monitor Height: $screenHeight pixels"
+
+        # Compare with the primary monitor size
+        if ($width -gt $screenWidth -or $height -gt $screenHeight) {
+            Write-Debug "The specified width and/or height is greater than the primary monitor size."
+            [void][Window]::MoveWindow($windowHandle, 0, 0, $screenWidth, $screenHeight, $True)
+        } else {
+            Write-Debug "The specified width and height are within the primary monitor size limits."
+        }
+    } else {
+        Write-Debug "Unable to retrieve information about the primary monitor."
+    }
     
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 })
 
 $sync["CheckboxFilter"].Add_TextChanged({
-    #Write-host $sync.CheckboxFilter.Text
 
-    $filter = Get-WinUtilVariables -Type Checkbox
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
-    $textToSearch = $sync.CheckboxFilter.Text
-    Foreach ($CheckBox in $CheckBoxes) {
-        #Write-Host "$($sync.CheckboxFilter.Text)"
+    if ($sync.CheckboxFilter.Text -ne "") {
+        $sync.CheckboxFilterClear.Visibility = "Visible"
+    }
+    else {
+        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+    }
+
+    $filter = Get-WinUtilVariables -Type CheckBox
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    
+    foreach ($CheckBox in $CheckBoxes) {
+        # Check if the checkbox is null or if it doesn't have content
         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
             continue
         }
-         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
-             $CheckBox.Value.Visibility = "Visible"
-         }
-         else {
+    
+        $textToSearch = $sync.CheckboxFilter.Text
+        $checkBoxName = $CheckBox.Key
+        $textBlockName = $checkBoxName + "Link"
+    
+        # Retrieve the corresponding text block based on the generated name
+        $textBlock = $sync[$textBlockName]
+    
+        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+            $CheckBox.Value.Visibility = "Visible"
+             # Set the corresponding text block visibility
+            if ($textBlock -ne $null) {
+                $textBlock.Visibility = "Visible"
+            }
+        }
+        else {
              $CheckBox.Value.Visibility = "Collapsed"
-         }
-     }
+            # Set the corresponding text block visibility
+            if ($textBlock -ne $null) {
+                $textBlock.Visibility = "Collapsed"
+            }
+        }
+    }
+    
 })
-
-# show current windowsd Product ID
-#Write-Host "Your Windows Product Key: $((Get-WmiObject -query 'select * from SoftwareLicensingService').OA3xOriginalProductKey)"
 
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

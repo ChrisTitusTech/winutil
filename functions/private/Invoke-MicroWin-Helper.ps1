@@ -1,3 +1,20 @@
+function Invoke-MicroWin-Helper {
+<#
+
+    .SYNOPSIS
+        checking unit tests
+
+    .PARAMETER Name
+        no parameters
+
+    .EXAMPLE
+        placeholder
+
+#>
+
+}
+
+
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
 <#
 
@@ -430,7 +447,7 @@ function New-FirstRun {
 	
 	function Stop-UnnecessaryServices
 	{
-		$servicesAuto = @"
+		$servicesToExclude = @(
 			"AudioSrv",
 			"AudioEndpointBuilder",
 			"BFE",
@@ -493,12 +510,12 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-"@		
+)	
 	
-		$allServices = Get-Service | Where-Object { $_.StartType -eq "Automatic" -and $servicesAuto -NotContains $_.Name}
-		foreach($service in $allServices)
+		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
+		foreach($service in $runningServices)
 		{
-			Stop-Service -Name $service.Name -PassThru
+            Stop-Service -Name $service.Name -PassThru
 			Set-Service $service.Name -StartupType Manual
 			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}

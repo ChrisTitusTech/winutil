@@ -14,7 +14,12 @@ Describe "Config Files" -ForEach @(
         name = "applications"
         config = $('{
             "winget": "value",
-            "choco": "value"
+            "choco": "value",
+            "category": "value",
+            "panel": "value",
+            "content": "value",
+            "description": "value",
+            "link": "value"
           }' | ConvertFrom-Json)
     },
     @{
