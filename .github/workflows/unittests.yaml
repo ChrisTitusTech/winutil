@@ -18,27 +18,23 @@ jobs:
         failOnWarnings: false
         failOnInfos: false
   test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up PowerShell
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x' # Specify the desired .NET Core SDK version
-
     - name: Install Pester
       run: |
-        pwsh -Command "Install-Module -Name Pester -Force -AllowClobber"
-      shell: bash
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+        Install-Module -Name Pester -Force -AllowClobber
+      shell: pwsh
 
     - name: Run Pester tests
       run: |
-        # Change the path to your test file and script file accordingly
-        pwsh -Command "Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit"
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+        Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit
         
-      shell: bash
+      shell: pwsh
       env:
         TEMP: ${{ runner.temp }}
