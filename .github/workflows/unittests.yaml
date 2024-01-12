@@ -25,18 +25,18 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up PowerShell
-      uses: PowerShell/setup-powershell@v1
+      uses: actions/setup-dotnet@v1
       with:
-        powershell-version: '7.0' # Specify the desired PowerShell version
+        dotnet-version: '3.1.x' # Specify the desired .NET Core SDK version
 
     - name: Install Pester
       run: |
         Install-Module -Name Pester -Force -AllowClobber
-      shell: pwsh
+      shell: bash
 
     - name: Run Pester tests
       run: |
         # Change the path to your test file and script file accordingly
         Invoke-Pester -Path 'pester/*.Tests.ps1'
         
-      shell: pwsh
+      shell: bash
