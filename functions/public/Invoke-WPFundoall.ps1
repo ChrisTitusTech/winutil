@@ -7,12 +7,12 @@ function Invoke-WPFundoall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
+        $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+    $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
 
     if ($tweaks.count -eq 0){
         $msg = "Please check the tweaks you wish to undo."
@@ -20,8 +20,8 @@ function Invoke-WPFundoall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks -ScriptBlock {
-        param($Tweaks)
+    Invoke-WPFRunspace -ArgumentList $Tweaks,$DebugPreference -ScriptBlock {
+        param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
 

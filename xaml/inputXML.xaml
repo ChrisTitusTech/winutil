@@ -13,15 +13,6 @@
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
-
-        <Storyboard x:Key="FireworksAnimation">
-            <!-- Firework Burst -->
-            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5"/>
-            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="ScaleX" From="0" To="1" Duration="0:0:0.5"/>
-            <DoubleAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="ScaleY" From="0" To="1" Duration="0:0:0.5"/>
-            <ColorAnimation Storyboard.TargetName="FireworkBurst" Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)" To="Red" Duration="0:0:0.5"/>
-        </Storyboard>
-
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -52,6 +43,28 @@
                 <Setter Property="Cursor" Value="Hand" />
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="HoverButtonStyle">
+        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!--ScrollBars-->
@@ -600,8 +613,16 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <Grid>
-                <TextBox Width="200" 
+            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox
+                    Grid.Column="0"
+                    Width="200" 
                     FontSize="14"
                     VerticalAlignment="Center" HorizontalAlignment="Left" 
                     Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
@@ -609,19 +630,52 @@
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                <TextBlock 
+                    Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
-                
-                <Button Name="CheckboxFilterClear" Style="{StaticResource ClearButtonStyle}" Margin="184,0,0,0" Visibility="Collapsed"/>
-            </Grid>
-            <TextBlock Text="Version: CTTVersion" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
-            <Button Content="&#xD7;" BorderThickness="0" 
+                <Button Grid.Column="0" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    Name="CheckboxFilterClear" 
+                    Style="{StaticResource ClearButtonStyle}" 
+                    Margin="193,0,0,0" Visibility="Collapsed"/>
+
+                <Button Name="SettingsButton"
+                    Style="{StaticResource HoverButtonStyle}"
+                    Grid.Column="1" BorderBrush="Transparent" 
+                    Background="{MainBackgroundColor}"
+                    Foreground="{MainForegroundColor}"
+                    FontSize="18"
+                    Width="35" Height="35" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    Margin="0,5,5,0" 
+                    FontFamily="Segoe MDL2 Assets" 
+                    Content="&#xE713;"/>
+                <Popup Grid.Column="1" Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border BorderBrush="{MainForegroundColor}" BorderThickness="1"  HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <StackPanel Background="{MainBackgroundColor}"  HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <MenuItem Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <Separator />
+                            <MenuItem Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+ 
+            <Button 
+                Grid.Column="2"
+                Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,5,0" 
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
-            
+            </Grid>
+           
         </DockPanel>
        
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
@@ -638,10 +692,6 @@
                         <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
-                  
-                        <Label Content="Configuration:" FontSize="15" VerticalAlignment="Center"/>
-                        <Button Name="WPFimportWinget" Content=" Import " Margin="1"/>
-                        <Button Name="WPFexportWinget" Content=" Export " Margin="1"/>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
@@ -704,11 +754,6 @@
                         <Button Name="WPFclear" Content=" Clear " Margin="1"/>
                         <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
                     </StackPanel>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" Margin="10">
-                        <Label Content="Configuration File:" FontSize="14" VerticalAlignment="Center"/>
-                        <Button Name="WPFimport" Content=" Import " Margin="1"/>
-                        <Button Name="WPFexport" Content=" Export " Margin="1"/>
-                    </StackPanel>
                     <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
                             <TextBlock Padding="10">
@@ -721,51 +766,51 @@
                     <Border Grid.Row="1" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Label FontSize="16" Content="Essential Tweaks"/>
-                            <CheckBox Name="WPFEssTweaksRestorePoint" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" IsChecked="True"/>
-                            <CheckBox Name="WPFEssTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                            <CheckBox Name="WPFEssTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFEssTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFEssTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFEssTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFEssTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFEssTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFEssTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn't have this, it was awful."/>
-                            <CheckBox Name="WPFEssTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFEssTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFEssTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
-                            <CheckBox Name="WPFEssTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latancy."/>
-                            <CheckBox Name="WPFEssTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" IsChecked="True"/>
+                            <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
+                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
+                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
+                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
+                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
+                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
+                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - Windows 11 doesn't have this, it was awful."/>
+                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
+                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation."/>
+                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
+                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latancy."/>
+                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 
                             <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                                 <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFMiscTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                                <CheckBox Name="WPFMiscTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                                <CheckBox Name="WPFMiscTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
-                                <CheckBox Name="WPFMiscTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFEssTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFEssTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="WPFEssTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
-                                <CheckBox Name="WPFMiscTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFMiscTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                                <CheckBox Name="WPFMiscTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
+                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
+                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
+                                <CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
+                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
+                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
+                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
+                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
+                                <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
 
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
                                         <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                        <ComboBoxItem Content = "DHCP"/>
-                                        <ComboBoxItem Content = "Google"/>
-                                        <ComboBoxItem Content = "Cloudflare"/>
-                                        <ComboBoxItem Content = "Cloudflare_Malware"/>
-                                        <ComboBoxItem Content = "Cloudflare_Malware_Adult"/>
-                                        <ComboBoxItem Content = "Level3"/>
-                                        <ComboBoxItem Content = "Open_DNS"/>
-                                        <ComboBoxItem Content = "Quad9"/>
+                                        <ComboBoxItem Content="DHCP"/>
+                                        <ComboBoxItem Content="Google"/>
+                                        <ComboBoxItem Content="Cloudflare"/>
+                                        <ComboBoxItem Content="Cloudflare_Malware"/>
+                                        <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
+                                        <ComboBoxItem Content="Level3"/>
+                                        <ComboBoxItem Content="Open_DNS"/>
+                                        <ComboBoxItem Content="Quad9"/>
                                     </ComboBox>
                                 </StackPanel>
                                 
-                                <Button Name="WPFtweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
-                                <Button Name="WPFundoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
+                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
+                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
                                 
                             </StackPanel>
 
@@ -774,43 +819,42 @@
 
                     <Border Grid.Row="1" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                        <Label FontSize="16" Content="Customize Preferences"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
-                            <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
+                            <Label FontSize="16" Content="Customize Preferences"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
+                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
-                            <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
-                        
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
-                            <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
+                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
+                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
-                            <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
-                        
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
-                            <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
+                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                            <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                        </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
+                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
 
-                        <Label FontSize="16" Content="Performance Plans" />
-                        <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                        <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                        <Label FontSize="16" Content="Shortcuts" />
-                        <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-
+                            <Label FontSize="16" Content="Performance Plans" />
+                            <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
+                            <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
+                            <Label FontSize="16" Content="Shortcuts" />
+                            <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
 
                         </StackPanel> <!-- End of Customize Preferences Section -->
                         </Border>

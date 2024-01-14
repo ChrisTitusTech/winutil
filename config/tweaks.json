@@ -1,5 +1,5 @@
 {
-  "WPFEssTweaksAH": {
+  "WPFTweaksAH": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -24,7 +24,7 @@
       }
     ]
   },
-  "WPFEssTweaksHiber": {
+  "WPFTweaksHiber": {
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -45,7 +45,7 @@
         "powercfg.exe /hibernate off"
     ]
   },
-  "WPFEssTweaksHome": {
+  "WPFTweaksHome": {
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -59,7 +59,7 @@
       }
     ]
   },
-  "WPFEssTweaksLoc": {
+  "WPFTweaksLoc": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -91,7 +91,7 @@
       }
     ]
   },
-  "WPFEssTweaksServices": {
+  "WPFTweaksServices": {
     "service": [
       {
         "Name": "AJRouter",
@@ -1510,7 +1510,7 @@
       }
     ]
   },
-  "WPFEssTweaksTele": {
+  "WPFTweaksTele": {
     "ScheduledTask": [
       {
         "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
@@ -1897,7 +1897,7 @@
         "
     ]
   },
-  "WPFEssTweaksWifi": {
+  "WPFTweaksWifi": {
     "registry": [
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
@@ -1915,7 +1915,7 @@
       }
     ]
   },
-  "WPFMiscTweaksUTC": {
+  "WPFTweaksUTC": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -1926,7 +1926,7 @@
       }
     ]
   },
-  "WPFMiscTweaksDisplay": {
+  "WPFTweaksDisplay": {
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -2027,7 +2027,7 @@
       "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
-  "WPFEssTweaksDeBloat": {
+  "WPFTweaksDeBloat": {
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -2141,7 +2141,7 @@
       "
     ]
   },
-  "WPFEssTweaksRestorePoint": {
+  "WPFTweaksRestorePoint": {
     "InvokeScript": [
       "
         # Check if the user has administrative privileges
@@ -2178,7 +2178,7 @@
       "
     ]
   },
-  "WPFEssTweaksOO": {
+  "WPFTweaksOO": {
     "InvokeScript": [
       "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
@@ -2186,7 +2186,7 @@
        "
     ]
   },
-  "WPFEssTweaksStorage": {
+  "WPFTweaksStorage": {
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
     ],
@@ -2195,7 +2195,7 @@
       "
     ]
   },
-  "WPFEssTweaksRemoveEdge": {
+  "WPFTweaksRemoveEdge": {
     "InvokeScript": [
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
@@ -2212,7 +2212,7 @@
       "
     ]
   },
-  "WPFEssTweaksRemoveOnedrive": {
+  "WPFTweaksRemoveOnedrive": {
     "InvokeScript": [
         "
 
@@ -2289,7 +2289,7 @@
       "
     ]
   },
-  "WPFMiscTweaksDisableNotifications": {
+  "WPFTweaksDisableNotifications": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
@@ -2307,7 +2307,7 @@
       }
     ]
   },
-  "WPFMiscTweaksRightClickMenu": {
+  "WPFTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -2318,7 +2318,7 @@
       "
     ]
   },
-  "WPFEssTweaksDiskCleanup": {
+  "WPFTweaksDiskCleanup": {
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
@@ -2326,7 +2326,7 @@
       "
     ]
   },
-  "WPFMiscTweaksDisableUAC": {
+  "WPFTweaksDisableUAC": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -2337,13 +2337,13 @@
       }
     ]
   },
-  "WPFEssTweaksDeleteTempFiles": {
+  "WPFTweaksDeleteTempFiles": {
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
-  "WPFEssTweaksDVR": {
+  "WPFTweaksDVR": {
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
@@ -2389,7 +2389,7 @@
       }
     ]
   },
-  "WPFEssTweaksTeredo": {
+  "WPFTweaksTeredo": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2417,7 +2417,7 @@
       }
     ]
   },
-  "WPFMiscTweaksDisableipsix": {
+  "WPFTweaksDisableipsix": {
     "InvokeScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
@@ -2425,7 +2425,7 @@
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
-  "WPFMiscTweaksEnableipsix": {
+  "WPFTweaksEnableipsix": {
     "InvokeScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],

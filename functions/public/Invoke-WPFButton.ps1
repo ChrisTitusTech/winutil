@@ -24,10 +24,6 @@ function Invoke-WPFButton {
         "WPFdesktop" {Invoke-WPFPresets "Desktop"}
         "WPFlaptop" {Invoke-WPFPresets "laptop"}
         "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFexport" {Invoke-WPFImpex -type "export" -CheckBox "WPFTweaks"}
-        "WPFimport" {Invoke-WPFImpex -type "import" -CheckBox "WPFTweaks"}
-        "WPFexportWinget" {Invoke-WPFImpex -type "export" -CheckBox "WPFInstall"}
-        "WPFimportWinget" {Invoke-WPFImpex -type "import" -CheckBox "WPFInstall"}
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
         "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}

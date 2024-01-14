@@ -5,6 +5,27 @@
     GitHub         : https://github.com/ChrisTitusTech
     Version        : #{replaceme}
 #>
+param (
+    [switch]$Debug,
+    [string]$Config,
+    [switch]$Run
+)
+
+# Set DebugPreference based on the -Debug switch
+if ($Debug) {
+    $DebugPreference = "Continue"
+}
+
+if ($Config) {
+    $PARAM_CONFIG = $Config
+}
+
+$PARAM_RUN = $false
+# Handle the -Run switch
+if ($Run) {
+    Write-Host "Running config file tasks..."
+    $PARAM_RUN = $true
+}
 
 if (!(Test-Path -Path $ENV:TEMP)) {
     New-Item -ItemType Directory -Force -Path $ENV:TEMP
@@ -26,6 +47,7 @@ $sync.ProcessRunning = $false
 $currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
 $adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
+
 
 if ($principal.IsInRole($adminRole))
 {
