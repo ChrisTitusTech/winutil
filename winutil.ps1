@@ -4911,6 +4911,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
                             <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                             <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
@@ -7054,6 +7059,15 @@ $sync.configs.applications = '{
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
 	},
+	"WPFInstallparsec": {
+		"winget": "Parsec.parsec",
+		"choco": "parsec",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Parsec",
+		"link": "https://parsec.app/",
+		"description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices."
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip",
@@ -7430,6 +7444,71 @@ $sync.configs.feature = '{
       Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0
       nfsadmin client start
       nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
+      "
+    ]
+  },
+  "WPFFeatureEnableSearchSuggestions": {
+    "feature": [
+    ],
+    "InvokeScript": [
+      "
+      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
+            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
+      }
+      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
+      Stop-Process -name explorer -force
+      "
+    ]
+  },
+  "WPFFeatureDisableSearchSuggestions": {
+    "feature": [
+    ],
+    "InvokeScript": [
+      "
+      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
+            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
+      }
+      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force
+      Stop-Process -name explorer -force
+      "
+    ]
+  },
+  "WPFFeatureRegBackup": {
+    "feature": [
+    ],
+    "InvokeScript": [
+      "
+      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''EnablePeriodicBackup'' -Type DWord -Value 1 -Force
+      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''BackupCount'' -Type DWord -Value 2 -Force
+      $action = New-ScheduledTaskAction -Execute ''schtasks'' -Argument ''/run /i /tn \"\\Microsoft\\Windows\\Registry\\RegIdleBackup\"''
+      $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
+      Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''
+      "
+    ]
+  },
+  "WPFFeatureEnableLegacyRecovery": {
+    "feature": [
+    ],
+    "InvokeScript": [
+      "
+      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
+            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
+      }
+      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
+      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
+      "
+    ]
+  },
+  "WPFFeatureDisableLegacyRecovery": {
+    "feature": [
+    ],
+    "InvokeScript": [
+      "
+      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
+            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
+      }
+      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force
+      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
       "
     ]
   }
