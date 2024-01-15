@@ -1736,6 +1736,15 @@
 		"link": "https://www.voidtools.com/",
 		"description": "Everything Search is a fast and efficient file search utility for Windows."
 	},
+	"WPFInstallfileconverter": {
+		"winget": "AdrienAllard.FileConverter",
+		"choco": "files",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "File Converter",
+		"link": "https://file-converter.org/",
+		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer."
+	},
 	"WPFInstallfiles": {
 		"winget": "YairAichenbaum.Files",
 		"choco": "files",
