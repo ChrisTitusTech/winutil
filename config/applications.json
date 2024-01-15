@@ -1934,6 +1934,15 @@
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
 	},
+	"WPFInstallparsec": {
+		"winget": "Parsec.parsec",
+		"choco": "parsec",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Parsec",
+		"link": "https://parsec.app/",
+		"description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices."
+	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
 		"choco": "peazip",
