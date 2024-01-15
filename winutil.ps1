@@ -5900,15 +5900,6 @@ $sync.configs.applications = '{
 		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
 		"link": "https://www.blender.org/"
 	},
-	"WPFInstallcider": {
-		"winget": "CiderCollective.Cider",
-		"choco": "cider",
-		"category": "Multimedia Tools",
-		"panel": "3",
-		"content": "Cider (FOSS Music Player)",
-		"description": "Cider is a free and open-source music player that focuses on simplicity, providing a clean interface for enjoying your music.",
-		"link": "https://getcider.io/"
-	},
 	"WPFInstallclementine": {
 		"winget": "Clementine.Clementine",
 		"choco": "clementine",
