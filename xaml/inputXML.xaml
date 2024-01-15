@@ -878,6 +878,11 @@
                             <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"/>
                             <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0"/>
+                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"/>
                             <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"/>
                             <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>

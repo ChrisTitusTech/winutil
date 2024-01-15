@@ -357,7 +357,7 @@
 		"panel": "1",
 		"content": "GoLang",
 		"link": "https://golang.org/",
-		"description": "GoLang (or Golangis a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
+		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
 	},
 	"WPFInstalljetbrains": {
 		"winget": "JetBrains.Toolbox",
@@ -1087,7 +1087,7 @@
 		"content": "Blender (3D Graphics)",
 		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
 		"link": "https://www.blender.org/"
-	}
+	},
 	"WPFInstallclementine": {
 		"winget": "Clementine.Clementine",
 		"choco": "clementine",
@@ -1933,6 +1933,15 @@
 		"content": "ownCloud Desktop",
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
+	},
+	"WPFInstallparsec": {
+		"winget": "Parsec.parsec",
+		"choco": "parsec",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Parsec",
+		"link": "https://parsec.app/",
+		"description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices."
 	},
 	"WPFInstallpeazip": {
 		"winget": "Giorgiotani.Peazip",
