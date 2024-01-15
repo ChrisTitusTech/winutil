@@ -35,7 +35,7 @@ if for some reason this site is not reachable from your country please try runni
 
 ```
 irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1 | iex
-``
+```
 
 #### Automation
 
