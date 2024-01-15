@@ -5482,7 +5482,7 @@ $sync.configs.applications = '{
 		"panel": "1",
 		"content": "GoLang",
 		"link": "https://golang.org/",
-		"description": "GoLang (or Golangis a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
+		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency."
 	},
 	"WPFInstalljetbrains": {
 		"winget": "JetBrains.Toolbox",
