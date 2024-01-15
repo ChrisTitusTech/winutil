@@ -6207,7 +6207,7 @@ $sync.configs.applications = '{
 		"content": "Blender (3D Graphics)",
 		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
 		"link": "https://www.blender.org/"
-	}
+	},
 	"WPFInstallclementine": {
 		"winget": "Clementine.Clementine",
 		"choco": "clementine",
