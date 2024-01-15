@@ -171,6 +171,7 @@
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+
         <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
@@ -288,8 +289,8 @@
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="TextElement.FontFamily" Value="Arial, sans-serif"/>
+            <!-- <Setter Property="FontSize" Value="15" /> -->
+            <!-- <Setter Property="TextElement.FontFamily" Value="Consolas, sans-serif"/> -->
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
@@ -652,13 +653,15 @@
                     Margin="0,5,5,0" 
                     FontFamily="Segoe MDL2 Assets" 
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                <Popup Grid.Column="1" Name="SettingsPopup" 
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Border BorderBrush="{MainForegroundColor}" BorderThickness="1"  HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <StackPanel Background="{MainBackgroundColor}"  HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <MenuItem Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
                             <MenuItem Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
-                            <Separator />
+                            <Separator/>
                             <MenuItem Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
                         </StackPanel>
                     </Border>

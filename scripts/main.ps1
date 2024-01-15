@@ -278,6 +278,12 @@ $sync["Form"].Add_MouseDoubleClick({
     }
 })
 
+$sync["Form"].Add_Deactivated({
+    Write-Debug "WinUtil lost focus"
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    }
+})
 
 $sync["Form"].Add_ContentRendered({
 
@@ -366,6 +372,8 @@ Add-Type @"
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
+    # maybe this is not the best place to load and execute config file?
+    # maybe community can help?
     if ($PARAM_CONFIG){
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN){

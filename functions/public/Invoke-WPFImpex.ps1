@@ -38,8 +38,6 @@ function Invoke-WPFImpex {
             $Config = $FileBrowser.FileName
         }
     }
-
-
     
     if ($type -eq "export"){
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
@@ -52,7 +50,6 @@ function Invoke-WPFImpex {
         $jsonFile.PSObject.Properties | ForEach-Object {
             $category = $_.Name
             foreach ($checkboxName in $_.Value) {
-                # ignore Install, this one is for installing apps
                 if ($category -ne "Install") {
                     $flattenedJson += $checkboxName
                 }

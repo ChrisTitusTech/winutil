@@ -28,12 +28,12 @@ function Invoke-WPFPresets {
     }
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
-
     Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
 
-    if (-not $CheckBoxesToCheck)
-    {
-        $CheckBoxesToCheck | ForEach-Object { Write-Debug $_ }
+    $CheckBoxesToCheck | ForEach-Object {
+        if ($_ -ne $null) {
+            Write-Debug $_
+        }
     }
     
     foreach ($CheckBox in $CheckBoxes) {

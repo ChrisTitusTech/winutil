@@ -2771,8 +2771,6 @@ function Invoke-WPFImpex {
             $Config = $FileBrowser.FileName
         }
     }
-
-
     
     if ($type -eq "export"){
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
@@ -2785,7 +2783,6 @@ function Invoke-WPFImpex {
         $jsonFile.PSObject.Properties | ForEach-Object {
             $category = $_.Name
             foreach ($checkboxName in $_.Value) {
-                # ignore Install, this one is for installing apps
                 if ($category -ne "Install") {
                     $flattenedJson += $checkboxName
                 }
@@ -3334,12 +3331,12 @@ function Invoke-WPFPresets {
     }
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
-
     Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
 
-    if (-not $CheckBoxesToCheck)
-    {
-        $CheckBoxesToCheck | ForEach-Object { Write-Debug $_ }
+    $CheckBoxesToCheck | ForEach-Object {
+        if ($_ -ne $null) {
+            Write-Debug $_
+        }
     }
     
     foreach ($CheckBox in $CheckBoxes) {
@@ -4207,6 +4204,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
         </Style>
+
         <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
@@ -4324,8 +4322,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="TextElement.FontFamily" Value="Arial, sans-serif"/>
+            <!-- <Setter Property="FontSize" Value="15" /> -->
+            <!-- <Setter Property="TextElement.FontFamily" Value="Consolas, sans-serif"/> -->
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
@@ -4688,13 +4686,15 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     Margin="0,5,5,0" 
                     FontFamily="Segoe MDL2 Assets" 
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup" PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                <Popup Grid.Column="1" Name="SettingsPopup" 
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Border BorderBrush="{MainForegroundColor}" BorderThickness="1"  HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <StackPanel Background="{MainBackgroundColor}"  HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <MenuItem Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
                             <MenuItem Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
-                            <Separator />
+                            <Separator/>
                             <MenuItem Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
@@ -10238,6 +10238,12 @@ $sync["Form"].Add_MouseDoubleClick({
     }
 })
 
+$sync["Form"].Add_Deactivated({
+    Write-Debug "WinUtil lost focus"
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    }
+})
 
 $sync["Form"].Add_ContentRendered({
 
@@ -10326,6 +10332,8 @@ Add-Type @"
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
+    # maybe this is not the best place to load and execute config file?
+    # maybe community can help?
     if ($PARAM_CONFIG){
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN){
