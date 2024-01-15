@@ -12,11 +12,7 @@ The recommended way is to right-click on the start menu and select (PowerShell A
 Launch Command:
 
 ```
-iwr -useb https://christitus.com/win | iex
-```
-or by executing: 
-```
-irm https://christitus.com/win | iex
+irm christitus.com/win | iex
 ```
 Courtesy of the issue raised at: [#144](/../../issues/144)
 
