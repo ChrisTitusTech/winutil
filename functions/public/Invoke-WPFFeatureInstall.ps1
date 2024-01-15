@@ -7,15 +7,15 @@ function Invoke-WPFFeatureInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
+        $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $Features = Get-WinUtilCheckBoxes -Group "WPFFeature"
+    $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
 
-    Invoke-WPFRunspace -ArgumentList $Features -ScriptBlock {
-        param($Features)
+    Invoke-WPFRunspace -ArgumentList $Features,$DebugPreference -ScriptBlock {
+        param($Features, $DebugPreference)
 
         $sync.ProcessRunning = $true
 
@@ -26,12 +26,5 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
-
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "All features are now installed "
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
 }

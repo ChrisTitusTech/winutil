@@ -7,12 +7,12 @@ function Invoke-WPFUnInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "Install process is currently running"
+        $msg = "[Invoke-WPFUnInstall] Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
+    $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install"
@@ -29,8 +29,9 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
-        param($WingetInstall)
+    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+        param($WingetInstall, $DebugPreference)
+
         try{
             $sync.ProcessRunning = $true
 

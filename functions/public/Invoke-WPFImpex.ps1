@@ -16,7 +16,7 @@ function Invoke-WPFImpex {
     #>
     param(
         $type,
-        $checkbox
+        $Config = $null
     )
 
     if ($type -eq "export"){
@@ -26,20 +26,36 @@ function Invoke-WPFImpex {
         $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
     }
 
-    $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
-    $FileBrowser.Filter = "JSON Files (*.json)|*.json"
-    $FileBrowser.ShowDialog() | Out-Null
+    if (-not $Config){
+        $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
+        $FileBrowser.Filter = "JSON Files (*.json)|*.json"
+        $FileBrowser.ShowDialog() | Out-Null
 
-    if($FileBrowser.FileName -eq ""){
-        return
+        if($FileBrowser.FileName -eq ""){
+            return
+        } 
+        else{
+            $Config = $FileBrowser.FileName
+        }
     }
-
+    
     if ($type -eq "export"){
-        $jsonFile = Get-WinUtilCheckBoxes $checkbox -unCheck $false
+        $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
     if ($type -eq "import"){
-        $jsonFile = Get-Content $FileBrowser.FileName | ConvertFrom-Json
-        Invoke-WPFPresets -preset $jsonFile -imported $true -CheckBox $checkbox
+        $jsonFile = Get-Content $Config | ConvertFrom-Json
+
+        $flattenedJson = @()
+        $jsonFile.PSObject.Properties | ForEach-Object {
+            $category = $_.Name
+            foreach ($checkboxName in $_.Value) {
+                if ($category -ne "Install") {
+                    $flattenedJson += $checkboxName
+                }
+            }
+        }
+
+        Invoke-WPFPresets -preset $flattenedJson -imported $true
     }
 }

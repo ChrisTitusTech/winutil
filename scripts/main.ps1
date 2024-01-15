@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: MIT
-
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
@@ -129,8 +128,6 @@ catch {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
-
-
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
@@ -168,7 +165,7 @@ $sync.keys | ForEach-Object {
                 $sync["$psitem"].Add_MouseUp({
                     [System.Object]$Sender = $args[0]
                     Start-Process $Sender.ToolTip -ErrorAction Stop
-                    Write-Host "Let's go: $($Sender.ToolTip)"
+                    Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
        
@@ -205,7 +202,6 @@ $sync["Form"].Add_Closing({
     $sync.runspace.Close()
     [System.GC]::Collect()
 })
-
 
 # Attach the event handler to the Click event
 $sync.CheckboxFilterClear.Add_Click({
@@ -264,8 +260,10 @@ $commonKeyEvents = {
 
 $sync["Form"].Add_PreViewKeyDown($commonKeyEvents)
 
-# adding some left mouse window move on drag capability
 $sync["Form"].Add_MouseLeftButtonDown({
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    }
     $sync["Form"].DragMove()
 })
 
@@ -280,31 +278,36 @@ $sync["Form"].Add_MouseDoubleClick({
     }
 })
 
-$sync["Form"].Add_ContentRendered({
-
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*tit*" })) {
-        if ($proc.Id -ne [System.IntPtr]::Zero) {
-            Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
-            $windowHandle = $proc.MainWindowHandle
-        }
+$sync["Form"].Add_Deactivated({
+    Write-Debug "WinUtil lost focus"
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
     }
+})
+
+$sync["Form"].Add_ContentRendered({
 
     try { 
         [void][Window]
     } catch {
-        Add-Type @"
+Add-Type @"
         using System;
         using System.Runtime.InteropServices;
         public class Window {
             [DllImport("user32.dll")]
+            public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+            [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+            
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
+            
             [DllImport("user32.dll")]
             public static extern int GetSystemMetrics(int nIndex);
-        }
+        };
         public struct RECT {
             public int Left;   // x position of upper-left corner
             public int Top;    // y position of upper-left corner
@@ -314,8 +317,29 @@ $sync["Form"].Add_ContentRendered({
 "@
     }
 
+    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        if ($proc.Id -ne [System.IntPtr]::Zero) {
+            Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
+            $windowHandle = $proc.MainWindowHandle
+        }
+    }
+
+    # need to experiemnt more
+    # setting icon for the windows is still not working
+    # $pngUrl = "https://christitus.com/images/logo-full.png"
+    # $pngPath = "$env:TEMP\cttlogo.png"
+    # $iconPath = "$env:TEMP\cttlogo.ico"
+    # # Download the PNG file
+    # Invoke-WebRequest -Uri $pngUrl -OutFile $pngPath
+    # if (Test-Path -Path $pngPath) {
+    #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $iconPath
+    # }
+    # $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
+    # Write-Host $icon.Handle
+    # [Window]::SendMessage($windowHandle, 0x80, [IntPtr]::Zero, $icon.Handle)
+
     $rect = New-Object RECT
-    [void][Window]::GetWindowRect($windowHandle, [ref]$rect)
+    [Window]::GetWindowRect($windowHandle, [ref]$rect)
     $width  = $rect.Right  - $rect.Left
     $height = $rect.Bottom - $rect.Top
 
@@ -347,6 +371,42 @@ $sync["Form"].Add_ContentRendered({
     
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
+
+    # maybe this is not the best place to load and execute config file?
+    # maybe community can help?
+    if ($PARAM_CONFIG){
+        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
+        if ($PARAM_RUN){
+            while ($sync.ProcessRunning) {
+                Start-Sleep -Seconds 5
+            }
+            Start-Sleep -Seconds 5
+
+            Write-Host "Applying tweaks..."
+            Invoke-WPFtweaksbutton
+            while ($sync.ProcessRunning) {
+                Start-Sleep -Seconds 5
+            }
+            Start-Sleep -Seconds 5
+
+            Write-Host "Installing features..."
+            Invoke-WPFFeatureInstall
+            while ($sync.ProcessRunning) {
+                Start-Sleep -Seconds 5
+            }
+
+            Start-Sleep -Seconds 5
+            Write-Host "Installing applications..."
+            while ($sync.ProcessRunning) {
+                Start-Sleep -Seconds 1
+            }
+            Invoke-WPFInstall
+            Start-Sleep -Seconds 5
+
+            Write-Host "Done."
+        }
+    }
+
 })
 
 $sync["CheckboxFilter"].Add_TextChanged({
@@ -390,6 +450,49 @@ $sync["CheckboxFilter"].Add_TextChanged({
         }
     }
     
+})
+
+# Define event handler for button click
+$sync["SettingsButton"].Add_Click({
+    Write-Debug "SettingsButton clicked"
+    if ($sync["SettingsPopup"].IsOpen) {
+        $sync["SettingsPopup"].IsOpen = $false
+    }
+    else {
+        $sync["SettingsPopup"].IsOpen = $true
+    }
+    $_.Handled = $false
+})
+
+# Define event handlers for menu items
+$sync["ImportMenuItem"].Add_Click({
+  # Handle Import menu item click
+  Write-Debug "Import clicked"
+  $sync["SettingsPopup"].IsOpen = $false
+  Invoke-WPFImpex -type "import"
+  $_.Handled = $false
+})
+
+$sync["ExportMenuItem"].Add_Click({
+    # Handle Export menu item click
+    Write-Debug "Export clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    Invoke-WPFImpex -type "export"
+    $_.Handled = $false
+})
+
+$sync["AboutMenuItem"].Add_Click({
+    # Handle Export menu item click
+    Write-Debug "About clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    # Example usage
+    $authorInfo = @"
+Author   : @christitustech
+Runspace : @DeveloperDurp
+GitHub   : https://github.com/ChrisTitusTech/winutil
+Version  : $($sync.version)
+"@    
+    Show-CustomDialog -Message $authorInfo -Width 400
 })
 
 $sync["Form"].ShowDialog() | out-null
