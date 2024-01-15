@@ -71,6 +71,15 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements."
 	},
+	"WPFInstallthorium": {
+		"winget": "Alex313031.Thorium.AVX2",
+		"choco": "na",
+		"category": "Browsers",
+		"panel": "0",
+		"content": "Thorium Browser AVX2",
+		"link": "http://thorium.rocks/",
+		"description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market."
+	},
 	"WPFInstalltor": {
 		"winget": "TorProject.TorBrowser",
 		"choco": "tor-browser",
@@ -653,7 +662,7 @@
 		"category": "Document",
 		"panel": "1",
 		"content": "Logseq",
-		"link": "https://github.com/logseq/logseq/releases",
+		"link": "https://logseq.com/",
 		"description": "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights."
 	},
 	"WPFInstallobsidian": {
@@ -962,6 +971,15 @@
 		"description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/7.0"
 	},
+		"WPFInstalldotnet8": {
+		"winget": "Microsoft.DotNet.DesktopRuntime.8",
+		"choco": "dotnet-8.0-runtime",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": ".NET Desktop Runtime 8",
+		"description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 7.",
+		"link": "https://dotnet.microsoft.com/download/dotnet/8.0"
+	},
 	"WPFInstallnuget": {
 		"winget": "Microsoft.NuGet",
 		"choco": "nuget.commandline",
@@ -1069,16 +1087,7 @@
 		"content": "Blender (3D Graphics)",
 		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
 		"link": "https://www.blender.org/"
-	},
-	"WPFInstallcider": {
-		"winget": "CiderCollective.Cider",
-		"choco": "cider",
-		"category": "Multimedia Tools",
-		"panel": "3",
-		"content": "Cider (FOSS Music Player)",
-		"description": "Cider is a free and open-source music player that focuses on simplicity, providing a clean interface for enjoying your music.",
-		"link": "https://getcider.io/"
-	},
+	}
 	"WPFInstallclementine": {
 		"winget": "Clementine.Clementine",
 		"choco": "clementine",
