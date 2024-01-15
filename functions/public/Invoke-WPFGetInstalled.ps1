@@ -11,7 +11,7 @@ function Invoke-WPFGetInstalled {
     param($checkbox)
 
     if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
+        $msg = "[Invoke-WPFGetInstalled] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -23,8 +23,8 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $checkbox -ScriptBlock {
-        param($checkbox)
+    Invoke-WPFRunspace -ArgumentList $checkbox,$DebugPreference -ScriptBlock {
+        param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
 
