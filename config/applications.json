@@ -1745,15 +1745,6 @@
 		"link": "https://file-converter.org/",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer."
 	},
-	"WPFInstallfiles": {
-		"winget": "YairAichenbaum.Files",
-		"choco": "files",
-		"category": "Utilities",
-		"panel": "4",
-		"content": "Files File Explorer",
-		"link": "https://www.yairaichenbaum.com/files",
-		"description": "Files is a feature-rich file explorer providing a user-friendly interface for file management."
-	},
 	"WPFInstallflux": {
 		"winget": "flux.flux",
 		"choco": "flux",
