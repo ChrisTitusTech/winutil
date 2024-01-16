@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.15
+    Version        : 24.01.16
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.15"
+$sync.version = "24.01.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5664,7 +5664,7 @@ $sync.configs.applications = '{
 		"link": "https://code.visualstudio.com/",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages."
 	},
-	"WPFInstallvscode": {
+	"WPFInstallanaconda3": {
 		"winget": "Anaconda.Anaconda3",
 		"choco": "anaconda3",
 		"category": "Development",
@@ -6231,7 +6231,7 @@ $sync.configs.applications = '{
 		"description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
 		"link": "https://www.clementine-player.org/"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallytdlp": {
 		"winget": "yt-dlp.yt-dlp",
 		"choco": "yt-dlp",
 		"category": "Multimedia Tools",
@@ -6240,7 +6240,7 @@ $sync.configs.applications = '{
 		"description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
 		"link": "https://github.com/yt-dlp/yt-dlp"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallvideomass": {
 		"winget": "GianlucaPernigotto.Videomass",
 		"choco": "na",
 		"category": "Multimedia Tools",
@@ -6249,7 +6249,7 @@ $sync.configs.applications = '{
 		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
 		"link": "https://github.com/jeanslack/Videomass"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallffmpeg": {
 		"winget": "Gyan.FFmpeg",
 		"choco": "ffmpeg-full",
 		"category": "Multimedia Tools",
