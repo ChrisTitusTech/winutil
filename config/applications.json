@@ -1106,7 +1106,7 @@
 		"description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
 		"link": "https://www.clementine-player.org/"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallytdlp": {
 		"winget": "yt-dlp.yt-dlp",
 		"choco": "yt-dlp",
 		"category": "Multimedia Tools",
@@ -1115,7 +1115,7 @@
 		"description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
 		"link": "https://github.com/yt-dlp/yt-dlp"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallvideomass": {
 		"winget": "GianlucaPernigotto.Videomass",
 		"choco": "na",
 		"category": "Multimedia Tools",
@@ -1124,7 +1124,7 @@
 		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
 		"link": "https://github.com/jeanslack/Videomass"
 	},
-	"WPFInstallclipgrab": {
+	"WPFInstallffmpeg": {
 		"winget": "Gyan.FFmpeg",
 		"choco": "ffmpeg-full",
 		"category": "Multimedia Tools",
