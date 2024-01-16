@@ -33,27 +33,6 @@ if ($Run) {
     Write-Host "Running config file tasks..."
     $PARAM_RUN = $true
 }
-param (
-    [switch]$Debug,
-    [string]$Config,
-    [switch]$Run
-)
-
-# Set DebugPreference based on the -Debug switch
-if ($Debug) {
-    $DebugPreference = "Continue"
-}
-
-if ($Config) {
-    $PARAM_CONFIG = $Config
-}
-
-$PARAM_RUN = $false
-# Handle the -Run switch
-if ($Run) {
-    Write-Host "Running config file tasks..."
-    $PARAM_RUN = $true
-}
 
 if (!(Test-Path -Path $ENV:TEMP)) {
     New-Item -ItemType Directory -Force -Path $ENV:TEMP
@@ -579,7 +558,7 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
             Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
@@ -2684,7 +2663,7 @@ function Invoke-WPFGetIso {
         # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
-        Write-Error "Please refer to this wiki for more details https://github.com/KonTy/winutil/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting"
+        Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
         return
     }
     # storing off values in hidden fields for further steps
@@ -5685,6 +5664,15 @@ $sync.configs.applications = '{
 		"link": "https://code.visualstudio.com/",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages."
 	},
+	"WPFInstallvscode": {
+		"winget": "Anaconda.Anaconda3",
+		"choco": "anaconda3",
+		"category": "Development",
+		"panel": "1",
+		"content": "Anaconda",
+		"link": "https://www.anaconda.com/products/distribution",
+		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
+    },
 	"WPFInstallvscodium": {
 		"winget": "Git.Git;VSCodium.VSCodium",
 		"choco": "vscodium",
@@ -6244,14 +6232,32 @@ $sync.configs.applications = '{
 		"link": "https://www.clementine-player.org/"
 	},
 	"WPFInstallclipgrab": {
-		"winget": "na",
-		"choco": "clipgrab",
+		"winget": "yt-dlp.yt-dlp",
+		"choco": "yt-dlp",
 		"category": "Multimedia Tools",
 		"panel": "3",
-		"content": "Clipgrab",
-		"description": "Clipgrab is a free downloader and converter for YouTube, Vimeo, Facebook, and many other online video sites.",
-		"link": "https://clipgrab.org/"
+		"content": "Yt-dlp",
+		"description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
+		"link": "https://github.com/yt-dlp/yt-dlp"
 	},
+	"WPFInstallclipgrab": {
+		"winget": "GianlucaPernigotto.Videomass",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Videomass",
+		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
+		"link": "https://github.com/jeanslack/Videomass"
+	},
+	"WPFInstallclipgrab": {
+		"winget": "Gyan.FFmpeg",
+		"choco": "ffmpeg-full",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Ffmpeg full",
+		"description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
+		"link": "https://ffmpeg.org/"
+	},	
 	"WPFInstallcopyq": {
 		"winget": "hluk.CopyQ",
 		"choco": "copyq",
