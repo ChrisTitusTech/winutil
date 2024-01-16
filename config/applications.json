@@ -539,7 +539,7 @@
 		"link": "https://code.visualstudio.com/",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages."
 	},
-	"WPFInstallvscode": {
+	"WPFInstallanaconda3": {
 		"winget": "Anaconda.Anaconda3",
 		"choco": "anaconda3",
 		"category": "Development",
