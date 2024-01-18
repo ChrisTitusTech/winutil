@@ -53,7 +53,6 @@ function Invoke-WPFPresets {
         } else {
             # If it doesn't exist, set IsChecked to false
             $sync.$checkboxName.IsChecked = $false
-            Write-Debug "$checkboxName is not checked"
         }
     }
 }

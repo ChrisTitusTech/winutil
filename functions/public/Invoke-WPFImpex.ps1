@@ -50,9 +50,7 @@ function Invoke-WPFImpex {
         $jsonFile.PSObject.Properties | ForEach-Object {
             $category = $_.Name
             foreach ($checkboxName in $_.Value) {
-                if ($category -ne "Install") {
-                    $flattenedJson += $checkboxName
-                }
+                $flattenedJson += $checkboxName
             }
         }
 

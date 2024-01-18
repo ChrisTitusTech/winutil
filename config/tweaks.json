@@ -2212,6 +2212,62 @@
       "
     ]
   },
+  "WPFTweaksUnpinShortcuts": {
+    "InvokeScript": [
+        "
+          Write-Host \"Unpin Microsoft Edge from Start menu\"
+          $startMenuShortcutPath = [System.IO.Path]::Combine($env:ProgramData, 'Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Edge.lnk')
+
+          # Define the path to the Edge shortcut in the Taskbar
+          $taskbarShortcutPath = [System.IO.Path]::Combine($env:ProigramData, 'Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Microsoft Edge.lnk')
+
+          # Remove the Edge shortcut from the Start Menu
+          if (Test-Path $startMenuShortcutPath) {
+              Remove-Item $startMenuShortcutPath -Force
+              Write-Host \"Microsoft Edge removed from Start Menu\"
+          } else {
+              Write-Host \"Microsoft Edge not found in Start Menu\"
+          }
+
+          # Remove the Edge shortcut from the Taskbar
+          if (Test-Path $taskbarShortcutPath) {
+              Remove-Item $taskbarShortcutPath -Force
+              Write-Host \"Microsoft Edge removed from Taskbar\"
+          } else {
+              Write-Host \"Microsoft Edge not found in Taskbar\"
+          }
+          (New-Object -ComObject shell.application).Windows() | ForEach-Object { $_.Refresh() }
+
+        "
+    ],
+    "UndoScript": [
+      "
+        Write-Host \"Pin Microsoft Edge\"
+
+        # Get the Edge installation path from the registry
+        $edgePath = (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe\" -ErrorAction SilentlyContinue).Path
+
+        if ($edgePath) {
+            Write-Host \"Microsoft Edge is installed at: $edgePath\"
+
+            $Shell = New-Object -ComObject Shell.Application
+            $QuickLaunchPath = Join-Path $env:AppData 'Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar'
+            $EdgeShortcutPath = Join-Path $QuickLaunchPath 'Microsoft Edge.lnk'
+      
+            $Shortcut = $Shell.CreateShortcut($EdgeShortcutPath)
+            
+            # Set properties for the shortcut
+            $Shortcut.TargetPath = $edgePath
+            $Shortcut.IconLocation = \"$edgePath,0\"
+            $Shortcut.Save()
+            (New-Object -ComObject shell.application).Windows() | ForEach-Object { $_.Refresh() }
+        } else {
+            Write-Host \"Microsoft Edge not found -- nothing to pin. Please check if it is installed.\"
+        }
+
+      "
+    ]
+  },
   "WPFTweaksRemoveOnedrive": {
     "InvokeScript": [
         "
@@ -2324,6 +2380,93 @@
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
+    ]
+  },
+  "WPFTweaksDarkMode": {
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "WPFTweaksBingSearch": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "WPFTweaksNumLock": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "2"
+      }
+    ]
+  },  
+  "WPFTweaksVerboseLogon": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ]
+  },
+  "WPFTweaksShowExt": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
+  "WPFTweaksMouseAcceleration": {
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Type": "DWord",
+        "Value": "6",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Type": "DWord",
+        "Value": "10",
+        "OriginalValue": "0"
+      }
     ]
   },
   "WPFTweaksDisableUAC": {

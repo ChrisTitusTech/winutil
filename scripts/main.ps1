@@ -103,12 +103,11 @@ foreach ($panel in $organizedData.Keys) {
     $blockXml = ""
 }
 
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+$ctttheme = 'Classic'
+if (Get-OSDarkThemeState) {
     $ctttheme = 'Matrix'
 }
-else {
-    $ctttheme = 'Classic'
-}
+
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -136,15 +135,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*"){
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
-            })
-        }
 
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
             $sync["$psitem"].Add_Click({

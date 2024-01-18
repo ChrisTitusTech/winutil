@@ -43,10 +43,18 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
 
-    # $ButtonType = [System.Windows.MessageBoxButton]::OK
-    # $MessageboxTitle = "Tweaks are Finished "
-    # $Messageboxbody = ("Done")
-    # $MessageIcon = [System.Windows.MessageBoxImage]::Information
-    # [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+
+    # Assuming your App.xaml contains a ResourceDictionary with the defined theme
+$themeResource = [System.Windows.Markup.XamlLoader]::Load((New-Object System.IO.StreamReader("App.xaml")).BaseStream)
+
+# Find the existing ResourceDictionary and remove it
+[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Clear()
+
+# Add the new ResourceDictionary (reloading the theme)
+[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Add($themeResource)
+
+
+    $form.FindName("YourButtonName").InvalidateProperty([Windows.Controls.Control]::BackgroundProperty)
+    $sync["Form"].Refresh()
   }
 }
