@@ -94,7 +94,7 @@
 		"choco": "ungoogled-chromium",
 		"category": "Browsers",
 		"panel": "0",
-		"content": "Ungoogled",
+		"content": "Ungoogled Chromium",
 		"link": "https://github.com/Eloston/ungoogled-chromium",
 		"description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control."
 	},
@@ -333,8 +333,8 @@
 		"description": "Git is a distributed version control system widely used for tracking changes in source code during software development."
 	},
 	"WPFInstallgitextensions": {
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
-		"choco": "git;gitextensions",
+		"winget": "GitExtensionsTeam.GitExtensions",
+		"choco": "gitextensions",
 		"category": "Development",
 		"panel": "1",
 		"content": "Git Extensions",
@@ -342,8 +342,8 @@
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management."
 	},
 	"WPFInstallgithubdesktop": {
-		"winget": "Git.Git;GitHub.GitHubDesktop",
-		"choco": "git;github-desktop",
+		"winget": "GitHub.GitHubDesktop",
+		"choco": "github-desktop",
 		"category": "Development",
 		"panel": "1",
 		"content": "GitHub Desktop",

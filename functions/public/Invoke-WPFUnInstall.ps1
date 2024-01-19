@@ -12,6 +12,8 @@ function Invoke-WPFUnInstall {
         return
     }
 
+    # $WingetInstall = ((Get-WinUtilCheckBoxes)["Install"] -join ';')
+
     $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
@@ -29,11 +31,13 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
             $sync.ProcessRunning = $true
+
+            # $WingetInstallArray = ($WingetInstall -split ';')
 
             # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall -Manage "Uninstalling"

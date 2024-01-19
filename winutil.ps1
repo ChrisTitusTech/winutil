@@ -2549,6 +2549,9 @@ function Invoke-WPFInstall {
         return
     }
 
+    
+    # $WingetInstall = ((Get-WinUtilCheckBoxes)["Install"] -join ';')
+
     $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
@@ -2557,11 +2560,13 @@ function Invoke-WPFInstall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
             $sync.ProcessRunning = $true
+
+          #  $WingetInstallArray = ($WingetInstall -split ';')
 
             Install-WinUtilWinget
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
@@ -3576,6 +3581,8 @@ function Invoke-WPFUnInstall {
         return
     }
 
+    # $WingetInstall = ((Get-WinUtilCheckBoxes)["Install"] -join ';')
+
     $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
@@ -3593,11 +3600,13 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
             $sync.ProcessRunning = $true
+
+            # $WingetInstallArray = ($WingetInstall -split ';')
 
             # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall -Manage "Uninstalling"
@@ -4833,7 +4842,7 @@ $sync.configs.applications = '{
 		"choco": "ungoogled-chromium",
 		"category": "Browsers",
 		"panel": "0",
-		"content": "Ungoogled",
+		"content": "Ungoogled Chromium",
 		"link": "https://github.com/Eloston/ungoogled-chromium",
 		"description": "Ungoogled Chromium is a version of Chromium without Google''s integration for enhanced privacy and control."
 	},
@@ -5072,8 +5081,8 @@ $sync.configs.applications = '{
 		"description": "Git is a distributed version control system widely used for tracking changes in source code during software development."
 	},
 	"WPFInstallgitextensions": {
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions",
-		"choco": "git;gitextensions",
+		"winget": "GitExtensionsTeam.GitExtensions",
+		"choco": "gitextensions",
 		"category": "Development",
 		"panel": "1",
 		"content": "Git Extensions",
@@ -5081,8 +5090,8 @@ $sync.configs.applications = '{
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management."
 	},
 	"WPFInstallgithubdesktop": {
-		"winget": "Git.Git;GitHub.GitHubDesktop",
-		"choco": "git;github-desktop",
+		"winget": "GitHub.GitHubDesktop",
+		"choco": "github-desktop",
 		"category": "Development",
 		"panel": "1",
 		"content": "GitHub Desktop",
