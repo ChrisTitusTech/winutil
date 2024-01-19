@@ -131,6 +131,8 @@ When creating pull requests, it is essential to thoroughly document all changes 
 
 By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
 
+NOTE: When creating a function please include "WPF" or "WinUtil" in the name so that it can be loaded into the runspace.
+
 ## Thanks to all Contributors
 Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
 
