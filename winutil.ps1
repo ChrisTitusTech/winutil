@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.16
+    Version        : 24.01.18
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.16"
+$sync.version = "24.01.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4493,7 +4493,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFTweaksVerboseLogon" Content="Turn on Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." Margin="5,0"/>
                                 <CheckBox Name="WPFTweaksShowExt" Content="Show File Extensions" Margin="5,0" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible."/>
                                 <CheckBox Name="WPFTweaksMouseAcceleration" Content="Mouse Acceleration" Margin="5,0" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFTweaksUnpinShortcuts" Content="Unpin Edge" Margin="5,0" ToolTip="Unpin Edge from quick launch"/>
+                                <CheckBox Name="WPFTweaksLaptopHybernation" Content="Set hibernation to default (for laptops)" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation but when laptop hibernates there is no risk to drain battery due to S0 sleep"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -7187,6 +7187,7 @@ $sync.configs.preset = '{
     "WPFTweaksStorage",
     "WPFTweaksTele",
     "WPFTweaksWifi",
+    "WPFTweaksLaptopHybernation",
     "WPFMiscTweaksLapPower"
   ],
   "minimal": [
@@ -9474,61 +9475,47 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksUnpinShortcuts": {
+  "WPFTweaksLaptopHybernation": {
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
+        "OriginalValue": "1",
+        "Name": "Attributes",
+        "Value": "2",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\abfc2519-3608-4c2a-94ea-171b0ed546ab\\94ac6d29-73ce-41a6-809f-6363ba21b47e",
+        "OriginalValue": "0",
+        "Name": "Attributes ",
+        "Value": "2",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
-        "
-          Write-Host \"Unpin Microsoft Edge from Start menu\"
-          $startMenuShortcutPath = [System.IO.Path]::Combine($env:ProgramData, ''Microsoft\\Windows\\Start Menu\\Programs\\Microsoft Edge.lnk'')
-
-          # Define the path to the Edge shortcut in the Taskbar
-          $taskbarShortcutPath = [System.IO.Path]::Combine($env:ProigramData, ''Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Microsoft Edge.lnk'')
-
-          # Remove the Edge shortcut from the Start Menu
-          if (Test-Path $startMenuShortcutPath) {
-              Remove-Item $startMenuShortcutPath -Force
-              Write-Host \"Microsoft Edge removed from Start Menu\"
-          } else {
-              Write-Host \"Microsoft Edge not found in Start Menu\"
-          }
-
-          # Remove the Edge shortcut from the Taskbar
-          if (Test-Path $taskbarShortcutPath) {
-              Remove-Item $taskbarShortcutPath -Force
-              Write-Host \"Microsoft Edge removed from Taskbar\"
-          } else {
-              Write-Host \"Microsoft Edge not found in Taskbar\"
-          }
-          (New-Object -ComObject shell.application).Windows() | ForEach-Object { $_.Refresh() }
-
-        "
+      "
+      Write-Host \"Turn on Hibernation\"
+      Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
+  
+      # Set hibernation as the default action
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 10\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 1\" -NoNewWindow -Wait
+      "
     ],
     "UndoScript": [
       "
-        Write-Host \"Pin Microsoft Edge\"
-
-        # Get the Edge installation path from the registry
-        $edgePath = (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe\" -ErrorAction SilentlyContinue).Path
-
-        if ($edgePath) {
-            Write-Host \"Microsoft Edge is installed at: $edgePath\"
-
-            $Shell = New-Object -ComObject Shell.Application
-            $QuickLaunchPath = Join-Path $env:AppData ''Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar''
-            $EdgeShortcutPath = Join-Path $QuickLaunchPath ''Microsoft Edge.lnk''
-      
-            $Shortcut = $Shell.CreateShortcut($EdgeShortcutPath)
-            
-            # Set properties for the shortcut
-            $Shortcut.TargetPath = $edgePath
-            $Shortcut.IconLocation = \"$edgePath,0\"
-            $Shortcut.Save()
-            (New-Object -ComObject shell.application).Windows() | ForEach-Object { $_.Refresh() }
-        } else {
-            Write-Host \"Microsoft Edge not found -- nothing to pin. Please check if it is installed.\"
-        }
-
+      Write-Host \"Turn off Hibernation\"
+      Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
+  
+      # Set standby to detault values
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
+      Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
-    ]
+    ]    
   },
   "WPFTweaksRemoveOnedrive": {
     "InvokeScript": [

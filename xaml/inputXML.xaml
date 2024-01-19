@@ -728,7 +728,7 @@
                                 <CheckBox Name="WPFTweaksVerboseLogon" Content="Turn on Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." Margin="5,0"/>
                                 <CheckBox Name="WPFTweaksShowExt" Content="Show File Extensions" Margin="5,0" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible."/>
                                 <CheckBox Name="WPFTweaksMouseAcceleration" Content="Mouse Acceleration" Margin="5,0" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFTweaksUnpinShortcuts" Content="Unpin Edge" Margin="5,0" ToolTip="Unpin Edge from quick launch"/>
+                                <CheckBox Name="WPFTweaksLaptopHybernation" Content="Set hibernation to default (for laptops)" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation but when laptop hibernates there is no risk to drain battery due to S0 sleep"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
