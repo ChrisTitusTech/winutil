@@ -2258,7 +2258,7 @@
 		"link": "https://www.ghisler.com/",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
 		}
-	"WPFInstalltotalcommander": {
+	"WPFInstallexplorerpatcher": {
 		"winget": "valient.ExplorerPatcher",
 		"choco": "EXPATCHER",
 		"category": "Utilities",
