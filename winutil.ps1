@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.18
+    Version        : 24.01.16
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.18"
+$sync.version = "24.01.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -6511,14 +6511,14 @@ $sync.configs.applications = '{
 		"link": "https://www.voidtools.com/",
 		"description": "Everything Search is a fast and efficient file search utility for Windows."
 	},
-	"WPFInstallfiles": {
-		"winget": "YairAichenbaum.Files",
+	"WPFInstallfileconverter": {
+		"winget": "AdrienAllard.FileConverter",
 		"choco": "files",
 		"category": "Utilities",
 		"panel": "4",
-		"content": "Files File Explorer",
-		"link": "https://www.yairaichenbaum.com/files",
-		"description": "Files is a feature-rich file explorer providing a user-friendly interface for file management."
+		"content": "File Converter",
+		"link": "https://file-converter.org/",
+		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer."
 	},
 	"WPFInstallflux": {
 		"winget": "flux.flux",
