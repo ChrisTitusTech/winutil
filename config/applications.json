@@ -2134,11 +2134,11 @@
 	},
 	"WPFInstallwingetui": {
 		"winget": "SomePythonThings.WingetUIStore",
-		"choco": "na",
+		"choco": "wingetui",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "WingetUI",
-		"link": "https://github.com/lostindark/WingetUIStore",
+		"link": "https://github.com/marticliment/WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft's Windows Package Manager (winget)."
 	},
 	"WPFInstallwiztree": {
