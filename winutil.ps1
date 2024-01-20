@@ -6498,7 +6498,7 @@ $sync.configs.applications = '{
 		"category": "Multimedia Tools",
 		"panel": "3",
 		"content": "Strawberry (Music Player)",
-		"link": "https://github.com/strawberrymusicplayer/strawberry/",
+		"link": "https://strawberry.rocks/",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface."
 	},
 	"WPFInstalltidal": {
