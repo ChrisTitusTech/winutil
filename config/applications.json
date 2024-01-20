@@ -2116,12 +2116,12 @@
 	},
 	"WPFInstalltwinkletray": {
 		"winget": "xanderfrangos.twinkletray",
-		"choco": "na",
+		"choco": "twinkle-tray",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Twinkle Tray",
-		"link": "https://github.com/xanderfrangos/TwinkleTray",
-		"description": "Twinkle Tray is a small utility that allows you to customize the system tray icons on your Windows taskbar."
+		"link": "https://twinkletray.com/",
+		"description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors."
 	},
 	"WPFInstallwindirstat": {
 		"winget": "WinDirStat.WinDirStat",
