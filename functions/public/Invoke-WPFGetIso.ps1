@@ -5,6 +5,8 @@ function Invoke-WPFGetIso {
     #>
 
     Write-Host "Invoking WPFGetIso"
+    $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyText.Text="N Busy"
 
     if($sync.ProcessRunning){
         $msg = "GetIso process is currently running."
@@ -21,6 +23,7 @@ function Invoke-WPFGetIso {
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
+    $sync.BusyMessage.Visibility="Hidden"
     
     if (!$oscdImgFound) 
     {
@@ -77,6 +80,7 @@ function Invoke-WPFGetIso {
     {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+        $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
@@ -96,6 +100,23 @@ function Invoke-WPFGetIso {
     # storing off values in hidden fields for further steps
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
+    $mountedISOPath = (Split-Path -Path $filePath)
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
+        $sync.MicrowinScratchDirBox.Text =""
+    }
+
+     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+
+    if ($UseISOScratchDir) {
+        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
+    }
+
+    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
+
+         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
+
+    }
+
 
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -154,6 +175,7 @@ function Invoke-WPFGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
+    $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
 }
 
