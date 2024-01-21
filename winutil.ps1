@@ -5929,6 +5929,15 @@ $sync.configs.applications = '{
 		"description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
 		"link": "https://firealpaca.com/"
 	},
+	"WPFInstallExifTool": {
+		"winget": "OliverBetz.ExifTool",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ExifTool",
+		"description": "ExifTool is a customizable set of Perl modules plus a full-featured command-line application for reading and writing meta information in a wide variety of files, including the maker note information of many digital cameras by various manufacturers",
+		"link": "https://github.com/exiftool/exiftool"
+	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
 		"choco": "flameshot",
@@ -6099,6 +6108,15 @@ $sync.configs.applications = '{
 		"content": "Nomacs (Image viewer)",
 		"link": "https://github.com/nomacs/nomacs/releases/",
 		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats."
+	},
+	"WPFInstallupscayl": {
+		"winget": "Upscayl.Upscayl",
+		"choco": "upscayl",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "AI image upscaler",
+		"link": "https://github.com/upscayl/upscayl",
+		"description": "Free and Open Source AI Image Upscaler"
 	},
 	"WPFInstalldarktable": {
 		"winget": "darktable.darktable",
@@ -6666,6 +6684,15 @@ $sync.configs.applications = '{
 		"content": "Nushell",
 		"link": "https://www.nushell.sh/",
 		"description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience."
+	},
+	"WPFInstalllibrehardwaremonitor": {
+		"winget": "na",
+		"choco": "librehardwaremonitor",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Libre Hardware Monitor",
+		"link": "https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/",
+		"description": "Libre Hardware Monitor, a fork of Open Hardware Monitor, is free software that can monitor the temperature sensors, fan speeds, voltages, load and clock speeds of your computer."
 	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",

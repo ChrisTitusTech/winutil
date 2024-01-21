@@ -1178,6 +1178,15 @@
 		"description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
 		"link": "https://firealpaca.com/"
 	},
+	"WPFInstallExifTool": {
+		"winget": "OliverBetz.ExifTool",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ExifTool",
+		"description": "ExifTool is a customizable set of Perl modules plus a full-featured command-line application for reading and writing meta information in a wide variety of files, including the maker note information of many digital cameras by various manufacturers",
+		"link": "https://github.com/exiftool/exiftool"
+	},
 	"WPFInstallflameshot": {
 		"winget": "Flameshot.Flameshot",
 		"choco": "flameshot",
