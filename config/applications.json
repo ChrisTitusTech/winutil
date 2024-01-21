@@ -1349,6 +1349,15 @@
 		"link": "https://github.com/nomacs/nomacs/releases/",
 		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats."
 	},
+	"WPFInstallupscayl": {
+		"winget": "Upscayl.Upscayl",
+		"choco": "upscayl",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "AI image upscaler",
+		"link": "https://github.com/upscayl/upscayl",
+		"description": "Free and Open Source AI Image Upscaler"
+	},
 	"WPFInstalldarktable": {
 		"winget": "darktable.darktable",
 		"choco": "darktable",
@@ -1915,6 +1924,15 @@
 		"content": "Nushell",
 		"link": "https://www.nushell.sh/",
 		"description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience."
+	},
+	"WPFInstalllibrehardwaremonitor": {
+		"winget": "na",
+		"choco": "librehardwaremonitor",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Libre Hardware Monitor",
+		"link": "https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/",
+		"description": "Libre Hardware Monitor, a fork of Open Hardware Monitor, is free software that can monitor the temperature sensors, fan speeds, voltages, load and clock speeds of your computer."
 	},
 	"WPFInstallnvclean": {
 		"winget": "TechPowerUp.NVCleanstall",
