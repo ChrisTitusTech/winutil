@@ -1070,6 +1070,15 @@
 		"description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
 		"link": "https://aka.ms/terminal"
 	},
+	"WPFInstallpowerbi": {
+		"winget": "Microsoft.PowerBI",
+		"choco": "powerbi",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Power BI",
+		"description": "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
+		"link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/"
+	},
 	"WPFInstallaimp": {
 		"winget": "AIMP.AIMP",
 		"choco": "aimp",
