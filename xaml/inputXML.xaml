@@ -34,8 +34,10 @@
     </Style>
 
     <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
-        <Setter Property="Foreground" Value="{LinkForegroundColor}" />
+        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Background" Value="{MainBackgroundColor}" />
         <Setter Property="TextDecorations" Value="Underline" />
+        <Setter Property="Margin" Value="0" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
@@ -597,6 +599,7 @@
        
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
+
                 <Grid Background="Transparent" >
                    
                     <Grid.RowDefinitions>
@@ -611,7 +614,7 @@
                         <Button Name="WPFclearWinget" Content="Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                   <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>

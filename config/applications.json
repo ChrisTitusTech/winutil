@@ -517,9 +517,9 @@
 		"choco": "visualstudio2022community",
 		"category": "Development",
 		"panel": "1",
-		"content": "Visual Studio 2022",
+		"content": "Visual Studio 2022 Community",
 		"link": "https://visualstudio.microsoft.com/",
-		"description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications."
+		"description": "Visual Studio 2022 Community is an integrated development environment (IDE) for building, debugging, and deploying applications."
 	},
 	"WPFInstallvagrant": {
 		"winget": "Hashicorp.Vagrant",

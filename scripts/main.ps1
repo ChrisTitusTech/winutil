@@ -52,55 +52,100 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-$organizedData = @{}
-# Iterate through JSON data and organize by panel and category
-foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
-    $appInfo = $sync.configs.applications.$appName
+# $organizedData = @{}
 
-    # Create an object for the application
-    $appObject = [PSCustomObject]@{
-        Name = $appName
-        Category = $appInfo.Category
-        Content = $appInfo.Content
-        Choco = $appInfo.choco
-        Winget = $appInfo.winget
-        Panel = $appInfo.panel
-        Link = $appInfo.link
-        Description = $appInfo.description
-    }
+# foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
+#     $appInfo = $sync.configs.applications.$appName
 
-    if (-not $organizedData.ContainsKey($appInfo.panel)) {
-        $organizedData[$appInfo.panel] = @{}
-    }
+#     # Create an object for the application
+#     $appObject = [PSCustomObject]@{
+#         Name = $appName
+#         Category = $appInfo.Category
+#         Content = $appInfo.Content
+#         Choco = $appInfo.choco
+#         Winget = $appInfo.winget
+#         Panel = $appInfo.panel
+#         Link = $appInfo.link
+#         Description = $appInfo.description
+#     }
 
-    if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
-        $organizedData[$appInfo.panel][$appInfo.Category] = @{}
-    }
+#     if (-not $organizedData.ContainsKey($appInfo.panel)) {
+#         $organizedData[$appInfo.panel] = @{}
+#     }
 
-    # Store application data in a sub-array under the category
-    $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
-}
+#     if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
+#         $organizedData[$appInfo.panel][$appInfo.Category] = @{}
+#     }
 
-# Iterate through organizedData by panel, category, and application
-foreach ($panel in $organizedData.Keys) {
-    foreach ($category in $organizedData[$panel].Keys) {
-        $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
-        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
-        foreach ($appName in $sortedApps) {
-            $appInfo = $organizedData[$panel][$category][$appName]
-            if ($null -eq $appInfo.Link)
-            {
-                $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
-            }
-            else 
-            {
-                $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
-            }
+#     # Store application data in a sub-array under the category
+#     $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
+# }
+
+# # Iterate through organizedData by panel, category, and application
+# foreach ($panel in $organizedData.Keys) {
+#     foreach ($category in $organizedData[$panel].Keys) {
+#         $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
+#         $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+#         foreach ($appName in $sortedApps) {
+#             $appInfo = $organizedData[$panel][$category][$appName]
+#             if ($null -eq $appInfo.Link)
+#             {
+#                 $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
+#             }
+#             else 
+#             {
+#                 $blockXml += "<StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"" VerticalAlignment=""Top"" Margin=""0""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Margin=""0"" Height=""12"" Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
+#             }
+#         }
+#     }
+
+#     Write-Host $blockXml
+#     $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
+#     $blockXml = ""
+#     pause
+# }
+
+
+
+# Get all applications
+$allApps = $sync.configs.applications.PSObject.Properties | Where-Object { $_.Name -ne 'PSObject' }
+$totalApps = $allApps.Count
+$categories = $allApps.Value | Select-Object -Property Category -Unique
+$appsPerRow = [math]::Ceiling($totalApps / 5)
+$blockXml = ""
+
+$appsInCurrentRow = 0
+$currentRow = 0
+
+foreach ($category in $categories) {
+    $blockXml += "<Label Content=""$($category.Category)"" FontSize=""16""/>`n"
+    $appsInCategory = $allApps | Where-Object { $_.Value.Category -eq $category.Category }
+    $totalAppsInCategory = $appsInCategory.Count
+    $sortedApps = $appsInCategory | Sort-Object -Property { $_.Value.Content }
+
+    Write-Debug "Category: $($category.Category)"
+    Write-Debug "Total Apps in Category: $totalAppsInCategory and sorted $($sortedApps.Count) and $blockXml"
+
+    foreach ($appInfo in $sortedApps) {
+        $appName = $appInfo.Value.Content
+
+        $blockXml += "<StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"" VerticalAlignment=""Top"" Margin=""0"">
+        <CheckBox Name=""$($appInfo.Name)"" Content=""$($appName)"" ToolTip=""$($appInfo.Value.Description)"" Margin=""0,0,2,0""/>
+        <TextBlock Margin=""3,0,0,0"" HorizontalAlignment=""Left"" VerticalAlignment=""Top"" Height=""14"" Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""&#x1F517;"" ToolTip=""$($appInfo.Value.Link)"" />
+        </StackPanel>`n"
+
+        $appsInCurrentRow++
+        if ($appsInCurrentRow -eq $appsPerRow) {
+            $inputXML = $inputXML -replace "{{InstallPanel$currentRow}}", $blockXml
+            $blockXml = ""
+            $currentRow++
+            $appsInCurrentRow = 0
         }
     }
+}
 
-    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
-    $blockXml = ""
+if (-not [string]::IsNullOrWhiteSpace($blockXml)) {
+    $inputXML = $inputXML -replace "{{InstallPanel$currentRow}}", $blockXml
 }
 
 $ctttheme = 'Classic'
