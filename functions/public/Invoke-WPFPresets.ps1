@@ -27,7 +27,7 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -like "WPFToggle*" }
     Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
 
     $CheckBoxesToCheck | ForEach-Object {
