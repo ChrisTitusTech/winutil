@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.19
+    Version        : 24.01.25
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.19"
+$sync.version = "24.01.25"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5184,7 +5184,7 @@ $sync.configs.applications = '{
 		"category": "Browsers",
 		"panel": "0",
 		"content": "Floorp",
-		"link": "https://github.com/Floorp-Projects/Floorp",
+		"link": "https://floorp.app/",
 		"description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience."
 	},
 	"WPFInstalllibrewolf": {
@@ -7241,12 +7241,12 @@ $sync.configs.applications = '{
 	},
 	"WPFInstalltwinkletray": {
 		"winget": "xanderfrangos.twinkletray",
-		"choco": "na",
+		"choco": "twinkle-tray",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Twinkle Tray",
-		"link": "https://github.com/xanderfrangos/TwinkleTray",
-		"description": "Twinkle Tray is a small utility that allows you to customize the system tray icons on your Windows taskbar."
+		"link": "https://twinkletray.com/",
+		"description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors."
 	},
 	"WPFInstallwindirstat": {
 		"winget": "WinDirStat.WinDirStat",
@@ -7259,11 +7259,11 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallwingetui": {
 		"winget": "SomePythonThings.WingetUIStore",
-		"choco": "na",
+		"choco": "wingetui",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "WingetUI",
-		"link": "https://github.com/lostindark/WingetUIStore",
+		"link": "https://github.com/marticliment/WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)."
 	},
 	"WPFInstallwiztree": {
@@ -7299,7 +7299,7 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "WiseToys",
-		"link": "https://www.wisecleaner.com/wisetoys.html",
+		"link": "https://toys.wisecleaner.com/",
 		"description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience."
 	},
 	"WPFInstallxdm": {
