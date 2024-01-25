@@ -5404,7 +5404,7 @@ $sync.configs.applications = '{
 		"category": "Communications",
 		"panel": "0",
 		"content": "Ferdium",
-		"link": "https://www.ferdiapp.com/",
+		"link": "https://ferdium.org/",
 		"description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management."
 	},
 	"WPFInstallguilded": {
