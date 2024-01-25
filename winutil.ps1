@@ -5250,6 +5250,96 @@ $sync.configs.applications = '{
 		"link": "https://www.chatterino.com/",
 		"description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience."
 	},
+	"WPFInstallgoogledrive": {
+		"winget": "Google.Drive",
+		"choco": "googledrive",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Google Drive",
+		"link": "https://www.google.com/drive/",
+		"description": "File syncing across devices all tied to your google account"
+	},
+	"WPFInstallsynctrayzor": {
+		"winget": "SyncTrayzor.SyncTrayzor",
+		"choco": "synctrayzor",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Synctrayzor",
+		"link": "https://github.com/canton7/SyncTrayzor/",
+		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
+	},
+	"WPFInstallauthy": {
+		"winget": "Twilio.Authy",
+		"choco": "authy-desktop",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Authy",
+		"link": "https://authy.com/",
+		"description": "Simple and cross-platform 2FA app"
+	},
+	"WPFInstallbleachbit": {
+		"winget": "BleachBit.BleachBit",
+		"choco": "bleachbit",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "BleachBit",
+		"link": "https://www.bleachbit.org/",
+		"description": "Clean Your System and Free Disk Space"
+	},
+	"WPFInstallespanso": {
+		"winget": "Espanso.Espanso",
+		"choco": "espanso",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Espanso",
+		"link": "https://espanso.org/",
+		"description": "Cross-platform and open-source Text Expander written in Rust"
+	},
+	"WPFInstallpdf24creator": {
+		"winget": "geeksoftwareGmbH.PDF24Creator",
+		"choco": "pdf24",
+		"category": "Document",
+		"panel": "1",
+		"content": "PDF24 creator",
+		"link": "https://tools.pdf24.org/en/",
+		"description": "Free and easy-to-use online/desktop PDF tools that make you more productive"
+	},
+	"WPFInstalllazygit": {
+		"winget": "JesseDuffield.lazygit",
+		"choco": "lazygit",
+		"category": "Development",
+		"panel": "1",
+		"content": "Lazygit",
+		"link": "https://github.com/jesseduffield/lazygit/",
+		"description": "Simple terminal UI for git commands"
+	},
+	"WPFInstallwezterm": {
+		"winget": "wez.wezterm",
+		"choco": "wezterm",
+		"category": "Development",
+		"panel": "1",
+		"content": "Wezterm",
+		"link": "https://wezfurlong.org/wezterm/index.html",
+		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer"
+	},
+	"WPFInstallripgrep": {
+		"winget": "BurntSushi.ripgrep.MSVC",
+		"choco": "ripgrep",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Ripgrep",
+		"link": "https://github.com/BurntSushi/ripgrep/",
+		"description": "Fast and powerful commandline search tool"
+	},
+	"WPFInstallfzf": {
+		"winget": "junegunn.fzf",
+		"choco": "fzf",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Fzf",
+		"link": "https://github.com/junegunn/fzf/",
+		"description": "A command-line fuzzy finder"
+	},
 	"WPFInstalldiscord": {
 		"winget": "Discord.Discord",
 		"choco": "discord",
@@ -6525,7 +6615,7 @@ $sync.configs.applications = '{
 		"category": "Multimedia Tools",
 		"panel": "3",
 		"content": "Strawberry (Music Player)",
-		"link": "https://strawberry.rocks/",
+		"link": "https://github.com/strawberrymusicplayer/strawberry/",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface."
 	},
 	"WPFInstalltidal": {
