@@ -6143,7 +6143,7 @@ $sync.configs.applications = '{
 		"panel": "2",
 		"content": "Prism Launcher",
 		"description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
-		"link": "https://prismlauncher.com/"
+		"link": "https://prismlauncher.org/"
 	},
 	"WPFInstallsidequest": {
 		"winget": "SideQuestVR.SideQuest",
