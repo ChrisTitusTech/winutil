@@ -452,6 +452,15 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }    
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
@@ -1587,6 +1596,40 @@ function Invoke-WinUtilShowExt {
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapFlyout {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snap Assist Flyout on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snap Assist Flyout on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Assist Flyout On startup"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Assist Flyout On startup"
+            $value = 0
+        }
+        # taskkill.exe /F /IM "explorer.exe"
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        taskkill.exe /F /IM "explorer.exe"
+        Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
+        Start-Process "explorer.exe"
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -3510,6 +3553,7 @@ function Invoke-WPFToggle {
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
         "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
     }
 }
@@ -4879,6 +4923,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                 <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
