@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.25
+    Version        : 24.01.26
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.25"
+$sync.version = "24.01.26"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -6981,15 +6981,6 @@ $sync.configs.applications = '{
 		"content": "Deluge",
 		"link": "https://deluge-torrent.org/",
 		"description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely."
-	},
-	"WPFInstalldolphin": {
-		"winget": "KDE.Dolphin",
-		"choco": "na",
-		"category": "Utilities",
-		"panel": "4",
-		"content": "Dolphin File manager",
-		"link": "https://apps.kde.org/en/dolphin/",
-		"description": "Dolphin is a file manager for the KDE desktop environment. It provides a powerful and intuitive interface for managing files and folders on Linux systems."
 	},
 	"WPFInstallduplicati": {
 		"winget": "Duplicati.Duplicati",
