@@ -79,7 +79,7 @@
         "content": "Mullvad Browser",
         "link": "https://mullvad.net/browser",
         "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project."
-    },
+    	},
 	"WPFInstallthorium": {
 		"winget": "Alex313031.Thorium.AVX2",
 		"choco": "na",
