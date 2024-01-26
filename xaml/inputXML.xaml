@@ -33,6 +33,101 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Grid x:Name="toggleSwitch">
+                
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Name="txtToggle" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" FontSize="12">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="Off"/>
+                            <Setter Property="Margin" Value="4,0,4,0"/>
+                                <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsChecked}" Value="True">
+                                    <Setter Property="Text" Value="On"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    </TextBlock>
+
+                    <Border Grid.Column="1" x:Name="Border" CornerRadius="8"
+                            BorderThickness="1"
+                            Width="34" Height="17">
+                        <Ellipse x:Name="Ellipse" Fill="{MainForegroundColor}" Stretch="Uniform"
+                                Margin="2,2,2,1"
+                                HorizontalAlignment="Left" Width="12">
+                        </Ellipse>
+                    </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
+                            <Setter Property="Background" Value="{MainBackgroundColor}" />
+                            <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}"/>
+                            <Setter Property="Cursor" Value="Hand" />
+
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="25"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Panel.ZIndex" Value="2000"/>
+                        </Trigger>
+                        <Trigger Property="ToggleButton.IsChecked" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
+
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
+                            <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
+                        </Trigger>
+                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
+
+                            <Setter TargetName="Ellipse" Property="Fill" Value="{LinkHoverForegroundColor}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{LinkHoverForegroundColor}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="{MainForegroundColor}" Duration="0:0:0.1" />
+
+                                        <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="18,2,2,2" Duration="0:0:0.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="{MainBackgroundColor}" Duration="0:0:0.1" />
+
+                                        <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                Storyboard.TargetProperty="Margin"
+                                                To="2,2,2,1" Duration="0:0:0.1" />
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
         <Setter Property="Foreground" Value="{MainForegroundColor}" />
         <Setter Property="Background" Value="{MainBackgroundColor}" />
@@ -129,6 +224,7 @@
             </Setter.Value>
         </Setter>
         </Style>
+
         <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
             <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
@@ -169,6 +265,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{LabelBackgroundColor}"/>
@@ -267,6 +364,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
         <Style x:Key="ClearButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="Arial"/>
             <Setter Property="FontSize" Value="14"/>
@@ -724,31 +822,55 @@
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Label FontSize="16" Content="Customize Preferences"/>
                             <StackPanel Orientation="Vertical" Margin="0,10,0,0">
-                                <CheckBox Name="WPFTweaksDarkMode" Content="Set Dark Theme" Margin="5,0" ToolTip="Enable/Disable Dark Mode."/>
-                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFTweaksBingSearch" Content="Disable Bing Search in Start Menu" Margin="5,0" ToolTip= "If enable then includes web search results from Bing in your Start Menu search."/>
-                                <CheckBox Name="WPFTweaksNumLock" Content="Disable NumLock on Startup" ToolTip= "Toggle the Num Lock key state when your computer starts." Margin="5,0"/>
-                                <CheckBox Name="WPFTweaksVerboseLogon" Content="Turn on Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." Margin="5,0"/>
-                                <CheckBox Name="WPFTweaksShowExt" Content="Show File Extensions" Margin="5,0" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible."/>
-                                <CheckBox Name="WPFTweaksMouseAcceleration" Content="Mouse Acceleration" Margin="5,0" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFTweaksLaptopHybernation" Content="Set hibernation to default (for laptops)" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation but when laptop hibernates there is no risk to drain battery due to S0 sleep"/>
-                            </StackPanel>
+                                <DockPanel LastChildFill="True">
+                                    <Label Content="Set Dark Theme" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksDarkMode1" Content="Set Dark Theme" ToolTip="Enable/Disable Dark Mode." Style="{StaticResource ColorfulToggleSwitchStyle}" HorizontalAlignment="Right" Margin="5,0"/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Set Classic Right-Click Menu" ToolTip="Great Windows 11 tweak to bring back good context menus when right-clicking things in explorer." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksRightClickMenu" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set Classic Right-Click Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right-clicking things in explorer."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Disable Bing Search in Start Menu" ToolTip="If enabled, includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable Bing Search in Start Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, includes web search results from Bing in your Start Menu search."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Disable NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable NumLock on Startup" HorizontalAlignment="Right" Margin="5,0" ToolTip="Toggle the Num Lock key state when your computer starts."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Turn on Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Turn on Verbose Logon Messages" HorizontalAlignment="Right" Margin="5,0" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Show File Extensions" ToolTip="If enabled, file extensions (e.g., .txt, .jpg) are visible." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Show File Extensions" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, file extensions (e.g., .txt, .jpg) are visible."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Mouse Acceleration" ToolTip="If enabled, cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" />
+                                    <CheckBox Name="WPFTweaksMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Mouse Acceleration" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, cursor movement is affected by the speed of your physical mouse movements."/>
+                                </DockPanel>
+                                <DockPanel LastChildFill="True" >
+                                    <Label Content="Set hibernation to default (for laptops)" ToolTip="With SSD laptops boot fast even with hibernation, but when a laptop hibernates, there is no risk to drain battery due to S0 sleep."  HorizontalAlignment="Left"/>
+                                    <CheckBox Name="WPFTweaksLaptopHybernation" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set hibernation to default (for laptops)" Grid.Column="1" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation, but when a laptop hibernates, there is no risk to drain battery due to S0 sleep." HorizontalAlignment="Right" />
+                                </DockPanel>
+                        </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                <Label Content="Set Custom DNS:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <ComboBox Name="WPFchangedns" Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
-                                    <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                    <ComboBoxItem Content="DHCP"/>
-                                    <ComboBoxItem Content="Google"/>
-                                    <ComboBoxItem Content="Cloudflare"/>
-                                    <ComboBoxItem Content="Cloudflare_Malware"/>
-                                    <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
-                                    <ComboBoxItem Content="Level3"/>
-                                    <ComboBoxItem Content="Open_DNS"/>
-                                    <ComboBoxItem Content="Quad9"/>
-                                </ComboBox>
-                            </StackPanel>
-                        </StackPanel> <!-- End of Customize Preferences Section -->
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="Set Custom DNS:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <ComboBox Name="WPFchangedns" Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
+                                <ComboBoxItem IsSelected="True" Content = "Default"/>
+                                <ComboBoxItem Content="DHCP"/>
+                                <ComboBoxItem Content="Google"/>
+                                <ComboBoxItem Content="Cloudflare"/>
+                                <ComboBoxItem Content="Cloudflare_Malware"/>
+                                <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
+                                <ComboBoxItem Content="Level3"/>
+                                <ComboBoxItem Content="Open_DNS"/>
+                                <ComboBoxItem Content="Quad9"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel> 
                     </Border>
                     </Grid>
                 </ScrollViewer>
