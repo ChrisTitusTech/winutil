@@ -1827,13 +1827,13 @@
 		"description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services."
 	},
 	"WPFInstalldevtoys": {
-		"winget": "devtoys",
-		"choco": "devToys",
+		"winget": "DevToys",
+		"choco": "devtoys",
 		"category": "Utilities",
 		"panel": "4",
-		"content": "Devtoys",
-		"link": "https://dev.to/devtoys",
-		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers."
+		"content": "DevToys",
+		"link": "https://devtoys.app/",
+		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers."
 	},
 	"WPFInstallerrorlookup": {
 		"winget": "Henry++.ErrorLookup",
