@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.15
+    Version        : 24.01.25
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.15"
+$sync.version = "24.01.25"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -452,6 +452,15 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }    
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
@@ -558,7 +567,7 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
             Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
@@ -1587,6 +1596,40 @@ function Invoke-WinUtilShowExt {
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapFlyout {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snap Assist Flyout on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snap Assist Flyout on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Assist Flyout On startup"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Assist Flyout On startup"
+            $value = 0
+        }
+        # taskkill.exe /F /IM "explorer.exe"
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        taskkill.exe /F /IM "explorer.exe"
+        Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
+        Start-Process "explorer.exe"
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -2663,7 +2706,7 @@ function Invoke-WPFGetIso {
         # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
-        Write-Error "Please refer to this wiki for more details https://github.com/KonTy/winutil/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting"
+        Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
         return
     }
     # storing off values in hidden fields for further steps
@@ -3330,7 +3373,7 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
+    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" }
     Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
 
     $CheckBoxesToCheck | ForEach-Object {
@@ -3510,6 +3553,7 @@ function Invoke-WPFToggle {
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
         "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
     }
 }
@@ -4882,6 +4926,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+                                <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                 <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
                                 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
@@ -5184,7 +5233,7 @@ $sync.configs.applications = '{
 		"category": "Browsers",
 		"panel": "0",
 		"content": "Floorp",
-		"link": "https://github.com/Floorp-Projects/Floorp",
+		"link": "https://floorp.app/",
 		"description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience."
 	},
 	"WPFInstalllibrewolf": {
@@ -5250,6 +5299,96 @@ $sync.configs.applications = '{
 		"link": "https://www.chatterino.com/",
 		"description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience."
 	},
+	"WPFInstallgoogledrive": {
+		"winget": "Google.Drive",
+		"choco": "googledrive",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Google Drive",
+		"link": "https://www.google.com/drive/",
+		"description": "File syncing across devices all tied to your google account"
+	},
+	"WPFInstallsynctrayzor": {
+		"winget": "SyncTrayzor.SyncTrayzor",
+		"choco": "synctrayzor",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Synctrayzor",
+		"link": "https://github.com/canton7/SyncTrayzor/",
+		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
+	},
+	"WPFInstallauthy": {
+		"winget": "Twilio.Authy",
+		"choco": "authy-desktop",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Authy",
+		"link": "https://authy.com/",
+		"description": "Simple and cross-platform 2FA app"
+	},
+	"WPFInstallbleachbit": {
+		"winget": "BleachBit.BleachBit",
+		"choco": "bleachbit",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "BleachBit",
+		"link": "https://www.bleachbit.org/",
+		"description": "Clean Your System and Free Disk Space"
+	},
+	"WPFInstallespanso": {
+		"winget": "Espanso.Espanso",
+		"choco": "espanso",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Espanso",
+		"link": "https://espanso.org/",
+		"description": "Cross-platform and open-source Text Expander written in Rust"
+	},
+	"WPFInstallpdf24creator": {
+		"winget": "geeksoftwareGmbH.PDF24Creator",
+		"choco": "pdf24",
+		"category": "Document",
+		"panel": "1",
+		"content": "PDF24 creator",
+		"link": "https://tools.pdf24.org/en/",
+		"description": "Free and easy-to-use online/desktop PDF tools that make you more productive"
+	},
+	"WPFInstalllazygit": {
+		"winget": "JesseDuffield.lazygit",
+		"choco": "lazygit",
+		"category": "Development",
+		"panel": "1",
+		"content": "Lazygit",
+		"link": "https://github.com/jesseduffield/lazygit/",
+		"description": "Simple terminal UI for git commands"
+	},
+	"WPFInstallwezterm": {
+		"winget": "wez.wezterm",
+		"choco": "wezterm",
+		"category": "Development",
+		"panel": "1",
+		"content": "Wezterm",
+		"link": "https://wezfurlong.org/wezterm/index.html",
+		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer"
+	},
+	"WPFInstallripgrep": {
+		"winget": "BurntSushi.ripgrep.MSVC",
+		"choco": "ripgrep",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Ripgrep",
+		"link": "https://github.com/BurntSushi/ripgrep/",
+		"description": "Fast and powerful commandline search tool"
+	},
+	"WPFInstallfzf": {
+		"winget": "junegunn.fzf",
+		"choco": "fzf",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Fzf",
+		"link": "https://github.com/junegunn/fzf/",
+		"description": "A command-line fuzzy finder"
+	},
 	"WPFInstalldiscord": {
 		"winget": "Discord.Discord",
 		"choco": "discord",
@@ -5265,7 +5404,7 @@ $sync.configs.applications = '{
 		"category": "Communications",
 		"panel": "0",
 		"content": "Ferdium",
-		"link": "https://www.ferdiapp.com/",
+		"link": "https://ferdium.org/",
 		"description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management."
 	},
 	"WPFInstallguilded": {
@@ -5664,6 +5803,15 @@ $sync.configs.applications = '{
 		"link": "https://code.visualstudio.com/",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages."
 	},
+	"WPFInstallanaconda3": {
+		"winget": "Anaconda.Anaconda3",
+		"choco": "anaconda3",
+		"category": "Development",
+		"panel": "1",
+		"content": "Anaconda",
+		"link": "https://www.anaconda.com/products/distribution",
+		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
+    },
 	"WPFInstallvscodium": {
 		"winget": "Git.Git;VSCodium.VSCodium",
 		"choco": "vscodium",
@@ -5995,7 +6143,7 @@ $sync.configs.applications = '{
 		"panel": "2",
 		"content": "Prism Launcher",
 		"description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
-		"link": "https://prismlauncher.com/"
+		"link": "https://prismlauncher.org/"
 	},
 	"WPFInstallsidequest": {
 		"winget": "SideQuestVR.SideQuest",
@@ -6186,6 +6334,15 @@ $sync.configs.applications = '{
 		"description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
 		"link": "https://aka.ms/terminal"
 	},
+	"WPFInstallpowerbi": {
+		"winget": "Microsoft.PowerBI",
+		"choco": "powerbi",
+		"category": "Microsoft Tools",
+		"panel": "2",
+		"content": "Power BI",
+		"description": "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
+		"link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/"
+	},
 	"WPFInstallaimp": {
 		"winget": "AIMP.AIMP",
 		"choco": "aimp",
@@ -6222,15 +6379,33 @@ $sync.configs.applications = '{
 		"description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
 		"link": "https://www.clementine-player.org/"
 	},
-	"WPFInstallclipgrab": {
-		"winget": "na",
-		"choco": "clipgrab",
+	"WPFInstallytdlp": {
+		"winget": "yt-dlp.yt-dlp",
+		"choco": "yt-dlp",
 		"category": "Multimedia Tools",
 		"panel": "3",
-		"content": "Clipgrab",
-		"description": "Clipgrab is a free downloader and converter for YouTube, Vimeo, Facebook, and many other online video sites.",
-		"link": "https://clipgrab.org/"
+		"content": "Yt-dlp",
+		"description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
+		"link": "https://github.com/yt-dlp/yt-dlp"
 	},
+	"WPFInstallvideomass": {
+		"winget": "GianlucaPernigotto.Videomass",
+		"choco": "na",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Videomass",
+		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
+		"link": "https://github.com/jeanslack/Videomass"
+	},
+	"WPFInstallffmpeg": {
+		"winget": "Gyan.FFmpeg",
+		"choco": "ffmpeg-full",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Ffmpeg full",
+		"description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
+		"link": "https://ffmpeg.org/"
+	},	
 	"WPFInstallcopyq": {
 		"winget": "hluk.CopyQ",
 		"choco": "copyq",
@@ -6498,7 +6673,7 @@ $sync.configs.applications = '{
 		"category": "Multimedia Tools",
 		"panel": "3",
 		"content": "Strawberry (Music Player)",
-		"link": "https://strawberry.rocks/",
+		"link": "https://github.com/strawberrymusicplayer/strawberry/",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface."
 	},
 	"WPFInstalltidal": {
@@ -6861,14 +7036,14 @@ $sync.configs.applications = '{
 		"link": "https://www.voidtools.com/",
 		"description": "Everything Search is a fast and efficient file search utility for Windows."
 	},
-	"WPFInstallfiles": {
-		"winget": "YairAichenbaum.Files",
+	"WPFInstallfileconverter": {
+		"winget": "AdrienAllard.FileConverter",
 		"choco": "files",
 		"category": "Utilities",
 		"panel": "4",
-		"content": "Files File Explorer",
-		"link": "https://www.yairaichenbaum.com/files",
-		"description": "Files is a feature-rich file explorer providing a user-friendly interface for file management."
+		"content": "File Converter",
+		"link": "https://file-converter.org/",
+		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer."
 	},
 	"WPFInstallflux": {
 		"winget": "flux.flux",
@@ -7214,12 +7389,12 @@ $sync.configs.applications = '{
 	},
 	"WPFInstalltwinkletray": {
 		"winget": "xanderfrangos.twinkletray",
-		"choco": "na",
+		"choco": "twinkle-tray",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Twinkle Tray",
-		"link": "https://github.com/xanderfrangos/TwinkleTray",
-		"description": "Twinkle Tray is a small utility that allows you to customize the system tray icons on your Windows taskbar."
+		"link": "https://twinkletray.com/",
+		"description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors."
 	},
 	"WPFInstallwindirstat": {
 		"winget": "WinDirStat.WinDirStat",
@@ -7232,11 +7407,11 @@ $sync.configs.applications = '{
 	},
 	"WPFInstallwingetui": {
 		"winget": "SomePythonThings.WingetUIStore",
-		"choco": "na",
+		"choco": "wingetui",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "WingetUI",
-		"link": "https://github.com/lostindark/WingetUIStore",
+		"link": "https://github.com/marticliment/WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)."
 	},
 	"WPFInstallwiztree": {
@@ -7272,7 +7447,7 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "WiseToys",
-		"link": "https://www.wisecleaner.com/wisetoys.html",
+		"link": "https://toys.wisecleaner.com/",
 		"description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience."
 	},
 	"WPFInstallxdm": {
