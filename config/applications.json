@@ -2147,17 +2147,17 @@
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Snappy Driver Installer Origin",
-		"link": "https://github.com/snappy-driver/snappy-driver-installer",
+		"link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
 		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows."
 	},
 	"WPFInstallspacedrive": {
-		"winget": "spacedrive.Spacedrive",
+		"winget": "Spacedrive.FileManager",
 		"choco": "na",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Spacedrive File Manager",
-		"link": "https://spacedrive.org/",
-		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
+		"link": "https://github.com/spacedriveapp/spacedrive",
+		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices. *Currently in Alpha 0.2.0, may be unstable*"
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
@@ -2274,7 +2274,7 @@
 		"panel": "4",
 		"content": "Xtreme Download Manager",
 		"link": "https://github.com/subhra74/xdm",
-		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers."
+		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*"
 	},
 	"WPFInstallzerotierone": {
 		"winget": "ZeroTier.ZeroTierOne",
