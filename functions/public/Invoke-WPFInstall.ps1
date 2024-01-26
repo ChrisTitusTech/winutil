@@ -7,12 +7,12 @@ function Invoke-WPFInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "Install process is currently running."
+        $msg = "[Invoke-WPFInstall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
+    $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install"
@@ -20,23 +20,14 @@ function Invoke-WPFInstall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall -scriptblock {
-        param($WingetInstall)
+    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+        param($WingetInstall, $DebugPreference)
+
         try{
             $sync.ProcessRunning = $true
 
-            # Ensure winget is installed
             Install-WinUtilWinget
-
-            # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
-
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Installs are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-        
-            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
@@ -47,6 +38,7 @@ function Invoke-WPFInstall {
             Write-Host "--      Winget failed to install        ---"
             Write-Host "==========================================="
         }
+        Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False
     }
 }
