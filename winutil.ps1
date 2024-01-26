@@ -6712,6 +6712,42 @@ $sync.configs.applications = '{
 		"link": "https://www.plex.tv/your-media/",
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features."
 		},
+  "WPFInstallsonarr": {
+		"winget": "TeamSonarr.Sonarr",
+		"choco": "sonarr",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Sonarr",
+		"description": "Sonarr is a software-based Personal Video Recorder (PVR) for Usenet and BitTorrent users.",
+		"link": "https://sonarr.tv/"
+	},
+	"WPFInstallradarr": {
+		"winget": "TeamRadarr.Radarr",
+		"choco": "radarr",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Radarr",
+		"description": "Radarr is a free and open-source movie collection manager for Usenet and BitTorrent users.",
+		"link": "https://radarr.video/"
+	},
+	"WPFInstallprowlarr": {
+		"winget": "TeamProwlarr.Prowlarr",
+		"choco": "prowlarr",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Prowlarr",
+		"description": "Prowlarr is an indexer manager/proxy built on the *arr.net/reactjs base stack to integrate with various PVR apps.",
+		"link": "https://prowlarr.com/"
+	},
+	"WPFInstallbazarr": {
+		"winget": "Morpheus.Bazarr",
+		"choco": "",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Bazarr",
+		"description": "Bazarr is a companion application to Sonarr and Radarr that manages and downloads subtitles based on your requirements.",
+		"link": "https://www.bazarr.media/"
+	},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
 		"choco": "advanced-ip-scanner",
