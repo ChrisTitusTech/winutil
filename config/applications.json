@@ -71,6 +71,15 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements."
 	},
+	"WPFInstallmullvadbrowser": {
+        "winget": "MullvadVPN.MullvadBrowser",
+        "choco": "na",
+        "category": "Browsers",
+        "panel": "0",
+        "content": "Mullvad Browser",
+        "link": "https://mullvad.net/browser",
+        "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project."
+    },
 	"WPFInstallthorium": {
 		"winget": "Alex313031.Thorium.AVX2",
 		"choco": "na",
