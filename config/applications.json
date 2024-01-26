@@ -357,7 +357,7 @@
 		"panel": "1",
 		"content": "GitHub CLI",
 		"link": "https://cli.github.com/",
-		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.."
+		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal."
 	},
 	"WPFInstallgolang": {
 		"winget": "GoLang.Go",
