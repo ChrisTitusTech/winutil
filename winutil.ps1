@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.26
+    Version        : 24.01.27
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.26"
+$sync.version = "24.01.27"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -645,6 +645,36 @@ function Invoke-MicroWin-Helper {
 
 }
 
+function Is-CompatibleImage() {
+<#
+
+    .SYNOPSIS
+        Checks the version of a Windows image and determines whether or not it is compatible depending on the Major property
+
+    .PARAMETER imgVersion
+        The version of the Windows image
+
+#>
+
+    param
+    (
+        [Parameter(Mandatory = $true)] [string] $imgVersion
+    )
+
+    try {
+        $version = [Version]$imgVersion
+        if ($version.Major -ge 10)
+        {
+            return $True
+        }
+        else
+        {
+            return $False
+        }
+    } catch {
+        return $False
+    }
+}
 
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
 <#
@@ -2748,6 +2778,7 @@ function Invoke-WPFGetIso {
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
         }
+        $sync.MicrowinWindowsFlavors.Items.Clear()
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
             $imageIdx = $_.ImageIndex
             $imageName = $_.ImageName
@@ -2964,6 +2995,18 @@ public class PowerManagement {
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
+
+    $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
+
+    # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
+    if ((Is-CompatibleImage $imgVersion) -eq $false)
+    {
+		$msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
+        $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
+		Write-Host $msg
+		[System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+        return
+    }
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
