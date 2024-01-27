@@ -1607,8 +1607,8 @@
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Portmaster",
-		"link": "https://github.com/freebsd/portmaster",
-		"description": "Portmaster is a FreeBSD package management tool. It simplifies the process of managing software packages and dependencies on FreeBSD systems."
+		"link": "https://github.com/safing/portmaster",
+		"description": "Portmaster is a free and open-source application firewall that does the heavy lifting for you. Restore privacy and take back control over all your computer's network activity. "
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
