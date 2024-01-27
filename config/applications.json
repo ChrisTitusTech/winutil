@@ -2367,7 +2367,7 @@
 		"description": "An open source cross-platform alternative to AirDrop."
 	},
 	"WPFInstallopenhashtab": {
-		"winget": "LocalSend.LocalSend",
+		"winget": "namazso.OpenHashTab",
 		"choco": "openhashtab",
 		"category": "Utilities",
 		"panel": "4",
