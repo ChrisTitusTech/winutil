@@ -143,6 +143,16 @@
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
 	},
+	"WPFInstallarduinoide": {
+		"winget": "na",
+		"choco": "arduino",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Arduino IDE",
+		"link": "https://www.arduino.cc/",
+		"description": "The Arduino IDE is a cross-platform application that enables users to write and upload code to Arduino boards, facilitating easy electronics prototyping."
+	},
+	
 	"WPFInstallauthy": {
 		"winget": "Twilio.Authy",
 		"choco": "authy-desktop",
@@ -358,6 +368,15 @@
 		"content": "Viber",
 		"link": "https://www.viber.com/",
 		"description": "Viber is a free messaging and calling app with features like group chats, video calls, and more."
+	},
+	"WPFInstallwhatsapp": {
+		"winget": "WhatsApp.WhatsApp",
+		"choco": "whatsapp",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Whatsapp",
+		"link": "https://www.whatsapp.com/",
+		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer."
 	},
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
