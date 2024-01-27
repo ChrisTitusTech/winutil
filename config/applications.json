@@ -152,7 +152,6 @@
 		"link": "https://www.arduino.cc/",
 		"description": "The Arduino IDE is a cross-platform application that enables users to write and upload code to Arduino boards, facilitating easy electronics prototyping."
 	},
-	
 	"WPFInstallauthy": {
 		"winget": "Twilio.Authy",
 		"choco": "authy-desktop",
