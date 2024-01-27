@@ -2151,7 +2151,7 @@
 		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows."
 	},
 	"WPFInstallspacedrive": {
-		"winget": "Spacedrive.FileManager",
+		"winget": "spacedrive.Spacedrive",
 		"choco": "na",
 		"category": "Utilities",
 		"panel": "4",
