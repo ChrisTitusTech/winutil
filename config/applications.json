@@ -251,6 +251,15 @@
 		"link": "https://hexchat.github.io/",
 		"description": "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication."
 	},
+	"WPFInstallmumble": {
+		"winget": "Mumble.Mumble.Client",
+		"choco": "mumble",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Mumble",
+		"link": "https://www.mumble.info",
+		"description": "Mumble is a free, open source, low latency, high quality voice chat application."
+	},
 	"WPFInstalljami": {
 		"winget": "SFLinux.Jami",
 		"choco": "jami",
