@@ -144,7 +144,7 @@
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
 	},
 	"WPFInstallarduinoide": {
-		"winget": "na",
+		"winget": "ArduinoSA.IDE.stable",
 		"choco": "arduino",
 		"category": "Utilities",
 		"panel": "4",
@@ -2169,7 +2169,7 @@
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients."
 	},
 	"WPFInstallqFlipper": {
-		"winget": "na",
+		"winget": "qflipper",
 		"choco": "qflipper",
 		"category": "Utilities",
 		"panel": "4",
