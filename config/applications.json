@@ -854,6 +854,15 @@
 		"link": "https://www.zotero.org/",
 		"description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials."
 	},
+	"WPFInstallATLauncher": {
+		"winget": "ATLauncher.ATLauncher",
+		"choco": "na",
+		"category": "Games",
+		"panel": "3",
+		"content": "ATLauncher",
+		"link": "https://github.com/ATLauncher/ATLauncher",
+		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
+	},
 	"WPFInstallbluestacks": {
 		"winget": "BlueStack.BlueStacks",
 		"choco": "bluestacks",
@@ -997,6 +1006,15 @@
 		"content": "Sunshine/GameStream Server",
 		"description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
 		"link": "https://github.com/LoLBoy25/Sunshine"
+	},
+	"WPFInstallTcNoAccSwitcher": {
+		"winget": "TechNobo.TcNoAccountSwitcher",
+		"choco": "tcno-acc-switcher",
+		"category": "Games",
+		"panel": "3",
+		"content": "TCNO Account Switcher",
+		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
+		"description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!"
 	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
@@ -1961,6 +1979,15 @@
 		"link": "https://www.monitorian.com/",
 		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows."
 	},
+	"WPFInstallMotrix": {
+		"winget": "na",
+		"choco": "motrix",
+		"category": "Utilities",
+		"panel": "5",
+		"content": "Motrix Download Manager",
+		"link": "https://github.com/agalwood/Motrix",
+		"description": "A full-featured download manager."
+	},
 	"WPFInstallmsiafterburner": {
 		"winget": "Guru3D.Afterburner",
 		"choco": "msiafterburner",
@@ -2050,6 +2077,15 @@
 		"content": "ownCloud Desktop",
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
+	},
+	"WPFInstallOPAutoClicker": {
+		"winget": "OPAutoClicker.OPAutoClicker",
+		"choco": "autoclicker",
+		"category": "Utilities",
+		"panel": "5",
+		"content": "OPAutoClicker",
+		"link": "https://www.opautoclicker.com",
+		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
 	},
 	"WPFInstallparsec": {
 		"winget": "Parsec.parsec",
