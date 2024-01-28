@@ -858,7 +858,7 @@
 		"winget": "ATLauncher.ATLauncher",
 		"choco": "na",
 		"category": "Games",
-		"panel": "3",
+		"panel": "2",
 		"content": "ATLauncher",
 		"link": "https://github.com/ATLauncher/ATLauncher",
 		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
@@ -1011,7 +1011,7 @@
 		"winget": "TechNobo.TcNoAccountSwitcher",
 		"choco": "tcno-acc-switcher",
 		"category": "Games",
-		"panel": "3",
+		"panel": "2",
 		"content": "TCNO Account Switcher",
 		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
 		"description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!"
@@ -1983,7 +1983,7 @@
 		"winget": "na",
 		"choco": "motrix",
 		"category": "Utilities",
-		"panel": "5",
+		"panel": "4",
 		"content": "Motrix Download Manager",
 		"link": "https://github.com/agalwood/Motrix",
 		"description": "A full-featured download manager."
