@@ -1601,14 +1601,14 @@
 		"link": "https://openvpn.net/",
 		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy."
 	},
-	"WPFInstallportmaster": {
-		"winget": "portmaster",
-		"choco": "portmaster",
+	"WPFInstallPortmaster": {
+		"winget": "Safing.Portmaster",
+		"choco": "na",
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Portmaster",
-		"link": "https://github.com/freebsd/portmaster",
-		"description": "Portmaster is a FreeBSD package management tool. It simplifies the process of managing software packages and dependencies on FreeBSD systems."
+		"link": "https://github.com/safing/portmaster",
+		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections."
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
