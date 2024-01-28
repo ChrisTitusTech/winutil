@@ -638,6 +638,15 @@
 		"link": "https://www.anaconda.com/products/distribution",
 		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
     },
+	"WPFInstallThonny": {
+		"winget": "na",
+		"choco": "thonny",
+		"category": "Development",
+		"panel": "1",
+		"content": "Thonny Python IDE",
+		"link": "https://github.com/thonny/thonny",
+		"description": "Python IDE for beginners."
+    },
 	"WPFInstallvscodium": {
 		"winget": "Git.Git;VSCodium.VSCodium",
 		"choco": "vscodium",
