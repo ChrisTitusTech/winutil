@@ -1603,7 +1603,7 @@
 	},
 	"WPFInstallPortmaster": {
 		"winget": "Safing.Portmaster",
-		"choco": "na",
+		"choco": "portmaster",
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Portmaster",
