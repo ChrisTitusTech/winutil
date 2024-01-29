@@ -185,7 +185,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Border x:Name="ButtonGlow" 
+                            <Border x:Name="ButtonGlow"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{ButtonForegroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
@@ -196,7 +196,7 @@
                                         BorderBrush="{ButtonBackgroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                             Margin="10,2,10,2"/>
                                     </Border>
                                 </Grid>
@@ -545,9 +545,9 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" />
@@ -572,7 +572,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
+            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon"
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
@@ -620,42 +620,42 @@
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBox
                     Grid.Column="0"
-                    Width="200" 
+                    Width="200"
                     FontSize="14"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
                     Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
                     Name="CheckboxFilter"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
-                <TextBlock 
+                <TextBlock
                     Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    FontFamily="Segoe MDL2 Assets" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    FontFamily="Segoe MDL2 Assets"
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
-                <Button Grid.Column="0" 
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    Name="CheckboxFilterClear" 
-                    Style="{StaticResource ClearButtonStyle}" 
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Name="CheckboxFilterClear"
+                    Style="{StaticResource ClearButtonStyle}"
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent" 
+                    Grid.Column="1" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="18"
-                    Width="35" Height="35" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    Margin="0,5,5,0" 
-                    FontFamily="Segoe MDL2 Assets" 
+                    Width="35" Height="35"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,5,5,0"
+                    FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup" 
+                <Popup Grid.Column="1" Name="SettingsPopup"
                     IsOpen="False"
-                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -666,25 +666,25 @@
                         </StackPanel>
                     </Border>
                 </Popup>
- 
-            <Button 
+
+            <Button
                 Grid.Column="2"
-                Content="&#xD7;" BorderThickness="0" 
+                Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                Width="35" Height="35" 
-                HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="0,5,5,0" 
+                Width="35" Height="35"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,5,5,0"
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
             </Grid>
-           
+
         </DockPanel>
-       
+
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
-                   
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="45px"/>
                         <RowDefinition Height="0.95*"/>
@@ -697,41 +697,10 @@
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                            <Border Grid.Row="1" Grid.Column="0">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel0}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="1">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
-                                    {{InstallPanel1}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="2">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel2}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="3">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel3}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="4">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel4}}
-                                </StackPanel>
-                            </Border>
+                        {{InstallPanel00}}
                         </Grid>
                     </ScrollViewer>
 
@@ -811,10 +780,10 @@
                                         <ComboBoxItem Content="Quad9"/>
                                     </ComboBox>
                                 </StackPanel>
-                                
+
                                 <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
                                 <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
-                                
+
                             </StackPanel>
 
                         </StackPanel>
@@ -832,7 +801,7 @@
                                 <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
                                 <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
-                            
+
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                 <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
                                 <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
@@ -842,7 +811,7 @@
                                 <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
                                 <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
-                            
+
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                 <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
                                 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
@@ -1027,16 +996,16 @@
                                 FontSize = "10"
                                 FontFamily = "Courier New"
                             >
-  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
- /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  
-/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
-\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __
+ /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | |
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_|
                             </TextBlock>
-                        
-                            <TextBlock Margin="15,15,15,0" 
-                                Padding="8,8,8,0" 
-                                VerticalAlignment="Center" 
-                                TextWrapping="WrapWithOverflow" 
+
+                            <TextBlock Margin="15,15,15,0"
+                                Padding="8,8,8,0"
+                                VerticalAlignment="Center"
+                                TextWrapping="WrapWithOverflow"
                                 Height = "Auto"
                                 Width = "Auto"
                                 Foreground="{ComboBoxForegroundColor}">
@@ -1068,9 +1037,9 @@
                                 <LineBreak/>
                                 If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
                             </TextBlock>
-                            <TextBlock Margin="15,0,15,15" 
-                                Padding = "1" 
-                                TextWrapping="WrapWithOverflow" 
+                            <TextBlock Margin="15,0,15,15"
+                                Padding = "1"
+                                TextWrapping="WrapWithOverflow"
                                 Height = "Auto"
                                 Width = "Auto"
                                 VerticalAlignment = "Top"

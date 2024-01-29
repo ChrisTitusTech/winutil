@@ -80,8 +80,9 @@ foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
     # Store application data in a sub-array under the category
     $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
 }
-
 # Iterate through organizedData by panel, category, and application
+$opanels=""
+$opanel=0
 foreach ($panel in $organizedData.Keys) {
     foreach ($category in $organizedData[$panel].Keys) {
         $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
@@ -92,16 +93,27 @@ foreach ($panel in $organizedData.Keys) {
             {
                 $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
             }
-            else 
+            else
             {
                 $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
             }
         }
     }
 
-    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
+    # $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
+    $opanels += "<Border Grid.Row=""1"" Grid.Column=""$opanel""><StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">$blockXml</StackPanel></Border>`n"
+    $opanel+=1
     $blockXml = ""
 }
+$ocols="<Grid.ColumnDefinitions>"+("<ColumnDefinition Width=""*""/>"*($opanel))+"</Grid.ColumnDefinitions>"
+
+$inputXML = $inputXML -replace "{{InstallPanel00}}", ($ocols+$opanels)
+# $inputXML = $inputXML -replace "{{InstallPanel0}}", ''
+# $inputXML = $inputXML -replace "{{InstallPanel1}}", ''
+# $inputXML = $inputXML -replace "{{InstallPanel2}}", ''
+# $inputXML = $inputXML -replace "{{InstallPanel3}}", ''
+# $inputXML = $inputXML -replace "{{InstallPanel4}}", ''
+
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Matrix'
@@ -168,7 +180,7 @@ $sync.keys | ForEach-Object {
                     Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
-       
+
         }
     }
 }
@@ -287,7 +299,7 @@ $sync["Form"].Add_Deactivated({
 
 $sync["Form"].Add_ContentRendered({
 
-    try { 
+    try {
         [void][Window]
     } catch {
 Add-Type @"
@@ -300,11 +312,11 @@ Add-Type @"
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-            
+
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-            
+
             [DllImport("user32.dll")]
             public static extern int GetSystemMetrics(int nIndex);
         };
@@ -368,7 +380,7 @@ Add-Type @"
     } else {
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
-    
+
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
@@ -420,20 +432,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
     $filter = Get-WinUtilVariables -Type CheckBox
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
-    
+
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
             continue
         }
-    
+
         $textToSearch = $sync.CheckboxFilter.Text
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
-    
+
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
-    
+
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
              # Set the corresponding text block visibility
@@ -449,7 +461,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
-    
+
 })
 
 # Define event handler for button click
@@ -493,7 +505,7 @@ GUI      : @KonTy
 MicroWin : @KonTy
 GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
-"@    
+"@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
 
