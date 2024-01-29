@@ -37,6 +37,12 @@ function Invoke-WinUtilTweaks {
             WingetArg = "install -e --accept-source-agreements --accept-package-agreements --scope=machine"
         }
     }
+    if($sync.configs.tweaks.$CheckBox.apps){
+        $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
+            Write-Warning $($psitem.winget)
+            Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
+        }
+    }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
@@ -60,19 +66,6 @@ function Invoke-WinUtilTweaks {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.apps){
-        $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
-            Write-Warning $($psitem.winget)
-            Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
         }
     }
     if(!$undo){
