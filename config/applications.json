@@ -143,6 +143,15 @@
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
 	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+	},
 	"WPFInstallauthy": {
 		"winget": "Twilio.Authy",
 		"choco": "authy-desktop",
