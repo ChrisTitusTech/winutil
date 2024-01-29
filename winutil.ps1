@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.25
+    Version        : 24.01.27
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.25"
+$sync.version = "24.01.27"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -317,29 +317,33 @@ Function Get-WinUtilCheckBoxes {
     foreach ($CheckBox in $CheckBoxes) {
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
+                elseif ($CheckBox.Key.StartsWith("WPFToggle")) { "WPFToggle" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
 
         if ($group) {
-            if ($CheckBox.Value.IsChecked -eq $true) {
-                $feature = switch ($group) {
-                    "Install" {
-                        # Get the winget value
-                        $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
+            $feature = switch ($group) {
+                "Install" {
+                    # Get the winget value
+                    $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
 
-                        if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
-                            $wingetValue -split ";"
-                        } else {
-                            $sync.configs.applications.$($CheckBox.Name).choco
-                        }
-                    }
-                    default {
-                        $CheckBox.Name
+                    if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
+                        $wingetValue -split ";"
+                    } else {
+                        $sync.configs.applications.$($CheckBox.Name).choco
                     }
                 }
-
-                if (-not $Output.ContainsKey($group)) {
-                    $Output[$group] = @()
+                "WPFToggle" {
+                    "$($CheckBox.Name):$($CheckBox.Value.IsChecked)"
                 }
+                default {
+                    $CheckBox.Name
+                }
+            }
+
+            if (-not $Output.ContainsKey($group)) {
+                $Output[$group] = @()
+            }
+            if ($CheckBox.Value.IsChecked -eq $true -or $group -eq "WPFToggle") {
                 if ($group -eq "Install") {
                     $Output["WPFInstall"] += $CheckBox.Name
                     Write-Debug "Adding: $($CheckBox.Name) under: WPFInstall"
@@ -347,10 +351,10 @@ Function Get-WinUtilCheckBoxes {
 
                 Write-Debug "Adding: $($feature) under: $($group)"
                 $Output[$group] += $feature
+            }
 
-                if ($uncheck -eq $true) {
-                    $CheckBox.Value.IsChecked = $false
-                }
+            if ($uncheck -eq $true) {
+                $CheckBox.Value.IsChecked = $false
             }
         }
     }
@@ -3241,17 +3245,52 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning){
+  if ($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  Write-Debug "Getting Toggles"
+  $toggles = (Get-WinUtilCheckBoxes)["WPFToggle"]
+  
+  Write-Debug "Got some toglges $($toggles.count)"
+  if ($toggles.count -ne 0) {
+    Invoke-WPFRunspace -ArgumentList $toggles -DebugPreference $DebugPreference -ScriptBlock {
+      param($toggles, $DebugPreference)
+      Write-Debug "Inside Number of toggles to process: $($toggles.Count)"
+ 
+      $sync.ProcessRunning = $true
+  
+      $cnt = 0
+      # Execute other selected tweaks
+      foreach ($tog in $toggles) {
+        Write-Debug "This is a toggle to run $tog count: $cnt"
+
+        $toga = $tog -split ":"
+
+        Write-Debug "TOGA $($toga[0]) AND $($toga[1])"
+        if ($toga[1] -ieq "true") {
+          Write-Debug "Setting $toga[0]"
+          Invoke-WinUtilTweaks $toga[0]
+          pause
+        }
+        else {
+          Write-Debug "Unsetting $toga[0]"
+          Invoke-WinUtilTweaks $toga[0] -undo $true
+          pause
+        }
+        $cnt += 1
+      }
+  
+      $sync.ProcessRunning = $false
+    }
+  }
   
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  if ($Tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -3277,20 +3316,6 @@ function Invoke-WPFtweaksbutton {
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
-
-
-    # Assuming your App.xaml contains a ResourceDictionary with the defined theme
-$themeResource = [System.Windows.Markup.XamlLoader]::Load((New-Object System.IO.StreamReader("App.xaml")).BaseStream)
-
-# Find the existing ResourceDictionary and remove it
-[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Clear()
-
-# Add the new ResourceDictionary (reloading the theme)
-[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Add($themeResource)
-
-
-    $form.FindName("YourButtonName").InvalidateProperty([Windows.Controls.Control]::BackgroundProperty)
-    $sync["Form"].Refresh()
   }
 }
 Function Invoke-WPFUltimatePerformance {
@@ -3379,7 +3404,7 @@ function Invoke-WPFundoall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if ($sync.ProcessRunning) {
         $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -3387,18 +3412,18 @@ function Invoke-WPFundoall {
 
     $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
 
-    if ($tweaks.count -eq 0){
+    if ($tweaks.count -eq 0) {
         $msg = "Please check the tweaks you wish to undo."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $Tweaks, $DebugPreference -ScriptBlock {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
 
-        Foreach ($tweak in $tweaks){
+        foreach ($tweak in $tweaks) {
             Invoke-WinUtilTweaks $tweak -undo $true
         }
 
@@ -3406,166 +3431,7 @@ function Invoke-WPFundoall {
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
-
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Tweaks are Finished "
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
-
-<#
-
-    Write-Host "Creating Restore Point in case something bad happens"
-    Enable-ComputerRestore -Drive "$env:SystemDrive"
-    Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
-
-    Write-Host "Enabling Telemetry..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
-    Write-Host "Enabling Wi-Fi Sense"
-    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 1
-    Write-Host "Enabling Application suggestions..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEverEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SilentInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338388Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 1
-    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 0
-    Write-Host "Enabling Activity History..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 1
-    Write-Host "Enable Location Tracking..."
-    If (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value 1
-    Write-Host "Enabling automatic Maps updates..."
-    Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 1
-    Write-Host "Enabling Feedback..."
-    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 0
-    Write-Host "Enabling Tailored Experiences..."
-    If (Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 0
-    Write-Host "Disabling Advertising ID..."
-    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 0
-    Write-Host "Allow Error reporting..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 0
-    Write-Host "Allowing Diagnostics Tracking Service..."
-    Stop-Service "DiagTrack" -WarningAction SilentlyContinue
-    Set-Service "DiagTrack" -StartupType Manual
-    Write-Host "Allowing WAP Push Service..."
-    Stop-Service "dmwappushservice" -WarningAction SilentlyContinue
-    Set-Service "dmwappushservice" -StartupType Manual
-    Write-Host "Allowing Home Groups services..."
-    Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue
-    Set-Service "HomeGroupListener" -StartupType Manual
-    Stop-Service "HomeGroupProvider" -WarningAction SilentlyContinue
-    Set-Service "HomeGroupProvider" -StartupType Manual
-    Write-Host "Enabling Storage Sense..."
-    New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" | Out-Null
-    Write-Host "Allowing Superfetch service..."
-    Stop-Service "SysMain" -WarningAction SilentlyContinue
-    Set-Service "SysMain" -StartupType Manual
-    Write-Host "Setting BIOS time to Local Time instead of UTC..."
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 0
-    Write-Host "Enabling Hibernation..."
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 1
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -ErrorAction SilentlyContinue
-
-    Write-Host "Hiding file operations details..."
-    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 0
-    Write-Host "Showing Task View button..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
-
-    Write-Host "Changing default Explorer view to Quick Access..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 0
-
-    Write-Host "Unrestricting AutoLogger directory"
-    $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
-    icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-    Write-Host "Enabling and starting Diagnostics Tracking Service"
-    Set-Service "DiagTrack" -StartupType Automatic
-    Start-Service "DiagTrack"
-
-    Write-Host "Hiding known file extensions"
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
-
-    Write-Host "Reset Local Group Policies to Stock Defaults"
-    # cmd /c secedit /configure /cfg %windir%\inf\defltbase.inf /db defltbase.sdb /verbose
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicyUsers"
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicy"
-    cmd /c gpupdate /force
-    # Considered using Invoke-GPUpdate but requires module most people won't have installed
-
-    Write-Host "Adjusting visual effects for appearance..."
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158, 30, 7, 128, 18, 0, 0, 0))
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 1
-    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-    Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
-    Write-Host "Restoring Clipboard History..."
-    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
-    Write-Host "Enabling Notifications and Action Center"
-    Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
-    Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
-    Write-Host "Restoring Default Right Click Menu Layout"
-    Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
-
-    Write-Host "Reset News and Interests"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 1
-    # Remove "News and Interest" from taskbar
-    Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
-    Write-Host "Done - Reverted to Stock Settings"
-
-    Write-Host "Essential Undo Completed"
-
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Undo All"
-    $Messageboxbody = ("Done")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-
-    Write-Host "================================="
-    Write-Host "---   Undo All is Finished    ---"
-    Write-Host "================================="
-    #>
 }
 function Invoke-WPFUnInstall {
     <#
@@ -4589,35 +4455,35 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Vertical" Margin="0,10,0,0">
                                 <DockPanel LastChildFill="True">
                                     <Label Content="Set Dark Theme" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksDarkMode1" Content="Set Dark Theme" ToolTip="Enable/Disable Dark Mode." Style="{StaticResource ColorfulToggleSwitchStyle}" HorizontalAlignment="Right" Margin="5,0"/>
+                                    <CheckBox Name="WPFToggleTweaksDarkMode" Content="Set Dark Theme" ToolTip="Enable/Disable Dark Mode." Style="{StaticResource ColorfulToggleSwitchStyle}" HorizontalAlignment="Right" Margin="5,0"/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Set Classic Right-Click Menu" ToolTip="Great Windows 11 tweak to bring back good context menus when right-clicking things in explorer." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksRightClickMenu" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set Classic Right-Click Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right-clicking things in explorer."/>
+                                    <CheckBox Name="WPFToggleTweaksRightClickMenu" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set Classic Right-Click Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right-clicking things in explorer."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Disable Bing Search in Start Menu" ToolTip="If enabled, includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable Bing Search in Start Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, includes web search results from Bing in your Start Menu search."/>
+                                    <CheckBox Name="WPFToggleTweaksBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable Bing Search in Start Menu" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, includes web search results from Bing in your Start Menu search."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Disable NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable NumLock on Startup" HorizontalAlignment="Right" Margin="5,0" ToolTip="Toggle the Num Lock key state when your computer starts."/>
+                                    <CheckBox Name="WPFToggleTweaksNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Disable NumLock on Startup" HorizontalAlignment="Right" Margin="5,0" ToolTip="Toggle the Num Lock key state when your computer starts."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Turn on Verbose Logon Messages" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Turn on Verbose Logon Messages" HorizontalAlignment="Right" Margin="5,0" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
+                                    <CheckBox Name="WPFToggleTweaksVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Turn on Verbose Logon Messages" HorizontalAlignment="Right" Margin="5,0" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Show File Extensions" ToolTip="If enabled, file extensions (e.g., .txt, .jpg) are visible." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Show File Extensions" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, file extensions (e.g., .txt, .jpg) are visible."/>
+                                    <CheckBox Name="WPFToggleTweaksShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Show File Extensions" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, file extensions (e.g., .txt, .jpg) are visible."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Mouse Acceleration" ToolTip="If enabled, cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" />
-                                    <CheckBox Name="WPFTweaksMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Mouse Acceleration" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, cursor movement is affected by the speed of your physical mouse movements."/>
+                                    <CheckBox Name="WPFToggleTweaksMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Mouse Acceleration" HorizontalAlignment="Right" Margin="5,0" ToolTip="If enabled, cursor movement is affected by the speed of your physical mouse movements."/>
                                 </DockPanel>
                                 <DockPanel LastChildFill="True" >
                                     <Label Content="Set hibernation to default (for laptops)" ToolTip="With SSD laptops boot fast even with hibernation, but when a laptop hibernates, there is no risk to drain battery due to S0 sleep."  HorizontalAlignment="Left"/>
-                                    <CheckBox Name="WPFTweaksLaptopHybernation" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set hibernation to default (for laptops)" Grid.Column="1" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation, but when a laptop hibernates, there is no risk to drain battery due to S0 sleep." HorizontalAlignment="Right" />
+                                    <CheckBox Name="WPFToggleTweaksLaptopHybernation" Style="{StaticResource ColorfulToggleSwitchStyle}" Content="Set hibernation to default (for laptops)" Grid.Column="1" Margin="5,0" ToolTip="With SSD laptops boot fast even with hibernation, but when a laptop hibernates, there is no risk to drain battery due to S0 sleep." HorizontalAlignment="Right" />
                                 </DockPanel>
                         </StackPanel>
 
@@ -9309,8 +9175,8 @@ $sync.configs.tweaks = '{
 
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-        "
-    ]
+      "
+      ]
   },
   "WPFTweaksWifi": {
     "registry": [
@@ -9627,7 +9493,7 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksLaptopHybernation": {
+  "WPFToggleTweaksLaptopHybernation": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
@@ -9764,7 +9630,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksRightClickMenu": {
+  "WPFToggleTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -9783,7 +9649,7 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksDarkMode": {
+  "WPFToggleTweaksDarkMode": {
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
@@ -9801,7 +9667,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksBingSearch": {
+  "WPFToggleTweaksBingSearch": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
@@ -9812,7 +9678,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksNumLock": {
+  "WPFToggleTweaksNumLock": {
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Keyboard",
@@ -9823,7 +9689,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },  
-  "WPFTweaksVerboseLogon": {
+  "WPFToggleTweaksVerboseLogon": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -9834,7 +9700,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksShowExt": {
+  "WPFToggleTweaksShowExt": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -9845,7 +9711,7 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksMouseAcceleration": {
+  "WPFToggleTweaksMouseAcceleration": {
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Mouse",

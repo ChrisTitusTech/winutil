@@ -1894,8 +1894,8 @@
 
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-        "
-    ]
+      "
+      ]
   },
   "WPFTweaksWifi": {
     "registry": [
@@ -2212,7 +2212,7 @@
       "
     ]
   },
-  "WPFTweaksLaptopHybernation": {
+  "WPFToggleTweaksLaptopHybernation": {
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings\\238C9FA8-0AAD-41ED-83F4-97BE242C8F20\\7bc4a2f9-d8fc-4469-b07b-33eb785aaca0",
@@ -2349,7 +2349,7 @@
       }
     ]
   },
-  "WPFTweaksRightClickMenu": {
+  "WPFToggleTweaksRightClickMenu": {
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -2368,7 +2368,7 @@
       "
     ]
   },
-  "WPFTweaksDarkMode": {
+  "WPFToggleTweaksDarkMode": {
     "registry": [
       {
         "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
@@ -2386,7 +2386,7 @@
       }
     ]
   },
-  "WPFTweaksBingSearch": {
+  "WPFToggleTweaksBingSearch": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
@@ -2397,7 +2397,7 @@
       }
     ]
   },
-  "WPFTweaksNumLock": {
+  "WPFToggleTweaksNumLock": {
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Keyboard",
@@ -2408,7 +2408,7 @@
       }
     ]
   },  
-  "WPFTweaksVerboseLogon": {
+  "WPFToggleTweaksVerboseLogon": {
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -2419,7 +2419,7 @@
       }
     ]
   },
-  "WPFTweaksShowExt": {
+  "WPFToggleTweaksShowExt": {
     "registry": [
       {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -2430,7 +2430,7 @@
       }
     ]
   },
-  "WPFTweaksMouseAcceleration": {
+  "WPFToggleTweaksMouseAcceleration": {
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Mouse",

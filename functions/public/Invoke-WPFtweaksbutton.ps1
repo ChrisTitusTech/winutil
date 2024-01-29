@@ -6,17 +6,52 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning){
+  if ($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  Write-Debug "Getting Toggles"
+  $toggles = (Get-WinUtilCheckBoxes)["WPFToggle"]
+  
+  Write-Debug "Got some toggles $($toggles.count)"
+  if ($toggles.count -ne 0) {
+    Invoke-WPFRunspace -ArgumentList $toggles -DebugPreference $DebugPreference -ScriptBlock {
+      param($toggles, $DebugPreference)
+      Write-Debug "Inside Number of toggles to process: $($toggles.Count)"
+ 
+      $sync.ProcessRunning = $true
+  
+      $cnt = 0
+      # Execute other selected tweaks
+      foreach ($tog in $toggles) {
+        Write-Debug "This is a toggle to run $tog count: $cnt"
+
+        $toga = $tog -split ":"
+
+        Write-Debug "Toggles Array: $($toga[0]) Value: $($toga[1])"
+        if ($toga[1] -ieq "true") {
+          Write-Debug "Setting $toga[0]"
+          Invoke-WinUtilTweaks $toga[0]
+          pause
+        }
+        else {
+          Write-Debug "Unsetting $toga[0]"
+          Invoke-WinUtilTweaks $toga[0] -undo $true
+          pause
+        }
+        $cnt += 1
+      }
+  
+      $sync.ProcessRunning = $false
+    }
+  }
   
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  if ($Tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -42,19 +77,5 @@ function Invoke-WPFtweaksbutton {
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
-
-
-    # Assuming your App.xaml contains a ResourceDictionary with the defined theme
-$themeResource = [System.Windows.Markup.XamlLoader]::Load((New-Object System.IO.StreamReader("App.xaml")).BaseStream)
-
-# Find the existing ResourceDictionary and remove it
-[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Clear()
-
-# Add the new ResourceDictionary (reloading the theme)
-[Windows.Markup.XamlLoader]::Load("App.xaml").Application.Resources.MergedDictionaries.Add($themeResource)
-
-
-    $form.FindName("YourButtonName").InvalidateProperty([Windows.Controls.Control]::BackgroundProperty)
-    $sync["Form"].Refresh()
   }
 }

@@ -35,29 +35,33 @@ Function Get-WinUtilCheckBoxes {
     foreach ($CheckBox in $CheckBoxes) {
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
+                elseif ($CheckBox.Key.StartsWith("WPFToggle")) { "WPFToggle" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
 
         if ($group) {
-            if ($CheckBox.Value.IsChecked -eq $true) {
-                $feature = switch ($group) {
-                    "Install" {
-                        # Get the winget value
-                        $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
+            $feature = switch ($group) {
+                "Install" {
+                    # Get the winget value
+                    $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
 
-                        if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
-                            $wingetValue -split ";"
-                        } else {
-                            $sync.configs.applications.$($CheckBox.Name).choco
-                        }
-                    }
-                    default {
-                        $CheckBox.Name
+                    if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
+                        $wingetValue -split ";"
+                    } else {
+                        $sync.configs.applications.$($CheckBox.Name).choco
                     }
                 }
-
-                if (-not $Output.ContainsKey($group)) {
-                    $Output[$group] = @()
+                "WPFToggle" {
+                    "$($CheckBox.Name):$($CheckBox.Value.IsChecked)"
                 }
+                default {
+                    $CheckBox.Name
+                }
+            }
+
+            if (-not $Output.ContainsKey($group)) {
+                $Output[$group] = @()
+            }
+            if ($CheckBox.Value.IsChecked -eq $true -or $group -eq "WPFToggle") {
                 if ($group -eq "Install") {
                     $Output["WPFInstall"] += $CheckBox.Name
                     Write-Debug "Adding: $($CheckBox.Name) under: WPFInstall"
@@ -65,10 +69,10 @@ Function Get-WinUtilCheckBoxes {
 
                 Write-Debug "Adding: $($feature) under: $($group)"
                 $Output[$group] += $feature
+            }
 
-                if ($uncheck -eq $true) {
-                    $CheckBox.Value.IsChecked = $false
-                }
+            if ($uncheck -eq $true) {
+                $CheckBox.Value.IsChecked = $false
             }
         }
     }
