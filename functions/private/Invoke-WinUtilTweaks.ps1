@@ -24,6 +24,7 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
             ScriptType = "UndoScript"
+            WingetArg = "uninstall -e --purge --force"
         }
 
     }
@@ -33,6 +34,7 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "State"
             Service = "StartupType"
             ScriptType = "InvokeScript"
+            WingetArg = "install -e --accept-source-agreements --accept-package-agreements --scope=machine"
         }
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
@@ -60,7 +62,19 @@ function Invoke-WinUtilTweaks {
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
-
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+            Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
+            $Scriptblock = [scriptblock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+        }
+    }
+    if($sync.configs.tweaks.$CheckBox.apps){
+        $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
+            Write-Warning $($psitem.winget)
+            Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
+        }
+    }
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
