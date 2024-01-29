@@ -1976,7 +1976,7 @@
 		"category": "Utilities",
 		"panel": "4",
 		"content": "NanaZip",
-		"link": "https://nanazip.codeplex.com/",
+		"link": "https://github.com/M2Team/NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool."
 	},
 	"WPFInstallneofetchwin": {
@@ -2132,13 +2132,13 @@
 		"link": "https://www.sandboxie.com/",
 		"description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment."
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShell": {
 		"winget": "Nilesoft.Shell",
 		"choco": "nilesoft-shell",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Shell (Expanded Context Menu)",
-		"link": "https://www.nilesoft.com/shell/",
+		"link": "https://nilesoft.org/",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu."
 	},
 	"WPFInstallsdio": {
@@ -2156,7 +2156,7 @@
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Spacedrive File Manager",
-		"link": "https://spacedrive.org/",
+		"link": "https://www.spacedrive.com/",
 		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
 	},
 	"WPFInstallsuperf4": {
