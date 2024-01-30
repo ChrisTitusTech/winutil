@@ -1989,7 +1989,7 @@
 		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows."
 	},
 	"WPFInstallMotrix": {
-		"winget": "na",
+		"winget": "agalwood.Motrix",
 		"choco": "motrix",
 		"category": "Utilities",
 		"panel": "4",
@@ -2094,7 +2094,7 @@
 		"panel": "5",
 		"content": "OPAutoClicker",
 		"link": "https://www.opautoclicker.com",
-		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
+		"description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location."
 	},
 	"WPFInstallparsec": {
 		"winget": "Parsec.parsec",
