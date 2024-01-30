@@ -7830,6 +7830,15 @@ $sync.configs.applications = '{
 		"content": "Total Commander",
 		"link": "https://www.ghisler.com/",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
+		},
+	"WPFInstallvesktop": {
+		"winget": "Vencord.Vesktop",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Vesktop",
+		"link": "https://github.com/Vencord/Vesktop",
+		"description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed."
 		}
 }' | convertfrom-json
 $sync.configs.dns = '{
