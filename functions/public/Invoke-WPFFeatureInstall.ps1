@@ -14,7 +14,7 @@ function Invoke-WPFFeatureInstall {
 
     $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
 
-    Invoke-WPFRunspace -ArgumentList $Features,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
 
         $sync.ProcessRunning = $true
