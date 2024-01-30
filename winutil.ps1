@@ -5698,6 +5698,15 @@ $sync.configs.applications = '{
 		"link": "https://element.io/",
 		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools."
 	},
+	"WPFInstallmumble": {
+		"winget": "Mumble.Mumble.Client",
+		"choco": "mumble",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Mumble",
+		"link": "https://www.mumble.info",
+		"description": "Mumble is a free, open source, low latency, high quality voice chat application."
+	},
 	"WPFInstallsession": {
 		"winget": "Oxen.Session",
 		"choco": "session",
