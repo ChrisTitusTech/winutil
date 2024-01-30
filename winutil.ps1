@@ -1668,7 +1668,7 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
             ScriptType = "UndoScript"
-            WingetArg = "uninstall -e --purge --force"
+            WingetArg = "Uninstall -e --purge --force"
         }
 
     }
@@ -1678,8 +1678,22 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "State"
             Service = "StartupType"
             ScriptType = "InvokeScript"
-            WingetArg = "install -e --accept-source-agreements --accept-package-agreements --scope=machine"
+            WingetArg = "Install -e --accept-source-agreements --accept-package-agreements --scope=machine"
         }
+    }
+    # if($sync.configs.tweaks.$CheckBox.apps){
+    #     $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
+    #         Write-Host "$(($values.WingetArg -split " ")[0]) $($psitem.WingetArg)"
+    #         Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
+    #     }
+    # }
+    if($sync.configs.applications.$CheckBox.winget){
+        Write-Host "$(($values.WingetArg -split " ")[0]) $sync.configs.tweaks.$CheckBox.content "
+        Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($sync.configs.applications.$CheckBox.winget)" -NoNewWindow -Wait
+    }
+    if($sync.configs.tweaks.$CheckBox.winget){
+        Write-Host "$(($values.WingetArg -split " ")[0]) $sync.configs.tweaks.$CheckBox.content "
+        Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($sync.configs.tweaks.$CheckBox.winget)" -NoNewWindow -Wait
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
@@ -1706,19 +1720,6 @@ function Invoke-WinUtilTweaks {
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
-            Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
-        }
-    }
-    if($sync.configs.tweaks.$CheckBox.apps){
-        $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
-            Write-Warning $($psitem.winget)
-            Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
-        }
-    }
     if(!$undo){
         if($sync.configs.tweaks.$CheckBox.appx){
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
@@ -1727,6 +1728,48 @@ function Invoke-WinUtilTweaks {
             }
         }
 
+    }
+    Write-Debug $sync.configs.feature.$CheckBox.feature
+    Write-Debug "11111111111111111111111"
+    if($sync.configs.feature.$CheckBox.feature){
+        Write-Debug "11111111111111111111111"
+        Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+            Try{
+                Write-Host "Installing $feature"
+                Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+            }
+            Catch{
+                if ($CheckBox.Exception.Message -like "*requires elevation*"){
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                }
+
+                else{
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
+                }
+            }
+        }
+    }
+    if($sync.configs.feature.$CheckBox.InvokeScript){
+        Write-Debug "11111111111111111111111"
+        Foreach( $script in $sync.configs.feature.$CheckBox.InvokeScript ){
+            Try{
+                $Scriptblock = [scriptblock]::Create($script)
+
+                Write-Host "Running Script for $CheckBox"
+                Invoke-Command $scriptblock -ErrorAction stop
+            }
+            Catch{
+                if ($CheckBox.Exception.Message -like "*requires elevation*"){
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                }
+
+                else{
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
+                }
+            }
+        }
     }
 }
 function Invoke-WinUtilVerboseLogon {
@@ -2397,6 +2440,7 @@ function Invoke-WPFFeatureInstall {
     }
 
     $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+    Write-Debug $Features
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
@@ -3585,15 +3629,17 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
-  
+    $Tweaks = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+  # $Tweaks = (Get-WinUtilCheckBoxes)["WPFInstall"]
+  # $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
-    $msg = "Please check the tweaks you wish to perform."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-    return
-  }
+  # if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  #   $msg = "Please check the tweaks you wish to perform."
+  #   [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+  #   return
+  # }
 
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
@@ -3607,6 +3653,7 @@ function Invoke-WPFtweaksbutton {
     # Execute other selected tweaks
     foreach ($tweak in $Tweaks) {
       Write-Debug "This is a tweak to run $tweak count: $cnt"
+      Write-Debug $tweak
       Invoke-WinUtilTweaks $tweak
       $cnt += 1
     }
@@ -5158,8 +5205,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
 $sync.configs.applications = '{
 
 	"WPFInstallzotero": {
-		"winget": "DigitalScholar.Zotero",
 		"choco": "zotero",
+		"winget": "NirSoft.NirCmd",
 		"category": "Document",
 		"panel": "1",
 		"content": "Zotero",
@@ -5458,12 +5505,9 @@ $sync.configs.themes = '{
 }' | convertfrom-json
 $sync.configs.tweaks = '{
   "WPFTweaksAH": {
-    "apps": [
-      {
-        "winget": "NirSoft.NirCmd",
-        "choco": "---"
-      }
-    ]
+    "choco": "---",
+    "winget": "NirSoft.NirCmd",
+    "content": "deneme"
   },
   "WPFTweaksAH2": {
     "registry": [

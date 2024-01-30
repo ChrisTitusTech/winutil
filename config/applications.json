@@ -1,8 +1,8 @@
 {
 
 	"WPFInstallzotero": {
-		"winget": "DigitalScholar.Zotero",
 		"choco": "zotero",
+		"winget": "NirSoft.NirCmd",
 		"category": "Document",
 		"panel": "1",
 		"content": "Zotero",

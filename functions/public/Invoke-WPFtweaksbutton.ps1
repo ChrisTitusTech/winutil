@@ -12,15 +12,17 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
-  
+    $Tweaks = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+  # $Tweaks = (Get-WinUtilCheckBoxes)["WPFInstall"]
+  # $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
-    $msg = "Please check the tweaks you wish to perform."
-    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-    return
-  }
+  # if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  #   $msg = "Please check the tweaks you wish to perform."
+  #   [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+  #   return
+  # }
 
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
@@ -34,6 +36,7 @@ function Invoke-WPFtweaksbutton {
     # Execute other selected tweaks
     foreach ($tweak in $Tweaks) {
       Write-Debug "This is a tweak to run $tweak count: $cnt"
+      Write-Debug $tweak
       Invoke-WinUtilTweaks $tweak
       $cnt += 1
     }

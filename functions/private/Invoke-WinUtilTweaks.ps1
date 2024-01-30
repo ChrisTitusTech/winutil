@@ -24,7 +24,7 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "OriginalState"
             Service = "OriginalType"
             ScriptType = "UndoScript"
-            WingetArg = "uninstall -e --purge --force"
+            WingetArg = "Uninstall -e --purge --force"
         }
 
     }
@@ -34,14 +34,22 @@ function Invoke-WinUtilTweaks {
             ScheduledTask = "State"
             Service = "StartupType"
             ScriptType = "InvokeScript"
-            WingetArg = "install -e --accept-source-agreements --accept-package-agreements --scope=machine"
+            WingetArg = "Install -e --accept-source-agreements --accept-package-agreements --scope=machine"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.apps){
-        $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
-            Write-Warning $($psitem.winget)
-            Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
-        }
+    # if($sync.configs.tweaks.$CheckBox.apps){
+    #     $sync.configs.tweaks.$CheckBox.apps | ForEach-Object {
+    #         Write-Host "$(($values.WingetArg -split " ")[0]) $($psitem.WingetArg)"
+    #         Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($psitem.winget)" -NoNewWindow -Wait
+    #     }
+    # }
+    if($sync.configs.applications.$CheckBox.winget){
+        Write-Host "$(($values.WingetArg -split " ")[0]) $sync.configs.tweaks.$CheckBox.content "
+        Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($sync.configs.applications.$CheckBox.winget)" -NoNewWindow -Wait
+    }
+    if($sync.configs.tweaks.$CheckBox.winget){
+        Write-Host "$(($values.WingetArg -split " ")[0]) $sync.configs.tweaks.$CheckBox.content "
+        Start-Process -FilePath winget -ArgumentList "$($values.WingetArg) --silent $($sync.configs.tweaks.$CheckBox.winget)" -NoNewWindow -Wait
     }
     if($sync.configs.tweaks.$CheckBox.ScheduledTask){
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
@@ -76,5 +84,47 @@ function Invoke-WinUtilTweaks {
             }
         }
 
+    }
+    Write-Debug $sync.configs.feature.$CheckBox.feature
+    Write-Debug "11111111111111111111111"
+    if($sync.configs.feature.$CheckBox.feature){
+        Write-Debug "11111111111111111111111"
+        Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+            Try{
+                Write-Host "Installing $feature"
+                Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+            }
+            Catch{
+                if ($CheckBox.Exception.Message -like "*requires elevation*"){
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                }
+
+                else{
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
+                }
+            }
+        }
+    }
+    if($sync.configs.feature.$CheckBox.InvokeScript){
+        Write-Debug "11111111111111111111111"
+        Foreach( $script in $sync.configs.feature.$CheckBox.InvokeScript ){
+            Try{
+                $Scriptblock = [scriptblock]::Create($script)
+
+                Write-Host "Running Script for $CheckBox"
+                Invoke-Command $scriptblock -ErrorAction stop
+            }
+            Catch{
+                if ($CheckBox.Exception.Message -like "*requires elevation*"){
+                    Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                }
+
+                else{
+                    Write-Warning "Unable to Install $feature due to unhandled exception"
+                    Write-Warning $CheckBox.Exception.StackTrace
+                }
+            }
+        }
     }
 }

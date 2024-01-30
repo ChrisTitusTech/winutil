@@ -1,11 +1,8 @@
 {
   "WPFTweaksAH": {
-    "apps": [
-      {
-        "winget": "NirSoft.NirCmd",
-        "choco": "---"
-      }
-    ]
+    "choco": "---",
+    "winget": "NirSoft.NirCmd",
+    "content": "deneme"
   },
   "WPFTweaksAH2": {
     "registry": [
