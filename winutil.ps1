@@ -2414,7 +2414,7 @@ function Invoke-WPFFeatureInstall {
 
     $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
 
-    Invoke-WPFRunspace -ArgumentList $Features,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
 
         $sync.ProcessRunning = $true
@@ -2823,7 +2823,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $checkbox,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $checkbox -DebugPreference $DebugPreference -ScriptBlock {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
@@ -3091,7 +3091,7 @@ function Invoke-WPFInstall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
@@ -3955,7 +3955,7 @@ function Invoke-WPFundoall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
@@ -4160,7 +4160,7 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
