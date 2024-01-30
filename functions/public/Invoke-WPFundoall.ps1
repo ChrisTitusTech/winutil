@@ -20,7 +20,7 @@ function Invoke-WPFundoall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
