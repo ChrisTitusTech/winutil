@@ -5860,6 +5860,15 @@ $sync.configs.applications = '{
 		"link": "https://desktop.github.com/",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface."
 	},
+	"WPFInstallgithubcli": {
+		"winget": "Git.Git;GitHub.cli",
+		"choco": "git;gh",
+		"category": "Development",
+		"panel": "1",
+		"content": "GitHub CLI",
+		"link": "https://cli.github.com/",
+		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal."
+	},
 	"WPFInstallgolang": {
 		"winget": "GoLang.Go",
 		"choco": "golang",
