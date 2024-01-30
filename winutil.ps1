@@ -6489,7 +6489,7 @@ $sync.configs.applications = '{
 		"content": "PS Remote Play",
 		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
 		"description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device."
-		},
+	},
 	"WPFInstallvrdesktopstreamer": {
 		"winget": "VirtualDesktop.Streamer",
 		"choco": "na",
@@ -6498,7 +6498,7 @@ $sync.configs.applications = '{
 		"content": "Virtual Desktop Streamer",
 		"link": "https://www.vrdesktop.net/",
 		"description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices."
-		},
+	},
 	"WPFInstalldotnet3": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
 		"choco": "dotnetcore3-desktop-runtime",
@@ -6535,7 +6535,7 @@ $sync.configs.applications = '{
 		"description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/7.0"
 	},
-		"WPFInstalldotnet8": {
+	"WPFInstalldotnet8": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.8",
 		"choco": "dotnet-8.0-runtime",
 		"category": "Microsoft Tools",
@@ -7002,7 +7002,7 @@ $sync.configs.applications = '{
 		"content": "Plex Media Server",
 		"link": "https://www.plex.tv/your-media/",
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features."
-		},
+	},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
 		"choco": "advanced-ip-scanner",
@@ -7785,7 +7785,7 @@ $sync.configs.applications = '{
 		"content": "Windows PC Health Check",
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
 		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11."
-		},
+	},
 	"WPFInstallsamsungmagician": {
 		"winget": "Samsung.SamsungMagician",
 		"choco": "samsung-magician",
@@ -7794,7 +7794,7 @@ $sync.configs.applications = '{
 		"content": "Samsung Magician",
 		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
 		"description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs."
-		},
+	},
 	"WPFInstallbitcomet": {
 		"winget": "CometNetwork.BitComet",
 		"choco": "bitcomet",
@@ -7803,7 +7803,7 @@ $sync.configs.applications = '{
 		"content": "BitComet",
 		"link": "https://www.bitcomet.com/",
 		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features."
-		},
+	},
 	"WPFInstallpiimager": {
 		"winget": "RaspberryPiFoundation.RaspberryPiImager",
 		"choco": "rpi-imager",
@@ -7812,7 +7812,7 @@ $sync.configs.applications = '{
 		"content": "Raspberry Pi Imager",
 		"link": "https://www.raspberrypi.com/software/",
 		"description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices."
-		},
+	},
 	"WPFInstall1password": {
 		"winget": "AgileBits.1Password",
 		"choco": "1password",
@@ -7821,7 +7821,7 @@ $sync.configs.applications = '{
 		"content": "1Password",
 		"link": "https://1password.com/",
 		"description": "1Password is a password manager that allows you to store and manage your passwords securely."
-		},
+	},
 	"WPFInstalltotalcommander": {
 		"winget": "Ghisler.TotalCommander",
 		"choco": "TotalCommander",
@@ -7830,7 +7830,43 @@ $sync.configs.applications = '{
 		"content": "Total Commander",
 		"link": "https://www.ghisler.com/",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
-		},
+	},
+	"WPFInstalllivelywallpaper": {
+		"winget": "rocksdanister.LivelyWallpaper",
+		"choco": "lively",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Lively Wallpaper",
+		"link": "https://www.rocksdanister.com/lively/",
+		"description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers."
+	},
+	"WPFInstalllocalsend": {
+		"winget": "LocalSend.LocalSend",
+		"choco": "localsend.install",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "LocalSend",
+		"link": "https://localsend.org/",
+		"description": "An open source cross-platform alternative to AirDrop."
+	},
+	"WPFInstallopenhashtab": {
+		"winget": "namazso.OpenHashTab",
+		"choco": "openhashtab",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "OpenHashTab",
+		"link": "https://github.com/namazso/OpenHashTab/",
+		"description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties."
+	},
+	"WPFInstallvencord": {
+		"winget": "Vendicated.Vencord",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Vencord",
+		"link": "https://vencord.dev/",
+		"description": "Vencord is a modification for Discord that adds plugins, custom styles, and more!"
+	},
 	"WPFInstallvesktop": {
 		"winget": "Vencord.Vesktop",
 		"choco": "na",
