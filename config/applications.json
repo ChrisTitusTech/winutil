@@ -1853,6 +1853,15 @@
 		"panel": "4",
 		"winget": "spacedrive.Spacedrive"
 	},
+	"WPFInstallstarship": {
+		"category": "Development",
+		"choco": "starship",
+		"content": "Starship (Shell Prompt)",
+		"description": "Starship is a minimal, fast, and customizable prompt for any shell.",
+		"link": "https://starship.rs/",
+		"panel": "1",
+		"winget": "starship"
+	},
 	"WPFInstallstartallback": {
 		"category": "Utilities",
 		"choco": "na",
