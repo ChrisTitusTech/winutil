@@ -7165,6 +7165,15 @@ $sync.configs.applications = '{
 		"link": "https://xpipe.io/",
 		"description": "X-Pipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment."
 	},
+	"WPFInstallstremio": {
+		"winget": "Stremio.Stremio",
+		"choco": "stremio",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "Stremio",
+		"link": "https://www.stremio.com/",
+		"description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
+	},
 	"WPFInstall7zip": {
 		"winget": "7zip.7zip",
 		"choco": "7zip",
