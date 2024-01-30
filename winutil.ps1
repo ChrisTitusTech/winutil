@@ -6058,6 +6058,15 @@ $sync.configs.applications = '{
 		"link": "https://www.anaconda.com/products/distribution",
 		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
     },
+	"WPFInstallThonny": {
+		"winget": "AivarAnnamaa.Thonny",
+		"choco": "thonny",
+		"category": "Development",
+		"panel": "1",
+		"content": "Thonny Python IDE",
+		"link": "https://github.com/thonny/thonny",
+		"description": "Python IDE for beginners."
+    },
 	"WPFInstallvscodium": {
 		"winget": "Git.Git;VSCodium.VSCodium",
 		"choco": "vscodium",
@@ -6274,6 +6283,15 @@ $sync.configs.applications = '{
 		"link": "https://www.zotero.org/",
 		"description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials."
 	},
+	"WPFInstallATLauncher": {
+		"winget": "ATLauncher.ATLauncher",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "ATLauncher",
+		"link": "https://github.com/ATLauncher/ATLauncher",
+		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
+	},
 	"WPFInstallbluestacks": {
 		"winget": "BlueStack.BlueStacks",
 		"choco": "bluestacks",
@@ -6417,6 +6435,15 @@ $sync.configs.applications = '{
 		"content": "Sunshine/GameStream Server",
 		"description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
 		"link": "https://github.com/LoLBoy25/Sunshine"
+	},
+	"WPFInstallTcNoAccSwitcher": {
+		"winget": "TechNobo.TcNoAccountSwitcher",
+		"choco": "tcno-acc-switcher",
+		"category": "Games",
+		"panel": "2",
+		"content": "TCNO Account Switcher",
+		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
+		"description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!"
 	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
@@ -7021,14 +7048,14 @@ $sync.configs.applications = '{
 		"link": "https://openvpn.net/",
 		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy."
 	},
-	"WPFInstallportmaster": {
-		"winget": "portmaster",
+	"WPFInstallPortmaster": {
+		"winget": "Safing.Portmaster",
 		"choco": "portmaster",
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Portmaster",
-		"link": "https://github.com/freebsd/portmaster",
-		"description": "Portmaster is a FreeBSD package management tool. It simplifies the process of managing software packages and dependencies on FreeBSD systems."
+		"link": "https://github.com/safing/portmaster",
+		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections."
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
@@ -7381,6 +7408,15 @@ $sync.configs.applications = '{
 		"link": "https://www.monitorian.com/",
 		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows."
 	},
+	"WPFInstallMotrix": {
+		"winget": "agalwood.Motrix",
+		"choco": "motrix",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Motrix Download Manager",
+		"link": "https://github.com/agalwood/Motrix",
+		"description": "A full-featured download manager."
+	},
 	"WPFInstallmsiafterburner": {
 		"winget": "Guru3D.Afterburner",
 		"choco": "msiafterburner",
@@ -7470,6 +7506,15 @@ $sync.configs.applications = '{
 		"content": "ownCloud Desktop",
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
+	},
+	"WPFInstallOPAutoClicker": {
+		"winget": "OPAutoClicker.OPAutoClicker",
+		"choco": "autoclicker",
+		"category": "Utilities",
+		"panel": "5",
+		"content": "OPAutoClicker",
+		"link": "https://www.opautoclicker.com",
+		"description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location."
 	},
 	"WPFInstallparsec": {
 		"winget": "Parsec.parsec",
@@ -7567,7 +7612,7 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Snappy Driver Installer Origin",
-		"link": "https://github.com/snappy-driver/snappy-driver-installer",
+		"link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
 		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows."
 	},
 	"WPFInstallspacedrive": {
@@ -7576,8 +7621,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Spacedrive File Manager",
-		"link": "https://spacedrive.org/",
-		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
+		"link": "https://github.com/spacedriveapp/spacedrive",
+		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices. *Currently in Alpha 0.2.0, may be unstable*"
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
@@ -7694,7 +7739,7 @@ $sync.configs.applications = '{
 		"panel": "4",
 		"content": "Xtreme Download Manager",
 		"link": "https://github.com/subhra74/xdm",
-		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers."
+		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*"
 	},
 	"WPFInstallzerotierone": {
 		"winget": "ZeroTier.ZeroTierOne",
