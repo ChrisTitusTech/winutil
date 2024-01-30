@@ -639,7 +639,7 @@
 		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
     },
 	"WPFInstallThonny": {
-		"winget": "na",
+		"winget": "AivarAnnamaa.Thonny",
 		"choco": "thonny",
 		"category": "Development",
 		"panel": "1",
