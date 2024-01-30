@@ -132,6 +132,7 @@ function Invoke-WPFGetIso {
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
         }
+        $sync.MicrowinWindowsFlavors.Items.Clear()
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
             $imageIdx = $_.ImageIndex
             $imageName = $_.ImageName
