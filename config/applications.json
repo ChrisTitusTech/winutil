@@ -485,6 +485,15 @@
 		"link": "https://neovim.io/",
 		"description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor."
 	},
+	"WPFInstallhelix":{
+		"winget": "Helix.Helix",
+		"choco": "helix",
+		"category": "Development",
+		"panel": "1",
+		"content": "Helix",
+		"link": "https://helix-editor.com/",
+		"description": "Helix is a neovim alternative built in rust."
+	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
 		"choco": "nodejs",
