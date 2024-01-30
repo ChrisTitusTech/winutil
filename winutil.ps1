@@ -6094,6 +6094,15 @@ $sync.configs.applications = '{
 		"link": "https://mh-nexus.de/en/hxd/",
 		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files."
 		},
+	"WPFInstallDaxStudio": {
+		"winget": "DaxStudio.DaxStudio",
+		"choco": "daxstudio",
+		"category": "Development",
+		"panel": "1",
+		"content": "DaxStudio",
+		"link": "https://daxstudio.org/",
+		"description": "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models."
+		},
 	"WPFInstallanki": {
 		"winget": "Anki.Anki",
 		"choco": "anki",
@@ -6678,7 +6687,7 @@ $sync.configs.applications = '{
 		"content": "Ffmpeg full",
 		"description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
 		"link": "https://ffmpeg.org/"
-	},	
+	},
 	"WPFInstallcopyq": {
 		"winget": "hluk.CopyQ",
 		"choco": "copyq",
