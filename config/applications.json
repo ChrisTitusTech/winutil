@@ -737,15 +737,6 @@
 		"link": "https://yarnpkg.com/",
 		"description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects."
 	},
-	"WPFInstallwinmerge": {
-		"winget": "WinMerge.WinMerge",
-		"choco": "winmerge",
-		"category": "Development",
-		"panel": "1",
-		"content": "WinMerge",
-		"link": "https://winmerge.org/",
-		"description": "WinMerge is an Open Source differencing and merging tool for Windows."
-	},
 	"WPFInstallxeheditor": {
 		"winget": "MHNexus.HxD",
 		"choco": "HxD",
