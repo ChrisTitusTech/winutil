@@ -5572,6 +5572,15 @@ $sync.configs.applications = '{
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
 	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+  },
 	"WPFInstallarduinoide": {
 		"winget": "ArduinoSA.IDE.stable",
 		"choco": "arduino",
@@ -7171,7 +7180,7 @@ $sync.configs.applications = '{
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Putty",
-		"link": "https://www.putty.org/",
+		"link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
 		"description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP."
 	},
 	"WPFInstallrustdesk": {
@@ -7567,7 +7576,7 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "NanaZip",
-		"link": "https://nanazip.codeplex.com/",
+		"link": "https://github.com/M2Team/NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool."
 	},
 	"WPFInstallneofetchwin": {
@@ -7741,13 +7750,13 @@ $sync.configs.applications = '{
 		"link": "https://www.sandboxie.com/",
 		"description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment."
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShell": {
 		"winget": "Nilesoft.Shell",
 		"choco": "nilesoft-shell",
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Shell (Expanded Context Menu)",
-		"link": "https://www.nilesoft.com/shell/",
+		"link": "https://nilesoft.org/",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu."
 	},
 	"WPFInstallstartallback": {
@@ -7774,8 +7783,8 @@ $sync.configs.applications = '{
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Spacedrive File Manager",
-		"link": "https://github.com/spacedriveapp/spacedrive",
-		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices. *Currently in Alpha 0.2.0, may be unstable*"
+		"link": "https://www.spacedrive.com/",
+		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
