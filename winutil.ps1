@@ -5860,6 +5860,15 @@ $sync.configs.applications = '{
 		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
+  "WPFInstalldmt": {
+		"winget": "GNE.DualMonitorTools",
+		"choco": "dual-monitor-tools",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Dual Monitor Tools",
+		"link": "https://dualmonitortool.sourceforge.net/",
+		"description": "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
+	},
 	"WPFInstallduplicati": {
 		"category": "Utilities",
 		"choco": "duplicati",
