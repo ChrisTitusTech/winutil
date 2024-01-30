@@ -5572,6 +5572,15 @@ $sync.configs.applications = '{
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing"
 	},
+	"WPFInstallarduinoide": {
+		"winget": "ArduinoSA.IDE.stable",
+		"choco": "arduino",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Arduino IDE",
+		"link": "https://www.arduino.cc/",
+		"description": "The Arduino IDE is a cross-platform application that enables users to write and upload code to Arduino boards, facilitating easy electronics prototyping."
+	},
 	"WPFInstallauthy": {
 		"winget": "Twilio.Authy",
 		"choco": "authy-desktop",
@@ -5797,6 +5806,15 @@ $sync.configs.applications = '{
 		"link": "https://www.viber.com/",
 		"description": "Viber is a free messaging and calling app with features like group chats, video calls, and more."
 	},
+	"WPFInstallwhatsapp": {
+		"winget": "WhatsApp.WhatsApp",
+		"choco": "whatsapp",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Whatsapp",
+		"link": "https://www.whatsapp.com/",
+		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer."
+	},
 	"WPFInstallzoom": {
 		"winget": "Zoom.Zoom",
 		"choco": "zoom",
@@ -5850,6 +5868,15 @@ $sync.configs.applications = '{
 		"content": "Docker Desktop",
 		"link": "https://www.docker.com/products/docker-desktop",
 		"description": "Docker Desktop is a powerful tool for containerized application development and deployment."
+	},
+	"WPFInstallrancherdesktop": {
+		"winget": "Rancher.RancherDesktop",
+		"choco": "rancher-desktop",
+		"category": "Development",
+		"panel": "1",
+		"content": "Rancher Desktop",
+		"link": "https://rancherdesktop.io/",
+		"description": "Rancher Desktop is an open-source application that provides all the essentials to work with containers and Kubernetes on the desktop."
 	},
 	"WPFInstallgit": {
 		"winget": "Git.Git",
@@ -6120,6 +6147,15 @@ $sync.configs.applications = '{
 		"content": "Yarn",
 		"link": "https://yarnpkg.com/",
 		"description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects."
+	},
+	"WPFInstallwinmerge": {
+		"winget": "WinMerge.WinMerge",
+		"choco": "winmerge",
+		"category": "Development",
+		"panel": "1",
+		"content": "WinMerge",
+		"link": "https://winmerge.org/",
+		"description": "WinMerge is an Open Source differencing and merging tool for Windows."
 	},
 	"WPFInstallxeheditor": {
 		"winget": "MHNexus.HxD",
@@ -6436,6 +6472,15 @@ $sync.configs.applications = '{
 		"link": "https://moonlight-stream.org/",
 		"description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network."
 	},
+	"WPFInstallminecraft": {
+		"winget": "Mojang.MinecraftLauncher",
+		"choco": "minecraft-launcher",
+		"category": "Games",
+		"panel": "2",
+		"content": "Minecraft Launcher",
+		"link": "https://www.minecraft.net/",
+		"description": "Minecraft Launcher is used to install & play various minecraft editions and versions."
+	},
 	"WPFInstallplaynite": {
 		"winget": "Playnite.Playnite",
 		"choco": "playnite",
@@ -6751,6 +6796,15 @@ $sync.configs.applications = '{
 		"description": "Eartrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
 		"link": "https://eartrumpet.app/"
 	},
+	"WPFInstallmodernflyouts": {
+		"winget": "ModernFlyouts-Community.ModernFlyouts",
+		"choco": "modernflyouts",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ModernFlyouts",
+		"description": "ModernFlyouts is an open source, modern, and Fluent Design-based replacement for the old Metro-themed flyouts.",
+		"link": "https://modernflyouts-community.github.io/"
+	},
 	"WPFInstallfreecad": {
 		"winget": "FreeCAD.FreeCAD",
 		"choco": "freecad",
@@ -7029,6 +7083,15 @@ $sync.configs.applications = '{
 		"content": "Plex Media Server",
 		"link": "https://www.plex.tv/your-media/",
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features."
+	},
+	"WPFInstallzoomit": {
+		"winget": "zoomit",
+		"choco": "zoomit",
+		"category": "Multimedia Tools",
+		"panel": "3",
+		"content": "ZoomIt",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
+		"description": "ZoomIt is a screen zoom, annotation, drawing and recording tool that uses customizable shortcuts for usage."
 	},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
@@ -7327,6 +7390,15 @@ $sync.configs.applications = '{
 		"link": "https://dev.to/devtoys",
 		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers."
 	},
+	"WPFInstallwintoys": {
+		"winget": "9P8LTPGCBZXD",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Wintoys",
+		"link": "https://apps.microsoft.com/detail/9P8LTPGCBZXD?hl=en-US&gl=US",
+		"description": "Wintoys is here to help you set up, debloat, optimize, repair, and tweak your operating system in a simple, time-saving, yet safe approach."
+	},
 	"WPFInstallerrorlookup": {
 		"winget": "Henry++.ErrorLookup",
 		"choco": "na",
@@ -7443,6 +7515,15 @@ $sync.configs.applications = '{
 		"content": "MalwareBytes",
 		"link": "https://www.malwarebytes.com/",
 		"description": "MalwareBytes is an anti-malware software that provides real-time protection against threats."
+	},
+	"WPFInstallmanictime": {
+		"winget": "ManicTime.ManicTime",
+		"choco": "manictime.install",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "ManicTime",
+		"link": "https://www.manictime.com/",
+		"description": "ManicTime is a time-tracking software that automatically records your computer usage to help track work hours and productivity."
 	},
 	"WPFInstallmeld": {
 		"winget": "Meld.Meld",
@@ -7615,6 +7696,15 @@ $sync.configs.applications = '{
 		"link": "https://www.qbittorrent.org/",
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients."
 	},
+	"WPFInstallqFlipper": {
+		"winget": "qflipper",
+		"choco": "qflipper",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "qFlipper",
+		"link": "https://flipperzero.one/update",
+		"description": "qFlipper is a desktop application for updating Flipper Zero firmware via PC."
+	},
 	"WPFInstallrainmeter": {
 		"winget": "Rainmeter.Rainmeter",
 		"choco": "na",
@@ -7659,6 +7749,15 @@ $sync.configs.applications = '{
 		"content": "Shell (Expanded Context Menu)",
 		"link": "https://www.nilesoft.com/shell/",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu."
+	},
+	"WPFInstallstartallback": {
+		"winget": "startallback",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "StartAllBack",
+		"link": "https://www.startallback.com/",
+		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)"
 	},
 	"WPFInstallsdio": {
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin",
