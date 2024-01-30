@@ -2347,7 +2347,7 @@
 		"content": "Total Commander",
 		"link": "https://www.ghisler.com/",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
-		}
+		},
 	"WPFInstallvesktop": {
 		"winget": "Vencord.Vesktop",
 		"choco": "na",
