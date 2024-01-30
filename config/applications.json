@@ -278,6 +278,15 @@
 		"link": "https://element.io/",
 		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools."
 	},
+	"WPFInstallmumble": {
+		"winget": "Mumble.Mumble.Client",
+		"choco": "mumble",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Mumble",
+		"link": "https://www.mumble.info",
+		"description": "Mumble is a free, open source, low latency, high quality voice chat application."
+	},
 	"WPFInstallsession": {
 		"winget": "Oxen.Session",
 		"choco": "session",
@@ -440,6 +449,15 @@
 		"link": "https://desktop.github.com/",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface."
 	},
+	"WPFInstallgithubcli": {
+		"winget": "Git.Git;GitHub.cli",
+		"choco": "git;gh",
+		"category": "Development",
+		"panel": "1",
+		"content": "GitHub CLI",
+		"link": "https://cli.github.com/",
+		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal."
+	},
 	"WPFInstallgolang": {
 		"winget": "GoLang.Go",
 		"choco": "golang",
@@ -475,6 +493,15 @@
 		"content": "Neovim",
 		"link": "https://neovim.io/",
 		"description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor."
+	},
+	"WPFInstallhelix":{
+		"winget": "Helix.Helix",
+		"choco": "helix",
+		"category": "Development",
+		"panel": "1",
+		"content": "Helix",
+		"link": "https://helix-editor.com/",
+		"description": "Helix is a neovim alternative built in rust."
 	},
 	"WPFInstallnodejs": {
 		"winget": "OpenJS.NodeJS",
@@ -638,6 +665,15 @@
 		"link": "https://www.anaconda.com/products/distribution",
 		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing."
     },
+	"WPFInstallThonny": {
+		"winget": "AivarAnnamaa.Thonny",
+		"choco": "thonny",
+		"category": "Development",
+		"panel": "1",
+		"content": "Thonny Python IDE",
+		"link": "https://github.com/thonny/thonny",
+		"description": "Python IDE for beginners."
+    },
 	"WPFInstallvscodium": {
 		"winget": "Git.Git;VSCodium.VSCodium",
 		"choco": "vscodium",
@@ -664,6 +700,15 @@
 		"content": "HxD Hex Editor",
 		"link": "https://mh-nexus.de/en/hxd/",
 		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files."
+		},
+	"WPFInstallDaxStudio": {
+		"winget": "DaxStudio.DaxStudio",
+		"choco": "daxstudio",
+		"category": "Development",
+		"panel": "1",
+		"content": "DaxStudio",
+		"link": "https://daxstudio.org/",
+		"description": "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models."
 		},
 	"WPFInstallanki": {
 		"winget": "Anki.Anki",
@@ -854,6 +899,15 @@
 		"link": "https://www.zotero.org/",
 		"description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials."
 	},
+	"WPFInstallATLauncher": {
+		"winget": "ATLauncher.ATLauncher",
+		"choco": "na",
+		"category": "Games",
+		"panel": "2",
+		"content": "ATLauncher",
+		"link": "https://github.com/ATLauncher/ATLauncher",
+		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly."
+	},
 	"WPFInstallbluestacks": {
 		"winget": "BlueStack.BlueStacks",
 		"choco": "bluestacks",
@@ -998,6 +1052,15 @@
 		"description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
 		"link": "https://github.com/LoLBoy25/Sunshine"
 	},
+	"WPFInstallTcNoAccSwitcher": {
+		"winget": "TechNobo.TcNoAccountSwitcher",
+		"choco": "tcno-acc-switcher",
+		"category": "Games",
+		"panel": "2",
+		"content": "TCNO Account Switcher",
+		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
+		"description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!"
+	},
 	"WPFInstallubisoft": {
 		"winget": "Ubisoft.Connect",
 		"choco": "ubisoft-connect",
@@ -1024,7 +1087,7 @@
 		"content": "PS Remote Play",
 		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
 		"description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device."
-		},
+	},
 	"WPFInstallvrdesktopstreamer": {
 		"winget": "VirtualDesktop.Streamer",
 		"choco": "na",
@@ -1033,7 +1096,7 @@
 		"content": "Virtual Desktop Streamer",
 		"link": "https://www.vrdesktop.net/",
 		"description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices."
-		},
+	},
 	"WPFInstalldotnet3": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1",
 		"choco": "dotnetcore3-desktop-runtime",
@@ -1070,7 +1133,7 @@
 		"description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/7.0"
 	},
-		"WPFInstalldotnet8": {
+	"WPFInstalldotnet8": {
 		"winget": "Microsoft.DotNet.DesktopRuntime.8",
 		"choco": "dotnet-8.0-runtime",
 		"category": "Microsoft Tools",
@@ -1231,7 +1294,7 @@
 		"content": "Ffmpeg full",
 		"description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
 		"link": "https://ffmpeg.org/"
-	},	
+	},
 	"WPFInstallcopyq": {
 		"winget": "hluk.CopyQ",
 		"choco": "copyq",
@@ -1537,7 +1600,7 @@
 		"content": "Plex Media Server",
 		"link": "https://www.plex.tv/your-media/",
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features."
-		},
+	},
 	"WPFInstalladvancedip": {
 		"winget": "Famatech.AdvancedIPScanner",
 		"choco": "advanced-ip-scanner",
@@ -1601,14 +1664,14 @@
 		"link": "https://openvpn.net/",
 		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy."
 	},
-	"WPFInstallportmaster": {
-		"winget": "portmaster",
+	"WPFInstallPortmaster": {
+		"winget": "Safing.Portmaster",
 		"choco": "portmaster",
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Portmaster",
-		"link": "https://github.com/freebsd/portmaster",
-		"description": "Portmaster is a FreeBSD package management tool. It simplifies the process of managing software packages and dependencies on FreeBSD systems."
+		"link": "https://github.com/safing/portmaster",
+		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections."
 	},
 	"WPFInstallputty": {
 		"winget": "PuTTY.PuTTY",
@@ -1817,15 +1880,6 @@
 		"link": "https://deluge-torrent.org/",
 		"description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely."
 	},
-	"WPFInstalldolphin": {
-		"winget": "KDE.Dolphin",
-		"choco": "na",
-		"category": "Utilities",
-		"panel": "4",
-		"content": "Dolphin File manager",
-		"link": "https://apps.kde.org/en/dolphin/",
-		"description": "Dolphin is a file manager for the KDE desktop environment. It provides a powerful and intuitive interface for managing files and folders on Linux systems."
-	},
 	"WPFInstallduplicati": {
 		"winget": "Duplicati.Duplicati",
 		"choco": "duplicati",
@@ -1979,6 +2033,15 @@
 		"link": "https://www.monitorian.com/",
 		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows."
 	},
+	"WPFInstallMotrix": {
+		"winget": "agalwood.Motrix",
+		"choco": "motrix",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Motrix Download Manager",
+		"link": "https://github.com/agalwood/Motrix",
+		"description": "A full-featured download manager."
+	},
 	"WPFInstallmsiafterburner": {
 		"winget": "Guru3D.Afterburner",
 		"choco": "msiafterburner",
@@ -2068,6 +2131,15 @@
 		"content": "ownCloud Desktop",
 		"link": "https://owncloud.com/desktop-app/",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform."
+	},
+	"WPFInstallOPAutoClicker": {
+		"winget": "OPAutoClicker.OPAutoClicker",
+		"choco": "autoclicker",
+		"category": "Utilities",
+		"panel": "5",
+		"content": "OPAutoClicker",
+		"link": "https://www.opautoclicker.com",
+		"description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location."
 	},
 	"WPFInstallparsec": {
 		"winget": "Parsec.parsec",
@@ -2165,7 +2237,7 @@
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Snappy Driver Installer Origin",
-		"link": "https://github.com/snappy-driver/snappy-driver-installer",
+		"link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
 		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows."
 	},
 	"WPFInstallspacedrive": {
@@ -2174,8 +2246,8 @@
 		"category": "Utilities",
 		"panel": "4",
 		"content": "Spacedrive File Manager",
-		"link": "https://spacedrive.org/",
-		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices."
+		"link": "https://github.com/spacedriveapp/spacedrive",
+		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices. *Currently in Alpha 0.2.0, may be unstable*"
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
@@ -2292,7 +2364,7 @@
 		"panel": "4",
 		"content": "Xtreme Download Manager",
 		"link": "https://github.com/subhra74/xdm",
-		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers."
+		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*"
 	},
 	"WPFInstallzerotierone": {
 		"winget": "ZeroTier.ZeroTierOne",
@@ -2320,7 +2392,7 @@
 		"content": "Windows PC Health Check",
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
 		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11."
-		},
+	},
 	"WPFInstallsamsungmagician": {
 		"winget": "Samsung.SamsungMagician",
 		"choco": "samsung-magician",
@@ -2329,7 +2401,7 @@
 		"content": "Samsung Magician",
 		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
 		"description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs."
-		},
+	},
 	"WPFInstallbitcomet": {
 		"winget": "CometNetwork.BitComet",
 		"choco": "bitcomet",
@@ -2338,7 +2410,7 @@
 		"content": "BitComet",
 		"link": "https://www.bitcomet.com/",
 		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features."
-		},
+	},
 	"WPFInstallpiimager": {
 		"winget": "RaspberryPiFoundation.RaspberryPiImager",
 		"choco": "rpi-imager",
@@ -2347,7 +2419,7 @@
 		"content": "Raspberry Pi Imager",
 		"link": "https://www.raspberrypi.com/software/",
 		"description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices."
-		},
+	},
 	"WPFInstall1password": {
 		"winget": "AgileBits.1Password",
 		"choco": "1password",
@@ -2356,7 +2428,7 @@
 		"content": "1Password",
 		"link": "https://1password.com/",
 		"description": "1Password is a password manager that allows you to store and manage your passwords securely."
-		},
+	},
 	"WPFInstalltotalcommander": {
 		"winget": "Ghisler.TotalCommander",
 		"choco": "TotalCommander",
@@ -2365,5 +2437,50 @@
 		"content": "Total Commander",
 		"link": "https://www.ghisler.com/",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management."
+	},
+	"WPFInstalllivelywallpaper": {
+		"winget": "rocksdanister.LivelyWallpaper",
+		"choco": "lively",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Lively Wallpaper",
+		"link": "https://www.rocksdanister.com/lively/",
+		"description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers."
+	},
+	"WPFInstalllocalsend": {
+		"winget": "LocalSend.LocalSend",
+		"choco": "localsend.install",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "LocalSend",
+		"link": "https://localsend.org/",
+		"description": "An open source cross-platform alternative to AirDrop."
+	},
+	"WPFInstallopenhashtab": {
+		"winget": "namazso.OpenHashTab",
+		"choco": "openhashtab",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "OpenHashTab",
+		"link": "https://github.com/namazso/OpenHashTab/",
+		"description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties."
+	},
+	"WPFInstallvencord": {
+		"winget": "Vendicated.Vencord",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Vencord",
+		"link": "https://vencord.dev/",
+		"description": "Vencord is a modification for Discord that adds plugins, custom styles, and more!"
+	},
+	"WPFInstallvesktop": {
+		"winget": "Vencord.Vesktop",
+		"choco": "na",
+		"category": "Communications",
+		"panel": "0",
+		"content": "Vesktop",
+		"link": "https://github.com/Vencord/Vesktop",
+		"description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed."
 		}
 }
