@@ -1625,7 +1625,7 @@
 		"category": "Pro Tools",
 		"panel": "3",
 		"content": "Putty",
-		"link": "https://www.putty.org/",
+		"link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
 		"description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP."
 	},
 	"WPFInstallrustdesk": {
