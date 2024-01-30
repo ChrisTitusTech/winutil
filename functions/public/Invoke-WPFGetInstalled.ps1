@@ -23,7 +23,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $checkbox,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $checkbox -DebugPreference $DebugPreference -ScriptBlock {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true

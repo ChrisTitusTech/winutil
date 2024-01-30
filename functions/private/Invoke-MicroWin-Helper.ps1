@@ -14,6 +14,36 @@ function Invoke-MicroWin-Helper {
 
 }
 
+function Is-CompatibleImage() {
+<#
+
+    .SYNOPSIS
+        Checks the version of a Windows image and determines whether or not it is compatible depending on the Major property
+
+    .PARAMETER imgVersion
+        The version of the Windows image
+
+#>
+
+    param
+    (
+        [Parameter(Mandatory = $true)] [string] $imgVersion
+    )
+
+    try {
+        $version = [Version]$imgVersion
+        if ($version.Major -ge 10)
+        {
+            return $True
+        }
+        else
+        {
+            return $False
+        }
+    } catch {
+        return $False
+    }
+}
 
 function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
 <#
