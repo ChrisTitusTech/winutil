@@ -1133,6 +1133,15 @@
 		"panel": "0",
 		"winget": "Element.Element"
 	},
+	"WPFInstallMEGAsync": {
+		"category": "Utilities",
+		"choco": "megasync",
+		"content": "Mega Sync",
+		"description": "Easy automated synchronisation between your computer and your MEGA cloud.",
+		"link": "https://mega.io/",
+		"panel": "4",
+		"winget": "Mega.MEGASync"
+	},
 	"WPFInstallmeld": {
 		"category": "Utilities",
 		"choco": "meld",
