@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.01.31
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.01.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -6273,6 +6273,15 @@ $sync.configs.applications = '{
 		"link": "https://imageglass.org/",
 		"panel": "3",
 		"winget": "DuongDieuPhap.ImageGlass"
+	},
+	"WPFInstallImageMagick": {
+		"category": "Multimedia Tools",
+		"choco": "imagemagick",
+		"content": "ImageMagick (File Convertion Tool)",
+		"description": "mageMagick?? is a software suite to create, edit, compose, or convert bitmap images. It can read and write images in a variety of formats (over 100) including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG, and TIFF. Use ImageMagick to resize, flip, mirror, rotate, distort, shear and transform images, adjust image colors, apply various special effects, or draw text, lines, polygons, ellipses and B??zier curves.",
+		"link": "https://imagemagick.org/",
+		"panel": "3",
+		"winget": "ImageMagick.ImageMagick"
 	},
 	"WPFInstallimgburn": {
 		"category": "Multimedia Tools",
