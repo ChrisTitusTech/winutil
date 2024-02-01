@@ -323,6 +323,15 @@
 		"panel": "4",
 		"winget": "CrystalDewWorld.CrystalDiskMark"
 	},
+	"WPFInstallcygwin": {
+		"category": "Development",
+		"choco": "cygwin",
+		"cotntent": "Cygwin",
+		"description": "Cygwin is an open-source lightweight Unix-like environment for Windows, including most GNU tools and some BSD tools.",
+		"link": "https://www.cygwin.com/",
+		"panel": "1",
+		"winget": "Cygwin.Cygwin"
+	},
 	"WPFInstalldarktable": {
 		"category": "Multimedia Tools",
 		"choco": "darktable",
