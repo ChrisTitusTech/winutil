@@ -897,6 +897,7 @@
                             <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                             <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
+                            <Button Name="WPFRunAdobeCCCleanerTool" FontSize="14" Content="Run Adobe CC Cleaner tool" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="0" Grid.Column="1">
