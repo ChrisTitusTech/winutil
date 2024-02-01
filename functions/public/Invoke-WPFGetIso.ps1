@@ -173,7 +173,7 @@ function Invoke-WPFGetIso {
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 5
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
