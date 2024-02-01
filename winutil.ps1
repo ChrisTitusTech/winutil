@@ -2308,6 +2308,36 @@ Function Update-WinUtilProgramWinget {
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
+
+function Invoke-ScratchDialog {
+
+    <#
+
+    .SYNOPSIS
+        Enable Editable Text box Alternate Scartch path
+
+    .PARAMETER Button
+    #>
+    $sync.WPFMicrowinISOScratchDir.IsChecked 
+ 
+
+    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+    $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
+    $DialogShowNewFolderButton = $true
+    $Dialog.ShowDialog() 
+    $filePath = $Dialog.SelectedPath
+        Write-Host "No ISO is chosen+  $filePath"
+
+    if ([string]::IsNullOrEmpty($filePath))
+    {
+        Write-Host "No Folder had chosen"
+        return
+    }
+    
+       $sync.MicrowinScratchDirBox.Text =  Join-Path $filePath "\"
+
+}
 function Invoke-WPFButton {
 
     <#
@@ -2362,6 +2392,7 @@ function Invoke-WPFButton {
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
+        "MicrowinScratchDirBT" {Invoke-ScratchDialog}
     }
 }
 function Invoke-WPFCloseButton {
@@ -2861,6 +2892,10 @@ function Invoke-WPFGetIso {
         return
     }
 
+  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyText.Text="N Busy"
+
+
     Write-Host "         _                     __    __  _         "
 	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
 	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -2868,12 +2903,17 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
+   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
+}
+
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) 
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+        $sync.BusyMessage.Visibility="Hidden"
 
         if (!$downloadFromGitHub) 
         {
@@ -2918,6 +2958,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
+        $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
@@ -2946,13 +2987,38 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
+    $mountedISOPath = (Split-Path -Path $filePath)
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
+        $sync.MicrowinScratchDirBox.Text =""
+    }
+
+     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+
+    if ($UseISOScratchDir) {
+        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
+    }
+
+    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
+
+         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
+
+    }
+
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $randomNumber = Get-Random -Minimum 1 -Maximum 9999
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $sync.BusyText.Text=" - Mounting"
+    Write-Host "Mounting Iso. Please wait."  
+    if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+    } else {
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
+    }
+
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
@@ -2987,7 +3053,7 @@ function Invoke-WPFGetIso {
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 5
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
@@ -3004,6 +3070,7 @@ function Invoke-WPFGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
+    $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
 }
 
@@ -5115,6 +5182,22 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 Choose a Windows ISO file that you''ve downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
+                                ToolTip="Use ISO directory for ScratchDir " />
+
+                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
+                              <Button.Content>
+                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                    Text="Scratch" Padding="0"
+                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
+                                    Margin="0,0,0,3" HorizontalAlignment="Left"
+                                    IsReadOnly="False"
+                                    Height="Auto"
+                                    Width="110"
+                                    Foreground="{ButtonForegroundColor}"
+                                  />
+                              </Button.Content>
+                            </Button>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
@@ -5168,6 +5251,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         Grid.Row="0" Grid.Column="1">
                         <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
+                            <Grid Name = "BusyMessage" Visibility="Collapsed">
+                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
+                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                                  FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
+                            </Grid>                         
+ 
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
                                 HorizontalAlignment = "Center"
