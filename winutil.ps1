@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.31
+    Version        : 24.02.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.31"
+$sync.version = "24.02.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4508,7 +4508,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Border x:Name="ButtonGlow"
+                            <Border x:Name="ButtonGlow" 
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{ButtonForegroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
@@ -4519,7 +4519,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                         BorderBrush="{ButtonBackgroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
                                             Margin="10,2,10,2"/>
                                     </Border>
                                 </Grid>
@@ -4868,9 +4868,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
                                 CornerRadius="5">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" />
@@ -4895,7 +4895,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon"
+            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
@@ -4943,42 +4943,42 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
-
+                
                 <TextBox
                     Grid.Column="0"
-                    Width="200"
+                    Width="200" 
                     FontSize="14"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
                     Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
                     Name="CheckboxFilter"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
-                <TextBlock
+                <TextBlock 
                     Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    FontFamily="Segoe MDL2 Assets"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    FontFamily="Segoe MDL2 Assets" 
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
-                <Button Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Name="CheckboxFilterClear"
-                    Style="{StaticResource ClearButtonStyle}"
+                <Button Grid.Column="0" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    Name="CheckboxFilterClear" 
+                    Style="{StaticResource ClearButtonStyle}" 
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent"
+                    Grid.Column="1" BorderBrush="Transparent" 
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="18"
-                    Width="35" Height="35"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,5,5,0"
-                    FontFamily="Segoe MDL2 Assets"
+                    Width="35" Height="35" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    Margin="0,5,5,0" 
+                    FontFamily="Segoe MDL2 Assets" 
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup"
+                <Popup Grid.Column="1" Name="SettingsPopup" 
                     IsOpen="False"
-                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -4989,25 +4989,25 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </StackPanel>
                     </Border>
                 </Popup>
-
-            <Button
+ 
+            <Button 
                 Grid.Column="2"
-                Content="&#xD7;" BorderThickness="0"
+                Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                Width="35" Height="35"
-                HorizontalAlignment="Right" VerticalAlignment="Top"
-                Margin="0,5,5,0"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
             </Grid>
-
+           
         </DockPanel>
-
+       
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
-
+                   
                     <Grid.RowDefinitions>
                         <RowDefinition Height="45px"/>
                         <RowDefinition Height="0.95*"/>
@@ -5020,7 +5020,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         {{InstallPanel_applications}}
@@ -5062,7 +5062,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     {{InstallPanel_features}}
-                </Grid>
+                    </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
@@ -5178,16 +5178,16 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 FontSize = "10"
                                 FontFamily = "Courier New"
                             >
-  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __
- /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \
-/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | |
-\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_|
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
+ /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \  
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
                             </TextBlock>
-
-                            <TextBlock Margin="15,15,15,0"
-                                Padding="8,8,8,0"
-                                VerticalAlignment="Center"
-                                TextWrapping="WrapWithOverflow"
+                        
+                            <TextBlock Margin="15,15,15,0" 
+                                Padding="8,8,8,0" 
+                                VerticalAlignment="Center" 
+                                TextWrapping="WrapWithOverflow" 
                                 Height = "Auto"
                                 Width = "Auto"
                                 Foreground="{ComboBoxForegroundColor}">
@@ -5219,9 +5219,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <LineBreak/>
                                 If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
                             </TextBlock>
-                            <TextBlock Margin="15,0,15,15"
-                                Padding = "1"
-                                TextWrapping="WrapWithOverflow"
+                            <TextBlock Margin="15,0,15,15" 
+                                Padding = "1" 
+                                TextWrapping="WrapWithOverflow" 
                                 Height = "Auto"
                                 Width = "Auto"
                                 VerticalAlignment = "Top"
@@ -7885,7 +7885,7 @@ $sync.configs.feature = '{
     "InvokeScript": [
       "
       If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
-        New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
+            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
       }
       New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
@@ -7939,7 +7939,7 @@ $sync.configs.feature = '{
     "InvokeScript": [
       "
       If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
-        New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
+            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
       }
       New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
@@ -8054,7 +8054,7 @@ $sync.configs.feature = '{
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "200"
-  },
+  }
 }' | convertfrom-json
 $sync.configs.preset = '{
   "desktop": [
@@ -10360,7 +10360,7 @@ $sync.configs.tweaks = '{
             Write-Host \"Please run this script as an administrator.\"
             return
         }
-
+    
         # Check if System Restore is enabled for the main drive
         try {
             # Try getting restore points to check if System Restore is enabled
@@ -10368,21 +10368,21 @@ $sync.configs.tweaks = '{
         } catch {
             Write-Host \"An error occurred while enabling System Restore: $_\"
         }
-
+    
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
         if($null -eq $exists){
             write-host ''Changing system to allow multiple restore points per day''
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
-
+    
         # Get all the restore points for the current day
         $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
-
+    
         # Check if there is already a restore point created today
         if ($existingRestorePoints.Count -eq 0) {
             $description = \"System Restore Point created by WinUtil\"
-
+    
             Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
@@ -10769,35 +10769,35 @@ $sync.configs.tweaks = '{
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a041_",
-    "Type": "160",
+    "Type": "160"
   },
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a042_",
-    "Type": "160",
+    "Type": "160"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a080_",
-    "Type": "300",
+    "Type": "300"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a081_",
-    "Type": "300",
+    "Type": "300"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
     "category": "Shortcuts",
     "panel": "2",
     "Order": "a082_",
-    "Type": "300",
+    "Type": "300"
   }
 }' | convertfrom-json
 # SPDX-License-Identifier: MIT
@@ -10850,6 +10850,7 @@ $sync.runspace.Open()
 
         GenericException($Message) : base($Message) {}
     }
+
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
@@ -11009,7 +11010,7 @@ $sync.keys | ForEach-Object {
                     Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
-
+       
         }
     }
 }
@@ -11128,7 +11129,7 @@ $sync["Form"].Add_Deactivated({
 
 $sync["Form"].Add_ContentRendered({
 
-    try {
+    try { 
         [void][Window]
     } catch {
 Add-Type @"
@@ -11141,11 +11142,11 @@ Add-Type @"
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
+            
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-
+            
             [DllImport("user32.dll")]
             public static extern int GetSystemMetrics(int nIndex);
         };
@@ -11209,7 +11210,7 @@ Add-Type @"
     } else {
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
-
+    
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
@@ -11261,20 +11262,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
     $filter = Get-WinUtilVariables -Type CheckBox
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
-
+    
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
             continue
         }
-
+    
         $textToSearch = $sync.CheckboxFilter.Text
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
-
+    
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
-
+    
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
              # Set the corresponding text block visibility
@@ -11290,7 +11291,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
-
+    
 })
 
 # Define event handler for button click
@@ -11334,7 +11335,7 @@ GUI      : @KonTy
 MicroWin : @KonTy
 GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
-"@
+"@    
     Show-CustomDialog -Message $authorInfo -Width 400
 })
 
