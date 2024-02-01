@@ -700,38 +700,7 @@
                     <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                            <Border Grid.Row="1" Grid.Column="0">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel0}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="1">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
-                                    {{InstallPanel1}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="2">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel2}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="3">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel3}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="4">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel4}}
-                                </StackPanel>
-                            </Border>
+                        {{InstallPanel_applications}}
                         </Grid>
                     </ScrollViewer>
 
@@ -740,15 +709,12 @@
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=".50*"/>
-                        <ColumnDefinition Width=".50*"/>
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55"/>
                         <RowDefinition Height=".70*"/>
                         <RowDefinition Height=".10*"/>
                     </Grid.RowDefinitions>
+                    {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
                         <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
@@ -766,151 +732,13 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Essential Tweaks"/>
-                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" IsChecked="True"/>
-                            <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
-                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd."/>
-                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
-                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-
-                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                                <CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
-                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
-                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                                <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
-
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
-                                        <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                        <ComboBoxItem Content="DHCP"/>
-                                        <ComboBoxItem Content="Google"/>
-                                        <ComboBoxItem Content="Cloudflare"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
-                                        <ComboBoxItem Content="Level3"/>
-                                        <ComboBoxItem Content="Open_DNS"/>
-                                        <ComboBoxItem Content="Quad9"/>
-                                    </ComboBox>
-                                </StackPanel>
-                                
-                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
-                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
-                                
-                            </StackPanel>
-
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Customize Preferences"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
-                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
-                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
-                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
-                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
-                                <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
-                                <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <Label FontSize="16" Content="Performance Plans" />
-                            <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Label FontSize="16" Content="Shortcuts" />
-                            <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-
-                        </StackPanel> <!-- End of Customize Preferences Section -->
-                        </Border>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Features" FontSize="16"/>
-                            <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
-                            <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
-                            <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0" ToolTip="Enables legacy programs from previous versions of windows"/>
-                            <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0" ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
-                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Enables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Disables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
-                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
-                            <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
-                            <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
-                            <Label Content="Fixes" FontSize="16"/>
-                            <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Legacy Windows Panels" FontSize="16"/>
-                            <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelregion" FontSize="14" Content="Region" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                        </StackPanel>
-                        </Border>
+                    {{InstallPanel_features}}
                     </Grid>
                 </ScrollViewer>
             </TabItem>
