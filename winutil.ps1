@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.02.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.02.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2308,6 +2308,36 @@ Function Update-WinUtilProgramWinget {
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
+
+function Invoke-ScratchDialog {
+
+    <#
+
+    .SYNOPSIS
+        Enable Editable Text box Alternate Scartch path
+
+    .PARAMETER Button
+    #>
+    $sync.WPFMicrowinISOScratchDir.IsChecked 
+ 
+
+    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+    $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
+    $DialogShowNewFolderButton = $true
+    $Dialog.ShowDialog() 
+    $filePath = $Dialog.SelectedPath
+        Write-Host "No ISO is chosen+  $filePath"
+
+    if ([string]::IsNullOrEmpty($filePath))
+    {
+        Write-Host "No Folder had chosen"
+        return
+    }
+    
+       $sync.MicrowinScratchDirBox.Text =  Join-Path $filePath "\"
+
+}
 function Invoke-WPFButton {
 
     <#
@@ -2362,6 +2392,7 @@ function Invoke-WPFButton {
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
+        "MicrowinScratchDirBT" {Invoke-ScratchDialog}
     }
 }
 function Invoke-WPFCloseButton {
@@ -2861,6 +2892,10 @@ function Invoke-WPFGetIso {
         return
     }
 
+  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyText.Text="N Busy"
+
+
     Write-Host "         _                     __    __  _         "
 	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
 	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -2868,12 +2903,17 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
+   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
+}
+
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) 
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+        $sync.BusyMessage.Visibility="Hidden"
 
         if (!$downloadFromGitHub) 
         {
@@ -2918,6 +2958,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
+        $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
@@ -2946,13 +2987,38 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
+    $mountedISOPath = (Split-Path -Path $filePath)
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
+        $sync.MicrowinScratchDirBox.Text =""
+    }
+
+     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+
+    if ($UseISOScratchDir) {
+        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
+    }
+
+    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
+
+         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
+
+    }
+
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $randomNumber = Get-Random -Minimum 1 -Maximum 9999
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $sync.BusyText.Text=" - Mounting"
+    Write-Host "Mounting Iso. Please wait."  
+    if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+    } else {
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
+    }
+
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
@@ -2987,7 +3053,7 @@ function Invoke-WPFGetIso {
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 5
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
@@ -3004,6 +3070,7 @@ function Invoke-WPFGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
+    $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
 }
 
@@ -5023,38 +5090,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                            <Border Grid.Row="1" Grid.Column="0">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel0}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="1">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
-                                    {{InstallPanel1}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="2">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel2}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="3">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel3}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="4">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel4}}
-                                </StackPanel>
-                            </Border>
+                        {{InstallPanel_applications}}
                         </Grid>
                     </ScrollViewer>
 
@@ -5063,15 +5099,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=".50*"/>
-                        <ColumnDefinition Width=".50*"/>
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55"/>
                         <RowDefinition Height=".70*"/>
                         <RowDefinition Height=".10*"/>
                     </Grid.RowDefinitions>
+                    {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
                         <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
@@ -5089,151 +5122,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Essential Tweaks"/>
-                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" IsChecked="True"/>
-                            <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
-                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
-                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
-                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-
-                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                                <CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
-                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
-                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                                <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
-
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
-                                        <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                        <ComboBoxItem Content="DHCP"/>
-                                        <ComboBoxItem Content="Google"/>
-                                        <ComboBoxItem Content="Cloudflare"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
-                                        <ComboBoxItem Content="Level3"/>
-                                        <ComboBoxItem Content="Open_DNS"/>
-                                        <ComboBoxItem Content="Quad9"/>
-                                    </ComboBox>
-                                </StackPanel>
-                                
-                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
-                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
-                                
-                            </StackPanel>
-
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Customize Preferences"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
-                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
-                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
-                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
-                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
-                                <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
-                                <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <Label FontSize="16" Content="Performance Plans" />
-                            <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Label FontSize="16" Content="Shortcuts" />
-                            <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-
-                        </StackPanel> <!-- End of Customize Preferences Section -->
-                        </Border>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Features" FontSize="16"/>
-                            <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
-                            <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
-                            <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0" ToolTip="Enables legacy programs from previous versions of windows"/>
-                            <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0" ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
-                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Enables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Disables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
-                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
-                            <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
-                            <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
-                            <Label Content="Fixes" FontSize="16"/>
-                            <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Legacy Windows Panels" FontSize="16"/>
-                            <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelregion" FontSize="14" Content="Region" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                        </StackPanel>
-                        </Border>
+                    {{InstallPanel_features}}
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -5287,6 +5182,22 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 Choose a Windows ISO file that you''ve downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
+                                ToolTip="Use ISO directory for ScratchDir " />
+
+                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
+                              <Button.Content>
+                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                    Text="Scratch" Padding="0"
+                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
+                                    Margin="0,0,0,3" HorizontalAlignment="Left"
+                                    IsReadOnly="False"
+                                    Height="Auto"
+                                    Width="110"
+                                    Foreground="{ButtonForegroundColor}"
+                                  />
+                              </Button.Content>
+                            </Button>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
@@ -5340,6 +5251,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         Grid.Row="0" Grid.Column="1">
                         <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
+                            <Grid Name = "BusyMessage" Visibility="Collapsed">
+                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
+                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                                  FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
+                            </Grid>                         
+ 
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
                                 HorizontalAlignment = "Center"
@@ -6058,14 +5975,23 @@ $sync.configs.applications = '{
 		"panel": "3",
 		"winget": "PeterPawlowski.foobar2000"
 	},
-	"WPFInstallfoxpdf": {
+	"WPFInstallfoxpdfeditor": {
 		"category": "Document",
 		"choco": "na",
-		"content": "Foxit PDF",
-		"description": "Foxit PDF is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
+		"content": "Foxit PDF Editor",
+		"description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
 		"link": "https://www.foxitsoftware.com/",
 		"panel": "1",
 		"winget": "Foxit.PhantomPDF"
+	},
+	"WPFInstallfoxpdfreader": {
+		"category": "Document",
+		"choco": "foxitreader",
+		"content": "Foxit PDF Reader",
+		"description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+		"link": "https://www.foxitsoftware.com/",
+		"panel": "1",
+		"winget": "Foxit.FoxitReader"
 	},
 	"WPFInstallfreecad": {
 		"category": "Multimedia Tools",
@@ -6639,18 +6565,9 @@ $sync.configs.applications = '{
 		"choco": "nanazip",
 		"content": "NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
-		"link": "https://nanazip.codeplex.com/",
+		"link": "https://github.com/M2Team/NanaZip",
 		"panel": "4",
 		"winget": "M2Team.NanaZip"
-	},
-	"WPFInstallnano": {
-		"category": "Development",
-		"choco": "nano",
-		"content": "Nano",
-		"description": "Nano is a text editor for Unix-like computing systems or operating environments using a command-line interface.",
-		"link": "https://www.nano-editor.org/",
-		"panel": "1",
-		"winget": "GNU.Nano"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -7210,7 +7127,7 @@ $sync.configs.applications = '{
 		"panel": "3",
 		"winget": "ShareX.ShareX"
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShel": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
 		"content": "Shell (Expanded Context Menu)",
@@ -7929,7 +7846,16 @@ $sync.configs.applications = '{
 		"link": "https://zulipchat.com/",
 		"panel": "0",
 		"winget": "Zulip.Zulip"
-	}
+	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+  }
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
@@ -7963,6 +7889,11 @@ $sync.configs.dns = '{
 }' | convertfrom-json
 $sync.configs.feature = '{
   "WPFFeaturesdotnet": {
+    "Content": "All .Net Framework (2,3,4)",
+    "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a010_",
     "feature": [
       "NetFx4-AdvSrvs",
       "NetFx3"
@@ -7972,6 +7903,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureshyperv": {
+    "Content": "HyperV Virtualization",
+    "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a011_",
     "feature": [
       "HypervisorPlatform",
       "Microsoft-Hyper-V-All",
@@ -7987,6 +7923,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureslegacymedia": {
+    "Content": "Legacy Media (WMP, DirectPlay)",
+    "Description": "Enables legacy programs from previous versions of windows",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a012_",
     "feature": [
       "WindowsMediaPlayer",
       "MediaPlayback",
@@ -7998,6 +7939,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeaturewsl": {
+    "Content": "Windows Subsystem for Linux",
+    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a020_",
     "feature": [
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
@@ -8007,6 +7953,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeaturenfs": {
+    "Content": "NFS - Network File System",
+    "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a014_",
     "feature": [
       "ServicesForNFS-ClientOnly",
       "ClientForNFS-Infrastructure",
@@ -8022,6 +7973,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureEnableSearchSuggestions": {
+    "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
+    "Description": "Enables web suggestions when searching using Windows Search.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a015_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8035,6 +7991,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureDisableSearchSuggestions": {
+    "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
+    "Description": "Disables web suggestions when searching using Windows Search.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a016_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8048,6 +8009,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureRegBackup": {
+    "Content": "Enable Daily Registry Backup Task 12.30am",
+    "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a017_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8061,6 +8027,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureEnableLegacyRecovery": {
+    "Content": "Enable Legacy F8 Boot Recovery",
+    "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a018_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8074,6 +8045,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureDisableLegacyRecovery": {
+    "Content": "Disable Legacy F8 Boot Recovery",
+    "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a019_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8085,6 +8061,97 @@ $sync.configs.feature = '{
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
       "
     ]
+  },
+  "WPFFeaturesandbox": {
+    "Content": "Windows Sandbox",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a021_",
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+  },
+  "WPFFeatureInstall": {
+    "Content": "Install Features",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a060_",
+    "Type": "150"
+  },
+  "WPFPanelAutologin": {
+    "Content": "Set Up Autologin",
+    "category": "Fixes",
+    "Order": "a040_",
+    "panel": "1",
+    "Type": "300"
+  },
+  "WPFFixesUpdate": {
+    "Content": "Reset Windows Update",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a041_",
+    "Type": "300"
+  },
+  "WPFFixesNetwork": {
+    "Content": "Reset Network",
+    "category": "Fixes",
+    "Order": "a042_",
+    "panel": "1",
+    "Type": "300"
+  },
+  "WPFPanelDISM": {
+    "Content": "System Corruption Scan",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a043_",
+    "Type": "300"
+  },
+  "WPFFixesWinget": {
+    "Content": "WinGet Reinstall",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a044_",
+    "Type": "300"
+  },
+  "WPFPanelnetwork": {
+    "Content": "Network Connections",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelcontrol": {
+    "Content": "Control Panel",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelpower": {
+    "Content": "Power Panel",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelregion": {
+    "Content": "Region",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelsound": {
+    "Content": "Sound Settings",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelsystem": {
+    "Content": "System Properties",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPaneluser": {
+    "Content": "User Accounts",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -8186,6 +8253,11 @@ $sync.configs.themes = '{
 }' | convertfrom-json
 $sync.configs.tweaks = '{
   "WPFTweaksAH": {
+    "Content": "Disable Activity History",
+    "Description": "This erases recent docs, clipboard, and run history.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -8211,6 +8283,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksHiber": {
+    "Content": "Disable Hibernation",
+    "Description": "Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a011_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -8232,6 +8309,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksHome": {
+    "Content": "Disable Homegroup",
+    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -8246,6 +8328,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksLoc": {
+    "Content": "Disable Location Tracking",
+    "Description": "Disables Location Tracking...DUH!",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a008_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -8278,6 +8365,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksServices": {
+    "Content": "Set Services to Manual",
+    "Description": "Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a014_",
     "service": [
       {
         "Name": "AJRouter",
@@ -9697,6 +9789,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksTele": {
+    "Content": "Disable Telemetry",
+    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a003_",
     "ScheduledTask": [
       {
         "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
@@ -10084,6 +10181,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksWifi": {
+    "Content": "Disable Wifi-Sense",
+    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a004_",
     "registry": [
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
@@ -10102,6 +10204,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksUTC": {
+    "Content": "Set Time to UTC (Dual Boot)",
+    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a022_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -10113,6 +10220,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisplay": {
+    "Content": "Set Display for Performance",
+    "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a021_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -10214,6 +10326,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDeBloat": {
+    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
+    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025_",
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -10328,6 +10445,12 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRestorePoint": {
+    "Content": "Create Restore Point",
+    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Checked": "True",
+    "Order": "a001_",
     "InvokeScript": [
       "
         # Check if the user has administrative privileges
@@ -10365,6 +10488,13 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksOO": {
+    "Content": "Run OO Shutup",
+    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a002_",
+    "Content": "Run OO Shutup",
+    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
       "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
@@ -10373,6 +10503,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksStorage": {
+    "Content": "Disable Storage Sense",
+    "Description": "Storage Sense deletes temp files automatically.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a010_",
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
     ],
@@ -10382,6 +10517,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRemoveEdge": {
+    "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
+    "Description": "Removes MS Edge when it gets reinstalled by updates.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a026_",
     "InvokeScript": [
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
@@ -10399,6 +10539,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRemoveOnedrive": {
+    "Content": "Remove OneDrive",
+    "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
     "InvokeScript": [
         "
 
@@ -10476,6 +10621,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisableNotifications": {
+    "Content": "Disable Notification Tray/Calendar",
+    "Description": "Disables all Notifications INCLUDING Calendar",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
@@ -10494,6 +10644,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRightClickMenu": {
+    "Content": "Set Classic Right-Click Menu ",
+    "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a028_",
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -10505,6 +10660,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDiskCleanup": {
+    "Content": "Run Disk Cleanup",
+    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a007_",
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
@@ -10513,6 +10673,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisableUAC": {
+    "Content": "Disable UAC",
+    "Description": "Disables User Account Control. Only recommended for Expert Users.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -10524,12 +10689,22 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDeleteTempFiles": {
+    "Content": "Delete Temporary Files",
+    "Description": "Erases TEMP Folders",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a006_",
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
   "WPFTweaksDVR": {
+    "Content": "Disable GameDVR",
+    "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a012_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
@@ -10576,6 +10751,12 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksTeredo": {
+    "Content": "Disable Teredo",
+    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a029_",
+    "Order": "a013_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -10592,18 +10773,12 @@ $sync.configs.tweaks = '{
       "netsh interface teredo set state default"
     ]
   },
-  "WPFBingSearch": {
-    "registry": [
-      {
-        "OriginalValue": "1",
-        "Name": "BingSearchEnabled",
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Type": "DWord",
-        "Value": "0"
-      }
-    ]
-  },
   "WPFTweaksDisableipsix": {
+    "Content": "Disable IPv6",
+    "Description": "Disables IPv6.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
     "InvokeScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
@@ -10612,12 +10787,116 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksEnableipsix": {
+    "Content": "Enable IPv6",
+    "Description": "Enables IPv6.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a030_",
     "InvokeScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
+  },
+  "WPFToggleDarkMode": {
+    "Content": "Dark Theme",
+    "Description": "Enable/Disable Dark Mode.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a060_",
+    "Type": "Toggle"
+  },
+  "WPFToggleBingSearch": {
+    "Content": "Bing Search in Start Menu",
+    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a061_",
+    "Type": "Toggle"
+  },
+  "WPFToggleNumLock": {
+    "Content": "NumLock on Startup",
+    "Description": "Toggle the Num Lock key state when your computer starts.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a062_",
+    "Type": "Toggle"
+  },
+  "WPFToggleVerboseLogon": {
+    "Content": "Verbose Logon Messages",
+    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a063_",
+    "Type": "Toggle"
+  },
+  "WPFToggleShowExt": {
+    "Content": "Show File Extensions",
+    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a064_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapFlyout": {
+    "Content": "Snap Assist Flyout",
+    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a065_",
+    "Type": "Toggle"
+  },
+  "WPFToggleMouseAcceleration": {
+    "Content": "Mouse Acceleration",
+    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a066_",
+    "Type": "Toggle"
+  },
+  "WPFchangedns": {
+    "Content": "DNS",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a040_",
+    "Type": "Combobox",
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
+  },
+  "WPFTweaksbutton": {
+    "Content": "Run Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a041_",
+    "Type": "160"
+  },
+  "WPFUndoall": {
+    "Content": "Undo Selected Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a042_",
+    "Type": "160"
+  },
+  "WPFAddUltPerf": {
+    "Content": "Add and Activate Ultimate Performance Profile",
+    "category": "Performance Plans",
+    "panel": "2",
+    "Order": "a080_",
+    "Type": "300"
+  },
+  "WPFRemoveUltPerf": {
+    "Content": "Remove Ultimate Performance Profile",
+    "category": "Performance Plans",
+    "panel": "2",
+    "Order": "a081_",
+    "Type": "300"
+  },
+  "WPFWinUtilShortcut": {
+    "Content": "Create WinUtil Shortcut",
+    "category": "Shortcuts",
+    "panel": "2",
+    "Order": "a082_",
+    "Type": "300"
   }
 }' | convertfrom-json
 # SPDX-License-Identifier: MIT
@@ -10674,56 +10953,96 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-$organizedData = @{}
-# Iterate through JSON data and organize by panel and category
-foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
-    $appInfo = $sync.configs.applications.$appName
+function Get-TabXaml {
+    param( [Parameter(Mandatory=$true)]
+        $tabname
+    )
+    $organizedData = @{}
+    # Iterate through JSON data and organize by panel and category
+    foreach ($appName in $sync.configs.$tabname.PSObject.Properties.Name) {
+        $appInfo = $sync.configs.$tabname.$appName
 
-    # Create an object for the application
-    $appObject = [PSCustomObject]@{
-        Name = $appName
-        Category = $appInfo.Category
-        Content = $appInfo.Content
-        Choco = $appInfo.choco
-        Winget = $appInfo.winget
-        Panel = $appInfo.panel
-        Link = $appInfo.link
-        Description = $appInfo.description
+        # Create an object for the application
+        $appObject = [PSCustomObject]@{
+            Name = $appName
+            Category = $appInfo.Category
+            Content = $appInfo.Content
+            Choco = $appInfo.choco
+            Winget = $appInfo.winget
+            Panel = $appInfo.panel
+            Link = $appInfo.link
+            Description = $appInfo.description
+            # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
+            Type = $appInfo.type
+            ComboItems = $appInfo.ComboItems
+            # Checked is the property to set startup checked status of checkbox (Default is false)
+            Checked = $appInfo.Checked
+        }
+
+        if (-not $organizedData.ContainsKey($appInfo.panel)) {
+            $organizedData[$appInfo.panel] = @{}
+        }
+
+        if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
+            $organizedData[$appInfo.panel][$appInfo.Category] = @{}
+        }
+
+        # Store application data in a sub-array under the category
+        # Add Order property to keep the original order of tweaks and features
+        $organizedData[$appInfo.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
     }
-
-    if (-not $organizedData.ContainsKey($appInfo.panel)) {
-        $organizedData[$appInfo.panel] = @{}
-    }
-
-    if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
-        $organizedData[$appInfo.panel][$appInfo.Category] = @{}
-    }
-
-    # Store application data in a sub-array under the category
-    $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
-}
-
-# Iterate through organizedData by panel, category, and application
-foreach ($panel in $organizedData.Keys) {
-    foreach ($category in $organizedData[$panel].Keys) {
-        $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
-        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
-        foreach ($appName in $sortedApps) {
-            $appInfo = $organizedData[$panel][$category][$appName]
-            if ($null -eq $appInfo.Link)
-            {
-                $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
-            }
-            else 
-            {
-                $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
+    $panelcount=0
+    # add ColumnDefinitions to evenly draw colums
+    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($organizedData.Keys.Count))+"</Grid.ColumnDefinitions>`n"
+    # Iterate through organizedData by panel, category, and application
+    foreach ($panel in ($organizedData.Keys | Sort-Object)) {
+        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+        $panelcount++
+        foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
+            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
+            $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+            foreach ($appName in $sortedApps) {
+                $appInfo = $organizedData[$panel][$category][$appName]
+                if ("Toggle" -eq $appInfo.Type) {
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+                } elseif ("Combobox" -eq $appInfo.Type) {
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
+                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
+                    $addfirst="IsSelected=`"True`""
+                    foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`n"
+                        $addfirst=""
+                    }
+                    $blockXml += "</ComboBox>`n</StackPanel>"
+                # If it is a digit, type is button and button length is digits
+                } elseif ($appInfo.Type -match "^[\d\.]+$") {
+                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`n"
+                # else it is a checkbox
+                } else {
+                    $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
+                    if ($null -eq $appInfo.Link)
+                    {
+                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`n"
+                    }
+                    else
+                    {
+                        $blockXml += "<StackPanel Orientation=""Horizontal"">`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`n</StackPanel>`n"
+                    }
+                }
             }
         }
+        $blockXml +="`n</StackPanel>`n</Border>`n"
     }
-
-    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
-    $blockXml = ""
+    return ($blockXml)
 }
+
+$tabcolums=Get-TabXaml "applications"
+$inputXML = $inputXML -replace "{{InstallPanel_applications}}", ($tabcolums)
+$tabcolums=Get-TabXaml "tweaks"
+$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
+$tabcolums=Get-TabXaml "feature"
+$inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Matrix'
