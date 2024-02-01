@@ -6652,15 +6652,6 @@ $sync.configs.applications = '{
 		"panel": "4",
 		"winget": "M2Team.NanaZip"
 	},
-	"WPFInstallnano": {
-		"category": "Development",
-		"choco": "nano",
-		"content": "Nano",
-		"description": "Nano is a text editor for Unix-like computing systems or operating environments using a command-line interface.",
-		"link": "https://www.nano-editor.org/",
-		"panel": "1",
-		"winget": "GNU.Nano"
-	},
 	"WPFInstallnaps2": {
 		"category": "Document",
 		"choco": "naps2",
