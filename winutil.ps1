@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.02.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.02.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -6058,14 +6058,23 @@ $sync.configs.applications = '{
 		"panel": "3",
 		"winget": "PeterPawlowski.foobar2000"
 	},
-	"WPFInstallfoxpdf": {
+	"WPFInstallfoxpdfeditor": {
 		"category": "Document",
 		"choco": "na",
-		"content": "Foxit PDF",
-		"description": "Foxit PDF is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
+		"content": "Foxit PDF Editor",
+		"description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
 		"link": "https://www.foxitsoftware.com/",
 		"panel": "1",
 		"winget": "Foxit.PhantomPDF"
+	},
+	"WPFInstallfoxpdfreader": {
+		"category": "Document",
+		"choco": "foxitreader",
+		"content": "Foxit PDF Reader",
+		"description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+		"link": "https://www.foxitsoftware.com/",
+		"panel": "1",
+		"winget": "Foxit.FoxitReader"
 	},
 	"WPFInstallfreecad": {
 		"category": "Multimedia Tools",
