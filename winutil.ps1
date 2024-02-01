@@ -6648,7 +6648,7 @@ $sync.configs.applications = '{
 		"choco": "nanazip",
 		"content": "NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
-		"link": "https://nanazip.codeplex.com/",
+		"link": "https://github.com/M2Team/NanaZip",
 		"panel": "4",
 		"winget": "M2Team.NanaZip"
 	},
@@ -7219,7 +7219,7 @@ $sync.configs.applications = '{
 		"panel": "3",
 		"winget": "ShareX.ShareX"
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShel": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
 		"content": "Shell (Expanded Context Menu)",
@@ -7938,7 +7938,16 @@ $sync.configs.applications = '{
 		"link": "https://zulipchat.com/",
 		"panel": "0",
 		"winget": "Zulip.Zulip"
-	}
+	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+  }
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
