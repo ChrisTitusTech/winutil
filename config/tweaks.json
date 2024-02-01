@@ -2614,34 +2614,34 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a041_",
-    "Type": "160",
+    "Type": "160"
   },
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a042_",
-    "Type": "160",
+    "Type": "160"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a080_",
-    "Type": "300",
+    "Type": "300"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a081_",
-    "Type": "300",
+    "Type": "300"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
     "category": "Shortcuts",
     "panel": "2",
     "Order": "a082_",
-    "Type": "300",
+    "Type": "300"
   }
 }
