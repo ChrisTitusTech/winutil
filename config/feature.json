@@ -222,6 +222,13 @@
     "Order": "a044_",
     "Type": "300"
   },
+  "WPFRunAdobeCCCleanerTool": {
+    "Content": "Remove Adobe Creative Cloud",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a045_",
+    "Type": "300"
+  },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
