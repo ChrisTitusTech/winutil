@@ -638,14 +638,23 @@
 		"panel": "3",
 		"winget": "PeterPawlowski.foobar2000"
 	},
-	"WPFInstallfoxpdf": {
+	"WPFInstallfoxpdfeditor": {
 		"category": "Document",
 		"choco": "na",
-		"content": "Foxit PDF",
-		"description": "Foxit PDF is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
+		"content": "Foxit PDF Editor",
+		"description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
 		"link": "https://www.foxitsoftware.com/",
 		"panel": "1",
 		"winget": "Foxit.PhantomPDF"
+	},
+	"WPFInstallfoxpdfreader": {
+		"category": "Document",
+		"choco": "foxitreader",
+		"content": "Foxit PDF Reader",
+		"description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+		"link": "https://www.foxitsoftware.com/",
+		"panel": "1",
+		"winget": "Foxit.FoxitReader"
 	},
 	"WPFInstallfreecad": {
 		"category": "Multimedia Tools",
@@ -1219,18 +1228,9 @@
 		"choco": "nanazip",
 		"content": "NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
-		"link": "https://nanazip.codeplex.com/",
+		"link": "https://github.com/M2Team/NanaZip",
 		"panel": "4",
 		"winget": "M2Team.NanaZip"
-	},
-	"WPFInstallnano": {
-		"category": "Development",
-		"choco": "nano",
-		"content": "Nano",
-		"description": "Nano is a text editor for Unix-like computing systems or operating environments using a command-line interface.",
-		"link": "https://www.nano-editor.org/",
-		"panel": "1",
-		"winget": "GNU.Nano"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -1790,7 +1790,7 @@
 		"panel": "3",
 		"winget": "ShareX.ShareX"
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShel": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
 		"content": "Shell (Expanded Context Menu)",
@@ -2509,5 +2509,14 @@
 		"link": "https://zulipchat.com/",
 		"panel": "0",
 		"winget": "Zulip.Zulip"
-	}
+	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+  }
 }
