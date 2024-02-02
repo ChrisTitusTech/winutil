@@ -2759,7 +2759,7 @@ function Invoke-WPFFixesWinget {
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
 
-    Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
+    Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
 Function Invoke-WPFFormVariables {
