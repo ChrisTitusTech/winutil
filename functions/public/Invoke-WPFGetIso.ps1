@@ -173,7 +173,15 @@ function Invoke-WPFGetIso {
             $imageName = $_.ImageName
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
-        $sync.MicrowinWindowsFlavors.SelectedIndex = 5
+        $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
+        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional")
+            {
+                # We have found the Pro edition
+                $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
+            }
+        }
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
