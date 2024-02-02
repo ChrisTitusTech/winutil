@@ -54,7 +54,8 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 
 function Get-TabXaml {
     param( [Parameter(Mandatory=$true)]
-        $tabname
+        $tabname,
+        $columncount = 0
     )
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
@@ -68,7 +69,7 @@ function Get-TabXaml {
             Content = $appInfo.Content
             Choco = $appInfo.choco
             Winget = $appInfo.winget
-            Panel = $appInfo.panel
+            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel}
             Link = $appInfo.link
             Description = $appInfo.description
             # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
@@ -78,29 +79,54 @@ function Get-TabXaml {
             Checked = $appInfo.Checked
         }
 
-        if (-not $organizedData.ContainsKey($appInfo.panel)) {
-            $organizedData[$appInfo.panel] = @{}
+        if (-not $organizedData.ContainsKey($appObject.panel)) {
+            $organizedData[$appObject.panel] = @{}
         }
 
-        if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
-            $organizedData[$appInfo.panel][$appInfo.Category] = @{}
+        if (-not $organizedData[$appObject.panel].ContainsKey($appObject.Category)) {
+            $organizedData[$appObject.panel][$appObject.Category] = @{}
         }
 
         # Store application data in a sub-array under the category
         # Add Order property to keep the original order of tweaks and features
-        $organizedData[$appInfo.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
+        $organizedData[$appObject.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
     }
     $panelcount=0
+    $paneltotal = $organizedData.Keys.Count
+    if ($columncount -gt 0) {
+        $appcount = $sync.configs.$tabname.PSObject.Properties.Name.count + $organizedData["0"].Keys.count
+        $maxcount = [Math]::Round( $appcount / $columncount + 0.5)
+        $paneltotal = $columncount
+    }
     # add ColumnDefinitions to evenly draw colums
-    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($organizedData.Keys.Count))+"</Grid.ColumnDefinitions>`n"
+    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($paneltotal))+"</Grid.ColumnDefinitions>`n"
     # Iterate through organizedData by panel, category, and application
+    $count = 0
     foreach ($panel in ($organizedData.Keys | Sort-Object)) {
         $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
         $panelcount++
         foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
+            $count++
+            if ($columncount -gt 0) {
+                $panelcount2 = [Int](($count)/$maxcount-0.5)
+                if ($panelcount -eq $panelcount2 ) {
+                    $blockXml +="`n</StackPanel>`n</Border>`n"
+                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                    $panelcount++
+                }
+            }
             $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
+                $count++
+                if ($columncount -gt 0) {
+                    $panelcount2 = [Int](($count)/$maxcount-0.5)
+                    if ($panelcount -eq $panelcount2 ) {
+                        $blockXml +="`n</StackPanel>`n</Border>`n"
+                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                        $panelcount++
+                    }
+                }
                 $appInfo = $organizedData[$panel][$category][$appName]
                 if ("Toggle" -eq $appInfo.Type) {
                     $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
@@ -136,7 +162,7 @@ function Get-TabXaml {
     return ($blockXml)
 }
 
-$tabcolums=Get-TabXaml "applications"
+$tabcolums=Get-TabXaml "applications" 5
 $inputXML = $inputXML -replace "{{InstallPanel_applications}}", ($tabcolums)
 $tabcolums=Get-TabXaml "tweaks"
 $inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
@@ -208,7 +234,7 @@ $sync.keys | ForEach-Object {
                     Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
-       
+
         }
     }
 }
@@ -327,7 +353,7 @@ $sync["Form"].Add_Deactivated({
 
 $sync["Form"].Add_ContentRendered({
 
-    try { 
+    try {
         [void][Window]
     } catch {
 Add-Type @"
@@ -340,11 +366,11 @@ Add-Type @"
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-            
+
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-            
+
             [DllImport("user32.dll")]
             public static extern int GetSystemMetrics(int nIndex);
         };
@@ -408,7 +434,7 @@ Add-Type @"
     } else {
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
-    
+
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
@@ -460,20 +486,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
     $filter = Get-WinUtilVariables -Type CheckBox
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
-    
+
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
             continue
         }
-    
+
         $textToSearch = $sync.CheckboxFilter.Text
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
-    
+
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
-    
+
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
              # Set the corresponding text block visibility
@@ -489,7 +515,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
-    
+
 })
 
 # Define event handler for button click
@@ -533,7 +559,7 @@ GUI      : @KonTy
 MicroWin : @KonTy
 GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
-"@    
+"@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
 
