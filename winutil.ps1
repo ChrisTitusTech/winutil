@@ -2383,6 +2383,7 @@ function Invoke-WPFButton {
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
+        "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
         "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
@@ -3722,6 +3723,34 @@ function Invoke-WPFPresets {
             $sync.$checkboxName.IsChecked = $false
             Write-Debug "$checkboxName is not checked"
         }
+    }
+}
+function Invoke-WPFRunAdobeCCCleanerTool {
+    <#
+    .SYNOPSIS
+        It removes or fixes problem files and resolves permission issues in registry keys.
+    .DESCRIPTION
+        The Creative Cloud Cleaner tool is a utility for experienced users to clean up corrupted installations.
+    #>
+
+    [string]$url="https://swupmf.adobe.com/webfeed/CleanerTool/win/AdobeCreativeCloudCleanerTool.exe"
+
+    Write-Host "The Adobe Creative Cloud Cleaner tool is hosted at"
+    Write-Host "$url"
+
+    # Don't show the progress because it will slow down the download speed
+    $ProgressPreference='SilentlyContinue'
+
+    Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
+
+    # Revert back the ProgressPreference variable to the default value since we got the file desired
+    $ProgressPreference='Continue'
+
+    Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
+    
+    if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
+        Write-Host "Cleaning up..."
+        Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
     }
 }
 function Invoke-WPFRunspace {
@@ -8117,6 +8146,13 @@ $sync.configs.feature = '{
     "category": "Fixes",
     "panel": "1",
     "Order": "a044_",
+    "Type": "300"
+  },
+  "WPFRunAdobeCCCleanerTool": {
+    "Content": "Remove Adobe Creative Cloud",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a045_",
     "Type": "300"
   },
   "WPFPanelnetwork": {
