@@ -1529,6 +1529,15 @@
 		"panel": "1",
 		"winget": "PDFsam.PDFsam"
 	},
+    "WPFInstallpdfgear":{
+		"category": "Document",
+		"content": "PDFGear",
+		"description": "PDFGear is a free and easy-to-use PDF software close to on par with Adobe's Acrobat software",
+		"link": "https://www.pdfgear.com/",
+		"panel": "1",
+		"winget": "PDFgear.PDFgear"
+
+    },
 	"WPFInstallpeazip": {
 		"category": "Utilities",
 		"choco": "peazip",
