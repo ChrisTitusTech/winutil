@@ -16,7 +16,6 @@ Describe "Config Files" -ForEach @(
             "winget": "value",
             "choco": "value",
             "category": "value",
-            "panel": "value",
             "content": "value",
             "description": "value",
             "link": "value"
