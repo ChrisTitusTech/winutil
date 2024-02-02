@@ -56,8 +56,8 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
         $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            $ScriptBlock = [ScriptBlock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $ScriptBlock -Name $CheckBox
         }
     }
 

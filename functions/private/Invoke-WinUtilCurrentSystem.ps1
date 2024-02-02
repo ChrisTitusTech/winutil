@@ -39,7 +39,7 @@ Function Invoke-WinUtilCurrentSystem {
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
             $Config = $psitem.Name
-            #WPFEssTweaksTele
+            #WPFTweaksTele
             $registryKeys = $sync.configs.tweaks.$Config.registry
             $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
             $serviceKeys = $sync.configs.tweaks.$Config.service

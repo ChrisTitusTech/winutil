@@ -10,7 +10,7 @@
     "WPFTweaksStorage",
     "WPFTweaksTele",
     "WPFTweaksWifi",
-    "WPFMiscTweaksPower"
+    "WPFTweaksPower"
   ],
   "laptop": [
     "WPFTweaksAH",
@@ -22,7 +22,7 @@
     "WPFTweaksStorage",
     "WPFTweaksTele",
     "WPFTweaksWifi",
-    "WPFMiscTweaksLapPower"
+    "WPFTweaksLapPower"
   ],
   "minimal": [
     "WPFTweaksHome",

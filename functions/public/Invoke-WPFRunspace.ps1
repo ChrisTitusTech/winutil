@@ -3,10 +3,10 @@ function Invoke-WPFRunspace {
     <#
 
     .SYNOPSIS
-        Creates and invokes a runspace using the given scriptblock and argumentlist
+        Creates and invokes a runspace using the given ScriptBlock and argumentlist
 
     .PARAMETER ScriptBlock
-        The scriptblock to invoke in the runspace
+        The ScriptBlock to invoke in the runspace
 
     .PARAMETER ArgumentList
         A list of arguments to pass to the runspace
@@ -28,7 +28,7 @@ function Invoke-WPFRunspace {
     # Create a PowerShell instance
     $script:powershell = [powershell]::Create()
 
-    # Add Scriptblock and Arguments to runspace
+    # Add ScriptBlock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block

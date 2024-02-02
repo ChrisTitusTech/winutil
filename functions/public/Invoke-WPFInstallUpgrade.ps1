@@ -13,7 +13,7 @@ function Invoke-WPFInstallUpgrade {
     }
 
     if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
-        $msg = "[Invoke-WPFInstallUpgrade] Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
+        $msg = "Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }

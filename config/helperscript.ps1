@@ -210,7 +210,7 @@ $jsonfile | ConvertTo-Json | Out-File ./config/preset.json
         ],
         "InvokeScript": [
             "Script to make modifications not possible with the above types
-            Special care needs to be taken here as converting from json to a scriptblock
+            Special care needs to be taken here as converting from json to a ScriptBlock
             can cause weird issues. Please look at the example below to get an idea of how things should work"
         ],
         "UndoScript": [

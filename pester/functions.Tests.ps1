@@ -29,7 +29,7 @@ Describe "Functions"{
     Get-ChildItem .\functions -Recurse -File | ForEach-Object {
 
         context "$($psitem.BaseName)" {
-            BeforeEach -Scriptblock {
+            BeforeEach -ScriptBlock {
                 . $psitem.FullName
             }
 

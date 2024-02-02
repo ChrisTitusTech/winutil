@@ -3,7 +3,7 @@ function Invoke-WPFToggle {
     <#
 
     .SYNOPSIS
-        Invokes the scriptblock for the given toggle
+        Invokes the ScriptBlock for the given toggle
 
     .PARAMETER Button
         The name of the toggle to invoke

@@ -2,27 +2,27 @@ function Invoke-WinUtilScript {
     <#
 
     .SYNOPSIS
-        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
+        Invokes the provided ScriptBlock. Intended for things that can't be handled with the other functions.
 
     .PARAMETER Name
-        The name of the scriptblock being invoked
+        The name of the ScriptBlock being invoked
 
-    .PARAMETER scriptblock
-        The scriptblock to be invoked
+    .PARAMETER ScriptBlock
+        The ScriptBlock to be invoked
 
     .EXAMPLE
-        $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
-        Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
+        $ScriptBlock = [ScriptBlock]::Create({"Write-output 'Hello World'"})
+        Invoke-WinUtilScript -ScriptBlock $ScriptBlock -Name "Hello World"
 
     #>
     param (
         $Name,
-        [scriptblock]$scriptblock
+        [ScriptBlock]$ScriptBlock
     )
 
     Try {
         Write-Host "Running Script for $name"
-        Invoke-Command $scriptblock -ErrorAction Stop
+        Invoke-Command $ScriptBlock -ErrorAction Stop
     }
     Catch [System.Management.Automation.CommandNotFoundException] {
         Write-Warning "The specified command was not found."

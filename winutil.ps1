@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.31
+    Version        : 24.02.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.31"
+$sync.version = "24.02.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1336,7 +1336,7 @@ Function Invoke-WinUtilCurrentSystem {
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
 
             $Config = $psitem.Name
-            #WPFEssTweaksTele
+            #WPFTweaksTele
             $registryKeys = $sync.configs.tweaks.$Config.registry
             $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
             $serviceKeys = $sync.configs.tweaks.$Config.service
@@ -1464,10 +1464,10 @@ function Invoke-WinUtilFeatureInstall {
         if($sync.configs.feature.$psitem.InvokeScript){
             Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
                 Try{
-                    $Scriptblock = [scriptblock]::Create($script)
+                    $ScriptBlock = [ScriptBlock]::Create($script)
 
                     Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
+                    Invoke-Command $ScriptBlock -ErrorAction stop
                 }
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
@@ -1560,27 +1560,27 @@ function Invoke-WinUtilScript {
     <#
 
     .SYNOPSIS
-        Invokes the provided scriptblock. Intended for things that can't be handled with the other functions.
+        Invokes the provided ScriptBlock. Intended for things that can't be handled with the other functions.
 
     .PARAMETER Name
-        The name of the scriptblock being invoked
+        The name of the ScriptBlock being invoked
 
-    .PARAMETER scriptblock
-        The scriptblock to be invoked
+    .PARAMETER ScriptBlock
+        The ScriptBlock to be invoked
 
     .EXAMPLE
-        $Scriptblock = [scriptblock]::Create({"Write-output 'Hello World'"})
-        Invoke-WinUtilScript -ScriptBlock $scriptblock -Name "Hello World"
+        $ScriptBlock = [ScriptBlock]::Create({"Write-output 'Hello World'"})
+        Invoke-WinUtilScript -ScriptBlock $ScriptBlock -Name "Hello World"
 
     #>
     param (
         $Name,
-        [scriptblock]$scriptblock
+        [ScriptBlock]$ScriptBlock
     )
 
     Try {
         Write-Host "Running Script for $name"
-        Invoke-Command $scriptblock -ErrorAction Stop
+        Invoke-Command $ScriptBlock -ErrorAction Stop
     }
     Catch [System.Management.Automation.CommandNotFoundException] {
         Write-Warning "The specified command was not found."
@@ -1728,8 +1728,8 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
         $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
-            $Scriptblock = [scriptblock]::Create($psitem)
-            Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
+            $ScriptBlock = [ScriptBlock]::Create($psitem)
+            Invoke-WinUtilScript -ScriptBlock $ScriptBlock -Name $CheckBox
         }
     }
 
@@ -2303,7 +2303,7 @@ Function Update-WinUtilProgramWinget {
 
     }
 
-    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
+    $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -ScriptBlock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
 function Invoke-WPFButton {
@@ -2405,12 +2405,12 @@ function Invoke-WPFFeatureInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
+        $msg = "Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+    $Features = Get-WinUtilCheckBoxes -Group "WPFFeature"
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
@@ -2424,6 +2424,13 @@ function Invoke-WPFFeatureInstall {
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
         Write-Host "==================================="
+
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "All features are now installed "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
 }
 function Invoke-WPFFixesNetwork {
@@ -2809,7 +2816,7 @@ function Invoke-WPFGetInstalled {
     param($checkbox)
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFGetInstalled] Install process is currently running."
+        $msg = "Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -3076,12 +3083,12 @@ function Invoke-WPFInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFInstall] Install process is currently running."
+        $msg = "Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
+    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
 
     if ($wingetinstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install"
@@ -3091,12 +3098,21 @@ function Invoke-WPFInstall {
 
     Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
-
         try{
             $sync.ProcessRunning = $true
 
+            # Ensure winget is installed
             Install-WinUtilWinget
+
+            # Install all selected programs in new window
             Install-WinUtilProgramWinget -ProgramsToInstall $WingetInstall
+
+            $ButtonType = [System.Windows.MessageBoxButton]::OK
+            $MessageboxTitle = "Installs are Finished "
+            $Messageboxbody = ("Done")
+            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
@@ -3107,7 +3123,6 @@ function Invoke-WPFInstall {
             Write-Host "--      Winget failed to install        ---"
             Write-Host "==========================================="
         }
-        Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False
     }
 }
@@ -3126,7 +3141,7 @@ function Invoke-WPFInstallUpgrade {
     }
 
     if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
-        $msg = "[Invoke-WPFInstallUpgrade] Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
+        $msg = "Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -3607,7 +3622,8 @@ function Invoke-WPFPresets {
 
     param(
         $preset,
-        [bool]$imported = $false
+        [bool]$imported = $false,
+        $checkbox = "WPFTweaks"
     )
 
     if($imported -eq $true){
@@ -3617,33 +3633,23 @@ function Invoke-WPFPresets {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" }
-    Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
-
-    $CheckBoxesToCheck | ForEach-Object {
-        if ($_ -ne $null) {
-            Write-Debug $_
+    if($checkbox -eq "WPFTweaks"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "*tweaks*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if ($CheckBoxesToCheck -contains $PSItem.name){
+                $sync.$($PSItem.name).ischecked = $true
+            }
+            else{$sync.$($PSItem.name).ischecked = $false}
         }
     }
-    
-    foreach ($CheckBox in $CheckBoxes) {
-        $checkboxName = $CheckBox.Key
+    if($checkbox -eq "WPFInstall"){
 
-        if (-not $CheckBoxesToCheck)
-        {
-            $sync.$checkboxName.IsChecked = $false
-            continue
-        }
-
-        # Check if the checkbox name exists in the flattened JSON hashtable
-        if ($CheckBoxesToCheck.Contains($checkboxName)) {
-            # If it exists, set IsChecked to true
-            $sync.$checkboxName.IsChecked = $true
-            Write-Debug "$checkboxName is checked"
-        } else {
-            # If it doesn't exist, set IsChecked to false
-            $sync.$checkboxName.IsChecked = $false
-            Write-Debug "$checkboxName is not checked"
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
+            if($($sync.configs.applications.$($psitem.name).winget) -in $CheckBoxesToCheck){
+                $sync.$($PSItem.name).ischecked = $true
+            }
+            else{$sync.$($PSItem.name).ischecked = $false}
         }
     }
 }
@@ -3652,10 +3658,10 @@ function Invoke-WPFRunspace {
     <#
 
     .SYNOPSIS
-        Creates and invokes a runspace using the given scriptblock and argumentlist
+        Creates and invokes a runspace using the given ScriptBlock and argumentlist
 
     .PARAMETER ScriptBlock
-        The scriptblock to invoke in the runspace
+        The ScriptBlock to invoke in the runspace
 
     .PARAMETER ArgumentList
         A list of arguments to pass to the runspace
@@ -3677,7 +3683,7 @@ function Invoke-WPFRunspace {
     # Create a PowerShell instance
     $script:powershell = [powershell]::Create()
 
-    # Add Scriptblock and Arguments to runspace
+    # Add ScriptBlock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
     $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
@@ -3778,7 +3784,7 @@ function Invoke-WPFToggle {
     <#
 
     .SYNOPSIS
-        Invokes the scriptblock for the given toggle
+        Invokes the ScriptBlock for the given toggle
 
     .PARAMETER Button
         The name of the toggle to invoke
@@ -3810,13 +3816,13 @@ function Invoke-WPFtweaksbutton {
   #>
 
   if($sync.ProcessRunning){
-    $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
+    $msg = "Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
-  
+  $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
+
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
@@ -3829,16 +3835,20 @@ function Invoke-WPFtweaksbutton {
 
   Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
     param($Tweaks, $DebugPreference)
-    Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
+    
 
     $sync.ProcessRunning = $true
 
-    $cnt = 0
+    # Executes first if selected
+    if ("WPFTweaksRestorePoint" -in $Tweaks) {
+      Invoke-WinUtilTweaks "WPFTweaksRestorePoint"
+  }
+
     # Execute other selected tweaks
-    foreach ($tweak in $Tweaks) {
-      Write-Debug "This is a tweak to run $tweak count: $cnt"
-      Invoke-WinUtilTweaks $tweak
-      $cnt += 1
+    foreach ($tweak in $tweaks) {
+        if ($tweak -ne "WPFTweaksRestorePoint") {
+            Invoke-WinUtilTweaks $tweak
+        }
     }
 
     $sync.ProcessRunning = $false
@@ -3846,11 +3856,12 @@ function Invoke-WPFtweaksbutton {
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
 
-    # $ButtonType = [System.Windows.MessageBoxButton]::OK
-    # $MessageboxTitle = "Tweaks are Finished "
-    # $Messageboxbody = ("Done")
-    # $MessageIcon = [System.Windows.MessageBoxImage]::Information
-    # [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "Tweaks are Finished "
+    $Messageboxbody = ("Done")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
   }
 }
 Function Invoke-WPFUltimatePerformance {
@@ -3940,12 +3951,12 @@ function Invoke-WPFundoall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFundoall] Install process is currently running."
+        $msg = "Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+    $Tweaks = Get-WinUtilCheckBoxes -Group "WPFTweaks"
 
     if ($tweaks.count -eq 0){
         $msg = "Please check the tweaks you wish to undo."
@@ -4136,12 +4147,12 @@ function Invoke-WPFUnInstall {
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFUnInstall] Install process is currently running"
+        $msg = "Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
+    $WingetInstall = Get-WinUtilCheckBoxes -Group "WPFInstall"
 
     if ($wingetinstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install"
@@ -4159,8 +4170,7 @@ function Invoke-WPFUnInstall {
     if($confirm -eq "No"){return}
 
     Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
-        param($WingetInstall, $DebugPreference)
-
+        param($WingetInstall , $DebugPreference)
         try{
             $sync.ProcessRunning = $true
 
@@ -8097,7 +8107,7 @@ $sync.configs.preset = '{
     "WPFTweaksStorage",
     "WPFTweaksTele",
     "WPFTweaksWifi",
-    "WPFMiscTweaksPower"
+    "WPFTweaksPower"
   ],
   "laptop": [
     "WPFTweaksAH",
@@ -8109,7 +8119,7 @@ $sync.configs.preset = '{
     "WPFTweaksStorage",
     "WPFTweaksTele",
     "WPFTweaksWifi",
-    "WPFMiscTweaksLapPower"
+    "WPFTweaksLapPower"
   ],
   "minimal": [
     "WPFTweaksHome",

@@ -32,10 +32,10 @@ function Invoke-WinUtilFeatureInstall {
         if($sync.configs.feature.$psitem.InvokeScript){
             Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
                 Try{
-                    $Scriptblock = [scriptblock]::Create($script)
+                    $ScriptBlock = [ScriptBlock]::Create($script)
 
                     Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
+                    Invoke-Command $ScriptBlock -ErrorAction stop
                 }
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
