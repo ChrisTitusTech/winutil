@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.01.31
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.01.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -280,60 +280,58 @@ Function Get-WinUtilCheckBoxes {
     #>
 
     Param(
-        [boolean]$unCheck = $false
+        $Group,
+        [boolean]$unCheck = $true
     )
 
-    $Output = @{
-        Install      = @()
-        WPFTweaks     = @()
-        WPFFeature    = @()
-        WPFInstall    = @()
+
+    $Output = New-Object System.Collections.Generic.List[System.Object]
+
+    if($Group -eq "WPFInstall"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPFInstall*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+        Foreach ($CheckBox in $CheckBoxes){
+            if($CheckBox.value.ischecked -eq $true){
+                $sync.configs.applications.$($CheckBox.Name).winget -split ";" | ForEach-Object {
+                    $Output.Add($psitem)
+                }
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
+                }
+
+            }
+        }
     }
 
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
+    if($Group -eq "WPFTweaks"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Tweaks*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+        Foreach ($CheckBox in $CheckBoxes){
+            if($CheckBox.value.ischecked -eq $true){
+                $Output.Add($Checkbox.Name)
 
-    foreach ($CheckBox in $CheckBoxes) {
-        $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
-                elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
-                elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
-
-        if ($group) {
-            if ($CheckBox.Value.IsChecked -eq $true) {
-                $feature = switch ($group) {
-                    "Install" {
-                        # Get the winget value
-                        $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
-
-                        if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
-                            $wingetValue -split ";"
-                        } else {
-                            $sync.configs.applications.$($CheckBox.Name).choco
-                        }
-                    }
-                    default {
-                        $CheckBox.Name
-                    }
-                }
-
-                if (-not $Output.ContainsKey($group)) {
-                    $Output[$group] = @()
-                }
-                if ($group -eq "Install") {
-                    $Output["WPFInstall"] += $CheckBox.Name
-                    Write-Debug "Adding: $($CheckBox.Name) under: WPFInstall"
-                }
-
-                Write-Debug "Adding: $($feature) under: $($group)"
-                $Output[$group] += $feature
-
-                if ($uncheck -eq $true) {
-                    $CheckBox.Value.IsChecked = $false
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
                 }
             }
         }
     }
 
-    return  $Output
+    if($Group -eq "WPFFeature"){
+        $filter = Get-WinUtilVariables -Type Checkbox | Where-Object {$psitem -like "WPF*Feature*"}
+        $CheckBoxes = $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter}
+        Foreach ($CheckBox in $CheckBoxes){
+            if($CheckBox.value.ischecked -eq $true){
+                $Output.Add($Checkbox.Name)
+
+                if ($uncheck -eq $true){
+                    $CheckBox.value.ischecked = $false
+                }
+            }
+        }
+    }
+
+    Write-Output $($Output | Select-Object -Unique)
 }
 function Get-WinUtilInstallerProcess {
     <#
@@ -567,7 +565,7 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
             Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
