@@ -20,7 +20,7 @@ function Invoke-WPFInstall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $WingetInstall,$DebugPreference -ScriptBlock {
+    Invoke-WPFRunspace -ArgumentList $WingetInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($WingetInstall, $DebugPreference)
 
         try{
