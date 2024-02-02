@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.02.02
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.02.02"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -471,6 +471,15 @@ Function Get-WinUtilToggleStatus {
         }
         else{
             return $false
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
+        $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
+        if($StickyKeys -eq 58){
+            return $false
+        }
+        else{
+            return $true
         }
     }
 }
@@ -1660,6 +1669,37 @@ function Invoke-WinUtilSnapFlyout {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Invoke-WinUtilStickyKeys {
+    <#
+    .SYNOPSIS
+        Disables/Enables Sticky Keyss on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Sticky Keys on startup
+    #>
+    Param($Enabled)
+    Try { 
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Sticky Keys On startup"
+            $value = 510
+        }
+        else {
+            Write-Host "Disabling Sticky Keys On startup"
+            $value = 58
+        }
+        $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
+        Set-ItemProperty -Path $Path -Name Flags -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -3801,6 +3841,7 @@ function Invoke-WPFToggle {
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
         "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
+        "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -5179,6 +5220,11 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                 <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
                                 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury."/>
+                                <CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
                             </StackPanel>
 
                             <Label FontSize="16" Content="Performance Plans" />

@@ -80,4 +80,13 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }
+    if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
+        $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
+        if($StickyKeys -eq 58){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
 }
