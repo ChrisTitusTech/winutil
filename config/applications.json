@@ -8,6 +8,15 @@
 		"panel": "4",
 		"winget": "AgileBits.1Password"
 	},
+		"WPFInstallzohomail": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Zoho Mail",
+		"description": "The comfort of your webmail now in your desktop with Zoho Mail Desktop",
+		"link": "https://www.zoho.com/mail/",
+		"panel": "0",
+		"winget": "Zoho.ZohoMail.Desktop"
+	},
 	"WPFInstall7zip": {
 		"category": "Utilities",
 		"choco": "7zip",
