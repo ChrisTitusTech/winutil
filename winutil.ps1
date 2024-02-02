@@ -2443,7 +2443,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+    $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
@@ -2790,7 +2790,7 @@ function Invoke-WPFFixesWinget {
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
 
-    Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
+    Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
 Function Invoke-WPFFormVariables {

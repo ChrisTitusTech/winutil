@@ -12,7 +12,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+    $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
