@@ -548,6 +548,15 @@
 		"panel": "4",
 		"winget": "Balena.Etcher"
 	},
+	"WPFInstallfend": {
+        "category": "Utilities",
+        "choco": "fend",
+        "content": "Fend",
+        "description": "Fend is a command-line based arbitrary-precision unit-aware calculator",
+        "link": "https://printfn.github.io/fend/documentation/",
+        "panel": "4",
+        "winget": "printfn.fend"
+    },
 	"WPFInstallfalkon": {
 		"category": "Browsers",
 		"choco": "falkon",
