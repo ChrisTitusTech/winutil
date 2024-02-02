@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.01.30
+    Version        : 24.02.02
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.01.30"
+$sync.version = "24.02.02"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2308,6 +2308,36 @@ Function Update-WinUtilProgramWinget {
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
+
+function Invoke-ScratchDialog {
+
+    <#
+
+    .SYNOPSIS
+        Enable Editable Text box Alternate Scartch path
+
+    .PARAMETER Button
+    #>
+    $sync.WPFMicrowinISOScratchDir.IsChecked 
+ 
+
+    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+    $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+    $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
+    $DialogShowNewFolderButton = $true
+    $Dialog.ShowDialog() 
+    $filePath = $Dialog.SelectedPath
+        Write-Host "No ISO is chosen+  $filePath"
+
+    if ([string]::IsNullOrEmpty($filePath))
+    {
+        Write-Host "No Folder had chosen"
+        return
+    }
+    
+       $sync.MicrowinScratchDirBox.Text =  Join-Path $filePath "\"
+
+}
 function Invoke-WPFButton {
 
     <#
@@ -2353,6 +2383,7 @@ function Invoke-WPFButton {
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
+        "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
         "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
@@ -2362,6 +2393,7 @@ function Invoke-WPFButton {
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
+        "MicrowinScratchDirBT" {Invoke-ScratchDialog}
     }
 }
 function Invoke-WPFCloseButton {
@@ -2412,7 +2444,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeatures"]
+    $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
@@ -2759,7 +2791,7 @@ function Invoke-WPFFixesWinget {
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
 
-    Start-Process -FilePath "choco" -ArgumentList "install winget -y" -NoNewWindow -Wait
+    Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
 Function Invoke-WPFFormVariables {
@@ -2861,6 +2893,10 @@ function Invoke-WPFGetIso {
         return
     }
 
+  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyText.Text="N Busy"
+
+
     Write-Host "         _                     __    __  _         "
 	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
 	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -2868,12 +2904,17 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
+   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
+}
+
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) 
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+        $sync.BusyMessage.Visibility="Hidden"
 
         if (!$downloadFromGitHub) 
         {
@@ -2918,6 +2959,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
+        $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
@@ -2946,13 +2988,38 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
+    $mountedISOPath = (Split-Path -Path $filePath)
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
+        $sync.MicrowinScratchDirBox.Text =""
+    }
+
+     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+
+    if ($UseISOScratchDir) {
+        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
+    }
+
+    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
+
+         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
+
+    }
+
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $randomNumber = Get-Random -Minimum 1 -Maximum 9999
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $sync.BusyText.Text=" - Mounting"
+    Write-Host "Mounting Iso. Please wait."  
+    if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+    } else {
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
+    }
+
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
@@ -2988,6 +3055,14 @@ function Invoke-WPFGetIso {
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
         $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
+        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional")
+            {
+                # We have found the Pro edition
+                $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
+            }
+        }
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
@@ -3004,6 +3079,7 @@ function Invoke-WPFGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
+    $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
 }
 
@@ -3647,6 +3723,34 @@ function Invoke-WPFPresets {
             $sync.$checkboxName.IsChecked = $false
             Write-Debug "$checkboxName is not checked"
         }
+    }
+}
+function Invoke-WPFRunAdobeCCCleanerTool {
+    <#
+    .SYNOPSIS
+        It removes or fixes problem files and resolves permission issues in registry keys.
+    .DESCRIPTION
+        The Creative Cloud Cleaner tool is a utility for experienced users to clean up corrupted installations.
+    #>
+
+    [string]$url="https://swupmf.adobe.com/webfeed/CleanerTool/win/AdobeCreativeCloudCleanerTool.exe"
+
+    Write-Host "The Adobe Creative Cloud Cleaner tool is hosted at"
+    Write-Host "$url"
+
+    # Don't show the progress because it will slow down the download speed
+    $ProgressPreference='SilentlyContinue'
+
+    Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
+
+    # Revert back the ProgressPreference variable to the default value since we got the file desired
+    $ProgressPreference='Continue'
+
+    Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
+    
+    if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
+        Write-Host "Cleaning up..."
+        Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
     }
 }
 function Invoke-WPFRunspace {
@@ -5023,38 +5127,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                         BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                            <Border Grid.Row="1" Grid.Column="0">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel0}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="1">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True" >
-                                    {{InstallPanel1}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="2">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel2}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="3">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel3}}
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Row="1" Grid.Column="4">
-                                <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                    {{InstallPanel4}}
-                                </StackPanel>
-                            </Border>
+                        {{InstallPanel_applications}}
                         </Grid>
                     </ScrollViewer>
 
@@ -5063,15 +5136,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=".50*"/>
-                        <ColumnDefinition Width=".50*"/>
-                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="55"/>
                         <RowDefinition Height=".70*"/>
                         <RowDefinition Height=".10*"/>
                     </Grid.RowDefinitions>
+                    {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
                         <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
@@ -5089,151 +5159,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Essential Tweaks"/>
-                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" IsChecked="True"/>
-                            <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0" ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
-                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
-                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
-                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
-                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-
-                            <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                                <Label FontSize="16" Content="Advanced Tweaks - CAUTION"/>
-                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                                <CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0" ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
-                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
-                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
-                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                                <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0" ToolTip="Enables IPv6."/>
-
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
-                                        <ComboBoxItem IsSelected="True" Content = "Default"/>
-                                        <ComboBoxItem Content="DHCP"/>
-                                        <ComboBoxItem Content="Google"/>
-                                        <ComboBoxItem Content="Cloudflare"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware"/>
-                                        <ComboBoxItem Content="Cloudflare_Malware_Adult"/>
-                                        <ComboBoxItem Content="Level3"/>
-                                        <ComboBoxItem Content="Open_DNS"/>
-                                        <ComboBoxItem Content="Quad9"/>
-                                    </ComboBox>
-                                </StackPanel>
-                                
-                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,15,0,0"/>
-                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="0,10,0,0"/>
-                                
-                            </StackPanel>
-
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label FontSize="16" Content="Customize Preferences"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Dark Theme"  Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
-                                <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip= "If enable then includes web search results from Bing in your Start Menu search." />
-                                <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip= "Toggle the Num Lock key state when your computer starts."/>
-                                <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics."/>
-                                <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-                            
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
-                                <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
-                                <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                <Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements."/>
-                                <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-                            </StackPanel>
-
-                            <Label FontSize="16" Content="Performance Plans" />
-                            <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Margin="5,2" Width="300"/>
-                            <Label FontSize="16" Content="Shortcuts" />
-                            <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Margin="5,0" Padding="20,5" Width="300"/>
-
-                        </StackPanel> <!-- End of Customize Preferences Section -->
-                        </Border>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Features" FontSize="16"/>
-                            <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
-                            <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
-                            <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0" ToolTip="Enables legacy programs from previous versions of windows"/>
-                            <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0" ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
-                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Enables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Disables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
-                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
-                            <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
-                            <Button Name="WPFFeatureInstall" FontSize="14" Content="Install Features" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="150"/>
-                            <Label Content="Fixes" FontSize="16"/>
-                            <Button Name="WPFPanelAutologin" FontSize="14" Content="Set Up Autologin" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesUpdate" FontSize="14" Content="Reset Windows Update" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesNetwork" FontSize="14" Content="Reset Network" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFPanelDISM" FontSize="14" Content="System Corruption Scan" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                            <Button Name="WPFFixesWinget" FontSize="14" Content="WinGet Reinstall" HorizontalAlignment = "Left" Margin="5,2" Padding="20,5" Width="300"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Label Content="Legacy Windows Panels" FontSize="16"/>
-                            <Button Name="WPFPanelcontrol" FontSize="14" Content="Control Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelnetwork" FontSize="14" Content="Network Connections" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelpower" FontSize="14" Content="Power Panel" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelregion" FontSize="14" Content="Region" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsound" FontSize="14" Content="Sound Settings" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPanelsystem" FontSize="14" Content="System Properties" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                            <Button Name="WPFPaneluser" FontSize="14" Content="User Accounts" HorizontalAlignment = "Left" Margin="5" Padding="20,5" Width="200"/>
-                        </StackPanel>
-                        </Border>
+                    {{InstallPanel_features}}
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -5287,6 +5219,22 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 Choose a Windows ISO file that you''ve downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
+                                ToolTip="Use ISO directory for ScratchDir " />
+
+                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
+                              <Button.Content>
+                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                    Text="Scratch" Padding="0"
+                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
+                                    Margin="0,0,0,3" HorizontalAlignment="Left"
+                                    IsReadOnly="False"
+                                    Height="Auto"
+                                    Width="110"
+                                    Foreground="{ButtonForegroundColor}"
+                                  />
+                              </Button.Content>
+                            </Button>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
@@ -5340,6 +5288,12 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                         Grid.Row="0" Grid.Column="1">
                         <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
 
+                            <Grid Name = "BusyMessage" Visibility="Collapsed">
+                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
+                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                                  FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
+                            </Grid>                         
+ 
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
                                 HorizontalAlignment = "Center"
@@ -5425,7 +5379,6 @@ $sync.configs.applications = '{
 		"content": "1Password",
 		"description": "1Password is a password manager that allows you to store and manage your passwords securely.",
 		"link": "https://1password.com/",
-		"panel": "4",
 		"winget": "AgileBits.1Password"
 	},
 	"WPFInstall7zip": {
@@ -5434,7 +5387,6 @@ $sync.configs.applications = '{
 		"content": "7-Zip",
 		"description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
 		"link": "https://www.7-zip.org/",
-		"panel": "4",
 		"winget": "7zip.7zip"
 	},
 	"WPFInstalladobe": {
@@ -5443,7 +5395,6 @@ $sync.configs.applications = '{
 		"content": "Adobe Reader DC",
 		"description": "Adobe Reader DC is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
 		"link": "https://acrobat.adobe.com/",
-		"panel": "1",
 		"winget": "Adobe.Acrobat.Reader.64-bit"
 	},
 	"WPFInstalladvancedip": {
@@ -5452,7 +5403,6 @@ $sync.configs.applications = '{
 		"content": "Advanced IP Scanner",
 		"description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
 		"link": "https://www.advanced-ip-scanner.com/",
-		"panel": "3",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
 	"WPFInstallaimp": {
@@ -5461,7 +5411,6 @@ $sync.configs.applications = '{
 		"content": "AIMP (Music Player)",
 		"description": "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
 		"link": "https://www.aimp.ru/",
-		"panel": "3",
 		"winget": "AIMP.AIMP"
 	},
 	"WPFInstallalacritty": {
@@ -5470,7 +5419,6 @@ $sync.configs.applications = '{
 		"content": "Alacritty Terminal",
 		"description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
 		"link": "https://github.com/alacritty/alacritty",
-		"panel": "4",
 		"winget": "Alacritty.Alacritty"
 	},
 	"WPFInstallanaconda3": {
@@ -5479,7 +5427,6 @@ $sync.configs.applications = '{
 		"content": "Anaconda",
 		"description": "Anaconda is a distribution of the Python and R programming languages for scientific computing.",
 		"link": "https://www.anaconda.com/products/distribution",
-		"panel": "1",
 		"winget": "Anaconda.Anaconda3"
 	},
 	"WPFInstallangryipscanner": {
@@ -5488,7 +5435,6 @@ $sync.configs.applications = '{
 		"content": "Angry IP Scanner",
 		"description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
 		"link": "https://angryip.org/",
-		"panel": "3",
 		"winget": "angryziber.AngryIPScanner"
 	},
 	"WPFInstallanki": {
@@ -5497,7 +5443,6 @@ $sync.configs.applications = '{
 		"content": "Anki",
 		"description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
 		"link": "https://apps.ankiweb.net/",
-		"panel": "1",
 		"winget": "Anki.Anki"
 	},
 	"WPFInstallanydesk": {
@@ -5506,7 +5451,6 @@ $sync.configs.applications = '{
 		"content": "AnyDesk",
 		"description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
 		"link": "https://anydesk.com/",
-		"panel": "4",
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk"
 	},
 	"WPFInstallATLauncher": {
@@ -5515,7 +5459,6 @@ $sync.configs.applications = '{
 		"content": "ATLauncher",
 		"description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly.",
 		"link": "https://github.com/ATLauncher/ATLauncher",
-		"panel": "2",
 		"winget": "ATLauncher.ATLauncher"
 	},
 	"WPFInstallaudacity": {
@@ -5524,7 +5467,6 @@ $sync.configs.applications = '{
 		"content": "Audacity",
 		"description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
 		"link": "https://www.audacityteam.org/",
-		"panel": "3",
 		"winget": "Audacity.Audacity"
 	},
 	"WPFInstallauthy": {
@@ -5533,7 +5475,6 @@ $sync.configs.applications = '{
 		"content": "Authy",
 		"description": "Simple and cross-platform 2FA app",
 		"link": "https://authy.com/",
-		"panel": "4",
 		"winget": "Twilio.Authy"
 	},
 	"WPFInstallautohotkey": {
@@ -5542,7 +5483,6 @@ $sync.configs.applications = '{
 		"content": "AutoHotkey",
 		"description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
 		"link": "https://www.autohotkey.com/",
-		"panel": "4",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
 	"WPFInstallbarrier": {
@@ -5551,7 +5491,6 @@ $sync.configs.applications = '{
 		"content": "Barrier",
 		"description": "Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems.",
 		"link": "https://github.com/debauchee/barrier",
-		"panel": "4",
 		"winget": "DebaucheeOpenSourceGroup.Barrier"
 	},
 	"WPFInstallbat": {
@@ -5560,7 +5499,6 @@ $sync.configs.applications = '{
 		"content": "Bat (Cat)",
 		"description": "Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files.",
 		"link": "https://github.com/sharkdp/bat",
-		"panel": "4",
 		"winget": "sharkdp.bat"
 	},
 	"WPFInstallbitcomet": {
@@ -5569,7 +5507,6 @@ $sync.configs.applications = '{
 		"content": "BitComet",
 		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
 		"link": "https://www.bitcomet.com/",
-		"panel": "4",
 		"winget": "CometNetwork.BitComet"
 	},
 	"WPFInstallbitwarden": {
@@ -5578,7 +5515,6 @@ $sync.configs.applications = '{
 		"content": "Bitwarden",
 		"description": "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices.",
 		"link": "https://bitwarden.com/",
-		"panel": "4",
 		"winget": "Bitwarden.Bitwarden"
 	},
 	"WPFInstallbleachbit": {
@@ -5587,7 +5523,6 @@ $sync.configs.applications = '{
 		"content": "BleachBit",
 		"description": "Clean Your System and Free Disk Space",
 		"link": "https://www.bleachbit.org/",
-		"panel": "4",
 		"winget": "BleachBit.BleachBit"
 	},
 	"WPFInstallblender": {
@@ -5596,7 +5531,6 @@ $sync.configs.applications = '{
 		"content": "Blender (3D Graphics)",
 		"description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
 		"link": "https://www.blender.org/",
-		"panel": "3",
 		"winget": "BlenderFoundation.Blender"
 	},
 	"WPFInstallbluestacks": {
@@ -5605,7 +5539,6 @@ $sync.configs.applications = '{
 		"content": "Bluestacks",
 		"description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
 		"link": "https://www.bluestacks.com/",
-		"panel": "2",
 		"winget": "BlueStack.BlueStacks"
 	},
 	"WPFInstallbrave": {
@@ -5614,7 +5547,6 @@ $sync.configs.applications = '{
 		"content": "Brave",
 		"description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
 		"link": "https://www.brave.com",
-		"panel": "0",
 		"winget": "Brave.Brave"
 	},
 	"WPFInstallbulkcrapuninstaller": {
@@ -5623,7 +5555,6 @@ $sync.configs.applications = '{
 		"content": "Bulk Crap Uninstaller",
 		"description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
 		"link": "https://www.bcuninstaller.com/",
-		"panel": "4",
 		"winget": "Klocman.BulkCrapUninstaller"
 	},
 	"WPFInstallcalibre": {
@@ -5632,7 +5563,6 @@ $sync.configs.applications = '{
 		"content": "Calibre",
 		"description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
 		"link": "https://calibre-ebook.com/",
-		"panel": "1",
 		"winget": "calibre.calibre"
 	},
 	"WPFInstallcarnac": {
@@ -5641,7 +5571,6 @@ $sync.configs.applications = '{
 		"content": "Carnac",
 		"description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
 		"link": "https://github.com/Code52/carnac",
-		"panel": "4",
 		"winget": "code52.Carnac"
 	},
 	"WPFInstallcemu": {
@@ -5650,7 +5579,6 @@ $sync.configs.applications = '{
 		"content": "Cemu",
 		"description": "Cemu is a highly experimental software to emulate Wii U applications on PC.",
 		"link": "https://cemu.info/",
-		"panel": "2",
 		"winget": "Cemu.Cemu"
 	},
 	"WPFInstallchatterino": {
@@ -5659,7 +5587,6 @@ $sync.configs.applications = '{
 		"content": "Chatterino",
 		"description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
 		"link": "https://www.chatterino.com/",
-		"panel": "0",
 		"winget": "ChatterinoTeam.Chatterino"
 	},
 	"WPFInstallchrome": {
@@ -5668,7 +5595,6 @@ $sync.configs.applications = '{
 		"content": "Chrome",
 		"description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
 		"link": "https://www.google.com/chrome/",
-		"panel": "0",
 		"winget": "Google.Chrome"
 	},
 	"WPFInstallchromium": {
@@ -5677,7 +5603,6 @@ $sync.configs.applications = '{
 		"content": "Chromium",
 		"description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
 		"link": "https://github.com/Hibbiki/chromium-win64",
-		"panel": "0",
 		"winget": "Hibbiki.Chromium"
 	},
 	"WPFInstallclementine": {
@@ -5686,7 +5611,6 @@ $sync.configs.applications = '{
 		"content": "Clementine",
 		"description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
 		"link": "https://www.clementine-player.org/",
-		"panel": "3",
 		"winget": "Clementine.Clementine"
 	},
 	"WPFInstallclink": {
@@ -5695,7 +5619,6 @@ $sync.configs.applications = '{
 		"content": "Clink",
 		"description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
 		"link": "https://mridgers.github.io/clink/",
-		"panel": "1",
 		"winget": "chrisant996.Clink"
 	},
 	"WPFInstallclonehero": {
@@ -5704,7 +5627,6 @@ $sync.configs.applications = '{
 		"content": "Clone Hero",
 		"description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller.",
 		"link": "https://clonehero.net/",
-		"panel": "2",
 		"winget": "CloneHeroTeam.CloneHero"
 	},
 	"WPFInstallcopyq": {
@@ -5713,7 +5635,6 @@ $sync.configs.applications = '{
 		"content": "Copyq (Clipboard Manager)",
 		"description": "Copyq is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
 		"link": "https://copyq.readthedocs.io/",
-		"panel": "3",
 		"winget": "hluk.CopyQ"
 	},
 	"WPFInstallcpuz": {
@@ -5722,7 +5643,6 @@ $sync.configs.applications = '{
 		"content": "CPU-Z",
 		"description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer''s hardware components, including the CPU, memory, and motherboard.",
 		"link": "https://www.cpuid.com/softwares/cpu-z.html",
-		"panel": "4",
 		"winget": "CPUID.CPU-Z"
 	},
 	"WPFInstallcrystaldiskinfo": {
@@ -5731,7 +5651,6 @@ $sync.configs.applications = '{
 		"content": "Crystal Disk Info",
 		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
-		"panel": "4",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
 	},
 	"WPFInstallcrystaldiskmark": {
@@ -5740,7 +5659,6 @@ $sync.configs.applications = '{
 		"content": "Crystal Disk Mark",
 		"description": "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs.",
 		"link": "https://crystalmark.info/en/software/crystaldiskmark/",
-		"panel": "4",
 		"winget": "CrystalDewWorld.CrystalDiskMark"
 	},
 	"WPFInstalldarktable": {
@@ -5749,7 +5667,6 @@ $sync.configs.applications = '{
 		"content": "DarkTable",
 		"description": "Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement.",
 		"link": "https://www.darktable.org/install/",
-		"panel": "3",
 		"winget": "darktable.darktable"
 	},
 	"WPFInstallDaxStudio": {
@@ -5758,7 +5675,6 @@ $sync.configs.applications = '{
 		"content": "DaxStudio",
 		"description": "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models.",
 		"link": "https://daxstudio.org/",
-		"panel": "1",
 		"winget": "DaxStudio.DaxStudio"
 	},
 	"WPFInstallddu": {
@@ -5767,7 +5683,6 @@ $sync.configs.applications = '{
 		"content": "Display Driver Uninstaller",
 		"description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
 		"link": "https://www.wagnardsoft.com/",
-		"panel": "4",
 		"winget": "ddu"
 	},
 	"WPFInstalldeluge": {
@@ -5776,7 +5691,6 @@ $sync.configs.applications = '{
 		"content": "Deluge",
 		"description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely.",
 		"link": "https://deluge-torrent.org/",
-		"panel": "4",
 		"winget": "DelugeTeam.Deluge"
 	},
 	"WPFInstalldevtoys": {
@@ -5785,7 +5699,6 @@ $sync.configs.applications = '{
 		"content": "Devtoys",
 		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://dev.to/devtoys",
-		"panel": "4",
 		"winget": "devtoys"
 	},
 	"WPFInstalldigikam": {
@@ -5794,7 +5707,6 @@ $sync.configs.applications = '{
 		"content": "DigiKam",
 		"description": "DigiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
 		"link": "https://www.digikam.org/",
-		"panel": "3",
 		"winget": "KDE.digikam"
 	},
 	"WPFInstalldiscord": {
@@ -5803,7 +5715,6 @@ $sync.configs.applications = '{
 		"content": "Discord",
 		"description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
 		"link": "https://discord.com/",
-		"panel": "0",
 		"winget": "Discord.Discord"
 	},
 	"WPFInstalldockerdesktop": {
@@ -5812,7 +5723,6 @@ $sync.configs.applications = '{
 		"content": "Docker Desktop",
 		"description": "Docker Desktop is a powerful tool for containerized application development and deployment.",
 		"link": "https://www.docker.com/products/docker-desktop",
-		"panel": "1",
 		"winget": "Docker.DockerDesktop"
 	},
 	"WPFInstalldotnet3": {
@@ -5821,7 +5731,6 @@ $sync.configs.applications = '{
 		"content": ".NET Desktop Runtime 3.1",
 		"description": ".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/3.1",
-		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1"
 	},
 	"WPFInstalldotnet5": {
@@ -5830,7 +5739,6 @@ $sync.configs.applications = '{
 		"content": ".NET Desktop Runtime 5",
 		"description": ".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/5.0",
-		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.5"
 	},
 	"WPFInstalldotnet6": {
@@ -5839,7 +5747,6 @@ $sync.configs.applications = '{
 		"content": ".NET Desktop Runtime 6",
 		"description": ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/6.0",
-		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.6"
 	},
 	"WPFInstalldotnet7": {
@@ -5848,7 +5755,6 @@ $sync.configs.applications = '{
 		"content": ".NET Desktop Runtime 7",
 		"description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/7.0",
-		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.7"
 	},
 	"WPFInstalldotnet8": {
@@ -5857,14 +5763,12 @@ $sync.configs.applications = '{
 		"content": ".NET Desktop Runtime 8",
 		"description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 7.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/8.0",
-		"panel": "2",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
   "WPFInstalldmt": {
 		"winget": "GNE.DualMonitorTools",
 		"choco": "dual-monitor-tools",
 		"category": "Utilities",
-		"panel": "4",
 		"content": "Dual Monitor Tools",
 		"link": "https://dualmonitortool.sourceforge.net/",
 		"description": "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
@@ -5875,7 +5779,6 @@ $sync.configs.applications = '{
 		"content": "Duplicati 2",
 		"description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
 		"link": "https://www.duplicati.com/",
-		"panel": "4",
 		"winget": "Duplicati.Duplicati"
 	},
 	"WPFInstalleaapp": {
@@ -5884,7 +5787,6 @@ $sync.configs.applications = '{
 		"content": "EA App",
 		"description": "EA App is a platform for accessing and playing Electronic Arts games.",
 		"link": "https://www.ea.com/",
-		"panel": "2",
 		"winget": "ElectronicArts.EADesktop"
 	},
 	"WPFInstalleartrumpet": {
@@ -5893,7 +5795,6 @@ $sync.configs.applications = '{
 		"content": "Eartrumpet (Audio)",
 		"description": "Eartrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
 		"link": "https://eartrumpet.app/",
-		"panel": "3",
 		"winget": "File-New-Project.EarTrumpet"
 	},
 	"WPFInstalledge": {
@@ -5902,7 +5803,6 @@ $sync.configs.applications = '{
 		"content": "Edge",
 		"description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
 		"link": "https://www.microsoft.com/edge",
-		"panel": "0",
 		"winget": "Microsoft.Edge"
 	},
 	"WPFInstallefibooteditor": {
@@ -5911,7 +5811,6 @@ $sync.configs.applications = '{
 		"content": "EFI Boot Editor",
 		"description": "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer.",
 		"link": "https://www.easyuefi.com/",
-		"panel": "3",
 		"winget": "EFIBootEditor.EFIBootEditor"
 	},
 	"WPFInstallemulationstation": {
@@ -5920,7 +5819,6 @@ $sync.configs.applications = '{
 		"content": "Emulation Station",
 		"description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
 		"link": "https://emulationstation.org/",
-		"panel": "2",
 		"winget": "Emulationstation.Emulationstation"
 	},
 	"WPFInstallepicgames": {
@@ -5929,7 +5827,6 @@ $sync.configs.applications = '{
 		"content": "Epic Games Launcher",
 		"description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
 		"link": "https://www.epicgames.com/store/en-US/",
-		"panel": "2",
 		"winget": "EpicGames.EpicGamesLauncher"
 	},
 	"WPFInstallerrorlookup": {
@@ -5938,7 +5835,6 @@ $sync.configs.applications = '{
 		"content": "Windows Error Code Lookup",
 		"description": "ErrorLookup is a tool for looking up Windows error codes and their descriptions.",
 		"link": "https://github.com/HenryPP/ErrorLookup",
-		"panel": "4",
 		"winget": "Henry++.ErrorLookup"
 	},
 	"WPFInstallesearch": {
@@ -5947,7 +5843,6 @@ $sync.configs.applications = '{
 		"content": "Everything Search",
 		"description": "Everything Search is a fast and efficient file search utility for Windows.",
 		"link": "https://www.voidtools.com/",
-		"panel": "4",
 		"winget": "voidtools.Everything"
 	},
 	"WPFInstallespanso": {
@@ -5956,7 +5851,6 @@ $sync.configs.applications = '{
 		"content": "Espanso",
 		"description": "Cross-platform and open-source Text Expander written in Rust",
 		"link": "https://espanso.org/",
-		"panel": "4",
 		"winget": "Espanso.Espanso"
 	},
 	"WPFInstalletcher": {
@@ -5965,7 +5859,6 @@ $sync.configs.applications = '{
 		"content": "Etcher USB Creator",
 		"description": "Etcher is a powerful tool for creating bootable USB drives with ease.",
 		"link": "https://www.balena.io/etcher/",
-		"panel": "4",
 		"winget": "Balena.Etcher"
 	},
 	"WPFInstallfalkon": {
@@ -5974,7 +5867,6 @@ $sync.configs.applications = '{
 		"content": "Falkon",
 		"description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
 		"link": "https://www.falkon.org/",
-		"panel": "0",
 		"winget": "KDE.Falkon"
 	},
 	"WPFInstallferdium": {
@@ -5983,7 +5875,6 @@ $sync.configs.applications = '{
 		"content": "Ferdium",
 		"description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management.",
 		"link": "https://ferdium.org/",
-		"panel": "0",
 		"winget": "Ferdium.Ferdium"
 	},
 	"WPFInstallffmpeg": {
@@ -5992,7 +5883,6 @@ $sync.configs.applications = '{
 		"content": "Ffmpeg full",
 		"description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
 		"link": "https://ffmpeg.org/",
-		"panel": "3",
 		"winget": "Gyan.FFmpeg"
 	},
 	"WPFInstallfileconverter": {
@@ -6001,7 +5891,6 @@ $sync.configs.applications = '{
 		"content": "File Converter",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
 		"link": "https://file-converter.org/",
-		"panel": "4",
 		"winget": "AdrienAllard.FileConverter"
 	},
 	"WPFInstallfirealpaca": {
@@ -6010,7 +5899,6 @@ $sync.configs.applications = '{
 		"content": "Fire Alpaca",
 		"description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
 		"link": "https://firealpaca.com/",
-		"panel": "3",
 		"winget": "FireAlpaca.FireAlpaca"
 	},
 	"WPFInstallfirefox": {
@@ -6019,7 +5907,6 @@ $sync.configs.applications = '{
 		"content": "Firefox",
 		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
-		"panel": "0",
 		"winget": "Mozilla.Firefox"
 	},
 	"WPFInstallflameshot": {
@@ -6028,7 +5915,6 @@ $sync.configs.applications = '{
 		"content": "Flameshot (Screenshots)",
 		"description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
 		"link": "https://flameshot.org/",
-		"panel": "3",
 		"winget": "Flameshot.Flameshot"
 	},
 	"WPFInstallfloorp": {
@@ -6037,7 +5923,6 @@ $sync.configs.applications = '{
 		"content": "Floorp",
 		"description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
 		"link": "https://floorp.app/",
-		"panel": "0",
 		"winget": "Ablaze.Floorp"
 	},
 	"WPFInstallflux": {
@@ -6046,7 +5931,6 @@ $sync.configs.applications = '{
 		"content": "f.lux Redshift",
 		"description": "f.lux Redshift adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
 		"link": "https://justgetflux.com/",
-		"panel": "4",
 		"winget": "flux.flux"
 	},
 	"WPFInstallfoobar": {
@@ -6055,17 +5939,23 @@ $sync.configs.applications = '{
 		"content": "Foobar2000 (Music Player)",
 		"description": "Foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
 		"link": "https://www.foobar2000.org/",
-		"panel": "3",
 		"winget": "PeterPawlowski.foobar2000"
 	},
-	"WPFInstallfoxpdf": {
+	"WPFInstallfoxpdfeditor": {
 		"category": "Document",
 		"choco": "na",
-		"content": "Foxit PDF",
-		"description": "Foxit PDF is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
+		"content": "Foxit PDF Editor",
+		"description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
 		"link": "https://www.foxitsoftware.com/",
-		"panel": "1",
 		"winget": "Foxit.PhantomPDF"
+	},
+	"WPFInstallfoxpdfreader": {
+		"category": "Document",
+		"choco": "foxitreader",
+		"content": "Foxit PDF Reader",
+		"description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+		"link": "https://www.foxitsoftware.com/",
+		"winget": "Foxit.FoxitReader"
 	},
 	"WPFInstallfreecad": {
 		"category": "Multimedia Tools",
@@ -6073,7 +5963,6 @@ $sync.configs.applications = '{
 		"content": "FreeCAD",
 		"description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
 		"link": "https://www.freecadweb.org/",
-		"panel": "3",
 		"winget": "FreeCAD.FreeCAD"
 	},
 	"WPFInstallfzf": {
@@ -6082,7 +5971,6 @@ $sync.configs.applications = '{
 		"content": "Fzf",
 		"description": "A command-line fuzzy finder",
 		"link": "https://github.com/junegunn/fzf/",
-		"panel": "4",
 		"winget": "junegunn.fzf"
 	},
 	"WPFInstallgeforcenow": {
@@ -6091,7 +5979,6 @@ $sync.configs.applications = '{
 		"content": "GeForce NOW",
 		"description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
 		"link": "https://www.nvidia.com/en-us/geforce-now/",
-		"panel": "2",
 		"winget": "Nvidia.GeForceNow"
 	},
 	"WPFInstallgimp": {
@@ -6100,7 +5987,6 @@ $sync.configs.applications = '{
 		"content": "GIMP (Image Editor)",
 		"description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
 		"link": "https://www.gimp.org/",
-		"panel": "3",
 		"winget": "GIMP.GIMP"
 	},
 	"WPFInstallgit": {
@@ -6109,7 +5995,6 @@ $sync.configs.applications = '{
 		"content": "Git",
 		"description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
 		"link": "https://git-scm.com/",
-		"panel": "1",
 		"winget": "Git.Git"
 	},
 	"WPFInstallgitextensions": {
@@ -6118,7 +6003,6 @@ $sync.configs.applications = '{
 		"content": "Git Extensions",
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
 		"link": "https://gitextensions.github.io/",
-		"panel": "1",
 		"winget": "Git.Git;GitExtensionsTeam.GitExtensions"
 	},
 	"WPFInstallgithubcli": {
@@ -6127,7 +6011,6 @@ $sync.configs.applications = '{
 		"content": "GitHub CLI",
 		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
 		"link": "https://cli.github.com/",
-		"panel": "1",
 		"winget": "Git.Git;GitHub.cli"
 	},
 	"WPFInstallgithubdesktop": {
@@ -6136,7 +6019,6 @@ $sync.configs.applications = '{
 		"content": "GitHub Desktop",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
 		"link": "https://desktop.github.com/",
-		"panel": "1",
 		"winget": "Git.Git;GitHub.GitHubDesktop"
 	},
 	"WPFInstallglaryutilities": {
@@ -6145,7 +6027,6 @@ $sync.configs.applications = '{
 		"content": "Glary Utilities",
 		"description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
 		"link": "https://www.glarysoft.com/glary-utilities/",
-		"panel": "4",
 		"winget": "Glarysoft.GlaryUtilities"
 	},
 	"WPFInstallgog": {
@@ -6154,7 +6035,6 @@ $sync.configs.applications = '{
 		"content": "GOG Galaxy",
 		"description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
 		"link": "https://www.gog.com/galaxy",
-		"panel": "2",
 		"winget": "GOG.Galaxy"
 	},
 	"WPFInstallgolang": {
@@ -6163,7 +6043,6 @@ $sync.configs.applications = '{
 		"content": "GoLang",
 		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
 		"link": "https://golang.org/",
-		"panel": "1",
 		"winget": "GoLang.Go"
 	},
 	"WPFInstallgoogledrive": {
@@ -6172,7 +6051,6 @@ $sync.configs.applications = '{
 		"content": "Google Drive",
 		"description": "File syncing across devices all tied to your google account",
 		"link": "https://www.google.com/drive/",
-		"panel": "4",
 		"winget": "Google.Drive"
 	},
 	"WPFInstallgpuz": {
@@ -6181,7 +6059,6 @@ $sync.configs.applications = '{
 		"content": "GPU-Z",
 		"description": "GPU-Z provides detailed information about your graphics card and GPU.",
 		"link": "https://www.techpowerup.com/gpuz/",
-		"panel": "4",
 		"winget": "TechPowerUp.GPU-Z"
 	},
 	"WPFInstallgreenshot": {
@@ -6190,7 +6067,6 @@ $sync.configs.applications = '{
 		"content": "Greenshot (Screenshots)",
 		"description": "Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options.",
 		"link": "https://getgreenshot.org/",
-		"panel": "3",
 		"winget": "Greenshot.Greenshot"
 	},
 	"WPFInstallgsudo": {
@@ -6199,7 +6075,6 @@ $sync.configs.applications = '{
 		"content": "Gsudo",
 		"description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
 		"link": "https://github.com/gerardog/gsudo",
-		"panel": "4",
 		"winget": "gerardog.gsudo"
 	},
 	"WPFInstallguilded": {
@@ -6208,7 +6083,6 @@ $sync.configs.applications = '{
 		"content": "Guilded",
 		"description": "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities.",
 		"link": "https://www.guilded.gg/",
-		"panel": "0",
 		"winget": "Guilded.Guilded"
 	},
 	"WPFInstallhandbrake": {
@@ -6217,7 +6091,6 @@ $sync.configs.applications = '{
 		"content": "HandBrake",
 		"description": "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
 		"link": "https://handbrake.fr/",
-		"panel": "3",
 		"winget": "HandBrake.HandBrake"
 	},
 	"WPFInstallheidisql": {
@@ -6226,7 +6099,6 @@ $sync.configs.applications = '{
 		"content": "HeidiSQL",
 		"description": "HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development.",
 		"link": "https://www.heidisql.com/",
-		"panel": "3",
 		"winget": "HeidiSQL.HeidiSQL"
 	},
 	"WPFInstallhelix": {
@@ -6235,7 +6107,6 @@ $sync.configs.applications = '{
 		"content": "Helix",
 		"description": "Helix is a neovim alternative built in rust.",
 		"link": "https://helix-editor.com/",
-		"panel": "1",
 		"winget": "Helix.Helix"
 	},
 	"WPFInstallheroiclauncher": {
@@ -6244,7 +6115,6 @@ $sync.configs.applications = '{
 		"content": "Heroic Games Launcher",
 		"description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
 		"link": "https://heroicgameslauncher.com/",
-		"panel": "2",
 		"winget": "HeroicGamesLauncher.HeroicGamesLauncher"
 	},
 	"WPFInstallhexchat": {
@@ -6253,7 +6123,6 @@ $sync.configs.applications = '{
 		"content": "Hexchat",
 		"description": "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication.",
 		"link": "https://hexchat.github.io/",
-		"panel": "0",
 		"winget": "HexChat.HexChat"
 	},
 	"WPFInstallhwinfo": {
@@ -6262,7 +6131,6 @@ $sync.configs.applications = '{
 		"content": "HWInfo",
 		"description": "HWInfo provides comprehensive hardware information and diagnostics for Windows.",
 		"link": "https://www.hwinfo.com/",
-		"panel": "4",
 		"winget": "REALiX.HWiNFO"
 	},
 	"WPFInstallimageglass": {
@@ -6271,7 +6139,6 @@ $sync.configs.applications = '{
 		"content": "ImageGlass (Image Viewer)",
 		"description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
 		"link": "https://imageglass.org/",
-		"panel": "3",
 		"winget": "DuongDieuPhap.ImageGlass"
 	},
 	"WPFInstallimgburn": {
@@ -6280,7 +6147,6 @@ $sync.configs.applications = '{
 		"content": "ImgBurn",
 		"description": "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
 		"link": "http://www.imgburn.com/",
-		"panel": "3",
 		"winget": "LIGHTNINGUK.ImgBurn"
 	},
 	"WPFInstallinkscape": {
@@ -6289,7 +6155,6 @@ $sync.configs.applications = '{
 		"content": "Inkscape",
 		"description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
 		"link": "https://inkscape.org/",
-		"panel": "3",
 		"winget": "Inkscape.Inkscape"
 	},
 	"WPFInstallitch": {
@@ -6298,7 +6163,6 @@ $sync.configs.applications = '{
 		"content": "Itch.io",
 		"description": "Itch.io is a digital distribution platform for indie games and creative projects.",
 		"link": "https://itch.io/",
-		"panel": "2",
 		"winget": "ItchIo.Itch"
 	},
 	"WPFInstallitunes": {
@@ -6307,7 +6171,6 @@ $sync.configs.applications = '{
 		"content": "iTunes",
 		"description": "iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc.",
 		"link": "https://www.apple.com/itunes/",
-		"panel": "3",
 		"winget": "Apple.iTunes"
 	},
 	"WPFInstalljami": {
@@ -6316,7 +6179,6 @@ $sync.configs.applications = '{
 		"content": "Jami",
 		"description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
 		"link": "https://jami.net/",
-		"panel": "0",
 		"winget": "SFLinux.Jami"
 	},
 	"WPFInstalljava16": {
@@ -6325,7 +6187,6 @@ $sync.configs.applications = '{
 		"content": "OpenJDK Java 16",
 		"description": "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
 		"link": "https://adoptopenjdk.net/",
-		"panel": "1",
 		"winget": "AdoptOpenJDK.OpenJDK.16"
 	},
 	"WPFInstalljava18": {
@@ -6334,7 +6195,6 @@ $sync.configs.applications = '{
 		"content": "Oracle Java 18",
 		"description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
 		"link": "https://www.oracle.com/java/",
-		"panel": "1",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
 	"WPFInstalljava20": {
@@ -6343,7 +6203,6 @@ $sync.configs.applications = '{
 		"content": "Azul Zulu JDK 20",
 		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
 		"link": "https://www.azul.com/downloads/zulu-community/",
-		"panel": "1",
 		"winget": "Azul.Zulu.20.JDK"
 	},
 	"WPFInstalljava21": {
@@ -6352,7 +6211,6 @@ $sync.configs.applications = '{
 		"content": "Azul Zulu JDK 21",
 		"description": "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
 		"link": "https://www.azul.com/downloads/zulu-community/",
-		"panel": "1",
 		"winget": "Azul.Zulu.21.JDK"
 	},
 	"WPFInstalljava8": {
@@ -6361,7 +6219,6 @@ $sync.configs.applications = '{
 		"content": "OpenJDK Java 8",
 		"description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
 		"link": "https://adoptopenjdk.net/",
-		"panel": "1",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
 	},
 	"WPFInstalljdownloader": {
@@ -6370,7 +6227,6 @@ $sync.configs.applications = '{
 		"content": "J Download Manager",
 		"description": "JDownloader is a feature-rich download manager with support for various file hosting services.",
 		"link": "http://jdownloader.org/",
-		"panel": "4",
 		"winget": "AppWork.JDownloader"
 	},
 	"WPFInstalljellyfinmediaplayer": {
@@ -6379,7 +6235,6 @@ $sync.configs.applications = '{
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
 		"link": "https://jellyfin.org/",
-		"panel": "3",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
@@ -6388,7 +6243,6 @@ $sync.configs.applications = '{
 		"content": "Jellyfin Server",
 		"description": "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
 		"link": "https://jellyfin.org/",
-		"panel": "3",
 		"winget": "Jellyfin.Server"
 	},
 	"WPFInstalljetbrains": {
@@ -6397,7 +6251,6 @@ $sync.configs.applications = '{
 		"content": "Jetbrains Toolbox",
 		"description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
 		"link": "https://www.jetbrains.com/toolbox/",
-		"panel": "1",
 		"winget": "JetBrains.Toolbox"
 	},
 	"WPFInstalljoplin": {
@@ -6406,7 +6259,6 @@ $sync.configs.applications = '{
 		"content": "Joplin (FOSS Notes)",
 		"description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
 		"link": "https://joplinapp.org/",
-		"panel": "1",
 		"winget": "Joplin.Joplin"
 	},
 	"WPFInstallkdeconnect": {
@@ -6415,7 +6267,6 @@ $sync.configs.applications = '{
 		"content": "KDE Connect",
 		"description": "KDE Connect allows seamless integration between your KDE desktop and mobile devices.",
 		"link": "https://community.kde.org/KDEConnect",
-		"panel": "4",
 		"winget": "KDE.KDEConnect"
 	},
 	"WPFInstallkdenlive": {
@@ -6424,7 +6275,6 @@ $sync.configs.applications = '{
 		"content": "Kdenlive (Video Editor)",
 		"description": "Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos.",
 		"link": "https://kdenlive.org/",
-		"panel": "3",
 		"winget": "KDE.Kdenlive"
 	},
 	"WPFInstallkeepass": {
@@ -6433,7 +6283,6 @@ $sync.configs.applications = '{
 		"content": "KeePassXC",
 		"description": "KeePassXC is a cross-platform, open-source password manager with strong encryption features.",
 		"link": "https://keepassxc.org/",
-		"panel": "4",
 		"winget": "KeePassXCTeam.KeePassXC"
 	},
 	"WPFInstallklite": {
@@ -6442,7 +6291,6 @@ $sync.configs.applications = '{
 		"content": "K-Lite Codec Standard",
 		"description": "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
 		"link": "https://www.codecguide.com/",
-		"panel": "3",
 		"winget": "CodecGuide.K-LiteCodecPack.Standard"
 	},
 	"WPFInstallkodi": {
@@ -6451,7 +6299,6 @@ $sync.configs.applications = '{
 		"content": "Kodi Media Center",
 		"description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
 		"link": "https://kodi.tv/",
-		"panel": "3",
 		"winget": "XBMCFoundation.Kodi"
 	},
 	"WPFInstallkrita": {
@@ -6460,7 +6307,6 @@ $sync.configs.applications = '{
 		"content": "Krita (Image Editor)",
 		"description": "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry.",
 		"link": "https://krita.org/en/download/krita-desktop/",
-		"panel": "3",
 		"winget": "KDE.Krita"
 	},
 	"WPFInstalllazygit": {
@@ -6469,7 +6315,6 @@ $sync.configs.applications = '{
 		"content": "Lazygit",
 		"description": "Simple terminal UI for git commands",
 		"link": "https://github.com/jesseduffield/lazygit/",
-		"panel": "1",
 		"winget": "JesseDuffield.lazygit"
 	},
 	"WPFInstalllibreoffice": {
@@ -6478,7 +6323,6 @@ $sync.configs.applications = '{
 		"content": "LibreOffice",
 		"description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
 		"link": "https://www.libreoffice.org/",
-		"panel": "1",
 		"winget": "TheDocumentFoundation.LibreOffice"
 	},
 	"WPFInstalllibrewolf": {
@@ -6487,7 +6331,6 @@ $sync.configs.applications = '{
 		"content": "LibreWolf",
 		"description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
 		"link": "https://librewolf-community.gitlab.io/",
-		"panel": "0",
 		"winget": "LibreWolf.LibreWolf"
 	},
 	"WPFInstalllinphone": {
@@ -6496,7 +6339,6 @@ $sync.configs.applications = '{
 		"content": "Linphone",
 		"description": "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more.",
 		"link": "https://www.linphone.org/",
-		"panel": "0",
 		"winget": "BelledonneCommunications.Linphone"
 	},
 	"WPFInstalllivelywallpaper": {
@@ -6505,7 +6347,6 @@ $sync.configs.applications = '{
 		"content": "Lively Wallpaper",
 		"description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers.",
 		"link": "https://www.rocksdanister.com/lively/",
-		"panel": "4",
 		"winget": "rocksdanister.LivelyWallpaper"
 	},
 	"WPFInstalllocalsend": {
@@ -6514,7 +6355,6 @@ $sync.configs.applications = '{
 		"content": "LocalSend",
 		"description": "An open source cross-platform alternative to AirDrop.",
 		"link": "https://localsend.org/",
-		"panel": "4",
 		"winget": "LocalSend.LocalSend"
 	},
 	"WPFInstalllogseq": {
@@ -6523,7 +6363,6 @@ $sync.configs.applications = '{
 		"content": "Logseq",
 		"description": "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights.",
 		"link": "https://logseq.com/",
-		"panel": "1",
 		"winget": "Logseq.Logseq"
 	},
 	"WPFInstallmalwarebytes": {
@@ -6532,7 +6371,6 @@ $sync.configs.applications = '{
 		"content": "MalwareBytes",
 		"description": "MalwareBytes is an anti-malware software that provides real-time protection against threats.",
 		"link": "https://www.malwarebytes.com/",
-		"panel": "4",
 		"winget": "Malwarebytes.Malwarebytes"
 	},
 	"WPFInstallmasscode": {
@@ -6541,7 +6379,6 @@ $sync.configs.applications = '{
 		"content": "massCode (Snippet Manager)",
 		"description": "massCode is a fast and efficient open-source code snippet manager for developers.",
 		"link": "https://masscode.io/",
-		"panel": "1",
 		"winget": "antonreshetov.massCode"
 	},
 	"WPFInstallmatrix": {
@@ -6550,7 +6387,6 @@ $sync.configs.applications = '{
 		"content": "Matrix",
 		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
 		"link": "https://element.io/",
-		"panel": "0",
 		"winget": "Element.Element"
 	},
 	"WPFInstallmeld": {
@@ -6559,7 +6395,6 @@ $sync.configs.applications = '{
 		"content": "Meld",
 		"description": "Meld is a visual diff and merge tool for files and directories.",
 		"link": "https://meldmerge.org/",
-		"panel": "4",
 		"winget": "Meld.Meld"
 	},
 	"WPFInstallmonitorian": {
@@ -6568,7 +6403,6 @@ $sync.configs.applications = '{
 		"content": "Monitorian",
 		"description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows.",
 		"link": "https://www.monitorian.com/",
-		"panel": "4",
 		"winget": "emoacht.Monitorian"
 	},
 	"WPFInstallmoonlight": {
@@ -6577,7 +6411,6 @@ $sync.configs.applications = '{
 		"content": "Moonlight/GameStream Client",
 		"description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
 		"link": "https://moonlight-stream.org/",
-		"panel": "2",
 		"winget": "MoonlightGameStreamingProject.Moonlight"
 	},
 	"WPFInstallMotrix": {
@@ -6586,7 +6419,6 @@ $sync.configs.applications = '{
 		"content": "Motrix Download Manager",
 		"description": "A full-featured download manager.",
 		"link": "https://github.com/agalwood/Motrix",
-		"panel": "4",
 		"winget": "agalwood.Motrix"
 	},
 	"WPFInstallmpc": {
@@ -6595,7 +6427,6 @@ $sync.configs.applications = '{
 		"content": "Media Player Classic (Video Player)",
 		"description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
 		"link": "https://mpc-hc.org/",
-		"panel": "3",
 		"winget": "clsid2.mpc-hc"
 	},
 	"WPFInstallmremoteng": {
@@ -6604,7 +6435,6 @@ $sync.configs.applications = '{
 		"content": "mRemoteNG",
 		"description": "mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface.",
 		"link": "https://mremoteng.org/",
-		"panel": "3",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
 	"WPFInstallmsiafterburner": {
@@ -6613,7 +6443,6 @@ $sync.configs.applications = '{
 		"content": "MSI Afterburner",
 		"description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
 		"link": "https://www.msi.com/Landing/afterburner",
-		"panel": "4",
 		"winget": "Guru3D.Afterburner"
 	},
 	"WPFInstallmullvadbrowser": {
@@ -6622,7 +6451,6 @@ $sync.configs.applications = '{
 		"content": "Mullvad Browser",
 		"description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
 		"link": "https://mullvad.net/browser",
-		"panel": "0",
 		"winget": "MullvadVPN.MullvadBrowser"
 	},
 	"WPFInstallmusicbee": {
@@ -6631,7 +6459,6 @@ $sync.configs.applications = '{
 		"content": "MusicBee (Music Player)",
 		"description": "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more.",
 		"link": "https://getmusicbee.com/",
-		"panel": "3",
 		"winget": "MusicBee.MusicBee"
 	},
 	"WPFInstallnanazip": {
@@ -6639,18 +6466,8 @@ $sync.configs.applications = '{
 		"choco": "nanazip",
 		"content": "NanaZip",
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
-		"link": "https://nanazip.codeplex.com/",
-		"panel": "4",
+		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
-	},
-	"WPFInstallnano": {
-		"category": "Development",
-		"choco": "nano",
-		"content": "Nano",
-		"description": "Nano is a text editor for Unix-like computing systems or operating environments using a command-line interface.",
-		"link": "https://www.nano-editor.org/",
-		"panel": "1",
-		"winget": "GNU.Nano"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -6658,7 +6475,6 @@ $sync.configs.applications = '{
 		"content": "NAPS2 (Document Scanner)",
 		"description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
 		"link": "https://www.naps2.com/",
-		"panel": "1",
 		"winget": "Cyanfish.NAPS2"
 	},
 	"WPFInstallneofetchwin": {
@@ -6667,7 +6483,6 @@ $sync.configs.applications = '{
 		"content": "Neofetch",
 		"description": "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
 		"link": "https://github.com/dylanaraps/neofetch",
-		"panel": "4",
 		"winget": "nepnep.neofetch-win"
 	},
 	"WPFInstallneovim": {
@@ -6676,7 +6491,6 @@ $sync.configs.applications = '{
 		"content": "Neovim",
 		"description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor.",
 		"link": "https://neovim.io/",
-		"panel": "1",
 		"winget": "Neovim.Neovim"
 	},
 	"WPFInstallnextclouddesktop": {
@@ -6685,7 +6499,6 @@ $sync.configs.applications = '{
 		"content": "Nextcloud Desktop",
 		"description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
 		"link": "https://nextcloud.com/install/#install-clients",
-		"panel": "4",
 		"winget": "Nextcloud.NextcloudDesktop"
 	},
 	"WPFInstallnglide": {
@@ -6694,7 +6507,6 @@ $sync.configs.applications = '{
 		"content": "nGlide (3dfx compatibility)",
 		"description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
 		"link": "http://www.zeus-software.com/downloads/nglide",
-		"panel": "3",
 		"winget": "ZeusSoftware.nGlide"
 	},
 	"WPFInstallnmap": {
@@ -6703,7 +6515,6 @@ $sync.configs.applications = '{
 		"content": "Nmap",
 		"description": "Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services.",
 		"link": "https://nmap.org/",
-		"panel": "3",
 		"winget": "Insecure.Nmap"
 	},
 	"WPFInstallnodejs": {
@@ -6712,7 +6523,6 @@ $sync.configs.applications = '{
 		"content": "NodeJS",
 		"description": "NodeJS is a JavaScript runtime built on Chrome''s V8 JavaScript engine for building server-side and networking applications.",
 		"link": "https://nodejs.org/",
-		"panel": "1",
 		"winget": "OpenJS.NodeJS"
 	},
 	"WPFInstallnodejslts": {
@@ -6721,7 +6531,6 @@ $sync.configs.applications = '{
 		"content": "NodeJS LTS",
 		"description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
 		"link": "https://nodejs.org/",
-		"panel": "1",
 		"winget": "OpenJS.NodeJS.LTS"
 	},
 	"WPFInstallnomacs": {
@@ -6730,7 +6539,6 @@ $sync.configs.applications = '{
 		"content": "Nomacs (Image viewer)",
 		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
 		"link": "https://github.com/nomacs/nomacs/releases/",
-		"panel": "3",
 		"winget": "nomacs.nomacs"
 	},
 	"WPFInstallnotepadplus": {
@@ -6739,7 +6547,6 @@ $sync.configs.applications = '{
 		"content": "Notepad++",
 		"description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
 		"link": "https://notepad-plus-plus.org/",
-		"panel": "1",
 		"winget": "Notepad++.Notepad++"
 	},
 	"WPFInstallnuget": {
@@ -6748,7 +6555,6 @@ $sync.configs.applications = '{
 		"content": "NuGet",
 		"description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
 		"link": "https://www.nuget.org/",
-		"panel": "2",
 		"winget": "Microsoft.NuGet"
 	},
 	"WPFInstallnushell": {
@@ -6757,7 +6563,6 @@ $sync.configs.applications = '{
 		"content": "Nushell",
 		"description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience.",
 		"link": "https://www.nushell.sh/",
-		"panel": "4",
 		"winget": "Nushell.Nushell"
 	},
 	"WPFInstallnvclean": {
@@ -6766,7 +6571,6 @@ $sync.configs.applications = '{
 		"content": "NVCleanstall",
 		"description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
 		"link": "https://www.techpowerup.com/nvcleanstall/",
-		"panel": "4",
 		"winget": "TechPowerUp.NVCleanstall"
 	},
 	"WPFInstallnvm": {
@@ -6775,7 +6579,6 @@ $sync.configs.applications = '{
 		"content": "Node Version Manager",
 		"description": "Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions.",
 		"link": "https://github.com/coreybutler/nvm-windows",
-		"panel": "1",
 		"winget": "CoreyButler.NVMforWindows"
 	},
 	"WPFInstallobs": {
@@ -6784,7 +6587,6 @@ $sync.configs.applications = '{
 		"content": "OBS Studio",
 		"description": "OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators.",
 		"link": "https://obsproject.com/",
-		"panel": "3",
 		"winget": "OBSProject.OBSStudio"
 	},
 	"WPFInstallobsidian": {
@@ -6793,7 +6595,6 @@ $sync.configs.applications = '{
 		"content": "Obsidian",
 		"description": "Obsidian is a powerful note-taking and knowledge management application.",
 		"link": "https://obsidian.md/",
-		"panel": "1",
 		"winget": "Obsidian.Obsidian"
 	},
 	"WPFInstallokular": {
@@ -6802,7 +6603,6 @@ $sync.configs.applications = '{
 		"content": "Okular",
 		"description": "Okular is a versatile document viewer with advanced features.",
 		"link": "https://okular.kde.org/",
-		"panel": "1",
 		"winget": "KDE.Okular"
 	},
 	"WPFInstallonedrive": {
@@ -6811,7 +6611,6 @@ $sync.configs.applications = '{
 		"content": "OneDrive",
 		"description": "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
 		"link": "https://onedrive.live.com/",
-		"panel": "2",
 		"winget": "Microsoft.OneDrive"
 	},
 	"WPFInstallonlyoffice": {
@@ -6820,7 +6619,6 @@ $sync.configs.applications = '{
 		"content": "ONLYOffice Desktop",
 		"description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
 		"link": "https://www.onlyoffice.com/desktop.aspx",
-		"panel": "1",
 		"winget": "ONLYOFFICE.DesktopEditors"
 	},
 	"WPFInstallOPAutoClicker": {
@@ -6829,7 +6627,6 @@ $sync.configs.applications = '{
 		"content": "OPAutoClicker",
 		"description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
 		"link": "https://www.opautoclicker.com",
-		"panel": "5",
 		"winget": "OPAutoClicker.OPAutoClicker"
 	},
 	"WPFInstallopenhashtab": {
@@ -6838,7 +6635,6 @@ $sync.configs.applications = '{
 		"content": "OpenHashTab",
 		"description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
 		"link": "https://github.com/namazso/OpenHashTab/",
-		"panel": "4",
 		"winget": "namazso.OpenHashTab"
 	},
 	"WPFInstallopenoffice": {
@@ -6847,7 +6643,6 @@ $sync.configs.applications = '{
 		"content": "Apache OpenOffice",
 		"description": "Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more.",
 		"link": "https://www.openoffice.org/",
-		"panel": "1",
 		"winget": "Apache.OpenOffice"
 	},
 	"WPFInstallopenrgb": {
@@ -6856,7 +6651,6 @@ $sync.configs.applications = '{
 		"content": "OpenRGB",
 		"description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
 		"link": "https://openrgb.org/",
-		"panel": "4",
 		"winget": "CalcProgrammer1.OpenRGB"
 	},
 	"WPFInstallopenscad": {
@@ -6865,7 +6659,6 @@ $sync.configs.applications = '{
 		"content": "OpenSCAD",
 		"description": "OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing.",
 		"link": "https://www.openscad.org/",
-		"panel": "3",
 		"winget": "OpenSCAD.OpenSCAD"
 	},
 	"WPFInstallopenshell": {
@@ -6874,7 +6667,6 @@ $sync.configs.applications = '{
 		"content": "Open Shell (Start Menu)",
 		"description": "Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options.",
 		"link": "https://github.com/Open-Shell/Open-Shell-Menu",
-		"panel": "4",
 		"winget": "Open-Shell.Open-Shell-Menu"
 	},
 	"WPFInstallOpenVPN": {
@@ -6883,7 +6675,6 @@ $sync.configs.applications = '{
 		"content": "OpenVPN Connect",
 		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
 		"link": "https://openvpn.net/",
-		"panel": "3",
 		"winget": "OpenVPNTechnologies.OpenVPNConnect"
 	},
 	"WPFInstallOVirtualBox": {
@@ -6892,7 +6683,6 @@ $sync.configs.applications = '{
 		"content": "Oracle VirtualBox",
 		"description": "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures.",
 		"link": "https://www.virtualbox.org/",
-		"panel": "4",
 		"winget": "Oracle.VirtualBox"
 	},
 	"WPFInstallownclouddesktop": {
@@ -6901,7 +6691,6 @@ $sync.configs.applications = '{
 		"content": "ownCloud Desktop",
 		"description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform.",
 		"link": "https://owncloud.com/desktop-app/",
-		"panel": "4",
 		"winget": "ownCloud.ownCloudDesktop"
 	},
 	"WPFInstallPaintdotnet": {
@@ -6910,7 +6699,6 @@ $sync.configs.applications = '{
 		"content": "Paint.net",
 		"description": "Paint.net is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
 		"link": "https://www.getpaint.net/",
-		"panel": "3",
 		"winget": "dotPDNLLC.paintdotnet"
 	},
 	"WPFInstallparsec": {
@@ -6919,7 +6707,6 @@ $sync.configs.applications = '{
 		"content": "Parsec",
 		"description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
 		"link": "https://parsec.app/",
-		"panel": "4",
 		"winget": "Parsec.parsec"
 	},
 	"WPFInstallpdf24creator": {
@@ -6928,7 +6715,6 @@ $sync.configs.applications = '{
 		"content": "PDF24 creator",
 		"description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
 		"link": "https://tools.pdf24.org/en/",
-		"panel": "1",
 		"winget": "geeksoftwareGmbH.PDF24Creator"
 	},
 	"WPFInstallpdfsam": {
@@ -6937,7 +6723,6 @@ $sync.configs.applications = '{
 		"content": "PDFsam Basic",
 		"description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
 		"link": "https://pdfsam.org/",
-		"panel": "1",
 		"winget": "PDFsam.PDFsam"
 	},
 	"WPFInstallpeazip": {
@@ -6946,7 +6731,6 @@ $sync.configs.applications = '{
 		"content": "Peazip",
 		"description": "Peazip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
 		"link": "https://peazip.github.io/",
-		"panel": "4",
 		"winget": "Giorgiotani.Peazip"
 	},
 	"WPFInstallpiimager": {
@@ -6955,7 +6739,6 @@ $sync.configs.applications = '{
 		"content": "Raspberry Pi Imager",
 		"description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices.",
 		"link": "https://www.raspberrypi.com/software/",
-		"panel": "4",
 		"winget": "RaspberryPiFoundation.RaspberryPiImager"
 	},
 	"WPFInstallplaynite": {
@@ -6964,7 +6747,6 @@ $sync.configs.applications = '{
 		"content": "Playnite",
 		"description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
 		"link": "https://playnite.link/",
-		"panel": "2",
 		"winget": "Playnite.Playnite"
 	},
 	"WPFInstallplex": {
@@ -6973,7 +6755,6 @@ $sync.configs.applications = '{
 		"content": "Plex Media Server",
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
 		"link": "https://www.plex.tv/your-media/",
-		"panel": "3",
 		"winget": "Plex.PlexMediaServer"
 	},
 	"WPFInstallPortmaster": {
@@ -6982,7 +6763,6 @@ $sync.configs.applications = '{
 		"content": "Portmaster",
 		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
 		"link": "https://github.com/safing/portmaster",
-		"panel": "3",
 		"winget": "Safing.Portmaster"
 	},
 	"WPFInstallposh": {
@@ -6991,7 +6771,6 @@ $sync.configs.applications = '{
 		"content": "Oh My Posh (Prompt)",
 		"description": "Oh My Posh is a cross-platform prompt theme engine for any shell.",
 		"link": "https://ohmyposh.dev/",
-		"panel": "1",
 		"winget": "JanDeDobbeleer.OhMyPosh"
 	},
 	"WPFInstallpostman": {
@@ -7000,7 +6779,6 @@ $sync.configs.applications = '{
 		"content": "Postman",
 		"description": "Postman is a collaboration platform for API development that simplifies the process of developing APIs.",
 		"link": "https://www.postman.com/",
-		"panel": "1",
 		"winget": "Postman.Postman"
 	},
 	"WPFInstallpowerbi": {
@@ -7009,7 +6787,6 @@ $sync.configs.applications = '{
 		"content": "Power BI",
 		"description": "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
 		"link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/",
-		"panel": "2",
 		"winget": "Microsoft.PowerBI"
 	},
 	"WPFInstallpowershell": {
@@ -7018,7 +6795,6 @@ $sync.configs.applications = '{
 		"content": "PowerShell",
 		"description": "PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities.",
 		"link": "https://github.com/PowerShell/PowerShell",
-		"panel": "2",
 		"winget": "Microsoft.PowerShell"
 	},
 	"WPFInstallpowertoys": {
@@ -7027,7 +6803,6 @@ $sync.configs.applications = '{
 		"content": "Powertoys",
 		"description": "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
 		"link": "https://github.com/microsoft/PowerToys",
-		"panel": "2",
 		"winget": "Microsoft.PowerToys"
 	},
 	"WPFInstallprismlauncher": {
@@ -7036,7 +6811,6 @@ $sync.configs.applications = '{
 		"content": "Prism Launcher",
 		"description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
 		"link": "https://prismlauncher.org/",
-		"panel": "2",
 		"winget": "PrismLauncher.PrismLauncher"
 	},
 	"WPFInstallprocesslasso": {
@@ -7045,7 +6819,6 @@ $sync.configs.applications = '{
 		"content": "Process Lasso",
 		"description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
 		"link": "https://bitsum.com/",
-		"panel": "4",
 		"winget": "BitSum.ProcessLasso"
 	},
 	"WPFInstallprocessmonitor": {
@@ -7054,7 +6827,6 @@ $sync.configs.applications = '{
 		"content": "SysInternals Process Monitor",
 		"description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
-		"panel": "2",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
 	},
 	"WPFInstallprucaslicer": {
@@ -7063,7 +6835,6 @@ $sync.configs.applications = '{
 		"content": "Prusa Slicer",
 		"description": "Prusa Slicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
 		"link": "https://www.prusa3d.com/prusaslicer/",
-		"panel": "4",
 		"winget": "Prusa3d.PrusaSlicer"
 	},
 	"WPFInstallpsremoteplay": {
@@ -7072,7 +6843,6 @@ $sync.configs.applications = '{
 		"content": "PS Remote Play",
 		"description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device.",
 		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
-		"panel": "2",
 		"winget": "PlayStation.PSRemotePlay"
 	},
 	"WPFInstallputty": {
@@ -7081,7 +6851,6 @@ $sync.configs.applications = '{
 		"content": "Putty",
 		"description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP.",
 		"link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
-		"panel": "3",
 		"winget": "PuTTY.PuTTY"
 	},
 	"WPFInstallpython3": {
@@ -7090,7 +6859,6 @@ $sync.configs.applications = '{
 		"content": "Python3",
 		"description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
 		"link": "https://www.python.org/",
-		"panel": "1",
 		"winget": "Python.Python.3.12"
 	},
 	"WPFInstallqbittorrent": {
@@ -7099,7 +6867,6 @@ $sync.configs.applications = '{
 		"content": "qBittorrent",
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
 		"link": "https://www.qbittorrent.org/",
-		"panel": "4",
 		"winget": "qBittorrent.qBittorrent"
 	},
 	"WPFInstallqtox": {
@@ -7108,7 +6875,6 @@ $sync.configs.applications = '{
 		"content": "QTox",
 		"description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
 		"link": "https://qtox.github.io/",
-		"panel": "0",
 		"winget": "Tox.qTox"
 	},
 	"WPFInstallrainmeter": {
@@ -7117,7 +6883,6 @@ $sync.configs.applications = '{
 		"content": "Rainmeter",
 		"description": "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop.",
 		"link": "https://www.rainmeter.net/",
-		"panel": "4",
 		"winget": "Rainmeter.Rainmeter"
 	},
 	"WPFInstallrevo": {
@@ -7126,7 +6891,6 @@ $sync.configs.applications = '{
 		"content": "RevoUninstaller",
 		"description": "RevoUninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
 		"link": "https://www.revouninstaller.com/",
-		"panel": "4",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
 	"WPFInstallripgrep": {
@@ -7135,7 +6899,6 @@ $sync.configs.applications = '{
 		"content": "Ripgrep",
 		"description": "Fast and powerful commandline search tool",
 		"link": "https://github.com/BurntSushi/ripgrep/",
-		"panel": "4",
 		"winget": "BurntSushi.ripgrep.MSVC"
 	},
 	"WPFInstallrufus": {
@@ -7144,7 +6907,6 @@ $sync.configs.applications = '{
 		"content": "Rufus Imager",
 		"description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
 		"link": "https://rufus.ie/",
-		"panel": "4",
 		"winget": "Rufus.Rufus"
 	},
 	"WPFInstallrustdesk": {
@@ -7153,7 +6915,6 @@ $sync.configs.applications = '{
 		"content": "Rust Remote Desktop (FOSS)",
 		"description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
 		"link": "https://rustdesk.com/",
-		"panel": "3",
 		"winget": "RustDesk.RustDesk"
 	},
 	"WPFInstallrustlang": {
@@ -7162,7 +6923,6 @@ $sync.configs.applications = '{
 		"content": "Rust",
 		"description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
 		"link": "https://www.rust-lang.org/",
-		"panel": "1",
 		"winget": "Rustlang.Rust.MSVC"
 	},
 	"WPFInstallsamsungmagician": {
@@ -7171,7 +6931,6 @@ $sync.configs.applications = '{
 		"content": "Samsung Magician",
 		"description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs.",
 		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
-		"panel": "4",
 		"winget": "Samsung.SamsungMagician"
 	},
 	"WPFInstallsandboxie": {
@@ -7180,7 +6939,6 @@ $sync.configs.applications = '{
 		"content": "Sandboxie Plus",
 		"description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment.",
 		"link": "https://www.sandboxie.com/",
-		"panel": "4",
 		"winget": "Sandboxie.Plus"
 	},
 	"WPFInstallsdio": {
@@ -7189,7 +6947,6 @@ $sync.configs.applications = '{
 		"content": "Snappy Driver Installer Origin",
 		"description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
 		"link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
-		"panel": "4",
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
 	},
 	"WPFInstallsession": {
@@ -7198,7 +6955,6 @@ $sync.configs.applications = '{
 		"content": "Session",
 		"description": "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection.",
 		"link": "https://getsession.org/",
-		"panel": "0",
 		"winget": "Oxen.Session"
 	},
 	"WPFInstallsharex": {
@@ -7207,16 +6963,14 @@ $sync.configs.applications = '{
 		"content": "ShareX (Screenshots)",
 		"description": "ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots.",
 		"link": "https://getsharex.com/",
-		"panel": "3",
 		"winget": "ShareX.ShareX"
 	},
-	"WPFInstallshell": {
+	"WPFInstallnilesoftShel": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
 		"content": "Shell (Expanded Context Menu)",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
 		"link": "https://nilesoft.org/",
-		"panel": "4",
 		"winget": "Nilesoft.Shell"
 	},
 	"WPFInstallsidequest": {
@@ -7225,7 +6979,6 @@ $sync.configs.applications = '{
 		"content": "SideQuestVR",
 		"description": "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
 		"link": "https://sidequestvr.com/",
-		"panel": "2",
 		"winget": "SideQuestVR.SideQuest"
 	},
 	"WPFInstallsignal": {
@@ -7234,7 +6987,6 @@ $sync.configs.applications = '{
 		"content": "Signal",
 		"description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
 		"link": "https://signal.org/",
-		"panel": "0",
 		"winget": "OpenWhisperSystems.Signal"
 	},
 	"WPFInstallsimplewall": {
@@ -7243,7 +6995,6 @@ $sync.configs.applications = '{
 		"content": "SimpleWall",
 		"description": "SimpleWall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://www.henrypp.org/product/simplewall",
-		"panel": "3",
 		"winget": "Henry++.simplewall"
 	},
 	"WPFInstallskype": {
@@ -7252,7 +7003,6 @@ $sync.configs.applications = '{
 		"content": "Skype",
 		"description": "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services.",
 		"link": "https://www.skype.com/",
-		"panel": "0",
 		"winget": "Microsoft.Skype"
 	},
 	"WPFInstallslack": {
@@ -7261,7 +7011,6 @@ $sync.configs.applications = '{
 		"content": "Slack",
 		"description": "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing.",
 		"link": "https://slack.com/",
-		"panel": "0",
 		"winget": "SlackTechnologies.Slack"
 	},
 	"WPFInstallspacedrive": {
@@ -7270,7 +7019,6 @@ $sync.configs.applications = '{
 		"content": "Spacedrive File Manager",
 		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
 		"link": "https://www.spacedrive.com/",
-		"panel": "4",
 		"winget": "spacedrive.Spacedrive"
 	},
 	"WPFInstallstarship": {
@@ -7279,7 +7027,6 @@ $sync.configs.applications = '{
 		"content": "Starship (Shell Prompt)",
 		"description": "Starship is a minimal, fast, and customizable prompt for any shell.",
 		"link": "https://starship.rs/",
-		"panel": "1",
 		"winget": "starship"
 	},
 	"WPFInstallstartallback": {
@@ -7288,7 +7035,6 @@ $sync.configs.applications = '{
 		"content": "StartAllBack",
 		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
 		"link": "https://www.startallback.com/",
-		"panel": "4",
 		"winget": "startallback"
 	},
 	"WPFInstallsteam": {
@@ -7297,7 +7043,6 @@ $sync.configs.applications = '{
 		"content": "Steam",
 		"description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
 		"link": "https://store.steampowered.com/",
-		"panel": "2",
 		"winget": "Valve.Steam"
 	},
 	"WPFInstallstrawberry": {
@@ -7306,14 +7051,12 @@ $sync.configs.applications = '{
 		"content": "Strawberry (Music Player)",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
 		"link": "https://github.com/strawberrymusicplayer/strawberry/",
-		"panel": "3",
 		"winget": "StrawberryMusicPlayer.Strawberry"
 	},
 	"WPFInstallstremio": {
 		"winget": "Stremio.Stremio",
 		"choco": "stremio",
 		"category": "Multimedia Tools",
-		"panel": "3",
 		"content": "Stremio",
 		"link": "https://www.stremio.com/",
 		"description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
@@ -7324,7 +7067,6 @@ $sync.configs.applications = '{
 		"content": "Sublime Merge",
 		"description": "Sublime Merge is a Git client with advanced features and a beautiful interface.",
 		"link": "https://www.sublimemerge.com/",
-		"panel": "1",
 		"winget": "SublimeHQ.SublimeMerge"
 	},
 	"WPFInstallsublimetext": {
@@ -7333,7 +7075,6 @@ $sync.configs.applications = '{
 		"content": "Sublime Text",
 		"description": "Sublime Text is a sophisticated text editor for code, markup, and prose.",
 		"link": "https://www.sublimetext.com/",
-		"panel": "1",
 		"winget": "SublimeHQ.SublimeText.4"
 	},
 	"WPFInstallsumatra": {
@@ -7342,7 +7083,6 @@ $sync.configs.applications = '{
 		"content": "Sumatra PDF",
 		"description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
-		"panel": "1",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
 	"WPFInstallsunshine": {
@@ -7351,7 +7091,6 @@ $sync.configs.applications = '{
 		"content": "Sunshine/GameStream Server",
 		"description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
 		"link": "https://github.com/LoLBoy25/Sunshine",
-		"panel": "2",
 		"winget": "LizardByte.Sunshine"
 	},
 	"WPFInstallsuperf4": {
@@ -7360,7 +7099,6 @@ $sync.configs.applications = '{
 		"content": "SuperF4",
 		"description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
 		"link": "https://stefansundin.github.io/superf4/",
-		"panel": "4",
 		"winget": "StefanSundin.Superf4"
 	},
 	"WPFInstallsynctrayzor": {
@@ -7369,7 +7107,6 @@ $sync.configs.applications = '{
 		"content": "Synctrayzor",
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/canton7/SyncTrayzor/",
-		"panel": "4",
 		"winget": "SyncTrayzor.SyncTrayzor"
 	},
 	"WPFInstalltailscale": {
@@ -7378,7 +7115,6 @@ $sync.configs.applications = '{
 		"content": "Tailscale",
 		"description": "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks.",
 		"link": "https://tailscale.com/",
-		"panel": "4",
 		"winget": "tailscale.tailscale"
 	},
 	"WPFInstallTcNoAccSwitcher": {
@@ -7387,7 +7123,6 @@ $sync.configs.applications = '{
 		"content": "TCNO Account Switcher",
 		"description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!",
 		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
-		"panel": "2",
 		"winget": "TechNobo.TcNoAccountSwitcher"
 	},
 	"WPFInstalltcpview": {
@@ -7396,7 +7131,6 @@ $sync.configs.applications = '{
 		"content": "SysInternals TCPView",
 		"description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
-		"panel": "2",
 		"winget": "Microsoft.Sysinternals.TCPView"
 	},
 	"WPFInstallteams": {
@@ -7405,7 +7139,6 @@ $sync.configs.applications = '{
 		"content": "Teams",
 		"description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
 		"link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-		"panel": "0",
 		"winget": "Microsoft.Teams"
 	},
 	"WPFInstallteamviewer": {
@@ -7414,7 +7147,6 @@ $sync.configs.applications = '{
 		"content": "TeamViewer",
 		"description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
 		"link": "https://www.teamviewer.com/",
-		"panel": "4",
 		"winget": "TeamViewer.TeamViewer"
 	},
 	"WPFInstalltelegram": {
@@ -7423,7 +7155,6 @@ $sync.configs.applications = '{
 		"content": "Telegram",
 		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
 		"link": "https://telegram.org/",
-		"panel": "0",
 		"winget": "Telegram.TelegramDesktop"
 	},
 	"WPFInstallterminal": {
@@ -7432,7 +7163,6 @@ $sync.configs.applications = '{
 		"content": "Windows Terminal",
 		"description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
 		"link": "https://aka.ms/terminal",
-		"panel": "2",
 		"winget": "Microsoft.WindowsTerminal"
 	},
 	"WPFInstallThonny": {
@@ -7441,7 +7171,6 @@ $sync.configs.applications = '{
 		"content": "Thonny Python IDE",
 		"description": "Python IDE for beginners.",
 		"link": "https://github.com/thonny/thonny",
-		"panel": "1",
 		"winget": "AivarAnnamaa.Thonny"
 	},
 	"WPFInstallthorium": {
@@ -7450,7 +7179,6 @@ $sync.configs.applications = '{
 		"content": "Thorium Browser AVX2",
 		"description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
 		"link": "http://thorium.rocks/",
-		"panel": "0",
 		"winget": "Alex313031.Thorium.AVX2"
 	},
 	"WPFInstallthunderbird": {
@@ -7459,7 +7187,6 @@ $sync.configs.applications = '{
 		"content": "Thunderbird",
 		"description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features.",
 		"link": "https://www.thunderbird.net/",
-		"panel": "0",
 		"winget": "Mozilla.Thunderbird"
 	},
 	"WPFInstalltidal": {
@@ -7468,7 +7195,6 @@ $sync.configs.applications = '{
 		"content": "Tidal",
 		"description": "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists.",
 		"link": "https://tidal.com/",
-		"panel": "3",
 		"winget": "9NNCB5BS59PH"
 	},
 	"WPFInstalltor": {
@@ -7477,7 +7203,6 @@ $sync.configs.applications = '{
 		"content": "Tor Browser",
 		"description": "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security.",
 		"link": "https://www.torproject.org/",
-		"panel": "0",
 		"winget": "TorProject.TorBrowser"
 	},
 	"WPFInstalltotalcommander": {
@@ -7486,7 +7211,6 @@ $sync.configs.applications = '{
 		"content": "Total Commander",
 		"description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management.",
 		"link": "https://www.ghisler.com/",
-		"panel": "4",
 		"winget": "Ghisler.TotalCommander"
 	},
 	"WPFInstalltreesize": {
@@ -7495,7 +7219,6 @@ $sync.configs.applications = '{
 		"content": "TreeSize Free",
 		"description": "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives.",
 		"link": "https://www.jam-software.com/treesize_free/",
-		"panel": "4",
 		"winget": "JAMSoftware.TreeSize.Free"
 	},
 	"WPFInstallttaskbar": {
@@ -7504,7 +7227,6 @@ $sync.configs.applications = '{
 		"content": "Translucent Taskbar",
 		"description": "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar.",
 		"link": "https://github.com/TranslucentTB/TranslucentTB",
-		"panel": "4",
 		"winget": "9PF4KZ2VN4W9"
 	},
 	"WPFInstalltwinkletray": {
@@ -7513,7 +7235,6 @@ $sync.configs.applications = '{
 		"content": "Twinkle Tray",
 		"description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors.",
 		"link": "https://twinkletray.com/",
-		"panel": "4",
 		"winget": "xanderfrangos.twinkletray"
 	},
 	"WPFInstallubisoft": {
@@ -7522,7 +7243,6 @@ $sync.configs.applications = '{
 		"content": "Ubisoft Connect",
 		"description": "Ubisoft Connect is Ubisoft''s digital distribution and online gaming service, providing access to Ubisoft''s games and services.",
 		"link": "https://ubisoftconnect.com/",
-		"panel": "2",
 		"winget": "Ubisoft.Connect"
 	},
 	"WPFInstallungoogled": {
@@ -7531,7 +7251,6 @@ $sync.configs.applications = '{
 		"content": "Ungoogled",
 		"description": "Ungoogled Chromium is a version of Chromium without Google''s integration for enhanced privacy and control.",
 		"link": "https://github.com/Eloston/ungoogled-chromium",
-		"panel": "0",
 		"winget": "eloston.ungoogled-chromium"
 	},
 	"WPFInstallunity": {
@@ -7540,7 +7259,6 @@ $sync.configs.applications = '{
 		"content": "Unity Game Engine",
 		"description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
 		"link": "https://unity.com/",
-		"panel": "1",
 		"winget": "Unity.UnityHub"
 	},
 	"WPFInstallvagrant": {
@@ -7549,7 +7267,6 @@ $sync.configs.applications = '{
 		"content": "Vagrant",
 		"description": "Vagrant is an open-source tool for building and managing virtualized development environments.",
 		"link": "https://www.vagrantup.com/",
-		"panel": "1",
 		"winget": "Hashicorp.Vagrant"
 	},
 	"WPFInstallvc2015_32": {
@@ -7558,7 +7275,6 @@ $sync.configs.applications = '{
 		"content": "Visual C++ 2015-2022 32-bit",
 		"description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
 		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-		"panel": "2",
 		"winget": "Microsoft.VCRedist.2015+.x86"
 	},
 	"WPFInstallvc2015_64": {
@@ -7567,7 +7283,6 @@ $sync.configs.applications = '{
 		"content": "Visual C++ 2015-2022 64-bit",
 		"description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
 		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-		"panel": "2",
 		"winget": "Microsoft.VCRedist.2015+.x64"
 	},
 	"WPFInstallvencord": {
@@ -7576,7 +7291,6 @@ $sync.configs.applications = '{
 		"content": "Vencord",
 		"description": "Vencord is a modification for Discord that adds plugins, custom styles, and more!",
 		"link": "https://vencord.dev/",
-		"panel": "0",
 		"winget": "Vendicated.Vencord"
 	},
 	"WPFInstallventoy": {
@@ -7585,7 +7299,6 @@ $sync.configs.applications = '{
 		"content": "Ventoy",
 		"description": "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems.",
 		"link": "https://www.ventoy.net/",
-		"panel": "3",
 		"winget": "Ventoy.Ventoy"
 	},
 	"WPFInstallvesktop": {
@@ -7594,7 +7307,6 @@ $sync.configs.applications = '{
 		"content": "Vesktop",
 		"description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
 		"link": "https://github.com/Vencord/Vesktop",
-		"panel": "0",
 		"winget": "Vencord.Vesktop"
 	},
 	"WPFInstallviber": {
@@ -7603,7 +7315,6 @@ $sync.configs.applications = '{
 		"content": "Viber",
 		"description": "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
 		"link": "https://www.viber.com/",
-		"panel": "0",
 		"winget": "Viber.Viber"
 	},
 	"WPFInstallvideomass": {
@@ -7612,7 +7323,6 @@ $sync.configs.applications = '{
 		"content": "Videomass",
 		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
 		"link": "https://github.com/jeanslack/Videomass",
-		"panel": "3",
 		"winget": "GianlucaPernigotto.Videomass"
 	},
 	"WPFInstallvisualstudio": {
@@ -7621,7 +7331,6 @@ $sync.configs.applications = '{
 		"content": "Visual Studio 2022",
 		"description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
 		"link": "https://visualstudio.microsoft.com/",
-		"panel": "1",
 		"winget": "Microsoft.VisualStudio.2022.Community"
 	},
 	"WPFInstallvivaldi": {
@@ -7630,7 +7339,6 @@ $sync.configs.applications = '{
 		"content": "Vivaldi",
 		"description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
 		"link": "https://vivaldi.com/",
-		"panel": "0",
 		"winget": "VivaldiTechnologies.Vivaldi"
 	},
 	"WPFInstallvlc": {
@@ -7639,7 +7347,6 @@ $sync.configs.applications = '{
 		"content": "VLC (Video Player)",
 		"description": "VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility.",
 		"link": "https://www.videolan.org/vlc/",
-		"panel": "3",
 		"winget": "VideoLAN.VLC"
 	},
 	"WPFInstallvoicemeeter": {
@@ -7648,7 +7355,6 @@ $sync.configs.applications = '{
 		"content": "Voicemeeter (Audio)",
 		"description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes.",
 		"link": "https://www.vb-audio.com/Voicemeeter/",
-		"panel": "3",
 		"winget": "VB-Audio.Voicemeeter"
 	},
 	"WPFInstallvrdesktopstreamer": {
@@ -7657,7 +7363,6 @@ $sync.configs.applications = '{
 		"content": "Virtual Desktop Streamer",
 		"description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
 		"link": "https://www.vrdesktop.net/",
-		"panel": "2",
 		"winget": "VirtualDesktop.Streamer"
 	},
 	"WPFInstallvscode": {
@@ -7666,7 +7371,6 @@ $sync.configs.applications = '{
 		"content": "VS Code",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
 		"link": "https://code.visualstudio.com/",
-		"panel": "1",
 		"winget": "Git.Git;Microsoft.VisualStudioCode"
 	},
 	"WPFInstallvscodium": {
@@ -7675,7 +7379,6 @@ $sync.configs.applications = '{
 		"content": "VS Codium",
 		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft''s VS Code.",
 		"link": "https://vscodium.com/",
-		"panel": "1",
 		"winget": "Git.Git;VSCodium.VSCodium"
 	},
 	"WPFInstallwaterfox": {
@@ -7684,7 +7387,6 @@ $sync.configs.applications = '{
 		"content": "Waterfox",
 		"description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
 		"link": "https://www.waterfox.net/",
-		"panel": "0",
 		"winget": "Waterfox.Waterfox"
 	},
 	"WPFInstallwezterm": {
@@ -7693,7 +7395,6 @@ $sync.configs.applications = '{
 		"content": "Wezterm",
 		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
 		"link": "https://wezfurlong.org/wezterm/index.html",
-		"panel": "1",
 		"winget": "wez.wezterm"
 	},
 	"WPFInstallwhatsapp": {
@@ -7702,7 +7403,6 @@ $sync.configs.applications = '{
 		"content": "Whatsapp",
 		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
 		"link": "https://www.whatsapp.com/",
-		"panel": "0",
 		"winget": "WhatsApp.WhatsApp"
 	},
 	"WPFInstallwindirstat": {
@@ -7711,7 +7411,6 @@ $sync.configs.applications = '{
 		"content": "WinDirStat",
 		"description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
 		"link": "https://windirstat.net/",
-		"panel": "4",
 		"winget": "WinDirStat.WinDirStat"
 	},
 	"WPFInstallwindowspchealth": {
@@ -7720,7 +7419,6 @@ $sync.configs.applications = '{
 		"content": "Windows PC Health Check",
 		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
-		"panel": "4",
 		"winget": "Microsoft.WindowsPCHealthCheck"
 	},
 	"WPFInstallwingetui": {
@@ -7729,7 +7427,6 @@ $sync.configs.applications = '{
 		"content": "WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget).",
 		"link": "https://github.com/marticliment/WingetUI",
-		"panel": "4",
 		"winget": "SomePythonThings.WingetUIStore"
 	},
 	"WPFInstallwinmerge": {
@@ -7738,7 +7435,6 @@ $sync.configs.applications = '{
 		"content": "WinMerge",
 		"description": "WinMerge is a visual text file and directory comparison tool for Windows.",
 		"link": "https://winmerge.org/",
-		"panel": "1",
 		"winget": "WinMerge.WinMerge"
 	},
 	"WPFInstallwinpaletter": {
@@ -7747,7 +7443,6 @@ $sync.configs.applications = '{
 		"content": "WinPaletter",
 		"description": "WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors.",
 		"link": "https://github.com/Abdelrhman-AK/WinPaletter",
-		"panel": "4",
 		"winget": "Abdelrhman-AK.WinPaletter"
 	},
 	"WPFInstallwinrar": {
@@ -7756,7 +7451,6 @@ $sync.configs.applications = '{
 		"content": "WinRAR",
 		"description": "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files.",
 		"link": "https://www.win-rar.com/",
-		"panel": "4",
 		"winget": "RARLab.WinRAR"
 	},
 	"WPFInstallwinscp": {
@@ -7765,7 +7459,6 @@ $sync.configs.applications = '{
 		"content": "WinSCP",
 		"description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
 		"link": "https://winscp.net/",
-		"panel": "3",
 		"winget": "WinSCP.WinSCP"
 	},
 	"WPFInstallwireguard": {
@@ -7774,7 +7467,6 @@ $sync.configs.applications = '{
 		"content": "WireGuard",
 		"description": "WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections.",
 		"link": "https://www.wireguard.com/",
-		"panel": "3",
 		"winget": "WireGuard.WireGuard"
 	},
 	"WPFInstallwireshark": {
@@ -7783,7 +7475,6 @@ $sync.configs.applications = '{
 		"content": "WireShark",
 		"description": "Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities.",
 		"link": "https://www.wireshark.org/",
-		"panel": "3",
 		"winget": "WiresharkFoundation.Wireshark"
 	},
 	"WPFInstallwisetoys": {
@@ -7792,7 +7483,6 @@ $sync.configs.applications = '{
 		"content": "WiseToys",
 		"description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience.",
 		"link": "https://toys.wisecleaner.com/",
-		"panel": "4",
 		"winget": "WiseCleaner.WiseToys"
 	},
 	"WPFInstallwiztree": {
@@ -7801,7 +7491,6 @@ $sync.configs.applications = '{
 		"content": "WizTree",
 		"description": "WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive.",
 		"link": "https://wiztreefree.com/",
-		"panel": "4",
 		"winget": "AntibodySoftware.WizTree"
 	},
 	"WPFInstallxdm": {
@@ -7810,7 +7499,6 @@ $sync.configs.applications = '{
 		"content": "Xtreme Download Manager",
 		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
 		"link": "https://github.com/subhra74/xdm",
-		"panel": "4",
 		"winget": "subhra74.XtremeDownloadManager"
 	},
 	"WPFInstallxeheditor": {
@@ -7819,7 +7507,6 @@ $sync.configs.applications = '{
 		"content": "HxD Hex Editor",
 		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
 		"link": "https://mh-nexus.de/en/hxd/",
-		"panel": "1",
 		"winget": "MHNexus.HxD"
 	},
 	"WPFInstallxemu": {
@@ -7828,7 +7515,6 @@ $sync.configs.applications = '{
 		"content": "XEMU",
 		"description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
 		"link": "https://xemu.app/",
-		"panel": "2",
 		"winget": "xemu-project.xemu"
 	},
 	"WPFInstallxournal": {
@@ -7837,7 +7523,6 @@ $sync.configs.applications = '{
 		"content": "Xournal++",
 		"description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
 		"link": "https://xournalpp.github.io/",
-		"panel": "1",
 		"winget": "Xournal++.Xournal++"
 	},
 	"WPFInstallxpipe": {
@@ -7846,7 +7531,6 @@ $sync.configs.applications = '{
 		"content": "X-Pipe",
 		"description": "X-Pipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
 		"link": "https://xpipe.io/",
-		"panel": "3",
 		"winget": "xpipe-io.xpipe"
 	},
 	"WPFInstallyarn": {
@@ -7855,7 +7539,6 @@ $sync.configs.applications = '{
 		"content": "Yarn",
 		"description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects.",
 		"link": "https://yarnpkg.com/",
-		"panel": "1",
 		"winget": "Yarn.Yarn"
 	},
 	"WPFInstallytdlp": {
@@ -7864,7 +7547,6 @@ $sync.configs.applications = '{
 		"content": "Yt-dlp",
 		"description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
 		"link": "https://github.com/yt-dlp/yt-dlp",
-		"panel": "3",
 		"winget": "yt-dlp.yt-dlp"
 	},
 	"WPFInstallzerotierone": {
@@ -7873,7 +7555,6 @@ $sync.configs.applications = '{
 		"content": "ZeroTier One",
 		"description": "ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks.",
 		"link": "https://zerotier.com/",
-		"panel": "4",
 		"winget": "ZeroTier.ZeroTierOne"
 	},
 	"WPFInstallzim": {
@@ -7882,7 +7563,6 @@ $sync.configs.applications = '{
 		"content": "Zim Desktop Wiki",
 		"description": "Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages.",
 		"link": "https://zim-wiki.org/",
-		"panel": "1",
 		"winget": "Zimwiki.Zim"
 	},
 	"WPFInstallznote": {
@@ -7891,7 +7571,6 @@ $sync.configs.applications = '{
 		"content": "Znote",
 		"description": "Znote is a note-taking application.",
 		"link": "https://znote.io/",
-		"panel": "1",
 		"winget": "alagrede.znote"
 	},
 	"WPFInstallzoom": {
@@ -7900,7 +7579,6 @@ $sync.configs.applications = '{
 		"content": "Zoom",
 		"description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
 		"link": "https://zoom.us/",
-		"panel": "0",
 		"winget": "Zoom.Zoom"
 	},
 	"WPFInstallzotero": {
@@ -7909,7 +7587,6 @@ $sync.configs.applications = '{
 		"content": "Zotero",
 		"description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
 		"link": "https://www.zotero.org/",
-		"panel": "1",
 		"winget": "DigitalScholar.Zotero"
 	},
 	"WPFInstallzoxide": {
@@ -7918,7 +7595,6 @@ $sync.configs.applications = '{
 		"content": "Zoxide",
 		"description": "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease.",
 		"link": "https://github.com/ajeetdsouza/zoxide",
-		"panel": "4",
 		"winget": "ajeetdsouza.zoxide"
 	},
 	"WPFInstallzulip": {
@@ -7927,9 +7603,16 @@ $sync.configs.applications = '{
 		"content": "Zulip",
 		"description": "Zulip is an open-source team collaboration tool with chat streams for productive and organized communication.",
 		"link": "https://zulipchat.com/",
-		"panel": "0",
 		"winget": "Zulip.Zulip"
-	}
+	},
+	"WPFInstallsyncthingtray": {
+		"winget": " Martchus.syncthingtray",
+		"choco": "syncthingtray",
+		"category": "Utilities",
+		"content": "syncthingtray",
+		"link": "https://github.com/Martchus/syncthingtray",
+		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+  }
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
@@ -7963,6 +7646,11 @@ $sync.configs.dns = '{
 }' | convertfrom-json
 $sync.configs.feature = '{
   "WPFFeaturesdotnet": {
+    "Content": "All .Net Framework (2,3,4)",
+    "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a010_",
     "feature": [
       "NetFx4-AdvSrvs",
       "NetFx3"
@@ -7972,6 +7660,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureshyperv": {
+    "Content": "HyperV Virtualization",
+    "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a011_",
     "feature": [
       "HypervisorPlatform",
       "Microsoft-Hyper-V-All",
@@ -7987,6 +7680,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureslegacymedia": {
+    "Content": "Legacy Media (WMP, DirectPlay)",
+    "Description": "Enables legacy programs from previous versions of windows",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a012_",
     "feature": [
       "WindowsMediaPlayer",
       "MediaPlayback",
@@ -7998,6 +7696,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeaturewsl": {
+    "Content": "Windows Subsystem for Linux",
+    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a020_",
     "feature": [
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
@@ -8007,6 +7710,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeaturenfs": {
+    "Content": "NFS - Network File System",
+    "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a014_",
     "feature": [
       "ServicesForNFS-ClientOnly",
       "ClientForNFS-Infrastructure",
@@ -8022,6 +7730,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureEnableSearchSuggestions": {
+    "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
+    "Description": "Enables web suggestions when searching using Windows Search.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a015_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8035,6 +7748,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureDisableSearchSuggestions": {
+    "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
+    "Description": "Disables web suggestions when searching using Windows Search.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a016_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8048,6 +7766,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureRegBackup": {
+    "Content": "Enable Daily Registry Backup Task 12.30am",
+    "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a017_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8061,6 +7784,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureEnableLegacyRecovery": {
+    "Content": "Enable Legacy F8 Boot Recovery",
+    "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a018_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8074,6 +7802,11 @@ $sync.configs.feature = '{
     ]
   },
   "WPFFeatureDisableLegacyRecovery": {
+    "Content": "Disable Legacy F8 Boot Recovery",
+    "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a019_",
     "feature": [
     ],
     "InvokeScript": [
@@ -8085,6 +7818,104 @@ $sync.configs.feature = '{
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
       "
     ]
+  },
+  "WPFFeaturesandbox": {
+    "Content": "Windows Sandbox",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a021_",
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+  },
+  "WPFFeatureInstall": {
+    "Content": "Install Features",
+    "category": "Features",
+    "panel": "1",
+    "Order": "a060_",
+    "Type": "150"
+  },
+  "WPFPanelAutologin": {
+    "Content": "Set Up Autologin",
+    "category": "Fixes",
+    "Order": "a040_",
+    "panel": "1",
+    "Type": "300"
+  },
+  "WPFFixesUpdate": {
+    "Content": "Reset Windows Update",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a041_",
+    "Type": "300"
+  },
+  "WPFFixesNetwork": {
+    "Content": "Reset Network",
+    "category": "Fixes",
+    "Order": "a042_",
+    "panel": "1",
+    "Type": "300"
+  },
+  "WPFPanelDISM": {
+    "Content": "System Corruption Scan",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a043_",
+    "Type": "300"
+  },
+  "WPFFixesWinget": {
+    "Content": "WinGet Reinstall",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a044_",
+    "Type": "300"
+  },
+  "WPFRunAdobeCCCleanerTool": {
+    "Content": "Remove Adobe Creative Cloud",
+    "category": "Fixes",
+    "panel": "1",
+    "Order": "a045_",
+    "Type": "300"
+  },
+  "WPFPanelnetwork": {
+    "Content": "Network Connections",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelcontrol": {
+    "Content": "Control Panel",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelpower": {
+    "Content": "Power Panel",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelregion": {
+    "Content": "Region",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelsound": {
+    "Content": "Sound Settings",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPanelsystem": {
+    "Content": "System Properties",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
+  },
+  "WPFPaneluser": {
+    "Content": "User Accounts",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "200"
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -8186,6 +8017,11 @@ $sync.configs.themes = '{
 }' | convertfrom-json
 $sync.configs.tweaks = '{
   "WPFTweaksAH": {
+    "Content": "Disable Activity History",
+    "Description": "This erases recent docs, clipboard, and run history.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -8211,6 +8047,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksHiber": {
+    "Content": "Disable Hibernation",
+    "Description": "Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a011_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -8232,6 +8073,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksHome": {
+    "Content": "Disable Homegroup",
+    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -8246,6 +8092,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksLoc": {
+    "Content": "Disable Location Tracking",
+    "Description": "Disables Location Tracking...DUH!",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a008_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -8278,6 +8129,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksServices": {
+    "Content": "Set Services to Manual",
+    "Description": "Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a014_",
     "service": [
       {
         "Name": "AJRouter",
@@ -9697,6 +9553,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksTele": {
+    "Content": "Disable Telemetry",
+    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a003_",
     "ScheduledTask": [
       {
         "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
@@ -10084,6 +9945,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksWifi": {
+    "Content": "Disable Wifi-Sense",
+    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a004_",
     "registry": [
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
@@ -10102,6 +9968,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksUTC": {
+    "Content": "Set Time to UTC (Dual Boot)",
+    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a022_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -10113,6 +9984,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisplay": {
+    "Content": "Set Display for Performance",
+    "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a021_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -10214,6 +10090,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDeBloat": {
+    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
+    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025_",
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -10328,6 +10209,12 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRestorePoint": {
+    "Content": "Create Restore Point",
+    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Checked": "True",
+    "Order": "a001_",
     "InvokeScript": [
       "
         # Check if the user has administrative privileges
@@ -10365,6 +10252,13 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksOO": {
+    "Content": "Run OO Shutup",
+    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a002_",
+    "Content": "Run OO Shutup",
+    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
       "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
@@ -10373,6 +10267,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksStorage": {
+    "Content": "Disable Storage Sense",
+    "Description": "Storage Sense deletes temp files automatically.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a010_",
     "InvokeScript": [
       "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
     ],
@@ -10382,6 +10281,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRemoveEdge": {
+    "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
+    "Description": "Removes MS Edge when it gets reinstalled by updates.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a026_",
     "InvokeScript": [
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
@@ -10399,6 +10303,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRemoveOnedrive": {
+    "Content": "Remove OneDrive",
+    "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a027_",
     "InvokeScript": [
         "
 
@@ -10476,6 +10385,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisableNotifications": {
+    "Content": "Disable Notification Tray/Calendar",
+    "Description": "Disables all Notifications INCLUDING Calendar",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
@@ -10494,6 +10408,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksRightClickMenu": {
+    "Content": "Set Classic Right-Click Menu ",
+    "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a028_",
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -10505,6 +10424,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDiskCleanup": {
+    "Content": "Run Disk Cleanup",
+    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a007_",
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
@@ -10513,6 +10437,11 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDisableUAC": {
+    "Content": "Disable UAC",
+    "Description": "Disables User Account Control. Only recommended for Expert Users.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
@@ -10524,12 +10453,22 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksDeleteTempFiles": {
+    "Content": "Delete Temporary Files",
+    "Description": "Erases TEMP Folders",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a006_",
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
   "WPFTweaksDVR": {
+    "Content": "Disable GameDVR",
+    "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a012_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
@@ -10576,6 +10515,12 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksTeredo": {
+    "Content": "Disable Teredo",
+    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a029_",
+    "Order": "a013_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -10592,18 +10537,12 @@ $sync.configs.tweaks = '{
       "netsh interface teredo set state default"
     ]
   },
-  "WPFBingSearch": {
-    "registry": [
-      {
-        "OriginalValue": "1",
-        "Name": "BingSearchEnabled",
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Type": "DWord",
-        "Value": "0"
-      }
-    ]
-  },
   "WPFTweaksDisableipsix": {
+    "Content": "Disable IPv6",
+    "Description": "Disables IPv6.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
     "InvokeScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
@@ -10612,12 +10551,116 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksEnableipsix": {
+    "Content": "Enable IPv6",
+    "Description": "Enables IPv6.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a030_",
     "InvokeScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
+  },
+  "WPFToggleDarkMode": {
+    "Content": "Dark Theme",
+    "Description": "Enable/Disable Dark Mode.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a060_",
+    "Type": "Toggle"
+  },
+  "WPFToggleBingSearch": {
+    "Content": "Bing Search in Start Menu",
+    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a061_",
+    "Type": "Toggle"
+  },
+  "WPFToggleNumLock": {
+    "Content": "NumLock on Startup",
+    "Description": "Toggle the Num Lock key state when your computer starts.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a062_",
+    "Type": "Toggle"
+  },
+  "WPFToggleVerboseLogon": {
+    "Content": "Verbose Logon Messages",
+    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a063_",
+    "Type": "Toggle"
+  },
+  "WPFToggleShowExt": {
+    "Content": "Show File Extensions",
+    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a064_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapFlyout": {
+    "Content": "Snap Assist Flyout",
+    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a065_",
+    "Type": "Toggle"
+  },
+  "WPFToggleMouseAcceleration": {
+    "Content": "Mouse Acceleration",
+    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a066_",
+    "Type": "Toggle"
+  },
+  "WPFchangedns": {
+    "Content": "DNS",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a040_",
+    "Type": "Combobox",
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
+  },
+  "WPFTweaksbutton": {
+    "Content": "Run Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a041_",
+    "Type": "160"
+  },
+  "WPFUndoall": {
+    "Content": "Undo Selected Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a042_",
+    "Type": "160"
+  },
+  "WPFAddUltPerf": {
+    "Content": "Add and Activate Ultimate Performance Profile",
+    "category": "Performance Plans",
+    "panel": "2",
+    "Order": "a080_",
+    "Type": "300"
+  },
+  "WPFRemoveUltPerf": {
+    "Content": "Remove Ultimate Performance Profile",
+    "category": "Performance Plans",
+    "panel": "2",
+    "Order": "a081_",
+    "Type": "300"
+  },
+  "WPFWinUtilShortcut": {
+    "Content": "Create WinUtil Shortcut",
+    "category": "Shortcuts",
+    "panel": "2",
+    "Order": "a082_",
+    "Type": "300"
   }
 }' | convertfrom-json
 # SPDX-License-Identifier: MIT
@@ -10674,56 +10717,122 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-$organizedData = @{}
-# Iterate through JSON data and organize by panel and category
-foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
-    $appInfo = $sync.configs.applications.$appName
+function Get-TabXaml {
+    param( [Parameter(Mandatory=$true)]
+        $tabname,
+        $columncount = 0
+    )
+    $organizedData = @{}
+    # Iterate through JSON data and organize by panel and category
+    foreach ($appName in $sync.configs.$tabname.PSObject.Properties.Name) {
+        $appInfo = $sync.configs.$tabname.$appName
 
-    # Create an object for the application
-    $appObject = [PSCustomObject]@{
-        Name = $appName
-        Category = $appInfo.Category
-        Content = $appInfo.Content
-        Choco = $appInfo.choco
-        Winget = $appInfo.winget
-        Panel = $appInfo.panel
-        Link = $appInfo.link
-        Description = $appInfo.description
+        # Create an object for the application
+        $appObject = [PSCustomObject]@{
+            Name = $appName
+            Category = $appInfo.Category
+            Content = $appInfo.Content
+            Choco = $appInfo.choco
+            Winget = $appInfo.winget
+            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel}
+            Link = $appInfo.link
+            Description = $appInfo.description
+            # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
+            Type = $appInfo.type
+            ComboItems = $appInfo.ComboItems
+            # Checked is the property to set startup checked status of checkbox (Default is false)
+            Checked = $appInfo.Checked
+        }
+
+        if (-not $organizedData.ContainsKey($appObject.panel)) {
+            $organizedData[$appObject.panel] = @{}
+        }
+
+        if (-not $organizedData[$appObject.panel].ContainsKey($appObject.Category)) {
+            $organizedData[$appObject.panel][$appObject.Category] = @{}
+        }
+
+        # Store application data in a sub-array under the category
+        # Add Order property to keep the original order of tweaks and features
+        $organizedData[$appObject.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
     }
-
-    if (-not $organizedData.ContainsKey($appInfo.panel)) {
-        $organizedData[$appInfo.panel] = @{}
+    $panelcount=0
+    $paneltotal = $organizedData.Keys.Count
+    if ($columncount -gt 0) {
+        $appcount = $sync.configs.$tabname.PSObject.Properties.Name.count + $organizedData["0"].Keys.count
+        $maxcount = [Math]::Round( $appcount / $columncount + 0.5)
+        $paneltotal = $columncount
     }
-
-    if (-not $organizedData[$appInfo.panel].ContainsKey($appInfo.Category)) {
-        $organizedData[$appInfo.panel][$appInfo.Category] = @{}
-    }
-
-    # Store application data in a sub-array under the category
-    $organizedData[$appInfo.panel][$appInfo.Category][$appName] = $appObject
-}
-
-# Iterate through organizedData by panel, category, and application
-foreach ($panel in $organizedData.Keys) {
-    foreach ($category in $organizedData[$panel].Keys) {
-        $blockXml += "<Label Content=""$($category)"" FontSize=""16""/>`n"
-        $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
-        foreach ($appName in $sortedApps) {
-            $appInfo = $organizedData[$panel][$category][$appName]
-            if ($null -eq $appInfo.Link)
-            {
-                $blockXml += "<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""/>`n"
+    # add ColumnDefinitions to evenly draw colums
+    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($paneltotal))+"</Grid.ColumnDefinitions>`n"
+    # Iterate through organizedData by panel, category, and application
+    $count = 0
+    foreach ($panel in ($organizedData.Keys | Sort-Object)) {
+        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+        $panelcount++
+        foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
+            $count++
+            if ($columncount -gt 0) {
+                $panelcount2 = [Int](($count)/$maxcount-0.5)
+                if ($panelcount -eq $panelcount2 ) {
+                    $blockXml +="`n</StackPanel>`n</Border>`n"
+                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                    $panelcount++
+                }
             }
-            else 
-            {
-                $blockXml += "<StackPanel Orientation=""Horizontal""><CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" /></StackPanel>`n"
+            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
+            $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
+            foreach ($appName in $sortedApps) {
+                $count++
+                if ($columncount -gt 0) {
+                    $panelcount2 = [Int](($count)/$maxcount-0.5)
+                    if ($panelcount -eq $panelcount2 ) {
+                        $blockXml +="`n</StackPanel>`n</Border>`n"
+                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                        $panelcount++
+                    }
+                }
+                $appInfo = $organizedData[$panel][$category][$appName]
+                if ("Toggle" -eq $appInfo.Type) {
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+                } elseif ("Combobox" -eq $appInfo.Type) {
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
+                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
+                    $addfirst="IsSelected=`"True`""
+                    foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`n"
+                        $addfirst=""
+                    }
+                    $blockXml += "</ComboBox>`n</StackPanel>"
+                # If it is a digit, type is button and button length is digits
+                } elseif ($appInfo.Type -match "^[\d\.]+$") {
+                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`n"
+                # else it is a checkbox
+                } else {
+                    $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
+                    if ($null -eq $appInfo.Link)
+                    {
+                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`n"
+                    }
+                    else
+                    {
+                        $blockXml += "<StackPanel Orientation=""Horizontal"">`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`n</StackPanel>`n"
+                    }
+                }
             }
         }
+        $blockXml +="`n</StackPanel>`n</Border>`n"
     }
-
-    $inputXML = $inputXML -replace "{{InstallPanel$panel}}", $blockXml
-    $blockXml = ""
+    return ($blockXml)
 }
+
+$tabcolums=Get-TabXaml "applications" 5
+$inputXML = $inputXML -replace "{{InstallPanel_applications}}", ($tabcolums)
+$tabcolums=Get-TabXaml "tweaks"
+$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
+$tabcolums=Get-TabXaml "feature"
+$inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Matrix'
@@ -10790,7 +10899,7 @@ $sync.keys | ForEach-Object {
                     Write-Debug "Opening: $($Sender.ToolTip)"
                 })
             }
-       
+
         }
     }
 }
@@ -10909,7 +11018,7 @@ $sync["Form"].Add_Deactivated({
 
 $sync["Form"].Add_ContentRendered({
 
-    try { 
+    try {
         [void][Window]
     } catch {
 Add-Type @"
@@ -10922,11 +11031,11 @@ Add-Type @"
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-            
+
             [DllImport("user32.dll")]
             [return: MarshalAs(UnmanagedType.Bool)]
             public static extern bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
-            
+
             [DllImport("user32.dll")]
             public static extern int GetSystemMetrics(int nIndex);
         };
@@ -10990,7 +11099,7 @@ Add-Type @"
     } else {
         Write-Debug "Unable to retrieve information about the primary monitor."
     }
-    
+
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
 
@@ -11042,20 +11151,20 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
     $filter = Get-WinUtilVariables -Type CheckBox
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
-    
+
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
-        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) { 
+        if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
             continue
         }
-    
+
         $textToSearch = $sync.CheckboxFilter.Text
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
-    
+
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
-    
+
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
              # Set the corresponding text block visibility
@@ -11071,7 +11180,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
-    
+
 })
 
 # Define event handler for button click
@@ -11115,7 +11224,7 @@ GUI      : @KonTy
 MicroWin : @KonTy
 GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
-"@    
+"@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
 

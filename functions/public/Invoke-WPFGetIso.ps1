@@ -12,6 +12,10 @@ function Invoke-WPFGetIso {
         return
     }
 
+  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyText.Text="N Busy"
+
+
     Write-Host "         _                     __    __  _         "
 	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
 	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
@@ -19,12 +23,17 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
+   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
+}
+
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
     if (!$oscdImgFound) 
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
+        $sync.BusyMessage.Visibility="Hidden"
 
         if (!$downloadFromGitHub) 
         {
@@ -69,6 +78,7 @@ function Invoke-WPFGetIso {
     if ([string]::IsNullOrEmpty($filePath))
     {
         Write-Host "No ISO is chosen"
+        $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
@@ -97,13 +107,38 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
+    $mountedISOPath = (Split-Path -Path $filePath)
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
+        $sync.MicrowinScratchDirBox.Text =""
+    }
+
+     $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
+
+    if ($UseISOScratchDir) {
+        $sync.MicrowinScratchDirBox.Text=$mountedISOPath
+    }
+
+    if( -Not $sync.MicrowinScratchDirBox.Text.EndsWith('\') -And  $sync.MicrowinScratchDirBox.Text.Length -gt 1) {
+
+         $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
+
+    }
+
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $randomNumber = Get-Random -Minimum 1 -Maximum 9999
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
+    $sync.BusyText.Text=" - Mounting"
+    Write-Host "Mounting Iso. Please wait."  
+    if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
+    } else {
+        $scratchDir = $sync.MicrowinScratchDirBox.Text+"Scrach"
+        $mountDir = $sync.MicrowinScratchDirBox.Text+"micro"
+    }
+
     $sync.MicrowinMountDir.Text = $mountDir
     $sync.MicrowinScratchDir.Text = $scratchDir
     Write-Host "Done setting up mount dir and scratch dirs"
@@ -139,6 +174,14 @@ function Invoke-WPFGetIso {
             $sync.MicrowinWindowsFlavors.Items.Add("$imageIdx : $imageName")
         }
         $sync.MicrowinWindowsFlavors.SelectedIndex = 0
+        Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
+        Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
+            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional")
+            {
+                # We have found the Pro edition
+                $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
+            }
+        }
         Get-Volume $driveLetter | Get-DiskImage | Dismount-DiskImage
         Write-Host "Selected value '$($sync.MicrowinWindowsFlavors.SelectedValue)'....."
 
@@ -155,6 +198,7 @@ function Invoke-WPFGetIso {
     Write-Host "*********************************"
     Write-Host "Check the UI for further steps!!!"
 
+    $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
 }
 
