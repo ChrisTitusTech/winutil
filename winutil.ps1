@@ -7645,278 +7645,248 @@ $sync.configs.dns = '{
     }
 }' | convertfrom-json
 $sync.configs.feature = '{
-  "WPFFeaturesdotnet": {
-    "Content": "All .Net Framework (2,3,4)",
-    "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a010_",
-    "feature": [
-      "NetFx4-AdvSrvs",
-      "NetFx3"
-    ],
-    "InvokeScript": [
-
-    ]
-  },
-  "WPFFeatureshyperv": {
-    "Content": "HyperV Virtualization",
-    "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a011_",
-    "feature": [
-      "HypervisorPlatform",
-      "Microsoft-Hyper-V-All",
-      "Microsoft-Hyper-V",
-      "Microsoft-Hyper-V-Tools-All",
-      "Microsoft-Hyper-V-Management-PowerShell",
-      "Microsoft-Hyper-V-Hypervisor",
-      "Microsoft-Hyper-V-Services",
-      "Microsoft-Hyper-V-Management-Clients"
-    ],
-    "InvokeScript": [
-      "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
-    ]
-  },
-  "WPFFeatureslegacymedia": {
-    "Content": "Legacy Media (WMP, DirectPlay)",
-    "Description": "Enables legacy programs from previous versions of windows",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a012_",
-    "feature": [
-      "WindowsMediaPlayer",
-      "MediaPlayback",
-      "DirectPlay",
-      "LegacyComponents"
-    ],
-    "InvokeScript": [
-
-    ]
-  },
-  "WPFFeaturewsl": {
-    "Content": "Windows Subsystem for Linux",
-    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a020_",
-    "feature": [
-      "VirtualMachinePlatform",
-      "Microsoft-Windows-Subsystem-Linux"
-    ],
-    "InvokeScript": [
-
-    ]
-  },
-  "WPFFeaturenfs": {
-    "Content": "NFS - Network File System",
-    "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a014_",
-    "feature": [
-      "ServicesForNFS-ClientOnly",
-      "ClientForNFS-Infrastructure",
-      "NFS-Administration"
-    ],
-    "InvokeScript": [
-      "nfsadmin client stop
-      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0
-      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0
-      nfsadmin client start
-      nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-      "
-    ]
-  },
-  "WPFFeatureEnableSearchSuggestions": {
-    "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
-    "Description": "Enables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a015_",
-    "feature": [
-    ],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
-            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
-      }
-      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
-      Stop-Process -name explorer -force
-      "
-    ]
-  },
-  "WPFFeatureDisableSearchSuggestions": {
-    "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
-    "Description": "Disables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a016_",
-    "feature": [
-    ],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
-            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
-      }
-      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force
-      Stop-Process -name explorer -force
-      "
-    ]
-  },
-  "WPFFeatureRegBackup": {
-    "Content": "Enable Daily Registry Backup Task 12.30am",
-    "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a017_",
-    "feature": [
-    ],
-    "InvokeScript": [
-      "
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''EnablePeriodicBackup'' -Type DWord -Value 1 -Force
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''BackupCount'' -Type DWord -Value 2 -Force
-      $action = New-ScheduledTaskAction -Execute ''schtasks'' -Argument ''/run /i /tn \"\\Microsoft\\Windows\\Registry\\RegIdleBackup\"''
-      $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
-      Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''
-      "
-    ]
-  },
-  "WPFFeatureEnableLegacyRecovery": {
-    "Content": "Enable Legacy F8 Boot Recovery",
-    "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a018_",
-    "feature": [
-    ],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
-            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
-      }
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
-      "
-    ]
-  },
-  "WPFFeatureDisableLegacyRecovery": {
-    "Content": "Disable Legacy F8 Boot Recovery",
-    "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a019_",
-    "feature": [
-    ],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
-            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
-      }
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
-      "
-    ]
-  },
-  "WPFFeaturesandbox": {
-    "Content": "Windows Sandbox",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
-  },
-  "WPFFeatureInstall": {
-    "Content": "Install Features",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a060_",
-    "Type": "150"
-  },
-  "WPFPanelAutologin": {
-    "Content": "Set Up Autologin",
-    "category": "Fixes",
-    "Order": "a040_",
-    "panel": "1",
-    "Type": "300"
-  },
-  "WPFFixesUpdate": {
-    "Content": "Reset Windows Update",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "300"
-  },
-  "WPFFixesNetwork": {
-    "Content": "Reset Network",
-    "category": "Fixes",
-    "Order": "a042_",
-    "panel": "1",
-    "Type": "300"
-  },
-  "WPFPanelDISM": {
-    "Content": "System Corruption Scan",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a043_",
-    "Type": "300"
-  },
-  "WPFFixesWinget": {
-    "Content": "WinGet Reinstall",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a044_",
-    "Type": "300"
-  },
-  "WPFRunAdobeCCCleanerTool": {
-    "Content": "Remove Adobe Creative Cloud",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a045_",
-    "Type": "300"
-  },
-  "WPFPanelnetwork": {
-    "Content": "Network Connections",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelcontrol": {
-    "Content": "Control Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelpower": {
-    "Content": "Power Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelregion": {
-    "Content": "Region",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelsound": {
-    "Content": "Sound Settings",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelsystem": {
-    "Content": "System Properties",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPaneluser": {
-    "Content": "User Accounts",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  }
+   "WPFFeaturesdotnet":{
+      "Content":"All .Net Framework (2,3,4)",
+      "Description":".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a010_",
+      "feature":[
+         "NetFx4-AdvSrvs",
+         "NetFx3"
+      ],
+      "InvokeScript":[
+         
+      ]
+   },
+   "WPFFeatureshyperv":{
+      "Content":"HyperV Virtualization",
+      "Description":"Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a011_",
+      "feature":[
+         "HypervisorPlatform",
+         "Microsoft-Hyper-V-All",
+         "Microsoft-Hyper-V",
+         "Microsoft-Hyper-V-Tools-All",
+         "Microsoft-Hyper-V-Management-PowerShell",
+         "Microsoft-Hyper-V-Hypervisor",
+         "Microsoft-Hyper-V-Services",
+         "Microsoft-Hyper-V-Management-Clients"
+      ],
+      "InvokeScript":[
+         "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
+      ]
+   },
+   "WPFFeatureslegacymedia":{
+      "Content":"Legacy Media (WMP, DirectPlay)",
+      "Description":"Enables legacy programs from previous versions of windows",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a012_",
+      "feature":[
+         "WindowsMediaPlayer",
+         "MediaPlayback",
+         "DirectPlay",
+         "LegacyComponents"
+      ],
+      "InvokeScript":[
+         
+      ]
+   },
+   "WPFFeaturewsl":{
+      "Content":"Windows Subsystem for Linux",
+      "Description":"Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a020_",
+      "feature":[
+         "VirtualMachinePlatform",
+         "Microsoft-Windows-Subsystem-Linux"
+      ],
+      "InvokeScript":[
+         
+      ]
+   },
+   "WPFFeaturenfs":{
+      "Content":"NFS - Network File System",
+      "Description":"Network File System (NFS) is a mechanism for storing files on a network.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a014_",
+      "feature":[
+         "ServicesForNFS-ClientOnly",
+         "ClientForNFS-Infrastructure",
+         "NFS-Administration"
+      ],
+      "InvokeScript":[
+         "nfsadmin client stop;Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0;Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0;nfsadmin client start;nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
+      ]
+   },
+   "WPFFeatureEnableSearchSuggestions":{
+      "Content":"Enable Search Box Web Suggestions in Registry(explorer restart)",
+      "Description":"Enables web suggestions when searching using Windows Search.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a015_",
+      "feature":[
+         
+      ],
+      "InvokeScript":[
+         "If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null};New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force;Stop-Process -name explorer -force"
+      ]
+   },
+   "WPFFeatureDisableSearchSuggestions":{
+      "Content":"Disable Search Box Web Suggestions in Registry(explorer restart)",
+      "Description":"Disables web suggestions when searching using Windows Search.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a016_",
+      "feature":[
+         
+      ],
+      "InvokeScript":[
+         "If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null};New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force;Stop-Process -name explorer -force"
+      ]
+   },
+   "WPFFeatureRegBackup":{
+      "Content":"Enable Daily Registry Backup Task 12.30am",
+      "Description":"Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a017_",
+      "feature":[
+         
+      ],
+      "InvokeScript":[
+         "New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''EnablePeriodicBackup'' -Type DWord -Value 1 -Force;New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''BackupCount'' -Type DWord -Value 2 -Force;$action = New-ScheduledTaskAction -Execute ''schtasks'' -Argument ''/run /i /tn \"\\Microsoft\\Windows\\Registry\\RegIdleBackup\"'';$trigger = New-ScheduledTaskTrigger -Daily -At 00:30;Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''"
+      ]
+   },
+   "WPFFeatureEnableLegacyRecovery":{
+      "Content":"Enable Legacy F8 Boot Recovery",
+      "Description":"Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a018_",
+      "feature":[
+         
+      ],
+      "InvokeScript":[
+         "If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null};New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force;Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait"
+      ]
+   },
+   "WPFFeatureDisableLegacyRecovery":{
+      "Content":"Disable Legacy F8 Boot Recovery",
+      "Description":"Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a019_",
+      "feature":[
+         
+      ],
+      "InvokeScript":[
+         "If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null};New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force;Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait"
+      ]
+   },
+   "WPFFeaturesandbox":{
+      "Content":"Windows Sandbox",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a021_",
+      "Description":"Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+   },
+   "WPFFeatureInstall":{
+      "Content":"Install Features",
+      "category":"Features",
+      "panel":"1",
+      "Order":"a060_",
+      "Type":"150"
+   },
+   "WPFPanelAutologin":{
+      "Content":"Set Up Autologin",
+      "category":"Fixes",
+      "Order":"a040_",
+      "panel":"1",
+      "Type":"300"
+   },
+   "WPFFixesUpdate":{
+      "Content":"Reset Windows Update",
+      "category":"Fixes",
+      "panel":"1",
+      "Order":"a041_",
+      "Type":"300"
+   },
+   "WPFFixesNetwork":{
+      "Content":"Reset Network",
+      "category":"Fixes",
+      "Order":"a042_",
+      "panel":"1",
+      "Type":"300"
+   },
+   "WPFPanelDISM":{
+      "Content":"System Corruption Scan",
+      "category":"Fixes",
+      "panel":"1",
+      "Order":"a043_",
+      "Type":"300"
+   },
+   "WPFFixesWinget":{
+      "Content":"WinGet Reinstall",
+      "category":"Fixes",
+      "panel":"1",
+      "Order":"a044_",
+      "Type":"300"
+   },
+   "WPFRunAdobeCCCleanerTool":{
+      "Content":"Remove Adobe Creative Cloud",
+      "category":"Fixes",
+      "panel":"1",
+      "Order":"a045_",
+      "Type":"300"
+   },
+   "WPFPanelnetwork":{
+      "Content":"Network Connections",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPanelcontrol":{
+      "Content":"Control Panel",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPanelpower":{
+      "Content":"Power Panel",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPanelregion":{
+      "Content":"Region",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPanelsound":{
+      "Content":"Sound Settings",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPanelsystem":{
+      "Content":"System Properties",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   },
+   "WPFPaneluser":{
+      "Content":"User Accounts",
+      "category":"Legacy Windows Panels",
+      "panel":"2",
+      "Type":"200"
+   }
 }' | convertfrom-json
 $sync.configs.preset = '{
   "desktop": [
