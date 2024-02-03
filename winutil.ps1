@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.02
+    Version        : 24.02.03
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.02"
+$sync.version = "24.02.03"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -471,6 +471,15 @@ Function Get-WinUtilToggleStatus {
         }
         else{
             return $false
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
+        $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
+        if($StickyKeys -eq 58){
+            return $false
+        }
+        else{
+            return $true
         }
     }
 }
@@ -1660,6 +1669,37 @@ function Invoke-WinUtilSnapFlyout {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Invoke-WinUtilStickyKeys {
+    <#
+    .SYNOPSIS
+        Disables/Enables Sticky Keyss on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Sticky Keys on startup
+    #>
+    Param($Enabled)
+    Try { 
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Sticky Keys On startup"
+            $value = 510
+        }
+        else {
+            Write-Host "Disabling Sticky Keys On startup"
+            $value = 58
+        }
+        $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
+        Set-ItemProperty -Path $Path -Name Flags -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -3905,6 +3945,7 @@ function Invoke-WPFToggle {
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
         "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
+        "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -5765,7 +5806,7 @@ $sync.configs.applications = '{
 		"link": "https://dotnet.microsoft.com/download/dotnet/8.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
-  "WPFInstalldmt": {
+	"WPFInstalldmt": {
 		"winget": "GNE.DualMonitorTools",
 		"choco": "dual-monitor-tools",
 		"category": "Utilities",
@@ -7606,13 +7647,49 @@ $sync.configs.applications = '{
 		"winget": "Zulip.Zulip"
 	},
 	"WPFInstallsyncthingtray": {
-		"winget": " Martchus.syncthingtray",
-		"choco": "syncthingtray",
 		"category": "Utilities",
+		"choco": "syncthingtray",
 		"content": "syncthingtray",
+		"description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/Martchus/syncthingtray",
-		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
-  }
+		"winget": "Martchus.syncthingtray"
+	},
+	"WPFInstallminiconda": {
+		"category": "Development",
+		"choco": "miniconda3",
+		"content": "Miniconda",
+		"description": "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
+		"link": "https://docs.conda.io/projects/miniconda",
+		"panel": "1",
+		"winget": "Anaconda.Miniconda3"
+	},
+	"WPFInstalltemurin": {
+		"category": "Development",
+		"choco": "temurin",
+		"content": "Eclipse Temurin",
+		"description": "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
+		"link": "https://adoptium.net/temurin/",
+		"panel": "1",
+		"winget": "EclipseAdoptium.Temurin.21.JDK"
+	},
+	"WPFInstallintelpresentmon": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Intel?? PresentMon",
+		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
+		"link": "https://game.intel.com/us/stories/intel-presentmon/",
+		"panel": "4",
+		"winget": "Intel.PresentMon.Beta"
+	},
+	"WPFInstallpyenvwin": {
+		"category": "Development",
+		"choco": "pyenv-win",
+		"content": "Python Version Manager (pyenv-win)",
+		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
+		"link": "https://pyenv-win.github.io/pyenv-win/",
+		"panel": "1",
+		"winget": "na"
+	}
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
@@ -7721,12 +7798,11 @@ $sync.configs.feature = '{
       "NFS-Administration"
     ],
     "InvokeScript": [
-      "nfsadmin client stop
-      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0
-      Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0
-      nfsadmin client start
-      nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i
-      "
+      "nfsadmin client stop",
+      "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0",
+      "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0",
+      "nfsadmin client start",
+      "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
     ]
   },
   "WPFFeatureEnableSearchSuggestions": {
@@ -7824,7 +7900,7 @@ $sync.configs.feature = '{
     "category": "Features",
     "panel": "1",
     "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
@@ -10617,6 +10693,14 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a066_",
+    "Type": "Toggle"
+  },
+  "WPFToggleStickyKeys": {
+    "Content": "Sticky Keys",
+    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a067_",
     "Type": "Toggle"
   },
   "WPFchangedns": {
