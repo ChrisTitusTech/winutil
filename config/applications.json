@@ -775,6 +775,13 @@
 		"link": "http://www.imgburn.com/",
 		"winget": "LIGHTNINGUK.ImgBurn"
 	},
+	"WPFInstallimhex": {
+		"category": "Development",
+		"winget": "WerWolv.ImHex",
+		"content": "ImHex",
+		"description": "ImHex is an advanced open-source and highly extensible hex editor with features including patterns, a development SDK and more.",
+		"link": "https://imhex.werwolv.net/",
+	},
 	"WPFInstallinkscape": {
 		"category": "Multimedia Tools",
 		"choco": "inkscape",
