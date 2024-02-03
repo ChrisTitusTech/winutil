@@ -2238,5 +2238,14 @@
 		"content": "syncthingtray",
 		"link": "https://github.com/Martchus/syncthingtray",
 		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
+	},
+	"WPFInstalltaiga": {
+		"category": "Utilities",
+		"choco": "taiga",
+		"content": "Taiga",
+		"description": "Taiga automatically detects the anime videos you watch on your computer and synchronizes your progress with online services.",
+		"link": "https://taiga.moe/",
+		"winget": "erengy.Taiga"
+	},
   }
 }
