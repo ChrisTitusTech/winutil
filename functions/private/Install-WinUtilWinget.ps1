@@ -22,6 +22,7 @@ function Install-WinUtilWinget {
         if (Test-WinUtilPackageManager -winget) {
             # Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "winget settings --enable InstallerHashOverride" -Wait
             return
         }
 
@@ -72,7 +73,7 @@ function Install-WinUtilWinget {
         # Third Method
         Write-Host "- Attempting third install method..."
         
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force"
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force" -Wait
         if (Test-WinUtilPackageManager -winget) {
             # Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Installed via Chocolatey"

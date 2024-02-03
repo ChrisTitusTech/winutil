@@ -576,7 +576,7 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --ignore-security-hash --disable-interactivity --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
             Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
@@ -612,6 +612,20 @@ function Install-WinUtilWinget {
         if (Test-WinUtilPackageManager -winget) {
             # Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
+            # Define the path to the Winget settings file
+                $wingetSettingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState\settings.json"
+
+                # Read the current settings from the file
+                $settings = Get-Content -Path $wingetSettingsPath | ConvertFrom-Json
+
+                # Check if InstallerHashOverride is already enabled
+                if ($settings.PSObject.Properties.Name -notcontains 'InstallerHashOverride' -or $settings.InstallerHashOverride -ne "Enabled") {
+                    # If not present or not enabled, set it to Enabled
+                    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "winget settings --enable InstallerHashOverride"                   
+                    Write-Host "InstallerHashOverride has been enabled for Winget."
+                } else {
+                    Write-Host "InstallerHashOverride is already enabled for Winget."
+                }
             return
         }
 
@@ -7730,7 +7744,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel?? PresentMon",
+		"content": "Intel? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
