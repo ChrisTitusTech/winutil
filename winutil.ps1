@@ -5806,7 +5806,7 @@ $sync.configs.applications = '{
 		"link": "https://dotnet.microsoft.com/download/dotnet/8.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
-  "WPFInstalldmt": {
+	"WPFInstalldmt": {
 		"winget": "GNE.DualMonitorTools",
 		"choco": "dual-monitor-tools",
 		"category": "Utilities",
@@ -7647,13 +7647,49 @@ $sync.configs.applications = '{
 		"winget": "Zulip.Zulip"
 	},
 	"WPFInstallsyncthingtray": {
-		"winget": " Martchus.syncthingtray",
-		"choco": "syncthingtray",
 		"category": "Utilities",
+		"choco": "syncthingtray",
 		"content": "syncthingtray",
+		"description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/Martchus/syncthingtray",
-		"description": "Might be the alternative for Synctrayzro.Windows tray utility / filesystem watcher / launcher for Syncthing "
-  }
+		"winget": "Martchus.syncthingtray"
+	},
+	"WPFInstallminiconda": {
+		"category": "Development",
+		"choco": "miniconda3",
+		"content": "Miniconda",
+		"description": "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
+		"link": "https://docs.conda.io/projects/miniconda",
+		"panel": "1",
+		"winget": "Anaconda.Miniconda3"
+	},
+	"WPFInstalltemurin": {
+		"category": "Development",
+		"choco": "temurin",
+		"content": "Eclipse Temurin",
+		"description": "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
+		"link": "https://adoptium.net/temurin/",
+		"panel": "1",
+		"winget": "EclipseAdoptium.Temurin.21.JDK"
+	},
+	"WPFInstallintelpresentmon": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Intel?? PresentMon",
+		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
+		"link": "https://game.intel.com/us/stories/intel-presentmon/",
+		"panel": "4",
+		"winget": "Intel.PresentMon.Beta"
+	},
+	"WPFInstallpyenvwin": {
+		"category": "Development",
+		"choco": "pyenv-win",
+		"content": "Python Version Manager (pyenv-win)",
+		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
+		"link": "https://pyenv-win.github.io/pyenv-win/",
+		"panel": "1",
+		"winget": "na"
+	}
 }' | convertfrom-json
 $sync.configs.dns = '{
     "Google":{
