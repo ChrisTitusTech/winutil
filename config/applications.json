@@ -777,6 +777,7 @@
 	},
 	"WPFInstallimhex": {
 		"category": "Development",
+		"choco": "imhex",
 		"winget": "WerWolv.ImHex",
 		"content": "ImHex",
 		"description": "ImHex is an advanced open-source and highly extensible hex editor with features including patterns, a development SDK and more.",
