@@ -6805,7 +6805,7 @@ $sync.configs.applications = '{
 		"content": "Parsec",
 		"description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
 		"link": "https://parsec.app/",
-		"winget": "Parsec.parsec"
+		"winget": "Parsec.Parsec"
 	},
 	"WPFInstallpdf24creator": {
 		"category": "Document",
