@@ -629,10 +629,47 @@ function Install-WinUtilWinget {
             return
         }
 
-        Write-Host "Running Alternative Installer and Direct Installing"
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
-
-        Write-Host "Winget Installed"
+        Write-Host "Running Alternative Installers and Direct Installing"
+        Write-Host "- Attempting first install method..."
+        
+        $wingetURL = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        $wingetFileName = Split-Path $wingetURL -Leaf
+        $wingetInstallerPath = Join-Path $env:TEMP $wingetFileName
+        
+        Invoke-WebRequest -Uri $wingetURL -OutFile $wingetInstallerPath
+        Add-AppxPackage -Path $wingetInstallerPath
+        if (Test-WinUtilPackageManager -winget) {
+            # Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Installed via GitHub"
+            return
+        } else {
+            Write-Host "- Failed to install Winget via GitHub"
+        }
+        # Second Method
+        Write-Host "- Attempting second install method..."
+        
+        Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+        Install-Script -Name winget-install -Force
+        $wingetArgument = "-ExecutionPolicy Bypass winget-install.ps1"
+        Start-Process powershell -ArgumentList $wingetArgument -Wait
+        if (Test-WinUtilPackageManager -winget) {
+            # Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Installed via PowerShell Gallery Script"
+            return
+        } else {
+            Write-Host "- Failed to install Winget via PowerShell Gallery Script"
+        }
+        # Third Method
+        Write-Host "- Attempting third install method..."
+        
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force"
+        if (Test-WinUtilPackageManager -winget) {
+            # Checks if winget executable exists and if the Windows Version is 1809 or higher
+            Write-Host "Winget Installed via Chocolatey"
+            return
+        } else {
+            Write-Host "- Failed to install Winget via Chocolatey"
+        }
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
@@ -2313,14 +2350,34 @@ function Test-WinUtilPackageManager {
         [System.Management.Automation.SwitchParameter]$choco
     )
 
-    if($winget){
-        if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe) {
+    # Install Winget if not detected
+    $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+    if ($wingetExists) {
+        $wingetVersion = [System.Version]::Parse((winget --version).Trim('v'))
+        $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
+        $wingetOutdated = $wingetVersion -le $minimumWingetVersion
+        
+        Write-Host "Winget v$wingetVersion"
+    }
+
+    if (!$wingetExists -or $wingetOutdated) {
+        if (!$wingetExists) {
+            Write-Host "Winget not detected"
+        } else {
+            Write-Host "- Winget out-dated"
+        } 
+    }
+
+    if ($winget) {
+        if ($wingetExists -and !$wingetOutdated) {
+            Write-Host "- Winget up-to-date"
             return $true
         }
     }
 
     if($choco){
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)){
+            Write-Host "Chocolatey v$chocoVersion"
             return $true
         }
     }
@@ -7673,7 +7730,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel?? PresentMon",
+		"content": "Intel? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
