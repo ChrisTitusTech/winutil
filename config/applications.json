@@ -303,6 +303,14 @@
 		"link": "https://daxstudio.org/",
 		"winget": "DaxStudio.DaxStudio"
 	},
+	"WPFInstallDBeaverCommunity": {
+		"category": "Development",
+		"choco": "dbeaver",
+		"content": "DBeaver Community",
+		"description": "DBeaver Community is a free cross-platform database tool for developers, database administrators, analysts, and everyone working with data. It supports all popular SQL databases like MySQL, MariaDB, PostgreSQL, SQLite, Apache Family, and more.",
+		"link": "https://dbeaver.io/",
+		"winget": "dbeaver.dbeaver"
+	},
 	"WPFInstallddu": {
 		"category": "Utilities",
 		"choco": "ddu",
