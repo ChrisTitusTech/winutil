@@ -63,6 +63,14 @@
 		"link": "https://www.anaconda.com/products/distribution",
 		"winget": "Anaconda.Anaconda3"
 	},
+	"WPFInstallStrawberryPerl": {
+		"category": "Development",
+		"choco": "StrawberryPerl",
+		"content": "Strawberry Perl",
+		"description": "Strawberry Perl is a perl environment for MS Windows containing all you need to run and develop perl applications. It is designed to be as close as possible to perl environment on UNIX systems.",
+		"link": "https://www.anaconda.com/products/distribution",
+		"winget": "StrawberryPerl.StrawberryPerl"
+	},
 	"WPFInstallangryipscanner": {
 		"category": "Pro Tools",
 		"choco": "angryip",
