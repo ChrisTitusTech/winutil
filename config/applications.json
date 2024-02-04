@@ -31,6 +31,14 @@
 		"link": "https://www.advanced-ip-scanner.com/",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
+	"WPFInstallteraTerm": {
+		"category": "Pro Tools",
+		"choco": "teraterm",
+		"content": "terminal emulator Tera Term",
+		"description": "TeraTerm Project is developing the terminal emulator Tera Term and the SSH compatible extension module TTSSH",
+		"link": "https://sourceforge.net/projects/tera-term/",
+		"winget": "TeraTermProject.teraterm5"
+	},
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
