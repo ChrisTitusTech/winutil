@@ -45,10 +45,10 @@ Some features are avaliable through automation. This allows you to save your con
   ![GetInstalled](/wiki/Get-Installed.png)
 2. Click on the Settings cog in the upper right corner and chose Export, chose file file and location, this will export the setting file.
   ![SettingsExport](/wiki/Settings-Export.png)
-3. Copy this file to a USB or somewhere you can use after Windows installation
-4. Use Microwin tab to create a cusom Windows image
-5. Install the Windows image
-6. In the new Windows, Open PowerShell in the admin mode and run command to automatically apply twekas and install apps from the config file
+3. Copy this file to a USB or somewhere you can use after Windows installation.
+4. Use Microwin tab to create a custom Windows image.
+5. Install the Windows image.
+6. In the new Windows, Open PowerShell in the admin mode and run command to automatically apply tweaks and install apps from the config file.
 ```
 irm https://christitus.com/win -Config [path-to-your-config] -Run | iex
 ```
