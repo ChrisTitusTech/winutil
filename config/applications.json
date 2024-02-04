@@ -2270,5 +2270,14 @@
 		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
 		"link": "https://pyenv-win.github.io/pyenv-win/",
 		"winget": "na"
+	},
+	"WPFInstallnetworkmanager": {
+		"category":"Utilities",
+		"choco": "networkmanager",
+		"content": "Network Manager",
+		"description": "A powerful tool for managing networks and troubleshoot network problems!",
+		"link": "https://borntoberoot.net/NETworkManager/",
+		"winget": "BornToBeRoot.NETworkManager"
+
 	}
 }
