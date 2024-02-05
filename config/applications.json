@@ -1511,6 +1511,14 @@
 		"link": "https://www.rainmeter.net/",
 		"winget": "Rainmeter.Rainmeter"
 	},
+	"WPFInstallrclone": {
+		"category": "Utilities",
+		"choco": "rclone.portable",
+		"content": "rclone",
+		"description": "Rclone (rsync for cloud storage) is a command-line program to sync files and directories to and from different cloud storage providers. Install WinFsp (optional) for mounting ",
+		"link": "https://rclone.org/",
+		"winget": "Rclone.Rclone"
+	},
 	"WPFInstallrevo": {
 		"category": "Utilities",
 		"choco": "revo-uninstaller",
@@ -2046,6 +2054,14 @@
 		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
 		"winget": "Microsoft.WindowsPCHealthCheck"
+	},
+	"WPFInstallWinFsp": {
+		"category": "Utilities",
+		"choco": "winfsp",
+		"content": "WinFsp",
+		"description": "WinFsp enables developers to build file systems as user mode programs without any knowledge of Windows kernel programming (think FUSE for Windows).",
+		"link": "https://winfsp.dev/",
+		"winget": "WinFsp.WinFsp"
 	},
 	"WPFInstallwingetui": {
 		"category": "Utilities",
