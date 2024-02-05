@@ -2039,6 +2039,14 @@
 		"link": "https://www.whatsapp.com/",
 		"winget": "WhatsApp.WhatsApp"
 	},
+	"WPFInstallwinbtrfs": {
+		"category": "Pro Tools",
+		"choco": "winbtrfs",
+		"content": "WinBtrfs",
+		"description": "WinBtrfs - an open-source btrfs driver for Windows.",
+		"link": "https://github.com/maharmstone/btrfs/",
+		"winget": "na"
+	},
 	"WPFInstallwindirstat": {
 		"category": "Utilities",
 		"choco": "windirstat",
