@@ -1431,6 +1431,14 @@
 		"link": "https://github.com/microsoft/PowerToys",
 		"winget": "Microsoft.PowerToys"
 	},
+	"WPFInstallmousewithourborders": {
+		"category": "Microsoft Tools",
+		"choco": "mousewithoutborders",
+		"content": "Mouse Without Borders",
+		"description": "Mouse Without Borders is an application that allows you to control up to four computers from a single mouse and keyboard.",
+		"link": "https://www.microsoft.com/en-us/garage/wall-of-fame/mouse-without-borders/",
+		"winget": "Microsoft.MouseWithoutBorders"
+	},
 	"WPFInstallprismlauncher": {
 		"category": "Games",
 		"choco": "prismlauncher",
