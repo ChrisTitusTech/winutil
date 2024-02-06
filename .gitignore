@@ -38,3 +38,4 @@ Microsoft.PowerShell.ConsoleHost.dll
 .DS_Store
 microwin.log
 True
+test.ps1
