@@ -2610,6 +2610,14 @@
     "Order": "a067_",
     "Type": "Toggle"
   },
+  "WPFToggleStorageSense": {
+    "Content": "Storage Sense",
+    "Description": "If Enabled then Storage Sense is activated - Storage Sense is Microsoft's partial solution for automatically removing files to reclaim space. Only touches C drive and OneDrive and cannot work on custom folders. By default, SS is set to run when C is low on space and only remove files in the Recycle Bin deleted over 30 days ago.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a068_",
+    "Type": "Toggle"
+  },
   "WPFchangedns": {
     "Content": "DNS",
     "category": "z__Advanced Tweaks - CAUTION",

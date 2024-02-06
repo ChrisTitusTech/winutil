@@ -89,4 +89,13 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if ($ToggleSwitch -eq "WPFToggleStorageSense") {
+        $StorageSense = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy')."01"        
+        if($StorageSense -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
 }

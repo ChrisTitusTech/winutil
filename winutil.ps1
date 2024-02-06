@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.05
+    Version        : 24.02.06
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.05"
+$sync.version = "24.02.06"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -476,6 +476,15 @@ Function Get-WinUtilToggleStatus {
     if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
         $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
         if($StickyKeys -eq 58){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleStorageSense") {
+        $StorageSense = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy')."01"        
+        if($StorageSense -eq 0){
             return $false
         }
         else{
@@ -1738,6 +1747,41 @@ Function Invoke-WinUtilStickyKeys {
         }
         $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
         Set-ItemProperty -Path $Path -Name Flags -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Invoke-WinUtilStorageSense {
+    <#
+
+    .SYNOPSIS
+        Enables/disables Storage Sense.
+
+    .PARAMETER StorageSenseEnabled
+        Indicates the current Storage Sense state.
+
+    #>
+    Param($StorageSenseEnabled)
+    Try{
+        if ($StorageSenseEnabled -eq $false){
+            Write-Host "Enabling Storage Sense"
+            $DesiredStorageSenseState = 1
+        } 
+        else {
+            Write-Host "Disabling Storage Sense"
+            $DesiredStorageSenseState = 0
+        }
+
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy"
+        Set-ItemProperty -Path $Path -Name "01" -Value $DesiredStorageSenseState
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -4004,6 +4048,7 @@ function Invoke-WPFToggle {
         "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
         "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
+        "WPFToggleStorageSense" {Invoke-WinUtilStorageSense $(Get-WinUtilToggleStatus WPFToggleStorageSense)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -10755,6 +10800,14 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a067_",
+    "Type": "Toggle"
+  },
+  "WPFToggleStorageSense": {
+    "Content": "Storage Sense",
+    "Description": "If Enabled then Storage Sense is activated - Storage Sense is Microsoft''s partial solution for automatically removing files to reclaim space. Only touches C drive and OneDrive and cannot work on custom folders. By default, SS is set to run when C is low on space and only remove files in the Recycle Bin deleted over 30 days ago.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a068_",
     "Type": "Toggle"
   },
   "WPFchangedns": {
