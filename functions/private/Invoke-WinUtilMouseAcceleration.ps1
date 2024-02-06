@@ -4,7 +4,7 @@ Function Invoke-WinUtilMouseAcceleration {
     .SYNOPSIS
         Enables/Disables Mouse Acceleration
 
-    .PARAMETER DarkMoveEnabled
+    .PARAMETER MouseAccelerationEnabled
         Indicates the current Mouse Acceleration State
 
     #>
