@@ -2546,6 +2546,29 @@
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
+  "WPFTweaksSetRegionWorld": {
+    "Content": "Set region to world",
+    "Description": "Sets the region to world through registry editor.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
+    "registry": [
+    {
+      "Path": "HKCU:\\Control Panel\\International\\Geo",
+      "OriginalValue": "World",
+      "Name": "Name",
+      "Value": "World",
+      "Type": "String"
+    },
+    {
+      "Path": "HKCU:\\Control Panel\\International\\Geo",
+      "OriginalValue": "39070",
+      "Name": "Nation",
+      "Value": "39070",
+      "Type": "String"
+    }
+  ]
+},
   "WPFToggleDarkMode": {
     "Content": "Dark Theme",
     "Description": "Enable/Disable Dark Mode.",

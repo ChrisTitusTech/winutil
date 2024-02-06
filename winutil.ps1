@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.03
+    Version        : 24.02.06
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.03"
+$sync.version = "24.02.06"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -7660,7 +7660,6 @@ $sync.configs.applications = '{
 		"content": "Miniconda",
 		"description": "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
 		"link": "https://docs.conda.io/projects/miniconda",
-		"panel": "1",
 		"winget": "Anaconda.Miniconda3"
 	},
 	"WPFInstalltemurin": {
@@ -7669,7 +7668,6 @@ $sync.configs.applications = '{
 		"content": "Eclipse Temurin",
 		"description": "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
 		"link": "https://adoptium.net/temurin/",
-		"panel": "1",
 		"winget": "EclipseAdoptium.Temurin.21.JDK"
 	},
 	"WPFInstallintelpresentmon": {
@@ -7678,7 +7676,6 @@ $sync.configs.applications = '{
 		"content": "Intel?? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
-		"panel": "4",
 		"winget": "Intel.PresentMon.Beta"
 	},
 	"WPFInstallpyenvwin": {
@@ -7687,7 +7684,6 @@ $sync.configs.applications = '{
 		"content": "Python Version Manager (pyenv-win)",
 		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
 		"link": "https://pyenv-win.github.io/pyenv-win/",
-		"panel": "1",
 		"winget": "na"
 	}
 }' | convertfrom-json
@@ -10639,6 +10635,29 @@ $sync.configs.tweaks = '{
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
+  "WPFTweaksSetRegionWorld": {
+    "Content": "Set region to world",
+    "Description": "Sets the region to world through registry editor.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
+    "registry": [
+    {
+      "Path": "HKCU:\\Control Panel\\International\\Geo",
+      "OriginalValue": "World",
+      "Name": "Name",
+      "Value": "World",
+      "Type": "String"
+    },
+    {
+      "Path": "HKCU:\\Control Panel\\International\\Geo",
+      "OriginalValue": "39070",
+      "Name": "Nation",
+      "Value": "39070",
+      "Type": "String"
+    }
+  ]
+},
   "WPFToggleDarkMode": {
     "Content": "Dark Theme",
     "Description": "Enable/Disable Dark Mode.",
