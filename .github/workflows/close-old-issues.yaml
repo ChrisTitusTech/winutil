@@ -14,39 +14,43 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const octokit = context.octokit;
+          const octokit = github.getOctokit();
 
           // Get the repository owner and name
-          const { owner, repo } = context.repo;
+          const { owner, repo } = github.context.repo;
 
           // Define the inactivity period (14 days)
           const inactivityPeriod = new Date();
           inactivityPeriod.setDate(inactivityPeriod.getDate() - 14);
 
-          // Get all open issues
-          const { data: issues } = await octokit.rest.issues.listForRepo({
-            owner,
-            repo,
-            state: 'open',
-          });
+          async function run() {
+            // Get all open issues
+            const issues = await octokit.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+            });
 
-          // Close issues inactive for more than the inactivity period
-          for (const issue of issues) {
-            const lastCommentDate = issue.updated_at;
-            if (new Date(lastCommentDate) < inactivityPeriod) {
-              // Close the issue and add a comment
-              await octokit.rest.issues.update({
-                owner,
-                repo,
-                issue_number: issue.number,
-                state: 'closed',
-              });
+            // Close issues inactive for more than the inactivity period
+            for (const issue of issues.data) {
+              const lastCommentDate = issue.updated_at;
+              if (new Date(lastCommentDate) < inactivityPeriod) {
+                // Close the issue and add a comment
+                await octokit.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  state: 'closed',
+                });
 
-              await octokit.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: issue.number,
-                body: 'Closed due to inactivity',
-              });
+                await octokit.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: 'Closed due to inactivity',
+                });
+              }
             }
           }
+
+          run().catch(error => console.error(error));
