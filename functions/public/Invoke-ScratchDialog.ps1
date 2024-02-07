@@ -14,7 +14,6 @@ function Invoke-ScratchDialog {
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
     $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
-    $DialogShowNewFolderButton = $true
     $Dialog.ShowDialog() 
     $filePath = $Dialog.SelectedPath
         Write-Host "No ISO is chosen+  $filePath"

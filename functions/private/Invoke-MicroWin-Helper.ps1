@@ -14,7 +14,7 @@ function Invoke-MicroWin-Helper {
 
 }
 
-function Is-CompatibleImage() {
+function Test-CompatibleImage() {
 <#
 
     .SYNOPSIS

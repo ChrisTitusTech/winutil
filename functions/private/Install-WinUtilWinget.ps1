@@ -41,37 +41,7 @@ function Install-WinUtilWinget {
         }
 
         Write-Host "Running Alternative Installers and Direct Installing"
-        Write-Host "- Attempting first install method..."
-        
-        $wingetURL = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        $wingetFileName = Split-Path $wingetURL -Leaf
-        $wingetInstallerPath = Join-Path $env:TEMP $wingetFileName
-        
-        Invoke-WebRequest -Uri $wingetURL -OutFile $wingetInstallerPath
-        Add-AppxPackage -Path $wingetInstallerPath
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via GitHub"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via GitHub"
-        }
-        # Second Method
-        Write-Host "- Attempting second install method..."
-        
-        Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-        Install-Script -Name winget-install -Force
-        $wingetArgument = "-ExecutionPolicy Bypass winget-install.ps1"
-        Start-Process powershell -ArgumentList $wingetArgument -Wait
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via PowerShell Gallery Script"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via PowerShell Gallery Script"
-        }
-        # Third Method
-        Write-Host "- Attempting third install method..."
+        # Checks if winget is installed via Chocolatey
         
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force" -Wait -NoNewWindow
         if (Test-WinUtilPackageManager -winget) {

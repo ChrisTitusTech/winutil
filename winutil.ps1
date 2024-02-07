@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.06
+    Version        : 24.02.07
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.06"
+$sync.version = "24.02.07"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -241,9 +241,9 @@ function Get-Oscdimg {
         Get-Oscdimg
     #>
     param( [Parameter(Mandatory=$true)] 
-        $oscdimgPath = "$env:TEMP\oscdimg.exe"
+        [string]$oscdimgPath
     )
-    
+    $oscdimgPath = "$env:TEMP\oscdimg.exe"
     $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
@@ -358,38 +358,6 @@ function Get-WinUtilInstallerProcess {
         return $true
     }
     return $false
-}
-function Get-WinUtilRegistry {
-    <#
-
-    .SYNOPSIS
-        Gets the value of a registry key
-
-    .EXAMPLE
-        Get-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-
-    #>
-    param (
-        $Name,
-        $Path,
-        $Type,
-        $Value
-    )
-
-    Try{
-        $syscheckvalue = Get-ItemPropertyValue -Path $Path -Value $Value # Return Value
-
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
 }
 Function Get-WinUtilToggleStatus {
     <#
@@ -631,37 +599,7 @@ function Install-WinUtilWinget {
         }
 
         Write-Host "Running Alternative Installers and Direct Installing"
-        Write-Host "- Attempting first install method..."
-        
-        $wingetURL = "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
-        $wingetFileName = Split-Path $wingetURL -Leaf
-        $wingetInstallerPath = Join-Path $env:TEMP $wingetFileName
-        
-        Invoke-WebRequest -Uri $wingetURL -OutFile $wingetInstallerPath
-        Add-AppxPackage -Path $wingetInstallerPath
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via GitHub"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via GitHub"
-        }
-        # Second Method
-        Write-Host "- Attempting second install method..."
-        
-        Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-        Install-Script -Name winget-install -Force
-        $wingetArgument = "-ExecutionPolicy Bypass winget-install.ps1"
-        Start-Process powershell -ArgumentList $wingetArgument -Wait
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via PowerShell Gallery Script"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via PowerShell Gallery Script"
-        }
-        # Third Method
-        Write-Host "- Attempting third install method..."
+        # Checks if winget is installed via Chocolatey
         
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force" -Wait -NoNewWindow
         if (Test-WinUtilPackageManager -winget) {
@@ -692,7 +630,7 @@ function Invoke-MicroWin-Helper {
 
 }
 
-function Is-CompatibleImage() {
+function Test-CompatibleImage() {
 <#
 
     .SYNOPSIS
@@ -2422,7 +2360,6 @@ function Invoke-ScratchDialog {
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
     $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
-    $DialogShowNewFolderButton = $true
     $Dialog.ShowDialog() 
     $filePath = $Dialog.SelectedPath
         Write-Host "No ISO is chosen+  $filePath"
@@ -3376,7 +3313,7 @@ public class PowerManagement {
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
-    if ((Is-CompatibleImage $imgVersion) -eq $false)
+    if ((Test-CompatibleImage $imgVersion) -eq $false)
     {
 		$msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
@@ -3939,7 +3876,7 @@ function Invoke-WPFShortcut {
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
     $Shortcut.TargetPath = $SourceExe
     $Shortcut.Arguments = $ArgumentsToSourceExe
-    if ($iconPath -ne $null) {
+    if ($null -ne $iconPath) {
         $shortcut.IconLocation = $iconPath
     }
     $Shortcut.Save()
@@ -7731,7 +7668,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel?? PresentMon",
+		"content": "Intel? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
