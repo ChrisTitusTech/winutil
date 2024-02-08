@@ -2552,7 +2552,23 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a060_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
@@ -2560,7 +2576,16 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a061_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
@@ -2568,7 +2593,16 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a062_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Logon Messages",
@@ -2576,7 +2610,16 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a063_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
@@ -2584,7 +2627,16 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a064_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
@@ -2592,7 +2644,24 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a065_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "EnableSnapAssistFlyout",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "taskkill.exe /F /IM \"explorer.exe\"
+      Start-Process \"explorer.exe\""
+    ],
+    "UndoScript": [
+      "taskkill.exe /F /IM \"explorer.exe\"
+      Start-Process \"explorer.exe\""
+    ]
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -2600,7 +2669,30 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a066_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
@@ -2608,7 +2700,16 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a067_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
+        "Name": "Flags",
+        "Value": "510",
+        "OriginalValue": "58",
+        "Type": "DWord"
+      }
+    ]
   },
   "WPFchangedns": {
     "Content": "DNS",
