@@ -1,6 +1,6 @@
 # Chris Titus Tech's Windows Utility
 
-This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient. 
+This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient.
 
 ![screen-install](screen-install.png)
 
@@ -25,7 +25,7 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 ```
 iwr -useb https://christitus.com/win | iex
 ```
-or by executing: 
+or by executing:
 ```
 irm https://christitus.com/win | iex
 ```
@@ -83,15 +83,15 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
 - Install
   - Install Selection: Organize programs by category and facilitate installation by enabling users to select programs and initiate the installation process with a single click.
-  
-  - Upgrade All: Upgrade all existing programs to their latest versions, ensuring users have the most up-to-date and feature-rich software. 
-  
+
+  - Upgrade All: Upgrade all existing programs to their latest versions, ensuring users have the most up-to-date and feature-rich software.
+
   - Uninstall Selection: Effortlessly uninstall selected programs, providing users with a streamlined way to remove unwanted software from their system.
-  
+
   - Get Installed: Retrieve a comprehensive list of installed programs on the system, offering users visibility into the software currently installed on their computer.
-  
+
   - Import / Export: Enable users to import or export the selection list of programs, allowing them to save their preferred program configurations or share them with others. This feature promotes convenience and flexibility in managing program selections across different systems.
- 
+
 - Tweaks
   - Recommended Selection: Provides pre-defined templates tailored for desktop, laptop, and minimal configurations, allowing users to select recommended settings and optimizations specific to their system type.
 
@@ -111,7 +111,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
 - Updates:
   - Default (Out of Box) Settings: Provides the default settings that come with Windows for updates.
-  
+
   - Security (Recommended) Settings: Offers recommended settings, including a slight delay of feature updates by 2 years and installation of security updates 4 days after release.
 
   - Disable All Updates (Not Recommended!): Allows users to disable all Windows updates, but it's not recommended due to potential security risks.

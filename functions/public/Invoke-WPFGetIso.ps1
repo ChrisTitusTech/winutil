@@ -17,33 +17,33 @@ function Invoke-WPFGetIso {
 
 
     Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
+    Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
+    Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
+    Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
+    Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
    if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
-   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
+   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'
 }
 
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
-    
-    if (!$oscdImgFound) 
+
+    if (!$oscdImgFound)
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
         $sync.BusyMessage.Visibility="Hidden"
 
-        if (!$downloadFromGitHub) 
+        if (!$downloadFromGitHub)
         {
-            # only show the message to people who did check the box to download from github, if you check the box 
+            # only show the message to people who did check the box to download from github, if you check the box
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound) 
+            if (!$chocoFound)
             {
                 [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
                 return
@@ -130,7 +130,7 @@ function Invoke-WPFGetIso {
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
     $sync.BusyText.Text=" - Mounting"
-    Write-Host "Mounting Iso. Please wait."  
+    Write-Host "Mounting Iso. Please wait."
     if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
@@ -146,12 +146,12 @@ function Invoke-WPFGetIso {
     Write-Host "Image dir is $mountDir"
 
     try {
-        
+
         #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
-        
+
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
         $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }

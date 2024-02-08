@@ -23,7 +23,7 @@ function Test-WinUtilPackageManager {
         $wingetVersion = [System.Version]::Parse((winget --version).Trim('v'))
         $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
         $wingetOutdated = $wingetVersion -le $minimumWingetVersion
-        
+
         Write-Host "Winget v$wingetVersion"
     }
 
@@ -32,7 +32,7 @@ function Test-WinUtilPackageManager {
             Write-Host "Winget not detected"
         } else {
             Write-Host "- Winget out-dated"
-        } 
+        }
     }
 
     if ($winget) {

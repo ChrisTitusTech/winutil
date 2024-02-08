@@ -149,7 +149,7 @@ foreach ($choice in $remove_appx) {
         if ($skip -Contains $_.PackageName) { return }
 
         $PackageName = $_.PackageName
-        $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $_.DisplayName }).PackageFamilyName 
+        $PackageFamilyName = ($appxpackage | Where-Object { $_.Name -eq $_.DisplayName }).PackageFamilyName
 
         # Add registry entries
         New-Item -Path "$store\Deprovisioned\$PackageFamilyName" -Force -ErrorAction SilentlyContinue | Out-Null
@@ -187,17 +187,17 @@ foreach ($choice in $remove_appx) {
 foreach ($setup in $edges) {
     if (Test-Path $setup) {
         $target = if ($setup -like '*EdgeWebView*') { "--msedgewebview" } else { "--msedge" }
-        
+
         $removalArgs = "--uninstall $target --system-level --verbose-logging --force-uninstall"
-        
+
         Write-Host "$setup $removalArgs"
-        
+
         try {
             Start-Process -FilePath $setup -ArgumentList $removalArgs -Wait
         } catch {
             # You may want to add logging or other error handling here.
         }
-        
+
         while ((Get-Process -Name 'setup', 'MicrosoftEdge*' -ErrorAction SilentlyContinue).Path -like '*\Microsoft\Edge*') {
             Start-Sleep -Seconds 3
         }
@@ -426,7 +426,7 @@ exit /b
     set "decoded=%decoded:%%26=&%"
     set "decoded=%decoded:%%27='%"
     set "decoded=%decoded:%%28=(%"
-    set "decoded=%decoded:%%29=)%" 
+    set "decoded=%decoded:%%29=)%"
     set "decoded=%decoded:%%2A=*%"
     set "decoded=%decoded:%%2B=+%"
     set "decoded=%decoded:%%2C=,%"
@@ -446,7 +446,7 @@ exit /b
 [io.file]::WriteAllText("$DIR\OpenWebSearch.cmd", $OpenWebSearch)
 
 
-# Final Steps 
+# Final Steps
 
 # Retrieve the Edge_Removal property from the specified registry paths
 $userRegPaths = Get-ChildItem -Path 'Registry::HKEY_Users\S-1-5-21*\Volatile*' -ErrorAction SilentlyContinue

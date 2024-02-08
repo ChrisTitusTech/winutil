@@ -49,7 +49,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleShowExt"){
         $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
         if($hideextvalue -eq 0){
@@ -58,7 +58,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
         if($hidesnap -eq 0){
@@ -67,7 +67,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $true
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1

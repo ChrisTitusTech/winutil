@@ -33,12 +33,12 @@ function Invoke-WPFImpex {
 
         if($FileBrowser.FileName -eq ""){
             return
-        } 
+        }
         else{
             $Config = $FileBrowser.FileName
         }
     }
-    
+
     if ($type -eq "export"){
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force

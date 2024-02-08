@@ -3,7 +3,7 @@ function Invoke-WPFFixesWinget {
     <#
 
     .SYNOPSIS
-        Fixes Winget by running choco install winget 
+        Fixes Winget by running choco install winget
     .DESCRIPTION
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>

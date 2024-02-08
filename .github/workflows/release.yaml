@@ -1,8 +1,8 @@
 name: Update Branch
 
 on:
-  push: 
-    branches: 
+  push:
+    branches:
       - main
       - test*
 

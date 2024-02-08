@@ -20,7 +20,7 @@ function Invoke-WPFRunAdobeCCCleanerTool {
     $ProgressPreference='Continue'
 
     Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
-    
+
     if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
         Write-Host "Cleaning up..."
         Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
