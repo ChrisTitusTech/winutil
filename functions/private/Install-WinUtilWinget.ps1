@@ -22,7 +22,6 @@ function Install-WinUtilWinget {
         if (Test-WinUtilPackageManager -winget) {
             # Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "winget settings --enable InstallerHashOverride" -Wait -NoNewWindow
             return
         }
 
@@ -40,17 +39,10 @@ function Install-WinUtilWinget {
             return
         }
 
-        Write-Host "Running Alternative Installers and Direct Installing"
-        # Checks if winget is installed via Chocolatey
-        
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force" -Wait -NoNewWindow
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via Chocolatey"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via Chocolatey"
-        }
+        Write-Host "Running Alternative Installer and Direct Installing"
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
+
+        Write-Host "Winget Installed"
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')

@@ -10,7 +10,7 @@ function Install-WinUtilChoco {
     try {
         Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Test-WinUtilPackageManager -choco)){
+        if((Get-Command -Name choco -ErrorAction Ignore)) {
             Write-Host "Chocolatey Already Installed"
             return
         }

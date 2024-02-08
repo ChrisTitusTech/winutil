@@ -495,7 +495,7 @@ function Install-WinUtilChoco {
     try {
         Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Test-WinUtilPackageManager -choco)){
+        if((Get-Command -Name choco -ErrorAction Ignore)) {
             Write-Host "Chocolatey Already Installed"
             return
         }
@@ -544,7 +544,7 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --ignore-security-hash --disable-interactivity --silent $Program" -NoNewWindow -Wait
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
             Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
@@ -580,7 +580,6 @@ function Install-WinUtilWinget {
         if (Test-WinUtilPackageManager -winget) {
             # Checks if winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "winget settings --enable InstallerHashOverride" -Wait -NoNewWindow
             return
         }
 
@@ -598,17 +597,10 @@ function Install-WinUtilWinget {
             return
         }
 
-        Write-Host "Running Alternative Installers and Direct Installing"
-        # Checks if winget is installed via Chocolatey
-        
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget --force" -Wait -NoNewWindow
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Installed via Chocolatey"
-            return
-        } else {
-            Write-Host "- Failed to install Winget via Chocolatey"
-        }
+        Write-Host "Running Alternative Installer and Direct Installing"
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
+
+        Write-Host "Winget Installed"
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
@@ -2883,7 +2875,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(!(Test-WinUtilPackageManager -winget) -and $checkbox -eq "winget"){
+    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue) -and $checkbox -eq "winget"){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"
         Write-Host "==========================================="
@@ -3217,7 +3209,7 @@ function Invoke-WPFInstall {
         }
         Catch {
             Write-Host "==========================================="
-            Write-Host "--      Winget failed to install        ---"
+            Write-Host "Error: $_"
             Write-Host "==========================================="
         }
         Start-Sleep -Seconds 5
@@ -3231,7 +3223,7 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if(!(Test-WinUtilPackageManager -winget)){
+    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue)){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"
         Write-Host "==========================================="
