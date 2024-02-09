@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.07
+    Version        : 24.02.08
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.07"
+$sync.version = "24.02.08"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -116,7 +116,7 @@ function Copy-Files {
 
     try {
 
-     $files = Get-ChildItem -Path $path -Recurse:$recurse
+    $files = Get-ChildItem -Path $path -Recurse:$recurse
     Write-Host "Copy $($files.Count)(s) from $path to $destination"
 
         foreach($file in $files)
@@ -699,42 +699,42 @@ function Remove-Packages
     $appxlist = $appxlist -split "Package Identity : " | Where-Object {$_}
 
     $appxlist = $appxlist | Where-Object {
-            $_ -NotLike "*ApplicationModel*" -AND
-            $_ -NotLike "*indows-Client-LanguagePack*" -AND
-            $_ -NotLike "*LanguageFeatures-Basic*" -AND
-            $_ -NotLike "*Package_for_ServicingStack*" -AND
-            $_ -NotLike "*.NET*" -AND
-            $_ -NotLike "*Store*" -AND
-            $_ -NotLike "*VCLibs*" -AND
-            $_ -NotLike "*AAD.BrokerPlugin",
-            $_ -NotLike "*LockApp*" -AND
-            $_ -NotLike "*Notepad*" -AND
-            $_ -NotLike "*immersivecontrolpanel*" -AND
-            $_ -NotLike "*ContentDeliveryManager*" -AND
-            $_ -NotLike "*PinningConfirMationDialog*" -AND
-            $_ -NotLike "*SecHealthUI*" -AND
-            $_ -NotLike "*SecureAssessmentBrowser*" -AND
-            $_ -NotLike "*PrintDialog*" -AND
-            $_ -NotLike "*AssignedAccessLockApp*" -AND
-            $_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-            $_ -NotLike "*Apprep.ChxApp*" -AND
-            $_ -NotLike "*CBS*" -AND
-            $_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-            $_ -NotLike "*PeopleExperienceHost*" -AND
-            $_ -NotLike "*ParentalControls*" -AND
-            $_ -NotLike "*Win32WebViewHost*" -AND
-            $_ -NotLike "*InputApp*" -AND
-            $_ -NotLike "*AccountsControl*" -AND
-            $_ -NotLike "*AsyncTextService*" -AND
-            $_ -NotLike "*CapturePicker*" -AND
-            $_ -NotLike "*CredDialogHost*" -AND
-            $_ -NotLike "*BioEnrollMent*" -AND
-            $_ -NotLike "*ShellExperienceHost*" -AND
-            $_ -NotLike "*DesktopAppInstaller*" -AND
-            $_ -NotLike "*WebMediaExtensions*" -AND
-            $_ -NotLike "*WMIC*" -AND
-            $_ -NotLike "*UI.XaML*"
-        }
+        $_ -NotLike "*ApplicationModel*" -AND
+        $_ -NotLike "*indows-Client-LanguagePack*" -AND
+        $_ -NotLike "*LanguageFeatures-Basic*" -AND
+        $_ -NotLike "*Package_for_ServicingStack*" -AND
+        $_ -NotLike "*.NET*" -AND
+        $_ -NotLike "*Store*" -AND
+        $_ -NotLike "*VCLibs*" -AND
+        $_ -NotLike "*AAD.BrokerPlugin",
+        $_ -NotLike "*LockApp*" -AND
+        $_ -NotLike "*Notepad*" -AND
+        $_ -NotLike "*immersivecontrolpanel*" -AND
+        $_ -NotLike "*ContentDeliveryManager*" -AND
+        $_ -NotLike "*PinningConfirMationDialog*" -AND
+        $_ -NotLike "*SecHealthUI*" -AND
+        $_ -NotLike "*SecureAssessmentBrowser*" -AND
+        $_ -NotLike "*PrintDialog*" -AND
+        $_ -NotLike "*AssignedAccessLockApp*" -AND
+        $_ -NotLike "*OOBENetworkConnectionFlow*" -AND
+        $_ -NotLike "*Apprep.ChxApp*" -AND
+        $_ -NotLike "*CBS*" -AND
+        $_ -NotLike "*OOBENetworkCaptivePortal*" -AND
+        $_ -NotLike "*PeopleExperienceHost*" -AND
+        $_ -NotLike "*ParentalControls*" -AND
+        $_ -NotLike "*Win32WebViewHost*" -AND
+        $_ -NotLike "*InputApp*" -AND
+        $_ -NotLike "*AccountsControl*" -AND
+        $_ -NotLike "*AsyncTextService*" -AND
+        $_ -NotLike "*CapturePicker*" -AND
+        $_ -NotLike "*CredDialogHost*" -AND
+        $_ -NotLike "*BioEnrollMent*" -AND
+        $_ -NotLike "*ShellExperienceHost*" -AND
+        $_ -NotLike "*DesktopAppInstaller*" -AND
+        $_ -NotLike "*WebMediaExtensions*" -AND
+        $_ -NotLike "*WMIC*" -AND
+        $_ -NotLike "*UI.XaML*"
+    }
 
     foreach ($appx in $appxlist)
     {
@@ -759,7 +759,7 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
         Remove-ProvisionedPackages -keepSecurity:$false
 
 #>
-    $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object    {
+    $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object {
             $_.PackageName -NotLike "*AppInstaller*" -AND
             $_.PackageName -NotLike "*Store*" -and
             $_.PackageName -NotLike "*dism*" -and
@@ -1485,6 +1485,7 @@ Function Invoke-WinUtilMouseAcceleration {
             $MouseSpeed = 0
             $MouseThreshold1 = 0
             $MouseThreshold2 = 0
+
         }
 
         $Path = "HKCU:\Control Panel\Mouse"
@@ -7659,7 +7660,7 @@ $sync.configs.applications = '{
     "WPFInstallintelpresentmon": {
         "category": "Utilities",
         "choco": "na",
-        "content": "Intel? PresentMon",
+        "content": "Intel?? PresentMon",
         "description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
         "link": "https://game.intel.com/us/stories/intel-presentmon/",
         "winget": "Intel.PresentMon.Beta"
