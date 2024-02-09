@@ -51,7 +51,85 @@ $sync.runspace.Open()
 
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+function Get-TabXaml {
+    param( [Parameter(Mandatory=$true)]
+        $tabname,
+        $columncount=1,
+        $sort = $false
+    )
+    # Iterate through JSON data and organize by panel and category
+    $currentpanel=0
+    $currentcategory=""
+    $appnames = if ($sort) 
+            { $sync.configs.$tabname | Get-Member -Type  NoteProperty | Sort-Object -Property @{Expression={$sync.configs.$tabname.$($_.Name).category}},Name | ForEach-Object {$_.Name}} 
+        else 
+            { $sync.configs.$tabname.PSObject.Properties.Name } 
+    $linecount=($sync.configs.$tabname.PsObject.Properties.value.category | Sort-Object | Get-Unique).count + $appnames.count
+    $maxlinecount = [Math]::Round( $linecount / $columncount + 0.5)
+    $count=0
+    $blockXml = "<Border Grid.Row=""1"" Grid.Column=""0"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+    foreach ($appName in $appnames) {
+        $count++
+        $appInfo = $sync.configs.$tabname.$appName
+        # Create an object for the application
+        if ($appname -like "panel*" -or $count -ge $maxlinecount) {
+            $currentpanel++
+            $blockXml +="`n</StackPanel>`n</Border>`n"
+            $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$currentpanel"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+            $count=0
+        } 
+        if ($appname -like "category*" -or ($sort -and $appInfo.category -ne $currentcategory)) {
+            $count++
+            if ($count -ge $maxlinecount) {
+                $currentpanel++
+                $blockXml += "`n</StackPanel>`n</Border>`n"
+                $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$currentpanel"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                $count=0
+            } 
+            $blockXml += "<Label Content=""$($appInfo.category)"" FontSize=""16""/>`n"
+        } 
+        if ($null -ne $appInfo.Content) { 
+            if ("Toggle" -eq $appInfo.Type) {
+                $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
+                $blockXml += "<CheckBox Name=`"$appName`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+            } 
+            elseif ("Combobox" -eq $appInfo.Type) {
+                $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
+                $blockXml += "<ComboBox Name=`"$appName`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
+                $addfirst="IsSelected=`"True`""
+                foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                    $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`n"
+                    $addfirst=""
+                }
+                $blockXml += "</ComboBox>`n</StackPanel>"
+            # If it is a digit, type is button and button length is digits
+            } elseif ($appInfo.Type -match "^[\d\.]+$") {
+                $blockXml += "<Button Name=`"$appName`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`n"
+            # else it is a checkbox
+            } else {
+                $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
+                if ($null -eq $appInfo.Link)
+                {
+                    $blockXml += "<CheckBox Name=`"$appName`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`n"
+                }
+                else
+                {
+                    $blockXml += "<StackPanel Orientation=""Horizontal"">`n<CheckBox Name=""$appName"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appName)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`n</StackPanel>`n"
+                }
+            }
+        }
+        $currentcategory=$appInfo.category
+    }
+    $blockXml ="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($currentpanel+1))+"</Grid.ColumnDefinitions>`n$blockXml`n</StackPanel>`n</Border>`n"
+    return ($blockXml)
+}
 
+$tabcolums=Get-TabXaml "applications" 5 $true
+$inputXML = $inputXML -replace "{{InstallPanel_applications}}", ($tabcolums)
+$tabcolums=Get-TabXaml "tweaks"
+$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
+$tabcolums=Get-TabXaml "feature"
+$inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
 $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
 $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
 if($app -eq 0 -and $system -eq 0){
