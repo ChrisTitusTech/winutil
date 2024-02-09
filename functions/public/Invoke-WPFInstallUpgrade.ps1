@@ -5,7 +5,7 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if(!(Test-WinUtilPackageManager -winget)){
+    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue)){
         Write-Host "==========================================="
         Write-Host "--       Winget is not installed        ---"
         Write-Host "==========================================="

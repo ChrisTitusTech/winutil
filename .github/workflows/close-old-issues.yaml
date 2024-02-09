@@ -1,0 +1,56 @@
+name: Close Inactive Issues
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Close inactive issues
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const octokit = github.getOctokit();
+
+          // Get the repository owner and name
+          const { owner, repo } = github.context.repo;
+
+          // Define the inactivity period (14 days)
+          const inactivityPeriod = new Date();
+          inactivityPeriod.setDate(inactivityPeriod.getDate() - 14);
+
+          async function run() {
+            // Get all open issues
+            const issues = await octokit.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+            });
+
+            // Close issues inactive for more than the inactivity period
+            for (const issue of issues.data) {
+              const lastCommentDate = issue.updated_at;
+              if (new Date(lastCommentDate) < inactivityPeriod) {
+                // Close the issue and add a comment
+                await octokit.issues.update({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  state: 'closed',
+                });
+
+                await octokit.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: 'Closed due to inactivity',
+                });
+              }
+            }
+          }
+
+          run().catch(error => console.error(error));
