@@ -10431,7 +10431,6 @@ $tabcolums=Get-TabXaml "tweaks"
 $inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
 $tabcolums=Get-TabXaml "feature"
 $inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
-$inputXML | Out-File ./input_mod -Encoding ascii
 $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
 $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
 if($app -eq 0 -and $system -eq 0){
