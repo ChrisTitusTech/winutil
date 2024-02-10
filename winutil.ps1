@@ -1264,59 +1264,6 @@ Function Invoke-WinUtilCurrentSystemTweak {
     }
 }
 
-function Invoke-WinUtilFeatureInstall {
-    <#
-
-    .SYNOPSIS
-        Converts all the values from the tweaks.json and routes them to the appropriate function
-
-    #>
-
-    param(
-        $CheckBox
-    )
-
-    $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
-                    Write-Host "Installing $feature"
-                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
-        }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
-                    $Scriptblock = [scriptblock]::Create($script)
-
-                    Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
-
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
-        }
-    }
-}
 function Invoke-WinUtilScript {
     <#
 
@@ -1382,10 +1329,11 @@ function Invoke-WinUtilTweaks {
 
     param(
         $CheckBox,
-        $undo = $false
+        $undo = $false,
+        $tabname = "tweaks"
     )
 
-    Write-Debug "Tweaks: $($CheckBox)"
+    Write-Debug "$($tabname): $($CheckBox)"
     if($undo){
         $Values = @{
             Registry = "OriginalValue"
@@ -1403,26 +1351,26 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.ScheduledTask){
+        $sync.configs.$tabname.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.service){
+        $sync.configs.$tabname.$CheckBox.service | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.registry){
+        $sync.configs.$tabname.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.$($values.ScriptType)){
+        $sync.configs.$tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
@@ -1430,13 +1378,31 @@ function Invoke-WinUtilTweaks {
     }
 
     if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+        if($sync.configs.$tabname.$CheckBox.appx){
+            $sync.configs.$tabname.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-
+        if($sync.configs.$tabname.$CheckBox.feature){
+            Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+                Try{
+                    Write-Host "Installing $feature"
+                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+    
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace
+                    }
+                }
+            }
+        }
+    
     }
 }
 function Remove-WinUtilAPPX {
@@ -2053,15 +2019,6 @@ function Invoke-WPFButton {
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFPanelDISM" {Invoke-WPFPanelDISM}
-        "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
-        "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelregion" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsound" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
         "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
@@ -2090,28 +2047,6 @@ function Invoke-WPFCloseButton {
     $sync["Form"].Close()
     Write-Host "Bye bye!"
 }
-function Invoke-WPFControlPanel {
-    <#
-
-    .SYNOPSIS
-        Opens the requested legacy panel
-
-    .PARAMETER Panel
-        The panel to open
-
-    #>
-    param($Panel)
-
-    switch ($Panel){
-        "WPFPanelcontrol" {cmd /c control}
-        "WPFPanelnetwork" {cmd /c ncpa.cpl}
-        "WPFPanelpower"   {cmd /c powercfg.cpl}
-        "WPFPanelregion"  {cmd /c intl.cpl}
-        "WPFPanelsound"   {cmd /c mmsys.cpl}
-        "WPFPanelsystem"  {cmd /c sysdm.cpl}
-        "WPFPaneluser"    {cmd /c "control userpasswords2"}
-    }
-}
 function Invoke-WPFFeatureInstall {
     <#
 
@@ -2133,8 +2068,9 @@ function Invoke-WPFFeatureInstall {
 
         $sync.ProcessRunning = $true
 
-        Invoke-WinUtilFeatureInstall $Features
-
+        $Features | ForEach-Object {
+            Invoke-WinUtilTweaks $psitem -undo $false -tabname "feature"
+        }    
         $sync.ProcessRunning = $false
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
@@ -3307,16 +3243,6 @@ public class PowerManagement {
 		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
 	}
-}
-function Invoke-WPFPanelAutologin {
-    <#
-
-    .SYNOPSIS
-        Enables autologin using Sysinternals Autologon.exe
-
-    #>
-    curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-    cmd /c $env:temp\autologin.exe /accepteula
 }
 function Invoke-WPFPanelDISM {
     <#
@@ -7489,23 +7415,40 @@ $sync.configs.feature = '{
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "curl.exe -ss \"https://live.sysinternals.com/Autologon.exe\" -o $env:temp\\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+      cmd /c $env:temp\\autologin.exe /accepteula"
+    ]
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesUpdate"
+    ]
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesNetwork"
+    ]
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFPanelDISM"
+    ]
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesWinget"
+    ]
+
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -7517,31 +7460,52 @@ $sync.configs.feature = '{
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c control"
+    ]
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c ncpa.cpl"
+    ]
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c powercfg.cpl"
+    ]
   },
   "WPFPanelregion": {
     "Content": "Region",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c intl.cpl"
+    ]
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c mmsys.cpl"
+    ]
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c sysdm.cpl"
+    ]
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c \"control userpasswords2\""
+    ]
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -10485,7 +10449,13 @@ $sync.keys | ForEach-Object {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
+                if ($Sender.name -like "WPFPanel*" -or $Sender.name -like "WPFFixes*") {
+                    Write-Debug $Sender.name
+                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "feature"
+                }
+                else {
+                    Invoke-WPFButton $Sender.name
+                }
             })
         }
 

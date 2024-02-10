@@ -157,23 +157,40 @@
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "curl.exe -ss \"https://live.sysinternals.com/Autologon.exe\" -o $env:temp\\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+      cmd /c $env:temp\\autologin.exe /accepteula"
+    ]
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesUpdate"
+    ]
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesNetwork"
+    ]
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFPanelDISM"
+    ]
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesWinget"
+    ]
+
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -185,30 +202,51 @@
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c control"
+    ]
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c ncpa.cpl"
+    ]
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c powercfg.cpl"
+    ]
   },
   "WPFPanelregion": {
     "Content": "Region",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c intl.cpl"
+    ]
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c mmsys.cpl"
+    ]
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c sysdm.cpl"
+    ]
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c \"control userpasswords2\""
+    ]
   }
 }

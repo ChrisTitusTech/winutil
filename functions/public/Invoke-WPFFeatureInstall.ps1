@@ -19,8 +19,9 @@ function Invoke-WPFFeatureInstall {
 
         $sync.ProcessRunning = $true
 
-        Invoke-WinUtilFeatureInstall $Features
-
+        $Features | ForEach-Object {
+            Invoke-WinUtilTweaks $psitem -undo $false -tabname "feature"
+        }    
         $sync.ProcessRunning = $false
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
