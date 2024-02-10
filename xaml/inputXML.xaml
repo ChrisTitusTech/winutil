@@ -8,6 +8,7 @@
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
+        Name="MainWindow"
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
@@ -619,6 +620,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
                 
                 <TextBox
@@ -669,6 +672,26 @@
  
             <Button 
                 Grid.Column="2"
+                Content="&#x2D;" BorderThickness="0" 
+                BorderBrush="Transparent"
+                Background="{MainBackgroundColor}"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
+                FontFamily="Arial"
+                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFMinimizeButton" />
+            <Button 
+                Grid.Column="3"
+                Content="&#9633;" BorderThickness="0" 
+                BorderBrush="Transparent"
+                Background="{MainBackgroundColor}"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
+                FontFamily="Arial"
+                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFMaximizeButton" />
+            <Button 
+                Grid.Column="4"
                 Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"

@@ -52,6 +52,8 @@ function Invoke-WPFButton {
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
+        "WPFMinimizeButton" {Invoke-WPFMinimizeButton}
+        "WPFMaximizeButton" {Invoke-WPFMaximizeButton}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
     }

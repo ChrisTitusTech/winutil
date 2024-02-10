@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.07
+    Version        : 24.02.09
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.07"
+$sync.version = "24.02.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2336,6 +2336,13 @@ Function Update-WinUtilProgramWinget {
     $global:WinGetInstall = Start-Process -Verb runas powershell -ArgumentList "-command invoke-command -scriptblock {$wingetinstall} -argumentlist '$($ProgramsToInstall -join ",")'" -PassThru
 
 }
+function Invoke-WPFMinimizeButton {
+    <#
+    .SYNOPSIS
+        Minimize the application window
+    #>
+    $sync["Form"].WindowState = [System.Windows.WindowState]::Minimized
+}
 
 function Invoke-ScratchDialog {
 
@@ -2419,6 +2426,8 @@ function Invoke-WPFButton {
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
+        "WPFMinimizeButton" {Invoke-WPFMinimizeButton}
+        "WPFMaximizeButton" {Invoke-WPFMaximizeButton}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
     }
@@ -3243,6 +3252,17 @@ function Invoke-WPFInstallUpgrade {
     Write-Host "-- You can close this window if desired ---"
     Write-Host "==========================================="
 }
+function Invoke-WPFMaximizeButton {
+    <#
+    .SYNOPSIS
+        Alternates between Maximized and Minimized window
+    #>
+    if ($sync["Form"].WindowState -eq [System.Windows.WindowState]::Maximized) {
+        $sync["Form"].WindowState = [System.Windows.WindowState]::Normal
+    } else {
+        $sync["Form"].WindowState = [System.Windows.WindowState]::Maximized
+    }
+}
 function Invoke-WPFMicrowin {
     <#
         .DESCRIPTION
@@ -3828,6 +3848,48 @@ function Invoke-WPFRunspace {
         $sync.runspace.Close()
         [System.GC]::Collect()
     }
+}
+function Invoke-WPFSetWindowSize {
+    <#
+    .SYNOPSIS
+        Sets the window size according to the display resolution
+    #>
+    
+    param ($xamlContent)
+    $xamlContent = @"
+    <Window x:Class="WinUtility.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:WinUtility"
+    mc:Ignorable="d"
+    Background="{MainBackgroundColor}"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
+"@
+
+    [xml]$xaml = $xamlContent
+    $reader = New-Object System.Xml.XmlNodeReader $xaml
+    try {
+        $window = [Windows.Markup.XamlReader]::Load($reader)
+    }
+    catch {
+        Write-Error "Failed to load XAML: $_"
+        return
+    }
+
+    Add-Type -AssemblyName System.Windows.Forms
+    $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
+    $bounds = $primaryScreen.Bounds
+
+    $newHeight = $window.FindName("MainWindow")
+
+    if ($bounds.Height -lt 1080) {
+        $newHeight.Height = 720
+    }
+    Write-Host "$newHeight"
 }
 
 function Invoke-WPFShortcut {
@@ -4463,6 +4525,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
+        Name="MainWindow"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
@@ -5074,6 +5137,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
                 
                 <TextBox
@@ -5124,6 +5189,26 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
  
             <Button 
                 Grid.Column="2"
+                Content="&#x2D;" BorderThickness="0" 
+                BorderBrush="Transparent"
+                Background="{MainBackgroundColor}"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
+                FontFamily="Arial"
+                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFMinimizeButton" />
+            <Button 
+                Grid.Column="3"
+                Content="&#9633;" BorderThickness="0" 
+                BorderBrush="Transparent"
+                Background="{MainBackgroundColor}"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
+                FontFamily="Arial"
+                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFMaximizeButton" />
+            <Button 
+                Grid.Column="4"
                 Content="&#xD7;" BorderThickness="0" 
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
@@ -7660,7 +7745,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel? PresentMon",
+		"content": "Intel?? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
