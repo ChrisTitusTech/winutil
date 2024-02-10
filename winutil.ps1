@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.09
+    Version        : 24.02.10
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.09"
+$sync.version = "24.02.10"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -3849,48 +3849,6 @@ function Invoke-WPFRunspace {
         [System.GC]::Collect()
     }
 }
-function Invoke-WPFSetWindowSize {
-    <#
-    .SYNOPSIS
-        Sets the window size according to the display resolution
-    #>
-    
-    param ($xamlContent)
-    $xamlContent = @"
-    <Window x:Class="WinUtility.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:WinUtility"
-    mc:Ignorable="d"
-    Background="{MainBackgroundColor}"
-    WindowStartupLocation="CenterScreen"
-    WindowStyle="None"
-    Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
-"@
-
-    [xml]$xaml = $xamlContent
-    $reader = New-Object System.Xml.XmlNodeReader $xaml
-    try {
-        $window = [Windows.Markup.XamlReader]::Load($reader)
-    }
-    catch {
-        Write-Error "Failed to load XAML: $_"
-        return
-    }
-
-    Add-Type -AssemblyName System.Windows.Forms
-    $primaryScreen = [System.Windows.Forms.Screen]::PrimaryScreen
-    $bounds = $primaryScreen.Bounds
-
-    $newHeight = $window.FindName("MainWindow")
-
-    if ($bounds.Height -lt 1080) {
-        $newHeight.Height = 720
-    }
-    Write-Host "$newHeight"
-}
 
 function Invoke-WPFShortcut {
     <#
@@ -4771,13 +4729,13 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
                             </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsPressed" Value="False"/>
+                                </MultiTrigger.Conditions>
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
-                                <Setter Property="Foreground" Value="DimGray"/>
-                            </Trigger>
+                            </MultiTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
