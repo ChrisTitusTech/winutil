@@ -11,18 +11,22 @@ function Invoke-WPFRunAdobeCCCleanerTool {
     Write-Host "The Adobe Creative Cloud Cleaner tool is hosted at"
     Write-Host "$url"
 
-    # Don't show the progress because it will slow down the download speed
-    $ProgressPreference='SilentlyContinue'
+    try {
+        # Don't show the progress because it will slow down the download speed
+        $ProgressPreference='SilentlyContinue'
 
-    Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
+        Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -UseBasicParsing -ErrorAction SilentlyContinue -Verbose
 
-    # Revert back the ProgressPreference variable to the default value since we got the file desired
-    $ProgressPreference='Continue'
+        # Revert back the ProgressPreference variable to the default value since we got the file desired
+        $ProgressPreference='Continue'
 
-    Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
-    
-    if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
-        Write-Host "Cleaning up..."
-        Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
+        Start-Process -FilePath "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Wait -ErrorAction SilentlyContinue -Verbose
+    } catch {
+        Write-Error $_.Exception.Message
+    } finally {
+        if (Test-Path -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe") {
+            Write-Host "Cleaning up..."
+            Remove-Item -Path "$env:TEMP\AdobeCreativeCloudCleanerTool.exe" -Verbose
+        }
     }
 }
