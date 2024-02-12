@@ -2270,5 +2270,13 @@
 		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
 		"link": "https://pyenv-win.github.io/pyenv-win/",
 		"winget": "na"
+	},
+	"WPFInstallnzxtcam": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "NZXT CAM",
+		"description": "Manage performance, temperatures, and devices all from a single application. NZXT CAM is fast, efficient, and easy to use—putting you in control of every aspect of your PC.",
+		"link": "https://nzxt.com/software/cam",
+		"winget": "NZXT.CAM"
 	}
 }
