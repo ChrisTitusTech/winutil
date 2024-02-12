@@ -1,0 +1,91 @@
+{
+    "WPFTab1BT": {
+      "Content": "<Underline>I</Underline>nstall",
+      "Type": "Tab",
+      "Rows": "50,0.95*",
+      "color": "Install",
+      "jsonfile": "applications",
+      "columncount": 5,
+      "sort": 1,
+      "InvokeScript": ["Invoke-WPFTab WPFTab1BT"],
+      "Buttons": {
+        "WPFinstall": {
+          "Content": " Install Selected",
+          "Type": "Button"
+        },
+        "WPFInstallUpgrade": {
+          "Content": " Upgrade All",
+          "Type": "Button"
+        },
+        "WPFuninstall": {
+          "Content": " Uninstall Selection",
+          "Type": "Button"
+        },
+        "WPFGetInstalled": {
+          "Content": " Get Installed",
+          "Type": "Button"
+        },
+        "WPFclearWinget": {
+          "Content": " Clear Selection",
+          "Type": "Button"
+        }
+      }
+    },
+    "WPFTab2BT": {
+      "Content": "<Underline>T</Underline>weaks",
+      "jsonfile": "tweaks",
+      "color": "Tweaks",
+      "Type": "Tab",
+      "Rows": "50,.70*,.10*",
+      "InvokeScript": ["Invoke-WPFTab WPFTab2BT"],
+      "Buttons": {
+        "WPFLabelTab1": {
+          "Content": "Recommended Selections:",
+          "Type": "Label"
+        },
+        "WPFdesktop": {
+          "Content": " Desktop ",
+          "Type": "Button"
+        },
+        "WPFlaptop": {
+          "Content": " Laptop ",
+          "columncount": "1",
+          "Type": "Button"
+        },
+        "WPFminimal": {
+          "Content": " Minimal ",
+          "Type": "Button"
+        },
+        "WPFclear": {
+          "Content": " Clear ",
+          "Type": "Button"
+        },
+        "WPFGetInstalledTweaks": {
+          "Content": " Get Installed ",
+          "Type": "Button"
+        }
+      },
+      "Footer": "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.  
+      Recommended selections are for normal users and if you are unsure do NOT check anything else!"
+    },
+    "WPFTab3BT": {
+      "Content": "<Underline>C</Underline>onfig",
+      "jsonfile": "feature",
+      "color": "Config",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab3BT"]
+    },
+    "WPFTab4BT": {
+      "Content": "<Underline>U</Underline>pdates",
+      "jsonfile": "Updates",
+      "color": "Updates",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab4BT"]
+    },
+    "WPFTab5BT": {
+      "Content": "<Underline>M</Underline>icroWIN",
+      "color": "Updates",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab5BT"]
+    }
+}

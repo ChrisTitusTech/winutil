@@ -10,11 +10,13 @@ function Invoke-WPFTab {
 
     #>
 
+    
     Param ($ClickedTab)
-
-    $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-    $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
-
+    
+    
+    # $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+    # $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
+    
     $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
     $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
         if ($ClickedTab -ne $PSItem.name) {
@@ -24,8 +26,10 @@ function Invoke-WPFTab {
         }
         else {
             $sync["$ClickedTab"].IsChecked = $true
-            $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
-            $sync.$tabNav.Items[$tabNumber].IsSelected = $true
+            # $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
+            # write-debug $sync."WPFTabNav".Items[1].Name
+            $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like $($ClickedTab -replace 'BT','')}
+            $sync.$tabNav.IsSelected = $true
         }
     }
 }

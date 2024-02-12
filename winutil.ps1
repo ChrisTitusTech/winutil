@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.08
+    Version        : 24.02.12
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.08"
+$sync.version = "24.02.12"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -142,6 +142,144 @@ function Copy-Files {
     Catch{
         Write-Warning "Unable to Copy all the files due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Get-inputXMLWithTabs {
+    <#
+    
+        .DESCRIPTION
+    This function will generates tabs xml from tabs.json file and puts them in inputXML file. 
+    Uses Get-TabXaml and ConvertTo-xaml functions.
+    
+    #>    
+
+    $tabsxml=""
+    $tabtoggles=""
+    foreach ($tabname in $sync.configs.tabs.PSObject.Properties.Name) {
+        $tabInfo = $sync.configs.tabs.$tabname
+        $tabtoggles += ConvertTo-xaml $tabInfo $tabname
+        if ("Tab" -eq $tabInfo.Type -and $null -ne $tabInfo.jsonfile) {
+            $tabsxml += "`n<TabItem Header=`"$($tabInfo.content -replace '</?Underline>','')`" Visibility=`"Collapsed`" Name=`"$($tabname -replace 'BT','')`">`n<Grid Background=`"Transparent`" >"
+            $tabrowdefs=""
+            if ($null -ne $tabInfo.Rows ){
+                $tabinfo.Rows -split "," | ForEach-Object {$tabrowdefs += "`n<RowDefinition Height=`"$_`"/>"}
+                $tabrowdefs = "`n<Grid.RowDefinitions>$tabrowdefs`n</Grid.RowDefinitions>"
+            }
+            $tabbuttons=""
+            if ($null -ne $tabInfo.Buttons) {
+                $tabInfo.Buttons.PsObject.Properties.Name | ForEach-Object {$tabbuttons+= (ConvertTo-xaml $tabInfo.Buttons.$_ $_)}
+                $tabbuttons = "`n<StackPanel Background=`"{MainBackgroundColor}`" Orientation=`"Horizontal`" HorizontalAlignment=`"Left`" Grid.Row=`"0`" Grid.Column=`"0`" Grid.ColumnSpan=`"2`" Margin=`"10`">`n$($tabbuttons)`n</StackPanel>"
+            }
+            $tabfooter = ""
+            if ($null -ne $($tabInfo.footer)) {
+                $tabfooter = "`n<Border Grid.Row=""2"" Grid.Column=`"0`">`n<StackPanel Background=`"{MainBackgroundColor}`" Orientation=`"Horizontal`" HorizontalAlignment=`"Left`">`n$(ConvertTo-xaml @{"Type"="TextBlock";"Content"= $tabInfo.footer})`n</StackPanel>`n</Border>"
+            }
+            $tabapps=Get-TabXaml "$($tabInfo.jsonfile)" $($tabInfo.columncount) $($tabInfo.sort)
+            $tabsxml += "$tabrowdefs$tabbuttons$tabapps$tabfooter`n</Grid>`n</TabItem>"
+        }
+    }
+    $inputXML = $inputXML -replace "{{InstallPanel_tabs}}", "$tabtoggles"
+    return $inputXML -replace "{{InstallPanel_tabscontent}}", $tabsxml
+}
+function Get-TabXaml {
+    <#
+    .SYNOPSIS
+    This function iterate through JSON data and organize by column and category and generates xml content for inputXML 
+    .DESCRIPTION
+    This function sorts by category and name if specified and iterate through JSON data seperates to columns depends on columncount and returns xaml content
+    if json file has "panel*" item it will create column
+    if json file has "category*" item it will create category
+    .EXAMPLE
+        Get-TabXaml "tweaks" -columncount 1 -sort $true
+    #>
+    
+    param( [Parameter(Mandatory=$true)]
+        $jsonfile,
+        $columncount=1,
+        $sort = $false
+    )
+    if ($null -eq $columncount) {$columncount=1}
+    # Iterate through JSON data and organize by panel and category
+    $appnames = if ($sort) 
+        { $sync.configs.$jsonfile | Get-Member -Type  NoteProperty | Sort-Object -Property @{Expression={$sync.configs.$jsonfile.$($_.Name).category}},Name | ForEach-Object {$_.Name}} 
+    else 
+        { $sync.configs.$jsonfile.PSObject.Properties.Name } 
+    $linecount=($sync.configs.$jsonfile.PsObject.Properties.value.category | Sort-Object | Get-Unique).count + $appnames.count
+    $maxlinecount = [Math]::Round( $linecount / $columncount + 0.5)
+    $count=0
+    $currentpanel=0
+    $currentcategory=""
+    $tabXml="`n<Border Grid.Row=`"1`" Grid.Column=`"0`">`n<StackPanel Background=`"{MainBackgroundColor}`" SnapsToDevicePixels=`"True`">"
+    $addpanel={ $count++
+        if ($appname -like "panel*" -or $count -ge $maxlinecount) {
+            $currentpanel++
+            $tabXml+="`n</StackPanel>`n</Border>`n<Border Grid.Row=`"1`" Grid.Column=`"$currentpanel`">`n<StackPanel Background=`"{MainBackgroundColor}`" SnapsToDevicePixels=`"True`">"
+            $count=0
+        } 
+    }
+    foreach ($appName in $appnames) {
+        $appInfo = $sync.configs.$jsonfile.$appName
+        if ($appname -like "category*" -or ($sort -and $appInfo.category -ne $currentcategory)) {
+            $tabXml += "`n<Label Content=`"$($appInfo.category)`" FontSize=`"16`"/>"
+            Invoke-Command -ScriptBlock $addpanel -NoNewScope
+        }
+        $tabXml += (ConvertTo-xaml $appInfo $appName)
+        Invoke-Command -ScriptBlock $addpanel -NoNewScope
+        $currentcategory=$appInfo.category
+    }
+    $columndefs ="`n<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=`"*`"/>`n"*($currentpanel+1))+"</Grid.ColumnDefinitions>"
+    $tabXml = "`n<ScrollViewer Grid.Row=`"1`" Grid.Column=`"0`" Padding=`"-1`" VerticalScrollBarVisibility=`"Auto`" HorizontalScrollBarVisibility=`"Auto`"`nBorderBrush=`"Transparent`" BorderThickness=`"0`" HorizontalAlignment=`"Stretch`" VerticalAlignment=`"Stretch`">`n<Grid HorizontalAlignment=`"Stretch`" VerticalAlignment=`"Stretch`">`n$($columndefs)`n$($tabXml)`n</StackPanel>`n</Border>`n</Grid>`n</ScrollViewer>"
+    return ($tabXml)
+}
+function ConvertTo-xaml { 
+    param( [Parameter(Mandatory=$true)] 
+        $appInfo,
+        $appName = ""
+    )
+    if ($null -ne $appInfo.Content) {
+        switch -regex ($appInfo.Type) {
+            "Toggle" {  
+                return "`n<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n `
+                <Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n<CheckBox Name=`"$appName`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n `
+                </StackPanel>"
+            }
+            "Combobox" { 
+                $addfirst="IsSelected=`"True`""
+                $rt = "`n<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n `
+                <Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n `
+                <ComboBox Name=`"$appName`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">"
+                foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                        $rt += "`n<ComboBoxItem $addfirst Content=`"$comboitem`"/>"
+                        $addfirst=""
+                    }
+                    return "$rt`n</ComboBox>`n</StackPanel>"
+                } 
+            "Tab" { 
+                return "`n<ToggleButton HorizontalAlignment=`"Left`" Height=`"{ToggleButtonHeight}`" Width=`"100`"`nBackground=`"{Button$($appInfo.color)BackgroundColor}`" Foreground=`"{Button$($appInfo.color)ForegroundColor}`" FontWeight=`"Bold`" Name=`"$appName`">`n<ToggleButton.Content>`n<TextBlock Background=`"Transparent`" Foreground=`"{Button$($appInfo.color)ForegroundColor}`" >`n$($appInfo.Content)`n</TextBlock>`n</ToggleButton.Content>`n</ToggleButton>"
+            }
+            # If it is a digit, type is button and button length is digits
+            "^[\d\.]+$" {
+                if ($null -ne $appInfo.textblock) { 
+                    return "`n<Button Name=`"$appName`" FontSize=`"16`" Content=`"$($appInfo.Content)`" Margin=`"20,4,20,10`" Padding=`"10`"/>`n<TextBlock Margin=`"20,0,20,0`" Padding=`"10`" TextWrapping=`"WrapWithOverflow`" MaxWidth=`"300`">$($appInfo.textblock -replace "\r?\n","<LineBreak/>")</TextBlock>"
+                } else {
+                    return "`n<Button Name=`"$appName`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />"
+                }
+                
+            }
+            "Button"   {return "`n<Button Name=`"$appname`" Content=`"$($appInfo.Content)`" Margin=`"1`"/>"}
+            "Label"    {return "`n<Label Content=`"$($appInfo.Content)`" $FontSize VerticalAlignment=`"Center`"/>"}
+            "TextBlock"{return "`n<TextBlock Padding=`"10`">`n$($appInfo.Content -replace "\r?\n","`n<LineBreak/>")`n</TextBlock>"}
+            # else it is a checkbox
+            Default {
+                $checkedStatus = if ($($appInfo.Checked -ne "True")) {""} else {"IsChecked=`"True`" "}
+                if ($null -eq $appInfo.Link) {
+                    return "`n<CheckBox Name=`"$appName`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>"
+                }
+                else {
+                    return "`n<StackPanel Orientation=`"Horizontal`">`n<CheckBox Name=`"$appName`" Content=`"$($appInfo.Content)`" $($checkedStatus)ToolTip=`"$($appInfo.Description)`" Margin=`"0,0,2,0`"/><TextBlock Name=`"$($appName)Link`" Style=`"{StaticResource HoverTextBlockStyle}`" Text=`"(?)`" ToolTip=`"$($appInfo.Link)`" />`n</StackPanel>"
+                }
+            }
+        } 
     }
 }
 function Get-LocalizedYesNo {
@@ -358,98 +496,6 @@ function Get-WinUtilInstallerProcess {
         return $true
     }
     return $false
-}
-Function Get-WinUtilToggleStatus {
-    <#
-
-    .SYNOPSIS
-        Pulls the registry keys for the given toggle switch and checks whether the toggle should be checked or unchecked
-
-    .PARAMETER ToggleSwitch
-        The name of the toggle to check
-
-    .OUTPUTS
-        Boolean to set the toggle's status to
-
-    #>
-
-    Param($ToggleSwitch)
-    if($ToggleSwitch -eq "WPFToggleDarkMode"){
-        $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
-        $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-        if($app -eq 0 -and $system -eq 0){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }
-    if($ToggleSwitch -eq "WPFToggleBingSearch"){
-        $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
-        if($bingsearch -eq 0){
-            return $false
-        }
-        else{
-            return $true
-        }
-    }
-    if($ToggleSwitch -eq "WPFToggleNumLock"){
-        $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
-        if($numlockvalue -eq 2){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }
-    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
-        $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
-        if($VerboseStatusvalue -eq 1){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }    
-    if($ToggleSwitch -eq "WPFToggleShowExt"){
-        $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
-        if($hideextvalue -eq 0){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }    
-    if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
-        $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
-        if($hidesnap -eq 0){
-            return $false
-        }
-        else{
-            return $true
-        }
-    }    
-    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
-        $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
-        $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
-        $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
-
-        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
-            return $true
-        }
-        else{
-            return $false
-        }
-    }
-    if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
-        $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
-        if($StickyKeys -eq 58){
-            return $false
-        }
-        else{
-            return $true
-        }
-    }
 }
 function Get-WinUtilVariables {
 
@@ -1240,40 +1286,6 @@ function New-FirstRun {
 '@
 	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
 }
-function Invoke-WinUtilBingSearch {
-    <#
-
-    .SYNOPSIS
-        Disables/Enables Bing Search
-
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Bing Search
-
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Bing Search"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Bing Search"
-            $value = 0
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
-        Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
 Function Invoke-WinUtilCurrentSystem {
 
     <#
@@ -1313,228 +1325,83 @@ Function Invoke-WinUtilCurrentSystem {
         $ScheduledTasks = Get-ScheduledTask
 
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
-
-            $Config = $psitem.Name
-            #WPFEssTweaksTele
-            $registryKeys = $sync.configs.tweaks.$Config.registry
-            $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
-            $serviceKeys = $sync.configs.tweaks.$Config.service
-
-            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
-                $Values = @()
-
-
-                Foreach ($tweaks in $registryKeys){
-                    Foreach($tweak in $tweaks){
-
-                        if(test-path $tweak.Path){
-                            $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
-                            $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $scheduledtaskKeys){
-                    Foreach($tweak in $tweaks){
-                        $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
-
-                        if($task){
-                            $actualValue = $task.State
-                            $expectedValue = $tweak.State
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                Foreach ($tweaks in $serviceKeys){
-                    Foreach($tweak in $tweaks){
-                        $Service = Get-Service -Name $tweak.Name
-
-                        if($Service){
-                            $actualValue = $Service.StartType
-                            $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue){
-                                $values += $False
-                            }
-                        }
-                    }
-                }
-
-                if($values -notcontains $false){
-                    Write-Output $Config
-                }
+            if (Invoke-WinUtilCurrentSystemTweak $psitem $ScheduledTasks) {
+                Write-Output $psitem.Name
             }
         }
     }
 }
 
-Function Invoke-WinUtilDarkMode {
+Function Invoke-WinUtilCurrentSystemTweak {
+
     <#
 
     .SYNOPSIS
-        Enables/Disables Dark Mode
+        Checks to see tweaks have already been applied 
 
-    .PARAMETER DarkMoveEnabled
-        Indicates the current dark mode state
-
-    #>
-    Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
-            Write-Host "Enabling Dark Mode"
-            $DarkMoveValue = 0
-        }
-        else {
-            Write-Host "Disabling Dark Mode"
-            $DarkMoveValue = 1
-        }
-
-        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
-        Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilFeatureInstall {
-    <#
-
-    .SYNOPSIS
-        Converts all the values from the tweaks.json and routes them to the appropriate function
+    .EXAMPLE
+        Get-WinUtilCheckBoxesTweak "WPFToogleDarkTheme"
 
     #>
 
     param(
-        $CheckBox
+        $tweaktocheck,
+        $ScheduledTasks = @()
     )
 
-    $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
-                    Write-Host "Installing $feature"
-                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
+    $Config = $tweaktocheck.Name
+    #WPFEssTweaksTele
+    $registryKeys = $sync.configs.tweaks.$Config.registry
+    $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
+    $serviceKeys = $sync.configs.tweaks.$Config.service
 
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
-                    }
-                }
-            }
-        }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
-                    $Scriptblock = [scriptblock]::Create($script)
+    if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
 
-                    Write-Host "Running Script for $psitem"
-                    Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
-                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
-                    }
+        Foreach ($tweaks in $registryKeys){
+            Foreach($tweak in $tweaks){
 
-                    else{
-                        Write-Warning "Unable to Install $feature due to unhandled exception"
-                        Write-Warning $psitem.Exception.StackTrace
+                if(test-path $tweak.Path){
+                    $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
+                    $expectedValue = $tweak.Value
+                    if ($expectedValue -notlike $actualValue){
+                        return $False
                     }
                 }
             }
         }
-    }
-}
-Function Invoke-WinUtilMouseAcceleration {
-    <#
 
-    .SYNOPSIS
-        Enables/Disables Mouse Acceleration
+        Foreach ($tweaks in $scheduledtaskKeys){
+            Foreach($tweak in $tweaks){
+                $task = $ScheduledTasks | Where-Object {$($tweaktocheck.TaskPath + $tweaktocheck.TaskName) -like "\$($tweak.name)"}
 
-    .PARAMETER DarkMoveEnabled
-        Indicates the current Mouse Acceleration State
-
-    #>
-    Param($MouseAccelerationEnabled)
-    Try{
-        if ($MouseAccelerationEnabled -eq $false){
-            Write-Host "Enabling Mouse Acceleration"
-            $MouseSpeed = 1
-            $MouseThreshold1 = 6
-            $MouseThreshold2 = 10
-        } 
-        else {
-            Write-Host "Disabling Mouse Acceleration"
-            $MouseSpeed = 0
-            $MouseThreshold1 = 0
-            $MouseThreshold2 = 0 
-            
+                if($task){
+                    $actualValue = $task.State
+                    $expectedValue = $tweak.State
+                    if ($expectedValue -ne $actualValue){
+                        return $False
+                    }
+                }
+            }
         }
 
-        $Path = "HKCU:\Control Panel\Mouse"
-        Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
-        Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
-        Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+        Foreach ($tweaks in $serviceKeys){
+            Foreach($tweak in $tweaks){
+                $Service = Get-Service -Name $tweak.Name
+
+                if($Service){
+                    $actualValue = $Service.StartType
+                    $expectedValue = $tweak.StartupType
+                    if ($expectedValue -ne $actualValue){
+                        return $False
+                    }
+                }
+            }
+        }
+
+        return $True
     }
 }
-function Invoke-WinUtilNumLock {
-    <#
-    .SYNOPSIS
-        Disables/Enables NumLock on startup
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Numlock on startup
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Numlock on startup"
-            $value = 2
-        }
-        else {
-            Write-Host "Disabling Numlock on startup"
-            $value = 0
-        }
-        $Path = "HKCU:\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
+
 function Invoke-WinUtilScript {
     <#
 
@@ -1584,102 +1451,6 @@ function Invoke-WinUtilScript {
     }
 
 }
-function Invoke-WinUtilShowExt {
-    <#
-    .SYNOPSIS
-        Disables/Enables Show file Extentions
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Show file extentions
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Showing file extentions"
-            $value = 0
-        }
-        else {
-            Write-Host "hiding file extensions"
-            $value = 1
-        }
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-        Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-function Invoke-WinUtilSnapFlyout {
-    <#
-    .SYNOPSIS
-        Disables/Enables Snap Assist Flyout on startup
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Snap Assist Flyout on startup
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Snap Assist Flyout On startup"
-            $value = 1
-        }
-        else {
-            Write-Host "Disabling Snap Assist Flyout On startup"
-            $value = 0
-        }
-        # taskkill.exe /F /IM "explorer.exe"
-        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-        taskkill.exe /F /IM "explorer.exe"
-        Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
-        Start-Process "explorer.exe"
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
-Function Invoke-WinUtilStickyKeys {
-    <#
-    .SYNOPSIS
-        Disables/Enables Sticky Keyss on startup
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Sticky Keys on startup
-    #>
-    Param($Enabled)
-    Try { 
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Sticky Keys On startup"
-            $value = 510
-        }
-        else {
-            Write-Host "Disabling Sticky Keys On startup"
-            $value = 58
-        }
-        $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
-        Set-ItemProperty -Path $Path -Name Flags -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
-    }
-}
 function Invoke-WinUtilTweaks {
     <#
 
@@ -1696,10 +1467,11 @@ function Invoke-WinUtilTweaks {
 
     param(
         $CheckBox,
-        $undo = $false
+        $undo = $false,
+        $tabname = "tweaks"
     )
 
-    Write-Debug "Tweaks: $($CheckBox)"
+    Write-Debug "$($tabname): $($CheckBox)"
     if($undo){
         $Values = @{
             Registry = "OriginalValue"
@@ -1717,26 +1489,26 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
-        $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.ScheduledTask){
+        $sync.configs.$tabname.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
-        $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.service){
+        $sync.configs.$tabname.$CheckBox.service | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
-        $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.registry){
+        $sync.configs.$tabname.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
-        $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($sync.configs.$tabname.$CheckBox.$($values.ScriptType)){
+        $sync.configs.$tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
@@ -1744,44 +1516,31 @@ function Invoke-WinUtilTweaks {
     }
 
     if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
-            $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
+        if($sync.configs.$tabname.$CheckBox.appx){
+            $sync.configs.$tabname.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-
-    }
-}
-function Invoke-WinUtilVerboseLogon {
-    <#
-    .SYNOPSIS
-        Disables/Enables VerboseLogon Messages
-    .PARAMETER Enabled
-        Indicates whether to enable or disable VerboseLogon messages
-    #>
-    Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
-            Write-Host "Enabling Verbose Logon Messages"
-            $value = 1
+        if($sync.configs.$tabname.$CheckBox.feature){
+            Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+                Try{
+                    Write-Host "Installing $feature"
+                    Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
+                }
+                Catch{
+                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                        Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                    }
+    
+                    else{
+                        Write-Warning "Unable to Install $feature due to unhandled exception"
+                        Write-Warning $psitem.Exception.StackTrace
+                    }
+                }
+            }
         }
-        else {
-            Write-Host "Disabling Verbose Logon Messages"
-            $value = 0
-        }
-        $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
-        Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
-    }
-    Catch [System.Security.SecurityException] {
-        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
-        Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $psitem.Exception.StackTrace
+    
     }
 }
 function Remove-WinUtilAPPX {
@@ -2398,22 +2157,7 @@ function Invoke-WPFButton {
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
         "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFPanelDISM" {Invoke-WPFPanelDISM}
-        "WPFPanelAutologin" {Invoke-WPFPanelAutologin}
-        "WPFPanelcontrol" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelnetwork" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelpower" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelregion" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsound" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPanelsystem" {Invoke-WPFControlPanel -Panel $button}
-        "WPFPaneluser" {Invoke-WPFControlPanel -Panel $button}
-        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
-        "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
-        "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
-        "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
         "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
@@ -2434,58 +2178,6 @@ function Invoke-WPFCloseButton {
     #>
     $sync["Form"].Close()
     Write-Host "Bye bye!"
-}
-function Invoke-WPFControlPanel {
-    <#
-
-    .SYNOPSIS
-        Opens the requested legacy panel
-
-    .PARAMETER Panel
-        The panel to open
-
-    #>
-    param($Panel)
-
-    switch ($Panel){
-        "WPFPanelcontrol" {cmd /c control}
-        "WPFPanelnetwork" {cmd /c ncpa.cpl}
-        "WPFPanelpower"   {cmd /c powercfg.cpl}
-        "WPFPanelregion"  {cmd /c intl.cpl}
-        "WPFPanelsound"   {cmd /c mmsys.cpl}
-        "WPFPanelsystem"  {cmd /c sysdm.cpl}
-        "WPFPaneluser"    {cmd /c "control userpasswords2"}
-    }
-}
-function Invoke-WPFFeatureInstall {
-    <#
-
-    .SYNOPSIS
-        Installs selected Windows Features
-
-    #>
-
-    if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
-        [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
-
-    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
-        param($Features, $DebugPreference)
-
-        $sync.ProcessRunning = $true
-
-        Invoke-WinUtilFeatureInstall $Features
-
-        $sync.ProcessRunning = $false
-        Write-Host "==================================="
-        Write-Host "---   Features are Installed    ---"
-        Write-Host "---  A Reboot may be required   ---"
-        Write-Host "==================================="
-    }
 }
 function Invoke-WPFFixesNetwork {
     <#
@@ -3653,16 +3345,6 @@ public class PowerManagement {
 		$sync.ProcessRunning = $false
 	}
 }
-function Invoke-WPFPanelAutologin {
-    <#
-
-    .SYNOPSIS
-        Enables autologin using Sysinternals Autologon.exe
-
-    #>
-    curl.exe -ss "https://live.sysinternals.com/Autologon.exe" -o $env:temp\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
-    cmd /c $env:temp\autologin.exe /accepteula
-}
 function Invoke-WPFPanelDISM {
     <#
 
@@ -3887,11 +3569,13 @@ function Invoke-WPFTab {
 
     #>
 
+    
     Param ($ClickedTab)
-
-    $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
-    $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
-
+    
+    
+    # $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like "WPFTabNav"}
+    # $tabNumber = [int]($ClickedTab -replace "WPFTab","" -replace "BT","") - 1
+    
     $filter = Get-WinUtilVariables -Type ToggleButton | Where-Object {$psitem -like "WPFTab?BT"}
     $sync.GetEnumerator() | Where-Object {$psitem.Key -in $filter} | ForEach-Object {
         if ($ClickedTab -ne $PSItem.name) {
@@ -3901,38 +3585,11 @@ function Invoke-WPFTab {
         }
         else {
             $sync["$ClickedTab"].IsChecked = $true
-            $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
-            $sync.$tabNav.Items[$tabNumber].IsSelected = $true
+            # $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
+            # write-debug $sync."WPFTabNav".Items[1].Name
+            $tabNav = Get-WinUtilVariables | Where-Object {$psitem -like $($ClickedTab -replace 'BT','')}
+            $sync.$tabNav.IsSelected = $true
         }
-    }
-}
-function Invoke-WPFToggle {
-
-    <#
-
-    .SYNOPSIS
-        Invokes the scriptblock for the given toggle
-
-    .PARAMETER Button
-        The name of the toggle to invoke
-
-    #>
-
-    Param ([string]$Button)
-
-    # Use this to get the name of the button
-    #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-
-    Switch -Wildcard ($Button){
-
-        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
-        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
-        "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
-        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
-        "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
-        "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
-        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
-        "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
     }
 }
 function Invoke-WPFtweaksbutton {
@@ -5029,46 +4686,8 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
             <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
-                        <Underline>I</Underline>nstall
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
-                        <Underline>T</Underline>weaks
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
-                        <Underline>C</Underline>onfig
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
-                        <Underline>U</Underline>pdates
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
-                        <Underline>M</Underline>icroWin
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
+
+            {{InstallPanel_tabs}}
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -5137,96 +4756,9 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
         </DockPanel>
        
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
-            <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
-                <Grid Background="Transparent" >
-                   
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="45px"/>
-                        <RowDefinition Height="0.95*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
-                        <Button Name="WPFinstall" Content=" Install Selected" Margin="2" />
-                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
-                        <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
-                        <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
-                        <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
-                    </StackPanel>
-
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        {{InstallPanel_applications}}
-                        </Grid>
-                    </ScrollViewer>
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height=".70*"/>
-                        <RowDefinition Height=".10*"/>
-                    </Grid.RowDefinitions>
-                    {{InstallPanel_tweaks}}
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
-                        <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
-                        <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
-                        <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
-                        <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
-                        <Button Name="WPFclear" Content=" Clear " Margin="1"/>
-                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
-                    </StackPanel>
-                    <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBlock Padding="10">
-                                Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    {{InstallPanel_features}}
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdefault" FontSize="16" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatessecurity" FontSize="16" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdisable" FontSize="16" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
-                            <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-                        </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
+            
+            {{InstallPanel_tabscontent}}
+            
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Width="Auto" Height="Auto">
@@ -7660,7 +7192,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel?? PresentMon",
+		"content": "Intel? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
@@ -7705,26 +7237,22 @@ $sync.configs.dns = '{
     }
 }' | convertfrom-json
 $sync.configs.feature = '{
+  "category0": {
+    "category": "Features"
+  },
   "WPFFeaturesdotnet": {
     "Content": "All .Net Framework (2,3,4)",
     "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a010_",
     "feature": [
       "NetFx4-AdvSrvs",
       "NetFx3"
     ],
     "InvokeScript": [
-
     ]
   },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a011_",
     "feature": [
       "HypervisorPlatform",
       "Microsoft-Hyper-V-All",
@@ -7742,9 +7270,6 @@ $sync.configs.feature = '{
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
     "Description": "Enables legacy programs from previous versions of windows",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a012_",
     "feature": [
       "WindowsMediaPlayer",
       "MediaPlayback",
@@ -7755,26 +7280,9 @@ $sync.configs.feature = '{
 
     ]
   },
-  "WPFFeaturewsl": {
-    "Content": "Windows Subsystem for Linux",
-    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a020_",
-    "feature": [
-      "VirtualMachinePlatform",
-      "Microsoft-Windows-Subsystem-Linux"
-    ],
-    "InvokeScript": [
-
-    ]
-  },
   "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a014_",
     "feature": [
       "ServicesForNFS-ClientOnly",
       "ClientForNFS-Infrastructure",
@@ -7791,9 +7299,6 @@ $sync.configs.feature = '{
   "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Enables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a015_",
     "feature": [
     ],
     "InvokeScript": [
@@ -7809,9 +7314,6 @@ $sync.configs.feature = '{
   "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Disables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a016_",
     "feature": [
     ],
     "InvokeScript": [
@@ -7827,9 +7329,6 @@ $sync.configs.feature = '{
   "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a017_",
     "feature": [
     ],
     "InvokeScript": [
@@ -7845,9 +7344,6 @@ $sync.configs.feature = '{
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a018_",
     "feature": [
     ],
     "InvokeScript": [
@@ -7863,9 +7359,6 @@ $sync.configs.feature = '{
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
     "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a019_",
     "feature": [
     ],
     "InvokeScript": [
@@ -7878,103 +7371,121 @@ $sync.configs.feature = '{
       "
     ]
   },
+  "WPFFeaturewsl": {
+    "Content": "Windows Subsystem for Linux",
+    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+    "feature": [
+      "VirtualMachinePlatform",
+      "Microsoft-Windows-Subsystem-Linux"
+    ],
+    "InvokeScript": [
+
+    ]
+  },
   "WPFFeaturesandbox": {
     "Content": "Windows Sandbox",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a021_",
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a060_",
     "Type": "150"
+  },
+  "category1": {
+    "category": "Fixes"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
-    "category": "Fixes",
-    "Order": "a040_",
-    "panel": "1",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "curl.exe -ss \"https://live.sysinternals.com/Autologon.exe\" -o $env:temp\\autologin.exe # Official Microsoft recommendation https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+      cmd /c $env:temp\\autologin.exe /accepteula"
+    ]
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesUpdate"
+    ]
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
-    "category": "Fixes",
-    "Order": "a042_",
-    "panel": "1",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesNetwork"
+    ]
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a043_",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFPanelDISM"
+    ]
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a044_",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFFixesWinget"
+    ]
+
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a045_",
     "Type": "300"
   },
-  "WPFPanelnetwork": {
-    "Content": "Network Connections",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+  "panel1": {},
+  "category10": {
+    "category": "Legacy Windows Panels"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c control"
+    ]
+  },
+  "WPFPanelnetwork": {
+    "Content": "Network Connections",
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c ncpa.cpl"
+    ]
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c powercfg.cpl"
+    ]
   },
   "WPFPanelregion": {
     "Content": "Region",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c intl.cpl"
+    ]
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c mmsys.cpl"
+    ]
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c sysdm.cpl"
+    ]
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
+    "Type": "200",
+    "InvokeScript": [
+      "cmd /c \"control userpasswords2\""
+    ]
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -8009,6 +7520,97 @@ $sync.configs.preset = '{
     "WPFTweaksServices",
     "WPFTweaksTele"
   ]
+}' | convertfrom-json
+$sync.configs.tabs = '{
+    "WPFTab1BT": {
+      "Content": "<Underline>I</Underline>nstall",
+      "Type": "Tab",
+      "Rows": "50,0.95*",
+      "color": "Install",
+      "jsonfile": "applications",
+      "columncount": 5,
+      "sort": 1,
+      "InvokeScript": ["Invoke-WPFTab WPFTab1BT"],
+      "Buttons": {
+        "WPFinstall": {
+          "Content": " Install Selected",
+          "Type": "Button"
+        },
+        "WPFInstallUpgrade": {
+          "Content": " Upgrade All",
+          "Type": "Button"
+        },
+        "WPFuninstall": {
+          "Content": " Uninstall Selection",
+          "Type": "Button"
+        },
+        "WPFGetInstalled": {
+          "Content": " Get Installed",
+          "Type": "Button"
+        },
+        "WPFclearWinget": {
+          "Content": " Clear Selection",
+          "Type": "Button"
+        }
+      }
+    },
+    "WPFTab2BT": {
+      "Content": "<Underline>T</Underline>weaks",
+      "jsonfile": "tweaks",
+      "color": "Tweaks",
+      "Type": "Tab",
+      "Rows": "50,.70*,.10*",
+      "InvokeScript": ["Invoke-WPFTab WPFTab2BT"],
+      "Buttons": {
+        "WPFLabelTab1": {
+          "Content": "Recommended Selections:",
+          "Type": "Label"
+        },
+        "WPFdesktop": {
+          "Content": " Desktop ",
+          "Type": "Button"
+        },
+        "WPFlaptop": {
+          "Content": " Laptop ",
+          "columncount": "1",
+          "Type": "Button"
+        },
+        "WPFminimal": {
+          "Content": " Minimal ",
+          "Type": "Button"
+        },
+        "WPFclear": {
+          "Content": " Clear ",
+          "Type": "Button"
+        },
+        "WPFGetInstalledTweaks": {
+          "Content": " Get Installed ",
+          "Type": "Button"
+        }
+      },
+      "Footer": "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.  
+      Recommended selections are for normal users and if you are unsure do NOT check anything else!"
+    },
+    "WPFTab3BT": {
+      "Content": "<Underline>C</Underline>onfig",
+      "jsonfile": "feature",
+      "color": "Config",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab3BT"]
+    },
+    "WPFTab4BT": {
+      "Content": "<Underline>U</Underline>pdates",
+      "jsonfile": "Updates",
+      "color": "Updates",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab4BT"]
+    },
+    "WPFTab5BT": {
+      "Content": "<Underline>M</Underline>icroWIN",
+      "color": "Updates",
+      "Type": "Tab",
+      "InvokeScript": ["Invoke-WPFTab WPFTab5BT"]
+    }
 }' | convertfrom-json
 $sync.configs.themes = '{
         "Classic":  {
@@ -8075,12 +7677,472 @@ $sync.configs.themes = '{
                }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
+  "category0": {
+    "category": "Essential Tweaks"
+  },
+  "WPFTweaksRestorePoint": {
+    "Content": "Create Restore Point",
+    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "Checked": "True",
+    "InvokeScript": [
+      "
+        # Check if the user has administrative privileges
+        if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+            Write-Host \"Please run this script as an administrator.\"
+            return
+        }
+    
+        # Check if System Restore is enabled for the main drive
+        try {
+            # Try getting restore points to check if System Restore is enabled
+            Enable-ComputerRestore -Drive \"$env:SystemDrive\"
+        } catch {
+            Write-Host \"An error occurred while enabling System Restore: $_\"
+        }
+    
+        # Check if the SystemRestorePointCreationFrequency value exists
+        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
+        if($null -eq $exists){
+            write-host ''Changing system to allow multiple restore points per day''
+            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
+        }
+    
+        # Get all the restore points for the current day
+        $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+    
+        # Check if there is already a restore point created today
+        if ($existingRestorePoints.Count -eq 0) {
+            $description = \"System Restore Point created by WinUtil\"
+    
+            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
+            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
+        }
+      "
+    ]
+  },
+  "WPFTweaksOO": {
+    "Content": "Run OO Shutup",
+    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "InvokeScript": [
+      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
+       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
+       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
+       "
+    ]
+  },
+  "WPFTweaksTele": {
+    "Content": "Disable Telemetry",
+    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "ScheduledTask": [
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\MareBackup",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      },
+      {
+        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+        "State": "Disabled",
+        "OriginalState": "Enabled"
+      }
+    ],
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "Type": "DWord",
+        "Value": "0",
+        "Name": "AllowTelemetry",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "1",
+        "Name": "AllowTelemetry",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "ContentDeliveryAllowed",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "OemPreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "PreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "PreInstalledAppsEverEnabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SilentInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SubscribedContent-338387Enabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SubscribedContent-338388Enabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SubscribedContent-338389Enabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SubscribedContent-353698Enabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "OriginalValue": "1",
+        "Name": "SystemPaneSuggestionsEnabled",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "Name": "DisableWindowsConsumerFeatures",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+        "OriginalValue": "0",
+        "Name": "NumberOfSIUFInPeriod",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "OriginalValue": "0",
+        "Name": "DoNotShowFeedbackNotifications",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "Name": "DisableTailoredExperiencesWithDiagnosticData",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "OriginalValue": "0",
+        "Name": "DisabledByGroupPolicy",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "OriginalValue": "0",
+        "Name": "Disabled",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "OriginalValue": "1",
+        "Name": "DODownloadMode",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+        "OriginalValue": "1",
+        "Name": "fAllowToGetHelp",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+        "OriginalValue": "0",
+        "Name": "EnthusiastMode",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "Name": "ShowTaskViewButton",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
+        "OriginalValue": "1",
+        "Name": "PeopleBand",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "OriginalValue": "1",
+        "Name": "LaunchTo",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+        "OriginalValue": "0",
+        "Name": "LongPathsEnabled",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "_Comment" : "Driver searching is a function that should be left in",
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "OriginalValue": "1",
+        "Name": "SearchOrderConfig",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "Name": "SystemResponsiveness",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+        "OriginalValue": "1",
+        "Name": "NetworkThrottlingIndex",
+        "Value": "4294967295",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "Name": "MenuShowDelay",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Desktop",
+        "OriginalValue": "1",
+        "Name": "AutoEndTasks",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+        "OriginalValue": "0",
+        "Name": "ClearPageFileAtShutdown",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
+        "OriginalValue": "1",
+        "Name": "Start",
+        "Value": "2",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "OriginalValue": "400",
+        "Name": "MouseHoverTime",
+        "Value": "400",
+        "Type": "String"
+      },
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+        "OriginalValue": "20",
+        "Name": "IRPStackSize",
+        "Value": "30",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "OriginalValue": "1",
+        "Name": "EnableFeeds",
+        "Value": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+        "OriginalValue": "1",
+        "Name": "ShellFeedsTaskbarViewMode",
+        "Value": "2",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "OriginalValue": "1",
+        "Name": "HideSCAMeetNow",
+        "Value": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "Name": "GPU Priority",
+        "Value": "8",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "1",
+        "Name": "Priority",
+        "Value": "6",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+        "OriginalValue": "High",
+        "Name": "Scheduling Category",
+        "Value": "High",
+        "Type": "String"
+      }
+    ],
+    "InvokeScript": [
+      "
+      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
+        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
+            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+            Do {
+                Start-Sleep -Milliseconds 100
+                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
+            } Until ($preferences)
+            Stop-Process $taskmgr
+            $preferences.Preferences[28] = 0
+            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
+        }
+        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
+
+        # Fix Managed by your organization in Edge if regustry path exists then remove it
+
+        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
+            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
+        }
+
+        # Group svchost.exe processes
+        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
+
+        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
+        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
+            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
+        }
+        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+        # Disable Defender Auto Sample Submission
+        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
+        "
+    ]
+  },
+  "WPFTweaksWifi": {
+    "Content": "Disable Wifi-Sense",
+    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "registry": [
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+        "Name": "Value",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
   "WPFTweaksAH": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -8105,57 +8167,27 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksHiber": {
-    "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a011_",
-    "registry": [
-      {
-        "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HibernateEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
-        "Name": "ShowHibernateOption",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ],
+  "WPFTweaksDeleteTempFiles": {
+    "Content": "Delete Temporary Files",
+    "Description": "Erases TEMP Folders",
     "InvokeScript": [
-        "powercfg.exe /hibernate off"
+      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
     ]
   },
-  "WPFTweaksHome": {
-    "Content": "Disable Homegroup",
-    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "service": [
-      {
-        "Name": "HomeGroupListener",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "HomeGroupProvider",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      }
+  "WPFTweaksDiskCleanup": {
+    "Content": "Run Disk Cleanup",
+    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "InvokeScript": [
+      "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
     ]
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a008_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -8187,12 +8219,126 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksHome": {
+    "Content": "Disable Homegroup",
+    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+    "service": [
+      {
+        "Name": "HomeGroupListener",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "HomeGroupProvider",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
+  "WPFTweaksStorage": {
+    "Content": "Disable Storage Sense",
+    "Description": "Storage Sense deletes temp files automatically.",
+    "InvokeScript": [
+      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "UndoScript": [
+      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
+      "
+    ]
+  },
+  "WPFTweaksHiber": {
+    "Content": "Disable Hibernation",
+    "Description": "Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation.",
+    "registry": [
+      {
+        "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
+        "Name": "HibernateEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+        "Name": "ShowHibernateOption",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ],
+    "InvokeScript": [
+        "powercfg.exe /hibernate off"
+    ]
+  },
+  "WPFTweaksDVR": {
+    "Content": "Disable GameDVR",
+    "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd.",
+    "registry": [
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_FSEBehavior",
+        "Value": "2",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_HonorUserFSEBehaviorMode",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_EFSEFeatureFlags",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
+        "Name": "AllowGameDVR",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFTweaksTeredo": {
+    "Content": "Disable Teredo",
+    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "netsh interface teredo set state disabled"
+    ],
+    "UndoScript": [
+      "netsh interface teredo set state default"
+    ]
+  },
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a014_",
     "service": [
       {
         "Name": "AJRouter",
@@ -9611,443 +9757,12 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksTele": {
-    "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a003_",
-    "ScheduledTask": [
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\MareBackup",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      }
-    ],
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "Type": "DWord",
-        "Value": "0",
-        "Name": "AllowTelemetry",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "1",
-        "Name": "AllowTelemetry",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "ContentDeliveryAllowed",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "OemPreInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "PreInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "PreInstalledAppsEverEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SilentInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338387Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338388Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338389Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-353698Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SystemPaneSuggestionsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
-        "Name": "DisableWindowsConsumerFeatures",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
-        "OriginalValue": "0",
-        "Name": "NumberOfSIUFInPeriod",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "0",
-        "Name": "DoNotShowFeedbackNotifications",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
-        "Name": "DisableTailoredExperiencesWithDiagnosticData",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-        "OriginalValue": "0",
-        "Name": "DisabledByGroupPolicy",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
-        "OriginalValue": "0",
-        "Name": "Disabled",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
-        "OriginalValue": "1",
-        "Name": "DODownloadMode",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
-        "OriginalValue": "1",
-        "Name": "fAllowToGetHelp",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
-        "OriginalValue": "0",
-        "Name": "EnthusiastMode",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
-        "OriginalValue": "1",
-        "Name": "PeopleBand",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "LaunchTo",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "OriginalValue": "0",
-        "Name": "LongPathsEnabled",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "_Comment" : "Driver searching is a function that should be left in",
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
-        "OriginalValue": "1",
-        "Name": "SearchOrderConfig",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "OriginalValue": "1",
-        "Name": "SystemResponsiveness",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "OriginalValue": "1",
-        "Name": "NetworkThrottlingIndex",
-        "Value": "4294967295",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "MenuShowDelay",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "AutoEndTasks",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "OriginalValue": "0",
-        "Name": "ClearPageFileAtShutdown",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
-        "OriginalValue": "1",
-        "Name": "Start",
-        "Value": "2",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "400",
-        "Name": "MouseHoverTime",
-        "Value": "400",
-        "Type": "String"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "OriginalValue": "20",
-        "Name": "IRPStackSize",
-        "Value": "30",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "OriginalValue": "1",
-        "Name": "EnableFeeds",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
-        "OriginalValue": "1",
-        "Name": "ShellFeedsTaskbarViewMode",
-        "Value": "2",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "OriginalValue": "1",
-        "Name": "HideSCAMeetNow",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "GPU Priority",
-        "Value": "8",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "Priority",
-        "Value": "6",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "High",
-        "Name": "Scheduling Category",
-        "Value": "High",
-        "Type": "String"
-      }
-    ],
-    "InvokeScript": [
-      "
-      bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
-        If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
-            $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
-            Do {
-                Start-Sleep -Milliseconds 100
-                $preferences = Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -ErrorAction SilentlyContinue
-            } Until ($preferences)
-            Stop-Process $taskmgr
-            $preferences.Preferences[28] = 0
-            Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\TaskManager\" -Name \"Preferences\" -Type Binary -Value $preferences.Preferences
-        }
-        Remove-Item -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MyComputer\\NameSpace\\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}\" -Recurse -ErrorAction SilentlyContinue
-
-        # Fix Managed by your organization in Edge if regustry path exists then remove it
-
-        If (Test-Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\") {
-            Remove-Item -Path \"HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge\" -Recurse -ErrorAction SilentlyContinue
-        }
-
-        # Group svchost.exe processes
-        $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
-        Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\" -Name \"SvcHostSplitThresholdInKB\" -Type DWord -Value $ram -Force
-
-        $autoLoggerDir = \"$env:PROGRAMDATA\\Microsoft\\Diagnosis\\ETLLogs\\AutoLogger\"
-        If (Test-Path \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\") {
-            Remove-Item \"$autoLoggerDir\\AutoLogger-Diagtrack-Listener.etl\"
-        }
-        icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-        # Disable Defender Auto Sample Submission
-        Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-        "
-    ]
-  },
-  "WPFTweaksWifi": {
-    "Content": "Disable Wifi-Sense",
-    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a004_",
-    "registry": [
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
-  "WPFTweaksUTC": {
-    "Content": "Set Time to UTC (Dual Boot)",
-    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a022_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
-        "Name": "RealTimeIsUniversal",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      }
-    ]
-  },
+  "category1": {
+    "category": "Advanced Tweaks - CAUTION"
+  },  
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a021_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -10148,12 +9863,55 @@ $sync.configs.tweaks = '{
       "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
     ]
   },
+  "WPFTweaksUTC": {
+    "Content": "Set Time to UTC (Dual Boot)",
+    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+        "Name": "RealTimeIsUniversal",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ]
+  },
+  "WPFTweaksDisableUAC": {
+    "Content": "Disable UAC",
+    "Description": "Disables User Account Control. Only recommended for Expert Users.",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "OriginalValue": "5",
+        "Name": "ConsentPromptBehaviorAdmin",
+        "Value": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFTweaksDisableNotifications": {
+    "Content": "Disable Notification Tray/Calendar",
+    "Description": "Disables all Notifications INCLUDING Calendar",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisableNotificationCenter",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+        "Name": "ToastEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a025_",
     "appx": [
       "Microsoft.Microsoft3DViewer",
       "Microsoft.AppConnector",
@@ -10267,84 +10025,9 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksRestorePoint": {
-    "Content": "Create Restore Point",
-    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Checked": "True",
-    "Order": "a001_",
-    "InvokeScript": [
-      "
-        # Check if the user has administrative privileges
-        if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-            Write-Host \"Please run this script as an administrator.\"
-            return
-        }
-    
-        # Check if System Restore is enabled for the main drive
-        try {
-            # Try getting restore points to check if System Restore is enabled
-            Enable-ComputerRestore -Drive \"$env:SystemDrive\"
-        } catch {
-            Write-Host \"An error occurred while enabling System Restore: $_\"
-        }
-    
-        # Check if the SystemRestorePointCreationFrequency value exists
-        $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists){
-            write-host ''Changing system to allow multiple restore points per day''
-            Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
-        }
-    
-        # Get all the restore points for the current day
-        $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
-    
-        # Check if there is already a restore point created today
-        if ($existingRestorePoints.Count -eq 0) {
-            $description = \"System Restore Point created by WinUtil\"
-    
-            Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
-            Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
-        }
-      "
-    ]
-  },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a002_",
-    "Content": "Run OO Shutup",
-    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
-    "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
-       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
-       "
-    ]
-  },
-  "WPFTweaksStorage": {
-    "Content": "Disable Storage Sense",
-    "Description": "Storage Sense deletes temp files automatically.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a010_",
-    "InvokeScript": [
-      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
-    ],
-    "UndoScript": [
-      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
-      "
-    ]
-  },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
     "Description": "Removes MS Edge when it gets reinstalled by updates.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a026_",
     "InvokeScript": [
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
@@ -10364,9 +10047,6 @@ $sync.configs.tweaks = '{
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a027_",
     "InvokeScript": [
         "
 
@@ -10443,35 +10123,9 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksDisableNotifications": {
-    "Content": "Disable Notification Tray/Calendar",
-    "Description": "Disables all Notifications INCLUDING Calendar",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a024_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
-        "Name": "DisableNotificationCenter",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
-        "Name": "ToastEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a028_",
     "InvokeScript": [
       "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
     ],
@@ -10482,252 +10136,244 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksDiskCleanup": {
-    "Content": "Run Disk Cleanup",
-    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a007_",
+  "WPFTweaksEnableipsix": {
+    "Content": "Enable IPv6",
+    "Description": "Enables IPv6.",
     "InvokeScript": [
-      "
-      cleanmgr.exe /d C: /VERYLOWDISK
-      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
-      "
-    ]
-  },
-  "WPFTweaksDisableUAC": {
-    "Content": "Disable UAC",
-    "Description": "Disables User Account Control. Only recommended for Expert Users.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "OriginalValue": "5",
-        "Name": "ConsentPromptBehaviorAdmin",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFTweaksDeleteTempFiles": {
-    "Content": "Delete Temporary Files",
-    "Description": "Erases TEMP Folders",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a006_",
-    "InvokeScript": [
-      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
-    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
-  },
-  "WPFTweaksDVR": {
-    "Content": "Disable GameDVR",
-    "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a012_",
-    "registry": [
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_FSEBehavior",
-        "Value": "2",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_Enabled",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_EFSEFeatureFlags",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
-        "Name": "AllowGameDVR",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFTweaksTeredo": {
-    "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a029_",
-    "Order": "a013_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "netsh interface teredo set state disabled"
+      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
-      "netsh interface teredo set state default"
+      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a031_",
     "InvokeScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
-  },
-  "WPFTweaksEnableipsix": {
-    "Content": "Enable IPv6",
-    "Description": "Enables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a030_",
-    "InvokeScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ],
-    "UndoScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
-  },
-  "WPFToggleDarkMode": {
-    "Content": "Dark Theme",
-    "Description": "Enable/Disable Dark Mode.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a060_",
-    "Type": "Toggle"
-  },
-  "WPFToggleBingSearch": {
-    "Content": "Bing Search in Start Menu",
-    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a061_",
-    "Type": "Toggle"
-  },
-  "WPFToggleNumLock": {
-    "Content": "NumLock on Startup",
-    "Description": "Toggle the Num Lock key state when your computer starts.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a062_",
-    "Type": "Toggle"
-  },
-  "WPFToggleVerboseLogon": {
-    "Content": "Verbose Logon Messages",
-    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a063_",
-    "Type": "Toggle"
-  },
-  "WPFToggleShowExt": {
-    "Content": "Show File Extensions",
-    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a064_",
-    "Type": "Toggle"
-  },
-  "WPFToggleSnapFlyout": {
-    "Content": "Snap Assist Flyout",
-    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a065_",
-    "Type": "Toggle"
-  },
-  "WPFToggleMouseAcceleration": {
-    "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a066_",
-    "Type": "Toggle"
-  },
-  "WPFToggleStickyKeys": {
-    "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a067_",
-    "Type": "Toggle"
   },
   "WPFchangedns": {
     "Content": "DNS",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a040_",
     "Type": "Combobox",
     "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a041_",
     "Type": "160"
   },
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a042_",
     "Type": "160"
+  },
+  "panel1": {},
+  "category3": {
+    "category": "Customize Preferences"
+  },
+  "WPFToggleDarkMode": {
+    "Content": "Dark Theme",
+    "Description": "Enable/Disable Dark Mode.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "AppsUseLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "Name": "SystemUsesLightTheme",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleBingSearch": {
+    "Content": "Bing Search in Start Menu",
+    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "Name": "BingSearchEnabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleNumLock": {
+    "Content": "NumLock on Startup",
+    "Description": "Toggle the Num Lock key state when your computer starts.",
+    "category": "Customize Preferences",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Keyboard",
+        "Name": "InitialKeyboardIndicators",
+        "Value": "2",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleVerboseLogon": {
+    "Content": "Verbose Logon Messages",
+    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "VerboseStatus",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleShowExt": {
+    "Content": "Show File Extensions",
+    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "HideFileExt",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleSnapFlyout": {
+    "Content": "Snap Assist Flyout",
+    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Name": "EnableSnapAssistFlyout",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "taskkill.exe /F /IM \"explorer.exe\"
+      Start-Process \"explorer.exe\""
+    ],
+    "UndoScript": [
+      "taskkill.exe /F /IM \"explorer.exe\"
+      Start-Process \"explorer.exe\""
+    ]
+  },
+  "WPFToggleMouseAcceleration": {
+    "Content": "Mouse Acceleration",
+    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseSpeed",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold1",
+        "Value": "6",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKCU:\\Control Panel\\Mouse",
+        "Name": "MouseThreshold2",
+        "Value": "10",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "WPFToggleStickyKeys": {
+    "Content": "Sticky Keys",
+    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Control Panel\\Accessibility\\StickyKeys",
+        "Name": "Flags",
+        "Value": "510",
+        "OriginalValue": "58",
+        "Type": "DWord"
+      }
+    ]
+  },
+  "category4": {
+    "category": "Performance Plans"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
-    "category": "Performance Plans",
-    "panel": "2",
-    "Order": "a080_",
     "Type": "300"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
-    "category": "Performance Plans",
-    "panel": "2",
-    "Order": "a081_",
     "Type": "300"
+  },
+  "category5": {
+    "category": "Shortcuts"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
-    "category": "Shortcuts",
-    "panel": "2",
-    "Order": "a082_",
     "Type": "300"
+  }
+}' | convertfrom-json
+$sync.configs.updates = '{
+  "WPFUpdatesdefault": {
+    "Content": "Default (Out of Box) Settings",
+    "Type": "150",
+    "TextBlock": "This is the default settings that come with Windows.
+    
+    No modifications are made and will remove any custom windows update settings.
+    
+    Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatesdefault"
+    ]
+  },
+  "panel1": {},
+  "WPFUpdatessecurity": {
+    "Content": "Security (Recommended) Settings",
+    "Type": "150",
+    "TextBlock": "This is my recommended setting I use on all computers.
+    
+    It will delay feature updates by 2 years and will install security updates 4 days after release.
+    
+    Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.
+    
+    Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatessecurity"
+    ]
+  },
+  "panel2": {},
+  "WPFUpdatesdisable": {
+    "Content": "Disable ALL Updates (NOT RECOMMENDED!)",
+    "Type": "150",
+    "TextBlock": "This completely disables ALL Windows Updates and is NOT RECOMMENDED.
+    
+    However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. 
+    
+    Note: Your system will be easier to hack and infect without security updates.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatesdisable"
+    ]
   }
 }' | convertfrom-json
 # SPDX-License-Identifier: MIT
@@ -10781,127 +10427,13 @@ $sync.runspace.Open()
         GenericException($Message) : base($Message) {}
     }
 
+$inputXML=Get-inputXMLWithTabs
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-function Get-TabXaml {
-    param( [Parameter(Mandatory=$true)]
-        $tabname,
-        $columncount = 0
-    )
-    $organizedData = @{}
-    # Iterate through JSON data and organize by panel and category
-    foreach ($appName in $sync.configs.$tabname.PSObject.Properties.Name) {
-        $appInfo = $sync.configs.$tabname.$appName
-
-        # Create an object for the application
-        $appObject = [PSCustomObject]@{
-            Name = $appName
-            Category = $appInfo.Category
-            Content = $appInfo.Content
-            Choco = $appInfo.choco
-            Winget = $appInfo.winget
-            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel}
-            Link = $appInfo.link
-            Description = $appInfo.description
-            # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
-            Type = $appInfo.type
-            ComboItems = $appInfo.ComboItems
-            # Checked is the property to set startup checked status of checkbox (Default is false)
-            Checked = $appInfo.Checked
-        }
-
-        if (-not $organizedData.ContainsKey($appObject.panel)) {
-            $organizedData[$appObject.panel] = @{}
-        }
-
-        if (-not $organizedData[$appObject.panel].ContainsKey($appObject.Category)) {
-            $organizedData[$appObject.panel][$appObject.Category] = @{}
-        }
-
-        # Store application data in a sub-array under the category
-        # Add Order property to keep the original order of tweaks and features
-        $organizedData[$appObject.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
-    }
-    $panelcount=0
-    $paneltotal = $organizedData.Keys.Count
-    if ($columncount -gt 0) {
-        $appcount = $sync.configs.$tabname.PSObject.Properties.Name.count + $organizedData["0"].Keys.count
-        $maxcount = [Math]::Round( $appcount / $columncount + 0.5)
-        $paneltotal = $columncount
-    }
-    # add ColumnDefinitions to evenly draw colums
-    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($paneltotal))+"</Grid.ColumnDefinitions>`n"
-    # Iterate through organizedData by panel, category, and application
-    $count = 0
-    foreach ($panel in ($organizedData.Keys | Sort-Object)) {
-        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
-        $panelcount++
-        foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
-            $count++
-            if ($columncount -gt 0) {
-                $panelcount2 = [Int](($count)/$maxcount-0.5)
-                if ($panelcount -eq $panelcount2 ) {
-                    $blockXml +="`n</StackPanel>`n</Border>`n"
-                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
-                    $panelcount++
-                }
-            }
-            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
-            $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
-            foreach ($appName in $sortedApps) {
-                $count++
-                if ($columncount -gt 0) {
-                    $panelcount2 = [Int](($count)/$maxcount-0.5)
-                    if ($panelcount -eq $panelcount2 ) {
-                        $blockXml +="`n</StackPanel>`n</Border>`n"
-                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
-                        $panelcount++
-                    }
-                }
-                $appInfo = $organizedData[$panel][$category][$appName]
-                if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
-                } elseif ("Combobox" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
-                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
-                    $addfirst="IsSelected=`"True`""
-                    foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
-                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`n"
-                        $addfirst=""
-                    }
-                    $blockXml += "</ComboBox>`n</StackPanel>"
-                # If it is a digit, type is button and button length is digits
-                } elseif ($appInfo.Type -match "^[\d\.]+$") {
-                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`n"
-                # else it is a checkbox
-                } else {
-                    $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
-                    if ($null -eq $appInfo.Link)
-                    {
-                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`n"
-                    }
-                    else
-                    {
-                        $blockXml += "<StackPanel Orientation=""Horizontal"">`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`n</StackPanel>`n"
-                    }
-                }
-            }
-        }
-        $blockXml +="`n</StackPanel>`n</Border>`n"
-    }
-    return ($blockXml)
-}
-
-$tabcolums=Get-TabXaml "applications" 5
-$inputXML = $inputXML -replace "{{InstallPanel_applications}}", ($tabcolums)
-$tabcolums=Get-TabXaml "tweaks"
-$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
-$tabcolums=Get-TabXaml "feature"
-$inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
-
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+$app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+$system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+if($app -eq 0 -and $system -eq 0){
     $ctttheme = 'Matrix'
 }
 else {
@@ -10936,11 +10468,10 @@ $sync.keys | ForEach-Object {
     if($sync.$psitem){
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
                 -and $sync["$psitem"].Name -like "WPFToggle*"){
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
+            $sync["$psitem"].IsChecked = Invoke-WinUtilCurrentSystemTweak $sync["$psitem"]
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
+                Invoke-WinUtilTweaks $Sender.name -undo (-not $($sync["$($Sender.name)"].IsChecked))
             })
         }
 
@@ -10954,7 +10485,15 @@ $sync.keys | ForEach-Object {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
+                if ($Sender.name -like "WPFPanel*" -or $Sender.name -like "WPFFixes*") {
+                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "feature"
+                }
+                elseif ($Sender.name -like "WPFUpdates*") {
+                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "updates"
+                }
+                else {
+                    Invoke-WPFButton $Sender.name
+                }
             })
         }
 
