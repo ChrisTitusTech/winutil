@@ -5348,7 +5348,7 @@ $inputXML = '<Window x:Class="WinUtility.MainWindow"
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
                                 - Add ability to use local accounts <LineBreak/>
-                                - Remove Wifi requirement to finish install <LineBreak/>
+                                - Remove Wi-Fi requirement to finish install <LineBreak/>
                                 - Ability to remove Edge <LineBreak/>
                                 - Ability to remove Defender <LineBreak/>
                                 - Remove Teams <LineBreak/>
