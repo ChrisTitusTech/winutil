@@ -5767,7 +5767,7 @@ $sync.configs.applications = '{
 		"choco": "devToys",
 		"content": "Devtoys",
 		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
-		"link": "https://dev.to/devtoys",
+		"link": "https://devtoys.app/",
 		"winget": "devtoys"
 	},
 	"WPFInstalldigikam": {
