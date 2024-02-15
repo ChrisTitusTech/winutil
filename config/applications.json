@@ -175,6 +175,14 @@
 		"link": "https://github.com/Mr-Technician/BorderlessMinecraft",
 		"winget":
 	},
+	"WPFInstallborderlessgaming": {
+		"category": "Games",
+		"choco": "borderlessgaming",
+		"content": "BorderlessGaming",
+		"description": "BorderlessMinecraft allows you to play game instances in 'windowed borderless mode'",
+		"link": "https://github.com/Codeusa/Borderless-Gaming/",
+		"winget": "Codeusa.BorderlessGaming"
+	},
 	"WPFInstallbrave": {
 		"category": "Browsers",
 		"choco": "brave",
