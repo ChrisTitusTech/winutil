@@ -967,6 +967,14 @@
 		"link": "https://www.linphone.org/",
 		"winget": "BelledonneCommunications.Linphone"
 	},
+	"WPFInstallline": {
+		"category": "Communications",
+		"choco": "line",
+		"content": "LINE",
+		"description": "A communication app that connects people, services, and information.",
+		"link": "https://line.me/",
+		"winget": "LINE.LINE"
+	},
 	"WPFInstalllivelywallpaper": {
 		"category": "Utilities",
 		"choco": "lively",
