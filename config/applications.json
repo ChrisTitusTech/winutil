@@ -167,6 +167,14 @@
 		"link": "https://www.bluestacks.com/",
 		"winget": "BlueStack.BlueStacks"
 	},
+	"WPFInstallborderlessminecraft": {
+		"category": "Games",
+		"choco": "borderlessminecraft",
+		"content": "BorderlessMinecraft",
+		"description": "BorderlessMinecraft allows you to play Minecraft instances in 'windowed borderless mode'",
+		"link": "https://github.com/Mr-Technician/BorderlessMinecraft",
+		"winget":
+	},
 	"WPFInstallbrave": {
 		"category": "Browsers",
 		"choco": "brave",
