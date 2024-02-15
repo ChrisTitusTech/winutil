@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.13
+    Version        : 24.02.15
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.13"
+$sync.version = "24.02.15"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -167,7 +167,7 @@ function Get-inputXMLWithTabs {
             }
             $tabbuttons=""
             if ($null -ne $tabInfo.Buttons) {
-                $tabInfo.Buttons.PsObject.Properties.Name | ForEach-Object {$tabbuttons+= (ConvertTo-xaml $tabInfo.Buttons.$_ $_)}
+                $tabInfo.Buttons.PsObject.Properties.Name | ForEach-Object {$tabbuttons+= (ConvertTo-xaml $tabInfo.Buttons.$_ "$($tabname)_Buttons_$($_)")}
                 $tabbuttons = "`n<StackPanel Background=`"{MainBackgroundColor}`" Orientation=`"Horizontal`" HorizontalAlignment=`"Left`" Grid.Row=`"0`" Grid.Column=`"0`" Grid.ColumnSpan=`"2`" Margin=`"10`">`n$($tabbuttons)`n</StackPanel>"
             }
             $tabfooter = ""
@@ -1468,10 +1468,11 @@ function Invoke-WinUtilTweaks {
     param(
         $CheckBox,
         $undo = $false,
-        $tabname = "tweaks"
+        $tabname = $sync.configs.tweaks
     )
 
     Write-Debug "$($tabname): $($CheckBox)"
+    
     if($undo){
         $Values = @{
             Registry = "OriginalValue"
@@ -1489,26 +1490,26 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.$tabname.$CheckBox.ScheduledTask){
-        $sync.configs.$tabname.$CheckBox.ScheduledTask | ForEach-Object {
+    if($tabname.$CheckBox.ScheduledTask){
+        $tabname.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.service){
-        $sync.configs.$tabname.$CheckBox.service | ForEach-Object {
+    if($tabname.$CheckBox.service){
+        $tabname.$CheckBox.service | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.registry){
-        $sync.configs.$tabname.$CheckBox.registry | ForEach-Object {
+    if($tabname.$CheckBox.registry){
+        $tabname.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.$($values.ScriptType)){
-        $sync.configs.$tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($tabname.$CheckBox.$($values.ScriptType)){
+        $tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
@@ -1516,14 +1517,14 @@ function Invoke-WinUtilTweaks {
     }
 
     if(!$undo){
-        if($sync.configs.$tabname.$CheckBox.appx){
-            $sync.configs.$tabname.$CheckBox.appx | ForEach-Object {
+        if($tabname.$CheckBox.appx){
+            $tabname.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-        if($sync.configs.$tabname.$CheckBox.feature){
-            Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+        if($tabname.$CheckBox.feature){
+            Foreach( $feature in $tabname.$CheckBox.feature ){
                 Try{
                     Write-Host "Installing $feature"
                     Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
@@ -2144,28 +2145,17 @@ function Invoke-WPFButton {
     Switch -Wildcard ($Button){
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
-        "WPFinstall" {Invoke-WPFInstall}
-        "WPFuninstall" {Invoke-WPFUnInstall}
-        "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
-        "WPFdesktop" {Invoke-WPFPresets "Desktop"}
-        "WPFlaptop" {Invoke-WPFPresets "laptop"}
-        "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
-        "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
-        "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
-        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
-        "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
-        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
-        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
-        "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
-    }
+        "WPFTweak*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.tweaks}
+        "WPFPanel*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.feature}
+        "WPFFixes*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.feature}
+        "WPFUpdates*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.updates}
+        "*_Buttons_*" {Invoke-WinUtilTweaks $($Button -replace ".*_Buttons_","") -undo $false -tabname $sync.configs.tabs.$($Button -replace '_Buttons.*','').Buttons}
+        }
 }
 function Invoke-WPFCloseButton {
 
@@ -2200,7 +2190,9 @@ function Invoke-WPFFeatureInstall {
 
         $sync.ProcessRunning = $true
 
-        Invoke-WinUtilTweaks $Features -undo $false -tabname feature
+        Foreach ($feature in $Features){
+            Invoke-WinUtilTweaks $feature -undo $false -tabname $sync.configs.feature
+        }
 
         $sync.ProcessRunning = $false
         Write-Host "==================================="
@@ -7460,9 +7452,12 @@ $sync.configs.feature = '{
     ]
 
   },
-  "WPFRunAdobeCCCleanerTool": {
+  "WPFFixesRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFRunAdobeCCCleanerTool"
+    ]
   },
   "panel1": {},
   "category10": {
@@ -7564,23 +7559,28 @@ $sync.configs.tabs = '{
       "Buttons": {
         "WPFinstall": {
           "Content": " Install Selected",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFInstall"]
         },
         "WPFInstallUpgrade": {
           "Content": " Upgrade All",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFInstallUpgrade"]
         },
         "WPFuninstall": {
           "Content": " Uninstall Selection",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFUnInstall"]
         },
         "WPFGetInstalled": {
           "Content": " Get Installed",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFGetInstalled -CheckBox ''winget''"]
         },
         "WPFclearWinget": {
           "Content": " Clear Selection",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets -preset $null -imported $true -CheckBox ''WPFInstall''"]
         }
       }
     },
@@ -7598,24 +7598,28 @@ $sync.configs.tabs = '{
         },
         "WPFdesktop": {
           "Content": " Desktop ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets ''Desktop''"]
         },
         "WPFlaptop": {
           "Content": " Laptop ",
-          "columncount": "1",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets ''laptop''"]
         },
         "WPFminimal": {
           "Content": " Minimal ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets ''minimal''"]
         },
         "WPFclear": {
           "Content": " Clear ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets -preset $null -imported $true"]
         },
         "WPFGetInstalledTweaks": {
           "Content": " Get Installed ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFGetInstalled -CheckBox ''tweaks''"]          
         }
       },
       "Footer": "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.  
@@ -10193,11 +10197,17 @@ $sync.configs.tweaks = '{
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
-    "Type": "160"
+    "Type": "160",
+    "InvokeScript": [
+      "Invoke-WPFtweaksbutton"
+    ]
   },
-  "WPFUndoall": {
+  "WPFTweaksUndoall": {
     "Content": "Undo Selected Tweaks",
-    "Type": "160"
+    "Type": "160",
+    "InvokeScript": [
+      "Invoke-WPFundoall"
+    ]
   },
   "panel1": {},
   "category3": {
@@ -10348,20 +10358,25 @@ $sync.configs.tweaks = '{
   "category4": {
     "category": "Performance Plans"
   },
-  "WPFAddUltPerf": {
+  "WPFTweaksAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": ["Invoke-WPFUltimatePerformance -State ''Enabled''"]  
   },
-  "WPFRemoveUltPerf": {
+  "WPFTweaksRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": ["Invoke-WPFUltimatePerformance -State ''Disabled''"]  
   },
   "category5": {
     "category": "Shortcuts"
   },
-  "WPFWinUtilShortcut": {
+  "WPFTweaksWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFShortcut -ShortcutToAdd ''WinUtil''"
+    ]  
   }
 }' | convertfrom-json
 $sync.configs.updates = '{
@@ -10515,16 +10530,8 @@ $sync.keys | ForEach-Object {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                if ($Sender.name -like "WPFPanel*" -or $Sender.name -like "WPFFixes*") {
-                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "feature"
-                }
-                elseif ($Sender.name -like "WPFUpdates*") {
-                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "updates"
-                }
-                else {
                     Invoke-WPFButton $Sender.name
-                }
-            })
+                })
         }
 
         if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {

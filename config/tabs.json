@@ -11,23 +11,28 @@
       "Buttons": {
         "WPFinstall": {
           "Content": " Install Selected",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFInstall"]
         },
         "WPFInstallUpgrade": {
           "Content": " Upgrade All",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFInstallUpgrade"]
         },
         "WPFuninstall": {
           "Content": " Uninstall Selection",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFUnInstall"]
         },
         "WPFGetInstalled": {
           "Content": " Get Installed",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFGetInstalled -CheckBox 'winget'"]
         },
         "WPFclearWinget": {
           "Content": " Clear Selection",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets -preset $null -imported $true -CheckBox 'WPFInstall'"]
         }
       }
     },
@@ -45,24 +50,28 @@
         },
         "WPFdesktop": {
           "Content": " Desktop ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets 'Desktop'"]
         },
         "WPFlaptop": {
           "Content": " Laptop ",
-          "columncount": "1",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets 'laptop'"]
         },
         "WPFminimal": {
           "Content": " Minimal ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets 'minimal'"]
         },
         "WPFclear": {
           "Content": " Clear ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFPresets -preset $null -imported $true"]
         },
         "WPFGetInstalledTweaks": {
           "Content": " Get Installed ",
-          "Type": "Button"
+          "Type": "Button",
+          "InvokeScript": ["Invoke-WPFGetInstalled -CheckBox 'tweaks'"]          
         }
       },
       "Footer": "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.  

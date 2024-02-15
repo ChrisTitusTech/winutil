@@ -19,7 +19,9 @@ function Invoke-WPFFeatureInstall {
 
         $sync.ProcessRunning = $true
 
-        Invoke-WinUtilTweaks $Features -undo $false -tabname feature
+        Foreach ($feature in $Features){
+            Invoke-WinUtilTweaks $feature -undo $false -tabname $sync.configs.feature
+        }
 
         $sync.ProcessRunning = $false
         Write-Host "==================================="

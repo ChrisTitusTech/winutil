@@ -21,7 +21,7 @@ function Get-inputXMLWithTabs {
             }
             $tabbuttons=""
             if ($null -ne $tabInfo.Buttons) {
-                $tabInfo.Buttons.PsObject.Properties.Name | ForEach-Object {$tabbuttons+= (ConvertTo-xaml $tabInfo.Buttons.$_ $_)}
+                $tabInfo.Buttons.PsObject.Properties.Name | ForEach-Object {$tabbuttons+= (ConvertTo-xaml $tabInfo.Buttons.$_ "$($tabname)_Buttons_$($_)")}
                 $tabbuttons = "`n<StackPanel Background=`"{MainBackgroundColor}`" Orientation=`"Horizontal`" HorizontalAlignment=`"Left`" Grid.Row=`"0`" Grid.Column=`"0`" Grid.ColumnSpan=`"2`" Margin=`"10`">`n$($tabbuttons)`n</StackPanel>"
             }
             $tabfooter = ""

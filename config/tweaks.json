@@ -2485,11 +2485,17 @@
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
-    "Type": "160"
+    "Type": "160",
+    "InvokeScript": [
+      "Invoke-WPFtweaksbutton"
+    ]
   },
-  "WPFUndoall": {
+  "WPFTweaksUndoall": {
     "Content": "Undo Selected Tweaks",
-    "Type": "160"
+    "Type": "160",
+    "InvokeScript": [
+      "Invoke-WPFundoall"
+    ]
   },
   "panel1": {},
   "category3": {
@@ -2640,19 +2646,24 @@
   "category4": {
     "category": "Performance Plans"
   },
-  "WPFAddUltPerf": {
+  "WPFTweaksAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": ["Invoke-WPFUltimatePerformance -State 'Enabled'"]  
   },
-  "WPFRemoveUltPerf": {
+  "WPFTweaksRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": ["Invoke-WPFUltimatePerformance -State 'Disabled'"]  
   },
   "category5": {
     "category": "Shortcuts"
   },
-  "WPFWinUtilShortcut": {
+  "WPFTweaksWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFShortcut -ShortcutToAdd 'WinUtil'"
+    ]  
   }
 }

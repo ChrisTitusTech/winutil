@@ -18,26 +18,15 @@ function Invoke-WPFButton {
     Switch -Wildcard ($Button){
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
-        "WPFinstall" {Invoke-WPFInstall}
-        "WPFuninstall" {Invoke-WPFUnInstall}
-        "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
-        "WPFdesktop" {Invoke-WPFPresets "Desktop"}
-        "WPFlaptop" {Invoke-WPFPresets "laptop"}
-        "WPFminimal" {Invoke-WPFPresets "minimal"}
-        "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
-        "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
-        "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
-        "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
-        "WPFundoall" {Invoke-WPFundoall}
         "WPFFeatureInstall" {Invoke-WPFFeatureInstall}
-        "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
-        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
-        "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
-        "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
-    }
+        "WPFTweak*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.tweaks}
+        "WPFPanel*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.feature}
+        "WPFFixes*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.feature}
+        "WPFUpdates*" {Invoke-WinUtilTweaks $Button -undo $false -tabname $sync.configs.updates}
+        "*_Buttons_*" {Invoke-WinUtilTweaks $($Button -replace ".*_Buttons_","") -undo $false -tabname $sync.configs.tabs.$($Button -replace '_Buttons.*','').Buttons}
+        }
 }

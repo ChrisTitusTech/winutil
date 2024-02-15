@@ -107,16 +107,8 @@ $sync.keys | ForEach-Object {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                if ($Sender.name -like "WPFPanel*" -or $Sender.name -like "WPFFixes*") {
-                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "feature"
-                }
-                elseif ($Sender.name -like "WPFUpdates*") {
-                    Invoke-WinUtilTweaks $Sender.name -undo $false -tabname "updates"
-                }
-                else {
                     Invoke-WPFButton $Sender.name
-                }
-            })
+                })
         }
 
         if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {

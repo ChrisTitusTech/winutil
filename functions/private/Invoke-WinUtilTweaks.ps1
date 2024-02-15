@@ -15,10 +15,11 @@ function Invoke-WinUtilTweaks {
     param(
         $CheckBox,
         $undo = $false,
-        $tabname = "tweaks"
+        $tabname = $sync.configs.tweaks
     )
 
     Write-Debug "$($tabname): $($CheckBox)"
+    
     if($undo){
         $Values = @{
             Registry = "OriginalValue"
@@ -36,26 +37,26 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.$tabname.$CheckBox.ScheduledTask){
-        $sync.configs.$tabname.$CheckBox.ScheduledTask | ForEach-Object {
+    if($tabname.$CheckBox.ScheduledTask){
+        $tabname.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.service){
-        $sync.configs.$tabname.$CheckBox.service | ForEach-Object {
+    if($tabname.$CheckBox.service){
+        $tabname.$CheckBox.service | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
             Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.registry){
-        $sync.configs.$tabname.$CheckBox.registry | ForEach-Object {
+    if($tabname.$CheckBox.registry){
+        $tabname.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.$tabname.$CheckBox.$($values.ScriptType)){
-        $sync.configs.$tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
+    if($tabname.$CheckBox.$($values.ScriptType)){
+        $tabname.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
             Invoke-WinUtilScript -ScriptBlock $scriptblock -Name $CheckBox
@@ -63,14 +64,14 @@ function Invoke-WinUtilTweaks {
     }
 
     if(!$undo){
-        if($sync.configs.$tabname.$CheckBox.appx){
-            $sync.configs.$tabname.$CheckBox.appx | ForEach-Object {
+        if($tabname.$CheckBox.appx){
+            $tabname.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem
             }
         }
-        if($sync.configs.$tabname.$CheckBox.feature){
-            Foreach( $feature in $sync.configs.feature.$CheckBox.feature ){
+        if($tabname.$CheckBox.feature){
+            Foreach( $feature in $tabname.$CheckBox.feature ){
                 Try{
                     Write-Host "Installing $feature"
                     Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart

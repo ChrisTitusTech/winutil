@@ -192,9 +192,12 @@
     ]
 
   },
-  "WPFRunAdobeCCCleanerTool": {
+  "WPFFixesRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
-    "Type": "300"
+    "Type": "300",
+    "InvokeScript": [
+      "Invoke-WPFRunAdobeCCCleanerTool"
+    ]
   },
   "panel1": {},
   "category10": {
