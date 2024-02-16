@@ -2270,5 +2270,13 @@
 		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
 		"link": "https://pyenv-win.github.io/pyenv-win/",
 		"winget": "na"
+	},
+	"WPFInstalllightshot": {
+		"category": "Multimedia Tools",
+		"choco": "lightshot",
+		"content": "Lightshot (Screenshots)",
+		"description": "Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
+		"link": "https://app.prntscr.com/",
+		"winget": "Skillbrains.Lightshot"
 	}
 }
