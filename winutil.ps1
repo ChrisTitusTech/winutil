@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.07
+    Version        : 24.02.18
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.07"
+$sync.version = "24.02.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -7660,7 +7660,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel? PresentMon",
+		"content": "Intel?? PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
@@ -10620,6 +10620,38 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFTweaksTakeOwnershipContextMenu": {
+    "Content": "Enable Take Ownership in context menu",
+    "Description": "Enables Take Ownership in file explorer context menu. Useful if windows is being fussy with external drives.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
+    "InvokeScript": [
+      "
+      New-Item -Path \"Registry::HKCR:\\*\\shell\\runas\" -Force | Out-Null
+      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\" -Name \"(default)\" -Value ''Take Ownership''
+      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\" -Name \"NoWorkingDirectory\" -Value ''''
+
+      New-Item -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Force | Out-Null
+      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Name \"(default)\" -Value ''cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /grant administrators:F''
+      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Name \"IsolatedCommand\" -Value ''cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /grant administrators:F''
+      
+      New-Item -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Force | Out-Null
+      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Name \"(default)\" -Value ''Take Ownership''
+      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Name \"NoWorkingDirectory\" -Value ''''
+
+      New-Item -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Force | Out-Null
+      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Name \"(default)\" -Value ''cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t''
+      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Name \"IsolatedCommand\" -Value ''cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t''
+      "
+    ],
+    "UndoScript": [
+      "
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path \"Registry::HKCR:\\*\\shell\\runas\"
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path \"Registry::HKCR:\\Directory\\shell\\runas\" 
+      "
     ]
   },
   "WPFToggleDarkMode": {
