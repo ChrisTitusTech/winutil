@@ -1375,7 +1375,23 @@
 		"link": "https://playnite.link/",
 		"winget": "Playnite.Playnite"
 	},
-	"WPFInstallplex": {
+	"WPFInstallplexamp": {
+		"category": "Multimedia Tools",
+		"choco": "plexamp",
+		"content": "Plex Amp",
+		"description": "Plex Amp for Plex Pass users is a music playing software for Plex Media Server that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features. You need Plex Pass which is paid software upgrades.",
+		"link": "https://www.plex.tv/plexamp/",
+		"winget": "Plex.Plexamp"
+	},
+	"WPFInstallplexmediaplayer": {
+		"category": "Multimedia Tools",
+		"choco": "plexmediaplayer",
+		"content": "Plex Media Player",
+		"description": "Plex Media Player is a media playing software that allows you to watch or listen to your media library. It supports various media formats and offers a wide range of features.",
+		"link": "https://www.plex.tv/your-media/",
+		"winget": "Plex.PlexMediaPlayer"
+	},
+	"WPFInstallplexmediaserver": {
 		"category": "Multimedia Tools",
 		"choco": "plexmediaserver",
 		"content": "Plex Media Server",
