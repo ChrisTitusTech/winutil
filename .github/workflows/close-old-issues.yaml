@@ -14,7 +14,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const octokit = context.octokit;
+          const octokit = github;
 
           // Get the repository owner and name
           const { owner, repo } = context.repo;
