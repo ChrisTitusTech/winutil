@@ -3,7 +3,7 @@ name: Close Inactive Issues
 on:
   schedule:
     - cron: '0 0 * * *'  # Run daily
-
+  workflow_dispatch:  # This line enables manual triggering
 jobs:
   close-issues:
     runs-on: ubuntu-latest
