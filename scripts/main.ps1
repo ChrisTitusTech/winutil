@@ -54,17 +54,19 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 
 # Assuming inputApp.xaml is in the same directory as main.ps1
 $appXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputApp.xaml"
+$tweaksXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputTweaks.xaml"
+$featuresXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputFeatures.xaml"
 
 # Load the XAML content from inputApp.xaml
 $appXamlContent = Get-Content -Path $appXamlPath -Raw
+$tweaksXamlContent = Get-Content -Path $tweaksXamlPath -Raw
+$featuresXamlContent = Get-Content -Path $featuresXamlPath -Raw
 
 # Replace the placeholder in $inputXML with the content of inputApp.xaml
 $inputXML = $inputXML -replace "{{InstallPanel_applications}}", $appXamlContent
+$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
+$inputXML = $inputXML -replace "{{InstallPanel_features}}", $featuresXamlContent
 
-$tabcolums=Get-TabXaml "tweaks"
-$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", ($tabcolums)
-$tabcolums=Get-TabXaml "feature"
-$inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Matrix'

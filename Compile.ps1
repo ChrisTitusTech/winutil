@@ -39,5 +39,9 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
 ## Xaml Manipulation
 $tabColumns = Get-TabXaml "applications" 5
 $tabColumns | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
+$tabColumns = Get-TabXaml "tweaks"
+$tabColumns | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
+$tabColumns = Get-TabXaml "feature"
+$tabColumns | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii
 
 Get-Content .\scripts\main.ps1 | Out-File ./$scriptname -Append -Encoding ascii
