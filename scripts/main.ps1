@@ -170,7 +170,12 @@ $tabcolums=Get-TabXaml "feature"
 $inputXML = $inputXML -replace "{{InstallPanel_features}}", ($tabcolums)
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    $ctttheme = 'Matrix'
+    if (Invoke-GPUCheck -eq $True) {
+        $ctttheme = 'Matrix'
+    }
+    else {
+        $ctttheme = 'Dark'
+    }
 }
 else {
     $ctttheme = 'Classic'
