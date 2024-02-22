@@ -6648,7 +6648,7 @@ $sync.configs.applications = '{
 		"choco": "na",
 		"content": "Neofetch",
 		"description": "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
-		"link": "https://github.com/dylanaraps/neofetch",
+		"link": "https://github.com/nepnep39/neofetch-win",
 		"winget": "nepnep.neofetch-win"
 	},
 	"WPFInstallneovim": {
