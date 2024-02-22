@@ -1,6 +1,9 @@
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
-
+# Variable to sync between runspaces
+$sync = [Hashtable]::Synchronized(@{})
+$sync.PSScriptRoot = $PSScriptRoot
+$sync.configs = @{}
 
 if (Test-Path -Path "$($scriptname)")
 {
@@ -21,15 +24,24 @@ Get-ChildItem .\functions -Recurse -File | ForEach-Object {
     Get-Content $psitem.FullName | Out-File ./$scriptname -Append -Encoding ascii
 }
 
-Get-ChildItem .\xaml | ForEach-Object {
-    $xaml = (Get-Content $psitem.FullName).replace("'","''")
-    Write-output "`$$($psitem.BaseName) = '$xaml'" | Out-File ./$scriptname -Append -Encoding ascii
-}
+$xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
+Write-output "`$inputXML =  '$xaml'" | Out-File ./$scriptname -Append -Encoding ascii
 
 Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
     $json = (Get-Content $psitem.FullName).replace("'","''")
-
+    $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" | Out-File ./$scriptname -Append -Encoding ascii
 }
+
+# Dot-source the Get-TabXaml function
+. .\functions\private\Get-TabXaml.ps1
+
+## Xaml Manipulation
+$tabColumns = Get-TabXaml "applications" 5
+$tabColumns | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
+$tabColumns = Get-TabXaml "tweaks"
+$tabColumns | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
+$tabColumns = Get-TabXaml "feature"
+$tabColumns | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii
 
 Get-Content .\scripts\main.ps1 | Out-File ./$scriptname -Append -Encoding ascii

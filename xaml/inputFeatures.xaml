@@ -1,0 +1,43 @@
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+</Grid.ColumnDefinitions>
+<Border Grid.Row="1" Grid.Column="0">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Features" FontSize="16"/>
+<CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"  ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
+<CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"  ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
+<CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"  ToolTip="Enables legacy programs from previous versions of windows"/>
+<CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"  ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
+<CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"  ToolTip="Enables web suggestions when searching using Windows Search."/>
+<CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"  ToolTip="Disables web suggestions when searching using Windows Search."/>
+<CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0"  ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
+<CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0"  ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
+<CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0"  ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
+<CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"  ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
+<CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"  ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
+<Button Name="WPFFeatureInstall" Content="Install Features" HorizontalAlignment = "Left" Width="150" Margin="5" Padding="20,5" />
+<Label Content="Fixes" FontSize="16"/>
+<Button Name="WPFPanelAutologin" Content="Set Up Autologin" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesUpdate" Content="Reset Windows Update" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesNetwork" Content="Reset Network" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelDISM" Content="System Corruption Scan" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesWinget" Content="WinGet Reinstall" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFRunAdobeCCCleanerTool" Content="Remove Adobe Creative Cloud" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="1">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Legacy Windows Panels" FontSize="16"/>
+<Button Name="WPFPanelcontrol" Content="Control Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelnetwork" Content="Network Connections" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelpower" Content="Power Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelregion" Content="Region" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelsound" Content="Sound Settings" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelsystem" Content="System Properties" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPaneluser" Content="User Accounts" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+
