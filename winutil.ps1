@@ -10,6 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
+    Version        : 24.02.21
 #>
 param (
     [switch]$Debug,
@@ -46,6 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
+$sync.version = "24.02.21"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -10627,29 +10629,18 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a031_",
     "InvokeScript": [
-      "
-      New-Item -Path \"Registry::HKCR:\\*\\shell\\runas\" -Force | Out-Null
-      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\" -Name \"(default)\" -Value ''Take Ownership''
-      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\" -Name \"NoWorkingDirectory\" -Value ''''
-
-      New-Item -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Force | Out-Null
-      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Name \"(default)\" -Value ''cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /grant administrators:F''
-      Set-ItemProperty -Path \"Registry::HKCR:\\*\\shell\\runas\\command\" -Name \"IsolatedCommand\" -Value ''cmd.exe /c takeown /f \"%1\" && icacls \"%1\" /grant administrators:F''
-      
-      New-Item -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Force | Out-Null
-      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Name \"(default)\" -Value ''Take Ownership''
-      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\" -Name \"NoWorkingDirectory\" -Value ''''
-
-      New-Item -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Force | Out-Null
-      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Name \"(default)\" -Value ''cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t''
-      Set-ItemProperty -Path \"Registry::HKCR:\\Directory\\shell\\runas\\command\" -Name \"IsolatedCommand\" -Value ''cmd.exe /c takeown /f \"%1\" /r /d y && icacls \"%1\" /grant administrators:F /t''
-      "
+      "reg add \"HKCR\\*\\shell\\runas\" /ve /d \"Take Ownership\" /f",
+      "reg add \"HKCR\\*\\shell\\runas\" /v \"NoWorkingDirectory\" /d \"\" /f",
+      "reg add \"HKCR\\*\\shell\\runas\\command\" /ve /d \"cmd.exe /c takeown /f ''%1'' && icacls ''%1'' /grant administrators:F\" /f",
+      "reg add \"HKCR\\*\\shell\\runas\\command\" /v \"IsolatedCommand\" /d \"cmd.exe /c takeown /f ''%1'' && icacls ''%1'' /grant administrators:F\" /f",
+      "reg add \"HKCR\\Directory\\shell\\runas\" /ve /d \"Take Ownership\" /f",
+      "reg add \"HKCR\\Directory\\shell\\runas\" /v \"NoWorkingDirectory\" /d \"\" /f",
+      "reg add \"HKCR\\Directory\\shell\\runas\\command\" /ve /d \"cmd.exe /c takeown /f ''%1'' /r /d y && icacls ''%1'' /grant administrators:F /t\" /f",
+      "reg add \"HKCR\\Directory\\shell\\runas\\command\" /v \"IsolatedCommand\" /d \"cmd.exe /c takeown /f ''%1'' /r /d y && icacls ''%1'' /grant administrators:F /t\" /f"
     ],
     "UndoScript": [
-      "
-      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path \"Registry::HKCR:\\*\\shell\\runas\"
-      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path \"Registry::HKCR:\\Directory\\shell\\runas\" 
-      "
+      "reg delete \"HKCR\\*\\shell\\runas\" /f",
+      "reg delete \"HKCR\\Directory\\shell\\runas\" /f"
     ]
   },
   "WPFToggleDarkMode": {
