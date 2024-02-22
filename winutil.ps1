@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.02.21
+    Version        : 24.02.22
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.02.21"
+$sync.version = "24.02.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2539,7 +2539,7 @@ function Invoke-WPFButton {
         "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
-        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil"}
+        "WPFWinUtilShortcut" {Invoke-WPFShortcut -ShortcutToAdd "WinUtil" -RunAsAdmin $true}
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFGetIso" {Invoke-WPFGetIso}
@@ -3964,8 +3964,14 @@ function Invoke-WPFShortcut {
     .PARAMETER ShortcutToAdd
         The name of the shortcut to add
 
+    .PARAMETER RunAsAdmin
+        A boolean value to make 'Run as administrator' property on (true) or off (false), defaults to off
+
     #>
-    param($ShortcutToAdd)
+    param(
+        $ShortcutToAdd,
+        [bool]$RunAsAdmin = $false
+    )
 
         $iconPath = $null
         Switch ($ShortcutToAdd) {
@@ -3998,7 +4004,14 @@ function Invoke-WPFShortcut {
     }
     $Shortcut.Save()
 
-    Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName)"
+    if ($RunAsAdmin -eq $true) {
+        $bytes = [System.IO.File]::ReadAllBytes($FileBrowser.FileName)
+        # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
+        $bytes[0x15] = $bytes[0x15] -bor 0x20
+        [System.IO.File]::WriteAllBytes($FileBrowser.FileName, $bytes)
+    }
+
+    Write-Host "Shortcut for $ShortcutToAdd has been saved to $($FileBrowser.FileName) with 'Run as administrator' set to $RunAsAdmin"
 }
 function Invoke-WPFTab {
 
