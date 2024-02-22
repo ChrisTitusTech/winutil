@@ -324,7 +324,7 @@
 		"choco": "devToys",
 		"content": "Devtoys",
 		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
-		"link": "https://dev.to/devtoys",
+		"link": "https://devtoys.app/",
 		"winget": "devtoys"
 	},
 	"WPFInstalldigikam": {
@@ -1108,7 +1108,7 @@
 		"choco": "na",
 		"content": "Neofetch",
 		"description": "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
-		"link": "https://github.com/dylanaraps/neofetch",
+		"link": "https://github.com/nepnep39/neofetch-win",
 		"winget": "nepnep.neofetch-win"
 	},
 	"WPFInstallneovim": {
