@@ -1,0 +1,42 @@
+{
+  "WPFUpdatesdefault": {
+    "Content": "Default (Out of Box) Settings",
+    "Type": "150",
+    "TextBlock": "This is the default settings that come with Windows.
+    
+    No modifications are made and will remove any custom windows update settings.
+    
+    Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatesdefault"
+    ]
+  },
+  "panel1": {},
+  "WPFUpdatessecurity": {
+    "Content": "Security (Recommended) Settings",
+    "Type": "150",
+    "TextBlock": "This is my recommended setting I use on all computers.
+    
+    It will delay feature updates by 2 years and will install security updates 4 days after release.
+    
+    Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.
+    
+    Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatessecurity"
+    ]
+  },
+  "panel2": {},
+  "WPFUpdatesdisable": {
+    "Content": "Disable ALL Updates (NOT RECOMMENDED!)",
+    "Type": "150",
+    "TextBlock": "This completely disables ALL Windows Updates and is NOT RECOMMENDED.
+    
+    However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. 
+    
+    Note: Your system will be easier to hack and infect without security updates.",
+    "InvokeScript": [
+        "Invoke-WPFUpdatesdisable"
+    ]
+  }
+}

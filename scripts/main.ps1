@@ -49,26 +49,11 @@ $sync.runspace.Open()
         GenericException($Message) : base($Message) {}
     }
 
-
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-# Assuming inputApp.xaml is in the same directory as main.ps1
-$appXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputApp.xaml"
-$tweaksXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputTweaks.xaml"
-$featuresXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputFeatures.xaml"
-
-# Load the XAML content from inputApp.xaml
-$appXamlContent = Get-Content -Path $appXamlPath -Raw
-$tweaksXamlContent = Get-Content -Path $tweaksXamlPath -Raw
-$featuresXamlContent = Get-Content -Path $featuresXamlPath -Raw
-
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-$inputXML = $inputXML -replace "{{InstallPanel_applications}}", $appXamlContent
-$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$inputXML = $inputXML -replace "{{InstallPanel_features}}", $featuresXamlContent
-
-
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+$app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
+$system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
+if($app -eq 0 -and $system -eq 0){
     $ctttheme = 'Matrix'
 }
 else {
@@ -103,11 +88,10 @@ $sync.keys | ForEach-Object {
     if($sync.$psitem){
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
                 -and $sync["$psitem"].Name -like "WPFToggle*"){
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
+            $sync["$psitem"].IsChecked = Invoke-WinUtilCurrentSystemTweak $sync["$psitem"]
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
+                Invoke-WinUtilTweaks $Sender.name -undo (-not $($sync["$($Sender.name)"].IsChecked))
             })
         }
 
@@ -121,8 +105,8 @@ $sync.keys | ForEach-Object {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
-                Invoke-WPFButton $Sender.name
-            })
+                    Invoke-WPFButton $Sender.name
+                })
         }
 
         if ($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "TextBlock") {
