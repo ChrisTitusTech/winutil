@@ -3,10 +3,12 @@ name: Close Inactive Issues
 on:
   schedule:
     - cron: '0 0 * * *'  # Run daily
-
+  workflow_dispatch:  # This line enables manual triggering
 jobs:
   close-issues:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write  # Ensure necessary permissions for issues
 
     steps:
     - name: Close inactive issues
@@ -14,43 +16,50 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const octokit = github.getOctokit();
+          const octokit = github;
 
           // Get the repository owner and name
-          const { owner, repo } = github.context.repo;
+          const { owner, repo } = context.repo;
 
           // Define the inactivity period (14 days)
           const inactivityPeriod = new Date();
           inactivityPeriod.setDate(inactivityPeriod.getDate() - 14);
 
-          async function run() {
-            // Get all open issues
-            const issues = await octokit.issues.listForRepo({
+          try {
+            // Get all open issues with pagination
+            for await (const response of octokit.paginate.iterator(octokit.rest.issues.listForRepo, {
               owner,
               repo,
               state: 'open',
-            });
+            })) {
+              const issues = response.data;
 
-            // Close issues inactive for more than the inactivity period
-            for (const issue of issues.data) {
-              const lastCommentDate = issue.updated_at;
-              if (new Date(lastCommentDate) < inactivityPeriod) {
-                // Close the issue and add a comment
-                await octokit.issues.update({
-                  owner,
-                  repo,
-                  issue_number: issue.number,
-                  state: 'closed',
-                });
+              // Close issues inactive for more than the inactivity period
+              for (const issue of issues) {
+                const lastCommentDate = issue.updated_at;
+                if (new Date(lastCommentDate) < inactivityPeriod) {
+                  try {
+                    // Close the issue
+                    await octokit.rest.issues.update({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      state: 'closed',
+                    });
 
-                await octokit.issues.createComment({
-                  owner,
-                  repo,
-                  issue_number: issue.number,
-                  body: 'Closed due to inactivity',
-                });
+                    // Add a comment
+                    await octokit.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      body: 'Closed due to inactivity',
+                    });
+                  } catch (error) {
+                    console.error(`Error updating or commenting on issue #${issue.number}: ${error}`);
+                  }
+                }
               }
             }
+          } catch (error) {
+            console.error(`Error fetching issues: ${error}`);
           }
-
-          run().catch(error => console.error(error));
