@@ -622,6 +622,13 @@ function New-FirstRun {
 	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 	# Save the shortcut
 	$shortcut.Save()
+	
+        # Make the shortcut have 'Run as administrator' property on
+        $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+        # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
+        $bytes[0x15] = $bytes[0x15] -bor 0x20
+        [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
+        
 	Write-Host "Shortcut created at: $shortcutPath"
 	# 
 	# Done create WinUtil shortcut on the desktop
