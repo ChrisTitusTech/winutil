@@ -1628,7 +1628,7 @@
 		"link": "https://openvpn.net/",
 		"description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy."
 	},
-	"WPFInstallPortmaster": {
+	"WPFInstallportmaster": {
 		"winget": "Safing.Portmaster",
 		"choco": "portmaster",
 		"category": "Pro Tools",
@@ -1807,6 +1807,15 @@
 		"content": "Crystal Disk Info",
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health."
+	},
+	"WPFInstalldolphin": {
+		"winget": "KDE.Dolphin",
+		"choco": "na",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Dolphin File manager",
+		"link": "https://apps.kde.org/en/dolphin/",
+		"description": "Dolphin is a file manager for the KDE desktop environment. It provides a powerful and intuitive interface for managing files and folders on Linux systems."
 	},
 	"WPFInstallcrystaldiskmark": {
 		"winget": "CrystalDewWorld.CrystalDiskMark",
@@ -2337,7 +2346,7 @@
 		"panel": "4",
 		"content": "Xtreme Download Manager",
 		"link": "https://github.com/subhra74/xdm",
-		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*"
+		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers."
 	},
 	"WPFInstallzerotierone": {
 		"winget": "ZeroTier.ZeroTierOne",
