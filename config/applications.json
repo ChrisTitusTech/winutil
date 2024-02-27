@@ -99,7 +99,7 @@
 		"description": "Ungoogled Chromium is a version of Chromium without Google's integration for enhanced privacy and control."
 	},
 	"WPFInstallvivaldi": {
-		"winget": "VivaldiTechnologies.Vivaldi",
+		"winget": "Vivaldi.Vivaldi",
 		"choco": "vivaldi",
 		"category": "Browsers",
 		"panel": "0",
@@ -2203,6 +2203,24 @@
 		"content": "Spacedrive File Manager",
 		"link": "https://github.com/spacedriveapp/spacedrive",
 		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices. *Currently in Alpha 0.2.0, may be unstable*"
+	},
+	"WPFInstallkicad": {
+		"winget": "KiCad.KiCad",
+		"choco": "kicad",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "KiCad",
+		"link": "https://github.com/KiCad",
+		"description": "KiCad is a free software suite for electronic design automation. It facilitates the design of schematics for electronic circuits and their conversion to PCB designs."
+	},
+	"WPFInstallcryptomator": {
+		"winget": "Cryptomator.Cryptomator",
+		"choco": "cryptomator",
+		"category": "Utilities",
+		"panel": "4",
+		"content": "Cryptomator",
+		"link": "https://github.com/cryptomator/cryptomator",
+		"description": "Multi-platform transparent client-side encryption of your files in the cloud"
 	},
 	"WPFInstallsuperf4": {
 		"winget": "StefanSundin.Superf4",
