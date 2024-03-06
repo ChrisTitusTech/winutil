@@ -19,12 +19,18 @@ function Test-WinUtilPackageManager {
 
     # Install Winget if not detected
     $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
-    if ($wingetExists) {
-        $wingetVersion = [System.Version]::Parse((winget --version).Trim('v'))
+        if ($wingetExists) {
+        $wingetversionfull = (winget --version)
+        $wingetversiontrim = $wingetversionfull.Trim('v')
+        if ($wingetversiontrim.EndsWith("-preview")){
+            $wingetversiontrim =  $wingetversiontrim.Trim('-preview')
+            $wingetpreview = $true
+        }
+        $wingetVersion = [System.Version]::Parse($wingetversiontrim)
         $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
         $wingetOutdated = $wingetVersion -le $minimumWingetVersion
         
-        Write-Host "Winget v$wingetVersion"
+        Write-Host "Winget $wingetVersionfull"
     }
 
     if (!$wingetExists -or $wingetOutdated) {
@@ -34,10 +40,14 @@ function Test-WinUtilPackageManager {
             Write-Host "- Winget out-dated"
         } 
     }
-
+   
     if ($winget) {
         if ($wingetExists -and !$wingetOutdated) {
-            Write-Host "- Winget up-to-date"
+            if (!$wingetpreview){
+                Write-Host "- Winget up-to-date"
+            } else{
+                Write-Host "- Winget preview version detected. Unexptected problems may occur" -ForegroundColor Yellow
+            }
             return $true
         }
     }
