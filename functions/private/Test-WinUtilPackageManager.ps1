@@ -40,7 +40,7 @@ function Test-WinUtilPackageManager {
             Write-Host "- Winget out-dated"
         } 
     }
-   
+
     if ($winget) {
         if ($wingetExists -and !$wingetOutdated) {
             if (!$wingetpreview) {
