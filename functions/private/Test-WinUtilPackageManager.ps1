@@ -19,11 +19,11 @@ function Test-WinUtilPackageManager {
 
     # Install Winget if not detected
     $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
-        if ($wingetExists) {
+    if ($wingetExists) {
         $wingetversionfull = (winget --version)
         $wingetversiontrim = $wingetversionfull.Trim('v')
-        if ($wingetversiontrim.EndsWith("-preview")){
-            $wingetversiontrim =  $wingetversiontrim.Trim('-preview')
+        if ($wingetversiontrim.EndsWith("-preview")) {
+            $wingetversiontrim = $wingetversiontrim.Trim('-preview')
             $wingetpreview = $true
         }
         $wingetVersion = [System.Version]::Parse($wingetversiontrim)
@@ -43,17 +43,17 @@ function Test-WinUtilPackageManager {
    
     if ($winget) {
         if ($wingetExists -and !$wingetOutdated) {
-            if (!$wingetpreview){
+            if (!$wingetpreview) {
                 Write-Host "- Winget up-to-date"
-            } else{
+            } else {
                 Write-Host "- Winget preview version detected. Unexptected problems may occur" -ForegroundColor Yellow
             }
             return $true
         }
     }
 
-    if($choco){
-        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)){
+    if ($choco) {
+        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
             Write-Host "Chocolatey v$chocoVersion"
             return $true
         }
