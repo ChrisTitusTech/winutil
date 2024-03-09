@@ -5865,9 +5865,9 @@ $sync.configs.applications = '{
 	},
 	"WPFInstalldevtoys": {
 		"category": "Utilities",
-		"choco": "devToys",
-		"content": "Devtoys",
-		"description": "Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
+		"choco": "devtoys",
+		"content": "DevToys",
+		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://devtoys.app/",
 		"winget": "9PGCV4V3BK4W"
 	},
