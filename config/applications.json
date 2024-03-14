@@ -127,6 +127,14 @@
 		"link": "https://github.com/sharkdp/bat",
 		"winget": "sharkdp.bat"
 	},
+	"WPFInstallbetterbird": {
+		"category": "Communications",
+		"choco": "betterbird",
+		"content": "Betterbird",
+		"description": "Betterbird is a fine-tuned version of Mozilla Thunderbird, Thunderbird on steroids, if you will.",
+		"link": "https://www.betterbird.eu/",
+		"winget": "Betterbird.Betterbird"
+	},
 	"WPFInstallbitcomet": {
 		"category": "Utilities",
 		"choco": "bitcomet",
