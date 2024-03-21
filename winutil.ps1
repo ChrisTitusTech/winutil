@@ -12343,6 +12343,7 @@ $sync["AboutMenuItem"].Add_Click({
     $authorInfo = @"
 Author   : @christitustech
 Runspace : @DeveloperDurp
+GUI      : @KonTy
 MicroWin : @KonTy
 GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
