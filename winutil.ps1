@@ -10,7 +10,6 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.09
 #>
 param (
     [switch]$Debug,
@@ -47,7 +46,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.09"
+$sync.version = "24.03.21"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -672,8 +671,8 @@ Function Install-WinUtilProgramWinget {
             Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
-        }
+        Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
+	}
 
         $X++
     }
@@ -751,28 +750,23 @@ function Test-CompatibleImage() {
 <#
 
     .SYNOPSIS
-        Checks the version of a Windows image and determines whether or not it is compatible depending on the Major property
+        Checks the version of a Windows image and determines whether or not it is compatible with a specific feature depending on a desired version
 
-    .PARAMETER imgVersion
-        The version of the Windows image
+    .PARAMETER Name
+        imgVersion - The version of the Windows image
+        desiredVersion - The version to compare the image version with
 
 #>
 
     param
     (
-        [Parameter(Mandatory = $true)] [string] $imgVersion
+        [Parameter(Mandatory = $true, Position=0)] [string] $imgVersion,
+        [Parameter(Mandatory = $true, Position=1)] [Version] $desiredVersion
     )
 
     try {
         $version = [Version]$imgVersion
-        if ($version.Major -ge 10)
-        {
-            return $True
-        }
-        else
-        {
-            return $False
-        }
+        return $version -ge $desiredVersion
     } catch {
         return $False
     }
@@ -980,7 +974,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 
 	foreach($itemToDelete in $itemsToDelete)
 	{
-		$status = "Deleteing $($itemToDelete)"
+		$status = "Deleting $($itemToDelete)"
 		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
 
 		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
@@ -1054,7 +1048,7 @@ function New-Unattend {
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+        <#REPLACEME#>
 		<settings pass="auditUser">
 			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<RunSynchronous>
@@ -1095,6 +1089,26 @@ function New-Unattend {
 		</settings>
 	</unattend>
 '@
+    $specPass = @'
+<settings pass="specialize">
+            <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <CEIPEnabled>0</CEIPEnabled>
+            </component>
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
+            </component>
+        </settings>
+'@
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false)
+    {
+        # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
+        $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
+    }
+    else
+    {
+        # Replace the placeholder text with the Specialize pass
+        $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
+    }
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
@@ -1355,6 +1369,13 @@ function New-FirstRun {
 	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 	# Save the shortcut
 	$shortcut.Save()
+	
+        # Make the shortcut have 'Run as administrator' property on
+        $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+        # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
+        $bytes[0x15] = $bytes[0x15] -bor 0x20
+        [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
+        
 	Write-Host "Shortcut created at: $shortcutPath"
 	# 
 	# Done create WinUtil shortcut on the desktop
@@ -1584,6 +1605,35 @@ function Invoke-WinUtilFeatureInstall {
                     }
                 }
             }
+        }
+    }
+}
+function Invoke-GPUCheck {
+    $gpuInfo = Get-WmiObject Win32_VideoController
+    
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*NVIDIA*") {
+            return $true  # NVIDIA GPU found
+        }
+    }
+
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*AMD Radeon RX*") {
+            return $true # AMD GPU Found 
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*UHD*") {
+            return $false # Intel Intergrated GPU Found 
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*AMD Radeon(TM)*") {
+            return $false # AMD Intergrated GPU Found 
         }
     }
 }
@@ -2409,11 +2459,17 @@ function Test-WinUtilPackageManager {
     # Install Winget if not detected
     $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
     if ($wingetExists) {
-        $wingetVersion = [System.Version]::Parse((winget --version).Trim('v'))
+        $wingetversionfull = (winget --version)
+        $wingetversiontrim = $wingetversionfull.Trim('v')
+        if ($wingetversiontrim.EndsWith("-preview")) {
+            $wingetversiontrim = $wingetversiontrim.Trim('-preview')
+            $wingetpreview = $true
+        }
+        $wingetVersion = [System.Version]::Parse($wingetversiontrim)
         $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
         $wingetOutdated = $wingetVersion -le $minimumWingetVersion
         
-        Write-Host "Winget v$wingetVersion"
+        Write-Host "Winget $wingetVersionfull"
     }
 
     if (!$wingetExists -or $wingetOutdated) {
@@ -2426,13 +2482,17 @@ function Test-WinUtilPackageManager {
 
     if ($winget) {
         if ($wingetExists -and !$wingetOutdated) {
-            Write-Host "- Winget up-to-date"
+            if (!$wingetpreview) {
+                Write-Host "- Winget up-to-date"
+            } else {
+                Write-Host "- Winget preview version detected. Unexptected problems may occur" -ForegroundColor Yellow
+            }
             return $true
         }
     }
 
-    if($choco){
-        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)){
+    if ($choco) {
+        if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
             Write-Host "Chocolatey v$chocoVersion"
             return $true
         }
@@ -3193,12 +3253,17 @@ function Invoke-WPFGetIso {
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
-        if (-not (Test-Path -Path $wimFile -PathType Leaf))
+        if ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (-not (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf)))
         {
-            $msg = "Install.wim file doesn't exist in the image, this could happen if you use unofficial Windows images, or a Media creation tool, which creates a final image that can not be modified. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
+            $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
+        }
+        elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))
+        {
+            Write-Host "Install.esd found on the image. It needs to be converted to a WIM file in order to begin processing"
+            $wimFile = $wimFile.Replace(".wim", ".esd").Trim()
         }
         $sync.MicrowinWindowsFlavors.Items.Clear()
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
@@ -3301,12 +3366,12 @@ function Invoke-WPFInstall {
     <#
 
     .SYNOPSIS
-        Installs the selected programs using winget
+        Installs the selected programs using winget, if one or more of the selected programs are already installed on the system, winget will try and perform an upgrade if there's a newer version to install.
 
     #>
 
     if($sync.ProcessRunning){
-        $msg = "[Invoke-WPFInstall] Install process is currently running."
+        $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -3314,7 +3379,7 @@ function Invoke-WPFInstall {
     $WingetInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($wingetinstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install"
+        $WarningMsg = "Please select the program(s) to install or upgrade"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -3427,10 +3492,30 @@ public class PowerManagement {
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
+	# Detect if the Windows image is an ESD file and convert it to WIM
+	if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf))
+	{
+		Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
+		Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+		if ($?)
+		{
+            Remove-Item -Path $mountDir\sources\install.esd -Force
+			# Since we've already exported the image index we wanted, switch to the first one
+			$index = 1
+		}
+		else
+		{
+            $msg = "The export process has failed and MicroWin processing cannot continue"
+            Write-Host "Failed to export the image"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            return
+		}
+	}
+
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
-    if ((Test-CompatibleImage $imgVersion) -eq $false)
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false)
     {
 		$msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
@@ -4595,953 +4680,6 @@ function Invoke-WPFUpdatessecurity {
         Write-Host "-- Updates Set to Recommended ---"
         Write-Host "================================="
 }
-$inputXML =  '<Window x:Class="WinUtility.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WinUtility"
-        mc:Ignorable="d"
-        Background="{MainBackgroundColor}"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" CornerRadius="10"/>
-    </WindowChrome.WindowChrome>
-    <Window.Resources>
-    <!--Scrollbar Thumbs-->
-    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Grid x:Name="Grid">
-                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                        <Border x:Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Tag" Value="Horizontal">
-                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
-                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
-        <Setter Property="Foreground" Value="{LinkForegroundColor}" />
-        <Setter Property="TextDecorations" Value="Underline" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
-                <Setter Property="TextDecorations" Value="Underline" />
-                <Setter Property="Cursor" Value="Hand" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style TargetType="Button" x:Key="HoverButtonStyle">
-        <Setter Property="Foreground" Value="{MainForegroundColor}" />
-        <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="Background" Value="{MainBackgroundColor}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="FontWeight" Value="Bold" />
-                            <Setter Property="Foreground" Value="{MainForegroundColor}" />
-                            <Setter Property="Cursor" Value="Hand" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!--ScrollBars-->
-    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
-        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Foreground" Value="{MainForegroundColor}" />
-        <Setter Property="Background" Value="{MainBackgroundColor}" />
-        <Setter Property="Width" Value="6" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}" >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="0.00001*" />
-                        </Grid.RowDefinitions>
-
-                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
-                            <Track.Thumb>
-                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
-                            </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
-                            </Track.IncreaseRepeatButton>
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
-                            </Track.DecreaseRepeatButton>
-                        </Track>
-                    </Grid>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
-                        </Trigger>
-                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                            <Setter Value="{ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
-                        </Trigger>
-
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
-                        </Trigger>
-                        <Trigger Property="Orientation" Value="Horizontal">
-                            <Setter TargetName="GridRoot" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="-90" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="PART_Track" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="-90" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Width" Value="Auto" />
-                            <Setter Property="Height" Value="8" />
-                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
-                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
-                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
-            <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <ToggleButton x:Name="ToggleButton"
-                                          Background="{TemplateBinding Background}"
-                                          BorderBrush="{TemplateBinding Background}"
-                                          BorderThickness="0"
-                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press">
-                                <TextBlock Text="{TemplateBinding SelectionBoxItem}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Background="Transparent"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
-                                           />
-                            </ToggleButton>
-                            <Popup x:Name="Popup"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   Placement="Bottom"
-                                   Focusable="False"
-                                   AllowsTransparency="True"
-                                   PopupAnimation="Slide">
-                                <Border x:Name="DropDownBorder"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding Foreground}"
-                                        BorderThickness="1"
-                                        CornerRadius="4">
-                                    <ScrollViewer>
-                                        <ItemsPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
-                                    </ScrollViewer>
-                                </Border>
-                            </Popup>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="Label">
-            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
-            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
-        </Style>
-
-        <!-- TextBlock template -->
-        <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
-            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
-        </Style>
-        <!-- Toggle button template x:Key="TabToggleButton" -->
-        <Style TargetType="{x:Type ToggleButton}">
-            <Setter Property="Margin" Value="{ButtonMargin}"/>
-            <Setter Property="Content" Value=""/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Grid>
-                            <Border x:Name="ButtonGlow" 
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{ButtonForegroundColor}"
-                                        BorderThickness="{ButtonBorderThickness}"
-                                        CornerRadius="{ButtonCornerRadius}">
-                                <Grid>
-                                    <Border x:Name="BackgroundBorder"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{ButtonBackgroundColor}"
-                                        BorderThickness="{ButtonBorderThickness}"
-                                        CornerRadius="{ButtonCornerRadius}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                            Margin="10,2,10,2"/>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Panel.ZIndex" Value="2000"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="BorderBrush" Value="Pink"/>
-                                <Setter Property="BorderThickness" Value="2"/>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
-                                <Setter Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter Property="BorderBrush" Value="Transparent"/>
-                                <Setter Property="BorderThickness" Value="{ButtonBorderThickness}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Button Template -->
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="{ButtonMargin}"/>
-            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
-            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
-            <Setter Property="Height" Value="{ToggleButtonHeight}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="BackgroundBorder"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{ButtonBorderThickness}"
-                                    CornerRadius="{ButtonCornerRadius}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
-                                <Setter Property="Foreground" Value="DimGray"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="ClearButtonStyle" TargetType="Button">
-            <Setter Property="FontFamily" Value="Arial"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Content" Value="X"/>
-            <Setter Property="Height" Value="14"/>
-            <Setter Property="Width" Value="14"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="Red"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="BorderThickness" Value="10"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <!-- Checkbox template -->
-        <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
-            <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <!-- <Setter Property="FontSize" Value="15" /> -->
-            <!-- <Setter Property="TextElement.FontFamily" Value="Consolas, sans-serif"/> -->
-             <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="CheckBox">
-                        <Grid Background="{TemplateBinding Background}">
-                            <BulletDecorator Background="Transparent">
-                                <BulletDecorator.Bullet>
-                                    <Grid Width="16" Height="16">
-                                        <Border x:Name="Border"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                Background="{ButtonBackgroundColor}"
-                                                BorderThickness="1"
-                                                Width="14"
-                                                Height="14"
-                                                Margin="1"
-                                                SnapsToDevicePixels="True"/>
-                                        <Path x:Name="CheckMark"
-                                              Stroke="{TemplateBinding Foreground}"
-                                              StrokeThickness="2"
-                                              Data="M 0 5 L 5 10 L 12 0"
-                                              Visibility="Collapsed"/>
-                                    </Grid>
-                                </BulletDecorator.Bullet>
-                                <ContentPresenter Margin="4,0,0,0"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalAlignment="Center"
-                                                  RecognizesAccessKey="True"/>
-                            </BulletDecorator>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                 </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="CheckBox">
-                        <StackPanel>
-                            <Grid>
-                                <Border Width="45"
-                                        Height="20"
-                                        Background="#555555"
-                                        CornerRadius="10"
-                                        Margin="5,0"
-                                />
-                                <Border Name="WPFToggleSwitchButton"
-                                        Width="25"
-                                        Height="25"
-                                        Background="Black"
-                                        CornerRadius="12.5"
-                                        HorizontalAlignment="Left"
-                                />
-                                <ContentPresenter Name="WPFToggleSwitchContent"
-                                                  Margin="10,0,0,0"
-                                                  Content="{TemplateBinding Content}"
-                                                  VerticalAlignment="Center"
-                                />
-                            </Grid>
-                        </StackPanel>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="false">
-                                <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchLeft" />
-                                    <BeginStoryboard x:Name="WPFToggleSwitchRight">
-                                        <Storyboard>
-                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    Storyboard.TargetName="WPFToggleSwitchButton"
-                                                    Duration="0:0:0:0"
-                                                    From="0,0,0,0"
-                                                    To="28,0,0,0">
-                                            </ThicknessAnimation>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                                <Setter TargetName="WPFToggleSwitchButton"
-                                        Property="Background"
-                                        Value="#fff9f4f4"
-                                />
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="true">
-                                <Trigger.ExitActions>
-                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchRight" />
-                                    <BeginStoryboard x:Name="WPFToggleSwitchLeft">
-                                        <Storyboard>
-                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
-                                                    Storyboard.TargetName="WPFToggleSwitchButton"
-                                                    Duration="0:0:0:0"
-                                                    From="28,0,0,0"
-                                                    To="0,0,0,0">
-                                            </ThicknessAnimation>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                                <Setter TargetName="WPFToggleSwitchButton"
-                                        Property="Background"
-                                        Value="#ff060600"
-                                />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Grid x:Name="toggleSwitch">
-                            <Border x:Name="Border" CornerRadius="10"
-                                    Background="#FFFFFFFF"
-                                    Width="70" Height="25">
-                                <Border.Effect>
-                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
-                                </Border.Effect>
-                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
-                                        Margin="2 2 2 1"
-                                        Stroke="Gray" StrokeThickness="0.2"
-                                        HorizontalAlignment="Left" Width="22">
-                                    <Ellipse.Effect>
-                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
-                                    </Ellipse.Effect>
-                                </Ellipse>
-                            </Border>
-
-                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="ToggleButton.IsChecked" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="#C2283B" />
-                                <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
-                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
-                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
-                            </Trigger>
-
-                            <Trigger Property="ToggleButton.IsChecked" Value="True">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Border"
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#34A543" Duration="0:0:0.1" />
-
-                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
-                                                    Storyboard.TargetProperty="Margin"
-                                                    To="46 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-
-                                <!-- Some out fading -->
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Border"
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#C2283B" Duration="0:0:0.1" />
-
-                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
-                                                    Storyboard.TargetProperty="Margin"
-                                                    To="2 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-
-                                <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
-            <Setter Property="Foreground" Value="{MainForegroundColor}" />
-            <Setter Property="Background" Value="{MainBackgroundColor}" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="White" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="Border">
-            <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{BorderColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="5"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="Loaded">
-                    <BeginStoryboard>
-                        <Storyboard RepeatBehavior="Forever">
-                            <!-- <DoubleAnimation
-                                Storyboard.TargetProperty="Effect.(DropShadowEffect.ShadowDepth)"
-                                From="6" To="15" Duration="{ShadowPulse}" AutoReverse="True"/> -->
-                            <!-- <DoubleAnimation
-                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Direction)"
-                                From="0" To="360" Duration="Forever"/> -->
-                            <DoubleAnimation
-                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Opacity)"
-                                From="0.5" To="0.94" Duration="{ShadowPulse}" AutoReverse="True"/>
-                            <DoubleAnimation
-                                Storyboard.TargetProperty="Effect.(DropShadowEffect.BlurRadius)"
-                                From="5" To="15" Duration="{ShadowPulse}" AutoReverse="True"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="TextBox">
-            <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{MainForegroundColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="5">
-                            <Grid>
-                                <ScrollViewer x:Name="PART_ContentHost" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
-    <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50px"/>
-            <RowDefinition Height=".9*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
-                SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
-                        <Underline>I</Underline>nstall
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
-                        <Underline>T</Underline>weaks
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
-                        <Underline>C</Underline>onfig
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
-                        <Underline>U</Underline>pdates
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
-                <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
-                        <Underline>M</Underline>icroWin
-                    </TextBlock>
-                </ToggleButton.Content>
-            </ToggleButton>
-            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="50px"/>
-                    <ColumnDefinition Width="50px"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBox
-                    Grid.Column="0"
-                    Width="200" 
-                    FontSize="14"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
-                    Name="CheckboxFilter"
-                    Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
-                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
-                </TextBox>
-                <TextBlock 
-                    Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    FontFamily="Segoe MDL2 Assets" 
-                    FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
-                <Button Grid.Column="0" 
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    Name="CheckboxFilterClear" 
-                    Style="{StaticResource ClearButtonStyle}" 
-                    Margin="193,0,0,0" Visibility="Collapsed"/>
-
-                <Button Name="SettingsButton"
-                    Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent" 
-                    Background="{MainBackgroundColor}"
-                    Foreground="{MainForegroundColor}"
-                    FontSize="18"
-                    Width="35" Height="35" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    Margin="0,5,5,0" 
-                    FontFamily="Segoe MDL2 Assets" 
-                    Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup" 
-                    IsOpen="False"
-                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
-                    HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
-                        <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <MenuItem Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
-                            <MenuItem Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
-                            <Separator/>
-                            <MenuItem Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
-                        </StackPanel>
-                    </Border>
-                </Popup>
- 
-            <Button 
-                Grid.Column="2"
-                Content="&#xD7;" BorderThickness="0" 
-                BorderBrush="Transparent"
-                Background="{MainBackgroundColor}"
-                Width="35" Height="35" 
-                HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="0,5,5,0" 
-                FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
-            </Grid>
-           
-        </DockPanel>
-       
-        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
-            <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
-                <Grid Background="Transparent" >
-                   
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="45px"/>
-                        <RowDefinition Height="0.95*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
-                        <Button Name="WPFinstall" Content=" Install Selected" Margin="2" />
-                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
-                        <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
-                        <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
-                        <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
-                    </StackPanel>
-
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        {{InstallPanel_applications}}
-                        </Grid>
-                    </ScrollViewer>
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height=".70*"/>
-                        <RowDefinition Height=".10*"/>
-                    </Grid.RowDefinitions>
-                    {{InstallPanel_tweaks}}
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
-                        <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
-                        <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
-                        <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
-                        <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
-                        <Button Name="WPFclear" Content=" Clear " Margin="1"/>
-                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
-                    </StackPanel>
-                    <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBlock Padding="10">
-                                Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    {{InstallPanel_features}}
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdefault" FontSize="16" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatessecurity" FontSize="16" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.</TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdisable" FontSize="16" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
-                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
-                            <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
-                        </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Width="Auto" Height="Auto">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="3*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch">
-                    <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
-                        <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" />
-                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
-                                Choose a Windows ISO file that you''ve downloaded <LineBreak/>
-                                Check the status in the console
-                            </TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
-                                ToolTip="Use ISO directory for ScratchDir " />
-
-                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
-                              <Button.Content>
-                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                    Text="Scratch" Padding="0"
-                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
-                                    Margin="0,0,0,3" HorizontalAlignment="Left"
-                                    IsReadOnly="False"
-                                    Height="Auto"
-                                    Width="110"
-                                    Foreground="{ButtonForegroundColor}"
-                                  />
-                              </Button.Content>
-                            </Button>
-                            <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                Text="ISO location will be printed here"
-                                Margin="2"
-                                IsReadOnly="True"
-                                TextWrapping="Wrap"
-                                Foreground="{LabelboxForegroundColor}"
-                            />
-                            <Button Name="WPFGetIso" Margin="2" Padding="15">
-                                <Button.Content>
-                                    <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
-                                        Select Windows <Underline>I</Underline>SO
-                                    </TextBlock>
-                                </Button.Content>
-                            </Button>
-                        </StackPanel>
-                        <!-- Visibility="Hidden" -->
-                        <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
-                            <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
-                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I''M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
-                            <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
-                                Margin="6"
-                                Text=""
-                                IsReadOnly="False"
-                                TextWrapping="Wrap"
-                                Foreground="{LabelboxForegroundColor}"
-                                ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
-                            />
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
-                            <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinIsoLocation" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinMountDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinScratchDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                        </StackPanel>
-                    </StackPanel>
-                    </Border>
-                    <Border
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        Grid.Row="0" Grid.Column="1">
-                        <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
-
-                            <Grid Name = "BusyMessage" Visibility="Collapsed">
-                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
-                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
-                                  FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
-                            </Grid>                         
- 
-                            <TextBlock x:Name = "asciiTextBlock"
-                                xml:space ="preserve"
-                                HorizontalAlignment = "Center"
-                                Margin = "0"
-                                VerticalAlignment = "Top"
-                                Height = "Auto"
-                                Width = "Auto"
-                                FontSize = "10"
-                                FontFamily = "Courier New"
-                            >
-  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
- /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \  
-/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
-\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
-                            </TextBlock>
-                        
-                            <TextBlock Margin="15,15,15,0" 
-                                Padding="8,8,8,0" 
-                                VerticalAlignment="Center" 
-                                TextWrapping="WrapWithOverflow" 
-                                Height = "Auto"
-                                Width = "Auto"
-                                Foreground="{ComboBoxForegroundColor}">
-                                <Bold>MicroWin features:</Bold><LineBreak/>
-                                - Remove Telemetry and Tracking <LineBreak/>
-                                - Add ability to use local accounts <LineBreak/>
-                                - Remove Wifi requirement to finish install <LineBreak/>
-                                - Ability to remove Edge <LineBreak/>
-                                - Ability to remove Defender <LineBreak/>
-                                - Remove Teams <LineBreak/>
-                                - Apps debloat <LineBreak/>
-                                <LineBreak/>
-                                <LineBreak/>
-
-                                <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                - Download the latest Windows 11 image from Microsoft <LineBreak/>
-                                LINK: https://www.microsoft.com/software-download/windows11 <LineBreak/>
-                                May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
-                                - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
-                                - Launch WinUtil and MicroWin  <LineBreak/>
-                                - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
-                                It will be processed and unpacked which may take some time <LineBreak/>
-                                - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
-                                - Choose which features you want to keep <LineBreak/>
-                                - Click the "Start Process" button <LineBreak/>
-                                The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
-                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
-                                - Copy this image to your Ventoy USB Stick, boot to this image, gg
-                                <LineBreak/>
-                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
-                            </TextBlock>
-                            <TextBlock Margin="15,0,15,15" 
-                                Padding = "1" 
-                                TextWrapping="WrapWithOverflow" 
-                                Height = "Auto"
-                                Width = "Auto"
-                                VerticalAlignment = "Top"
-                                Foreground = "{ComboBoxForegroundColor}"
-                                xml:space = "preserve"
-                            >
-<Bold>Example:</Bold>
-     C:\drivers\
-          |-- Driver1\
-          |   |-- Driver1.inf
-          |   |-- Driver1.sys
-          |-- Driver2\
-          |   |-- Driver2.inf
-          |   |-- Driver2.sys
-          |-- OtherFiles...
-                                </TextBlock>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
-    </Grid>
-</Window>'
 $sync.configs.applications = '{
 	"WPFInstall1password": {
 		"category": "Utilities",
@@ -5931,7 +5069,7 @@ $sync.configs.applications = '{
 		"category": "Microsoft Tools",
 		"choco": "dotnet-8.0-runtime",
 		"content": ".NET Desktop Runtime 8",
-		"description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 7.",
+		"description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8.",
 		"link": "https://dotnet.microsoft.com/download/dotnet/8.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
@@ -8153,7 +7291,7 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-        "Classic":  {
+    "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -8214,6 +7352,36 @@ $sync.configs.themes = '{
                    "BorderColor": "#FFAC1C",
                    "BorderOpacity": "0.8",
                    "ShadowPulse": "0:0:3"
+               },
+     "Dark":  {
+                   "ComboBoxBackgroundColor":  "#000000",
+                   "LabelboxForegroundColor":  "#FFEE58",
+                   "MainForegroundColor":  "#9CCC65",
+                   "MainBackgroundColor":  "#000000",
+                   "LabelBackgroundColor":  "#000000",
+                   "LinkForegroundColor":  "#add8e6",
+                   "LinkHoverForegroundColor":  "#FFFFFF",
+                   "ComboBoxForegroundColor":  "#FFEE58",
+                   "ButtonInstallBackgroundColor":  "#222222",
+                   "ButtonTweaksBackgroundColor":  "#333333",
+                   "ButtonConfigBackgroundColor":  "#444444",
+                   "ButtonUpdatesBackgroundColor":  "#555555",
+                   "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonTweaksForegroundColor":  "#FFFFFF",
+                   "ButtonConfigForegroundColor":  "#FFFFFF",
+                   "ButtonUpdatesForegroundColor":  "#FFFFFF",
+                   "ButtonBackgroundColor":  "#000019",
+                   "ButtonBackgroundPressedColor":  "#9CCC65",
+                   "ButtonBackgroundMouseoverColor":  "#FF5733",
+                   "ButtonBackgroundSelectedColor":  "#FF5733",
+                   "ButtonForegroundColor":  "#9CCC65",
+                   "ButtonBorderThickness":  "1",
+                   "ButtonMargin":  "1",
+                   "ButtonCornerRadius": "2",
+                   "ToggleButtonHeight": "25",
+                   "BorderColor": "#FFAC1C",
+                   "BorderOpacity": "0.2",
+                   "ShadowPulse": "Forever"
                }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
@@ -10524,6 +9692,7 @@ $sync.configs.tweaks = '{
 
         Write-Host \"Removing OneDrive leftovers\"
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\OneDrive\"
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
         # check if directory is empty before removing:
@@ -10872,6 +10041,1984 @@ $sync.configs.tweaks = '{
     "Type": "300"
   }
 }' | convertfrom-json
+$inputXML =  '<Window x:Class="WinUtility.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinUtility"
+        mc:Ignorable="d"
+        Background="{MainBackgroundColor}"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" CornerRadius="10"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+    <!--Scrollbar Thumbs-->
+    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Grid x:Name="Grid">
+                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                        <Border x:Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="Horizontal">
+                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
+        <Setter Property="Foreground" Value="{LinkForegroundColor}" />
+        <Setter Property="TextDecorations" Value="Underline" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
+                <Setter Property="TextDecorations" Value="Underline" />
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="HoverButtonStyle">
+        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--ScrollBars-->
+    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.00001*" />
+                        </Grid.RowDefinitions>
+
+                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                            <Track.Thumb>
+                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                            <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                            <Setter Value="{ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Width" Value="Auto" />
+                            <Setter Property="Height" Value="8" />
+                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
+            <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding Background}"
+                                          BorderThickness="0"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <TextBlock Text="{TemplateBinding SelectionBoxItem}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Background="Transparent"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
+                                           />
+                            </ToggleButton>
+                            <Popup x:Name="Popup"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   Focusable="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding Foreground}"
+                                        BorderThickness="1"
+                                        CornerRadius="4">
+                                    <ScrollViewer>
+                                        <ItemsPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+        </Style>
+
+        <!-- TextBlock template -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+        </Style>
+        <!-- Toggle button template x:Key="TabToggleButton" -->
+        <Style TargetType="{x:Type ToggleButton}">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Border x:Name="ButtonGlow" 
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonForegroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                <Grid>
+                                    <Border x:Name="BackgroundBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{ButtonBackgroundColor}"
+                                        BorderThickness="{ButtonBorderThickness}"
+                                        CornerRadius="{ButtonCornerRadius}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                            Margin="10,2,10,2"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Panel.ZIndex" Value="2000"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="BorderBrush" Value="Pink"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="{ButtonBorderThickness}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Button Template -->
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="{ButtonMargin}"/>
+            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Height" Value="{ToggleButtonHeight}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="BackgroundBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{ButtonBorderThickness}"
+                                    CornerRadius="{ButtonCornerRadius}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2,10,2"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ClearButtonStyle" TargetType="Button">
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Content" Value="X"/>
+            <Setter Property="Height" Value="14"/>
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="10"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Checkbox template -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <!-- <Setter Property="FontSize" Value="15" /> -->
+            <!-- <Setter Property="TextElement.FontFamily" Value="Consolas, sans-serif"/> -->
+             <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="{TemplateBinding Background}">
+                            <BulletDecorator Background="Transparent">
+                                <BulletDecorator.Bullet>
+                                    <Grid Width="16" Height="16">
+                                        <Border x:Name="Border"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                Background="{ButtonBackgroundColor}"
+                                                BorderThickness="1"
+                                                Width="14"
+                                                Height="14"
+                                                Margin="1"
+                                                SnapsToDevicePixels="True"/>
+                                        <Path x:Name="CheckMark"
+                                              Stroke="{TemplateBinding Foreground}"
+                                              StrokeThickness="2"
+                                              Data="M 0 5 L 5 10 L 12 0"
+                                              Visibility="Collapsed"/>
+                                    </Grid>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="4,0,0,0"
+                                                  HorizontalAlignment="Left"
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True"/>
+                            </BulletDecorator>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
+                                <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                 </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel>
+                            <Grid>
+                                <Border Width="45"
+                                        Height="20"
+                                        Background="#555555"
+                                        CornerRadius="10"
+                                        Margin="5,0"
+                                />
+                                <Border Name="WPFToggleSwitchButton"
+                                        Width="25"
+                                        Height="25"
+                                        Background="Black"
+                                        CornerRadius="12.5"
+                                        HorizontalAlignment="Left"
+                                />
+                                <ContentPresenter Name="WPFToggleSwitchContent"
+                                                  Margin="10,0,0,0"
+                                                  Content="{TemplateBinding Content}"
+                                                  VerticalAlignment="Center"
+                                />
+                            </Grid>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Trigger.ExitActions>
+                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchLeft" />
+                                    <BeginStoryboard x:Name="WPFToggleSwitchRight">
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                    Storyboard.TargetName="WPFToggleSwitchButton"
+                                                    Duration="0:0:0:0"
+                                                    From="0,0,0,0"
+                                                    To="28,0,0,0">
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                                <Setter TargetName="WPFToggleSwitchButton"
+                                        Property="Background"
+                                        Value="#fff9f4f4"
+                                />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Trigger.ExitActions>
+                                    <RemoveStoryboard BeginStoryboardName="WPFToggleSwitchRight" />
+                                    <BeginStoryboard x:Name="WPFToggleSwitchLeft">
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                    Storyboard.TargetName="WPFToggleSwitchButton"
+                                                    Duration="0:0:0:0"
+                                                    From="28,0,0,0"
+                                                    To="0,0,0,0">
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                                <Setter TargetName="WPFToggleSwitchButton"
+                                        Property="Background"
+                                        Value="#ff060600"
+                                />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Grid x:Name="toggleSwitch">
+                            <Border x:Name="Border" CornerRadius="10"
+                                    Background="#FFFFFFFF"
+                                    Width="70" Height="25">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
+                                </Border.Effect>
+                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
+                                        Margin="2 2 2 1"
+                                        Stroke="Gray" StrokeThickness="0.2"
+                                        HorizontalAlignment="Left" Width="22">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+
+                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
+                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ToggleButton.IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#C2283B" />
+                                <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
+                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
+                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
+                            </Trigger>
+
+                            <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#34A543" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="46 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+
+                                <!-- Some out fading -->
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                    To="#C2283B" Duration="0:0:0.1" />
+
+                                            <ThicknessAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="Margin"
+                                                    To="2 2 2 1" Duration="0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="1.0" Duration="0:0:0:0.1" />
+
+                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
+                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                    To="0.0" Duration="0:0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+
+                                <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
+            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+            <Setter Property="Background" Value="{MainBackgroundColor}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Border">
+            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <!-- <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.ShadowDepth)"
+                                From="6" To="15" Duration="{ShadowPulse}" AutoReverse="True"/> -->
+                            <!-- <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Direction)"
+                                From="0" To="360" Duration="Forever"/> -->
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.Opacity)"
+                                From="0.5" To="0.94" Duration="{ShadowPulse}" AutoReverse="True"/>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Effect.(DropShadowEffect.BlurRadius)"
+                                From="5" To="15" Duration="{ShadowPulse}" AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{MainForegroundColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="5">
+                            <Grid>
+                                <ScrollViewer x:Name="PART_ContentHost" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="5" Opacity="{BorderOpacity}" Color="{BorderColor}"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50px"/>
+            <RowDefinition Height=".9*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
+            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
+                SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
+            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+                Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
+                <ToggleButton.Content>
+                    <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
+                        <Underline>I</Underline>nstall
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+                Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
+                <ToggleButton.Content>
+                    <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
+                        <Underline>T</Underline>weaks
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+                Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
+                <ToggleButton.Content>
+                    <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
+                        <Underline>C</Underline>onfig
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
+                <ToggleButton.Content>
+                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                        <Underline>U</Underline>pdates
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                <ToggleButton.Content>
+                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                        <Underline>M</Underline>icroWin
+                    </TextBlock>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="50px"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox
+                    Grid.Column="0"
+                    Width="200" 
+                    FontSize="14"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
+                    Name="CheckboxFilter"
+                    Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
+                    ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
+                </TextBox>
+                <TextBlock 
+                    Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    FontFamily="Segoe MDL2 Assets" 
+                    FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
+                <Button Grid.Column="0" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    Name="CheckboxFilterClear" 
+                    Style="{StaticResource ClearButtonStyle}" 
+                    Margin="193,0,0,0" Visibility="Collapsed"/>
+
+                <Button Name="SettingsButton"
+                    Style="{StaticResource HoverButtonStyle}"
+                    Grid.Column="1" BorderBrush="Transparent" 
+                    Background="{MainBackgroundColor}"
+                    Foreground="{MainForegroundColor}"
+                    FontSize="18"
+                    Width="35" Height="35" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    Margin="0,5,5,0" 
+                    FontFamily="Segoe MDL2 Assets" 
+                    Content="&#xE713;"/>
+                <Popup Grid.Column="1" Name="SettingsPopup" 
+                    IsOpen="False"
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                    HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                        <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <MenuItem Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <Separator/>
+                            <MenuItem Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+ 
+            <Button 
+                Grid.Column="2"
+                Content="&#xD7;" BorderThickness="0" 
+                BorderBrush="Transparent"
+                Background="{MainBackgroundColor}"
+                Width="35" Height="35" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="0,5,5,0" 
+                FontFamily="Arial"
+                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
+            </Grid>
+           
+        </DockPanel>
+       
+        <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
+            <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
+                <Grid Background="Transparent" >
+                   
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="45px"/>
+                        <RowDefinition Height="0.95*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                        <Button Name="WPFinstall" Content=" Install/Upgrade Selected" Margin="2" />
+                        <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
+                        <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
+                        <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
+                        <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+</Grid.ColumnDefinitions>
+<Border Grid.Row="1" Grid.Column="0">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Browsers" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbrave" Content="Brave" ToolTip="Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbraveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.brave.com" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallchrome" Content="Chrome" ToolTip="Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallchromeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.google.com/chrome/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallchromium" Content="Chromium" ToolTip="Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome." Margin="0,0,2,0"/><TextBlock Name="WPFInstallchromiumLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Hibbiki/chromium-win64" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalledge" Content="Edge" ToolTip="Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalledgeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/edge" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfalkon" Content="Falkon" ToolTip="Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfalkonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.falkon.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfirefox" Content="Firefox" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/new/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfloorp" Content="Floorp" ToolTip="Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfloorpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://floorp.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllibrewolf" Content="LibreWolf" ToolTip="LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllibrewolfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://librewolf-community.gitlab.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmullvadbrowser" Content="Mullvad Browser" ToolTip="Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmullvadbrowserLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mullvad.net/browser" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallthorium" Content="Thorium Browser AVX2" ToolTip="Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market." Margin="0,0,2,0"/><TextBlock Name="WPFInstallthoriumLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://thorium.rocks/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltor" Content="Tor Browser" ToolTip="Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.torproject.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallungoogled" Content="Ungoogled" ToolTip="Ungoogled Chromium is a version of Chromium without Google''s integration for enhanced privacy and control." Margin="0,0,2,0"/><TextBlock Name="WPFInstallungoogledLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Eloston/ungoogled-chromium" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvivaldi" Content="Vivaldi" ToolTip="Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvivaldiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vivaldi.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwaterfox" Content="Waterfox" ToolTip="Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwaterfoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.waterfox.net/" />
+</StackPanel>
+<Label Content="Communications" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallchatterino" Content="Chatterino" ToolTip="Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallchatterinoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.chatterino.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldiscord" Content="Discord" ToolTip="Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldiscordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://discord.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallferdium" Content="Ferdium" ToolTip="Ferdium is a messaging application that combines multiple messaging services into a single app for easy management." Margin="0,0,2,0"/><TextBlock Name="WPFInstallferdiumLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ferdium.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallguilded" Content="Guilded" ToolTip="Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallguildedLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.guilded.gg/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallhexchat" Content="Hexchat" ToolTip="HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhexchatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://hexchat.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljami" Content="Jami" ToolTip="Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljamiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jami.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllinphone" Content="Linphone" ToolTip="Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinphoneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.linphone.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmatrix" Content="Matrix" ToolTip="Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallqtox" Content="QTox" ToolTip="QTox is a free and open-source messaging app that prioritizes user privacy and security in its design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqtoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qtox.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsession" Content="Session" ToolTip="Session is a private and secure messaging app built on a decentralized network for user privacy and data protection." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsessionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsession.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsignal" Content="Signal" ToolTip="Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsignalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://signal.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallskype" Content="Skype" ToolTip="Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallskypeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.skype.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallslack" Content="Slack" ToolTip="Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallslackLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://slack.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallteams" Content="Teams" ToolTip="Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallteamsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/microsoft-teams/group-chat-software" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltelegram" Content="Telegram" ToolTip="Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltelegramLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://telegram.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" ToolTip="Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallthunderbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.thunderbird.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvencord" Content="Vencord" ToolTip="Vencord is a modification for Discord that adds plugins, custom styles, and more!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallvencordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vencord.dev/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvesktop" Content="Vesktop" ToolTip="A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Vencord/Vesktop" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallviber" Content="Viber" ToolTip="Viber is a free messaging and calling app with features like group chats, video calls, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallviberLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.viber.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwhatsapp" Content="Whatsapp" ToolTip="WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwhatsappLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.whatsapp.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzoom" Content="Zoom" ToolTip="Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoomLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zoom.us/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzulip" Content="Zulip" ToolTip="Zulip is an open-source team collaboration tool with chat streams for productive and organized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzulipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zulipchat.com/" />
+</StackPanel>
+<Label Content="Development" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallanaconda3" Content="Anaconda" ToolTip="Anaconda is a distribution of the Python and R programming languages for scientific computing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanaconda3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.anaconda.com/products/distribution" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallclink" Content="Clink" ToolTip="Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallclinkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mridgers.github.io/clink/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallDaxStudio" Content="DaxStudio" ToolTip="DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models." Margin="0,0,2,0"/><TextBlock Name="WPFInstallDaxStudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://daxstudio.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" ToolTip="Docker Desktop is a powerful tool for containerized application development and deployment." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldockerdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.docker.com/products/docker-desktop" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgit" Content="Git" ToolTip="Git is a distributed version control system widely used for tracking changes in source code during software development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-scm.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" ToolTip="Git Extensions is a graphical user interface for Git, providing additional features for easier source code management." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitextensionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://gitextensions.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgithubcli" Content="GitHub CLI" ToolTip="GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgithubcliLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://cli.github.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" ToolTip="GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgithubdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://desktop.github.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgolang" Content="GoLang" ToolTip="GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://golang.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallhelix" Content="Helix" ToolTip="Helix is a neovim alternative built in rust." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhelixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://helix-editor.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" ToolTip="OpenJDK Java 16 is the latest version of the open-source Java development kit." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava16Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" ToolTip="Oracle Java 18 is the latest version of the official Java development kit from Oracle." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava18Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.oracle.com/java/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" ToolTip="Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava20Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" ToolTip="Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava21Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" ToolTip="OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" ToolTip="Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljetbrainsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.jetbrains.com/toolbox/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllazygit" Content="Lazygit" ToolTip="Simple terminal UI for git commands" Margin="0,0,2,0"/><TextBlock Name="WPFInstalllazygitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jesseduffield/lazygit/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallminiconda" Content="Miniconda" ToolTip="Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallminicondaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.conda.io/projects/miniconda" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallneovim" Content="Neovim" ToolTip="Neovim is a highly extensible text editor and an improvement over the original Vim editor." Margin="0,0,2,0"/><TextBlock Name="WPFInstallneovimLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://neovim.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome''s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="1">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrustlang" Content="Rust" ToolTip="Rust is a programming language designed for safety and performance, particularly focused on systems programming." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrustlangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rust-lang.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstarship" Content="Starship (Shell Prompt)" ToolTip="Starship is a minimal, fast, and customizable prompt for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstarshipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://starship.rs/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsublimemerge" Content="Sublime Merge" ToolTip="Sublime Merge is a Git client with advanced features and a beautiful interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsublimemergeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sublimemerge.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" ToolTip="Sublime Text is a sophisticated text editor for code, markup, and prose." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsublimetextLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sublimetext.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltemurin" Content="Eclipse Temurin" ToolTip="Eclipse Temurin is the open source Java SE build based upon OpenJDK." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltemurinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/temurin/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallThonny" Content="Thonny Python IDE" ToolTip="Python IDE for beginners." Margin="0,0,2,0"/><TextBlock Name="WPFInstallThonnyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/thonny/thonny" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallunity" Content="Unity Game Engine" ToolTip="Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallunityLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://unity.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvagrant" Content="Vagrant" ToolTip="Vagrant is an open-source tool for building and managing virtualized development environments." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvagrantLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vagrantup.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvisualstudio" Content="Visual Studio 2022" ToolTip="Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvisualstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://visualstudio.microsoft.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvscode" Content="VS Code" ToolTip="Visual Studio Code is a free, open-source code editor with support for multiple programming languages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvscodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://code.visualstudio.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvscodium" Content="VS Codium" ToolTip="VSCodium is a community-driven, freely-licensed binary distribution of Microsoft''s VS Code." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvscodiumLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vscodium.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwezterm" Content="Wezterm" ToolTip="WezTerm is a powerful cross-platform terminal emulator and multiplexer" Margin="0,0,2,0"/><TextBlock Name="WPFInstallweztermLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wezfurlong.org/wezterm/index.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxeheditor" Content="HxD Hex Editor" ToolTip="HxD is a free hex editor that allows you to edit, view, search, and analyze binary files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxeheditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mh-nexus.de/en/hxd/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallyarn" Content="Yarn" ToolTip="Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallyarnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://yarnpkg.com/" />
+</StackPanel>
+<Label Content="Document" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalladobe" Content="Adobe Reader DC" ToolTip="Adobe Reader DC is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://acrobat.adobe.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallanki" Content="Anki" ToolTip="Anki is a flashcard application that helps you memorize information with intelligent spaced repetition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallankiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://apps.ankiweb.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcalibre" Content="Calibre" ToolTip="Calibre is a powerful and easy-to-use e-book manager, viewer, and converter." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcalibreLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://calibre-ebook.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfoxpdfeditor" Content="Foxit PDF Editor" ToolTip="Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfoxpdfeditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.foxitsoftware.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfoxpdfreader" Content="Foxit PDF Reader" ToolTip="Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfoxpdfreaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.foxitsoftware.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljoplin" Content="Joplin (FOSS Notes)" ToolTip="Joplin is an open-source note-taking and to-do application with synchronization capabilities." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljoplinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://joplinapp.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllibreoffice" Content="LibreOffice" ToolTip="LibreOffice is a powerful and free office suite, compatible with other major office suites." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllibreofficeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.libreoffice.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllogseq" Content="Logseq" ToolTip="Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllogseqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://logseq.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmasscode" Content="massCode (Snippet Manager)" ToolTip="massCode is a fast and efficient open-source code snippet manager for developers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmasscodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://masscode.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnaps2" Content="NAPS2 (Document Scanner)" ToolTip="NAPS2 is a document scanning application that simplifies the process of creating electronic documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnaps2Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.naps2.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnotepadplus" Content="Notepad++" ToolTip="Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnotepadplusLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://notepad-plus-plus.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallobsidian" Content="Obsidian" ToolTip="Obsidian is a powerful note-taking and knowledge management application." Margin="0,0,2,0"/><TextBlock Name="WPFInstallobsidianLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://obsidian.md/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallokular" Content="Okular" ToolTip="Okular is a versatile document viewer with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallokularLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://okular.kde.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallonlyoffice" Content="ONLYOffice Desktop" ToolTip="ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration." Margin="0,0,2,0"/><TextBlock Name="WPFInstallonlyofficeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.onlyoffice.com/desktop.aspx" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallopenoffice" Content="Apache OpenOffice" ToolTip="Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenofficeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.openoffice.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpdf24creator" Content="PDF24 creator" ToolTip="Free and easy-to-use online/desktop PDF tools that make you more productive" Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdf24creatorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tools.pdf24.org/en/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" ToolTip="PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdfsamLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pdfsam.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" ToolTip="Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsumatraLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sumatrapdfreader.org/free-pdf-reader.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwinmerge" Content="WinMerge" ToolTip="WinMerge is a visual text file and directory comparison tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinmergeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://winmerge.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxournal" Content="Xournal++" ToolTip="Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxournalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xournalpp.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzim" Content="Zim Desktop Wiki" ToolTip="Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzimLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zim-wiki.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallznote" Content="Znote" ToolTip="Znote is a note-taking application." Margin="0,0,2,0"/><TextBlock Name="WPFInstallznoteLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://znote.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzotero" Content="Zotero" ToolTip="Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoteroLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.zotero.org/" />
+</StackPanel>
+<Label Content="Games" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallATLauncher" Content="ATLauncher" ToolTip="ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly." Margin="0,0,2,0"/><TextBlock Name="WPFInstallATLauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ATLauncher/ATLauncher" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" ToolTip="Bluestacks is an Android emulator for running mobile apps and games on a PC." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbluestacksLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bluestacks.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcemu" Content="Cemu" ToolTip="Cemu is a highly experimental software to emulate Wii U applications on PC." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://cemu.info/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallclonehero" Content="Clone Hero" ToolTip="Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcloneheroLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://clonehero.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalleaapp" Content="EA App" ToolTip="EA App is a platform for accessing and playing Electronic Arts games." Margin="0,0,2,0"/><TextBlock Name="WPFInstalleaappLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ea.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallemulationstation" Content="Emulation Station" ToolTip="Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place." Margin="0,0,2,0"/><TextBlock Name="WPFInstallemulationstationLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://emulationstation.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallepicgames" Content="Epic Games Launcher" ToolTip="Epic Games Launcher is the client for accessing and playing games from the Epic Games Store." Margin="0,0,2,0"/><TextBlock Name="WPFInstallepicgamesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.epicgames.com/store/en-US/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgeforcenow" Content="GeForce NOW" ToolTip="GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgeforcenowLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nvidia.com/en-us/geforce-now/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgog" Content="GOG Galaxy" ToolTip="GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgogLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gog.com/galaxy" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallheroiclauncher" Content="Heroic Games Launcher" ToolTip="Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store." Margin="0,0,2,0"/><TextBlock Name="WPFInstallheroiclauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://heroicgameslauncher.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallitch" Content="Itch.io" ToolTip="Itch.io is a digital distribution platform for indie games and creative projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitchLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://itch.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmoonlight" Content="Moonlight/GameStream Client" ToolTip="Moonlight/GameStream Client allows you to stream PC games to other devices over your local network." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmoonlightLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://moonlight-stream.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallplaynite" Content="Playnite" ToolTip="Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplayniteLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://playnite.link/" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" ToolTip="Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprismlauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://prismlauncher.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpsremoteplay" Content="PS Remote Play" ToolTip="PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpsremoteplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://remoteplay.dl.playstation.net/remoteplay/lang/gb/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsidequest" Content="SideQuestVR" ToolTip="SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsidequestLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sidequestvr.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsteam" Content="Steam" ToolTip="Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsteamLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://store.steampowered.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsunshine" Content="Sunshine/GameStream Server" ToolTip="Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsunshineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/LoLBoy25/Sunshine" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallTcNoAccSwitcher" Content="TCNO Account Switcher" ToolTip="A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallTcNoAccSwitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/TCNOco/TcNo-Acc-Switcher" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft''s digital distribution and online gaming service, providing access to Ubisoft''s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvrdesktopstreamer" Content="Virtual Desktop Streamer" ToolTip="Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvrdesktopstreamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vrdesktop.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
+</StackPanel>
+<Label Content="Microsoft Tools" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" ToolTip=".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/3.1" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" ToolTip=".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet6Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/6.0" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" ToolTip=".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet7Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/7.0" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet8" Content=".NET Desktop Runtime 8" ToolTip=".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/8.0" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnuget" Content="NuGet" ToolTip="NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnugetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nuget.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpowerbi" Content="Power BI" ToolTip="Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpowerbiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-bi/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpowershell" Content="PowerShell" ToolTip="PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpowershellLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/PowerShell/PowerShell" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpowertoys" Content="Powertoys" ToolTip="PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpowertoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/microsoft/PowerToys" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" ToolTip="SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltcpviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallterminal" Content="Windows Terminal" ToolTip="Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallterminalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://aka.ms/terminal" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvc2015_32" Content="Visual C++ 2015-2022 32-bit" ToolTip="Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvc2015_32Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" ToolTip="Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvc2015_64Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads" />
+</StackPanel>
+<Label Content="Multimedia Tools" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" ToolTip="AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaimpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.aimp.ru/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallaudacity" Content="Audacity" ToolTip="Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaudacityLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.audacityteam.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallblender" Content="Blender (3D Graphics)" ToolTip="Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallblenderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.blender.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallclementine" Content="Clementine" ToolTip="Clementine is a modern music player and library organizer, supporting various audio formats and online radio services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallclementineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.clementine-player.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcopyq" Content="Copyq (Clipboard Manager)" ToolTip="Copyq is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcopyqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://copyq.readthedocs.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldarktable" Content="DarkTable" ToolTip="Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldarktableLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.darktable.org/install/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldigikam" Content="DigiKam" ToolTip="DigiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldigikamLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.digikam.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalleartrumpet" Content="Eartrumpet (Audio)" ToolTip="Eartrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings." Margin="0,0,2,0"/><TextBlock Name="WPFInstalleartrumpetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://eartrumpet.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallffmpeg" Content="Ffmpeg full" ToolTip="FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallffmpegLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ffmpeg.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfirealpaca" Content="Fire Alpaca" ToolTip="Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirealpacaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://firealpaca.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallflameshot" Content="Flameshot (Screenshots)" ToolTip="Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallflameshotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://flameshot.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfoobar" Content="Foobar2000 (Music Player)" ToolTip="Foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfoobarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.foobar2000.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfreecad" Content="FreeCAD" ToolTip="FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfreecadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.freecadweb.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" ToolTip="GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgimpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gimp.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgreenshot" Content="Greenshot (Screenshots)" ToolTip="Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgreenshotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getgreenshot.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallhandbrake" Content="HandBrake" ToolTip="HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhandbrakeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://handbrake.fr/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" ToolTip="ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed." Margin="0,0,2,0"/><TextBlock Name="WPFInstallimageglassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://imageglass.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallimgburn" Content="ImgBurn" ToolTip="ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images." Margin="0,0,2,0"/><TextBlock Name="WPFInstallimgburnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.imgburn.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallinkscape" Content="Inkscape" ToolTip="Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallinkscapeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://inkscape.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallitunes" Content="iTunes" ToolTip="iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitunesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.apple.com/itunes/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" ToolTip="Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinserverLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkdenlive" Content="Kdenlive (Video Editor)" ToolTip="Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdenliveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://kdenlive.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallklite" Content="K-Lite Codec Standard" ToolTip="K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkliteLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.codecguide.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkodi" Content="Kodi Media Center" ToolTip="Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkodiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://kodi.tv/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" ToolTip="Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkritaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://krita.org/en/download/krita-desktop/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" ToolTip="MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmusicbeeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getmusicbee.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" ToolTip="nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnglideLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.zeus-software.com/downloads/nglide" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" ToolTip="Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnomacsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/nomacs/nomacs/releases/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallobs" Content="OBS Studio" ToolTip="OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators." Margin="0,0,2,0"/><TextBlock Name="WPFInstallobsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://obsproject.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" ToolTip="OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenscadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.openscad.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallPaintdotnet" Content="Paint.net" ToolTip="Paint.net is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPaintdotnetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.getpaint.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallplex" Content="Plex Media Server" ToolTip="Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv/your-media/" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="3">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/strawberrymusicplayer/strawberry/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstremio" Content="Stremio" ToolTip="Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltidal" Content="Tidal" ToolTip="Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltidalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tidal.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvideomass" Content="Videomass" ToolTip="Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvideomassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jeanslack/Videomass" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
+</StackPanel>
+<Label Content="Pro Tools" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" ToolTip="EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallefibooteditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.easyuefi.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnmap" Content="Nmap" ToolTip="Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnmapLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nmap.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" ToolTip="OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy." Margin="0,0,2,0"/><TextBlock Name="WPFInstallOpenVPNLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://openvpn.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallPortmaster" Content="Portmaster" ToolTip="Portmaster is a free and open-source application that puts you back in charge over all your computers network connections." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPortmasterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/safing/portmaster" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallputty" Content="Putty" ToolTip="PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP." Margin="0,0,2,0"/><TextBlock Name="WPFInstallputtyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.chiark.greenend.org.uk/~sgtatham/putty/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrustdesk" Content="Rust Remote Desktop (FOSS)" ToolTip="RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrustdeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://rustdesk.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsimplewall" Content="SimpleWall" ToolTip="SimpleWall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplewallLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.henrypp.org/product/simplewall" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallventoy" Content="Ventoy" ToolTip="Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems." Margin="0,0,2,0"/><TextBlock Name="WPFInstallventoyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ventoy.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwinscp" Content="WinSCP" ToolTip="WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinscpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://winscp.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwireguard" Content="WireGuard" ToolTip="WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwireguardLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.wireguard.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwireshark" Content="WireShark" ToolTip="Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwiresharkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.wireshark.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxpipe" Content="X-Pipe" ToolTip="X-Pipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxpipeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xpipe.io/" />
+</StackPanel>
+<Label Content="Utilities" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstall7zip" Content="7-Zip" ToolTip="7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression." Margin="0,0,2,0"/><TextBlock Name="WPFInstall7zipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.7-zip.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" ToolTip="Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available." Margin="0,0,2,0"/><TextBlock Name="WPFInstallalacrittyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/alacritty/alacritty" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallanydesk" Content="AnyDesk" ToolTip="AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanydeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://anydesk.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallauthy" Content="Authy" ToolTip="Simple and cross-platform 2FA app" Margin="0,0,2,0"/><TextBlock Name="WPFInstallauthyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://authy.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" ToolTip="AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts." Margin="0,0,2,0"/><TextBlock Name="WPFInstallautohotkeyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.autohotkey.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbarrier" Content="Barrier" ToolTip="Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbarrierLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/debauchee/barrier" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbat" Content="Bat (Cat)" ToolTip="Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sharkdp/bat" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbitcomet" Content="BitComet" ToolTip="BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbitcometLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bitcomet.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" ToolTip="Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbitwardenLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://bitwarden.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbleachbit" Content="BleachBit" ToolTip="Clean Your System and Free Disk Space" Margin="0,0,2,0"/><TextBlock Name="WPFInstallbleachbitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bleachbit.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Code52/carnac" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcpuz" Content="CPU-Z" ToolTip="CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer''s hardware components, including the CPU, memory, and motherboard." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcpuzLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.cpuid.com/softwares/cpu-z.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcrystaldiskinfo" Content="Crystal Disk Info" ToolTip="Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcrystaldiskinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://crystalmark.info/en/software/crystaldiskinfo/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcrystaldiskmark" Content="Crystal Disk Mark" ToolTip="Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcrystaldiskmarkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://crystalmark.info/en/software/crystaldiskmark/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallddu" Content="Display Driver Uninstaller" ToolTip="Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldduLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.wagnardsoft.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldeluge" Content="Deluge" ToolTip="Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldelugeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://deluge-torrent.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldevtoys" Content="Devtoys" ToolTip="Devtoys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldevtoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://devtoys.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldmt" Content="Dual Monitor Tools" ToolTip="Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldmtLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dualmonitortool.sourceforge.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" ToolTip="Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallduplicatiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.duplicati.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" ToolTip="ErrorLookup is a tool for looking up Windows error codes and their descriptions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallerrorlookupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/HenryPP/ErrorLookup" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallesearch" Content="Everything Search" ToolTip="Everything Search is a fast and efficient file search utility for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallesearchLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.voidtools.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallespanso" Content="Espanso" ToolTip="Cross-platform and open-source Text Expander written in Rust" Margin="0,0,2,0"/><TextBlock Name="WPFInstallespansoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://espanso.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" ToolTip="Etcher is a powerful tool for creating bootable USB drives with ease." Margin="0,0,2,0"/><TextBlock Name="WPFInstalletcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.balena.io/etcher/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfileconverter" Content="File Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallflux" Content="f.lux Redshift" ToolTip="f.lux Redshift adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfzf" Content="Fzf" ToolTip="A command-line fuzzy finder" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfzfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/junegunn/fzf/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" ToolTip="Glary Utilities is a comprehensive system optimization and maintenance tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallglaryutilitiesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.glarysoft.com/glary-utilities/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgoogledrive" Content="Google Drive" ToolTip="File syncing across devices all tied to your google account" Margin="0,0,2,0"/><TextBlock Name="WPFInstallgoogledriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.google.com/drive/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgpuz" Content="GPU-Z" ToolTip="GPU-Z provides detailed information about your graphics card and GPU." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgpuzLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/gpuz/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgsudo" Content="Gsudo" ToolTip="Gsudo is a sudo implementation for Windows, allowing elevated privilege execution." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgsudoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/gerardog/gsudo" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallhwinfo" Content="HWInfo" ToolTip="HWInfo provides comprehensive hardware information and diagnostics for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.hwinfo.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallintelpresentmon" Content="Intel?? PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljdownloader" Content="J Download Manager" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmalwarebytes" Content="MalwareBytes" ToolTip="MalwareBytes is an anti-malware software that provides real-time protection against threats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmalwarebytesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.malwarebytes.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmeld" Content="Meld" ToolTip="Meld is a visual diff and merge tool for files and directories." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmeldLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://meldmerge.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmonitorian" Content="Monitorian" ToolTip="Monitorian is a utility for adjusting monitor brightness and contrast on Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmonitorianLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.monitorian.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/agalwood/Motrix" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnanazip" Content="NanaZip" ToolTip="NanaZip is a fast and efficient file compression and decompression tool." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnanazipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/M2Team/NanaZip" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallneofetchwin" Content="Neofetch" ToolTip="Neofetch is a command-line utility for displaying system information in a visually appealing way." Margin="0,0,2,0"/><TextBlock Name="WPFInstallneofetchwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/nepnep39/neofetch-win" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnextclouddesktop" Content="Nextcloud Desktop" ToolTip="Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnextclouddesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nextcloud.com/install/#install-clients" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnilesoftShel" Content="Shell (Expanded Context Menu)" ToolTip="Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnilesoftShelLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nilesoft.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnushell" Content="Nushell" ToolTip="Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnushellLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nushell.sh/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" ToolTip="NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvcleanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/nvcleanstall/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallOPAutoClicker" Content="OPAutoClicker" ToolTip="A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location." Margin="0,0,2,0"/><TextBlock Name="WPFInstallOPAutoClickerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.opautoclicker.com" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallopenhashtab" Content="OpenHashTab" ToolTip="OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenhashtabLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/namazso/OpenHashTab/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallopenrgb" Content="OpenRGB" ToolTip="OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenrgbLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://openrgb.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallopenshell" Content="Open Shell (Start Menu)" ToolTip="Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenshellLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Open-Shell/Open-Shell-Menu" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallOVirtualBox" Content="Oracle VirtualBox" ToolTip="Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures." Margin="0,0,2,0"/><TextBlock Name="WPFInstallOVirtualBoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.virtualbox.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallownclouddesktop" Content="ownCloud Desktop" ToolTip="ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform." Margin="0,0,2,0"/><TextBlock Name="WPFInstallownclouddesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://owncloud.com/desktop-app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallparsec" Content="Parsec" ToolTip="Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallparsecLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://parsec.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpeazip" Content="Peazip" ToolTip="Peazip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpeazipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://peazip.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpiimager" Content="Raspberry Pi Imager" ToolTip="Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpiimagerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.raspberrypi.com/software/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallprocesslasso" Content="Process Lasso" ToolTip="Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocesslassoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://bitsum.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallprucaslicer" Content="Prusa Slicer" ToolTip="Prusa Slicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprucaslicerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.prusa3d.com/prusaslicer/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" ToolTip="qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqbittorrentLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.qbittorrent.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrainmeter" Content="Rainmeter" ToolTip="Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrainmeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rainmeter.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrevo" Content="RevoUninstaller" ToolTip="RevoUninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrevoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.revouninstaller.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallripgrep" Content="Ripgrep" ToolTip="Fast and powerful commandline search tool" Margin="0,0,2,0"/><TextBlock Name="WPFInstallripgrepLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/BurntSushi/ripgrep/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrufus" Content="Rufus Imager" ToolTip="Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrufusLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://rufus.ie/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsamsungmagician" Content="Samsung Magician" ToolTip="Samsung Magician is a utility for managing and optimizing Samsung SSDs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsamsungmagicianLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://semiconductor.samsung.com/consumer-storage/magician/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsandboxie" Content="Sandboxie Plus" ToolTip="Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsandboxieLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sandboxie.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" ToolTip="Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsdioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sourceforge.net/projects/snappy-driver-installer-origin" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" ToolTip="Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspacedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spacedrive.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstartallback" Content="StartAllBack" ToolTip="StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallstartallbackLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.startallback.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsuperf4" Content="SuperF4" ToolTip="SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsuperf4Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://stefansundin.github.io/superf4/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsyncthingtray" Content="syncthingtray" ToolTip="Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsyncthingtrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Martchus/syncthingtray" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsynctrayzor" Content="Synctrayzor" ToolTip="Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsynctrayzorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/canton7/SyncTrayzor/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltailscale" Content="Tailscale" ToolTip="Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltailscaleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tailscale.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" ToolTip="TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallteamviewerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.teamviewer.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltotalcommander" Content="Total Commander" ToolTip="Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltotalcommanderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ghisler.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" ToolTip="TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltreesizeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.jam-software.com/treesize_free/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallttaskbar" Content="Translucent Taskbar" ToolTip="Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar." Margin="0,0,2,0"/><TextBlock Name="WPFInstallttaskbarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/TranslucentTB/TranslucentTB" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" ToolTip="Twinkle Tray lets you easily manage the brightness levels of multiple monitors." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltwinkletrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://twinkletray.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwindowspchealth" Content="Windows PC Health Check" ToolTip="Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwingetui" Content="WingetUI" ToolTip="WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/marticliment/WingetUI" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwinpaletter" Content="WinPaletter" ToolTip="WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinpaletterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Abdelrhman-AK/WinPaletter" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwinrar" Content="WinRAR" ToolTip="WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinrarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.win-rar.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwisetoys" Content="WiseToys" ToolTip="WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwisetoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://toys.wisecleaner.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwiztree" Content="WizTree" ToolTip="WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwiztreeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wiztreefree.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" ToolTip="Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*" Margin="0,0,2,0"/><TextBlock Name="WPFInstallxdmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/subhra74/xdm" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" ToolTip="ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzerotieroneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zerotier.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallzoxide" Content="Zoxide" ToolTip="Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoxideLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ajeetdsouza/zoxide" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+
+
+                        </Grid>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                        <RowDefinition Height=".70*"/>
+                        <RowDefinition Height=".10*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+</Grid.ColumnDefinitions>
+<Border Grid.Row="1" Grid.Column="0">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Essential Tweaks" FontSize="16"/>
+<CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+<CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
+<CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
+<CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
+<CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
+<CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
+<CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0"  ToolTip="Disables Location Tracking...DUH!"/>
+<CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
+<CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0"  ToolTip="Storage Sense deletes temp files automatically."/>
+<CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what''s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don''t be like Bob. Bob likes hibernation."/>
+<CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0"  ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I''ve never met someone that likes it, but it''s there for the XBOX crowd."/>
+<CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0"  ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
+<CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don''t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+<Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
+<CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0"  ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
+<CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
+<CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0"  ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
+<CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
+<CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+<CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+<CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0"  ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
+<CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
+<CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
+<CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
+<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+<Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+<ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
+<ComboBoxItem IsSelected="True" Content="Default"/>
+<ComboBoxItem  Content="DHCP"/>
+<ComboBoxItem  Content="Google"/>
+<ComboBoxItem  Content="Cloudflare"/>
+<ComboBoxItem  Content="Cloudflare_Malware"/>
+<ComboBoxItem  Content="Cloudflare_Malware_Adult"/>
+<ComboBoxItem  Content="Level3"/>
+<ComboBoxItem  Content="Open_DNS"/>
+<ComboBoxItem  Content="Quad9"/>
+</ComboBox>
+</StackPanel><Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
+<Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="1">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Customize Preferences" FontSize="16"/>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Dark Theme" Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
+<CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip="If enable then includes web search results from Bing in your Start Menu search." />
+<CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip="Toggle the Num Lock key state when your computer starts." />
+<CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." />
+<CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
+<CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
+<CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." />
+<CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." />
+<CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+</StackPanel>
+<Label Content="Performance Plans" FontSize="16"/>
+<Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Label Content="Shortcuts" FontSize="16"/>
+<Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+
+
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
+                        <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
+                        <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
+                        <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
+                        <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
+                        <Button Name="WPFclear" Content=" Clear " Margin="1"/>
+                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
+                    </StackPanel>
+                    <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
+                        <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBlock Padding="10">
+                                Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+                                <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Background="Transparent">
+                    <Grid.ColumnDefinitions>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="*"/>
+</Grid.ColumnDefinitions>
+<Border Grid.Row="1" Grid.Column="0">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Features" FontSize="16"/>
+<CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"  ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
+<CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"  ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
+<CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"  ToolTip="Enables legacy programs from previous versions of windows"/>
+<CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0"  ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
+<CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"  ToolTip="Enables web suggestions when searching using Windows Search."/>
+<CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0"  ToolTip="Disables web suggestions when searching using Windows Search."/>
+<CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0"  ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
+<CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0"  ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
+<CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0"  ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
+<CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"  ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
+<CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"  ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
+<Button Name="WPFFeatureInstall" Content="Install Features" HorizontalAlignment = "Left" Width="150" Margin="5" Padding="20,5" />
+<Label Content="Fixes" FontSize="16"/>
+<Button Name="WPFPanelAutologin" Content="Set Up Autologin" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesUpdate" Content="Reset Windows Update" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesNetwork" Content="Reset Network" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelDISM" Content="System Corruption Scan" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFFixesWinget" Content="WinGet Reinstall" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+<Button Name="WPFRunAdobeCCCleanerTool" Content="Remove Adobe Creative Cloud" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="1">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Legacy Windows Panels" FontSize="16"/>
+<Button Name="WPFPanelcontrol" Content="Control Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelnetwork" Content="Network Connections" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelpower" Content="Power Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelregion" Content="Region" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelsound" Content="Sound Settings" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPanelsystem" Content="System Properties" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+<Button Name="WPFPaneluser" Content="User Accounts" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
+
+</StackPanel>
+</Border>
+
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Row="0" Grid.Column="0">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <Button Name="WPFUpdatesdefault" FontSize="16" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
+                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="1">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <Button Name="WPFUpdatessecurity" FontSize="16" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
+                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don''t break other systems. You don''t want to go without these for ANY extended periods of time.</TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="2">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <Button Name="WPFUpdatesdisable" FontSize="16" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
+                            <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
+                            <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
+                        </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5" Width="Auto" Height="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Width="Auto" Height="Auto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Grid.Column="0"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch">
+                    <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                        <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" />
+                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
+                                Choose a Windows ISO file that you''ve downloaded <LineBreak/>
+                                Check the status in the console
+                            </TextBlock>
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
+                                ToolTip="Use ISO directory for ScratchDir " />
+
+                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
+                              <Button.Content>
+                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                    Text="Scratch" Padding="0"
+                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
+                                    Margin="0,0,0,3" HorizontalAlignment="Left"
+                                    IsReadOnly="False"
+                                    Height="Auto"
+                                    Width="110"
+                                    Foreground="{ButtonForegroundColor}"
+                                  />
+                              </Button.Content>
+                            </Button>
+                            <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                Text="ISO location will be printed here"
+                                Margin="2"
+                                IsReadOnly="True"
+                                TextWrapping="Wrap"
+                                Foreground="{LabelboxForegroundColor}"
+                            />
+                            <Button Name="WPFGetIso" Margin="2" Padding="15">
+                                <Button.Content>
+                                    <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
+                                        Select Windows <Underline>I</Underline>SO
+                                    </TextBlock>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        <!-- Visibility="Hidden" -->
+                        <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
+                            <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
+                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
+                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I''M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                            <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                                Margin="6"
+                                Text=""
+                                IsReadOnly="False"
+                                TextWrapping="Wrap"
+                                Foreground="{LabelboxForegroundColor}"
+                                ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
+                            />
+                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
+                            <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinIsoLocation" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinMountDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinScratchDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    </Border>
+                    <Border
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Grid.Row="0" Grid.Column="1">
+                        <StackPanel HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Visibility="Visible">
+
+                            <Grid Name = "BusyMessage" Visibility="Collapsed">
+                              <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
+                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                                  FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
+                            </Grid>                         
+ 
+                            <TextBlock x:Name = "asciiTextBlock"
+                                xml:space ="preserve"
+                                HorizontalAlignment = "Center"
+                                Margin = "0"
+                                VerticalAlignment = "Top"
+                                Height = "Auto"
+                                Width = "Auto"
+                                FontSize = "10"
+                                FontFamily = "Courier New"
+                            >
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
+ /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \  
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+                            </TextBlock>
+                        
+                            <TextBlock Margin="15,15,15,0" 
+                                Padding="8,8,8,0" 
+                                VerticalAlignment="Center" 
+                                TextWrapping="WrapWithOverflow" 
+                                Height = "Auto"
+                                Width = "Auto"
+                                Foreground="{ComboBoxForegroundColor}">
+                                <Bold>MicroWin features:</Bold><LineBreak/>
+                                - Remove Telemetry and Tracking <LineBreak/>
+                                - Add ability to use local accounts <LineBreak/>
+                                - Remove Wifi requirement to finish install <LineBreak/>
+                                - Ability to remove Edge <LineBreak/>
+                                - Ability to remove Defender <LineBreak/>
+                                - Remove Teams <LineBreak/>
+                                - Apps debloat <LineBreak/>
+                                <LineBreak/>
+                                <LineBreak/>
+
+                                <Bold>INSTRUCTIONS</Bold> <LineBreak/>
+                                - Download the latest Windows 11 image from Microsoft <LineBreak/>
+                                LINK: https://www.microsoft.com/software-download/windows11 <LineBreak/>
+                                May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
+                                - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
+                                - Launch WinUtil and MicroWin  <LineBreak/>
+                                - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
+                                It will be processed and unpacked which may take some time <LineBreak/>
+                                - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
+                                - Choose which features you want to keep <LineBreak/>
+                                - Click the "Start Process" button <LineBreak/>
+                                The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
+                                - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
+                                - Copy this image to your Ventoy USB Stick, boot to this image, gg
+                                <LineBreak/>
+                                If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
+                            </TextBlock>
+                            <TextBlock Margin="15,0,15,15" 
+                                Padding = "1" 
+                                TextWrapping="WrapWithOverflow" 
+                                Height = "Auto"
+                                Width = "Auto"
+                                VerticalAlignment = "Top"
+                                Foreground = "{ComboBoxForegroundColor}"
+                                xml:space = "preserve"
+                            >
+<Bold>Example:</Bold>
+     C:\drivers\
+          |-- Driver1\
+          |   |-- Driver1.inf
+          |   |-- Driver1.sys
+          |-- Driver2\
+          |   |-- Driver2.inf
+          |   |-- Driver2.sys
+          |-- OtherFiles...
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>'
 # SPDX-License-Identifier: MIT
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
@@ -10926,24 +12073,13 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-# Assuming inputApp.xaml is in the same directory as main.ps1
-$appXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputApp.xaml"
-$tweaksXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputTweaks.xaml"
-$featuresXamlPath = Join-Path -Path $PSScriptRoot -ChildPath "xaml/inputFeatures.xaml"
-
-# Load the XAML content from inputApp.xaml
-$appXamlContent = Get-Content -Path $appXamlPath -Raw
-$tweaksXamlContent = Get-Content -Path $tweaksXamlPath -Raw
-$featuresXamlContent = Get-Content -Path $featuresXamlPath -Raw
-
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-$inputXML = $inputXML -replace "{{InstallPanel_applications}}", $appXamlContent
-$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$inputXML = $inputXML -replace "{{InstallPanel_features}}", $featuresXamlContent
-
-
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    $ctttheme = 'Matrix'
+    if (Invoke-GPUCheck -eq $True) {
+        $ctttheme = 'Matrix'
+    }
+    else {
+        $ctttheme = 'Dark'
+    }
 }
 else {
     $ctttheme = 'Classic'
