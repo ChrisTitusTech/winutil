@@ -33,8 +33,8 @@ Function Install-WinUtilProgramWinget {
             Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
-            Start-Process -FilePath winget -ArgumentList "uninstall -e --purge --force --silent $Program" -NoNewWindow -Wait
-        }
+        Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
+	}
 
         $X++
     }

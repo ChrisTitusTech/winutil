@@ -690,7 +690,7 @@
                         <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
-                        <Button Name="WPFinstall" Content=" Install Selected" Margin="2" />
+                        <Button Name="WPFinstall" Content=" Install/Upgrade Selected" Margin="2" />
                         <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
                         <Button Name="WPFuninstall" Content=" Uninstall Selection" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
