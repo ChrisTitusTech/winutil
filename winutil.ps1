@@ -10,6 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
+    Version        : 24.03.21
 #>
 param (
     [switch]$Debug,
