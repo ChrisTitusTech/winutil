@@ -10,7 +10,6 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.21
 #>
 param (
     [switch]$Debug,
@@ -751,28 +750,23 @@ function Test-CompatibleImage() {
 <#
 
     .SYNOPSIS
-        Checks the version of a Windows image and determines whether or not it is compatible depending on the Major property
+        Checks the version of a Windows image and determines whether or not it is compatible with a specific feature depending on a desired version
 
-    .PARAMETER imgVersion
-        The version of the Windows image
+    .PARAMETER Name
+        imgVersion - The version of the Windows image
+        desiredVersion - The version to compare the image version with
 
 #>
 
     param
     (
-        [Parameter(Mandatory = $true)] [string] $imgVersion
+        [Parameter(Mandatory = $true, Position=0)] [string] $imgVersion,
+        [Parameter(Mandatory = $true, Position=1)] [Version] $desiredVersion
     )
 
     try {
         $version = [Version]$imgVersion
-        if ($version.Major -ge 10)
-        {
-            return $True
-        }
-        else
-        {
-            return $False
-        }
+        return $version -ge $desiredVersion
     } catch {
         return $False
     }
@@ -980,7 +974,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 
 	foreach($itemToDelete in $itemsToDelete)
 	{
-		$status = "Deleteing $($itemToDelete)"
+		$status = "Deleting $($itemToDelete)"
 		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
 
 		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
@@ -1054,7 +1048,7 @@ function New-Unattend {
 	<unattend xmlns="urn:schemas-microsoft-com:unattend"
 			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+        <#REPLACEME#>
 		<settings pass="auditUser">
 			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 				<RunSynchronous>
@@ -1095,6 +1089,26 @@ function New-Unattend {
 		</settings>
 	</unattend>
 '@
+    $specPass = @'
+<settings pass="specialize">
+            <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <CEIPEnabled>0</CEIPEnabled>
+            </component>
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
+            </component>
+        </settings>
+'@
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false)
+    {
+        # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
+        $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
+    }
+    else
+    {
+        # Replace the placeholder text with the Specialize pass
+        $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
+    }
 	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
 }
 
@@ -3193,12 +3207,17 @@ function Invoke-WPFGetIso {
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
-        if (-not (Test-Path -Path $wimFile -PathType Leaf))
+        if ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (-not (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf)))
         {
-            $msg = "Install.wim file doesn't exist in the image, this could happen if you use unofficial Windows images, or a Media creation tool, which creates a final image that can not be modified. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
+            $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             throw
+        }
+        elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))
+        {
+            Write-Host "Install.esd found on the image. It needs to be converted to a WIM file in order to begin processing"
+            $wimFile = $wimFile.Replace(".wim", ".esd").Trim()
         }
         $sync.MicrowinWindowsFlavors.Items.Clear()
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
@@ -3427,10 +3446,30 @@ public class PowerManagement {
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
+	# Detect if the Windows image is an ESD file and convert it to WIM
+	if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf))
+	{
+		Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
+		Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+		if ($?)
+		{
+            Remove-Item -Path $mountDir\sources\install.esd -Force
+			# Since we've already exported the image index we wanted, switch to the first one
+			$index = 1
+		}
+		else
+		{
+            $msg = "The export process has failed and MicroWin processing cannot continue"
+            Write-Host "Failed to export the image"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            return
+		}
+	}
+
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
-    if ((Test-CompatibleImage $imgVersion) -eq $false)
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false)
     {
 		$msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
