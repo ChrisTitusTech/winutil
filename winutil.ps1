@@ -1602,6 +1602,35 @@ function Invoke-WinUtilFeatureInstall {
         }
     }
 }
+function Invoke-GPUCheck {
+    $gpuInfo = Get-WmiObject Win32_VideoController
+    
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*NVIDIA*") {
+            return $true  # NVIDIA GPU found
+        }
+    }
+
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*AMD Radeon RX*") {
+            return $true # AMD GPU Found 
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*UHD*") {
+            return $false # Intel Intergrated GPU Found 
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*AMD Radeon(TM)*") {
+            return $false # AMD Intergrated GPU Found 
+        }
+    }
+}
 Function Invoke-WinUtilMouseAcceleration {
     <#
 
@@ -7246,7 +7275,7 @@ $sync.configs.preset = '{
   ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-        "Classic":  {
+    "Classic":  {
                     "ComboBoxBackgroundColor":  "#FFFFFF",
                     "LabelboxForegroundColor":  "#000000",
                     "MainForegroundColor":  "#000000",
@@ -7307,6 +7336,36 @@ $sync.configs.themes = '{
                    "BorderColor": "#FFAC1C",
                    "BorderOpacity": "0.8",
                    "ShadowPulse": "0:0:3"
+               },
+     "Dark":  {
+                   "ComboBoxBackgroundColor":  "#000000",
+                   "LabelboxForegroundColor":  "#FFEE58",
+                   "MainForegroundColor":  "#9CCC65",
+                   "MainBackgroundColor":  "#000000",
+                   "LabelBackgroundColor":  "#000000",
+                   "LinkForegroundColor":  "#add8e6",
+                   "LinkHoverForegroundColor":  "#FFFFFF",
+                   "ComboBoxForegroundColor":  "#FFEE58",
+                   "ButtonInstallBackgroundColor":  "#222222",
+                   "ButtonTweaksBackgroundColor":  "#333333",
+                   "ButtonConfigBackgroundColor":  "#444444",
+                   "ButtonUpdatesBackgroundColor":  "#555555",
+                   "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonTweaksForegroundColor":  "#FFFFFF",
+                   "ButtonConfigForegroundColor":  "#FFFFFF",
+                   "ButtonUpdatesForegroundColor":  "#FFFFFF",
+                   "ButtonBackgroundColor":  "#000019",
+                   "ButtonBackgroundPressedColor":  "#9CCC65",
+                   "ButtonBackgroundMouseoverColor":  "#FF5733",
+                   "ButtonBackgroundSelectedColor":  "#FF5733",
+                   "ButtonForegroundColor":  "#9CCC65",
+                   "ButtonBorderThickness":  "1",
+                   "ButtonMargin":  "1",
+                   "ButtonCornerRadius": "2",
+                   "ToggleButtonHeight": "25",
+                   "BorderColor": "#FFAC1C",
+                   "BorderOpacity": "0.2",
+                   "ShadowPulse": "Forever"
                }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
@@ -11998,7 +12057,12 @@ $sync.runspace.Open()
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    $ctttheme = 'Matrix'
+    if (Invoke-GPUCheck -eq $True) {
+        $ctttheme = 'Matrix'
+    }
+    else {
+        $ctttheme = 'Dark'
+    }
 }
 else {
     $ctttheme = 'Classic'
