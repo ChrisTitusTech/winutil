@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.21
+    Version        : 24.03.23
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.21"
+$sync.version = "24.03.23"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1110,7 +1110,7 @@ function New-Unattend {
         # Replace the placeholder text with the Specialize pass
         $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
     }
-	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
 }
 
 function New-CheckInstall {
