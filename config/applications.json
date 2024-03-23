@@ -539,7 +539,7 @@
 		"category": "Browsers",
 		"choco": "FirefoxESR",
 		"content": "Firefox ESR",
-		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
 		"winget": "Mozilla.Firefox.ESR"
 	},
