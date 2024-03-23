@@ -535,6 +535,14 @@
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
 		"winget": "Mozilla.Firefox"
 	},
+	"WPFInstallfirefoxesr": {
+		"category": "Browsers",
+		"choco": "FirefoxESR",
+		"content": "Firefox ESR",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
+		"link": "https://www.mozilla.org/en-US/firefox/new/",
+		"winget": "Mozilla.Firefox.ESR"
+	},
 	"WPFInstallflameshot": {
 		"category": "Multimedia Tools",
 		"choco": "flameshot",
@@ -542,6 +550,14 @@
 		"description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
 		"link": "https://flameshot.org/",
 		"winget": "Flameshot.Flameshot"
+	},
+	"WPFInstalllightshot": {
+		"category": "Multimedia Tools",
+		"choco": "lightshot",
+		"content": "Lightshot (Screenshots)",
+		"description": "Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
+		"link": "https://app.prntscr.com/",
+		"winget": "Skillbrains.Lightshot"
 	},
 	"WPFInstallfloorp": {
 		"category": "Browsers",
