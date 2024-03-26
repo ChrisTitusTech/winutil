@@ -23,6 +23,7 @@ ooshutup10.cfg
 winutil.exe.config
 Microsoft.UI.Xaml*
 license1.xml
+winutil.ps1
 
 # Libraries
 System.Management.Automation.dll
