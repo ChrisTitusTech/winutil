@@ -195,7 +195,7 @@ function Copy-ToUSB([string] $fileToCopy)
 					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
 				}
 
-			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			Write-Host "File copied to Ventoy drive $($volume.DriveLetter)"
 			return
 		}
 	}

@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.23
+    Version        : 24.03.26
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.23"
+$sync.version = "24.03.26"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -928,7 +928,7 @@ function Copy-ToUSB([string] $fileToCopy)
 					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
 				}
 
-			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			Write-Host "File copied to Ventoy drive $($volume.DriveLetter)"
 			return
 		}
 	}
