@@ -98,7 +98,9 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
   - Essential Tweaks: Offers a collection of essential tweaks aimed at improving system performance, privacy, and resource utilization. These tweaks include creating a system restore point, disabling telemetry, Wi-Fi Sense, setting services to manual, disabling location tracking, and HomeGroup, among others.
 
-  - Misc. Tweaks: Encompasses a range of various tweaks to further optimize the system. These tweaks include enabling/disabling power throttling, enabling num lock on startup, removing Cortana and Edge, disabling User Account Control (UAC), notification panel, and configuring TPM during updates, among others.
+  - Advanced Tweaks: Encompasses a range of various advanced power user tweaks to further optimize the system. These tweaks include removing OneDrive and Edge, disabling User Account Control (UAC), notification panel, among others.
+
+  - Toggles: Adds easy to use, one click shortcuts for toggling dark mode, NumLock on startup, file extensions, sticky keys, among others.
 
   - Additional Tweaks: Introduces various other tweaks such as enabling dark mode, changing DNS settings, adding an Ultimate Performance mode, and creating shortcuts for WinUtil tools. These tweaks provide users with additional customization options to tailor their system to their preferences.
 
