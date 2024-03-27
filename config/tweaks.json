@@ -2528,10 +2528,10 @@
     "panel": "1",
     "Order": "a031_",
     "InvokeScript": [
-      "netsh interface ipv6 6to4 set state state=disabled undoonstop=disabled; netsh interface ipv6 isatap set state state=disabled"
+      "netsh interface teredo set state disabled; netsh interface ipv6 6to4 set state state=disabled undoonstop=disabled; netsh interface ipv6 isatap set state state=disabled"
     ],
     "UndoScript": [
-      "netsh interface ipv6 6to4 set state state=enabled undoonstop=enabled; netsh interface ipv6 isatap set state state=enabled"
+      "netsh interface teredo set state default; netsh interface ipv6 6to4 set state state=enabled undoonstop=enabled; netsh interface ipv6 isatap set state state=enabled"
     ]
   },
   "WPFTweaksEnableipsix": {
@@ -2541,10 +2541,10 @@
     "panel": "1",
     "Order": "a030_",
     "InvokeScript": [
-      "netsh interface ipv6 6to4 set state state=enabled undoonstop=enabled; netsh interface ipv6 isatap set state state=enabled"
+      "netsh interface teredo set state default; netsh interface ipv6 6to4 set state state=enabled undoonstop=enabled; netsh interface ipv6 isatap set state state=enabled"
     ],
     "UndoScript": [
-      "netsh interface ipv6 6to4 set state state=disabled undoonstop=disabled; netsh interface ipv6 isatap set state state=disabled"
+      "netsh interface teredo set state disabled; netsh interface ipv6 6to4 set state state=disabled undoonstop=disabled; netsh interface ipv6 isatap set state state=disabled"
     ]
   },
   "WPFToggleDarkMode": {
