@@ -9914,6 +9914,15 @@ $sync.configs.tweaks = '{
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a031_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "255",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
       "netsh interface teredo set state disabled; netsh interface ipv6 6to4 set state state=disabled undoonstop=disabled; netsh interface ipv6 isatap set state state=disabled"
     ],
@@ -9927,6 +9936,15 @@ $sync.configs.tweaks = '{
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "0",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
       "netsh interface teredo set state default; netsh interface ipv6 6to4 set state state=enabled undoonstop=enabled; netsh interface ipv6 isatap set state state=enabled"
     ],
