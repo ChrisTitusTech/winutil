@@ -607,6 +607,14 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
+	"WPFInstallfxsound": {
+		"category": "Multimedia Tools",
+		"choco": "fxsound",
+		"content": "FxSound",
+		"description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+		"link": "https://www.fxsound.com/",
+		"winget": "FxSoundLLC.FxSound"
+	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
 		"choco": "fzf",
@@ -1638,6 +1646,14 @@
 		"description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
+	},
+	"WPFInstallsimplenote": {
+		"category": "Document",
+		"choco": "simplenote",
+		"content": "simplenote",
+		"description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+		"link": "https://simplenote.com/",
+		"winget": "Automattic.Simplenote"
 	},
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
