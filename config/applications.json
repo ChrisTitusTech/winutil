@@ -927,6 +927,14 @@
 		"link": "https://joplinapp.org/",
 		"winget": "Joplin.Joplin"
 	},
+	"WPFInstalljpegview": {
+		"category": "Utilities",
+		"choco": "jpegview",
+		"content": "JPEG View",
+		"description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
+		"link": "https://github.com/sylikc/jpegview",
+		"winget": "sylikc.JPEGView"
+	},
 	"WPFInstallkdeconnect": {
 		"category": "Utilities",
 		"choco": "kdeconnect-kde",
