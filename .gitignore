@@ -15,6 +15,11 @@ winutil.pdb
 # Folder config file
 [Dd]esktop.ini
 
+# Ignore Generated XAML Files
+xaml/inputApp.xaml
+xaml/inputFeatures.xaml
+xaml/inputTweaks.xaml
+
 # Executables and Configs
 winget.msixbundle
 pester.ps1
