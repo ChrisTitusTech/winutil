@@ -1743,6 +1743,14 @@
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
 	},
+	"WPFInstallsignalrgb": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "SignalRGB",
+		"description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
+		"link": "https://www.signalrgb.com/",
+		"winget": "WhirlwindFX.SignalRgb"
+	},
 	"WPFInstallsimplenote": {
 		"category": "Document",
 		"choco": "simplenote",
