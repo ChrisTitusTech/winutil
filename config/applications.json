@@ -495,6 +495,14 @@
 		"link": "https://www.balena.io/etcher/",
 		"winget": "Balena.Etcher"
 	},
+	"WPFInstallexplorerpatcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Explorer Patcher",
+		"description": "This project aims to enhance the working environment on Windows.",
+		"link": "https://github.com/valinet/ExplorerPatcher",
+		"winget": "valinet.ExplorerPatcher"
+	},
 	"WPFInstallfalkon": {
 		"category": "Browsers",
 		"choco": "falkon",
