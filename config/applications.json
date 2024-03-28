@@ -1615,6 +1615,14 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
+	"WPFInstallrevolt": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Revolt",
+		"description": "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
+		"link": "https://revolt.chat/",
+		"winget": "Revolt.RevoltDesktop"
+	},
 	"WPFInstallripgrep": {
 		"category": "Utilities",
 		"choco": "ripgrep",
