@@ -2255,6 +2255,14 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallwizfile": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "WizFile",
+		"description": "Find files by name on your hard drives almost instantly.",
+		"link": "https://antibody-software.com/wizfile/",
+		"winget": "AntibodySoftware.WizFile"
+	},
 	"WPFInstallwiztree": {
 		"category": "Utilities",
 		"choco": "wiztree",
