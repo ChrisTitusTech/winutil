@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.21
+    Version        : 24.03.28
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.21"
+$sync.version = "24.03.28"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -235,7 +235,7 @@ function Get-Oscdimg {
     <#
     
         .DESCRIPTION
-        This function will get oscdimg file for from github Release foldersand put it into env:temp
+        This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
@@ -608,6 +608,58 @@ function Get-WinUtilVariables {
     }
     return $keys
 }
+function Get-WinUtilWingetLatest {
+    <#
+    .SYNOPSIS
+        Uses GitHub API to check for the latest release of Winget.
+    .DESCRIPTION
+        This function grabs the latest version of Winget and returns the download path to Install-WinUtilWinget for installation.
+    #>
+
+    Try{
+        # Grabs the latest release of Winget from the Github API for the install process.
+        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
+        $latestVersion = $response.tag_name #Stores version number of latest release.
+        $licenseWingetUrl = $response.assets.browser_download_url[0] #Index value for License file.
+        Write-Host "Latest Version:`t$($latestVersion)`n"
+        $assetUrl = $response.assets.browser_download_url[2] #Index value for download URL.
+        Invoke-WebRequest -Uri $licenseWingetUrl -OutFile $ENV:TEMP\License1.xml
+        # The only pain is that the msixbundle for winget-cli is 246MB. In some situations this can take a bit, with slower connections.
+        Invoke-WebRequest -Uri $assetUrl -OutFile $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle
+    }
+    Catch{
+        throw [WingetFailedInstall]::new('Failed to get latest Winget release and license')
+    }
+}
+function Get-WinUtilWingetPrerequisites {
+    <#
+    .SYNOPSIS
+        Downloads the Winget Prereqs.
+    .DESCRIPTION
+        Downloads Prereqs for Winget. Version numbers are coded as variables and can be updated as uncommonly as Microsoft updates the prereqs.
+    #>
+
+    # I don't know of a way to detect the prereqs automatically, so if someone has a better way of defining these, that would be great.
+    # Microsoft.VCLibs version rarely changes, but for future compatibility I made it a variable.
+    $versionVCLibs = "14.00"
+    $fileVCLibs = "https://aka.ms/Microsoft.VCLibs.x64.${versionVCLibs}.Desktop.appx"
+    # Write-Host "$fileVCLibs"
+    # Microsoft.UI.Xaml version changed recently, so I made the version numbers variables.
+    $versionUIXamlMinor = "2.8"
+    $versionUIXamlPatch = "2.8.6"
+    $fileUIXaml = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v${versionUIXamlPatch}/Microsoft.UI.Xaml.${versionUIXamlMinor}.x64.appx"
+    # Write-Host "$fileUIXaml"
+
+    Try{
+        Write-Host "Downloading Microsoft.VCLibs Dependency..."
+        Invoke-WebRequest -Uri $fileVCLibs -OutFile $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx
+        Write-Host "Downloading Microsoft.UI.Xaml Dependency...`n"
+        Invoke-WebRequest -Uri $fileUIXaml -OutFile $ENV:TEMP\Microsoft.UI.Xaml.x64.appx
+    }
+    Catch{
+        throw [WingetFailedInstall]::new('Failed to install prerequsites')
+    }
+}
 function Install-WinUtilChoco {
 
     <#
@@ -669,7 +721,10 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
+            # --scope=machine when installing non-UWP apps with winget fails with error code 0x80070005.
+            # Removed argument while testing new Winget install method.
+            # Open issue on winget-cli github repo: https://github.com/microsoft/winget-cli/issues/3936
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
         Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
@@ -681,29 +736,19 @@ Function Install-WinUtilProgramWinget {
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
 }
-function Get-LatestHash {
-    $shaUrl = ((Invoke-WebRequest $apiLatestUrl -UseBasicParsing | ConvertFrom-Json).assets | Where-Object { $_.name -match '^Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt$' }).browser_download_url
-
-    $shaFile = Join-Path -Path $tempFolder -ChildPath 'Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.txt'
-    $WebClient.DownloadFile($shaUrl, $shaFile)
-
-    Get-Content $shaFile
-}
-
 function Install-WinUtilWinget {
-
     <#
 
     .SYNOPSIS
-        Installs Winget if it is not already installed
+        Installs Winget if it is not already installed.
 
     .DESCRIPTION
-        This function will download the latest version of winget and install it. If winget is already installed, it will do nothing.
+        This function will download the latest version of Winget and install it. If Winget is already installed, it will do nothing.
     #>
     Try{
         Write-Host "Checking if Winget is Installed..."
-        if (Test-WinUtilPackageManager -winget) {
-            # Checks if winget executable exists and if the Windows Version is 1809 or higher
+        if (Test-WinUtilPackageManager -Winget) {
+        # Checks if Winget executable exists and if the Windows Version is 1809 or higher
             Write-Host "Winget Already Installed"
             return
         }
@@ -717,15 +762,33 @@ function Install-WinUtilWinget {
         }
 
         if (($ComputerInfo.WindowsVersion) -lt "1809") {
-            # Checks if Windows Version is too old for winget
+            # Checks if Windows Version is too old for Winget
             Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
             return
         }
 
-        Write-Host "Running Alternative Installer and Direct Installing"
-        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget"
-
-        Write-Host "Winget Installed"
+        if((Get-Command -Name choco -ErrorAction Ignore)) {
+            # Checks if Chocolatey is present (In case it didn't install properly), and installs Winget with choco, if so.
+            Write-Host "Chocolatey detected. Installing Winget via Chocolatey"
+            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
+            Write-Host "Winget Installed"
+            Write-Output "Refreshing Environment Variables...`n"
+            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        }
+        Else {
+            # If Chocolatey doesn't exist, it will install Winget through more manual means.
+            # Used part of my own script with some modification: ruxunderscore/windows-initialization
+            Write-Host "Downloading Winget Prerequsites"
+            Get-WinUtilWingetPrerequisites
+            Write-Host "Downloading Winget and License File"
+            Get-WinUtilWingetLatest
+            Write-Host "Installing Winget w/ Prerequsites"
+            Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
+            Write-Host "Winget Installed"
+            # Winget only needs a refresh of the environment variables to be used.
+            Write-Output "Refreshing Environment Variables...`n"
+            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        }
     }
     Catch{
         throw [WingetFailedInstall]::new('Failed to install')
@@ -928,7 +991,7 @@ function Copy-ToUSB([string] $fileToCopy)
 					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
 				}
 
-			Write-Host "File copied to Ventoy drive $($volume.DriveLette)"
+			Write-Host "File copied to Ventoy drive $($volume.DriveLetter)"
 			return
 		}
 	}
@@ -1110,7 +1173,7 @@ function New-Unattend {
         # Replace the placeholder text with the Specialize pass
         $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
     }
-	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
 }
 
 function New-CheckInstall {
@@ -2515,7 +2578,7 @@ Function Update-WinUtilProgramWinget {
         $host.ui.RawUI.WindowTitle = """Winget Install"""
 
         Start-Transcript $ENV:TEMP\winget-update.log -Append
-        winget upgrade --all
+        winget upgrade --all --accept-source-agreements --accept-package-agreements --scope=machine --silent
 
     }
 
@@ -3536,8 +3599,16 @@ public class PowerManagement {
 	try {
 
 		Write-Host "Mounting Windows image. This may take a while."
-		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
-		Write-Host "Mounting complete! Performing removal of applications..."
+        Mount-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index -Path "$scratchDir"
+        if ($?)
+        {
+		    Write-Host "Mounting complete! Performing removal of applications..."
+        }
+        else
+        {
+            Write-Host "Could not mount image. Exiting..."
+            return
+        }
 
 		if ($injectDrivers)
 		{
@@ -3735,13 +3806,13 @@ public class PowerManagement {
 		Write-Host "Cleanup complete."
 
 		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit
+        Dismount-WindowsImage -Path $scratchDir -Save
 	} 
 	
 	try {
 
 		Write-Host "Exporting image into $mountDir\sources\install2.wim"
-		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
 		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
 		Remove-Item "$mountDir\sources\install.wim"
 		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
@@ -3755,7 +3826,7 @@ public class PowerManagement {
 
 		# Next step boot image		
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
-		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+        Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
 
 		if ($injectDrivers)
 		{
@@ -3801,7 +3872,7 @@ public class PowerManagement {
 		reg unload HKLM\zSYSTEM
 
 		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit 
+        Dismount-WindowsImage -Path $scratchDir -Save
 
 		Write-Host "Creating ISO image"
 
@@ -5218,6 +5289,14 @@ $sync.configs.applications = '{
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
 		"winget": "Mozilla.Firefox"
 	},
+	"WPFInstallfirefoxesr": {
+		"category": "Browsers",
+		"choco": "FirefoxESR",
+		"content": "Firefox ESR",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
+		"link": "https://www.mozilla.org/en-US/firefox/new/",
+		"winget": "Mozilla.Firefox.ESR"
+	},
 	"WPFInstallflameshot": {
 		"category": "Multimedia Tools",
 		"choco": "flameshot",
@@ -5225,6 +5304,14 @@ $sync.configs.applications = '{
 		"description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
 		"link": "https://flameshot.org/",
 		"winget": "Flameshot.Flameshot"
+	},
+	"WPFInstalllightshot": {
+		"category": "Multimedia Tools",
+		"choco": "lightshot",
+		"content": "Lightshot (Screenshots)",
+		"description": "Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
+		"link": "https://app.prntscr.com/",
+		"winget": "Skillbrains.Lightshot"
 	},
 	"WPFInstallfloorp": {
 		"category": "Browsers",
@@ -6953,6 +7040,14 @@ $sync.configs.applications = '{
 		"description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
 		"link": "https://pyenv-win.github.io/pyenv-win/",
 		"winget": "na"
+	},
+	"WPFInstalltightvnc": {
+		"category": "Utilities",
+		"choco": "TightVNC",
+		"content": "TightVNC",
+		"description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
+		"link": "https://www.tightvnc.com/",
+		"winget": "GlavSoft.TightVNC"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -9914,6 +10009,15 @@ $sync.configs.tweaks = '{
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a031_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "255",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
@@ -9927,6 +10031,15 @@ $sync.configs.tweaks = '{
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "0",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ],
@@ -10773,6 +10886,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallfirefox" Content="Firefox" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/new/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfirefoxesr" Content="Firefox ESR" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxesrLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/new/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfloorp" Content="Floorp" ToolTip="Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfloorpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://floorp.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11099,14 +11215,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallplaynite" Content="Playnite" ToolTip="Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplayniteLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://playnite.link/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" ToolTip="Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprismlauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://prismlauncher.org/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" ToolTip="Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprismlauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://prismlauncher.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpsremoteplay" Content="PS Remote Play" ToolTip="PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpsremoteplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://remoteplay.dl.playstation.net/remoteplay/lang/gb/" />
 </StackPanel>
@@ -11257,6 +11373,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallkrita" Content="Krita (Image Editor)" ToolTip="Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkritaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://krita.org/en/features/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllightshot" Content="Lightshot (Screenshots)" ToolTip="Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllightshotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://app.prntscr.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11280,14 +11399,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallplex" Content="Plex Media Server" ToolTip="Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv/your-media/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/strawberrymusicplayer/strawberry/" />
 </StackPanel>
@@ -11455,17 +11574,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgsudo" Content="Gsudo" ToolTip="Gsudo is a sudo implementation for Windows, allowing elevated privilege execution." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgsudoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/gerardog/gsudo" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhwinfo" Content="HWiNFO" ToolTip="HWiNFO provides comprehensive hardware information and diagnostics for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.hwinfo.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallintelpresentmon" Content="Intel?? PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
 </StackPanel>
@@ -11591,6 +11710,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" ToolTip="TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallteamviewerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.teamviewer.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltightvnc" Content="TightVNC" ToolTip="TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltightvncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tightvnc.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltotalcommander" Content="Total Commander" ToolTip="Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltotalcommanderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ghisler.com/" />

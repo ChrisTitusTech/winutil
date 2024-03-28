@@ -30,7 +30,10 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --scope=machine --silent $Program" -NoNewWindow -Wait
+            # --scope=machine when installing non-UWP apps with winget fails with error code 0x80070005.
+            # Removed argument while testing new Winget install method.
+            # Open issue on winget-cli github repo: https://github.com/microsoft/winget-cli/issues/3936
+            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
         }
         if($manage -eq "Uninstalling"){
         Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
