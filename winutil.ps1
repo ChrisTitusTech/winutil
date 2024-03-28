@@ -1673,7 +1673,7 @@ function Invoke-WinUtilFeatureInstall {
     }
 }
 function Invoke-GPUCheck {
-    $gpuInfo = Get-WmiObject Win32_VideoController
+    $gpuInfo = Get-CimInstance Win32_VideoController
     
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
