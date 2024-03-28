@@ -1735,6 +1735,14 @@
 		"link": "https://www.spacedrive.com/",
 		"winget": "spacedrive.Spacedrive"
 	},
+	"WPFInstallspacesniffer": {
+		"category": "Utilities",
+		"choco": "spacesniffer",
+		"content": "SpaceSniffer",
+		"description": "A tool application that lets you understand how folders and files are structured on your disks",
+		"link": "http://www.uderzo.it/main_products/space_sniffer/",
+		"winget": "UderzoSoftware.SpaceSniffer"
+	},
 	"WPFInstallstarship": {
 		"category": "Development",
 		"choco": "starship",
