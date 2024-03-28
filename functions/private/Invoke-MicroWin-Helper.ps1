@@ -377,7 +377,7 @@ function New-Unattend {
         # Replace the placeholder text with the Specialize pass
         $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
     }
-	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force
+	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
 }
 
 function New-CheckInstall {
