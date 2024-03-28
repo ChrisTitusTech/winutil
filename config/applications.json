@@ -1119,6 +1119,14 @@
 		"link": "https://mullvad.net/browser",
 		"winget": "MullvadVPN.MullvadBrowser"
 	},
+	"WPFInstallmusescore": {
+		"category": "Multimedia Tools",
+		"choco": "musescore",
+		"content": "MuseScore",
+		"description": "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
+		"link": "https://musescore.org/en",
+		"winget": "Musescore.Musescore"
+	},
 	"WPFInstallmusicbee": {
 		"category": "Multimedia Tools",
 		"choco": "musicbee",
