@@ -183,6 +183,14 @@
 		"link": "https://www.bcuninstaller.com/",
 		"winget": "Klocman.BulkCrapUninstaller"
 	},
+	"WPFInstallbulkrenameutility": {
+		"category": "Utilities",
+		"choco": "bulkrenameutility",
+		"content": "Bulk Rename Utility",
+		"description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
+		"link": "https://www.bulkrenameutility.co.uk",
+		"winget": "TGRMNSoftware.BulkRenameUtility"
+	},
 	"WPFInstallcalibre": {
 		"category": "Document",
 		"choco": "calibre",
