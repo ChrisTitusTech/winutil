@@ -100,8 +100,16 @@ public class PowerManagement {
 	try {
 
 		Write-Host "Mounting Windows image. This may take a while."
-		dism /mount-image /imagefile:$mountDir\sources\install.wim /index:$index /mountdir:$scratchDir
-		Write-Host "Mounting complete! Performing removal of applications..."
+        Mount-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index -Path "$scratchDir"
+        if ($?)
+        {
+		    Write-Host "Mounting complete! Performing removal of applications..."
+        }
+        else
+        {
+            Write-Host "Could not mount image. Exiting..."
+            return
+        }
 
 		if ($injectDrivers)
 		{
@@ -299,13 +307,13 @@ public class PowerManagement {
 		Write-Host "Cleanup complete."
 
 		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit
+        Dismount-WindowsImage -Path $scratchDir -Save
 	} 
 	
 	try {
 
 		Write-Host "Exporting image into $mountDir\sources\install2.wim"
-		dism /Export-Image /SourceImageFile:"$mountDir\sources\install.wim" /SourceIndex:$index /DestinationImageFile:"$mountDir\sources\install2.wim" /compress:max
+        Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
 		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
 		Remove-Item "$mountDir\sources\install.wim"
 		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
@@ -319,7 +327,7 @@ public class PowerManagement {
 
 		# Next step boot image		
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
-		dism /mount-image /imagefile:"$mountDir\sources\boot.wim" /index:2 /mountdir:"$scratchDir"
+        Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
 
 		if ($injectDrivers)
 		{
@@ -365,7 +373,7 @@ public class PowerManagement {
 		reg unload HKLM\zSYSTEM
 
 		Write-Host "Unmounting image..."
-		dism /unmount-image /mountdir:$scratchDir /commit 
+        Dismount-WindowsImage -Path $scratchDir -Save
 
 		Write-Host "Creating ISO image"
 
