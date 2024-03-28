@@ -104,6 +104,14 @@
 		"winget": "Twilio.Authy"
 	},
 	"WPFInstallautohotkey": {
+		"category": "Microsoft Tools",
+		"choco": "autoruns",
+		"content": "Autoruns",
+		"description": "This utility shows you what programs are configured to run during system bootup or login",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
+		"winget": "Microsoft.Sysinternals.Autoruns"
+	},
+	"WPFInstallautohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
 		"content": "AutoHotkey",
