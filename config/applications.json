@@ -823,6 +823,14 @@
 		"link": "https://www.hwinfo.com/",
 		"winget": "REALiX.HWiNFO"
 	},
+	"WPFInstallhwmonitor": {
+		"category": "Utilities",
+		"choco": "hwmonitor",
+		"content": "HWMonitor",
+		"description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
+		"link": "https://www.cpuid.com/softwares/hwmonitor.html",
+		"winget": "CPUID.HWMonitor"
+	},
 	"WPFInstallimageglass": {
 		"category": "Multimedia Tools",
 		"choco": "imageglass",
