@@ -12,7 +12,7 @@ Function Update-WinUtilProgramWinget {
         $host.ui.RawUI.WindowTitle = """Winget Install"""
 
         Start-Transcript $ENV:TEMP\winget-update.log -Append
-        winget upgrade --all
+        winget upgrade --all --accept-source-agreements --accept-package-agreements --scope=machine --silent
 
     }
 
