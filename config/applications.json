@@ -255,6 +255,14 @@
 		"link": "https://clonehero.net/",
 		"winget": "CloneHeroTeam.CloneHero"
 	},
+	"WPFInstallcmake": {
+		"category": "Development",
+		"choco": "cmake",
+		"content": "CMake",
+		"description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
+		"link": "https://cmake.org/",
+		"winget": "Kitware.CMake"
+	},
 	"WPFInstallcopyq": {
 		"category": "Multimedia Tools",
 		"choco": "copyq",
