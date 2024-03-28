@@ -2303,6 +2303,14 @@
 		"link": "https://xemu.app/",
 		"winget": "xemu-project.xemu"
 	},
+	"WPFInstallxnview": {
+		"category": "Utilities",
+		"choco": "xnview",
+		"content": "XnView classic",
+		"description": "XnView is an efficient image viewer, browser and converter for Windows.",
+		"link": "https://www.xnview.com/en/xnview/",
+		"winget": "XnSoft.XnView.Classic"
+	},
 	"WPFInstallxournal": {
 		"category": "Document",
 		"choco": "xournalplusplus",
