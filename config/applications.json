@@ -1039,6 +1039,14 @@
 		"link": "https://localsend.org/",
 		"winget": "LocalSend.LocalSend"
 	},
+	"WPFInstalllockhunter": {
+		"category": "Utilities",
+		"choco": "lockhunter",
+		"content": "LockHunter",
+		"description": "LockHunter is a free tool to delete files blocked by something you do not know.",
+		"link": "https://lockhunter.com/",
+		"winget": "CrystalRich.LockHunter"
+	},
 	"WPFInstalllogseq": {
 		"category": "Document",
 		"choco": "logseq",
