@@ -607,6 +607,14 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
+	"WPFInstallfxsound": {
+		"category": "Multimedia Tools",
+		"choco": "fxsound",
+		"content": "FxSound",
+		"description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+		"link": "https://www.fxsound.com/",
+		"winget": "FxSoundLLC.FxSound"
+	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
 		"choco": "fzf",
