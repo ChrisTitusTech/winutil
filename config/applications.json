@@ -1031,6 +1031,14 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"winget": "LibreWolf.LibreWolf"
 	},
+	"WPFInstalllinkshellextension": {
+		"category": "Utilities",
+		"choco": "linkshellextension",
+		"content": "Link Shell extension",
+		"description": "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
+		"link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
+		"winget": "HermannSchinagl.LinkShellExtension"
+	},
 	"WPFInstalllinphone": {
 		"category": "Communications",
 		"choco": "linphone",
