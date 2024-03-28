@@ -1871,6 +1871,14 @@
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
 	},
+	"WPFInstalltabby": {
+		"category": "Utilities",
+		"choco": "tabby",
+		"content": "Tabby.sh",
+		"description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+		"link": "https://tailscale.com/",
+		"winget": "Eugeny.Tabby"
+	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
 		"choco": "tailscale",
