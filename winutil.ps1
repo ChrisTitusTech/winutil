@@ -5270,7 +5270,7 @@ $sync.configs.applications = '{
 		"choco": "files",
 		"content": "File Converter",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
-		"link": "https://file-converter.org/",
+		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
 	"WPFInstallfirealpaca": {
