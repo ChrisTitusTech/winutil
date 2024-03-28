@@ -1639,11 +1639,19 @@
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
 	},
+	"WPFInstallsimplenote": {
+		"category": "Document",
+		"choco": "simplenote",
+		"content": "simplenote",
+		"description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+		"link": "https://simplenote.com/",
+		"winget": "Automattic.Simplenote"
+	},
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
 		"content": "simplewall",
-		"description": "simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
+		"description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
 	},
