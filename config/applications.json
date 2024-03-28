@@ -775,6 +775,14 @@
 		"link": "https://handbrake.fr/",
 		"winget": "HandBrake.HandBrake"
 	},
+	"WPFInstallharmonoid": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Harmonoid",
+		"description": "Plays & manages your music library. Looks beautiful & juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost & more.",
+		"link": "https://harmonoid.com/",
+		"winget": "Harmonoid.Harmonoid"
+	},
 	"WPFInstallheidisql": {
 		"category": "Pro Tools",
 		"choco": "heidisql",
