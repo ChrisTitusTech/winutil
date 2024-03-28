@@ -1583,6 +1583,14 @@
 		"link": "https://qtox.github.io/",
 		"winget": "Tox.qTox"
 	},
+	"WPFInstallquicklook": {
+		"category": "Utilities",
+		"choco": "quicklook",
+		"content": "Quicklook",
+		"description": "Bring macOS “Quick Look” feature to Windows",
+		"link": "https://github.com/QL-Win/QuickLook",
+		"winget": "QL-Win.QuickLook"
+	},
 	"WPFInstallrainmeter": {
 		"category": "Utilities",
 		"choco": "na",
