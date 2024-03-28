@@ -2,7 +2,7 @@ function Get-Oscdimg {
     <#
     
         .DESCRIPTION
-        This function will get oscdimg file for from github Release foldersand put it into env:temp
+        This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
