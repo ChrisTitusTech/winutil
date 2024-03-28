@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.23
+    Version        : 24.03.28
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.23"
+$sync.version = "24.03.28"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -235,7 +235,7 @@ function Get-Oscdimg {
     <#
     
         .DESCRIPTION
-        This function will get oscdimg file for from github Release foldersand put it into env:temp
+        This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
