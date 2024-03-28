@@ -567,6 +567,14 @@
 		"link": "https://floorp.app/",
 		"winget": "Ablaze.Floorp"
 	},
+	"WPFInstallflow": {
+		"category": "Utilities",
+		"choco": "flow-launcher",
+		"content": "Flow launcher",
+		"description": "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
+		"link": "https://www.flowlauncher.com/",
+		"winget": "Flow-Launcher.Flow-Launcher"
+	},
 	"WPFInstallflux": {
 		"category": "Utilities",
 		"choco": "flux",
