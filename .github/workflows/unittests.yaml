@@ -27,7 +27,7 @@ jobs:
     - name: Install Pester
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        Install-Module -Name Pester -Force -AllowClobber
+        Install-Module -Name Pester -Force -SkipPublisherCheck -AllowClobber
       shell: pwsh
 
     - name: Run Pester tests
