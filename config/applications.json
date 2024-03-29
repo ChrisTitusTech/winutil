@@ -44,7 +44,7 @@
 		"choco": "alacritty",
 		"content": "Alacritty Terminal",
 		"description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
-		"link": "https://github.com/alacritty/alacritty",
+		"link": "https://alacritty.org/",
 		"winget": "Alacritty.Alacritty"
 	},
 	"WPFInstallanaconda3": {
@@ -196,7 +196,7 @@
 		"choco": "carnac",
 		"content": "Carnac",
 		"description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
-		"link": "https://github.com/Code52/carnac",
+		"link": "https://carnackeys.com/",
 		"winget": "code52.Carnac"
 	},
 	"WPFInstallcemu": {
@@ -256,7 +256,7 @@
 		"winget": "CloneHeroTeam.CloneHero"
 	},
 	"WPFInstallcopyq": {
-		"category": "Multimedia Tools",
+		"category": "Utilities",
 		"choco": "copyq",
 		"content": "CopyQ (Clipboard Manager)",
 		"description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
@@ -402,7 +402,7 @@
 	"WPFInstallduplicati": {
 		"category": "Utilities",
 		"choco": "duplicati",
-		"content": "Duplicati 2",
+		"content": "Duplicati",
 		"description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
 		"link": "https://www.duplicati.com/",
 		"winget": "Duplicati.Duplicati"
@@ -514,9 +514,9 @@
 	"WPFInstallfileconverter": {
 		"category": "Utilities",
 		"choco": "files",
-		"content": "File Converter",
+		"content": "File-Converter",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
-		"link": "https://file-converter.org/",
+		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
 	"WPFInstallfirealpaca": {
@@ -540,7 +540,7 @@
 		"choco": "FirefoxESR",
 		"content": "Firefox ESR",
 		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
-		"link": "https://www.mozilla.org/en-US/firefox/new/",
+		"link": "https://www.mozilla.org/en-US/firefox/enterprise/",
 		"winget": "Mozilla.Firefox.ESR"
 	},
 	"WPFInstallflameshot": {
@@ -570,7 +570,7 @@
 	"WPFInstallflux": {
 		"category": "Utilities",
 		"choco": "flux",
-		"content": "f.lux",
+		"content": "F.lux",
 		"description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
 		"link": "https://justgetflux.com/",
 		"winget": "flux.flux"
@@ -716,7 +716,7 @@
 		"choco": "gsudo",
 		"content": "Gsudo",
 		"description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
-		"link": "https://github.com/gerardog/gsudo",
+		"link": "https://gerardog.github.io/gsudo/",
 		"winget": "gerardog.gsudo"
 	},
 	"WPFInstallguilded": {
@@ -876,7 +876,7 @@
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-		"link": "https://jellyfin.org/",
+		"link": "https://github.com/jellyfin/jellyfin-media-playerf",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
@@ -1060,7 +1060,7 @@
 		"choco": "motrix",
 		"content": "Motrix Download Manager",
 		"description": "A full-featured download manager.",
-		"link": "https://github.com/agalwood/Motrix",
+		"link": "https://motrix.app/",
 		"winget": "agalwood.Motrix"
 	},
 	"WPFInstallmpc": {
@@ -1180,7 +1180,7 @@
 		"choco": "nomacs",
 		"content": "Nomacs (Image viewer)",
 		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
-		"link": "https://github.com/nomacs/nomacs",
+		"link": "https://nomacs.org/",
 		"winget": "nomacs.nomacs"
 	},
 	"WPFInstallnotepadplus": {
@@ -1404,7 +1404,7 @@
 		"choco": "portmaster",
 		"content": "Portmaster",
 		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
-		"link": "https://github.com/safing/portmaster",
+		"link": "https://safing.io/",
 		"winget": "Safing.Portmaster"
 	},
 	"WPFInstallposh": {
@@ -1634,7 +1634,7 @@
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
-		"content": "simplewall",
+		"content": "Simplewall",
 		"description": "simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
@@ -1692,7 +1692,7 @@
 		"choco": "strawberrymusicplayer",
 		"content": "Strawberry (Music Player)",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
-		"link": "https://github.com/strawberrymusicplayer/strawberry/",
+		"link": "https://www.strawberrymusicplayer.org/",
 		"winget": "StrawberryMusicPlayer.Strawberry"
 	},
 	"WPFInstallstremio": {
@@ -1964,7 +1964,7 @@
 		"choco": "na",
 		"content": "Videomass",
 		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
-		"link": "https://github.com/jeanslack/Videomass",
+		"link": "https://jeanslack.github.io/Videomass/",
 		"winget": "GianlucaPernigotto.Videomass"
 	},
 	"WPFInstallvisualstudio": {
@@ -2068,7 +2068,7 @@
 		"choco": "wingetui",
 		"content": "WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft's Windows Package Manager (winget).",
-		"link": "https://github.com/marticliment/WingetUI",
+		"link": "https://www.marticliment.com/wingetui/",
 		"winget": "SomePythonThings.WingetUIStore"
 	},
 	"WPFInstallwinmerge": {
@@ -2140,11 +2140,11 @@
 		"choco": "xdm",
 		"content": "Xtreme Download Manager",
 		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
-		"link": "https://github.com/subhra74/xdm",
+		"link": "https://xtremedownloadmanager.com/",
 		"winget": "subhra74.XtremeDownloadManager"
 	},
 	"WPFInstallxeheditor": {
-		"category": "Development",
+		"category": "Utilities",
 		"choco": "HxD",
 		"content": "HxD Hex Editor",
 		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
@@ -2250,7 +2250,7 @@
 	"WPFInstallsyncthingtray": {
 		"category": "Utilities",
 		"choco": "syncthingtray",
-		"content": "syncthingtray",
+		"content": "Syncthingtray",
 		"description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/Martchus/syncthingtray",
 		"winget": "Martchus.syncthingtray"
@@ -2274,7 +2274,7 @@
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel® PresentMon",
+		"content": "Intel-PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
