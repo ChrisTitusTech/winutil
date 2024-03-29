@@ -37,7 +37,7 @@ Describe "Functions"{
                 basename = $($psitem.BaseName)
                 fullname = $psitem.FullName
             } {
-                Get-ChildItem function:\ -Name $basename | Should Not BeNullOrEmpty
+                Get-ChildItem function:\ -Name $basename | Should -Not -BeNullOrEmpty
             } 
         }
     }
