@@ -7,16 +7,16 @@ function Install-WinUtilWinget {
     .DESCRIPTION
         This function will download the latest version of Winget and install it. If Winget is already installed, it will do nothing.
     #>
+    $isWingetInstalled = Test-WinUtilPackageManager -winget
 
     Try {
-        Write-Host "Checking if Winget is installed..."
-        if ((Test-WinUtilPackageManager -winget) -eq "installed") {
-            Write-Host "Winget is already installed." -ForegroundColor Green
+        if ($isWingetInstalled -eq "installed") {
+            Write-Host "`nWinget is already installed.`r" -ForegroundColor Green
             return
-        } elseif ((Test-WinUtilPackageManager -winget) -eq "outdated") {
-            Write-Host "Winget is Outdated. Continuing with install." -ForegroundColor Yellow
+        } elseif ($isWingetInstalled -eq "outdated") {
+            Write-Host "`nWinget is Outdated. Continuing with install.`r" -ForegroundColor Yellow
         } else {
-            Write-Host "Winget is not Installed. Continuing with install." -ForegroundColor Red
+            Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
 
         # Gets the computer's information
@@ -34,11 +34,11 @@ function Install-WinUtilWinget {
 
         # Install Winget via GitHub method.
         # Used part of my own script with some modification: ruxunderscore/windows-initialization
-        Write-Host "Downloading Winget Prerequsites"
+        Write-Host "Downloading Winget Prerequsites`n"
         Get-WinUtilWingetPrerequisites
-        Write-Host "Downloading Winget and License File"
+        Write-Host "Downloading Winget and License File`r"
         Get-WinUtilWingetLatest
-        Write-Host "Installing Winget w/ Prerequsites"
+        Write-Host "Installing Winget w/ Prerequsites`r"
         Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
         Write-Host "Winget Installed" -ForegroundColor Green
         # Winget only needs a refresh of the environment variables to be used.
