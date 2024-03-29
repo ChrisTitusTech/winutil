@@ -9,8 +9,7 @@
     "WPFTweaksServices",
     "WPFTweaksStorage",
     "WPFTweaksTele",
-    "WPFTweaksWifi",
-    "WPFMiscTweaksPower"
+    "WPFTweaksWifi"
   ],
   "laptop": [
     "WPFTweaksAH",
