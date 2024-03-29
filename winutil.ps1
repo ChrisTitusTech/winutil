@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.28
+    Version        : 24.03.29
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.28"
+$sync.version = "24.03.29"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -3245,6 +3245,29 @@ function Invoke-WPFGetIso {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
+    }
+
+    # Detect the file size of the ISO and compare it with the free space of the system drive
+    $isoSize = (Get-Item -Path $filePath).Length
+    Write-Debug "Size of ISO file: $($isoSize) bytes"
+    # Use this procedure to get the free space of the drive depending on where the user profile folder is stored.
+    # This is done to guarantee a dynamic solution, as the installation drive may be mounted to a letter different than C
+    $driveSpace = (Get-Volume -DriveLetter ([IO.Path]::GetPathRoot([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)).Replace(":\", "").Trim())).SizeRemaining
+    Write-Debug "Free space on installation drive: $($driveSpace) bytes"
+    if ($driveSpace -lt ($isoSize * 2))
+    {
+        # It's not critical and we _may_ continue. Output a warning
+        Write-Warning "You may not have enough space for this operation. Proceed at your own risk."
+    }
+    elseif ($driveSpace -lt $isoSize)
+    {
+        # It's critical and we can't continue. Output an error
+        Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        return
+    }
+    else 
+    {
+        Write-Host "You have enough space for this operation."
     }
 
     try {
