@@ -6095,7 +6095,7 @@ $sync.configs.applications = '{
 		"content": "Paint.NET",
 		"description": "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
 		"link": "https://www.getpaint.net/",
-		"winget": "dotPDNLLC.paintdotnet"
+		"winget": "dotPDN.PaintDotNet"
 	},
 	"WPFInstallparsec": {
 		"category": "Utilities",
