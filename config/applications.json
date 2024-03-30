@@ -564,7 +564,7 @@
 		"choco": "line",
 		"content": "LINE",
 		"description": "A communication app that connects people, services, and information.",
-		"link": "https://line.me",
+		"link": "https://line.me/",
 		"winget": "LINE.LINE"
 	},
 	"WPFInstallfloorp": {
