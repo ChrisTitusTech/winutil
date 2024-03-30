@@ -63,10 +63,10 @@ if ($principal.IsInRole($adminRole))
 }
 else
 {
-    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
-    $newProcess.Arguments = $myInvocation.MyCommand.Definition;
-    $newProcess.Verb = "runas";
-    [System.Diagnostics.Process]::Start($newProcess);
+    Write-Host "===========================================" -Foregroundcolor Red
+    Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
+    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
+    Write-Host "===========================================" -Foregroundcolor Red
     break
 }
 function ConvertTo-Icon { 
@@ -9979,22 +9979,6 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksDisableUAC": {
-    "Content": "Disable UAC",
-    "Description": "Disables User Account Control. Only recommended for Expert Users.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "OriginalValue": "5",
-        "Name": "ConsentPromptBehaviorAdmin",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
     "Description": "Erases TEMP Folders",
@@ -11875,7 +11859,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
 <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0"  ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-<CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0"  ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
 <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
 <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
@@ -12274,7 +12257,7 @@ $sync.runspace.Open()
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    if (Invoke-GPUCheck -eq $True) {
+    if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
     }
     else {
