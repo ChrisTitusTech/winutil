@@ -22,7 +22,6 @@
 <Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
 <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0"  ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-<CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0"  ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
 <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
 <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>

@@ -53,7 +53,7 @@ $sync.runspace.Open()
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    if (Invoke-GPUCheck -eq $True) {
+    if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
     }
     else {

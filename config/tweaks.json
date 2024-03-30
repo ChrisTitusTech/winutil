@@ -2420,22 +2420,6 @@
       "
     ]
   },
-  "WPFTweaksDisableUAC": {
-    "Content": "Disable UAC",
-    "Description": "Disables User Account Control. Only recommended for Expert Users.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "OriginalValue": "5",
-        "Name": "ConsentPromptBehaviorAdmin",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
     "Description": "Erases TEMP Folders",

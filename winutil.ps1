@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.28
+    Version        : 24.03.30
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.28"
+$sync.version = "24.03.30"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -63,10 +63,10 @@ if ($principal.IsInRole($adminRole))
 }
 else
 {
-    $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
-    $newProcess.Arguments = $myInvocation.MyCommand.Definition;
-    $newProcess.Verb = "runas";
-    [System.Diagnostics.Process]::Start($newProcess);
+    Write-Host "===========================================" -Foregroundcolor Red
+    Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
+    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
+    Write-Host "===========================================" -Foregroundcolor Red
     break
 }
 function ConvertTo-Icon { 
@@ -672,20 +672,19 @@ function Install-WinUtilChoco {
     try {
         Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Get-Command -Name choco -ErrorAction Ignore)) {
-            Write-Host "Chocolatey Already Installed"
+        if((Test-WinUtilPackageManager -choco) -eq "installed") {
             return
         }
 
-        Write-Host "Seems Chocolatey is not installed, installing now"
+        Write-Host "Seems Chocolatey is not installed, installing now."
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
 
     }
     Catch {
-        Write-Host "==========================================="
-        Write-Host "--     Chocolatey failed to install     ---"
-        Write-Host "==========================================="
+        Write-Host "===========================================" -Foregroundcolor Red
+        Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
+        Write-Host "===========================================" -Foregroundcolor Red
     }
 
 }
@@ -745,53 +744,54 @@ function Install-WinUtilWinget {
     .DESCRIPTION
         This function will download the latest version of Winget and install it. If Winget is already installed, it will do nothing.
     #>
-    Try{
-        Write-Host "Checking if Winget is Installed..."
-        if (Test-WinUtilPackageManager -Winget) {
-        # Checks if Winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Already Installed"
+    $isWingetInstalled = Test-WinUtilPackageManager -winget
+
+    Try {
+        if ($isWingetInstalled -eq "installed") {
+            Write-Host "`nWinget is already installed.`r" -ForegroundColor Green
             return
+        } elseif ($isWingetInstalled -eq "outdated") {
+            Write-Host "`nWinget is Outdated. Continuing with install.`r" -ForegroundColor Yellow
+        } else {
+            Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
 
         # Gets the computer's information
         if ($null -eq $sync.ComputerInfo){
             $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
-        }
-        Else {
+        } else {
             $ComputerInfo = $sync.ComputerInfo
         }
 
         if (($ComputerInfo.WindowsVersion) -lt "1809") {
             # Checks if Windows Version is too old for Winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+            Write-Host "Winget is not supported on this version of Windows (Pre-1809)" -ForegroundColor Red
             return
         }
 
-        if((Get-Command -Name choco -ErrorAction Ignore)) {
-            # Checks if Chocolatey is present (In case it didn't install properly), and installs Winget with choco, if so.
-            Write-Host "Chocolatey detected. Installing Winget via Chocolatey"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
-            Write-Host "Winget Installed"
-            Write-Output "Refreshing Environment Variables...`n"
-            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        # Install Winget via GitHub method.
+        # Used part of my own script with some modification: ruxunderscore/windows-initialization
+        Write-Host "Downloading Winget Prerequsites`n"
+        Get-WinUtilWingetPrerequisites
+        Write-Host "Downloading Winget and License File`r"
+        Get-WinUtilWingetLatest
+        Write-Host "Installing Winget w/ Prerequsites`r"
+        Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
+        Write-Host "Winget Installed" -ForegroundColor Green
+        # Winget only needs a refresh of the environment variables to be used.
+        Write-Output "Refreshing Environment Variables...`n"
+        $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    } Catch {
+        Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
+        # In case install fails via GitHub method.
+        Try {
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
+        Write-Host "Winget Installed" -ForegroundColor Green
+        Write-Output "Refreshing Environment Variables...`n"
+        $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        } Catch {
+            throw [WingetFailedInstall]::new('Failed to install!')
         }
-        Else {
-            # If Chocolatey doesn't exist, it will install Winget through more manual means.
-            # Used part of my own script with some modification: ruxunderscore/windows-initialization
-            Write-Host "Downloading Winget Prerequsites"
-            Get-WinUtilWingetPrerequisites
-            Write-Host "Downloading Winget and License File"
-            Get-WinUtilWingetLatest
-            Write-Host "Installing Winget w/ Prerequsites"
-            Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
-            Write-Host "Winget Installed"
-            # Winget only needs a refresh of the environment variables to be used.
-            Write-Output "Refreshing Environment Variables...`n"
-            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        }
-    }
-    Catch{
-        throw [WingetFailedInstall]::new('Failed to install')
     }
 }
 function Invoke-MicroWin-Helper {
@@ -1672,7 +1672,7 @@ function Invoke-WinUtilFeatureInstall {
         }
     }
 }
-function Invoke-GPUCheck {
+function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
     
     foreach ($gpu in $gpuInfo) {
@@ -1931,11 +1931,15 @@ function Invoke-WinUtilTweaks {
     .PARAMETER undo
         Indicates whether to undo the operation contained in the checkbox
 
+    .PARAMETER KeepServiceStartup
+        Indicates whether to override the startup of a service with the one given from WinUtil,
+        or to keep the startup of said service, if it was changed by the user, or another program, from its default value.
     #>
 
     param(
         $CheckBox,
-        $undo = $false
+        $undo = $false,
+        $KeepServiceStartup = $true
     )
 
     Write-Debug "Tweaks: $($CheckBox)"
@@ -1953,6 +1957,7 @@ function Invoke-WinUtilTweaks {
             Registry = "Value"
             ScheduledTask = "State"
             Service = "StartupType"
+            OriginalService = "OriginalType"
             ScriptType = "InvokeScript"
         }
     }
@@ -1963,9 +1968,29 @@ function Invoke-WinUtilTweaks {
         }
     }
     if($sync.configs.tweaks.$CheckBox.service){
+        Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
-            Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+            $changeservice = $true
+            
+	    # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
+            if($KeepServiceStartup -AND !($undo)) {
+                try {
+                    # Check if the service exists
+                    $service = Get-Service -Name $psitem.Name -ErrorAction Stop
+                    if(!($service.StartType.ToString() -eq $psitem.$($values.OriginalService))) {
+                        Write-Debug "Service $($service.Name) was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
+                        $changeservice = $false
+                    }
+                }
+                catch [System.ServiceProcess.ServiceNotFoundException] {
+                    Write-Warning "Service $($psitem.Name) was not found"
+                }
+            }
+
+            if($changeservice) {
+                Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
+                Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+            }
         }
     }
     if($sync.configs.tweaks.$CheckBox.registry){
@@ -2520,49 +2545,72 @@ function Test-WinUtilPackageManager {
         [System.Management.Automation.SwitchParameter]$choco
     )
 
-    # Install Winget if not detected
-    $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
-    if ($wingetExists) {
-        $wingetversionfull = (winget --version)
-        $wingetversiontrim = $wingetversionfull.Trim('v')
-        if ($wingetversiontrim.EndsWith("-preview")) {
-            $wingetversiontrim = $wingetversiontrim.Trim('-preview')
-            $wingetpreview = $true
-        }
-        $wingetVersion = [System.Version]::Parse($wingetversiontrim)
-        $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
-        $wingetOutdated = $wingetVersion -le $minimumWingetVersion
-        
-        Write-Host "Winget $wingetVersionfull"
-    }
-
-    if (!$wingetExists -or $wingetOutdated) {
-        if (!$wingetExists) {
-            Write-Host "Winget not detected"
-        } else {
-            Write-Host "- Winget out-dated"
-        } 
-    }
+    $status = "not-installed"
 
     if ($winget) {
-        if ($wingetExists -and !$wingetOutdated) {
-            if (!$wingetpreview) {
-                Write-Host "- Winget up-to-date"
+        # Install Winget if not detected
+        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+
+        if ($wingetExists) {
+            # Check Winget Version
+            $wingetVersionFull = (winget --version) # Full Version without 'v'.
+
+            # Check if Preview Version
+            if ($wingetVersionFull.Contains("-preview")) {
+                $wingetVersion = $wingetVersionFull.Trim("-preview")
+                $wingetPreview = $true
             } else {
-                Write-Host "- Winget preview version detected. Unexptected problems may occur" -ForegroundColor Yellow
+                $wingetVersion = $wingetVersionFull
+                $wingetPreview = $false
             }
-            return $true
+
+            # Check if Winget's Version is too old.
+            $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
+            $wingetBadVersion = [System.Version]::Parse("1.2.10691") # Windows 11 (22H2) comes with v1.2.10691, which is bugged.
+            $wingetOutdated = $wingetCurrentVersion -le $wingetBadVersion
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "--         Winget is installed          ---" -ForegroundColor Green
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "Version: $wingetVersionFull" -ForegroundColor White
+
+            if (!$wingetPreview) {
+                Write-Host "    - Winget is a release version." -ForegroundColor Green
+            } else {
+                Write-Host "    - Winget is a preview version. Unexpected problems may occur." -ForegroundColor Yellow
+            }
+
+            if (!$wingetOutdated) {
+                Write-Host "    - Winget is Up to Date" -ForegroundColor Green
+                $status = "installed"
+            }
+            else {
+                Write-Host "    - Winget is Out of Date" -ForegroundColor Red
+                $status = "outdated"
+            }
+        } else {        
+            Write-Host "===========================================" -ForegroundColor Red
+            Write-Host "--       Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "===========================================" -ForegroundColor Red
+            $status = "not-installed"
         }
     }
 
     if ($choco) {
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
-            Write-Host "Chocolatey v$chocoVersion"
-            return $true
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "--       Chocolatey is installed        ---" -ForegroundColor Green
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "Version: v$chocoVersion" -ForegroundColor White
+            $status = "installed"
+        } else {
+            Write-Host "===========================================" -ForegroundColor Red
+            Write-Host "--     Chocolatey is not installed      ---" -ForegroundColor Red
+            Write-Host "===========================================" -ForegroundColor Red
+            $status = "not-installed"
         }
     }
 
-    return $false
+    return $status
 }
 Function Update-WinUtilProgramWinget {
 
@@ -3124,10 +3172,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue) -and $checkbox -eq "winget"){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
+    if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget"){
         return
     }
 
@@ -3247,6 +3292,29 @@ function Invoke-WPFGetIso {
         return
     }
 
+    # Detect the file size of the ISO and compare it with the free space of the system drive
+    $isoSize = (Get-Item -Path $filePath).Length
+    Write-Debug "Size of ISO file: $($isoSize) bytes"
+    # Use this procedure to get the free space of the drive depending on where the user profile folder is stored.
+    # This is done to guarantee a dynamic solution, as the installation drive may be mounted to a letter different than C
+    $driveSpace = (Get-Volume -DriveLetter ([IO.Path]::GetPathRoot([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)).Replace(":\", "").Trim())).SizeRemaining
+    Write-Debug "Free space on installation drive: $($driveSpace) bytes"
+    if ($driveSpace -lt ($isoSize * 2))
+    {
+        # It's not critical and we _may_ continue. Output a warning
+        Write-Warning "You may not have enough space for this operation. Proceed at your own risk."
+    }
+    elseif ($driveSpace -lt $isoSize)
+    {
+        # It's critical and we can't continue. Output an error
+        Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        return
+    }
+    else 
+    {
+        Write-Host "You have enough space for this operation."
+    }
+
     try {
         Write-Host "Mounting Iso. Please wait."
         $mountedISO = Mount-DiskImage -PassThru "$filePath"
@@ -3279,6 +3347,19 @@ function Invoke-WPFGetIso {
 
          $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
 
+    }
+    
+    # Detect if the folders already exist and remove them
+    if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text))
+    {
+        try {
+            Write-Host "Deleting temporary files from previous run. Please wait..."
+            Remove-Item -Path $sync.MicrowinMountDir.Text -Recurse -Force
+            Remove-Item -Path $sync.MicrowinScratchDir.Text -Recurse -Force
+        }
+        catch {
+            Write-Host "Could not delete temporary files. You need to delete those manually."
+        }
     }
 
     Write-Host "Setting up mount dir and scratch dirs"
@@ -3477,10 +3558,7 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue)){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
+    if((Test-WinUtilPackageManager -winget) -eq "not-installed"){
         return
     }
 
@@ -4798,7 +4876,7 @@ $sync.configs.applications = '{
 		"choco": "alacritty",
 		"content": "Alacritty Terminal",
 		"description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
-		"link": "https://github.com/alacritty/alacritty",
+		"link": "https://alacritty.org/",
 		"winget": "Alacritty.Alacritty"
 	},
 	"WPFInstallanaconda3": {
@@ -4950,7 +5028,7 @@ $sync.configs.applications = '{
 		"choco": "carnac",
 		"content": "Carnac",
 		"description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
-		"link": "https://github.com/Code52/carnac",
+		"link": "https://carnackeys.com/",
 		"winget": "code52.Carnac"
 	},
 	"WPFInstallcemu": {
@@ -5010,7 +5088,7 @@ $sync.configs.applications = '{
 		"winget": "CloneHeroTeam.CloneHero"
 	},
 	"WPFInstallcopyq": {
-		"category": "Multimedia Tools",
+		"category": "Utilities",
 		"choco": "copyq",
 		"content": "CopyQ (Clipboard Manager)",
 		"description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
@@ -5156,7 +5234,7 @@ $sync.configs.applications = '{
 	"WPFInstallduplicati": {
 		"category": "Utilities",
 		"choco": "duplicati",
-		"content": "Duplicati 2",
+		"content": "Duplicati",
 		"description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
 		"link": "https://www.duplicati.com/",
 		"winget": "Duplicati.Duplicati"
@@ -5268,9 +5346,9 @@ $sync.configs.applications = '{
 	"WPFInstallfileconverter": {
 		"category": "Utilities",
 		"choco": "files",
-		"content": "File Converter",
+		"content": "File-Converter",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
-		"link": "https://file-converter.org/",
+		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
 	"WPFInstallfirealpaca": {
@@ -5294,7 +5372,7 @@ $sync.configs.applications = '{
 		"choco": "FirefoxESR",
 		"content": "Firefox ESR",
 		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
-		"link": "https://www.mozilla.org/en-US/firefox/new/",
+		"link": "https://www.mozilla.org/en-US/firefox/enterprise/",
 		"winget": "Mozilla.Firefox.ESR"
 	},
 	"WPFInstallflameshot": {
@@ -5324,7 +5402,7 @@ $sync.configs.applications = '{
 	"WPFInstallflux": {
 		"category": "Utilities",
 		"choco": "flux",
-		"content": "f.lux",
+		"content": "F.lux",
 		"description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
 		"link": "https://justgetflux.com/",
 		"winget": "flux.flux"
@@ -5470,7 +5548,7 @@ $sync.configs.applications = '{
 		"choco": "gsudo",
 		"content": "Gsudo",
 		"description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
-		"link": "https://github.com/gerardog/gsudo",
+		"link": "https://gerardog.github.io/gsudo/",
 		"winget": "gerardog.gsudo"
 	},
 	"WPFInstallguilded": {
@@ -5630,7 +5708,7 @@ $sync.configs.applications = '{
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-		"link": "https://jellyfin.org/",
+		"link": "https://github.com/jellyfin/jellyfin-media-playerf",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
@@ -5814,7 +5892,7 @@ $sync.configs.applications = '{
 		"choco": "motrix",
 		"content": "Motrix Download Manager",
 		"description": "A full-featured download manager.",
-		"link": "https://github.com/agalwood/Motrix",
+		"link": "https://motrix.app/",
 		"winget": "agalwood.Motrix"
 	},
 	"WPFInstallmpc": {
@@ -5934,7 +6012,7 @@ $sync.configs.applications = '{
 		"choco": "nomacs",
 		"content": "Nomacs (Image viewer)",
 		"description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
-		"link": "https://github.com/nomacs/nomacs",
+		"link": "https://nomacs.org/",
 		"winget": "nomacs.nomacs"
 	},
 	"WPFInstallnotepadplus": {
@@ -6095,7 +6173,7 @@ $sync.configs.applications = '{
 		"content": "Paint.NET",
 		"description": "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
 		"link": "https://www.getpaint.net/",
-		"winget": "dotPDNLLC.paintdotnet"
+		"winget": "dotPDN.PaintDotNet"
 	},
 	"WPFInstallparsec": {
 		"category": "Utilities",
@@ -6158,7 +6236,7 @@ $sync.configs.applications = '{
 		"choco": "portmaster",
 		"content": "Portmaster",
 		"description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
-		"link": "https://github.com/safing/portmaster",
+		"link": "https://safing.io/",
 		"winget": "Safing.Portmaster"
 	},
 	"WPFInstallposh": {
@@ -6388,7 +6466,7 @@ $sync.configs.applications = '{
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
-		"content": "simplewall",
+		"content": "Simplewall",
 		"description": "simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
@@ -6446,7 +6524,7 @@ $sync.configs.applications = '{
 		"choco": "strawberrymusicplayer",
 		"content": "Strawberry (Music Player)",
 		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
-		"link": "https://github.com/strawberrymusicplayer/strawberry/",
+		"link": "https://www.strawberrymusicplayer.org/",
 		"winget": "StrawberryMusicPlayer.Strawberry"
 	},
 	"WPFInstallstremio": {
@@ -6718,7 +6796,7 @@ $sync.configs.applications = '{
 		"choco": "na",
 		"content": "Videomass",
 		"description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
-		"link": "https://github.com/jeanslack/Videomass",
+		"link": "https://jeanslack.github.io/Videomass/",
 		"winget": "GianlucaPernigotto.Videomass"
 	},
 	"WPFInstallvisualstudio": {
@@ -6822,7 +6900,7 @@ $sync.configs.applications = '{
 		"choco": "wingetui",
 		"content": "WingetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget).",
-		"link": "https://github.com/marticliment/WingetUI",
+		"link": "https://www.marticliment.com/wingetui/",
 		"winget": "SomePythonThings.WingetUIStore"
 	},
 	"WPFInstallwinmerge": {
@@ -6894,11 +6972,11 @@ $sync.configs.applications = '{
 		"choco": "xdm",
 		"content": "Xtreme Download Manager",
 		"description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
-		"link": "https://github.com/subhra74/xdm",
+		"link": "https://xtremedownloadmanager.com/",
 		"winget": "subhra74.XtremeDownloadManager"
 	},
 	"WPFInstallxeheditor": {
-		"category": "Development",
+		"category": "Utilities",
 		"choco": "HxD",
 		"content": "HxD Hex Editor",
 		"description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
@@ -7004,7 +7082,7 @@ $sync.configs.applications = '{
 	"WPFInstallsyncthingtray": {
 		"category": "Utilities",
 		"choco": "syncthingtray",
-		"content": "syncthingtray",
+		"content": "Syncthingtray",
 		"description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/Martchus/syncthingtray",
 		"winget": "Martchus.syncthingtray"
@@ -7028,7 +7106,7 @@ $sync.configs.applications = '{
 	"WPFInstallintelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "Intel?? PresentMon",
+		"content": "Intel-PresentMon",
 		"description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
@@ -7364,8 +7442,7 @@ $sync.configs.preset = '{
     "WPFTweaksServices",
     "WPFTweaksStorage",
     "WPFTweaksTele",
-    "WPFTweaksWifi",
-    "WPFMiscTweaksPower"
+    "WPFTweaksWifi"
   ],
   "laptop": [
     "WPFTweaksAH",
@@ -9902,22 +9979,6 @@ $sync.configs.tweaks = '{
       "
     ]
   },
-  "WPFTweaksDisableUAC": {
-    "Content": "Disable UAC",
-    "Description": "Disables User Account Control. Only recommended for Expert Users.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
-        "OriginalValue": "5",
-        "Name": "ConsentPromptBehaviorAdmin",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
     "Description": "Erases TEMP Folders",
@@ -10886,7 +10947,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallfirefox" Content="Firefox" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/new/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallfirefoxesr" Content="Firefox ESR" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxesrLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/new/" />
+<CheckBox Name="WPFInstallfirefoxesr" Content="Firefox ESR" ToolTip="Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfirefoxesrLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mozilla.org/en-US/firefox/enterprise/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfloorp" Content="Floorp" ToolTip="Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfloorpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://floorp.app/" />
@@ -11100,9 +11161,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallwezterm" Content="Wezterm" ToolTip="WezTerm is a powerful cross-platform terminal emulator and multiplexer" Margin="0,0,2,0"/><TextBlock Name="WPFInstallweztermLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wezfurlong.org/wezterm/index.html" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallxeheditor" Content="HxD Hex Editor" ToolTip="HxD is a free hex editor that allows you to edit, view, search, and analyze binary files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxeheditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mh-nexus.de/en/hxd/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallyarn" Content="Yarn" ToolTip="Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallyarnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://yarnpkg.com/" />
 </StackPanel>
 <Label Content="Document" FontSize="16"/>
@@ -11218,14 +11276,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" ToolTip="Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprismlauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://prismlauncher.org/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpsremoteplay" Content="PS Remote Play" ToolTip="PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpsremoteplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://remoteplay.dl.playstation.net/remoteplay/lang/gb/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallpsremoteplay" Content="PS Remote Play" ToolTip="PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpsremoteplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://remoteplay.dl.playstation.net/remoteplay/lang/gb/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsidequest" Content="SideQuestVR" ToolTip="SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsidequestLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sidequestvr.com/" />
 </StackPanel>
@@ -11307,9 +11365,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallclementine" Content="Clementine" ToolTip="Clementine is a modern music player and library organizer, supporting various audio formats and online radio services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallclementineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.clementine-player.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallcopyq" Content="CopyQ (Clipboard Manager)" ToolTip="CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcopyqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://copyq.readthedocs.io/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldarktable" Content="darktable" ToolTip="Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldarktableLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.darktable.org/install/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11355,7 +11410,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallitunes" Content="iTunes" ToolTip="iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitunesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.apple.com/itunes/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
+<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-playerf" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" ToolTip="Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinserverLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
@@ -11385,7 +11440,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" ToolTip="nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnglideLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.zeus-software.com/downloads/nglide" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" ToolTip="Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnomacsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/nomacs/nomacs" />
+<CheckBox Name="WPFInstallnomacs" Content="Nomacs (Image viewer)" ToolTip="Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnomacsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nomacs.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallobs" Content="OBS Studio" ToolTip="OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators." Margin="0,0,2,0"/><TextBlock Name="WPFInstallobsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://obsproject.com/" />
@@ -11402,22 +11457,22 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.strawberrymusicplayer.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallstremio" Content="Stremio" ToolTip="Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/strawberrymusicplayer/strawberry/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallstremio" Content="Stremio" ToolTip="Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltidal" Content="Tidal" ToolTip="Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltidalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tidal.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvideomass" Content="Videomass" ToolTip="Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvideomassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jeanslack/Videomass" />
+<CheckBox Name="WPFInstallvideomass" Content="Videomass" ToolTip="Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvideomassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jeanslack.github.io/Videomass/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
@@ -11451,7 +11506,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallOpenVPN" Content="OpenVPN Connect" ToolTip="OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy." Margin="0,0,2,0"/><TextBlock Name="WPFInstallOpenVPNLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://openvpn.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallPortmaster" Content="Portmaster" ToolTip="Portmaster is a free and open-source application that puts you back in charge over all your computers network connections." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPortmasterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/safing/portmaster" />
+<CheckBox Name="WPFInstallPortmaster" Content="Portmaster" ToolTip="Portmaster is a free and open-source application that puts you back in charge over all your computers network connections." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPortmasterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://safing.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallputty" Content="PuTTY" ToolTip="PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP." Margin="0,0,2,0"/><TextBlock Name="WPFInstallputtyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.chiark.greenend.org.uk/~sgtatham/putty/" />
@@ -11460,7 +11515,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallrustdesk" Content="RustDesk" ToolTip="RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrustdeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://rustdesk.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallsimplewall" Content="simplewall" ToolTip="simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplewallLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/henrypp/simplewall" />
+<CheckBox Name="WPFInstallsimplewall" Content="Simplewall" ToolTip="simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplewallLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/henrypp/simplewall" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallventoy" Content="Ventoy" ToolTip="Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems." Margin="0,0,2,0"/><TextBlock Name="WPFInstallventoyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ventoy.net/" />
@@ -11485,7 +11540,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstall7zip" Content="7-Zip" ToolTip="7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression." Margin="0,0,2,0"/><TextBlock Name="WPFInstall7zipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.7-zip.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" ToolTip="Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available." Margin="0,0,2,0"/><TextBlock Name="WPFInstallalacrittyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/alacritty/alacritty" />
+<CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" ToolTip="Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available." Margin="0,0,2,0"/><TextBlock Name="WPFInstallalacrittyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://alacritty.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" ToolTip="AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanydeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://anydesk.com/" />
@@ -11515,7 +11570,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Code52/carnac" />
+<CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://carnackeys.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcopyq" Content="CopyQ (Clipboard Manager)" ToolTip="CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcopyqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://copyq.readthedocs.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcpuz" Content="CPU-Z" ToolTip="CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer''s hardware components, including the CPU, memory, and motherboard." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcpuzLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.cpuid.com/softwares/cpu-z.html" />
@@ -11539,7 +11597,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalldmt" Content="Dual Monitor Tools" ToolTip="Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldmtLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dualmonitortool.sourceforge.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallduplicati" Content="Duplicati 2" ToolTip="Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallduplicatiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.duplicati.com/" />
+<CheckBox Name="WPFInstallduplicati" Content="Duplicati" ToolTip="Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallduplicatiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.duplicati.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallerrorlookup" Content="Windows Error Code Lookup" ToolTip="ErrorLookup is a tool for looking up Windows error codes and their descriptions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallerrorlookupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/HenryPP/ErrorLookup" />
@@ -11554,10 +11612,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" ToolTip="Etcher is a powerful tool for creating bootable USB drives with ease." Margin="0,0,2,0"/><TextBlock Name="WPFInstalletcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.balena.io/etcher/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallfileconverter" Content="File Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.org/" />
+<CheckBox Name="WPFInstallfileconverter" Content="File-Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallflux" Content="f.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
+<CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfzf" Content="Fzf" ToolTip="A command-line fuzzy finder" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfzfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/junegunn/fzf/" />
@@ -11572,22 +11630,22 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallgpuz" Content="GPU-Z" ToolTip="GPU-Z provides detailed information about your graphics card and GPU." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgpuzLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/gpuz/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallgsudo" Content="Gsudo" ToolTip="Gsudo is a sudo implementation for Windows, allowing elevated privilege execution." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgsudoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/gerardog/gsudo" />
+<CheckBox Name="WPFInstallgsudo" Content="Gsudo" ToolTip="Gsudo is a sudo implementation for Windows, allowing elevated privilege execution." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgsudoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://gerardog.github.io/gsudo/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhwinfo" Content="HWiNFO" ToolTip="HWiNFO provides comprehensive hardware information and diagnostics for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.hwinfo.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallintelpresentmon" Content="Intel?? PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
+<CheckBox Name="WPFInstallintelpresentmon" Content="Intel-PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
 </StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
 </StackPanel>
@@ -11610,7 +11668,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallmonitorian" Content="Monitorian" ToolTip="Monitorian is a utility for adjusting monitor brightness and contrast on Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmonitorianLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/emoacht/Monitorian" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/agalwood/Motrix" />
+<CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://motrix.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
@@ -11700,7 +11758,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" ToolTip="SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsuperf4Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://stefansundin.github.io/superf4/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallsyncthingtray" Content="syncthingtray" ToolTip="Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsyncthingtrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Martchus/syncthingtray" />
+<CheckBox Name="WPFInstallsyncthingtray" Content="Syncthingtray" ToolTip="Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsyncthingtrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Martchus/syncthingtray" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsynctrayzor" Content="SyncTrayzor" ToolTip="Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsynctrayzorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/canton7/SyncTrayzor/" />
@@ -11733,7 +11791,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallwindowspchealth" Content="Windows PC Health Check" ToolTip="Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallwingetui" Content="WingetUI" ToolTip="WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/marticliment/WingetUI" />
+<CheckBox Name="WPFInstallwingetui" Content="WingetUI" ToolTip="WingetUI is a graphical user interface for Microsoft''s Windows Package Manager (winget)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.marticliment.com/wingetui/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwinpaletter" Content="WinPaletter" ToolTip="WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinpaletterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Abdelrhman-AK/WinPaletter" />
@@ -11748,7 +11806,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallwiztree" Content="WizTree" ToolTip="WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwiztreeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wiztreefree.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" ToolTip="Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*" Margin="0,0,2,0"/><TextBlock Name="WPFInstallxdmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/subhra74/xdm" />
+<CheckBox Name="WPFInstallxdm" Content="Xtreme Download Manager" ToolTip="Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*" Margin="0,0,2,0"/><TextBlock Name="WPFInstallxdmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xtremedownloadmanager.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxeheditor" Content="HxD Hex Editor" ToolTip="HxD is a free hex editor that allows you to edit, view, search, and analyze binary files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxeheditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mh-nexus.de/en/hxd/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" ToolTip="ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzerotieroneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zerotier.com/" />
@@ -11798,7 +11859,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
 <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0"  ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-<CheckBox Name="WPFTweaksDisableUAC" Content="Disable UAC" Margin="5,0"  ToolTip="Disables User Account Control. Only recommended for Expert Users."/>
 <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
 <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
@@ -12197,7 +12257,7 @@ $sync.runspace.Open()
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    if (Invoke-GPUCheck -eq $True) {
+    if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
     }
     else {
