@@ -1,4 +1,4 @@
-function Invoke-GPUCheck {
+function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
     
     foreach ($gpu in $gpuInfo) {
