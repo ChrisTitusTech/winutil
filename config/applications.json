@@ -559,6 +559,14 @@
 		"link": "https://app.prntscr.com/",
 		"winget": "Skillbrains.Lightshot"
 	},
+	"WPFInstallLine": {
+		"category": "Communications",
+		"choco": "line",
+		"content": "LINE",
+		"description": "A communication app that connects people, services, and information.",
+		"link": "https://line.me",
+		"winget": "LINE.LINE"
+	},
 	"WPFInstallfloorp": {
 		"category": "Browsers",
 		"choco": "na",
