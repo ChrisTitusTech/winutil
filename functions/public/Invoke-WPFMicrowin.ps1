@@ -117,7 +117,8 @@ public class PowerManagement {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				#dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+				Add-WindowsDriver -Path "$scratchDir" -Recurse -Driver "$driverPath"
 			}
 			else 
 			{

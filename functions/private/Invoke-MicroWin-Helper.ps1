@@ -54,26 +54,27 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$appxlist = dism /English /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
-	$appxlist = $appxlist -split "Feature Name : " | Where-Object {$_}
+	#$featlist = dism /English /image:$scratchDir /Get-Features | Select-String -Pattern "Feature Name : " -CaseSensitive -SimpleMatch
+	#$featlist = $featlist -split "Feature Name : " | Where-Object {$_}
+	$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
 	if ($dumpFeatures)
 	{
-		$appxlist > allfeaturesdump.txt
+		$featlist > allfeaturesdump.txt
 	}
 
-	$appxlist = $appxlist | Where-Object {
+	$featlist = $featlist | Where-Object {
 		$_ -NotLike "*Printing*" -AND
 		$_ -NotLike "*TelnetClient*" -AND
 		$_ -NotLike "*PowerShell*" -AND
 		$_ -NotLike "*NetFx*"
 	}
 
-	if ($keepDefender) { $appxlist = $appxlist | Where-Object { $_ -NotLike "*Defender*" }}
+	if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
 
-	foreach($feature in $appxlist)
+	foreach($feature in $featlist)
 	{
 		$status = "Removing feature $feature"
-		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$appxlist.Count*100)
+		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
 		Write-Debug "Removing feature $feature"
 		# dism /image:$scratchDir /Disable-Feature /FeatureName:$feature /Remove /NoRestart > $null
 	}
@@ -167,7 +168,8 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 	    {
 		    $status = "Removing Provisioned $($appx.PackageName)"
 		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-		    dism /English /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+		    #dism /English /image:$scratchDir /Remove-ProvisionedAppxPackage /PackageName:$($appx.PackageName) /NoRestart
+			Remove-AppxProvisionedPackage -Path $scratchDir -PackageName $appx.PackageName
 	    }
 	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }
