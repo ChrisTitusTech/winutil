@@ -146,6 +146,19 @@ function Invoke-WPFGetIso {
          $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
 
     }
+    
+    # Detect if the folders already exist and remove them
+    if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text))
+    {
+        try {
+            Write-Host "Deleting temporary files from previous run. Please wait..."
+            Remove-Item -Path $sync.MicrowinMountDir.Text -Recurse -Force
+            Remove-Item -Path $sync.MicrowinScratchDir.Text -Recurse -Force
+        }
+        catch {
+            Write-Host "Could not delete temporary files. You need to delete those manually."
+        }
+    }
 
     Write-Host "Setting up mount dir and scratch dirs"
     $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
