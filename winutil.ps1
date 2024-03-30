@@ -672,20 +672,19 @@ function Install-WinUtilChoco {
     try {
         Write-Host "Checking if Chocolatey is Installed..."
 
-        if((Get-Command -Name choco -ErrorAction Ignore)) {
-            Write-Host "Chocolatey Already Installed"
+        if((Test-WinUtilPackageManager -choco) -eq "installed") {
             return
         }
 
-        Write-Host "Seems Chocolatey is not installed, installing now"
+        Write-Host "Seems Chocolatey is not installed, installing now."
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
 
     }
     Catch {
-        Write-Host "==========================================="
-        Write-Host "--     Chocolatey failed to install     ---"
-        Write-Host "==========================================="
+        Write-Host "===========================================" -Foregroundcolor Red
+        Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
+        Write-Host "===========================================" -Foregroundcolor Red
     }
 
 }
@@ -745,53 +744,54 @@ function Install-WinUtilWinget {
     .DESCRIPTION
         This function will download the latest version of Winget and install it. If Winget is already installed, it will do nothing.
     #>
-    Try{
-        Write-Host "Checking if Winget is Installed..."
-        if (Test-WinUtilPackageManager -Winget) {
-        # Checks if Winget executable exists and if the Windows Version is 1809 or higher
-            Write-Host "Winget Already Installed"
+    $isWingetInstalled = Test-WinUtilPackageManager -winget
+
+    Try {
+        if ($isWingetInstalled -eq "installed") {
+            Write-Host "`nWinget is already installed.`r" -ForegroundColor Green
             return
+        } elseif ($isWingetInstalled -eq "outdated") {
+            Write-Host "`nWinget is Outdated. Continuing with install.`r" -ForegroundColor Yellow
+        } else {
+            Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
 
         # Gets the computer's information
         if ($null -eq $sync.ComputerInfo){
             $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
-        }
-        Else {
+        } else {
             $ComputerInfo = $sync.ComputerInfo
         }
 
         if (($ComputerInfo.WindowsVersion) -lt "1809") {
             # Checks if Windows Version is too old for Winget
-            Write-Host "Winget is not supported on this version of Windows (Pre-1809)"
+            Write-Host "Winget is not supported on this version of Windows (Pre-1809)" -ForegroundColor Red
             return
         }
 
-        if((Get-Command -Name choco -ErrorAction Ignore)) {
-            # Checks if Chocolatey is present (In case it didn't install properly), and installs Winget with choco, if so.
-            Write-Host "Chocolatey detected. Installing Winget via Chocolatey"
-            Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
-            Write-Host "Winget Installed"
-            Write-Output "Refreshing Environment Variables...`n"
-            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        # Install Winget via GitHub method.
+        # Used part of my own script with some modification: ruxunderscore/windows-initialization
+        Write-Host "Downloading Winget Prerequsites`n"
+        Get-WinUtilWingetPrerequisites
+        Write-Host "Downloading Winget and License File`r"
+        Get-WinUtilWingetLatest
+        Write-Host "Installing Winget w/ Prerequsites`r"
+        Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
+        Write-Host "Winget Installed" -ForegroundColor Green
+        # Winget only needs a refresh of the environment variables to be used.
+        Write-Output "Refreshing Environment Variables...`n"
+        $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    } Catch {
+        Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
+        # In case install fails via GitHub method.
+        Try {
+        Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
+        Write-Host "Winget Installed" -ForegroundColor Green
+        Write-Output "Refreshing Environment Variables...`n"
+        $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        } Catch {
+            throw [WingetFailedInstall]::new('Failed to install!')
         }
-        Else {
-            # If Chocolatey doesn't exist, it will install Winget through more manual means.
-            # Used part of my own script with some modification: ruxunderscore/windows-initialization
-            Write-Host "Downloading Winget Prerequsites"
-            Get-WinUtilWingetPrerequisites
-            Write-Host "Downloading Winget and License File"
-            Get-WinUtilWingetLatest
-            Write-Host "Installing Winget w/ Prerequsites"
-            Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
-            Write-Host "Winget Installed"
-            # Winget only needs a refresh of the environment variables to be used.
-            Write-Output "Refreshing Environment Variables...`n"
-            $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        }
-    }
-    Catch{
-        throw [WingetFailedInstall]::new('Failed to install')
     }
 }
 function Invoke-MicroWin-Helper {
@@ -2520,49 +2520,72 @@ function Test-WinUtilPackageManager {
         [System.Management.Automation.SwitchParameter]$choco
     )
 
-    # Install Winget if not detected
-    $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
-    if ($wingetExists) {
-        $wingetversionfull = (winget --version)
-        $wingetversiontrim = $wingetversionfull.Trim('v')
-        if ($wingetversiontrim.EndsWith("-preview")) {
-            $wingetversiontrim = $wingetversiontrim.Trim('-preview')
-            $wingetpreview = $true
-        }
-        $wingetVersion = [System.Version]::Parse($wingetversiontrim)
-        $minimumWingetVersion = [System.Version]::new(1,2,10691) # Win 11 23H2 comes with bad winget v1.2.10691
-        $wingetOutdated = $wingetVersion -le $minimumWingetVersion
-        
-        Write-Host "Winget $wingetVersionfull"
-    }
-
-    if (!$wingetExists -or $wingetOutdated) {
-        if (!$wingetExists) {
-            Write-Host "Winget not detected"
-        } else {
-            Write-Host "- Winget out-dated"
-        } 
-    }
+    $status = "not-installed"
 
     if ($winget) {
-        if ($wingetExists -and !$wingetOutdated) {
-            if (!$wingetpreview) {
-                Write-Host "- Winget up-to-date"
+        # Install Winget if not detected
+        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+
+        if ($wingetExists) {
+            # Check Winget Version
+            $wingetVersionFull = (winget --version) # Full Version without 'v'.
+
+            # Check if Preview Version
+            if ($wingetVersionFull.Contains("-preview")) {
+                $wingetVersion = $wingetVersionFull.Trim("-preview")
+                $wingetPreview = $true
             } else {
-                Write-Host "- Winget preview version detected. Unexptected problems may occur" -ForegroundColor Yellow
+                $wingetVersion = $wingetVersionFull
+                $wingetPreview = $false
             }
-            return $true
+
+            # Check if Winget's Version is too old.
+            $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
+            $wingetBadVersion = [System.Version]::Parse("1.2.10691") # Windows 11 (22H2) comes with v1.2.10691, which is bugged.
+            $wingetOutdated = $wingetCurrentVersion -le $wingetBadVersion
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "--         Winget is installed          ---" -ForegroundColor Green
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "Version: $wingetVersionFull" -ForegroundColor White
+
+            if (!$wingetPreview) {
+                Write-Host "    - Winget is a release version." -ForegroundColor Green
+            } else {
+                Write-Host "    - Winget is a preview version. Unexpected problems may occur." -ForegroundColor Yellow
+            }
+
+            if (!$wingetOutdated) {
+                Write-Host "    - Winget is Up to Date" -ForegroundColor Green
+                $status = "installed"
+            }
+            else {
+                Write-Host "    - Winget is Out of Date" -ForegroundColor Red
+                $status = "outdated"
+            }
+        } else {        
+            Write-Host "===========================================" -ForegroundColor Red
+            Write-Host "--       Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "===========================================" -ForegroundColor Red
+            $status = "not-installed"
         }
     }
 
     if ($choco) {
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
-            Write-Host "Chocolatey v$chocoVersion"
-            return $true
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "--       Chocolatey is installed        ---" -ForegroundColor Green
+            Write-Host "===========================================" -ForegroundColor Green
+            Write-Host "Version: v$chocoVersion" -ForegroundColor White
+            $status = "installed"
+        } else {
+            Write-Host "===========================================" -ForegroundColor Red
+            Write-Host "--     Chocolatey is not installed      ---" -ForegroundColor Red
+            Write-Host "===========================================" -ForegroundColor Red
+            $status = "not-installed"
         }
     }
 
-    return $false
+    return $status
 }
 Function Update-WinUtilProgramWinget {
 
@@ -3124,10 +3147,7 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue) -and $checkbox -eq "winget"){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
+    if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget"){
         return
     }
 
@@ -3477,10 +3497,7 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if(!(Get-Command -Name winget -ErrorAction SilentlyContinue)){
-        Write-Host "==========================================="
-        Write-Host "--       Winget is not installed        ---"
-        Write-Host "==========================================="
+    if((Test-WinUtilPackageManager -winget) -eq "not-installed"){
         return
     }
 
