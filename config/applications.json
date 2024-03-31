@@ -1423,6 +1423,14 @@
 		"link": "https://www.postman.com/",
 		"winget": "Postman.Postman"
 	},
+	"WPFInstallpowerautomate": {
+		"category": "Microsoft Tools",
+		"choco": "powerautomatedesktop",
+		"content": "Power Automate",
+		"description": "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
+		"link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
+		"winget": "Microsoft.PowerAutomateDesktop"
+	},
 	"WPFInstallpowerbi": {
 		"category": "Microsoft Tools",
 		"choco": "powerbi",
@@ -1742,6 +1750,14 @@
 		"description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
 		"link": "https://stefansundin.github.io/superf4/",
 		"winget": "StefanSundin.Superf4"
+	},
+	"WPFInstallswift": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Swift toolchain",
+		"description": "Swift is a general-purpose programming language that’s approachable for newcomers and powerful for experts.",
+		"link": "https://www.swift.org/",
+		"winget": "Swift.Toolchain"
 	},
 	"WPFInstallsynctrayzor": {
 		"category": "Utilities",
