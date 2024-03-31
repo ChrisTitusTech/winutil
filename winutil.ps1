@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.30
+    Version        : 24.03.31
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.30"
+$sync.version = "24.03.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -777,6 +777,8 @@ function Install-WinUtilWinget {
         Get-WinUtilWingetLatest
         Write-Host "Installing Winget w/ Prerequsites`r"
         Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
+		Write-Host "Manually adding Winget Sources, from Winget CDN."
+		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time. 
         Write-Host "Winget Installed" -ForegroundColor Green
         # Winget only needs a refresh of the environment variables to be used.
         Write-Output "Refreshing Environment Variables...`n"
