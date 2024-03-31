@@ -1423,6 +1423,14 @@
 		"link": "https://www.postman.com/",
 		"winget": "Postman.Postman"
 	},
+	"WPFInstallpowerautomate": {
+		"category": "Microsoft Tools",
+		"choco": "powerautomatedesktop",
+		"content": "Power Automate",
+		"description": "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
+		"link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
+		"winget": "Microsoft.PowerAutomateDesktop"
+	},
 	"WPFInstallpowerbi": {
 		"category": "Microsoft Tools",
 		"choco": "powerbi",
