@@ -1751,6 +1751,14 @@
 		"link": "https://stefansundin.github.io/superf4/",
 		"winget": "StefanSundin.Superf4"
 	},
+	"WPFInstallswift": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Swift toolchain",
+		"description": "Swift is a general-purpose programming language that’s approachable for newcomers and powerful for experts.",
+		"link": "https://www.swift.org/",
+		"winget": "Swift.Toolchain"
+	},
 	"WPFInstallsynctrayzor": {
 		"category": "Utilities",
 		"choco": "synctrayzor",
