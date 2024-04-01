@@ -1751,6 +1751,14 @@
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
+	"WPFInstallpdfgear": {
+		"category": "Document",
+		"choco": "na",
+		"content": "PDFgear",
+		"description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it's completely free to use.",
+		"link": "https://www.pdfgear.com/",
+		"winget": "PDFgear.PDFgear"
+	},
 	"WPFInstallsunshine": {
 		"category": "Games",
 		"choco": "sunshine",
