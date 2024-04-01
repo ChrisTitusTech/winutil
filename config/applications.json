@@ -863,6 +863,38 @@
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
 	},
+	"WPFInstalljava11runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 11",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.11.JRE"
+	},
+	"WPFInstalljava17runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 17",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
+	},
+	"WPFInstalljava18runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 18",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.18.JRE"
+	},
+	"WPFInstalljava19runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 19",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.19.JRE"
+	},
 	"WPFInstalljdownloader": {
 		"category": "Utilities",
 		"choco": "jdownloader",
