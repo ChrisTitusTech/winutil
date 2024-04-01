@@ -1519,6 +1519,14 @@
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
+	"WPFInstalltixati": {
+		"category": "Utilities",
+		"choco": "tixati.portable",
+		"content": "Tixati",
+		"description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+		"link": "https://www.tixati.com/",
+		"winget": "Tixati.Tixati.Portable"
+	},
 	"WPFInstallqtox": {
 		"category": "Communications",
 		"choco": "qtox",
