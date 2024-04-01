@@ -111,6 +111,14 @@
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
+	"WPFInstallazuredatastudio": {
+		"category": "Microsoft Tools",
+		"choco": "azure-data-studio",
+		"content": "Microsoft Azure Data Studio",
+		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+		"winget": "Microsoft.AzureDataStudio"
+	},	
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
