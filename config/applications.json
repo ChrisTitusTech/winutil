@@ -2358,5 +2358,13 @@
 		"description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
 		"link": "https://www.binisoft.org/wfc",
 		"winget": "BiniSoft.WindowsFirewallControl"
+	},
+	"WPFInstallvistaswitcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "VistaSwitcher",
+		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
+		"winget": "ntwind.VistaSwitcher"
 	}
 }
