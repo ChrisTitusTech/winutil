@@ -607,6 +607,14 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
+	"WPFInstallorcaslicer": {
+		"category": "Multimedia Tools",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
 		"choco": "fzf",
