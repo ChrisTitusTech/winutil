@@ -51,7 +51,7 @@ Some features are avaliable through automation. This allows you to save your con
 5. Install the Windows image.
 6. In the new Windows, Open PowerShell in the admin mode and run command to automatically apply tweaks and install apps from the config file.
 ```
-irm https://christitus.com/win -Config [path-to-your-config] -Run | iex
+iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run"
 ```
 7. Have a cup of coffee! Come back when it's done.
 
