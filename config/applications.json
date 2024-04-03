@@ -2366,5 +2366,13 @@
 		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
 		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
 		"winget": "ntwind.VistaSwitcher"
+	},
+	"WPFInstallautodarkmode": {
+		"category": "Utilities",
+		"choco": "auto-dark-mode",
+		"content": "Windows Auto Dark Mode",
+		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+		"winget": "Armin2208.WindowsAutoNightMode"
 	}
 }
