@@ -41,19 +41,23 @@ jobs:
                 const closeIssue = true;
 
                 // Get all Labels of issue, and compared each label with the labelKeepIssue const variable
-                const respondIssueLabels = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}/labels", {
-                  owner: owner,
-                  repo: repo,
-                  issue_number: issue.number
-                });
-                const labels = respondIssueLabels.data;
+                try {
+                  const respondIssueLabels = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}/labels", {
+                    owner: owner,
+                    repo: repo,
+                    issue_number: issue.number
+                  });
+                  const labels = respondIssueLabels.data;
 
-                for (let i = 0; i < labels.length; i++) {
-                  const label = labels[i]
-                  if (label.name === labelKeepIssue) {
-                    console.log(`Issue #${issue.number} will not be closed`);
-                    closeIssue = false;
+                  for (let i = 0; i < labels.length; i++) {
+                    const label = labels[i]
+                    if (label.name === labelKeepIssue) {
+                      console.log(`Issue #${issue.number} will not be closed`);
+                      closeIssue = false;
+                    }
                   }
+                } catch (error) {
+                  console.error(`Error while Fetching Labels for Issue #${issue.number}, Error: ${error}`);
                 }
 
                 if (!closeIssue) {
