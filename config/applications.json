@@ -2382,5 +2382,13 @@
 		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
+	},
+	"WPFInstallmagicwormhole": {
+		"category": "Utilities",
+		"choco": "magic-wormhole",
+		"content": "Magic Wormhole",
+		"description": "get things from one computer to another, safely",
+		"link": "https://github.com/magic-wormhole/magic-wormhole",
+		"winget": "magic-wormhole.magic-wormhole"
 	}
 }
