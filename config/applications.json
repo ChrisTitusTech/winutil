@@ -1852,7 +1852,7 @@
 		"choco": "na",
 		"content": "Unigram",
 		"description": "Unigram - Telegram for Windows",
-		"link": "https://github.com/UnigramDev/Unigram",
+		"link": "https://unigramdev.github.io/",
 		"winget": "Telegram.Unigram"
 	},
 	"WPFInstallterminal": {
