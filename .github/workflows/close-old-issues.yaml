@@ -54,6 +54,7 @@ jobs:
                     if (label.name === labelKeepIssue) {
                       console.log(`Issue #${issue.number} will not be closed`);
                       closeIssue = false;
+                      break; // Break from the loop, no need to check the remaining Labels.
                     }
                   }
                 } catch (error) {
