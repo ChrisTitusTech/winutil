@@ -2236,17 +2236,23 @@
   },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a002_",
-    "Content": "Run OO Shutup",
-    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
+      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/recommended_ooshutup10.cfg\" -o $ENV:temp\\recommended_ooshutup10.cfg
        curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
+       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\recommended_ooshutup10.cfg\"\" /quiet\"
+       Write-Host \"To modify the applied policies run $ENV:temp\\OOSU10.exe manually\" -ForegroundColor Yellow
        "
+    ],
+    "UndoScript": [
+     "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/factory_ooshutup10.cfg\" -o $ENV:temp\\factory_ooshutup10.cfg
+      curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
+      Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\factory_ooshutup10.cfg\"\" /quiet\"
+      "
     ]
   },
   "WPFTweaksStorage": {
