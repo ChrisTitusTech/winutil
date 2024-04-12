@@ -1,4 +1,12 @@
 {
+	"WPFInstallbrave": {
+		"category": "Browsers",
+		"choco": "operagx",
+		"content": "OperaGX",
+		"description": "Opera GX is a gaming web browser that blocks ads, has a built-in VPN and offers gaming utils.",
+		"link": "https://www.opera.com/gx",
+		"winget": "Opera.OperaGX"
+	},
 	"WPFInstall1password": {
 		"category": "Utilities",
 		"choco": "1password",
