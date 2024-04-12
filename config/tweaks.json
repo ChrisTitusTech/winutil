@@ -2655,5 +2655,21 @@
     "panel": "2",
     "Order": "a082_",
     "Type": "300"
+  },
+  "WPFTweaksDisableMicrosoftAccountLogin": {
+    "Content": "Disable Microsoft Account Login",
+    "Description": "Disables new logins into Microsoft Accounts, so you can use local accounts in peace.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "Name": "NoConnectedUser",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      }
+    ]
   }
 }
