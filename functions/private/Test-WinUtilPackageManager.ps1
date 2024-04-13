@@ -38,10 +38,12 @@ function Test-WinUtilPackageManager {
 
             # Check if Winget's Version is too old.
             $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
-            $wingetBadVersion = [System.Version]::Parse("1.2.10691") # Windows 11 (22H2) comes with v1.2.10691, which is bugged.
-            $wingetOutdated = $wingetCurrentVersion -le $wingetBadVersion
+            # Grabs the latest release of Winget from the Github API for version check process.
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
+            $wingetLatestVersion = [System.Version]::Parse(($response.tag_name).Trim('v')) #Stores version number of latest release.
+            $wingetOutdated = $wingetCurrentVersion -lt $wingetLatestVersion
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--         Winget is installed          ---" -ForegroundColor Green
+            Write-Host "---        Winget is installed          ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: $wingetVersionFull" -ForegroundColor White
 
@@ -61,7 +63,7 @@ function Test-WinUtilPackageManager {
             }
         } else {        
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--       Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
@@ -70,13 +72,13 @@ function Test-WinUtilPackageManager {
     if ($choco) {
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--       Chocolatey is installed        ---" -ForegroundColor Green
+            Write-Host "---      Chocolatey is installed        ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: v$chocoVersion" -ForegroundColor White
             $status = "installed"
         } else {
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--     Chocolatey is not installed      ---" -ForegroundColor Red
+            Write-Host "---    Chocolatey is not installed      ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
