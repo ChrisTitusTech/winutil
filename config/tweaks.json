@@ -2234,7 +2234,7 @@
       "
     ]
   },
-  "WPFTweaksOO": {
+  "WPFTweaksOOSU": {
     "Content": "Run OO Shutup",
     "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
     "category": "Essential Tweaks",
@@ -2242,17 +2242,10 @@
     "Order": "a002_",
     "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/recommended_ooshutup10.cfg\" -o $ENV:temp\\recommended_ooshutup10.cfg
-       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\recommended_ooshutup10.cfg\"\" /quiet\"
-       Write-Host \"To modify the applied policies run $ENV:temp\\OOSU10.exe manually\" -ForegroundColor Yellow
-       "
+      "Invoke-WPFOOSU -action \"recommended\""
     ],
     "UndoScript": [
-     "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/factory_ooshutup10.cfg\" -o $ENV:temp\\factory_ooshutup10.cfg
-      curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-      Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\factory_ooshutup10.cfg\"\" /quiet\"
-      "
+      "Invoke-WPFOOSU -action \"undo\""
     ]
   },
   "WPFTweaksStorage": {
@@ -2619,6 +2612,13 @@
     "Order": "a067_",
     "Type": "Toggle"
   },
+  "WPFOOSUbutton": {
+    "Content": "Customize OO Shutup Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a039_",
+    "Type": "220"
+  },
   "WPFchangedns": {
     "Content": "DNS",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -2640,7 +2640,7 @@
     "panel": "1",
     "Order": "a042_",
     "Type": "160"
-  },
+  },  
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
     "category": "Performance Plans",
