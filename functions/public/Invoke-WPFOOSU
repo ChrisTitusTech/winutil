@@ -30,13 +30,13 @@ function Invoke-WPFOOSU {
             $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/recommended_ooshutup10.cfg" -OutFile $oosu_config
             Write-Host "Applying recommended OO Shutup 10 Policies"
-            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet"
+            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
             $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/factory_ooshutup10.cfg" -OutFile $oosu_config
             Write-Host "Resetting all OO Shutup 10 Policies"
-            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet"  
+            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
     }
     $ProgressPreference = $Initial_ProgressPreference
