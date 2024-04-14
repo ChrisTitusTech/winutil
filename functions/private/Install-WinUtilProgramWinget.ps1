@@ -1,7 +1,6 @@
 Function Install-WinUtilProgramWinget {
 
     <#
-
     .SYNOPSIS
         Manages the provided programs using Winget
 
@@ -13,7 +12,6 @@ Function Install-WinUtilProgramWinget {
 
     .NOTES
         The triple quotes are required any time you need a " in a normal script block.
-
     #>
 
     param(
@@ -30,18 +28,37 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            # --scope=machine when installing non-UWP apps with winget fails with error code 0x80070005.
-            # Removed argument while testing new Winget install method.
-            # Open issue on winget-cli github repo: https://github.com/microsoft/winget-cli/issues/3936
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+            # Install package via ID, if it fails try again with different scope. 
+            # Install-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the install.
+            $status=$((Install-WinGetPackage -Id $Program -Scope SystemOrUnknown -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+            if($status -ne "Ok"){
+                $status=$((Install-WinGetPackage -Id $Program -Scope UserOrUnknown -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+                if($status -ne "Ok"){
+                    $status=$((Install-WinGetPackage -Id $Program -Scope Any -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+                    if($status -ne "Ok"){
+                        Write-Host "Failed to install $Program."
+                    } else {
+                        Write-Host "$Program installed successfully."
+                    }
+                } else {
+                    Write-Host "$Program installed successfully."
+                }
+            } else {
+                Write-Host "$Program installed successfully."
+            }
         }
         if($manage -eq "Uninstalling"){
-        Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
-	}
-
+            # Uninstall package via ID.
+            # Uninstall-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the uninstall.
+            $status=$((Uninstall-WinGetPackage -Id $Program -Mode Silent -AcceptSourceAgreement).Status)
+            if ("$status" -ne "Ok") {
+                Write-Host "Failed to uninstall $Program."
+            } else {
+                Write-Host "$Program uninstalled successfully."
+            }
+	    }
         $X++
     }
 
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
-
 }
