@@ -89,4 +89,13 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
+        $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
+	if($TaskbarWidgets -eq 0) {
+            return $false
+	}
+	else{
+            return $true
+	}
+    }
 }
