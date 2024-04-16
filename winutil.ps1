@@ -9518,6 +9518,13 @@ $sync.configs.tweaks = '{
         "Name": "Scheduling Category",
         "Value": "High",
         "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "OriginalValue": "1",
+        "Name": "ScoobeSystemSettingEnabled",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
