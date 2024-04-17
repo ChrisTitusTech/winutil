@@ -2293,8 +2293,7 @@
     "Order": "a025_",
     "InvokeScript": [
         "
-        Remove-AppxPackage \"Microsoft.Windows.Ai.Copilot.Provider\"
-        Remove-AppxPackage \"MicrosoftWindows.Client.CoPilot\"
+        Get-AppxPackage *copilot* | Remove-AppxPackage
         Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
         "
     ],
