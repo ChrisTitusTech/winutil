@@ -103,7 +103,7 @@
 		"link": "https://authy.com/",
 		"winget": "Twilio.Authy"
 	},
-	"WPFInstallautohotkey": {
+	"WPFInstallautoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
 		"content": "Autoruns",
