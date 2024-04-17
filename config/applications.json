@@ -1975,6 +1975,14 @@
 		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
 		"winget": "Microsoft.SQLServerManagementStudio"
 	},
+	"WPFInstalltabby": {
+		"category": "Utilities",
+		"choco": "tabby",
+		"content": "Tabby.sh",
+		"description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+		"link": "https://tailscale.com/",
+		"winget": "Eugeny.Tabby"
+	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
 		"choco": "tailscale",
