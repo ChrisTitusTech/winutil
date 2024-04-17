@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.31
+    Version        : 24.04.17
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.31"
+$sync.version = "24.04.17"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2619,10 +2619,12 @@ function Test-WinUtilPackageManager {
 
             # Check if Winget's Version is too old.
             $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
-            $wingetBadVersion = [System.Version]::Parse("1.2.10691") # Windows 11 (22H2) comes with v1.2.10691, which is bugged.
-            $wingetOutdated = $wingetCurrentVersion -le $wingetBadVersion
+            # Grabs the latest release of Winget from the Github API for version check process.
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
+            $wingetLatestVersion = [System.Version]::Parse(($response.tag_name).Trim('v')) #Stores version number of latest release.
+            $wingetOutdated = $wingetCurrentVersion -lt $wingetLatestVersion
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--         Winget is installed          ---" -ForegroundColor Green
+            Write-Host "---        Winget is installed          ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: $wingetVersionFull" -ForegroundColor White
 
@@ -2642,7 +2644,7 @@ function Test-WinUtilPackageManager {
             }
         } else {        
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--       Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
@@ -2651,13 +2653,13 @@ function Test-WinUtilPackageManager {
     if ($choco) {
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--       Chocolatey is installed        ---" -ForegroundColor Green
+            Write-Host "---      Chocolatey is installed        ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: v$chocoVersion" -ForegroundColor White
             $status = "installed"
         } else {
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--     Chocolatey is not installed      ---" -ForegroundColor Red
+            Write-Host "---    Chocolatey is not installed      ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
@@ -4997,6 +4999,14 @@ $sync.configs.applications = '{
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
+	"WPFInstallazuredatastudio": {
+		"category": "Microsoft Tools",
+		"choco": "azure-data-studio",
+		"content": "Microsoft Azure Data Studio",
+		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+		"winget": "Microsoft.AzureDataStudio"
+	},	
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -5164,6 +5174,14 @@ $sync.configs.applications = '{
 		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
+	},
+	"WPFInstallcapframex": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "CapFrameX",
+		"description": "Frametimes capture and analysis tool based on Intel''s PresentMon. Overlay provided by Rivatuner Statistics Server.",
+		"link": "https://www.capframex.com/",
+		"winget": "CXWorld.CapFrameX"
 	},
 	"WPFInstallcrystaldiskmark": {
 		"category": "Utilities",
@@ -5493,6 +5511,14 @@ $sync.configs.applications = '{
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
+	"WPFInstallorcaslicer": {
+		"category": "Multimedia Tools",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
 		"choco": "fzf",
@@ -5748,6 +5774,38 @@ $sync.configs.applications = '{
 		"description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
+	},
+	"WPFInstalljava11runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 11",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.11.JRE"
+	},
+	"WPFInstalljava17runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 17",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
+	},
+	"WPFInstalljava18runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 18",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.18.JRE"
+	},
+	"WPFInstalljava19runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 19",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.19.JRE"
 	},
 	"WPFInstalljdownloader": {
 		"category": "Utilities",
@@ -6405,6 +6463,14 @@ $sync.configs.applications = '{
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
+	"WPFInstalltixati": {
+		"category": "Utilities",
+		"choco": "tixati.portable",
+		"content": "Tixati",
+		"description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+		"link": "https://www.tixati.com/",
+		"winget": "Tixati.Tixati.Portable"
+	},
 	"WPFInstallqtox": {
 		"category": "Communications",
 		"choco": "qtox",
@@ -6621,6 +6687,14 @@ $sync.configs.applications = '{
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
+	"WPFInstallpdfgear": {
+		"category": "Document",
+		"choco": "na",
+		"content": "PDFgear",
+		"description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it''s completely free to use.",
+		"link": "https://www.pdfgear.com/",
+		"winget": "PDFgear.PDFgear"
+	},
 	"WPFInstallsunshine": {
 		"category": "Games",
 		"choco": "sunshine",
@@ -6652,6 +6726,14 @@ $sync.configs.applications = '{
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
+	},
+	"WPFInstallsqlmanagementstudio": {
+		"category": "Microsoft Tools",
+		"choco": "sql-server-management-studio",
+		"content": "Microsoft SQL Server Management Studio",
+		"description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
+		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
+		"winget": "Microsoft.SQLServerManagementStudio"
 	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
@@ -6700,6 +6782,14 @@ $sync.configs.applications = '{
 		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
 		"link": "https://telegram.org/",
 		"winget": "Telegram.TelegramDesktop"
+	},
+	"WPFInstallunigram": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Unigram",
+		"description": "Unigram - Telegram for Windows",
+		"link": "https://unigramdev.github.io/",
+		"winget": "Telegram.Unigram"
 	},
 	"WPFInstallterminal": {
 		"category": "Microsoft Tools",
@@ -7196,6 +7286,46 @@ $sync.configs.applications = '{
 		"description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
 		"link": "https://www.tightvnc.com/",
 		"winget": "GlavSoft.TightVNC"
+	},
+	"WPFInstallultravnc": {
+		"category": "Utilities",
+		"choco": "ultravnc",
+		"content": "UltraVNC",
+		"description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+		"link": "https://uvnc.com/",
+		"winget": "uvncbvba.UltraVnc"
+	},
+	"WPFInstallwindowsfirewallcontrol": {
+		"category": "Utilities",
+		"choco": "windowsfirewallcontrol",
+		"content": "Windows Firewall Control",
+		"description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
+		"link": "https://www.binisoft.org/wfc",
+		"winget": "BiniSoft.WindowsFirewallControl"
+	},
+	"WPFInstallvistaswitcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "VistaSwitcher",
+		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
+		"winget": "ntwind.VistaSwitcher"
+	},
+	"WPFInstallautodarkmode": {
+		"category": "Utilities",
+		"choco": "auto-dark-mode",
+		"content": "Windows Auto Dark Mode",
+		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+		"winget": "Armin2208.WindowsAutoNightMode"
+	},
+	"WPFInstallmagicwormhole": {
+		"category": "Utilities",
+		"choco": "magic-wormhole",
+		"content": "Magic Wormhole",
+		"description": "get things from one computer to another, safely",
+		"link": "https://github.com/magic-wormhole/magic-wormhole",
+		"winget": "magic-wormhole.magic-wormhole"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -7682,6 +7812,9 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
         "powercfg.exe /hibernate off"
+    ],
+    "UndoScript": [
+        "powercfg.exe /hibernate on"
     ]
   },
   "WPFTweaksHome": {
@@ -9518,6 +9651,13 @@ $sync.configs.tweaks = '{
         "Name": "Scheduling Category",
         "Value": "High",
         "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "OriginalValue": "1",
+        "Name": "ScoobeSystemSettingEnabled",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
@@ -9863,6 +10003,23 @@ $sync.configs.tweaks = '{
       "
     ]
   },
+  "WPFTweaksEndTaskOnTaskbar": {
+    "Content": "Enable End Task With Right Click",
+    "Description": "Enables option to end task when right clicking a program in the taskbar",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a002_",
+    "InvokeScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
+      "
+    ]
+  },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
     "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
@@ -9885,11 +10042,10 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a010_",
     "InvokeScript": [
-      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
     ],
     "UndoScript": [
-      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
-      "
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
     ]
   },
   "WPFTweaksRemoveEdge": {
@@ -11109,6 +11265,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" ToolTip="Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallthunderbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.thunderbird.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallunigram" Content="Unigram" ToolTip="Unigram - Telegram for Windows" Margin="0,0,2,0"/><TextBlock Name="WPFInstallunigramLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://unigramdev.github.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvencord" Content="Vencord" ToolTip="Vencord is a modification for Discord that adds plugins, custom styles, and more!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallvencordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vencord.dev/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11158,10 +11317,22 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallhelix" Content="Helix" ToolTip="Helix is a neovim alternative built in rust." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhelixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://helix-editor.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava11runtime" Content="Eclipse Temurin JRE 11" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava11runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" ToolTip="OpenJDK Java 16 is the latest version of the open-source Java development kit." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava16Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava17runtime" Content="Eclipse Temurin JRE 17" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava17runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" ToolTip="Oracle Java 18 is the latest version of the official Java development kit from Oracle." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava18Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.oracle.com/java/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava18runtime" Content="Eclipse Temurin JRE 18" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava18runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava19runtime" Content="Eclipse Temurin JRE 19" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava19runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" ToolTip="Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava20Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
@@ -11181,17 +11352,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallminiconda" Content="Miniconda" ToolTip="Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallminicondaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.conda.io/projects/miniconda" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="1">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallneovim" Content="Neovim" ToolTip="Neovim is a highly extensible text editor and an improvement over the original Vim editor." Margin="0,0,2,0"/><TextBlock Name="WPFInstallneovimLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://neovim.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome''s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="1">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
@@ -11302,6 +11473,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallpdf24creator" Content="PDF24 creator" ToolTip="Free and easy-to-use online/desktop PDF tools that make you more productive" Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdf24creatorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tools.pdf24.org/en/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpdfgear" Content="PDFgear" ToolTip="PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it''s completely free to use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdfgearLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.pdfgear.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" ToolTip="PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdfsamLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pdfsam.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11396,6 +11570,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <Label Content="Microsoft Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallazuredatastudio" Content="Microsoft Azure Data Studio" ToolTip="Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux." Margin="0,0,2,0"/><TextBlock Name="WPFInstallazuredatastudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" ToolTip=".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/3.1" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11430,6 +11607,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsqlmanagementstudio" Content="Microsoft SQL Server Management Studio" ToolTip="SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsqlmanagementstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" ToolTip="SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltcpviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview" />
@@ -11541,6 +11721,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" ToolTip="OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenscadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.openscad.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallorcaslicer" Content="OrcaSlicer" ToolTip="G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallorcaslicerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/SoftFever/OrcaSlicer" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.NET" ToolTip="Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPaintdotnetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.getpaint.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11641,6 +11824,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallauthy" Content="Authy" ToolTip="Simple and cross-platform 2FA app" Margin="0,0,2,0"/><TextBlock Name="WPFInstallauthyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://authy.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallautodarkmode" Content="Windows Auto Dark Mode" ToolTip="Automatically switches between the dark and light theme of Windows 10 and Windows 11" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautodarkmodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/AutoDarkMode/Windows-Auto-Night-Mode" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" ToolTip="AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts." Margin="0,0,2,0"/><TextBlock Name="WPFInstallautohotkeyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.autohotkey.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11660,6 +11846,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcapframex" Content="CapFrameX" ToolTip="Frametimes capture and analysis tool based on Intel''s PresentMon. Overlay provided by Rivatuner Statistics Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcapframexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.capframex.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://carnackeys.com/" />
@@ -11727,14 +11916,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhwinfo" Content="HWiNFO" ToolTip="HWiNFO provides comprehensive hardware information and diagnostics for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.hwinfo.com/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallintelpresentmon" Content="Intel-PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallintelpresentmon" Content="Intel-PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
 </StackPanel>
@@ -11749,6 +11938,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/><TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmalwarebytes" Content="Malwarebytes" ToolTip="Malwarebytes is an anti-malware software that provides real-time protection against threats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmalwarebytesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.malwarebytes.com/" />
@@ -11865,6 +12057,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalltightvnc" Content="TightVNC" ToolTip="TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltightvncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tightvnc.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltixati" Content="Tixati" ToolTip="Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltixatiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tixati.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltotalcommander" Content="Total Commander" ToolTip="Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltotalcommanderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ghisler.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11877,7 +12072,16 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" ToolTip="Twinkle Tray lets you easily manage the brightness levels of multiple monitors." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltwinkletrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://twinkletray.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallultravnc" Content="UltraVNC" ToolTip="UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location." Margin="0,0,2,0"/><TextBlock Name="WPFInstallultravncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://uvnc.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwindowsfirewallcontrol" Content="Windows Firewall Control" ToolTip="Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowsfirewallcontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.binisoft.org/wfc" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindowspchealth" Content="Windows PC Health Check" ToolTip="Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844" />
@@ -11935,6 +12139,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
 <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
