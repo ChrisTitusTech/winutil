@@ -111,6 +111,14 @@
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
+	"WPFInstallazuredatastudio": {
+		"category": "Microsoft Tools",
+		"choco": "azure-data-studio",
+		"content": "Microsoft Azure Data Studio",
+		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+		"winget": "Microsoft.AzureDataStudio"
+	},	
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -878,6 +886,38 @@
 		"description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
+	},
+	"WPFInstalljava11runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 11",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.11.JRE"
+	},
+	"WPFInstalljava17runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 17",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
+	},
+	"WPFInstalljava18runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 18",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.18.JRE"
+	},
+	"WPFInstalljava19runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 19",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.19.JRE"
 	},
 	"WPFInstalljdownloader": {
 		"category": "Utilities",
@@ -1798,6 +1838,14 @@
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
+	},
+	"WPFInstallsqlmanagementstudio": {
+		"category": "Microsoft Tools",
+		"choco": "sql-server-management-studio",
+		"content": "Microsoft SQL Server Management Studio",
+		"description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
+		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
+		"winget": "Microsoft.SQLServerManagementStudio"
 	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
