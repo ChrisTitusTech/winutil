@@ -279,6 +279,14 @@
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
 	},
+	"WPFInstallcapframex": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "CapFrameX",
+		"description": "Frametimes capture and analysis tool based on Intel's PresentMon. Overlay provided by Rivatuner Statistics Server.",
+		"link": "https://www.capframex.com/",
+		"winget": "CXWorld.CapFrameX"
+	},
 	"WPFInstallcrystaldiskmark": {
 		"category": "Utilities",
 		"choco": "crystaldiskmark",
@@ -606,6 +614,14 @@
 		"description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
+	},
+	"WPFInstallorcaslicer": {
+		"category": "Multimedia Tools",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
 	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
@@ -1519,6 +1535,14 @@
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
+	"WPFInstalltixati": {
+		"category": "Utilities",
+		"choco": "tixati.portable",
+		"content": "Tixati",
+		"description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+		"link": "https://www.tixati.com/",
+		"winget": "Tixati.Tixati.Portable"
+	},
 	"WPFInstallqtox": {
 		"category": "Communications",
 		"choco": "qtox",
@@ -1735,6 +1759,14 @@
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
+	"WPFInstallpdfgear": {
+		"category": "Document",
+		"choco": "na",
+		"content": "PDFgear",
+		"description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it's completely free to use.",
+		"link": "https://www.pdfgear.com/",
+		"winget": "PDFgear.PDFgear"
+	},
 	"WPFInstallsunshine": {
 		"category": "Games",
 		"choco": "sunshine",
@@ -1814,6 +1846,14 @@
 		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
 		"link": "https://telegram.org/",
 		"winget": "Telegram.TelegramDesktop"
+	},
+	"WPFInstallunigram": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Unigram",
+		"description": "Unigram - Telegram for Windows",
+		"link": "https://unigramdev.github.io/",
+		"winget": "Telegram.Unigram"
 	},
 	"WPFInstallterminal": {
 		"category": "Microsoft Tools",
@@ -2310,5 +2350,45 @@
 		"description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
 		"link": "https://www.tightvnc.com/",
 		"winget": "GlavSoft.TightVNC"
+	},
+	"WPFInstallultravnc": {
+		"category": "Utilities",
+		"choco": "ultravnc",
+		"content": "UltraVNC",
+		"description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+		"link": "https://uvnc.com/",
+		"winget": "uvncbvba.UltraVnc"
+	},
+	"WPFInstallwindowsfirewallcontrol": {
+		"category": "Utilities",
+		"choco": "windowsfirewallcontrol",
+		"content": "Windows Firewall Control",
+		"description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
+		"link": "https://www.binisoft.org/wfc",
+		"winget": "BiniSoft.WindowsFirewallControl"
+	},
+	"WPFInstallvistaswitcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "VistaSwitcher",
+		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
+		"winget": "ntwind.VistaSwitcher"
+	},
+	"WPFInstallautodarkmode": {
+		"category": "Utilities",
+		"choco": "auto-dark-mode",
+		"content": "Windows Auto Dark Mode",
+		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+		"winget": "Armin2208.WindowsAutoNightMode"
+	},
+	"WPFInstallmagicwormhole": {
+		"category": "Utilities",
+		"choco": "magic-wormhole",
+		"content": "Magic Wormhole",
+		"description": "get things from one computer to another, safely",
+		"link": "https://github.com/magic-wormhole/magic-wormhole",
+		"winget": "magic-wormhole.magic-wormhole"
 	}
 }
