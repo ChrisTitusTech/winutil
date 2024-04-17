@@ -9880,6 +9880,11 @@ $sync.configs.tweaks = '{
       "
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
       "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
+      "
     ]
   },
   "WPFTweaksOO": {
