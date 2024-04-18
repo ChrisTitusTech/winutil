@@ -45,7 +45,8 @@
 <ComboBoxItem  Content="Open_DNS"/>
 <ComboBoxItem  Content="Quad9"/>
 </ComboBox>
-</StackPanel><Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
+</StackPanel>
+<Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
 <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
 </StackPanel>
 </Border>
