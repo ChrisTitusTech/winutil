@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.17
+    Version        : 24.04.18
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.17"
+$sync.version = "24.04.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -10467,6 +10467,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         mc:Ignorable="d"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
         WindowStyle="None"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
