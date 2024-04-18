@@ -700,7 +700,6 @@ function Install-WinUtilChoco {
 Function Install-WinUtilProgramWinget {
 
     <#
-
     .SYNOPSIS
         Manages the provided programs using Winget
 
@@ -712,7 +711,6 @@ Function Install-WinUtilProgramWinget {
 
     .NOTES
         The triple quotes are required any time you need a " in a normal script block.
-
     #>
 
     param(
@@ -729,20 +727,43 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            # --scope=machine when installing non-UWP apps with winget fails with error code 0x80070005.
-            # Removed argument while testing new Winget install method.
-            # Open issue on winget-cli github repo: https://github.com/microsoft/winget-cli/issues/3936
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+            # Install package via ID, if it fails try again with different scope. 
+            # Install-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the install.
+            # With WinGet, not all installers honor any of the following: System-wide or User Installs OR Silent Install Mode.
+            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
+            $status=$((Install-WinGetPackage -Id $Program -Scope SystemOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
+            if($status -ne "Ok"){
+                Write-Host "Not System"
+                $status=$((Install-WinGetPackage -Id $Program -Scope UserOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
+                if($status -ne "Ok"){
+                    Write-Host "Not User"
+                    $status=$((Install-WinGetPackage -Id $Program -Scope Any -Mode Silent -Source winget -MatchOption Equals).Status)
+                    if($status -ne "Ok"){
+                        Write-Host "Failed to install $Program."
+                    } else {
+                        Write-Host "$Program installed successfully."
+                    }
+                } else {
+                    Write-Host "$Program installed successfully."
+                }
+            } else {
+                Write-Host "$Program installed successfully."
+            }
         }
         if($manage -eq "Uninstalling"){
-        Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
-	}
-
+            # Uninstall package via ID.
+            # Uninstall-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the uninstall.
+            $status=$((Uninstall-WinGetPackage -Id $Program -Mode Silent -MatchOption Equals -Source winget).Status)
+            if ("$status" -ne "Ok") {
+                Write-Host "Failed to uninstall $Program."
+            } else {
+                Write-Host "$Program uninstalled successfully."
+            }
+	    }
         $X++
     }
 
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
-
 }
 function Install-WinUtilWinget {
     <#
@@ -789,6 +810,9 @@ function Install-WinUtilWinget {
 		Write-Host "Manually adding Winget Sources, from Winget CDN."
 		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time. 
         Write-Host "Winget Installed" -ForegroundColor Green
+        Write-Host "Enabling NuGet and Module..."
+        Install-PackageProvider -Name NuGet -Force
+        Install-Module -Name Microsoft.WinGet.Client -Force
         # Winget only needs a refresh of the environment variables to be used.
         Write-Output "Refreshing Environment Variables...`n"
         $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
