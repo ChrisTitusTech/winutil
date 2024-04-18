@@ -1827,7 +1827,7 @@
 		"category": "Development",
 		"choco": "na",
 		"content": "Swift toolchain",
-		"description": "Swift is a general-purpose programming language that’s approachable for newcomers and powerful for experts.",
+		"description": "Swift is a general-purpose programming language that is approachable for newcomers and powerful for experts.",
 		"link": "https://www.swift.org/",
 		"winget": "Swift.Toolchain"
 	},
