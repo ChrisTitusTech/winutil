@@ -1,7 +1,9 @@
+
 <Grid.ColumnDefinitions>
 <ColumnDefinition Width="*"/>
 <ColumnDefinition Width="*"/>
 </Grid.ColumnDefinitions>
+
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Essential Tweaks" FontSize="16"/>
@@ -45,7 +47,6 @@
 </ComboBox>
 </StackPanel><Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
 <Button Name="WPFUndoall" Content="Undo Selected Tweaks" HorizontalAlignment = "Left" Width="160" Margin="5" Padding="20,5" />
-
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
@@ -92,7 +93,5 @@
 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Label Content="Shortcuts" FontSize="16"/>
 <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
-
 </StackPanel>
 </Border>
-

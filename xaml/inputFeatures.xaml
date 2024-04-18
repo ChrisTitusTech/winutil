@@ -1,7 +1,9 @@
+
 <Grid.ColumnDefinitions>
 <ColumnDefinition Width="*"/>
 <ColumnDefinition Width="*"/>
 </Grid.ColumnDefinitions>
+
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Features" FontSize="16"/>
@@ -24,7 +26,6 @@
 <Button Name="WPFPanelDISM" Content="System Corruption Scan" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Button Name="WPFFixesWinget" Content="WinGet Reinstall" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Button Name="WPFRunAdobeCCCleanerTool" Content="Remove Adobe Creative Cloud" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
-
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
@@ -37,7 +38,5 @@
 <Button Name="WPFPanelsound" Content="Sound Settings" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
 <Button Name="WPFPanelsystem" Content="System Properties" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
 <Button Name="WPFPaneluser" Content="User Accounts" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
-
 </StackPanel>
 </Border>
-
