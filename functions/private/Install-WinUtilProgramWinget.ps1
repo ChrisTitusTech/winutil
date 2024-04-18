@@ -30,11 +30,15 @@ Function Install-WinUtilProgramWinget {
         if($manage -eq "Installing"){
             # Install package via ID, if it fails try again with different scope. 
             # Install-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the install.
-            $status=$((Install-WinGetPackage -Id $Program -Scope SystemOrUnknown -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+            # With WinGet, not all installers honor any of the following: System-wide or User Installs OR Silent Install Mode.
+            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
+            $status=$((Install-WinGetPackage -Id $Program -Scope SystemOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
             if($status -ne "Ok"){
-                $status=$((Install-WinGetPackage -Id $Program -Scope UserOrUnknown -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+                Write-Host "Not System"
+                $status=$((Install-WinGetPackage -Id $Program -Scope UserOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
                 if($status -ne "Ok"){
-                    $status=$((Install-WinGetPackage -Id $Program -Scope Any -Mode Silent -AcceptPackageAgreement -AcceptSourceAgreement).Status)
+                    Write-Host "Not User"
+                    $status=$((Install-WinGetPackage -Id $Program -Scope Any -Mode Silent -Source winget -MatchOption Equals).Status)
                     if($status -ne "Ok"){
                         Write-Host "Failed to install $Program."
                     } else {
@@ -50,7 +54,7 @@ Function Install-WinUtilProgramWinget {
         if($manage -eq "Uninstalling"){
             # Uninstall package via ID.
             # Uninstall-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the uninstall.
-            $status=$((Uninstall-WinGetPackage -Id $Program -Mode Silent -AcceptSourceAgreement).Status)
+            $status=$((Uninstall-WinGetPackage -Id $Program -Mode Silent -MatchOption Equals -Source winget).Status)
             if ("$status" -ne "Ok") {
                 Write-Host "Failed to uninstall $Program."
             } else {
