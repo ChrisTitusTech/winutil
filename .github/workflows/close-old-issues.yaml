@@ -38,7 +38,7 @@ jobs:
 
               // Close issues inactive for more than the inactivity period
               for (const issue of issues) {
-                const closeIssue = true;
+                let closeIssue = true;
 
                 // Get all Labels of issue, and compared each label with the labelKeepIssue const variable
                 try {
