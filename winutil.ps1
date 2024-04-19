@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.03.31
+    Version        : 24.04.18
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.03.31"
+$sync.version = "24.04.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -700,7 +700,6 @@ function Install-WinUtilChoco {
 Function Install-WinUtilProgramWinget {
 
     <#
-
     .SYNOPSIS
         Manages the provided programs using Winget
 
@@ -712,7 +711,6 @@ Function Install-WinUtilProgramWinget {
 
     .NOTES
         The triple quotes are required any time you need a " in a normal script block.
-
     #>
 
     param(
@@ -729,20 +727,43 @@ Function Install-WinUtilProgramWinget {
 
         Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            # --scope=machine when installing non-UWP apps with winget fails with error code 0x80070005.
-            # Removed argument while testing new Winget install method.
-            # Open issue on winget-cli github repo: https://github.com/microsoft/winget-cli/issues/3936
-            Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent $Program" -NoNewWindow -Wait
+            # Install package via ID, if it fails try again with different scope. 
+            # Install-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the install.
+            # With WinGet, not all installers honor any of the following: System-wide or User Installs OR Silent Install Mode.
+            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
+            $status=$((Install-WinGetPackage -Id $Program -Scope SystemOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
+            if($status -ne "Ok"){
+                Write-Host "Not System"
+                $status=$((Install-WinGetPackage -Id $Program -Scope UserOrUnknown -Mode Silent -Source winget -MatchOption Equals).Status)
+                if($status -ne "Ok"){
+                    Write-Host "Not User"
+                    $status=$((Install-WinGetPackage -Id $Program -Scope Any -Mode Silent -Source winget -MatchOption Equals).Status)
+                    if($status -ne "Ok"){
+                        Write-Host "Failed to install $Program."
+                    } else {
+                        Write-Host "$Program installed successfully."
+                    }
+                } else {
+                    Write-Host "$Program installed successfully."
+                }
+            } else {
+                Write-Host "$Program installed successfully."
+            }
         }
         if($manage -eq "Uninstalling"){
-        Start-Process -FilePath winget -ArgumentList "uninstall -e --accept-source-agreements --purge --force --silent $Program" -NoNewWindow -Wait
-	}
-
+            # Uninstall package via ID.
+            # Uninstall-WinGetPackage always returns "InstallerErrorCode" 0, so we have to check the "Status" of the uninstall.
+            $status=$((Uninstall-WinGetPackage -Id $Program -Mode Silent -MatchOption Equals -Source winget).Status)
+            if ("$status" -ne "Ok") {
+                Write-Host "Failed to uninstall $Program."
+            } else {
+                Write-Host "$Program uninstalled successfully."
+            }
+	    }
         $X++
     }
 
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
-
 }
 function Install-WinUtilWinget {
     <#
@@ -789,6 +810,9 @@ function Install-WinUtilWinget {
 		Write-Host "Manually adding Winget Sources, from Winget CDN."
 		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time. 
         Write-Host "Winget Installed" -ForegroundColor Green
+        Write-Host "Enabling NuGet and Module..."
+        Install-PackageProvider -Name NuGet -Force
+        Install-Module -Name Microsoft.WinGet.Client -Force
         # Winget only needs a refresh of the environment variables to be used.
         Write-Output "Refreshing Environment Variables...`n"
         $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -2619,10 +2643,12 @@ function Test-WinUtilPackageManager {
 
             # Check if Winget's Version is too old.
             $wingetCurrentVersion = [System.Version]::Parse($wingetVersion.Trim('v'))
-            $wingetBadVersion = [System.Version]::Parse("1.2.10691") # Windows 11 (22H2) comes with v1.2.10691, which is bugged.
-            $wingetOutdated = $wingetCurrentVersion -le $wingetBadVersion
+            # Grabs the latest release of Winget from the Github API for version check process.
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
+            $wingetLatestVersion = [System.Version]::Parse(($response.tag_name).Trim('v')) #Stores version number of latest release.
+            $wingetOutdated = $wingetCurrentVersion -lt $wingetLatestVersion
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--         Winget is installed          ---" -ForegroundColor Green
+            Write-Host "---        Winget is installed          ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: $wingetVersionFull" -ForegroundColor White
 
@@ -2642,7 +2668,7 @@ function Test-WinUtilPackageManager {
             }
         } else {        
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--       Winget is not installed        ---" -ForegroundColor Red
+            Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
@@ -2651,13 +2677,13 @@ function Test-WinUtilPackageManager {
     if ($choco) {
         if ((Get-Command -Name choco -ErrorAction Ignore) -and ($chocoVersion = (Get-Item "$env:ChocolateyInstall\choco.exe" -ErrorAction Ignore).VersionInfo.ProductVersion)) {
             Write-Host "===========================================" -ForegroundColor Green
-            Write-Host "--       Chocolatey is installed        ---" -ForegroundColor Green
+            Write-Host "---      Chocolatey is installed        ---" -ForegroundColor Green
             Write-Host "===========================================" -ForegroundColor Green
             Write-Host "Version: v$chocoVersion" -ForegroundColor White
             $status = "installed"
         } else {
             Write-Host "===========================================" -ForegroundColor Red
-            Write-Host "--     Chocolatey is not installed      ---" -ForegroundColor Red
+            Write-Host "---    Chocolatey is not installed      ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
             $status = "not-installed"
         }
@@ -4989,6 +5015,14 @@ $sync.configs.applications = '{
 		"link": "https://authy.com/",
 		"winget": "Twilio.Authy"
 	},
+	"WPFInstallautoruns": {
+		"category": "Microsoft Tools",
+		"choco": "autoruns",
+		"content": "Autoruns",
+		"description": "This utility shows you what programs are configured to run during system bootup or login",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
+		"winget": "Microsoft.Sysinternals.Autoruns"
+	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
@@ -4997,6 +5031,14 @@ $sync.configs.applications = '{
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
+	"WPFInstallazuredatastudio": {
+		"category": "Microsoft Tools",
+		"choco": "azure-data-studio",
+		"content": "Microsoft Azure Data Studio",
+		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+		"winget": "Microsoft.AzureDataStudio"
+	},	
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -5068,6 +5110,14 @@ $sync.configs.applications = '{
 		"description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
 		"link": "https://www.bcuninstaller.com/",
 		"winget": "Klocman.BulkCrapUninstaller"
+	},
+	"WPFInstallbulkrenameutility": {
+		"category": "Utilities",
+		"choco": "bulkrenameutility",
+		"content": "Bulk Rename Utility",
+		"description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
+		"link": "https://www.bulkrenameutility.co.uk",
+		"winget": "TGRMNSoftware.BulkRenameUtility"
 	},
 	"WPFInstallcalibre": {
 		"category": "Document",
@@ -5141,6 +5191,14 @@ $sync.configs.applications = '{
 		"link": "https://clonehero.net/",
 		"winget": "CloneHeroTeam.CloneHero"
 	},
+	"WPFInstallcmake": {
+		"category": "Development",
+		"choco": "cmake",
+		"content": "CMake",
+		"description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
+		"link": "https://cmake.org/",
+		"winget": "Kitware.CMake"
+	},
 	"WPFInstallcopyq": {
 		"category": "Utilities",
 		"choco": "copyq",
@@ -5164,6 +5222,14 @@ $sync.configs.applications = '{
 		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
+	},
+	"WPFInstallcapframex": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "CapFrameX",
+		"description": "Frametimes capture and analysis tool based on Intel''s PresentMon. Overlay provided by Rivatuner Statistics Server.",
+		"link": "https://www.capframex.com/",
+		"winget": "CXWorld.CapFrameX"
 	},
 	"WPFInstallcrystaldiskmark": {
 		"category": "Utilities",
@@ -5453,6 +5519,14 @@ $sync.configs.applications = '{
 		"link": "https://floorp.app/",
 		"winget": "Ablaze.Floorp"
 	},
+	"WPFInstallflow": {
+		"category": "Utilities",
+		"choco": "flow-launcher",
+		"content": "Flow launcher",
+		"description": "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
+		"link": "https://www.flowlauncher.com/",
+		"winget": "Flow-Launcher.Flow-Launcher"
+	},
 	"WPFInstallflux": {
 		"category": "Utilities",
 		"choco": "flux",
@@ -5492,6 +5566,22 @@ $sync.configs.applications = '{
 		"description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
+	},
+	"WPFInstallorcaslicer": {
+		"category": "Multimedia Tools",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
+	"WPFInstallfxsound": {
+		"category": "Multimedia Tools",
+		"choco": "fxsound",
+		"content": "FxSound",
+		"description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+		"link": "https://www.fxsound.com/",
+		"winget": "FxSoundLLC.FxSound"
 	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
@@ -5621,6 +5711,14 @@ $sync.configs.applications = '{
 		"link": "https://handbrake.fr/",
 		"winget": "HandBrake.HandBrake"
 	},
+	"WPFInstallharmonoid": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Harmonoid",
+		"description": "Plays & manages your music library. Looks beautiful & juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost & more.",
+		"link": "https://harmonoid.com/",
+		"winget": "Harmonoid.Harmonoid"
+	},
 	"WPFInstallheidisql": {
 		"category": "Pro Tools",
 		"choco": "heidisql",
@@ -5660,6 +5758,14 @@ $sync.configs.applications = '{
 		"description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
 		"link": "https://www.hwinfo.com/",
 		"winget": "REALiX.HWiNFO"
+	},
+	"WPFInstallhwmonitor": {
+		"category": "Utilities",
+		"choco": "hwmonitor",
+		"content": "HWMonitor",
+		"description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
+		"link": "https://www.cpuid.com/softwares/hwmonitor.html",
+		"winget": "CPUID.HWMonitor"
 	},
 	"WPFInstallimageglass": {
 		"category": "Multimedia Tools",
@@ -5749,6 +5855,38 @@ $sync.configs.applications = '{
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
 	},
+	"WPFInstalljava11runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 11",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.11.JRE"
+	},
+	"WPFInstalljava17runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 17",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
+	},
+	"WPFInstalljava18runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 18",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.18.JRE"
+	},
+	"WPFInstalljava19runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 19",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.19.JRE"
+	},
 	"WPFInstalljdownloader": {
 		"category": "Utilities",
 		"choco": "jdownloader",
@@ -5788,6 +5926,14 @@ $sync.configs.applications = '{
 		"description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
 		"link": "https://joplinapp.org/",
 		"winget": "Joplin.Joplin"
+	},
+	"WPFInstalljpegview": {
+		"category": "Utilities",
+		"choco": "jpegview",
+		"content": "JPEG View",
+		"description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
+		"link": "https://github.com/sylikc/jpegview",
+		"winget": "sylikc.JPEGView"
 	},
 	"WPFInstallkdeconnect": {
 		"category": "Utilities",
@@ -5861,6 +6007,14 @@ $sync.configs.applications = '{
 		"link": "https://librewolf-community.gitlab.io/",
 		"winget": "LibreWolf.LibreWolf"
 	},
+	"WPFInstalllinkshellextension": {
+		"category": "Utilities",
+		"choco": "linkshellextension",
+		"content": "Link Shell extension",
+		"description": "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
+		"link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
+		"winget": "HermannSchinagl.LinkShellExtension"
+	},
 	"WPFInstalllinphone": {
 		"category": "Communications",
 		"choco": "linphone",
@@ -5884,6 +6038,14 @@ $sync.configs.applications = '{
 		"description": "An open source cross-platform alternative to AirDrop.",
 		"link": "https://localsend.org/",
 		"winget": "LocalSend.LocalSend"
+	},
+	"WPFInstalllockhunter": {
+		"category": "Utilities",
+		"choco": "lockhunter",
+		"content": "LockHunter",
+		"description": "LockHunter is a free tool to delete files blocked by something you do not know.",
+		"link": "https://lockhunter.com/",
+		"winget": "CrystalRich.LockHunter"
 	},
 	"WPFInstalllogseq": {
 		"category": "Document",
@@ -5980,6 +6142,14 @@ $sync.configs.applications = '{
 		"description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
 		"link": "https://mullvad.net/browser",
 		"winget": "MullvadVPN.MullvadBrowser"
+	},
+	"WPFInstallmusescore": {
+		"category": "Multimedia Tools",
+		"choco": "musescore",
+		"content": "MuseScore",
+		"description": "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
+		"link": "https://musescore.org/en",
+		"winget": "Musescore.Musescore"
 	},
 	"WPFInstallmusicbee": {
 		"category": "Multimedia Tools",
@@ -6405,6 +6575,14 @@ $sync.configs.applications = '{
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
+	"WPFInstalltixati": {
+		"category": "Utilities",
+		"choco": "tixati.portable",
+		"content": "Tixati",
+		"description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+		"link": "https://www.tixati.com/",
+		"winget": "Tixati.Tixati.Portable"
+	},
 	"WPFInstallqtox": {
 		"category": "Communications",
 		"choco": "qtox",
@@ -6412,6 +6590,14 @@ $sync.configs.applications = '{
 		"description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
 		"link": "https://qtox.github.io/",
 		"winget": "Tox.qTox"
+	},
+	"WPFInstallquicklook": {
+		"category": "Utilities",
+		"choco": "quicklook",
+		"content": "Quicklook",
+		"description": "Bring macOS ???Quick Look??? feature to Windows",
+		"link": "https://github.com/QL-Win/QuickLook",
+		"winget": "QL-Win.QuickLook"
 	},
 	"WPFInstallrainmeter": {
 		"category": "Utilities",
@@ -6428,6 +6614,14 @@ $sync.configs.applications = '{
 		"description": "Revo Uninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
+	},
+	"WPFInstallrevolt": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Revolt",
+		"description": "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
+		"link": "https://revolt.chat/",
+		"winget": "Revolt.RevoltDesktop"
 	},
 	"WPFInstallripgrep": {
 		"category": "Utilities",
@@ -6525,11 +6719,27 @@ $sync.configs.applications = '{
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
 	},
+	"WPFInstallsignalrgb": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "SignalRGB",
+		"description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
+		"link": "https://www.signalrgb.com/",
+		"winget": "WhirlwindFX.SignalRgb"
+	},
+	"WPFInstallsimplenote": {
+		"category": "Document",
+		"choco": "simplenote",
+		"content": "simplenote",
+		"description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+		"link": "https://simplenote.com/",
+		"winget": "Automattic.Simplenote"
+	},
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
 		"content": "Simplewall",
-		"description": "simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
+		"description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
 	},
@@ -6556,6 +6766,14 @@ $sync.configs.applications = '{
 		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
 		"link": "https://www.spacedrive.com/",
 		"winget": "spacedrive.Spacedrive"
+	},
+	"WPFInstallspacesniffer": {
+		"category": "Utilities",
+		"choco": "spacesniffer",
+		"content": "SpaceSniffer",
+		"description": "A tool application that lets you understand how folders and files are structured on your disks",
+		"link": "http://www.uderzo.it/main_products/space_sniffer/",
+		"winget": "UderzoSoftware.SpaceSniffer"
 	},
 	"WPFInstallstarship": {
 		"category": "Development",
@@ -6621,6 +6839,14 @@ $sync.configs.applications = '{
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
+	"WPFInstallpdfgear": {
+		"category": "Document",
+		"choco": "na",
+		"content": "PDFgear",
+		"description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it''s completely free to use.",
+		"link": "https://www.pdfgear.com/",
+		"winget": "PDFgear.PDFgear"
+	},
 	"WPFInstallsunshine": {
 		"category": "Games",
 		"choco": "sunshine",
@@ -6641,7 +6867,7 @@ $sync.configs.applications = '{
 		"category": "Development",
 		"choco": "na",
 		"content": "Swift toolchain",
-		"description": "Swift is a general-purpose programming language that???s approachable for newcomers and powerful for experts.",
+		"description": "Swift is a general-purpose programming language that is approachable for newcomers and powerful for experts.",
 		"link": "https://www.swift.org/",
 		"winget": "Swift.Toolchain"
 	},
@@ -6652,6 +6878,22 @@ $sync.configs.applications = '{
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
+	},
+	"WPFInstallsqlmanagementstudio": {
+		"category": "Microsoft Tools",
+		"choco": "sql-server-management-studio",
+		"content": "Microsoft SQL Server Management Studio",
+		"description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
+		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
+		"winget": "Microsoft.SQLServerManagementStudio"
+	},
+	"WPFInstalltabby": {
+		"category": "Utilities",
+		"choco": "tabby",
+		"content": "Tabby.sh",
+		"description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+		"link": "https://tailscale.com/",
+		"winget": "Eugeny.Tabby"
 	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
@@ -6700,6 +6942,14 @@ $sync.configs.applications = '{
 		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
 		"link": "https://telegram.org/",
 		"winget": "Telegram.TelegramDesktop"
+	},
+	"WPFInstallunigram": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Unigram",
+		"description": "Unigram - Telegram for Windows",
+		"link": "https://unigramdev.github.io/",
+		"winget": "Telegram.Unigram"
 	},
 	"WPFInstallterminal": {
 		"category": "Microsoft Tools",
@@ -7029,6 +7279,14 @@ $sync.configs.applications = '{
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallwizfile": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "WizFile",
+		"description": "Find files by name on your hard drives almost instantly.",
+		"link": "https://antibody-software.com/wizfile/",
+		"winget": "AntibodySoftware.WizFile"
+	},
 	"WPFInstallwiztree": {
 		"category": "Utilities",
 		"choco": "wiztree",
@@ -7060,6 +7318,14 @@ $sync.configs.applications = '{
 		"description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
 		"link": "https://xemu.app/",
 		"winget": "xemu-project.xemu"
+	},
+	"WPFInstallxnview": {
+		"category": "Utilities",
+		"choco": "xnview",
+		"content": "XnView classic",
+		"description": "XnView is an efficient image viewer, browser and converter for Windows.",
+		"link": "https://www.xnview.com/en/xnview/",
+		"winget": "XnSoft.XnView.Classic"
 	},
 	"WPFInstallxournal": {
 		"category": "Document",
@@ -7196,6 +7462,46 @@ $sync.configs.applications = '{
 		"description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
 		"link": "https://www.tightvnc.com/",
 		"winget": "GlavSoft.TightVNC"
+	},
+	"WPFInstallultravnc": {
+		"category": "Utilities",
+		"choco": "ultravnc",
+		"content": "UltraVNC",
+		"description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+		"link": "https://uvnc.com/",
+		"winget": "uvncbvba.UltraVnc"
+	},
+	"WPFInstallwindowsfirewallcontrol": {
+		"category": "Utilities",
+		"choco": "windowsfirewallcontrol",
+		"content": "Windows Firewall Control",
+		"description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
+		"link": "https://www.binisoft.org/wfc",
+		"winget": "BiniSoft.WindowsFirewallControl"
+	},
+	"WPFInstallvistaswitcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "VistaSwitcher",
+		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
+		"winget": "ntwind.VistaSwitcher"
+	},
+	"WPFInstallautodarkmode": {
+		"category": "Utilities",
+		"choco": "auto-dark-mode",
+		"content": "Windows Auto Dark Mode",
+		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+		"winget": "Armin2208.WindowsAutoNightMode"
+	},
+	"WPFInstallmagicwormhole": {
+		"category": "Utilities",
+		"choco": "magic-wormhole",
+		"content": "Magic Wormhole",
+		"description": "get things from one computer to another, safely",
+		"link": "https://github.com/magic-wormhole/magic-wormhole",
+		"winget": "magic-wormhole.magic-wormhole"
 	}
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -7682,6 +7988,9 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
         "powercfg.exe /hibernate off"
+    ],
+    "UndoScript": [
+        "powercfg.exe /hibernate on"
     ]
   },
   "WPFTweaksHome": {
@@ -9518,6 +9827,13 @@ $sync.configs.tweaks = '{
         "Name": "Scheduling Category",
         "Value": "High",
         "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "OriginalValue": "1",
+        "Name": "ScoobeSystemSettingEnabled",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
@@ -9863,6 +10179,23 @@ $sync.configs.tweaks = '{
       "
     ]
   },
+  "WPFTweaksEndTaskOnTaskbar": {
+    "Content": "Enable End Task With Right Click",
+    "Description": "Enables option to end task when right clicking a program in the taskbar",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a002_",
+    "InvokeScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
+      "
+    ]
+  },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
     "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
@@ -9885,11 +10218,10 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a010_",
     "InvokeScript": [
-      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
     ],
     "UndoScript": [
-      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
-      "
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
     ]
   },
   "WPFTweaksRemoveEdge": {
@@ -10311,6 +10643,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         mc:Ignorable="d"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
         WindowStyle="None"
         Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
@@ -11088,6 +11421,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallqtox" Content="QTox" ToolTip="QTox is a free and open-source messaging app that prioritizes user privacy and security in its design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqtoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qtox.github.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrevolt" Content="Revolt" ToolTip="Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrevoltLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://revolt.chat/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsession" Content="Session" ToolTip="Session is a private and secure messaging app built on a decentralized network for user privacy and data protection." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsessionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsession.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11107,6 +11443,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallthunderbird" Content="Thunderbird" ToolTip="Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallthunderbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.thunderbird.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallunigram" Content="Unigram" ToolTip="Unigram - Telegram for Windows" Margin="0,0,2,0"/><TextBlock Name="WPFInstallunigramLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://unigramdev.github.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvencord" Content="Vencord" ToolTip="Vencord is a modification for Discord that adds plugins, custom styles, and more!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallvencordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vencord.dev/" />
@@ -11134,6 +11473,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallclink" Content="Clink" ToolTip="Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallclinkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mridgers.github.io/clink/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcmake" Content="CMake" ToolTip="CMake is an open-source, cross-platform family of tools designed to build, test and package software." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcmakeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://cmake.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallDaxStudio" Content="DaxStudio" ToolTip="DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models." Margin="0,0,2,0"/><TextBlock Name="WPFInstallDaxStudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://daxstudio.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11158,10 +11500,22 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallhelix" Content="Helix" ToolTip="Helix is a neovim alternative built in rust." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhelixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://helix-editor.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava11runtime" Content="Eclipse Temurin JRE 11" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava11runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" ToolTip="OpenJDK Java 16 is the latest version of the open-source Java development kit." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava16Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava17runtime" Content="Eclipse Temurin JRE 17" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava17runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" ToolTip="Oracle Java 18 is the latest version of the official Java development kit from Oracle." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava18Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.oracle.com/java/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava18runtime" Content="Eclipse Temurin JRE 18" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava18runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljava19runtime" Content="Eclipse Temurin JRE 19" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava19runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" ToolTip="Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava20Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
@@ -11223,7 +11577,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsublimetext" Content="Sublime Text" ToolTip="Sublime Text is a sophisticated text editor for code, markup, and prose." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsublimetextLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sublimetext.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallswift" Content="Swift toolchain" ToolTip="Swift is a general-purpose programming language that???s approachable for newcomers and powerful for experts." Margin="0,0,2,0"/><TextBlock Name="WPFInstallswiftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.swift.org/" />
+<CheckBox Name="WPFInstallswift" Content="Swift toolchain" ToolTip="Swift is a general-purpose programming language that is approachable for newcomers and powerful for experts." Margin="0,0,2,0"/><TextBlock Name="WPFInstallswiftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.swift.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltemurin" Content="Eclipse Temurin" ToolTip="Eclipse Temurin is the open source Java SE build based upon OpenJDK." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltemurinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/temurin/" />
@@ -11302,7 +11656,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallpdf24creator" Content="PDF24 creator" ToolTip="Free and easy-to-use online/desktop PDF tools that make you more productive" Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdf24creatorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tools.pdf24.org/en/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpdfgear" Content="PDFgear" ToolTip="PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it''s completely free to use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdfgearLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.pdfgear.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpdfsam" Content="PDFsam Basic" ToolTip="PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpdfsamLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pdfsam.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsimplenote" Content="simplenote" ToolTip="Simplenote is an easy way to keep notes, lists, ideas and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplenoteLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://simplenote.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsumatra" Content="Sumatra PDF" ToolTip="Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsumatraLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.sumatrapdfreader.org/free-pdf-reader.html" />
@@ -11365,11 +11725,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallprismlauncher" Content="Prism Launcher" ToolTip="Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprismlauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://prismlauncher.org/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="2">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpsremoteplay" Content="PS Remote Play" ToolTip="PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpsremoteplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://remoteplay.dl.playstation.net/remoteplay/lang/gb/" />
 </StackPanel>
@@ -11385,6 +11740,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallTcNoAccSwitcher" Content="TCNO Account Switcher" ToolTip="A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallTcNoAccSwitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/TCNOco/TcNo-Acc-Switcher" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft''s digital distribution and online gaming service, providing access to Ubisoft''s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
 </StackPanel>
@@ -11395,6 +11755,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
 <Label Content="Microsoft Tools" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallazuredatastudio" Content="Microsoft Azure Data Studio" ToolTip="Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux." Margin="0,0,2,0"/><TextBlock Name="WPFInstallazuredatastudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" ToolTip=".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/3.1" />
 </StackPanel>
@@ -11430,6 +11796,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsqlmanagementstudio" Content="Microsoft SQL Server Management Studio" ToolTip="SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsqlmanagementstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltcpview" Content="SysInternals TCPView" ToolTip="SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltcpviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview" />
@@ -11481,6 +11850,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallfreecad" Content="FreeCAD" ToolTip="FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfreecadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.freecadweb.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfxsound" Content="FxSound" ToolTip="FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfxsoundLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.fxsound.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgimp" Content="GIMP (Image Editor)" ToolTip="GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgimpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gimp.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11488,6 +11860,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhandbrake" Content="HandBrake" ToolTip="HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhandbrakeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://handbrake.fr/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallharmonoid" Content="Harmonoid" ToolTip="Plays & manages your music library. Looks beautiful & juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost & more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallharmonoidLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://harmonoid.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallimageglass" Content="ImageGlass (Image Viewer)" ToolTip="ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed." Margin="0,0,2,0"/><TextBlock Name="WPFInstallimageglassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://imageglass.org/" />
@@ -11526,6 +11901,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmusescore" Content="MuseScore" ToolTip="Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmusescoreLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://musescore.org/en" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" ToolTip="MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmusicbeeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getmusicbee.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11541,6 +11919,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallopenscad" Content="OpenSCAD" ToolTip="OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallopenscadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.openscad.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallorcaslicer" Content="OrcaSlicer" ToolTip="G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallorcaslicerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/SoftFever/OrcaSlicer" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallPaintdotnet" Content="Paint.NET" ToolTip="Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallPaintdotnetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.getpaint.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11549,11 +11930,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="3">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.strawberrymusicplayer.org/" />
 </StackPanel>
@@ -11569,6 +11945,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="3">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
 </StackPanel>
@@ -11607,7 +11988,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallrustdesk" Content="RustDesk" ToolTip="RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrustdeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://rustdesk.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallsimplewall" Content="Simplewall" ToolTip="simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplewallLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/henrypp/simplewall" />
+<CheckBox Name="WPFInstallsimplewall" Content="Simplewall" ToolTip="Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsimplewallLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/henrypp/simplewall" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallventoy" Content="Ventoy" ToolTip="Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems." Margin="0,0,2,0"/><TextBlock Name="WPFInstallventoyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ventoy.net/" />
@@ -11641,6 +12022,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallauthy" Content="Authy" ToolTip="Simple and cross-platform 2FA app" Margin="0,0,2,0"/><TextBlock Name="WPFInstallauthyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://authy.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallautodarkmode" Content="Windows Auto Dark Mode" ToolTip="Automatically switches between the dark and light theme of Windows 10 and Windows 11" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautodarkmodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/AutoDarkMode/Windows-Auto-Night-Mode" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautohotkey" Content="AutoHotkey" ToolTip="AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts." Margin="0,0,2,0"/><TextBlock Name="WPFInstallautohotkeyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.autohotkey.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11660,6 +12044,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbulkrenameutility" Content="Bulk Rename Utility" ToolTip="Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkrenameutilityLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bulkrenameutility.co.uk" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallcapframex" Content="CapFrameX" ToolTip="Frametimes capture and analysis tool based on Intel''s PresentMon. Overlay provided by Rivatuner Statistics Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcapframexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.capframex.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://carnackeys.com/" />
@@ -11707,6 +12097,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallfileconverter" Content="File-Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallflow" Content="Flow launcher" ToolTip="Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallflowLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.flowlauncher.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11727,16 +12120,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhwinfo" Content="HWiNFO" ToolTip="HWiNFO provides comprehensive hardware information and diagnostics for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwinfoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.hwinfo.com/" />
 </StackPanel>
-
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallhwmonitor" Content="HWMonitor" ToolTip="HWMonitor is a hardware monitoring program that reads PC systems main health sensors." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhwmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.cpuid.com/softwares/hwmonitor.html" />
 </StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallintelpresentmon" Content="Intel-PresentMon" ToolTip="A new gaming performance overlay and telemetry application to monitor and measure your gaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallintelpresentmonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://game.intel.com/us/stories/intel-presentmon/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalljpegview" Content="JPEG View" ToolTip="JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI" Margin="0,0,2,0"/><TextBlock Name="WPFInstalljpegviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sylikc/jpegview" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
@@ -11745,10 +12139,24 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
+<CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
+</StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/><TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmalwarebytes" Content="Malwarebytes" ToolTip="Malwarebytes is an anti-malware software that provides real-time protection against threats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmalwarebytesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.malwarebytes.com/" />
@@ -11820,6 +12228,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallqbittorrent" Content="qBittorrent" ToolTip="qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqbittorrentLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.qbittorrent.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallquicklook" Content="Quicklook" ToolTip="Bring macOS ???Quick Look??? feature to Windows" Margin="0,0,2,0"/><TextBlock Name="WPFInstallquicklookLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/QL-Win/QuickLook" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallrainmeter" Content="Rainmeter" ToolTip="Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrainmeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rainmeter.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11841,7 +12252,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsdio" Content="Snappy Driver Installer Origin" ToolTip="Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsdioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sourceforge.net/projects/snappy-driver-installer-origin" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsignalrgb" Content="SignalRGB" ToolTip="SignalRGB lets you control and sync your favorite RGB devices with one free application." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsignalrgbLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.signalrgb.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallspacedrive" Content="Spacedrive File Manager" ToolTip="Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspacedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spacedrive.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspacesniffer" Content="SpaceSniffer" ToolTip="A tool application that lets you understand how folders and files are structured on your disks" Margin="0,0,2,0"/><TextBlock Name="WPFInstallspacesnifferLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.uderzo.it/main_products/space_sniffer/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstartallback" Content="StartAllBack" ToolTip="StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallstartallbackLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.startallback.com/" />
@@ -11856,6 +12273,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsynctrayzor" Content="SyncTrayzor" ToolTip="Windows tray utility / filesystem watcher / launcher for Syncthing" Margin="0,0,2,0"/><TextBlock Name="WPFInstallsynctrayzorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/canton7/SyncTrayzor/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltabby" Content="Tabby.sh" ToolTip="Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltabbyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tailscale.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltailscale" Content="Tailscale" ToolTip="Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltailscaleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tailscale.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11863,6 +12283,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltightvnc" Content="TightVNC" ToolTip="TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltightvncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tightvnc.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltixati" Content="Tixati" ToolTip="Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltixatiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tixati.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltotalcommander" Content="Total Commander" ToolTip="Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltotalcommanderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ghisler.com/" />
@@ -11877,7 +12300,16 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalltwinkletray" Content="Twinkle Tray" ToolTip="Twinkle Tray lets you easily manage the brightness levels of multiple monitors." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltwinkletrayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://twinkletray.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallultravnc" Content="UltraVNC" ToolTip="UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location." Margin="0,0,2,0"/><TextBlock Name="WPFInstallultravncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://uvnc.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwindowsfirewallcontrol" Content="Windows Firewall Control" ToolTip="Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowsfirewallcontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.binisoft.org/wfc" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindowspchealth" Content="Windows PC Health Check" ToolTip="Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844" />
@@ -11895,6 +12327,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallwisetoys" Content="WiseToys" ToolTip="WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwisetoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://toys.wisecleaner.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwizfile" Content="WizFile" ToolTip="Find files by name on your hard drives almost instantly." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwizfileLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://antibody-software.com/wizfile/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwiztree" Content="WizTree" ToolTip="WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwiztreeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wiztreefree.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11902,6 +12337,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxeheditor" Content="HxD Hex Editor" ToolTip="HxD is a free hex editor that allows you to edit, view, search, and analyze binary files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxeheditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mh-nexus.de/en/hxd/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallxnview" Content="XnView classic" ToolTip="XnView is an efficient image viewer, browser and converter for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxnviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.xnview.com/en/xnview/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" ToolTip="ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzerotieroneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zerotier.com/" />
@@ -11935,6 +12373,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
 <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
