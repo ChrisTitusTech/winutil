@@ -2263,17 +2263,16 @@
   },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a002_",
-    "Content": "Run OO Shutup",
-    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
-       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
-       "
+      "Invoke-WPFOOSU -action \"recommended\""
+    ],
+    "UndoScript": [
+      "Invoke-WPFOOSU -action \"undo\""
     ]
   },
   "WPFTweaksStorage": {
@@ -2646,6 +2645,13 @@
     "panel": "2",
     "Order": "a067_",
     "Type": "Toggle"
+  },
+  "WPFOOSUbutton": {
+    "Content": "Customize OO Shutup Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a039_",
+    "Type": "220"
   },
   "WPFToggleTaskbarWidgets": {
     "Content": "Taskbar Widgets",
