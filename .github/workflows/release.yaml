@@ -13,17 +13,11 @@ jobs:
     - uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
-    - name: Create local changes
+    - name: Compile project
       shell: pwsh
       run: |
-        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        ./Compile.ps1
-      continue-on-error: true
-    - name: Check for failure in the previous step
-      if: failure()
-      run: |
-        echo "Compile.ps1 failed to execute properly."
-        exit 1
+        Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+      continue-on-error: false # Directly fail the job on error, removing the need for a separate check
     - uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: Compile Winutil
@@ -35,11 +29,12 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v4
-    - name: Get current date (PowerShell)
-      id: date
-      run: echo "CURRENT_DATE=$(powershell (Get-Date -Format 'yyyy-MM-dd').ToString())" >> $GITHUB_ENV
+    - name: Prepare Release Date
+      run: |
+        $date = (Get-Date).AddDays(1).ToString('yyyy-MM-dd')
+        echo "CURRENT_DATE=$date" >> $GITHUB_ENV
+      shell: pwsh
     - name: Create Release and Upload Asset
-      id: create_release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ env.CURRENT_DATE }}
