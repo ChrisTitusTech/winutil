@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.19
+    Version        : 24.04.20
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.19"
+$sync.version = "24.04.20"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -10260,7 +10260,7 @@ $sync.configs.tweaks = '{
         taskkill.exe /F /IM \"explorer.exe\"
 
         Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath robocopy -ArgumentList \"$env:USERPROFILE\\OneDrive $env:USERPROFILE /e /xj\" -NoNewWindow -Wait
+        Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($env:USERPROFILE.TrimEnd())\\OneDrive'' ''$($env:USERPROFILE.TrimEnd())\\'' /e /xj\" -NoNewWindow -Wait
 
         Write-Host \"Remove OneDrive\"
         Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
