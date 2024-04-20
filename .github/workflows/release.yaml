@@ -10,12 +10,42 @@ jobs:
   build-runspace:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
     - name: Create local changes
+      shell: pwsh
       run: |
-        powershell.exe -f Compile.ps1
-    - uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+        ./Compile.ps1
+      continue-on-error: true
+    - name: Check for failure in the previous step
+      if: failure()
+      run: |
+        echo "Compile.ps1 failed to execute properly."
+        exit 1
+    - uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: Compile Winutil
+      if: success()
+
+  create-release:
+    needs: build-runspace
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get current date (PowerShell)
+      id: date
+      run: echo "CURRENT_DATE=$(powershell (Get-Date -Format 'yyyy-MM-dd').ToString())" >> $GITHUB_ENV
+    - name: Create Release and Upload Asset
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ env.CURRENT_DATE }}
+        name: Release ${{ env.CURRENT_DATE }}
+        draft: false
+        prerelease: false
+        files: ./winutil.ps1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
