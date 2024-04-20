@@ -34,6 +34,14 @@ jobs:
         $date = (Get-Date).AddDays(1).ToString('yyyy-MM-dd')
         echo "CURRENT_DATE=$date" >> $GITHUB_ENV
       shell: pwsh
+    - name: Set Git Config
+      run: |
+        git config --local user.email "contact@christitus.com"
+        git config --local user.name "Chris Titus"
+    - name: Create and Push Tag
+      run: |
+        git tag ${{ env.CURRENT_DATE }}
+        git push origin ${{ env.CURRENT_DATE }}
     - name: Create Release and Upload Asset
       uses: softprops/action-gh-release@v2
       with:
