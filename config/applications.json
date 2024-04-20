@@ -803,7 +803,7 @@
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Harmonoid",
-		"description": "Plays & manages your music library. Looks beautiful & juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost & more.",
+		"description": "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
 		"link": "https://harmonoid.com/",
 		"winget": "Harmonoid.Harmonoid"
 	},
@@ -1980,7 +1980,7 @@
 		"choco": "tabby",
 		"content": "Tabby.sh",
 		"description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
-		"link": "https://tailscale.com/",
+		"link": "https://tabby.sh/",
 		"winget": "Eugeny.Tabby"
 	},
 	"WPFInstalltailscale": {
