@@ -53,6 +53,9 @@
     ],
     "InvokeScript": [
         "powercfg.exe /hibernate off"
+    ],
+    "UndoScript": [
+        "powercfg.exe /hibernate on"
     ]
   },
   "WPFTweaksHome": {
@@ -1889,6 +1892,13 @@
         "Name": "Scheduling Category",
         "Value": "High",
         "Type": "String"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+        "OriginalValue": "1",
+        "Name": "ScoobeSystemSettingEnabled",
+        "Value": "0",
+        "Type": "DWord"
       }
     ],
     "InvokeScript": [
@@ -2221,8 +2231,21 @@
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
     
+        # Attempt to load the required module for Get-ComputerRestorePoint
+        try {
+            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
+        } catch {
+            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
+            return
+        }
+    
         # Get all the restore points for the current day
-        $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+        try {
+            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+        } catch {
+            Write-Host \"Failed to retrieve restore points: $_\"
+            return
+        }
     
         # Check if there is already a restore point created today
         if ($existingRestorePoints.Count -eq 0) {
@@ -2234,19 +2257,35 @@
       "
     ]
   },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+  "WPFTweaksEndTaskOnTaskbar": {
+    "Content": "Enable End Task With Right Click",
+    "Description": "Enables option to end task when right clicking a program in the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a002_",
-    "Content": "Run OO Shutup",
-    "ToolTip": "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
-      "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
-       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
-       "
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
+      "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
+      "
+    ]
+  },
+  "WPFTweaksOO": {
+    "Content": "Run OO Shutup",
+    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a002_",
+    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
+    "InvokeScript": [
+      "Invoke-WPFOOSU -action \"recommended\""
+    ],
+    "UndoScript": [
+      "Invoke-WPFOOSU -action \"undo\""
     ]
   },
   "WPFTweaksStorage": {
@@ -2256,11 +2295,10 @@
     "panel": "1",
     "Order": "a010_",
     "InvokeScript": [
-      "Remove-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Recurse -ErrorAction SilentlyContinue"
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
     ],
     "UndoScript": [
-      "New-Item -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" | Out-Null
-      "
+      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
     ]
   },
   "WPFTweaksRemoveEdge": {
@@ -2299,7 +2337,7 @@
         taskkill.exe /F /IM \"explorer.exe\"
 
         Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath robocopy -ArgumentList \"$env:USERPROFILE\\OneDrive $env:USERPROFILE /e /xj\" -NoNewWindow -Wait
+        Start-Process -FilePath powershell -ArgumentList \"robocopy '$($env:USERPROFILE.TrimEnd())\\OneDrive' '$($env:USERPROFILE.TrimEnd())\\' /e /xj\" -NoNewWindow -Wait
 
         Write-Host \"Remove OneDrive\"
         Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
@@ -2398,12 +2436,20 @@
     "panel": "1",
     "Order": "a028_",
     "InvokeScript": [
-      "New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\" "
+      "
+      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
+      Write-Host Restarting explorer.exe ...
+      $process = Get-Process -Name \"explorer\"
+      Stop-Process -InputObject $process
+      "
     ],
     "UndoScript": [
       "
       Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      Write-Host Restart Needed for change
+      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
+      Write-Host Restarting explorer.exe ...
+      $process = Get-Process -Name \"explorer\"
+      Stop-Process -InputObject $process
       "
     ]
   },
@@ -2611,6 +2657,21 @@
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a067_",
+    "Type": "Toggle"
+  },
+  "WPFOOSUbutton": {
+    "Content": "Customize OO Shutup Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a039_",
+    "Type": "220"
+  },
+  "WPFToggleTaskbarWidgets": {
+    "Content": "Taskbar Widgets",
+    "Description": "If Enabled then Widgets Icon in Taskbar will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a068_",
     "Type": "Toggle"
   },
   "WPFchangedns": {

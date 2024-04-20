@@ -103,6 +103,14 @@
 		"link": "https://authy.com/",
 		"winget": "Twilio.Authy"
 	},
+	"WPFInstallautoruns": {
+		"category": "Microsoft Tools",
+		"choco": "autoruns",
+		"content": "Autoruns",
+		"description": "This utility shows you what programs are configured to run during system bootup or login",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
+		"winget": "Microsoft.Sysinternals.Autoruns"
+	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
@@ -111,6 +119,14 @@
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
+	"WPFInstallazuredatastudio": {
+		"category": "Microsoft Tools",
+		"choco": "azure-data-studio",
+		"content": "Microsoft Azure Data Studio",
+		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+		"winget": "Microsoft.AzureDataStudio"
+	},	
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -182,6 +198,14 @@
 		"description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
 		"link": "https://www.bcuninstaller.com/",
 		"winget": "Klocman.BulkCrapUninstaller"
+	},
+	"WPFInstallbulkrenameutility": {
+		"category": "Utilities",
+		"choco": "bulkrenameutility",
+		"content": "Bulk Rename Utility",
+		"description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
+		"link": "https://www.bulkrenameutility.co.uk",
+		"winget": "TGRMNSoftware.BulkRenameUtility"
 	},
 	"WPFInstallcalibre": {
 		"category": "Document",
@@ -255,6 +279,14 @@
 		"link": "https://clonehero.net/",
 		"winget": "CloneHeroTeam.CloneHero"
 	},
+	"WPFInstallcmake": {
+		"category": "Development",
+		"choco": "cmake",
+		"content": "CMake",
+		"description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
+		"link": "https://cmake.org/",
+		"winget": "Kitware.CMake"
+	},
 	"WPFInstallcopyq": {
 		"category": "Utilities",
 		"choco": "copyq",
@@ -278,6 +310,14 @@
 		"description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
+	},
+	"WPFInstallcapframex": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "CapFrameX",
+		"description": "Frametimes capture and analysis tool based on Intel's PresentMon. Overlay provided by Rivatuner Statistics Server.",
+		"link": "https://www.capframex.com/",
+		"winget": "CXWorld.CapFrameX"
 	},
 	"WPFInstallcrystaldiskmark": {
 		"category": "Utilities",
@@ -567,6 +607,14 @@
 		"link": "https://floorp.app/",
 		"winget": "Ablaze.Floorp"
 	},
+	"WPFInstallflow": {
+		"category": "Utilities",
+		"choco": "flow-launcher",
+		"content": "Flow launcher",
+		"description": "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
+		"link": "https://www.flowlauncher.com/",
+		"winget": "Flow-Launcher.Flow-Launcher"
+	},
 	"WPFInstallflux": {
 		"category": "Utilities",
 		"choco": "flux",
@@ -606,6 +654,22 @@
 		"description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
+	},
+	"WPFInstallorcaslicer": {
+		"category": "Multimedia Tools",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
+	"WPFInstallfxsound": {
+		"category": "Multimedia Tools",
+		"choco": "fxsound",
+		"content": "FxSound",
+		"description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+		"link": "https://www.fxsound.com/",
+		"winget": "FxSoundLLC.FxSound"
 	},
 	"WPFInstallfzf": {
 		"category": "Utilities",
@@ -735,6 +799,14 @@
 		"link": "https://handbrake.fr/",
 		"winget": "HandBrake.HandBrake"
 	},
+	"WPFInstallharmonoid": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Harmonoid",
+		"description": "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
+		"link": "https://harmonoid.com/",
+		"winget": "Harmonoid.Harmonoid"
+	},
 	"WPFInstallheidisql": {
 		"category": "Pro Tools",
 		"choco": "heidisql",
@@ -774,6 +846,14 @@
 		"description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
 		"link": "https://www.hwinfo.com/",
 		"winget": "REALiX.HWiNFO"
+	},
+	"WPFInstallhwmonitor": {
+		"category": "Utilities",
+		"choco": "hwmonitor",
+		"content": "HWMonitor",
+		"description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
+		"link": "https://www.cpuid.com/softwares/hwmonitor.html",
+		"winget": "CPUID.HWMonitor"
 	},
 	"WPFInstallimageglass": {
 		"category": "Multimedia Tools",
@@ -863,6 +943,38 @@
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
 	},
+	"WPFInstalljava11runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 11",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.11.JRE"
+	},
+	"WPFInstalljava17runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 17",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
+	},
+	"WPFInstalljava18runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 18",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.18.JRE"
+	},
+	"WPFInstalljava19runtime": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Eclipse Temurin JRE 19",
+		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+		"link": "https://adoptium.net/",
+		"winget": "EclipseAdoptium.Temurin.19.JRE"
+	},
 	"WPFInstalljdownloader": {
 		"category": "Utilities",
 		"choco": "jdownloader",
@@ -902,6 +1014,14 @@
 		"description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
 		"link": "https://joplinapp.org/",
 		"winget": "Joplin.Joplin"
+	},
+	"WPFInstalljpegview": {
+		"category": "Utilities",
+		"choco": "jpegview",
+		"content": "JPEG View",
+		"description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
+		"link": "https://github.com/sylikc/jpegview",
+		"winget": "sylikc.JPEGView"
 	},
 	"WPFInstallkdeconnect": {
 		"category": "Utilities",
@@ -975,6 +1095,14 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"winget": "LibreWolf.LibreWolf"
 	},
+	"WPFInstalllinkshellextension": {
+		"category": "Utilities",
+		"choco": "linkshellextension",
+		"content": "Link Shell extension",
+		"description": "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
+		"link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
+		"winget": "HermannSchinagl.LinkShellExtension"
+	},
 	"WPFInstalllinphone": {
 		"category": "Communications",
 		"choco": "linphone",
@@ -998,6 +1126,14 @@
 		"description": "An open source cross-platform alternative to AirDrop.",
 		"link": "https://localsend.org/",
 		"winget": "LocalSend.LocalSend"
+	},
+	"WPFInstalllockhunter": {
+		"category": "Utilities",
+		"choco": "lockhunter",
+		"content": "LockHunter",
+		"description": "LockHunter is a free tool to delete files blocked by something you do not know.",
+		"link": "https://lockhunter.com/",
+		"winget": "CrystalRich.LockHunter"
 	},
 	"WPFInstalllogseq": {
 		"category": "Document",
@@ -1094,6 +1230,14 @@
 		"description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
 		"link": "https://mullvad.net/browser",
 		"winget": "MullvadVPN.MullvadBrowser"
+	},
+	"WPFInstallmusescore": {
+		"category": "Multimedia Tools",
+		"choco": "musescore",
+		"content": "MuseScore",
+		"description": "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
+		"link": "https://musescore.org/en",
+		"winget": "Musescore.Musescore"
 	},
 	"WPFInstallmusicbee": {
 		"category": "Multimedia Tools",
@@ -1423,6 +1567,14 @@
 		"link": "https://www.postman.com/",
 		"winget": "Postman.Postman"
 	},
+	"WPFInstallpowerautomate": {
+		"category": "Microsoft Tools",
+		"choco": "powerautomatedesktop",
+		"content": "Power Automate",
+		"description": "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
+		"link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
+		"winget": "Microsoft.PowerAutomateDesktop"
+	},
 	"WPFInstallpowerbi": {
 		"category": "Microsoft Tools",
 		"choco": "powerbi",
@@ -1511,6 +1663,14 @@
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
+	"WPFInstalltixati": {
+		"category": "Utilities",
+		"choco": "tixati.portable",
+		"content": "Tixati",
+		"description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+		"link": "https://www.tixati.com/",
+		"winget": "Tixati.Tixati.Portable"
+	},
 	"WPFInstallqtox": {
 		"category": "Communications",
 		"choco": "qtox",
@@ -1518,6 +1678,14 @@
 		"description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
 		"link": "https://qtox.github.io/",
 		"winget": "Tox.qTox"
+	},
+	"WPFInstallquicklook": {
+		"category": "Utilities",
+		"choco": "quicklook",
+		"content": "Quicklook",
+		"description": "Bring macOS “Quick Look” feature to Windows",
+		"link": "https://github.com/QL-Win/QuickLook",
+		"winget": "QL-Win.QuickLook"
 	},
 	"WPFInstallrainmeter": {
 		"category": "Utilities",
@@ -1534,6 +1702,14 @@
 		"description": "Revo Uninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
+	},
+	"WPFInstallrevolt": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Revolt",
+		"description": "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
+		"link": "https://revolt.chat/",
+		"winget": "Revolt.RevoltDesktop"
 	},
 	"WPFInstallripgrep": {
 		"category": "Utilities",
@@ -1631,11 +1807,27 @@
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
 	},
+	"WPFInstallsignalrgb": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "SignalRGB",
+		"description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
+		"link": "https://www.signalrgb.com/",
+		"winget": "WhirlwindFX.SignalRgb"
+	},
+	"WPFInstallsimplenote": {
+		"category": "Document",
+		"choco": "simplenote",
+		"content": "simplenote",
+		"description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
+		"link": "https://simplenote.com/",
+		"winget": "Automattic.Simplenote"
+	},
 	"WPFInstallsimplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
 		"content": "Simplewall",
-		"description": "simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
+		"description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
 	},
@@ -1662,6 +1854,14 @@
 		"description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
 		"link": "https://www.spacedrive.com/",
 		"winget": "spacedrive.Spacedrive"
+	},
+	"WPFInstallspacesniffer": {
+		"category": "Utilities",
+		"choco": "spacesniffer",
+		"content": "SpaceSniffer",
+		"description": "A tool application that lets you understand how folders and files are structured on your disks",
+		"link": "http://www.uderzo.it/main_products/space_sniffer/",
+		"winget": "UderzoSoftware.SpaceSniffer"
 	},
 	"WPFInstallstarship": {
 		"category": "Development",
@@ -1727,6 +1927,14 @@
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
+	"WPFInstallpdfgear": {
+		"category": "Document",
+		"choco": "na",
+		"content": "PDFgear",
+		"description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it's completely free to use.",
+		"link": "https://www.pdfgear.com/",
+		"winget": "PDFgear.PDFgear"
+	},
 	"WPFInstallsunshine": {
 		"category": "Games",
 		"choco": "sunshine",
@@ -1743,6 +1951,14 @@
 		"link": "https://stefansundin.github.io/superf4/",
 		"winget": "StefanSundin.Superf4"
 	},
+	"WPFInstallswift": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Swift toolchain",
+		"description": "Swift is a general-purpose programming language that's approachable for newcomers and powerful for experts.",
+		"link": "https://www.swift.org/",
+		"winget": "Swift.Toolchain"
+	},
 	"WPFInstallsynctrayzor": {
 		"category": "Utilities",
 		"choco": "synctrayzor",
@@ -1750,6 +1966,22 @@
 		"description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
+	},
+	"WPFInstallsqlmanagementstudio": {
+		"category": "Microsoft Tools",
+		"choco": "sql-server-management-studio",
+		"content": "Microsoft SQL Server Management Studio",
+		"description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
+		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
+		"winget": "Microsoft.SQLServerManagementStudio"
+	},
+	"WPFInstalltabby": {
+		"category": "Utilities",
+		"choco": "tabby",
+		"content": "Tabby.sh",
+		"description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+		"link": "https://tabby.sh/",
+		"winget": "Eugeny.Tabby"
 	},
 	"WPFInstalltailscale": {
 		"category": "Utilities",
@@ -1798,6 +2030,14 @@
 		"description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
 		"link": "https://telegram.org/",
 		"winget": "Telegram.TelegramDesktop"
+	},
+	"WPFInstallunigram": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "Unigram",
+		"description": "Unigram - Telegram for Windows",
+		"link": "https://unigramdev.github.io/",
+		"winget": "Telegram.Unigram"
 	},
 	"WPFInstallterminal": {
 		"category": "Microsoft Tools",
@@ -2127,6 +2367,14 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallwizfile": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "WizFile",
+		"description": "Find files by name on your hard drives almost instantly.",
+		"link": "https://antibody-software.com/wizfile/",
+		"winget": "AntibodySoftware.WizFile"
+	},
 	"WPFInstallwiztree": {
 		"category": "Utilities",
 		"choco": "wiztree",
@@ -2158,6 +2406,14 @@
 		"description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
 		"link": "https://xemu.app/",
 		"winget": "xemu-project.xemu"
+	},
+	"WPFInstallxnview": {
+		"category": "Utilities",
+		"choco": "xnview",
+		"content": "XnView classic",
+		"description": "XnView is an efficient image viewer, browser and converter for Windows.",
+		"link": "https://www.xnview.com/en/xnview/",
+		"winget": "XnSoft.XnView.Classic"
 	},
 	"WPFInstallxournal": {
 		"category": "Document",
@@ -2294,5 +2550,45 @@
 		"description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
 		"link": "https://www.tightvnc.com/",
 		"winget": "GlavSoft.TightVNC"
+	},
+	"WPFInstallultravnc": {
+		"category": "Utilities",
+		"choco": "ultravnc",
+		"content": "UltraVNC",
+		"description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+		"link": "https://uvnc.com/",
+		"winget": "uvncbvba.UltraVnc"
+	},
+	"WPFInstallwindowsfirewallcontrol": {
+		"category": "Utilities",
+		"choco": "windowsfirewallcontrol",
+		"content": "Windows Firewall Control",
+		"description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
+		"link": "https://www.binisoft.org/wfc",
+		"winget": "BiniSoft.WindowsFirewallControl"
+	},
+	"WPFInstallvistaswitcher": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "VistaSwitcher",
+		"description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
+		"winget": "ntwind.VistaSwitcher"
+	},
+	"WPFInstallautodarkmode": {
+		"category": "Utilities",
+		"choco": "auto-dark-mode",
+		"content": "Windows Auto Dark Mode",
+		"description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+		"winget": "Armin2208.WindowsAutoNightMode"
+	},
+	"WPFInstallmagicwormhole": {
+		"category": "Utilities",
+		"choco": "magic-wormhole",
+		"content": "Magic Wormhole",
+		"description": "get things from one computer to another, safely",
+		"link": "https://github.com/magic-wormhole/magic-wormhole",
+		"winget": "magic-wormhole.magic-wormhole"
 	}
 }

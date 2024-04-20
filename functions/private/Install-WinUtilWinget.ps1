@@ -40,7 +40,12 @@ function Install-WinUtilWinget {
         Get-WinUtilWingetLatest
         Write-Host "Installing Winget w/ Prerequsites`r"
         Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
+		Write-Host "Manually adding Winget Sources, from Winget CDN."
+		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time. 
         Write-Host "Winget Installed" -ForegroundColor Green
+        Write-Host "Enabling NuGet and Module..."
+        Install-PackageProvider -Name NuGet -Force
+        Install-Module -Name Microsoft.WinGet.Client -Force
         # Winget only needs a refresh of the environment variables to be used.
         Write-Output "Refreshing Environment Variables...`n"
         $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")

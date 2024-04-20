@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
         WindowStyle="None"
         Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>

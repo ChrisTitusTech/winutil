@@ -26,6 +26,32 @@ Get-ChildItem .\functions -Recurse -File | ForEach-Object {
 
 Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
     $json = (Get-Content $psitem.FullName).replace("'","''")
+
+    # Replace every XML Special Character so it'll render correctly in final build
+    # Only do so if json files has content to be displayed (for example the applications, tweaks, features json files)
+        # Some Type Convertion using Casting and Cleaning Up of the convertion result using 'Replace' Method
+        $jsonAsObject = $json | convertfrom-json
+        $firstLevelJsonList = ([System.String]$jsonAsObject).split('=;') | ForEach-Object {
+            $_.Replace('=}','').Replace('@{','').Replace(' ','')
+        }
+
+       for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
+            $firstLevelName = $firstLevelJsonList[$i]
+            # Note: Avoid using HTML Entity Codes (for example '&rdquo;' (stands for "Right Double Quotation Mark")), and use HTML decimal/hex codes instead.
+	    # as using HTML Entity Codes will result in XML parse Error when running the compiled script.
+	    if ($jsonAsObject.$firstLevelName.content -ne $null) {
+                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;')
+                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
+            }
+            if ($jsonAsObject.$firstLevelName.description -ne $null) {
+                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;')
+                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
+	    }
+	}
+	# The replace at the end is required, as without it the output of converto-json will be somewhat weird for Multiline String
+	# Most Notably is the scripts in json files, make=ing it harder for users who want to review these scripts that are found in the final compiled script
+        $json = ($jsonAsObject | convertto-json -Depth 3).replace('\r\n',"`r`n")
+
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" | Out-File ./$scriptname -Append -Encoding ascii
 }
