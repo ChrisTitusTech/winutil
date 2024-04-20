@@ -33,7 +33,7 @@ jobs:
     - name: Run Pester tests
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-        Invoke-Pester -Path 'pester/*.Tests.ps1' -EnableExit
+        Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed
         
       shell: pwsh
       env:
