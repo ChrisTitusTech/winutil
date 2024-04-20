@@ -2231,8 +2231,21 @@
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
     
+        # Attempt to load the required module for Get-ComputerRestorePoint
+        try {
+            Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
+        } catch {
+            Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
+            return
+        }
+    
         # Get all the restore points for the current day
-        $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+        try {
+            $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
+        } catch {
+            Write-Host \"Failed to retrieve restore points: $_\"
+            return
+        }
     
         # Check if there is already a restore point created today
         if ($existingRestorePoints.Count -eq 0) {
