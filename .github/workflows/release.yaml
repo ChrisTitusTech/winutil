@@ -10,12 +10,19 @@ jobs:
   build-runspace:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
     - name: Create local changes
       run: |
         powershell.exe -f Compile.ps1
-    - uses: stefanzweifel/git-auto-commit-action@v4.16.0
+      continue-on-error: true # This step will not cause the workflow to fail if the script fails
+    - name: Check for failure in the previous step
+      if: failure() # This step will only run if the previous step failed
+      run: |
+        echo "Compile.ps1 failed to execute properly."
+        exit 1 # This forces the workflow to fail if the previous step failed
+    - uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: Compile Winutil
+      if: success() # This ensures the auto-commit action only runs if all previous steps succeeded
