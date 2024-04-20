@@ -25,6 +25,8 @@ jobs:
           const inactivityPeriod = new Date();
           inactivityPeriod.setDate(inactivityPeriod.getDate() - 14);
 
+          const labelKeepIssue = 'Keep Issue Open';
+
           try {
             // Get all open issues with pagination
             for await (const response of octokit.paginate.iterator(octokit.rest.issues.listForRepo, {
@@ -36,6 +38,33 @@ jobs:
 
               // Close issues inactive for more than the inactivity period
               for (const issue of issues) {
+                let closeIssue = true;
+
+                // Get all Labels of issue, and compared each label with the labelKeepIssue const variable
+                try {
+                  const respondIssueLabels = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}/labels", {
+                    owner: owner,
+                    repo: repo,
+                    issue_number: issue.number
+                  });
+                  const labels = respondIssueLabels.data;
+
+                  for (let i = 0; i < labels.length; i++) {
+                    const label = labels[i]
+                    if (label.name === labelKeepIssue) {
+                      console.log(`Issue #${issue.number} will not be closed`);
+                      closeIssue = false;
+                      break; // Break from the loop, no need to check the remaining Labels.
+                    }
+                  }
+                } catch (error) {
+                  console.error(`Error while Fetching Labels for Issue #${issue.number}, Error: ${error}`);
+                }
+
+                if (!closeIssue) {
+                  continue; // Skip the next bit of code
+                }
+
                 const lastCommentDate = issue.updated_at;
                 if (new Date(lastCommentDate) < inactivityPeriod) {
                   try {
