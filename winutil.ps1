@@ -2770,6 +2770,7 @@ function Invoke-WPFButton {
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
         "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
+        "WPFOOSUbutton" {Invoke-WPFOOSU -action "customize"}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
         "WPFundoall" {Invoke-WPFundoall}
@@ -4091,6 +4092,49 @@ public class PowerManagement {
 		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
 	}
+}
+function Invoke-WPFOOSU {
+    <#
+    .SYNOPSIS
+        Downloads and runs OO Shutup 10 with or without config files
+    .PARAMETER action
+        Specifies how OOSU should be started
+        customize:      Opens the OOSU GUI
+        recommended:    Loads and applies the recommended OOSU policies silently
+        undo:           Resets all policies to factory silently
+    #>
+
+    param (
+        [ValidateSet("customize", "recommended", "undo")]
+        [string]$action
+    )
+
+    $OOSU_filepath = "$ENV:temp\OOSU10.exe"
+
+    $Initial_ProgressPreference = $ProgressPreference
+    $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
+    Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
+
+    switch ($action) 
+    {
+        "customize"{
+            Write-Host "Starting OO Shutup 10 ..."
+            Start-Process $OOSU_filepath
+        }
+        "recommended"{
+            $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/recommended_ooshutup10.cfg" -OutFile $oosu_config
+            Write-Host "Applying recommended OO Shutup 10 Policies"
+            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
+        }
+        "undo"{
+            $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/factory_ooshutup10.cfg" -OutFile $oosu_config
+            Write-Host "Resetting all OO Shutup 10 Policies"
+            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
+        }
+    }
+    $ProgressPreference = $Initial_ProgressPreference
 }
 function Invoke-WPFPanelAutologin {
     <#
@@ -10203,17 +10247,17 @@ $sync.configs.tweaks = '{
                                   },
     "WPFTweaksOO":  {
                         "Content":  "Run OO Shutup",
-                        "Description":  "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+                        "Description":  "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
                         "category":  "Essential Tweaks",
                         "panel":  "1",
                         "Order":  "a002_",
-                        "ToolTip":  "Runs OO Shutup from https://www.oo-software.com/en/shutup10",
+                        "ToolTip":  "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
                         "InvokeScript":  [
-                                             "curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/ooshutup10_winutil_settings.cfg\" -o $ENV:temp\\ooshutup10.cfg
-       curl.exe -s \"https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe\" -o $ENV:temp\\OOSU10.exe
-       Start-Process $ENV:temp\\OOSU10.exe -ArgumentList \"\"\"$ENV:temp\\ooshutup10.cfg\"\" /quiet\"
-       "
-                                         ]
+                                             "Invoke-WPFOOSU -action \"recommended\""
+                                         ],
+                        "UndoScript":  [
+                                           "Invoke-WPFOOSU -action \"undo\""
+                                       ]
                     },
     "WPFTweaksStorage":  {
                              "Content":  "Disable Storage Sense",
@@ -10585,6 +10629,13 @@ $sync.configs.tweaks = '{
                                 "Order":  "a067_",
                                 "Type":  "Toggle"
                             },
+    "WPFOOSUbutton":  {
+                          "Content":  "Customize OO Shutup Tweaks",
+                          "category":  "z__Advanced Tweaks - CAUTION",
+                          "panel":  "1",
+                          "Order":  "a039_",
+                          "Type":  "220"
+                      },
     "WPFToggleTaskbarWidgets":  {
                                     "Content":  "Taskbar Widgets",
                                     "Description":  "If Enabled then Widgets Icon in Taskbar will be shown.",
@@ -12377,7 +12428,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
-<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
@@ -12400,6 +12451,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
 <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
 <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
+<Button Name="WPFOOSUbutton" Content="Customize OO Shutup Tweaks" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">

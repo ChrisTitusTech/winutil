@@ -7,7 +7,7 @@
 <Label Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
-<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup from https://www.oo-software.com/en/shutup10"/>
+<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
@@ -30,6 +30,7 @@
 <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
 <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
 <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
+<Button Name="WPFOOSUbutton" Content="Customize OO Shutup Tweaks" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
