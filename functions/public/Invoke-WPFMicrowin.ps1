@@ -53,6 +53,7 @@ public class PowerManagement {
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
 	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
 	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+	$importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -117,11 +118,35 @@ public class PowerManagement {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Recurse -Driver "$driverPath"
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
 				Write-Host "Path to drivers is invalid continuing without driver injection"
+			}
+		}
+
+		if ($importDrivers)
+		{
+			Write-Host "Exporting drivers from active installation..."
+			if (Test-Path "$env:TEMP\DRV_EXPORT")
+			{
+				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+			}
+			New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+			dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+			if ($?)
+			{
+				Write-Host "Adding exported drivers..."
+				dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+			}
+			else
+			{
+				Write-Host "Failed to export drivers. Continuing without importing them..."
+			}
+			if (Test-Path "$env:TEMP\DRV_EXPORT")
+			{
+				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
 			}
 		}
 
@@ -335,7 +360,7 @@ public class PowerManagement {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Driver "$driverPath" -Recurse
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
