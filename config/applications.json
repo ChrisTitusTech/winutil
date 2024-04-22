@@ -2614,5 +2614,13 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallfancontrol": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "FanControl",
+		"description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
+		"link": "https://getfancontrol.com/",
+		"winget": "Rem0o.FanControl"
 	}
 }
