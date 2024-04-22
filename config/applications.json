@@ -1263,6 +1263,14 @@
 		"link": "https://getmusicbee.com/",
 		"winget": "MusicBee.MusicBee"
 	},
+	"WPFInstallmp3tag": {
+		"category": "Multimedia Tools",
+		"choco": "mp3tag",
+		"content": "Mp3tag (Metadata Audio Editor)",
+		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
+		"link": "https://www.mp3tag.de/en/",
+		"winget": "Mp3tag.Mp3tag"
+	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
 		"choco": "nanazip",
