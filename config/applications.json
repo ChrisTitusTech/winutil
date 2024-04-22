@@ -111,6 +111,14 @@
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
 		"winget": "Microsoft.Sysinternals.Autoruns"
 	},
+	"WPFInstallrdcman": {
+		"category": "Microsoft Tools",
+		"choco": "rdcman",
+		"content": "Remote Desktop Connection Manager (RDCMan)",
+		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+		"winget": "Microsoft.Sysinternals.RDCMan"
+	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
