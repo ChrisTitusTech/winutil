@@ -295,6 +295,14 @@
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
 	},
+	"WPFInstallditto": {
+		"category": "Utilities",
+		"choco": "ditto",
+		"content": "Ditto (Clipboard Manager)",
+		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
+		"link": "https://github.com/sabrogden/Ditto",
+		"winget": "Ditto.Ditto"
+	},
 	"WPFInstallcpuz": {
 		"category": "Utilities",
 		"choco": "cpu-z",
