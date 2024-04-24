@@ -111,6 +111,14 @@
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
 		"winget": "Microsoft.Sysinternals.Autoruns"
 	},
+	"WPFInstallrdcman": {
+		"category": "Microsoft Tools",
+		"choco": "rdcman",
+		"content": "Remote Desktop Connection Manager (RDCMan)",
+		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+		"winget": "Microsoft.Sysinternals.RDCMan"
+	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
@@ -294,6 +302,14 @@
 		"description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
+	},
+	"WPFInstallditto": {
+		"category": "Utilities",
+		"choco": "ditto",
+		"content": "Ditto (Clipboard Manager)",
+		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
+		"link": "https://github.com/sabrogden/Ditto",
+		"winget": "Ditto.Ditto"
 	},
 	"WPFInstallcpuz": {
 		"category": "Utilities",
@@ -1246,6 +1262,14 @@
 		"description": "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more.",
 		"link": "https://getmusicbee.com/",
 		"winget": "MusicBee.MusicBee"
+	},
+	"WPFInstallmp3tag": {
+		"category": "Multimedia Tools",
+		"choco": "mp3tag",
+		"content": "Mp3tag (Metadata Audio Editor)",
+		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
+		"link": "https://www.mp3tag.de/en/",
+		"winget": "Mp3tag.Mp3tag"
 	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
@@ -2590,5 +2614,13 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallfancontrol": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "FanControl",
+		"description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
+		"link": "https://getfancontrol.com/",
+		"winget": "Rem0o.FanControl"
 	}
 }
