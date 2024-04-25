@@ -903,6 +903,14 @@
 		"link": "https://jami.net/",
 		"winget": "SFLinux.Jami"
 	},
+	"WPFInstalljava8": {
+		"category": "Development",
+		"choco": "temurin8jre",
+		"content": "OpenJDK Java 8",
+		"description": "OpenJDK Java 8 is the latest version of the open-source Java development kit.",
+		"link": "https://adoptopenjdk.net/",
+		"winget": "AdoptOpenJDK.OpenJDK.8"
+	},
 	"WPFInstalljava16": {
 		"category": "Development",
 		"choco": "temurin16jre",
@@ -910,6 +918,14 @@
 		"description": "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
 		"link": "https://adoptopenjdk.net/",
 		"winget": "AdoptOpenJDK.OpenJDK.16"
+	},
+	"WPFInstalljava17": {
+		"category": "Development",
+		"choco": "temurin17jre",
+		"content": "OpenJDK Java 17",
+		"description": "OpenJDK Java 17 is the latest version of the open-source Java development kit.",
+		"link": "https://adoptopenjdk.net/",
+		"winget": "EclipseAdoptium.Temurin.17.JRE"
 	},
 	"WPFInstalljava18": {
 		"category": "Development",
