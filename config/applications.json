@@ -2095,6 +2095,14 @@
 		"link": "https://www.thunderbird.net/",
 		"winget": "Mozilla.Thunderbird"
 	},
+	"WPFInstallbetterbird": {
+		"category": "Communications",
+		"choco": "betterbird",
+		"content": "Betterbird",
+		"description": "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
+		"link": "https://www.betterbird.eu/",
+		"winget": "Betterbird.Betterbird"
+	},
 	"WPFInstalltidal": {
 		"category": "Multimedia Tools",
 		"choco": "na",
