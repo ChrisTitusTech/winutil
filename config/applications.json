@@ -2253,7 +2253,7 @@
 		"content": "Vivaldi",
 		"description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
 		"link": "https://vivaldi.com/",
-		"winget": "VivaldiTechnologies.Vivaldi"
+		"winget": "Vivaldi.Vivaldi"
 	},
 	"WPFInstallvlc": {
 		"category": "Multimedia Tools",
