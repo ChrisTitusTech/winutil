@@ -112,6 +112,47 @@ public class PowerManagement {
             return
         }
 
+		if ($importDrivers)
+		{
+			Write-Host "Exporting drivers from active installation..."
+			if (Test-Path "$env:TEMP\DRV_EXPORT")
+			{
+				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+			}
+			if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text)))
+			{
+				Write-Host "Using specified driver source..."
+				dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
+				if ($?)
+				{
+					# Don't add exported drivers yet, that is run later
+					Write-Host "Drivers have been exported successfully."
+				}
+				else
+				{
+					Write-Host "Failed to export drivers."
+				}
+			}
+			else
+			{
+				New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+				dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+				if ($?)
+				{
+					Write-Host "Adding exported drivers..."
+					dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+				}
+				else
+				{
+					Write-Host "Failed to export drivers. Continuing without importing them..."
+				}
+				if (Test-Path "$env:TEMP\DRV_EXPORT")
+				{
+					Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+				}				
+			}
+		}
+
 		if ($injectDrivers)
 		{
 			$driverPath = $sync.MicrowinDriverLocation.Text
@@ -123,30 +164,6 @@ public class PowerManagement {
 			else 
 			{
 				Write-Host "Path to drivers is invalid continuing without driver injection"
-			}
-		}
-
-		if ($importDrivers)
-		{
-			Write-Host "Exporting drivers from active installation..."
-			if (Test-Path "$env:TEMP\DRV_EXPORT")
-			{
-				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
-			}
-			New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
-			dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
-			if ($?)
-			{
-				Write-Host "Adding exported drivers..."
-				dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
-			}
-			else
-			{
-				Write-Host "Failed to export drivers. Continuing without importing them..."
-			}
-			if (Test-Path "$env:TEMP\DRV_EXPORT")
-			{
-				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
 			}
 		}
 
