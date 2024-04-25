@@ -2622,5 +2622,13 @@
 		"description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
 		"link": "https://getfancontrol.com/",
 		"winget": "Rem0o.FanControl"
+	},
+	"WPFInstallfnm": {
+		"category": "Development",
+		"choco": "fnm",
+		"content": "Fast Node Manager",
+		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
+		"link": "https://github.com/Schniz/fnm",
+		"winget": "Schniz.fnm"
 	}
 }
