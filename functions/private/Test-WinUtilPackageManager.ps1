@@ -21,7 +21,6 @@ function Test-WinUtilPackageManager {
 
     if ($winget) {
         # Get Winget Version and Install it if not detected
-        $wingetVersionFull = ""
         $wingetExists = $true
         try {
             $wingetVersionFull = winget --version
