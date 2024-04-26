@@ -20,7 +20,7 @@ function Test-WinUtilPackageManager {
     $status = "not-installed"
 
     if ($winget) {
-        # Get Winget Version and Install it if not detected
+        # Check if Winget is available while getting it's Version if it's available
         $wingetExists = $true
         try {
             $wingetVersionFull = winget --version
@@ -28,7 +28,10 @@ function Test-WinUtilPackageManager {
             $wingetExists = $false
         }
 
-        if ($wingetExists) {
+        # If Winget is available, Parse it's Version and give proper information to Terminal Output.
+	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+        # Winget isn't installed/available on The System.
+	if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
