@@ -20,13 +20,16 @@ function Test-WinUtilPackageManager {
     $status = "not-installed"
 
     if ($winget) {
-        # Install Winget if not detected
-        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+        # Get Winget Version and Install it if not detected
+        $wingetVersionFull = ""
+        $wingetExists = $true
+        try {
+            $wingetVersionFull = winget --version
+        } catch [System.Management.Automation.CommandNotFoundException], [System.Management.Automation.ApplicationFailedException] {
+            $wingetExists = $false
+        }
 
         if ($wingetExists) {
-            # Check Winget Version
-            $wingetVersionFull = (winget --version) # Full Version without 'v'.
-
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
