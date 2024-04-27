@@ -1231,6 +1231,14 @@
 		"link": "https://mremoteng.org/",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
+	"WPFInstallmsedgeredirect": {
+		"category": "Utilities",
+		"choco": "msedgeredirect",
+		"content": "MSEdgeRedirect",
+		"description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+		"link": "https://github.com/rcmaehl/MSEdgeRedirect",
+		"winget": "rcmaehl.MSEdgeRedirect"
+	},
 	"WPFInstallmsiafterburner": {
 		"category": "Utilities",
 		"choco": "msiafterburner",
