@@ -38,6 +38,27 @@ if for some reason this site is not reachable from your country please try runni
 irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1 | iex
 ```
 
+#### Create an alias for easy app launching
+
+Open your PowerShell profile with:
+
+```powershell
+notepad $PROFILE
+```
+
+Add the function and alias definition to the profile script:
+
+```powershell
+function Invoke-WinUtil {
+    irm https://christitus.com/win | iex
+}
+Set-Alias -Name winutil -Value Invoke-WinUtil
+```
+
+Save and close Notepad. The next time you open PowerShell, the winutil alias will be ready to use.
+
+Now, whenever you type `winutil` in your PowerShell session, it will execute the irm https://christitus.com/win | iex command.
+
 #### Automation
 
 Some features are avaliable through automation. This allows you to save your config file pass it to Winutil walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
