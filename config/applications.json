@@ -1303,6 +1303,14 @@
 		"link": "https://github.com/IridiumIO/CompactGUI",
 		"winget": "IridiumIO.CompactGUI"
 	},
+	"WPFInstallExifCleaner": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "ExifCleaner",
+		"description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
+		"link": "https://github.com/szTheory/exifcleaner",
+		"winget": "szTheory.exifcleaner"
+	},
 	"WPFInstallmullvadbrowser": {
 		"category": "Browsers",
 		"choco": "na",
