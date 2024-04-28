@@ -1295,6 +1295,14 @@
 		"link": "https://www.stardock.com/products/curtains",
 		"winget": "Stardock.Curtains"
 	},
+	"WPFInstallCompactGUI": {
+		"category": "Utilities",
+		"choco": "compactgui",
+		"content": "Compact GUI",
+		"description": "Transparently compress active games and programs using Windows 10/11 APIs",
+		"link": "https://github.com/IridiumIO/CompactGUI",
+		"winget": "IridiumIO.CompactGUI"
+	},
 	"WPFInstallmullvadbrowser": {
 		"category": "Browsers",
 		"choco": "na",
