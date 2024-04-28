@@ -500,7 +500,7 @@
 		"choco": "emulationstation",
 		"content": "Emulation Station",
 		"description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
-		"link": "https://emulationstation.org/", 
+		"link": "https://emulationstation.org/",
 		"winget": "Emulationstation.Emulationstation"
 	},
 	"WPFInstallepicgames": {
