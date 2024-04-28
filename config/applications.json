@@ -1,4 +1,12 @@
 {
+	"WPFInstallKeePassXC": {
+		"category": "Utilities",
+		"choco": "keepassxc",
+		"content": "KeePassXC",
+		"description": "KeePassXC is a cross-platform password manager that allows you to store all of your passwords in one location.",
+		"link": "https://keepassxc.org",
+		"winget": "KeePassXCTeam.KeePassXC"
+	},
 	"WPFInstall1password": {
 		"category": "Utilities",
 		"choco": "1password",
