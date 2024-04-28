@@ -327,6 +327,14 @@
 		"link": "https://crystalmark.info/en/software/crystaldiskmark/",
 		"winget": "CrystalDewWorld.CrystalDiskMark"
 	},
+	"WPFInstallcygwin": {
+		"category": "Utilities",
+		"choco": "cygwin",
+		"content": "Cygwin",
+		"description": "Cygwin is a large collection of GNU and Open Source tools which provide functionality similar to a Linux distribution on Windows.",
+		"link": "https://cygwin.org/",
+		"winget": "Cygwin.Cygwin"
+	},
 	"WPFInstalldarktable": {
 		"category": "Multimedia Tools",
 		"choco": "darktable",
@@ -479,12 +487,20 @@
 		"link": "https://www.easyuefi.com/",
 		"winget": "EFIBootEditor.EFIBootEditor"
 	},
+	"WPFInstallemacs": {
+		"category": "Development",
+		"choco": "emacs",
+		"content": "GNU Emacs",
+		"description": "GNU Emacs is an extensible, customizable, free/libre text editor.",
+		"link": "https://www.gnu.org/software/emacs/",
+		"winget": "GNU.Emacs"
+	},
 	"WPFInstallemulationstation": {
 		"category": "Games",
 		"choco": "emulationstation",
 		"content": "Emulation Station",
 		"description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
-		"link": "https://emulationstation.org/",
+		"link": "https://emulationstation.org/", 
 		"winget": "Emulationstation.Emulationstation"
 	},
 	"WPFInstallepicgames": {
@@ -575,6 +591,22 @@
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
 		"winget": "Mozilla.Firefox"
 	},
+	"WPFInstallfirefoxbeta": {
+		"category": "Browsers",
+		"choco": "firefox-beta",
+		"content": "Firefox Beta",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox Beta is a pre-release version of the Firefox web browser that allows users to test upcoming features before the official release.",
+		"link": "https://www.mozilla.org/en-US/firefox/channel/desktop/#beta",
+		"winget": "Mozilla.Firefox.Beta"
+	},
+	"WPFInstallfirefoxdev": {
+		"category": "Browsers",
+		"choco": "firefox-dev",
+		"content": "Firefox Developer Edition",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox Developer Edition is a specialized browser tailored for web developers, offering a rich set of features integrated directly into the browser to create an efficient development environment.",
+		"link": "https://www.mozilla.org/en-US/firefox/developer/",
+		"winget": "Mozilla.Firefox.DeveloperEdition"
+	},
 	"WPFInstallfirefoxesr": {
 		"category": "Browsers",
 		"choco": "FirefoxESR",
@@ -582,6 +614,14 @@
 		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
 		"link": "https://www.mozilla.org/en-US/firefox/enterprise/",
 		"winget": "Mozilla.Firefox.ESR"
+	},
+	"WPFInstallfirefoxnightly": {
+		"category": "Browsers",
+		"choco": "firefox-nightly",
+		"content": "Firefox Nightly",
+		"description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox Nightly is the experimental, daily-updated version of the Firefox web browser.",
+		"link": "https://www.mozilla.org/en-US/firefox/channel/desktop/#nightly",
+		"winget": "Mozilla.Firefox.Nightly"
 	},
 	"WPFInstallflameshot": {
 		"category": "Multimedia Tools",
@@ -775,6 +815,14 @@
 		"link": "https://getgreenshot.org/",
 		"winget": "Greenshot.Greenshot"
 	},
+	"WPFInstallgrep": {
+		"category": "Utilities",
+		"choco": "grep",
+		"content": "GNU Grep",
+		"description": "Grep searches one or more input files for lines containing a match to a specified pattern. By default, Grep outputs the matching lines.",
+		"link": "https://www.gnu.org/software/grep/",
+		"winget": "GnuWin32.Grep"
+	},
 	"WPFInstallgsudo": {
 		"category": "Utilities",
 		"choco": "gsudo",
@@ -854,6 +902,14 @@
 		"description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
 		"link": "https://www.cpuid.com/softwares/hwmonitor.html",
 		"winget": "CPUID.HWMonitor"
+	},
+	"WPFInstallicecat": {
+		"category": "Browsers",
+		"choco": "icecat",
+		"content": "GNU IceCat",
+		"description": "GNU IceCat is the GNU version of the Firefox browser. Its main advantage is an ethical one: it is entirely free software.",
+		"link": "https://icecatbrowser.org/",
+		"winget": "na"
 	},
 	"WPFInstallimageglass": {
 		"category": "Multimedia Tools",
@@ -1254,6 +1310,14 @@
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
+	},
+	"WPFInstallnano": {
+		"category": "Development",
+		"choco": "nano",
+		"content": "GNU nano",
+		"description": "GNU nano is a user-friendly text editor for Unix-like systems, offering basic editing features and a simple interface.",
+		"link": "https://www.nano-editor.org/",
+		"winget": "GNU.Nano"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -1687,6 +1751,14 @@
 		"link": "https://github.com/QL-Win/QuickLook",
 		"winget": "QL-Win.QuickLook"
 	},
+	"WPFInstallqutebrowser": {
+		"category": "Browsers",
+		"choco": "qutebrowser",
+		"content": "qutebrowser",
+		"description": "qutebrowser is a keyboard-focused browser with a minimal GUI. It’s based on Python and Qt and free software, licensed under the GPL.",
+		"link": "https://qutebrowser.org/",
+		"winget": "qutebrowser.qutebrowser"
+	},
 	"WPFInstallrainmeter": {
 		"category": "Utilities",
 		"choco": "na",
@@ -1950,6 +2022,22 @@
 		"description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
 		"link": "https://stefansundin.github.io/superf4/",
 		"winget": "StefanSundin.Superf4"
+	},
+	"WPFInstallsupertux": {
+		"category": "Games",
+		"choco": "na",
+		"content": "SuperTux",
+		"description": "SuperTux is an open-source classic 2D jump and run sidescroller game in a style similar to the original Super Mario games.",
+		"link": "https://www.supertux.org/",
+		"winget": "SuperTux.SuperTux"
+	},
+	"WPFInstallsupertuxkart": {
+		"category": "Games",
+		"choco": "supertuxkart",
+		"content": "SuperTuxKart",
+		"description": "SuperTuxKart is a 3D open-source arcade racer with a variety characters, tracks, and modes to play.",
+		"link": "https://supertuxkart.net/Main_Page",
+		"winget": "SuperTuxKart.SuperTuxKart"
 	},
 	"WPFInstallswift": {
 		"category": "Development",
@@ -2318,6 +2406,14 @@
 		"description": "WinMerge is a visual text file and directory comparison tool for Windows.",
 		"link": "https://winmerge.org/",
 		"winget": "WinMerge.WinMerge"
+	},
+	"WPFInstallpalemoon": {
+		"category": "Browsers",
+		"choco": "palemoon",
+		"content": "Pale Moon",
+		"description": "Pale Moon is an Open Source, Goanna-based web browser focused on efficiency and customization.",
+		"link": "https://www.palemoon.org/",
+		"winget": "MoonchildProductions.PaleMoon"
 	},
 	"WPFInstallwinpaletter": {
 		"category": "Utilities",
