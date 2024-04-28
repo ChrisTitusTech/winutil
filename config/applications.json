@@ -2535,6 +2535,14 @@
 		"link": "https://github.com/ajeetdsouza/zoxide",
 		"winget": "ajeetdsouza.zoxide"
 	},
+	"WPFInstallSchildi": {
+		"category": "Communications",
+		"choco": "na",
+		"content": "SchildiChat",
+		"description": "SchildiChat is a feature-rich messenger for Matrix based on Element with some extras and tweaks.",
+		"link": "https://schildi.chat/",
+		"winget": "SchildiChat.SchildiChat"
+	},
 	"WPFInstallzulip": {
 		"category": "Communications",
 		"choco": "zulip",
