@@ -2333,7 +2333,7 @@
         "
         Get-AppxPackage *copilot* | Remove-AppxPackage
         Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
-        Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Name \"TurnOffWindowsCopilot\" -Type \"DWord\" -Value \"1\"
+        New-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force | New-ItemProperty -Name \"TurnOffWindowsCopilot\" -Value \"1\" -Force -Type \"DWord\"
         "
     ],
     "UndoScript": [
