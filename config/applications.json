@@ -1223,6 +1223,14 @@
 		"link": "https://mpc-hc.org/",
 		"winget": "clsid2.mpc-hc"
 	},
+	"WPFInstallRustDesk": {
+		"category": "Pro Tools",
+		"choco": "rustdesk",
+		"content": "RustDesk",
+		"description": "An open-source remote desktop, and alternative to TeamViewer.",
+		"link": "https://rustdesk.com",
+		"winget": "RustDesk.RustDesk"
+	},
 	"WPFInstallmremoteng": {
 		"category": "Pro Tools",
 		"choco": "mremoteng",
