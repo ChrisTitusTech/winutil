@@ -77,6 +77,60 @@
       }
     ]
   },
+  "WPFTweaksAdobe": {
+    "Content": "Disable Adobe Services",
+    "Description": "Disables many of the services that come with Adobe and run in the background.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
+    "service": [
+      {
+        "Name": "AGSService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeUpdateService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Acrobat Update",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Genuine Monitor Service",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeARMservice",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Licensing Console",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CCXProcess",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeIPCBroker",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CoreSync",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
