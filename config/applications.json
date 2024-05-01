@@ -2637,6 +2637,6 @@
 		"content": "Brackets.io",
 		"description": "customizable Webb development editor with live preview",
 		"link": "https://github.com/brackets-cont/brackets",
-		"winget": "Adobe.Brackets"
+		"winget": "brackets-cont.brackets"
 	}
 }
