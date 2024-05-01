@@ -844,6 +844,9 @@
 <CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://motrix.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmsedgeredirect" Content="MSEdgeRedirect" ToolTip="A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsedgeredirectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/rcmaehl/MSEdgeRedirect" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -977,6 +980,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />

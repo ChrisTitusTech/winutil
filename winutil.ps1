@@ -2632,13 +2632,22 @@ function Test-WinUtilPackageManager {
     $status = "not-installed"
 
     if ($winget) {
-        # Install Winget if not detected
-        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+        # Check if Winget is available while getting it's Version if it's available
+        $wingetExists = $true
+        try {
+            $wingetVersionFull = winget --version
+        } catch [System.Management.Automation.CommandNotFoundException], [System.Management.Automation.ApplicationFailedException] {
+            Write-Warning "Winget was not found due to un-availablity reasons"
+            $wingetExists = $false
+        } catch {
+            Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
+            $wingetExists = $false
+	}
 
-        if ($wingetExists) {
-            # Check Winget Version
-            $wingetVersionFull = (winget --version) # Full Version without 'v'.
-
+        # If Winget is available, Parse it's Version and give proper information to Terminal Output.
+	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+        # Winget isn't installed/available on The System.
+	if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
@@ -6194,6 +6203,14 @@ $sync.configs.applications = '{
     "link": "https://mremoteng.org/",
     "winget": "mRemoteNG.mRemoteNG"
   },
+  "WPFInstallmsedgeredirect": {
+    "category": "Utilities",
+    "choco": "msedgeredirect",
+    "content": "MSEdgeRedirect",
+    "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+    "link": "https://github.com/rcmaehl/MSEdgeRedirect",
+    "winget": "rcmaehl.MSEdgeRedirect"
+  },
   "WPFInstallmsiafterburner": {
     "category": "Utilities",
     "choco": "msiafterburner",
@@ -7593,6 +7610,14 @@ $sync.configs.applications = '{
     "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
     "link": "https://github.com/Schniz/fnm",
     "winget": "Schniz.fnm"
+  },
+  "WPFInstallWindhawk": {
+    "category": "Utilities",
+    "choco": "windhawk",
+    "content": "Windhawk",
+    "description": "The customization marketplace for Windows programs",
+    "link": "https://windhawk.net",
+    "winget": "RamenSoftware.Windhawk"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -12300,6 +12325,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://motrix.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmsedgeredirect" Content="MSEdgeRedirect" ToolTip="A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsedgeredirectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/rcmaehl/MSEdgeRedirect" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12433,6 +12461,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
