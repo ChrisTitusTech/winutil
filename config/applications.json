@@ -1871,14 +1871,6 @@
 		"link": "https://starship.rs/",
 		"winget": "starship"
 	},
-	"WPFInstallstartallback": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "StartAllBack",
-		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
-		"link": "https://www.startallback.com/",
-		"winget": "startallback"
-	},
 	"WPFInstallsteam": {
 		"category": "Games",
 		"choco": "steam-client",
