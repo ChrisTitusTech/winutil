@@ -2622,5 +2622,14 @@
 		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
 		"link": "https://github.com/Schniz/fnm",
 		"winget": "Schniz.fnm"
+	},
+	"WPFInstallaltsnap": {
+		"category": "Utilities",
+		"choco": "altsnap",
+		"content": "AltSnap",
+		"description": "Maintained continuation of Stefan Sundin's AltDrag - Easily drag windows when pressing the alt key. (Windows)",
+		"link": "https://github.com/RamonUnch/AltSnap",
+		"winget": "AltSnap.AltSnap"
 	}
+
 }
