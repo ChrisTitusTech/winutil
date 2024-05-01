@@ -7,6 +7,14 @@
 		"link": "https://1password.com/",
 		"winget": "AgileBits.1Password"
 	},
+	// you know fix it chris, idk how to code powershell i only know cmd
+	"FullRuntime": {
+		"category": "Runtime",
+		"choco": "vcredist2005 vcredist2008 vcredist2010  vcredist2012 msvisualcplusplus2012-redist vcredist2013 vcredist2017 vcredist140 vcredist-all adoptopenjdk8openj9jre adoptopenjdk11openj9jre direct",
+		"content": "Runtime",
+		"description": "Full Runtime to run apps on windows.",
+		"link": "um a bunch?"
+	},
 	"WPFInstall7zip": {
 		"category": "Utilities",
 		"choco": "7zip",
