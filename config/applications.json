@@ -2271,6 +2271,14 @@
 		"link": "https://www.waterfox.net/",
 		"winget": "Waterfox.Waterfox"
 	},
+	"WPFInstallwazuh": {
+		"category": "Utilities",
+		"choco": "wazuh-agent",
+		"content": "Wazuh.",
+		"description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+		"link": "https://wazuh.com/",
+		"winget": "Wazuh.WazuhAgent"
+	},
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
