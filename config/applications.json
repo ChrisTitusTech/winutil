@@ -2630,13 +2630,13 @@
 		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
 		"link": "https://github.com/Schniz/fnm",
 		"winget": "Schniz.fnm"
-	}
-		"WPFInstallWindhawk": {
+	},
+	"WPFInstallWindhawk": {
 		"category": "Utilities",
 		"choco": "windhawk",
 		"content": "Windhawk",
 		"description": "The customization marketplace for Windows programs",
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
-	},
+	}
 }
