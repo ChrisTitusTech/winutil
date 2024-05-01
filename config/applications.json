@@ -95,14 +95,6 @@
 		"link": "https://www.audacityteam.org/",
 		"winget": "Audacity.Audacity"
 	},
-	"WPFInstallauthy": {
-		"category": "Utilities",
-		"choco": "authy-desktop",
-		"content": "Authy",
-		"description": "Simple and cross-platform 2FA app",
-		"link": "https://authy.com/",
-		"winget": "Twilio.Authy"
-	},
 	"WPFInstallautoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
