@@ -2323,6 +2323,25 @@
       "
     ]
   },
+  "WPFTweaksRemoveCopilot": {
+    "Content": "Disables Microsoft Copilot",
+    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025_",
+    "InvokeScript": [
+        "
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
+        New-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force | New-ItemProperty -Name \"TurnOffWindowsCopilot\" -Value \"1\" -Force -Type \"DWord\"
+        "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"1\" 
+      Remove-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force
+      "
+    ]
+  },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
