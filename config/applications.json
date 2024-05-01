@@ -23,6 +23,14 @@
 		"link": "https://www.adobe.com/acrobat/pdf-reader.html",
 		"winget": "Adobe.Acrobat.Reader.64-bit"
 	},
+	"WPFInstallaffine": {
+		"category": "Documents",
+		"choco": "affine-client",
+		"content": "AFFiNE",
+		"description": "AFFiNE is an open source alternative to Notion. It can also be selfhosted to sync it",
+		"link": "https://affine.pro/",
+		"winget": "AFFiNE.stable"
+	},
 	"WPFInstalladvancedip": {
 		"category": "Pro Tools",
 		"choco": "advanced-ip-scanner",
