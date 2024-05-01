@@ -2311,14 +2311,6 @@
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
 	},
-	"WPFInstallwhatsapp": {
-		"category": "Communications",
-		"choco": "whatsapp",
-		"content": "Whatsapp",
-		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
-		"link": "https://www.whatsapp.com/",
-		"winget": "WhatsApp.WhatsApp"
-	},
 	"WPFInstallwindirstat": {
 		"category": "Utilities",
 		"choco": "windirstat",
