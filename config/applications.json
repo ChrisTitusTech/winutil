@@ -1255,6 +1255,14 @@
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
 	},
+	"WPFInstallnetbird": {
+		"category": "Pro Tools",
+		"choco": "netbird",
+		"content": "NetBird",
+		"description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+		"link": "https://netbird.io/",
+		"winget": "netbird"
+	},
 	"WPFInstallnaps2": {
 		"category": "Document",
 		"choco": "naps2",
