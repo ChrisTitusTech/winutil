@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.25
+    Version        : 24.05.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.25"
+$sync.version = "24.05.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4342,27 +4342,35 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-        $iconPath = $null
-        Switch ($ShortcutToAdd) {
-            "WinUtil" {
-                $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-                $IRM = 'irm https://christitus.com/win | iex'
-                $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-                $ArgumentsToSourceExe = "$powershell '$IRM'"
-                $DestinationName = "WinUtil.lnk"
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
+    $iconPath = $null
+    Switch ($ShortcutToAdd) {
+        "WinUtil" {
+            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $IRM = 'irm https://christitus.com/win | iex'
+            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
+            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            $DestinationName = "WinUtil.lnk"
 
-                if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                    $iconPath = "$env:SystempRoot\cttlogo.ico"
-                    ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-                }
+            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
+                $iconPath = "$env:SystempRoot\cttlogo.ico"
+                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
             }
         }
+    }
 
+    # Show a File Dialog Browser, to let the User choose the Name and Location of where to save the Shortcut
     $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
     $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
     $FileBrowser.Filter = "Shortcut Files (*.lnk)|*.lnk"
     $FileBrowser.FileName = $DestinationName
-    $FileBrowser.ShowDialog() | Out-Null
+
+    # Do an Early Return if The Save Shortcut operation was cancel by User's Input.
+    $FileBrowserResult = $FileBrowser.ShowDialog()
+    $DialogResultEnum = New-Object System.Windows.Forms.DialogResult
+    if (-not ($FileBrowserResult -eq $DialogResultEnum::OK)) {
+        return
+    }
 
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
