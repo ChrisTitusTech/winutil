@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.25
+    Version        : 24.05.01
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.25"
+$sync.version = "24.05.01"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2632,13 +2632,22 @@ function Test-WinUtilPackageManager {
     $status = "not-installed"
 
     if ($winget) {
-        # Install Winget if not detected
-        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+        # Check if Winget is available while getting it's Version if it's available
+        $wingetExists = $true
+        try {
+            $wingetVersionFull = winget --version
+        } catch [System.Management.Automation.CommandNotFoundException], [System.Management.Automation.ApplicationFailedException] {
+            Write-Warning "Winget was not found due to un-availablity reasons"
+            $wingetExists = $false
+        } catch {
+            Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
+            $wingetExists = $false
+	}
 
-        if ($wingetExists) {
-            # Check Winget Version
-            $wingetVersionFull = (winget --version) # Full Version without 'v'.
-
+        # If Winget is available, Parse it's Version and give proper information to Terminal Output.
+	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+        # Winget isn't installed/available on The System.
+	if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
@@ -4342,27 +4351,35 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-        $iconPath = $null
-        Switch ($ShortcutToAdd) {
-            "WinUtil" {
-                $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-                $IRM = 'irm https://christitus.com/win | iex'
-                $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-                $ArgumentsToSourceExe = "$powershell '$IRM'"
-                $DestinationName = "WinUtil.lnk"
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
+    $iconPath = $null
+    Switch ($ShortcutToAdd) {
+        "WinUtil" {
+            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+            $IRM = 'irm https://christitus.com/win | iex'
+            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
+            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            $DestinationName = "WinUtil.lnk"
 
-                if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                    $iconPath = "$env:SystempRoot\cttlogo.ico"
-                    ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-                }
+            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
+                $iconPath = "$env:SystempRoot\cttlogo.ico"
+                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
             }
         }
+    }
 
+    # Show a File Dialog Browser, to let the User choose the Name and Location of where to save the Shortcut
     $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
     $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
     $FileBrowser.Filter = "Shortcut Files (*.lnk)|*.lnk"
     $FileBrowser.FileName = $DestinationName
-    $FileBrowser.ShowDialog() | Out-Null
+
+    # Do an Early Return if The Save Shortcut operation was cancel by User's Input.
+    $FileBrowserResult = $FileBrowser.ShowDialog()
+    $DialogResultEnum = New-Object System.Windows.Forms.DialogResult
+    if (-not ($FileBrowserResult -eq $DialogResultEnum::OK)) {
+        return
+    }
 
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
@@ -5057,14 +5074,6 @@ $sync.configs.applications = '{
     "description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
     "link": "https://www.audacityteam.org/",
     "winget": "Audacity.Audacity"
-  },
-  "WPFInstallauthy": {
-    "category": "Utilities",
-    "choco": "authy-desktop",
-    "content": "Authy",
-    "description": "Simple and cross-platform 2FA app",
-    "link": "https://authy.com/",
-    "winget": "Twilio.Authy"
   },
   "WPFInstallautoruns": {
     "category": "Microsoft Tools",
@@ -6194,6 +6203,14 @@ $sync.configs.applications = '{
     "link": "https://mremoteng.org/",
     "winget": "mRemoteNG.mRemoteNG"
   },
+  "WPFInstallmsedgeredirect": {
+    "category": "Utilities",
+    "choco": "msedgeredirect",
+    "content": "MSEdgeRedirect",
+    "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+    "link": "https://github.com/rcmaehl/MSEdgeRedirect",
+    "winget": "rcmaehl.MSEdgeRedirect"
+  },
   "WPFInstallmsiafterburner": {
     "category": "Utilities",
     "choco": "msiafterburner",
@@ -6241,6 +6258,14 @@ $sync.configs.applications = '{
     "description": "NanaZip is a fast and efficient file compression and decompression tool.",
     "link": "https://github.com/M2Team/NanaZip",
     "winget": "M2Team.NanaZip"
+  },
+  "WPFInstallnetbird": {
+    "category": "Pro Tools",
+    "choco": "netbird",
+    "content": "NetBird",
+    "description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+    "link": "https://netbird.io/",
+    "winget": "netbird"
   },
   "WPFInstallnaps2": {
     "category": "Document",
@@ -6858,14 +6883,6 @@ $sync.configs.applications = '{
     "link": "https://starship.rs/",
     "winget": "starship"
   },
-  "WPFInstallstartallback": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "StartAllBack",
-    "description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
-    "link": "https://www.startallback.com/",
-    "winget": "startallback"
-  },
   "WPFInstallsteam": {
     "category": "Games",
     "choco": "steam-client",
@@ -7274,14 +7291,6 @@ $sync.configs.applications = '{
     "link": "https://wezfurlong.org/wezterm/index.html",
     "winget": "wez.wezterm"
   },
-  "WPFInstallwhatsapp": {
-    "category": "Communications",
-    "choco": "whatsapp",
-    "content": "Whatsapp",
-    "description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
-    "link": "https://www.whatsapp.com/",
-    "winget": "WhatsApp.WhatsApp"
-  },
   "WPFInstallwindirstat": {
     "category": "Utilities",
     "choco": "windirstat",
@@ -7601,6 +7610,14 @@ $sync.configs.applications = '{
     "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
     "link": "https://github.com/Schniz/fnm",
     "winget": "Schniz.fnm"
+  },
+  "WPFInstallWindhawk": {
+    "category": "Utilities",
+    "choco": "windhawk",
+    "content": "Windhawk",
+    "description": "The customization marketplace for Windows programs",
+    "link": "https://windhawk.net",
+    "winget": "RamenSoftware.Windhawk"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -8095,6 +8112,60 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "HomeGroupProvider",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
+  "WPFTweaksAdobe": {
+    "Content": "Disable Adobe Services",
+    "Description": "Disables many of the services that come with Adobe and run in the background.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
+    "service": [
+      {
+        "Name": "AGSService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeUpdateService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Acrobat Update",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Genuine Monitor Service",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeARMservice",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Licensing Console",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CCXProcess",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeIPCBroker",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CoreSync",
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
@@ -10346,6 +10417,25 @@ $sync.configs.tweaks = '{
       "
     ]
   },
+  "WPFTweaksRemoveCopilot": {
+    "Content": "Disables Microsoft Copilot",
+    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025_",
+    "InvokeScript": [
+      "
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
+        New-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force | New-ItemProperty -Name \"TurnOffWindowsCopilot\" -Value \"1\" -Force -Type \"DWord\"
+        "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"1\" 
+      Remove-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force
+      "
+    ]
+  },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
@@ -11566,9 +11656,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallviber" Content="Viber" ToolTip="Viber is a free messaging and calling app with features like group chats, video calls, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallviberLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.viber.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallwhatsapp" Content="Whatsapp" ToolTip="WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwhatsappLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.whatsapp.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzoom" Content="Zoom" ToolTip="Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoomLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zoom.us/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -11650,14 +11737,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallneovim" Content="Neovim" ToolTip="Neovim is a highly extensible text editor and an improvement over the original Vim editor." Margin="0,0,2,0"/><TextBlock Name="WPFInstallneovimLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://neovim.io/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
@@ -11852,14 +11939,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallTcNoAccSwitcher" Content="TCNO Account Switcher" ToolTip="A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallTcNoAccSwitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/TCNOco/TcNo-Acc-Switcher" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvrdesktopstreamer" Content="Virtual Desktop Streamer" ToolTip="Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvrdesktopstreamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vrdesktop.net/" />
 </StackPanel>
@@ -12060,14 +12147,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvideomass" Content="Videomass" ToolTip="Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvideomassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jeanslack.github.io/Videomass/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
 </StackPanel>
@@ -12089,6 +12176,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnetbird" Content="NetBird" ToolTip="NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnetbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://netbird.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnmap" Content="Nmap" ToolTip="Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnmapLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nmap.org/" />
@@ -12135,9 +12225,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" ToolTip="AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanydeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://anydesk.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallauthy" Content="Authy" ToolTip="Simple and cross-platform 2FA app" Margin="0,0,2,0"/><TextBlock Name="WPFInstallauthyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://authy.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautodarkmode" Content="Windows Auto Dark Mode" ToolTip="Automatically switches between the dark and light theme of Windows 10 and Windows 11" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautodarkmodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/AutoDarkMode/Windows-Auto-Night-Mode" />
@@ -12262,14 +12349,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
@@ -12293,6 +12380,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://motrix.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmsedgeredirect" Content="MSEdgeRedirect" ToolTip="A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsedgeredirectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/rcmaehl/MSEdgeRedirect" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
@@ -12385,9 +12475,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallspacesniffer" Content="SpaceSniffer" ToolTip="A tool application that lets you understand how folders and files are structured on your disks" Margin="0,0,2,0"/><TextBlock Name="WPFInstallspacesnifferLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.uderzo.it/main_products/space_sniffer/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallstartallback" Content="StartAllBack" ToolTip="StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallstartallbackLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.startallback.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" ToolTip="SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsuperf4Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://stefansundin.github.io/superf4/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12428,6 +12515,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
@@ -12505,6 +12595,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0"  ToolTip="Disables Location Tracking...DUH!"/>
+<CheckBox Name="WPFTweaksAdobe" Content="Disable Adobe Services" Margin="5,0"  ToolTip="Disables many of the services that come with Adobe and run in the background."/>
 <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
 <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0"  ToolTip="Storage Sense deletes temp files automatically."/>
 <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
@@ -12516,6 +12607,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
 <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
+<CheckBox Name="WPFTweaksRemoveCopilot" Content="Disables Microsoft Copilot" Margin="5,0"  ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
 <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
 <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0"  ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
 <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>

@@ -95,14 +95,6 @@
 		"link": "https://www.audacityteam.org/",
 		"winget": "Audacity.Audacity"
 	},
-	"WPFInstallauthy": {
-		"category": "Utilities",
-		"choco": "authy-desktop",
-		"content": "Authy",
-		"description": "Simple and cross-platform 2FA app",
-		"link": "https://authy.com/",
-		"winget": "Twilio.Authy"
-	},
 	"WPFInstallautoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
@@ -1231,6 +1223,14 @@
 		"link": "https://mremoteng.org/",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
+	"WPFInstallmsedgeredirect": {
+		"category": "Utilities",
+		"choco": "msedgeredirect",
+		"content": "MSEdgeRedirect",
+		"description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+		"link": "https://github.com/rcmaehl/MSEdgeRedirect",
+		"winget": "rcmaehl.MSEdgeRedirect"
+	},
 	"WPFInstallmsiafterburner": {
 		"category": "Utilities",
 		"choco": "msiafterburner",
@@ -1278,6 +1278,14 @@
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
+	},
+	"WPFInstallnetbird": {
+		"category": "Pro Tools",
+		"choco": "netbird",
+		"content": "NetBird",
+		"description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+		"link": "https://netbird.io/",
+		"winget": "netbird"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -1895,14 +1903,6 @@
 		"link": "https://starship.rs/",
 		"winget": "starship"
 	},
-	"WPFInstallstartallback": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "StartAllBack",
-		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
-		"link": "https://www.startallback.com/",
-		"winget": "startallback"
-	},
 	"WPFInstallsteam": {
 		"category": "Games",
 		"choco": "steam-client",
@@ -2311,14 +2311,6 @@
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
 	},
-	"WPFInstallwhatsapp": {
-		"category": "Communications",
-		"choco": "whatsapp",
-		"content": "Whatsapp",
-		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
-		"link": "https://www.whatsapp.com/",
-		"winget": "WhatsApp.WhatsApp"
-	},
 	"WPFInstallwindirstat": {
 		"category": "Utilities",
 		"choco": "windirstat",
@@ -2638,5 +2630,13 @@
 		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
 		"link": "https://github.com/Schniz/fnm",
 		"winget": "Schniz.fnm"
+	},
+	"WPFInstallWindhawk": {
+		"category": "Utilities",
+		"choco": "windhawk",
+		"content": "Windhawk",
+		"description": "The customization marketplace for Windows programs",
+		"link": "https://windhawk.net",
+		"winget": "RamenSoftware.Windhawk"
 	}
 }
