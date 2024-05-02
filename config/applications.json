@@ -2638,5 +2638,13 @@
 		"description": "The customization marketplace for Windows programs",
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
+	},
+	"WPFInstallveracrypt": {
+		"category": "Utilities",
+		"choco": "veracrypt",
+		"content": "VeraCrypt",
+		"description": "Free and open source disk encryption software with strong security based on TrueCrypt",
+		"link": "https://veracrypt.fr",
+		"winget": "IDRIX.VeraCrypt"
 	}
 }
