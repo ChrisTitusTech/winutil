@@ -1239,22 +1239,6 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
-	"WPFInstallNetLimiter": {
-		"category": "Pro Tools",
-		"choco": "netlimiter",
-		"content": "Net Limiter",
-		"description": "NetLimiter in an ultimate internet/network control, security and statistical tool for Windows.",
-		"link": "https://www.netlimiter.com",
-		"winget": "na"
-	},
-	"WPFInstallOneCommander": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "OneCommander",
-		"description": "Powerful file manager for Windows 10/11 with tabs, dual-panes, columns view, preview, customizable themes, color tags, and more.",
-		"link": "https://www.onecommander.com",
-		"winget": "MilosParipovic.OneCommander"
-	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
 		"choco": "na",
@@ -1278,22 +1262,6 @@
 		"description": "Synchronize Files and Folders",
 		"link": "https://freefilesync.org",
 		"winget": "na"
-	},
-	"WPFInstallStreamDeck": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "Elgato: Stream Deck",
-		"description": "Elgato Stream Deck software enables customizable control for streaming, productivity, and multimedia.",
-		"link": "https://www.elgato.com/uk/en/s/downloads",
-		"winget": "Elgato.StreamDeck"
-	},
-	"WPFInstallCurtains": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "Stardock Curtains",
-		"description": "Stardock Curtains software enables customizing window borders and transparency for improved desktop aesthetics.",
-		"link": "https://www.stardock.com/products/curtains",
-		"winget": "Stardock.Curtains"
 	},
 	"WPFInstallCompactGUI": {
 		"category": "Utilities",
