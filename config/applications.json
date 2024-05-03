@@ -727,6 +727,14 @@
 		"link": "https://desktop.github.com/",
 		"winget": "Git.Git;GitHub.GitHubDesktop"
 	},
+	"WPFInstallgitkrakenclient": {
+		"category": "Development",
+		"choco": "gitkraken",
+		"content": "GitKraken Client",
+		"description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+		"link": "https://www.gitkraken.com/git-client",
+		"winget": "Axosoft.GitKraken"
+	},
 	"WPFInstallglaryutilities": {
 		"category": "Utilities",
 		"choco": "glaryutilities-free",
