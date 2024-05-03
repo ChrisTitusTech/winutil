@@ -1162,8 +1162,8 @@
 	"WPFInstallmatrix": {
 		"category": "Communications",
 		"choco": "element-desktop",
-		"content": "Matrix",
-		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
+		"content": "Element",
+		"description": "Element is a client for Matrix—an open network for secure, decentralized communication.",
 		"link": "https://element.io/",
 		"winget": "Element.Element"
 	},
