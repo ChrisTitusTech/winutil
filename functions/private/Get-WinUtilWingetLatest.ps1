@@ -14,6 +14,7 @@ function Get-WinUtilWingetLatest {
         $latestVersion = $response.tag_name #Stores version number of latest release.
         $licenseWingetUrl = $response.assets.browser_download_url | Where-Object {$_ -like "*License1.xml"} #Index value for License file.
         Write-Host "Latest Version:`t$($latestVersion)`n"
+        Write-Host "Downloading..."
         $assetUrl = $response.assets.browser_download_url | Where-Object {$_ -like "*Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"}
         Invoke-WebRequest -Uri $licenseWingetUrl -OutFile $ENV:TEMP\License1.xml
         # The only pain is that the msixbundle for winget-cli is 246MB. In some situations this can take a bit, with slower connections.
