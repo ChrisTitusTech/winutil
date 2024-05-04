@@ -35,7 +35,7 @@
         "category": "Document",
         "choco": "na",
         "content": "AFFiNE",
-        "description": "AFFiNE is an open source alternative to Notion. It can also be selfhosted for syncing purposes.",
+        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
         "link": "https://affine.pro/",
         "winget": "AFFiNE.stable"
     },
