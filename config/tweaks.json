@@ -78,8 +78,8 @@
     ]
   },
   "WPFTweaksAdobe": {
-    "Content": "Disable Adobe Services",
-    "Description": "Disables many of the services that come with Adobe and run in the background.",
+    "Content": "Debloat Adobe",
+    "Description": "Sets Adobe Services to Manual & disable acrobat auto-updates",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -129,7 +129,56 @@
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
-    ]
+    ],
+    
+    "InvokeScript": [
+      "
+      # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
+      # Possible Values for the edited key:
+      # 0 = Do not download or install updates automatically
+      # 2 = Automatically download updates but let the user choose when to install them
+      # 3 = Automatically download and install updates (default value)
+      # 4 = Notify the user when an update is available but don't download or install it automatically
+  
+      $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+  
+      # Get all subkeys under the specified root path
+      $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+  
+      # Loop through each subkey
+      foreach ($subKey in $subKeys) {
+          # Get the full registry path
+          $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+          try {
+              Set-ItemProperty -Path $fullPath -Name Mode -Value 4
+          } catch {
+              Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+          }
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      # Default Value:
+      # 3 = Automatically download and install updates
+  
+      $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+  
+      # Get all subkeys under the specified root path
+      $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+  
+      # Loop through each subkey
+      foreach ($subKey in $subKeys) {
+          # Get the full registry path
+          $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+          try {
+              Set-ItemProperty -Path $fullPath -Name Mode -Value 3
+          } catch {
+              Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+          }
+      }
+      "
+    ] 
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
