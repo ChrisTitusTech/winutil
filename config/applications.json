@@ -743,6 +743,14 @@
 		"link": "https://www.glarysoft.com/glary-utilities/",
 		"winget": "Glarysoft.GlaryUtilities"
 	},
+	"WPFInstallgodotengine": {
+		"category": "Development",
+		"choco": "godot",
+		"content": "Godot Engine",
+		"description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+		"link": "https://godotengine.org/",
+		"winget": "GodotEngine.GodotEngine"
+	},
 	"WPFInstallgog": {
 		"category": "Games",
 		"choco": "goggalaxy",
