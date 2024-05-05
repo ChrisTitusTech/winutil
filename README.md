@@ -25,7 +25,6 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 ```
 irm https://b.werkman.xyz/winutil | iex
 ```
-Courtesy of the issue raised at: [#144](/../../issues/144)
 
 or by executing: 
 ```
@@ -57,7 +56,7 @@ iex "& { $(irm b.werkman.xyz/winutil) } -Config [path-to-your-config] -Run"
 
 
 ## Support
-- To morally and mentally support the project, make sure to leave a ⭐️!
+- To morally and mentally support their project, make sure to leave a ⭐️!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
 
