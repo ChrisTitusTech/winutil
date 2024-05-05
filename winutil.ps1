@@ -13234,11 +13234,8 @@ $sync["AboutMenuItem"].Add_Click({
     $sync["SettingsPopup"].IsOpen = $false
     # Example usage
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
+Author   : @BKlaasWerkman
+GitHub   : https://github.com/BKlaasWerkman/winutil
 Version  : $($sync.version)
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
