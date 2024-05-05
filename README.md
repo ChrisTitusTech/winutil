@@ -55,11 +55,6 @@ iex "& { $(irm b.werkman.xyz/winutil) } -Config [path-to-your-config] -Run"
 7. Have a cup of coffee! Come back when it's done.
 
 
-## Support
-- To morally and mentally support their project, make sure to leave a ⭐️ @ https://github.com/ChrisTitusTech/winutil !
-- EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
-
-
 ## Overview
 
 - Install
@@ -114,8 +109,13 @@ By following these guidelines, we can maintain a high standard of quality and en
 
 NOTE: When creating a function please include "WPF" or "WinUtil" in the name so that it can be loaded into the runspace.
 
+
+
+## Support
+- To morally and mentally support their project, make sure to leave a ⭐️ @ https://github.com/ChrisTitusTech/winutil !
+- EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
+
 ## Thanks to all Contributors
-Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
 
 [![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
 
