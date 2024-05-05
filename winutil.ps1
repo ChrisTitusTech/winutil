@@ -244,7 +244,7 @@ function Get-Oscdimg {
         [string]$oscdimgPath
     )
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
-    $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
+    $downloadUrl = "https://github.com/BklaasWerkman/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
     $sha256Hash = $hashResult.Hash
@@ -1464,7 +1464,7 @@ function New-FirstRun {
 	#
 	$desktopPath = "$($env:USERPROFILE)\Desktop"
 	# Specify the target PowerShell command
-	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://b.werkman.xyz/winutil | iex'"
 	# Specify the path for the shortcut
 	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
 	# Create a shell object
@@ -3216,24 +3216,18 @@ Function Invoke-WPFFormVariables {
 
 
     Write-Host ""
-    Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
-    Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
-    Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
-    Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
-    Write-Host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C                     T:::::T                T:::::T        "
-    Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
-    Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
-    Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-    Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
-    Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
+    Write-Host " __        ___       _   _ _   _ _                               "
+    Write-Host " \ \      / (_)_ __ | | | | |_(_) |                              "
+    Write-Host "  \ \ /\ / /| | '_ \| | | | __| | |                              "
+    Write-Host "   \ V  V / | | | | | |_| | |_| | |                              "
+    Write-Host " __ \_/\_/ _|_|_| |_|\___/ \__|_|_|                              "
+    Write-Host " \ \      / /__ _ __| | ___ __ ___   __ _ _ __   __  ___   _ ____"
+    Write-Host "  \ \ /\ / / _ \ '__| |/ / '_ ` _ \ / _` | '_ \  \ \/ / | | |_  /"
+    Write-Host "   \ V  V /  __/ |  |   <| | | | | | (_| | | | |_ >  <| |_| |/ / "
+    Write-Host "    \_/\_/ \___|_|  |_|\_\_| |_| |_|\__,_|_| |_(_)_/\_\\__, /___|"
+    Write-Host "                                                       |___/     "
     Write-Host ""
-    Write-Host "====Chris Titus Tech====="
+    Write-Host "====Werkman.xyz====="
     Write-Host "=====Windows Toolbox====="
 
     #====DEBUG GUI Elements====
@@ -3412,7 +3406,7 @@ function Invoke-WPFGetIso {
         # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
-        Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
+        Write-Error "Please refer to this wiki for more details https://github.com/BKlaasWerkman/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
         return
     }
     # storing off values in hidden fields for further steps
@@ -3866,7 +3860,7 @@ public class PowerManagement {
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
 	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://b.werkman.xyz/winutil | iex'"
 		$shortcutPath = "$desktopDir\WinUtil.lnk"
 		$shell = New-Object -ComObject WScript.Shell
 		$shortcut = $shell.CreateShortcut($shortcutPath)
@@ -4130,13 +4124,13 @@ function Invoke-WPFOOSU {
         }
         "recommended"{
             $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
             $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
@@ -4346,7 +4340,7 @@ function Invoke-WPFShortcut {
         Switch ($ShortcutToAdd) {
             "WinUtil" {
                 $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-                $IRM = 'irm https://christitus.com/win | iex'
+                $IRM = 'irm https://b.werkman.xyz/winutil | iex'
                 $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
                 $ArgumentsToSourceExe = "$powershell '$IRM'"
                 $DestinationName = "WinUtil.lnk"
@@ -10286,7 +10280,7 @@ $sync.configs.tweaks = '{
       "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
-        curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
+        curl.exe -s \"https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
         Start-Process $ENV:temp\\edgeremoval.bat
 
         "
