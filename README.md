@@ -56,7 +56,7 @@ iex "& { $(irm b.werkman.xyz/winutil) } -Config [path-to-your-config] -Run"
 
 
 ## Support
-- To morally and mentally support their project, make sure to leave a ⭐️!
+- To morally and mentally support their project, make sure to leave a ⭐️ @ https://github.com/ChrisTitusTech/winutil !
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
 
