@@ -112,11 +112,7 @@ NOTE: When creating a function please include "WPF" or "WinUtil" in the name so 
 
 
 ## Support
-- To morally and mentally support their project, make sure to leave a ⭐️ @ https://github.com/ChrisTitusTech/winutil !
-- EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
+- Support their project at https://github.com/ChrisTitusTech/winutil 
 
-## Thanks to all Contributors
-
-[![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
 
 
