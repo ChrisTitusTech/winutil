@@ -10697,7 +10697,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
-        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
+        Title="Berrick''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
