@@ -11262,7 +11262,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
             <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
-                SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
+                SnapsToDevicePixels="True" Source="https://avatars.githubusercontent.com/u/105836264?v=4" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
