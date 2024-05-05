@@ -9,7 +9,6 @@
 .NOTES
     Author	   : Berrick Werkman
     Original Author: Chris Titus @christitustech
-    Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/BKlaasWerkman
     Version        : 24.04.22
 #>
@@ -48,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.21"
+$sync.version = "24.04.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
