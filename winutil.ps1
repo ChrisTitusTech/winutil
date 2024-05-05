@@ -7,10 +7,11 @@
 
 <#
 .NOTES
-    Author         : Chris Titus @christitustech
+    Author	   : Berrick Werkman
+    Original Author: Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
-    GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.21
+    GitHub         : https://github.com/BKlaasWerkman
+    Version        : 24.04.22
 #>
 param (
     [switch]$Debug,
