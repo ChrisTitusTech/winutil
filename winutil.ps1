@@ -8,7 +8,6 @@
 <#
 .NOTES
     Author	   : Berrick Werkman
-    Original Author: Chris Titus @christitustech
     GitHub         : https://github.com/BKlaasWerkman
     Version        : 24.04.22
 #>
