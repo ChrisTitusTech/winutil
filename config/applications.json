@@ -2590,5 +2590,13 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallveracrypt": {
+		"category": "Microsoft Tools",
+		"choco": "",
+		"content": "Microsoft 365 Apps for enterprise",
+		"description": "Microsoft 365 Apps for enterprise is the most productive and most secure Office experience for enterprises, allowing your teams to work together seamlessly from anywhere, anytime.",
+		"link": "https://www.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-apps-for-enterprise",
+		"winget": "Microsoft.Office"
 	}
 }
