@@ -7,9 +7,10 @@
 
 <#
 .NOTES
-    Author	   : Berrick Werkman
-    GitHub         : https://github.com/BKlaasWerkman
-    Version        : 24.04.22
+    Author         : Chris Titus @christitustech
+    Runspace Author: @DeveloperDurp
+    GitHub         : https://github.com/ChrisTitusTech
+    Version        : 24.04.21
 #>
 param (
     [switch]$Debug,
@@ -46,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.22"
+$sync.version = "24.04.21"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -243,7 +244,7 @@ function Get-Oscdimg {
         [string]$oscdimgPath
     )
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
-    $downloadUrl = "https://github.com/BklaasWerkman/winutil/raw/main/releases/oscdimg.exe"
+    $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
     $hashResult = Get-FileHash -Path $oscdimgPath -Algorithm SHA256
     $sha256Hash = $hashResult.Hash
@@ -1463,7 +1464,7 @@ function New-FirstRun {
 	#
 	$desktopPath = "$($env:USERPROFILE)\Desktop"
 	# Specify the target PowerShell command
-	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://b.werkman.xyz/winutil | iex'"
+	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
 	# Specify the path for the shortcut
 	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
 	# Create a shell object
@@ -2511,7 +2512,43 @@ function Show-CustomDialog {
 #     M1069 610 c-4 -131 -5 -137 -38 -198 -43 -79 -89 -119 -210 -181 -53 -27 -116 -61 -141 -76 -74 -43 -6 -20 115 40 221 109 296 217 294 425 -1 144 -16 137 -20 -10z
 # "@
 $cttLogoPath = @"
-           M 4 8 L 10 1 L 13 0 L 12 3 L 5 9 C 6 10 6 11 7 10 C 7 11 8 12 7 12 A 1.42 1.42 0 0 1 6 13 A 5 5 0 0 0 4 10 Q 3.5 9.9 3.5 10.5 T 2 11.8 T 1.2 11 T 2.5 9.5 T 3 9 A 5 5 90 0 0 0 7 A 1.42 1.42 0 0 1 1 6 C 1 5 2 6 3 6 C 2 7 3 7 4 8 M 10 1 L 10 3 L 12 3 L 10.2 2.8 L 10 1
+           M 18.00,14.00
+           C 18.00,14.00 45.00,27.74 45.00,27.74
+             45.00,27.74 57.40,34.63 57.40,34.63
+             57.40,34.63 59.00,43.00 59.00,43.00
+             59.00,43.00 59.00,83.00 59.00,83.00
+             55.35,81.66 46.99,77.79 44.72,74.79
+             41.17,70.10 42.01,59.80 42.00,54.00
+             42.00,51.62 42.20,48.29 40.98,46.21
+             38.34,41.74 25.78,38.60 21.28,33.79
+             16.81,29.02 18.00,20.20 18.00,14.00 Z
+           M 107.00,14.00
+           C 109.01,19.06 108.93,30.37 104.66,34.21
+             100.47,37.98 86.38,43.10 84.60,47.21
+             83.94,48.74 84.01,51.32 84.00,53.00
+             83.97,57.04 84.46,68.90 83.26,72.00
+             81.06,77.70 72.54,81.42 67.00,83.00
+             67.00,83.00 67.00,43.00 67.00,43.00
+             67.00,43.00 67.99,35.63 67.99,35.63
+             67.99,35.63 80.00,28.26 80.00,28.26
+             80.00,28.26 107.00,14.00 107.00,14.00 Z
+           M 19.00,46.00
+           C 21.36,47.14 28.67,50.71 30.01,52.63
+             31.17,54.30 30.99,57.04 31.00,59.00
+             31.04,65.41 30.35,72.16 33.56,78.00
+             38.19,86.45 46.10,89.04 54.00,93.31
+             56.55,94.69 60.10,97.20 63.00,97.22
+             65.50,97.24 68.77,95.36 71.00,94.25
+             76.42,91.55 84.51,87.78 88.82,83.68
+             94.56,78.20 95.96,70.59 96.00,63.00
+             96.01,60.24 95.59,54.63 97.02,52.39
+             98.80,49.60 103.95,47.87 107.00,47.00
+             107.00,47.00 107.00,67.00 107.00,67.00
+             106.90,87.69 96.10,93.85 80.00,103.00
+             76.51,104.98 66.66,110.67 63.00,110.52
+             60.33,110.41 55.55,107.53 53.00,106.25
+             46.21,102.83 36.63,98.57 31.04,93.68
+             16.88,81.28 19.00,62.88 19.00,46.00 Z
 "@
     
     # Add SVG path
@@ -3179,18 +3216,24 @@ Function Invoke-WPFFormVariables {
 
 
     Write-Host ""
-    Write-Host " __        ___       _   _ _   _ _                               "
-    Write-Host " \ \      / (_)_ __ | | | | |_(_) |                              "
-    Write-Host "  \ \ /\ / /| | '_ \| | | | __| | |                              "
-    Write-Host "   \ V  V / | | | | | |_| | |_| | |                              "
-    Write-Host " __ \_/\_/ _|_|_| |_|\___/ \__|_|_|                              "
-    Write-Host " \ \      / /__ _ __| | ___ __ ___   __ _ _ __   __  ___   _ ____"
-    Write-Host "  \ \ /\ / / _ \ '__| |/ / '_ ` _ \ / _` | '_ \  \ \/ / | | |_  /"
-    Write-Host "   \ V  V /  __/ |  |   <| | | | | | (_| | | | |_ >  <| |_| |/ / "
-    Write-Host "    \_/\_/ \___|_|  |_|\_\_| |_| |_|\__,_|_| |_(_)_/\_\\__, /___|"
-    Write-Host "                                                       |___/     "
+    Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
+    Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
+    Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
+    Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
+    Write-Host "C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT"
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C                     T:::::T                T:::::T        "
+    Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
+    Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
+    Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
+    Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+    Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
     Write-Host ""
-    Write-Host "====Werkman.xyz====="
+    Write-Host "====Chris Titus Tech====="
     Write-Host "=====Windows Toolbox====="
 
     #====DEBUG GUI Elements====
@@ -3369,7 +3412,7 @@ function Invoke-WPFGetIso {
         # @ChrisTitusTech  please copy this wiki and change the link below to your copy of the wiki
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
-        Write-Error "Please refer to this wiki for more details https://github.com/BKlaasWerkman/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
+        Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
         return
     }
     # storing off values in hidden fields for further steps
@@ -3823,7 +3866,7 @@ public class PowerManagement {
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
 	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://b.werkman.xyz/winutil | iex'"
+		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
 		$shortcutPath = "$desktopDir\WinUtil.lnk"
 		$shell = New-Object -ComObject WScript.Shell
 		$shortcut = $shell.CreateShortcut($shortcutPath)
@@ -4087,13 +4130,13 @@ function Invoke-WPFOOSU {
         }
         "recommended"{
             $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
             $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
@@ -4303,7 +4346,7 @@ function Invoke-WPFShortcut {
         Switch ($ShortcutToAdd) {
             "WinUtil" {
                 $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-                $IRM = 'irm https://b.werkman.xyz/winutil | iex'
+                $IRM = 'irm https://christitus.com/win | iex'
                 $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
                 $ArgumentsToSourceExe = "$powershell '$IRM'"
                 $DestinationName = "WinUtil.lnk"
@@ -10243,7 +10286,7 @@ $sync.configs.tweaks = '{
       "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
-        curl.exe -s \"https://raw.githubusercontent.com/BKlaasWerkman/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
+        curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
         Start-Process $ENV:temp\\edgeremoval.bat
 
         "
@@ -10660,7 +10703,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
-        Title="Berrick''s Windows Utility" Height="800" Width="1280">
+        Title="Chris Titus Tech''s Windows Utility" Height="800" Width="1280">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
@@ -11224,8 +11267,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="36" Width="160" Name="WPFIcon" 
-                SnapsToDevicePixels="True" Source="https://b.werkman.xyz/logos/ITO_full_logo.png" Margin="10"/>
+            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
+                SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
@@ -13026,14 +13069,10 @@ Add-Type @"
 "@
     }
 
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*Berrick*" })) {
-        # Check if the process's MainWindowHandle is valid
-    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
+    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        if ($proc.Id -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
-	    } else {
-        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
-    
         }
     }
 
@@ -13200,8 +13239,11 @@ $sync["AboutMenuItem"].Add_Click({
     $sync["SettingsPopup"].IsOpen = $false
     # Example usage
     $authorInfo = @"
-Author   : @BKlaasWerkman
-GitHub   : https://github.com/BKlaasWerkman/winutil
+Author   : @christitustech
+Runspace : @DeveloperDurp
+GUI      : @KonTy
+MicroWin : @KonTy
+GitHub   : https://github.com/ChrisTitusTech/winutil
 Version  : $($sync.version)
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
