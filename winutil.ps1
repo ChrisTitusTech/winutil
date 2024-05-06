@@ -11226,7 +11226,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
             <Image Height="{ToggleButtonHeight}" Width="200" Name="WPFIcon" 
-                SnapsToDevicePixels="True" Source="https://images.squarespace-cdn.com/content/v1/65b98e409da12c701bc76630/53923acf-2c1f-4c0a-9bd1-ea07c9173e24/ITO-_full_logo_white.jpg?format=1500w" Margin="10"/>
+                SnapsToDevicePixels="True" Source="https://b.werkman.xyz/logos/ITO_full_logo.jpg" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
