@@ -1,21 +1,12 @@
 # Windows Utility
 
-This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient. 
+This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*.
 
 ![screen-install](screen-install.png)
 
 ## Usage
 
-Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, open PowerShell or Windows Terminal as an administrator. Here are a few ways to do it:
-
-1. **Right-Click Method:**
-   - Right-click on the start menu.
-   - Choose "PowerShell As Admin" (for Windows 10) or "Windows Terminal As Admin" (for Windows 11).
-
-2. **Search and Launch Method:**
-   - Press the Windows key.
-   - Type "PowerShell" or "Terminal" (for Windows 11).
-   - Press `Ctrl + Shift + Enter` to launch it with administrator privileges.
+Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, open PowerShell or Windows Terminal as an administrator.
 
 
 ### Launch Command
