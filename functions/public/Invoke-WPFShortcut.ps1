@@ -21,7 +21,7 @@ function Invoke-WPFShortcut {
         Switch ($ShortcutToAdd) {
             "WinUtil" {
                 $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-                $IRM = 'irm https://b.werkman.xyz/winutil | iex'
+                $IRM = 'irm https://christitus.com/win | iex'
                 $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
                 $ArgumentsToSourceExe = "$powershell '$IRM'"
                 $DestinationName = "WinUtil.lnk"
