@@ -2622,7 +2622,7 @@
 		"description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
 		"link": "https://www.smplayer.info",
 		"winget": "SMPlayer.SMPlayer"
-  },
+	},
 	"WPFInstallfancontrol": {
 		"category": "Utilities",
 		"choco": "na",
