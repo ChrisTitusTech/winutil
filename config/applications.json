@@ -95,14 +95,6 @@
 		"link": "https://www.audacityteam.org/",
 		"winget": "Audacity.Audacity"
 	},
-	"WPFInstallauthy": {
-		"category": "Utilities",
-		"choco": "authy-desktop",
-		"content": "Authy",
-		"description": "Simple and cross-platform 2FA app",
-		"link": "https://authy.com/",
-		"winget": "Twilio.Authy"
-	},
 	"WPFInstallautoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
@@ -110,6 +102,14 @@
 		"description": "This utility shows you what programs are configured to run during system bootup or login",
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
 		"winget": "Microsoft.Sysinternals.Autoruns"
+	},
+	"WPFInstallrdcman": {
+		"category": "Microsoft Tools",
+		"choco": "rdcman",
+		"content": "Remote Desktop Connection Manager (RDCMan)",
+		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+		"winget": "Microsoft.Sysinternals.RDCMan"
 	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
@@ -294,6 +294,14 @@
 		"description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
+	},
+	"WPFInstallditto": {
+		"category": "Utilities",
+		"choco": "ditto",
+		"content": "Ditto (Clipboard Manager)",
+		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
+		"link": "https://github.com/sabrogden/Ditto",
+		"winget": "Ditto.Ditto"
 	},
 	"WPFInstallcpuz": {
 		"category": "Utilities",
@@ -1215,6 +1223,14 @@
 		"link": "https://mremoteng.org/",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
+	"WPFInstallmsedgeredirect": {
+		"category": "Utilities",
+		"choco": "msedgeredirect",
+		"content": "MSEdgeRedirect",
+		"description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+		"link": "https://github.com/rcmaehl/MSEdgeRedirect",
+		"winget": "rcmaehl.MSEdgeRedirect"
+	},
 	"WPFInstallmsiafterburner": {
 		"category": "Utilities",
 		"choco": "msiafterburner",
@@ -1247,6 +1263,14 @@
 		"link": "https://getmusicbee.com/",
 		"winget": "MusicBee.MusicBee"
 	},
+	"WPFInstallmp3tag": {
+		"category": "Multimedia Tools",
+		"choco": "mp3tag",
+		"content": "Mp3tag (Metadata Audio Editor)",
+		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
+		"link": "https://www.mp3tag.de/en/",
+		"winget": "Mp3tag.Mp3tag"
+	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
 		"choco": "nanazip",
@@ -1254,6 +1278,14 @@
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
+	},
+	"WPFInstallnetbird": {
+		"category": "Pro Tools",
+		"choco": "netbird",
+		"content": "NetBird",
+		"description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+		"link": "https://netbird.io/",
+		"winget": "netbird"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -1871,14 +1903,6 @@
 		"link": "https://starship.rs/",
 		"winget": "starship"
 	},
-	"WPFInstallstartallback": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "StartAllBack",
-		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
-		"link": "https://www.startallback.com/",
-		"winget": "startallback"
-	},
 	"WPFInstallsteam": {
 		"category": "Games",
 		"choco": "steam-client",
@@ -2071,6 +2095,14 @@
 		"link": "https://www.thunderbird.net/",
 		"winget": "Mozilla.Thunderbird"
 	},
+	"WPFInstallbetterbird": {
+		"category": "Communications",
+		"choco": "betterbird",
+		"content": "Betterbird",
+		"description": "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
+		"link": "https://www.betterbird.eu/",
+		"winget": "Betterbird.Betterbird"
+	},
 	"WPFInstalltidal": {
 		"category": "Multimedia Tools",
 		"choco": "na",
@@ -2221,7 +2253,7 @@
 		"content": "Vivaldi",
 		"description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
 		"link": "https://vivaldi.com/",
-		"winget": "VivaldiTechnologies.Vivaldi"
+		"winget": "Vivaldi.Vivaldi"
 	},
 	"WPFInstallvlc": {
 		"category": "Multimedia Tools",
@@ -2278,14 +2310,6 @@
 		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
-	},
-	"WPFInstallwhatsapp": {
-		"category": "Communications",
-		"choco": "whatsapp",
-		"content": "Whatsapp",
-		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
-		"link": "https://www.whatsapp.com/",
-		"winget": "WhatsApp.WhatsApp"
 	},
 	"WPFInstallwindirstat": {
 		"category": "Utilities",
@@ -2598,5 +2622,29 @@
 		"description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
 		"link": "https://www.smplayer.info",
 		"winget": "SMPlayer.SMPlayer"
+  },
+	"WPFInstallfancontrol": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "FanControl",
+		"description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
+		"link": "https://getfancontrol.com/",
+		"winget": "Rem0o.FanControl"
+	},
+	"WPFInstallfnm": {
+		"category": "Development",
+		"choco": "fnm",
+		"content": "Fast Node Manager",
+		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
+		"link": "https://github.com/Schniz/fnm",
+		"winget": "Schniz.fnm"
+	},
+	"WPFInstallWindhawk": {
+		"category": "Utilities",
+		"choco": "windhawk",
+		"content": "Windhawk",
+		"description": "The customization marketplace for Windows programs",
+		"link": "https://windhawk.net",
+		"winget": "RamenSoftware.Windhawk"
 	}
 }
