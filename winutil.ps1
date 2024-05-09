@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.04.21
+    Version        : 24.05.09
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.04.21"
+$sync.version = "24.05.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -725,34 +725,34 @@ Function Install-WinUtilProgramWinget {
 
     Foreach ($Program in $($ProgramsToInstall -split ",")){
 
-        Write-Progress -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
+        Write-Progres -Activity "$manage Applications" -Status "$manage $Program $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt. 
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
             # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
             # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
             try {
-                $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                if($status -ne 0){
-                    Write-Host "Attempt with User scope"
-                    $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                    if($status -ne 0){
-                        Write-Host "Attempt with Unelevated prompt"
-                        $status = $(Start-Process -FilePath "powershell" -ArgumentList "-Command Start-Process winget -ArgumentList 'install --id $Program --silent --accept-source-agreements --accept-package-agreements' -Verb runAsUser" -Wait -PassThru).ExitCode
-                        if($status -ne 0){
-                            Write-Host "Failed to install $Program."
-                        } else {
-                            Write-Host "$Program installed successfully with Unelevated prompt."
-                        }
-                    } else {
-                        Write-Host "$Program installed successfully with User scope."
-                    }
-                } else {
-                    Write-Host "$Program installed successfully."
-                }
-            } catch {
+                         $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
+                         if(status -eq 0){
+                                write-host "$program installed successfully."
+                                continue
+                         }
+                             Write-Host "Attempt with User scope"
+                         $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
+                         if(status -eq 0){
+                                 Write-Host "$Program installed successfully with User scope."
+                                 continue
+                         }
+                         Write-Host "Attempt with Unelevated prompt"
+                         $status = $(Start-Process -FilePath "powershell" -ArgumentList "-Command Start-Process winget -ArgumentList 'install --id $Program --silent --accept-source-agreements --accept-package-agreements' -Verb runAsUser" -Wait -PassThru).ExitCode
+                         if(status -eq 0){
+                                 Write-Host "$Program installed successfully with Unelevated prompt."
+                                 continue
+                         }
+                         Write-Host "Failed to install $Program."
+                } catch {
                 Write-Host "Failed to install $Program due to an error: $_"
-            }
+                }
         }
         if($manage -eq "Uninstalling"){
             # Uninstall package via ID using winget directly.
