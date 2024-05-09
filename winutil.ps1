@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.05.01
+    Version        : 24.05.09
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.05.01"
+$sync.version = "24.05.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -3726,6 +3726,7 @@ public class PowerManagement {
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
 	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
 	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+	$importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -3784,13 +3785,54 @@ public class PowerManagement {
             return
         }
 
+		if ($importDrivers)
+		{
+			Write-Host "Exporting drivers from active installation..."
+			if (Test-Path "$env:TEMP\DRV_EXPORT")
+			{
+				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+			}
+			if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text)))
+			{
+				Write-Host "Using specified driver source..."
+				dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
+				if ($?)
+				{
+					# Don't add exported drivers yet, that is run later
+					Write-Host "Drivers have been exported successfully."
+				}
+				else
+				{
+					Write-Host "Failed to export drivers."
+				}
+			}
+			else
+			{
+				New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+				dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+				if ($?)
+				{
+					Write-Host "Adding exported drivers..."
+					dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+				}
+				else
+				{
+					Write-Host "Failed to export drivers. Continuing without importing them..."
+				}
+				if (Test-Path "$env:TEMP\DRV_EXPORT")
+				{
+					Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+				}				
+			}
+		}
+
 		if ($injectDrivers)
 		{
 			$driverPath = $sync.MicrowinDriverLocation.Text
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Recurse -Driver "$driverPath"
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -4008,7 +4050,7 @@ public class PowerManagement {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Driver "$driverPath" -Recurse
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -12851,6 +12893,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 Foreground="{LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="5,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
