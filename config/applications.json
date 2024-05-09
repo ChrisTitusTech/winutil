@@ -2655,6 +2655,14 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
+	"WPFInstalglazewm": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GlazeWM",
+		"description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
+		"link": "https://github.com/glzr-io/glazewm",
+		"winget": "glzr-io.glazewm"
+  },
 	"WPFInstallfancontrol": {
 		"category": "Utilities",
 		"choco": "na",
