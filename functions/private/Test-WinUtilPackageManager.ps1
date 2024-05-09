@@ -20,13 +20,22 @@ function Test-WinUtilPackageManager {
     $status = "not-installed"
 
     if ($winget) {
-        # Install Winget if not detected
-        $wingetExists = Get-Command -Name winget -ErrorAction SilentlyContinue
+        # Check if Winget is available while getting it's Version if it's available
+        $wingetExists = $true
+        try {
+            $wingetVersionFull = winget --version
+        } catch [System.Management.Automation.CommandNotFoundException], [System.Management.Automation.ApplicationFailedException] {
+            Write-Warning "Winget was not found due to un-availablity reasons"
+            $wingetExists = $false
+        } catch {
+            Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
+            $wingetExists = $false
+	}
 
-        if ($wingetExists) {
-            # Check Winget Version
-            $wingetVersionFull = (winget --version) # Full Version without 'v'.
-
+        # If Winget is available, Parse it's Version and give proper information to Terminal Output.
+	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+        # Winget isn't installed/available on The System.
+	if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")

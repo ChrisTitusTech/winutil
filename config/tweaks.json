@@ -77,6 +77,60 @@
       }
     ]
   },
+  "WPFTweaksAdobe": {
+    "Content": "Disable Adobe Services",
+    "Description": "Disables many of the services that come with Adobe and run in the background.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
+    "service": [
+      {
+        "Name": "AGSService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeUpdateService",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Acrobat Update",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Genuine Monitor Service",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeARMservice",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "Adobe Licensing Console",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CCXProcess",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AdobeIPCBroker",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "CoreSync",
+        "StartupType": "Manual",
+        "OriginalType": "Automatic"
+      }
+    ]
+  },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
@@ -2320,6 +2374,25 @@
       "
       Write-Host \"Install Microsoft Edge\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
+      "
+    ]
+  },
+  "WPFTweaksRemoveCopilot": {
+    "Content": "Disables Microsoft Copilot",
+    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a025_",
+    "InvokeScript": [
+        "
+        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
+        New-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force | New-ItemProperty -Name \"TurnOffWindowsCopilot\" -Value \"1\" -Force -Type \"DWord\"
+        "
+    ],
+    "UndoScript": [
+      "
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"1\" 
+      Remove-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force
       "
     ]
   },
