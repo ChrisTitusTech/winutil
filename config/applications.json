@@ -1239,6 +1239,46 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"WPFInstallBorderlessGaming": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Borderless Gaming",
+		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
+		"link": "https://github.com/Codeusa/Borderless-Gaming",
+		"winget": "Codeusa.BorderlessGaming"
+	},
+	"WPFInstallEqualizerAPO": {
+		"category": "Multimedia Tools",
+		"choco": "equalizerapo",
+		"content": "Equalizer APO",
+		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
+		"link": "https://sourceforge.net/projects/equalizerapo",
+		"winget": "na"
+	},
+	"WPFInstallFreeFileSync": {
+		"category": "Utilities",
+		"choco": "freefilesync",
+		"content": "FreeFileSync",
+		"description": "Synchronize Files and Folders",
+		"link": "https://freefilesync.org",
+		"winget": "na"
+	},
+	"WPFInstallCompactGUI": {
+		"category": "Utilities",
+		"choco": "compactgui",
+		"content": "Compact GUI",
+		"description": "Transparently compress active games and programs using Windows 10/11 APIs",
+		"link": "https://github.com/IridiumIO/CompactGUI",
+		"winget": "IridiumIO.CompactGUI"
+	},
+	"WPFInstallExifCleaner": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "ExifCleaner",
+		"description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
+		"link": "https://github.com/szTheory/exifcleaner",
+		"winget": "szTheory.exifcleaner"
+	},
 	"WPFInstallmullvadbrowser": {
 		"category": "Browsers",
 		"choco": "na",
