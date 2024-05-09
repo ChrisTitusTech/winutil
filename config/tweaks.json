@@ -34,7 +34,7 @@
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a011_",
+    "Order": "a012_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -63,7 +63,7 @@
     "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
+    "Order": "a011_",
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -77,9 +77,9 @@
       }
     ]
   },
-  "WPFTweaksAdobe": {
+  "WPFTweaksDebloatAdobe": {
     "Content": "Debloat Adobe",
-    "Description": "Sets Adobe Services to Manual & disable acrobat auto-updates",
+    "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",    
@@ -87,13 +87,20 @@
       "
       function CCStopper {
         $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-        Takeown /f $path
-        $acl = Get-Acl $path
-        $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
-        $acl | Set-Acl $path
+        
+        # Test if the path exists before proceeding
+        if (Test-Path $path) {
+            Takeown /f $path
+            $acl = Get-Acl $path
+            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
+            $acl | Set-Acl $path
     
-        Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
+            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
+        } else {
+            Write-Host \"Adobe Desktop Service is not in the default location.\"
+        }
       }
+    
 
       function AcrobatUpdates {
         # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
@@ -113,7 +120,8 @@
             # Get the full registry path
             $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
             try {
-                Set-ItemProperty -Path $fullPath -Name Mode -Value 4
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 0
+                Write-Host \"Acrobat Updates have been disabled.\"
             } catch {
                 Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
             }
@@ -214,6 +222,119 @@
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
+    ]
+  },
+  "WPFTweaksBlockAdobeNet": {
+    "Content": "Block Adobe Networking",
+    "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. ",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a010_",    
+    "InvokeScript": [
+      "
+      # Define the URL of the remote HOSTS file and the local paths
+      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
+      
+      # Download the remote HOSTS file to a temporary location
+      try {
+          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
+          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
+      }
+      catch {
+          Write-Error \"Failed to download the HOSTS file. Error: $_\"
+      }
+      
+      # Check if the AdobeNetBlock has already been started
+      try {
+          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      
+          # Check if AdobeNetBlock markers exist
+          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
+          if ($blockStartExists) {
+              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"
+          } else {
+              # Load the new block from the downloaded file
+              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop
+              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
+              $newBlockHeader = \"#AdobeNetBlock-start\"
+              $newBlockFooter = \"#AdobeNetBlock-end\"
+      
+              # Combine the contents, ensuring new block is properly formatted
+              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
+      
+              # Write the combined content back to the original HOSTS file
+              $combinedContent | Set-Content $localHostsPath -Encoding ASCII
+              Write-Output \"Successfully added the AdobeNetBlock.\"
+          }
+      }
+      catch {
+          Write-Error \"Error during processing: $_\"
+      }
+      
+      # Clean up temporary file
+      Remove-Item $tempHostsPath -ErrorAction Ignore
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      # Define the local path of the HOSTS file
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      
+      # Load the content of the HOSTS file
+      try {
+          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      }
+      catch {
+          Write-Error \"Failed to load the HOSTS file. Error: $_\"
+          return
+      }
+      
+      # Initialize flags and buffer for new content
+      $recording = $true
+      $newContent = @()
+      
+      # Iterate over each line of the HOSTS file
+      foreach ($line in $hostsContent) {
+          if ($line -match \"#AdobeNetBlock-start\") {
+              $recording = $false
+          }
+          if ($recording) {
+              $newContent += $line
+          }
+          if ($line -match \"#AdobeNetBlock-end\") {
+              $recording = $true
+          }
+      }
+      
+      # Write the filtered content back to the HOSTS file
+      try {
+          $newContent | Set-Content $localHostsPath -Encoding ASCII
+          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
+      }
+      catch {
+          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
+      }
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
     ]
   },
   "WPFTweaksLoc": {

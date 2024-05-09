@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.05.01
+    Version        : 24.05.09
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.05.01"
+$sync.version = "24.05.09"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -351,8 +351,9 @@ function Get-TabXaml {
                 }
                 $appInfo = $organizedData[$panel][$category][$appName]
                 if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n"
+                    $blockXml += "<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n</StackPanel>`n"
                 } elseif ("Combobox" -eq $appInfo.Type) {
                     $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
                     $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
@@ -390,9 +391,6 @@ Function Get-WinUtilCheckBoxes {
     .SYNOPSIS
         Finds all checkboxes that are checked on the specific tab and inputs them into a script.
 
-    .PARAMETER Group
-        The group of checkboxes to check
-
     .PARAMETER unCheck
         Whether to uncheck the checkboxes that are checked. Defaults to true
 
@@ -417,7 +415,20 @@ Function Get-WinUtilCheckBoxes {
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
 
+    # First check and add WPFTweaksRestorePoint if checked
+    $RestorePoint = $CheckBoxes | Where-Object { $_.Key -eq 'WPFTweaksRestorePoint' -and $_.Value.IsChecked -eq $true }
+    if ($RestorePoint) {
+        $Output["WPFTweaks"] = @('WPFTweaksRestorePoint')
+        Write-Debug "Adding WPFTweaksRestorePoint as first in WPFTweaks"
+
+        if ($unCheck) {
+            $RestorePoint.Value.IsChecked = $false
+        }
+    }
+
     foreach ($CheckBox in $CheckBoxes) {
+        if ($CheckBox.Key -eq 'WPFTweaksRestorePoint') { continue }  # Skip since it's already handled
+
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
@@ -426,9 +437,7 @@ Function Get-WinUtilCheckBoxes {
             if ($CheckBox.Value.IsChecked -eq $true) {
                 $feature = switch ($group) {
                     "Install" {
-                        # Get the winget value
                         $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
-
                         if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
                             $wingetValue -split ";"
                         } else {
@@ -451,14 +460,14 @@ Function Get-WinUtilCheckBoxes {
                 Write-Debug "Adding: $($feature) under: $($group)"
                 $Output[$group] += $feature
 
-                if ($uncheck -eq $true) {
+                if ($unCheck) {
                     $CheckBox.Value.IsChecked = $false
                 }
             }
         }
     }
 
-    return  $Output
+    return $Output
 }
 function Get-WinUtilInstallerProcess {
     <#
@@ -545,6 +554,15 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapWindow"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Control Panel\Desktop').WindowArrangementActive
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
     if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
         if($hidesnap -eq 0){
@@ -554,6 +572,15 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapSuggestion"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').SnapAssist
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }        
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
@@ -1926,6 +1953,71 @@ function Invoke-WinUtilSnapFlyout {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapSuggestion {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snap Assist Suggestions on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snap Assist Suggestions on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Assist Suggestion On startup"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Assist Suggestion On startup"
+            $value = 0
+        }
+        # taskkill.exe /F /IM "explorer.exe"
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        taskkill.exe /F /IM "explorer.exe"
+        Set-ItemProperty -Path $Path -Name SnapAssist -Value $value
+        Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapWindow {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snapping Windows on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snapping Windows on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Windows On startup | Relogin Required"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Windows On startup | Relogin Required"
+            $value = 0
+        }
+        $Path = "HKCU:\Control Panel\Desktop"
+        Set-ItemProperty -Path $Path -Name WindowArrangementActive -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -4454,7 +4546,9 @@ function Invoke-WPFToggle {
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
         "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleSnapWindow" {Invoke-WinUtilSnapWindow $(Get-WinUtilToggleStatus WPFToggleSnapWindow)}
         "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
+        "WPFToggleSnapSuggestion" {Invoke-WinUtilSnapSuggestion $(Get-WinUtilToggleStatus WPFToggleSnapSuggestion)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
         "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
@@ -4979,5024 +5073,5262 @@ function Invoke-WPFUpdatessecurity {
         Write-Host "================================="
 }
 $sync.configs.applications = '{
-  "WPFInstall1password": {
-    "category": "Utilities",
-    "choco": "1password",
-    "content": "1Password",
-    "description": "1Password is a password manager that allows you to store and manage your passwords securely.",
-    "link": "https://1password.com/",
-    "winget": "AgileBits.1Password"
-  },
-  "WPFInstall7zip": {
-    "category": "Utilities",
-    "choco": "7zip",
-    "content": "7-Zip",
-    "description": "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
-    "link": "https://www.7-zip.org/",
-    "winget": "7zip.7zip"
-  },
-  "WPFInstalladobe": {
-    "category": "Document",
-    "choco": "adobereader",
-    "content": "Adobe Acrobat Reader",
-    "description": "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
-    "link": "https://www.adobe.com/acrobat/pdf-reader.html",
-    "winget": "Adobe.Acrobat.Reader.64-bit"
-  },
-  "WPFInstalladvancedip": {
-    "category": "Pro Tools",
-    "choco": "advanced-ip-scanner",
-    "content": "Advanced IP Scanner",
-    "description": "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
-    "link": "https://www.advanced-ip-scanner.com/",
-    "winget": "Famatech.AdvancedIPScanner"
-  },
-  "WPFInstallaimp": {
-    "category": "Multimedia Tools",
-    "choco": "aimp",
-    "content": "AIMP (Music Player)",
-    "description": "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
-    "link": "https://www.aimp.ru/",
-    "winget": "AIMP.AIMP"
-  },
-  "WPFInstallalacritty": {
-    "category": "Utilities",
-    "choco": "alacritty",
-    "content": "Alacritty Terminal",
-    "description": "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
-    "link": "https://alacritty.org/",
-    "winget": "Alacritty.Alacritty"
-  },
-  "WPFInstallanaconda3": {
-    "category": "Development",
-    "choco": "anaconda3",
-    "content": "Anaconda",
-    "description": "Anaconda is a distribution of the Python and R programming languages for scientific computing.",
-    "link": "https://www.anaconda.com/products/distribution",
-    "winget": "Anaconda.Anaconda3"
-  },
-  "WPFInstallangryipscanner": {
-    "category": "Pro Tools",
-    "choco": "angryip",
-    "content": "Angry IP Scanner",
-    "description": "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
-    "link": "https://angryip.org/",
-    "winget": "angryziber.AngryIPScanner"
-  },
-  "WPFInstallanki": {
-    "category": "Document",
-    "choco": "anki",
-    "content": "Anki",
-    "description": "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
-    "link": "https://apps.ankiweb.net/",
-    "winget": "Anki.Anki"
-  },
-  "WPFInstallanydesk": {
-    "category": "Utilities",
-    "choco": "anydesk",
-    "content": "AnyDesk",
-    "description": "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
-    "link": "https://anydesk.com/",
-    "winget": "AnyDeskSoftwareGmbH.AnyDesk"
-  },
-  "WPFInstallATLauncher": {
-    "category": "Games",
-    "choco": "na",
-    "content": "ATLauncher",
-    "description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly.",
-    "link": "https://github.com/ATLauncher/ATLauncher",
-    "winget": "ATLauncher.ATLauncher"
-  },
-  "WPFInstallaudacity": {
-    "category": "Multimedia Tools",
-    "choco": "audacity",
-    "content": "Audacity",
-    "description": "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
-    "link": "https://www.audacityteam.org/",
-    "winget": "Audacity.Audacity"
-  },
-  "WPFInstallautoruns": {
-    "category": "Microsoft Tools",
-    "choco": "autoruns",
-    "content": "Autoruns",
-    "description": "This utility shows you what programs are configured to run during system bootup or login",
-    "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
-    "winget": "Microsoft.Sysinternals.Autoruns"
-  },
-  "WPFInstallrdcman": {
-    "category": "Microsoft Tools",
-    "choco": "rdcman",
-    "content": "Remote Desktop Connection Manager (RDCMan)",
-    "description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
-    "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
-    "winget": "Microsoft.Sysinternals.RDCMan"
-  },
-  "WPFInstallautohotkey": {
-    "category": "Utilities",
-    "choco": "autohotkey",
-    "content": "AutoHotkey",
-    "description": "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
-    "link": "https://www.autohotkey.com/",
-    "winget": "AutoHotkey.AutoHotkey"
-  },
-  "WPFInstallazuredatastudio": {
-    "category": "Microsoft Tools",
-    "choco": "azure-data-studio",
-    "content": "Microsoft Azure Data Studio",
-    "description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
-    "link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
-    "winget": "Microsoft.AzureDataStudio"
-  },
-  "WPFInstallbarrier": {
-    "category": "Utilities",
-    "choco": "barrier",
-    "content": "Barrier",
-    "description": "Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems.",
-    "link": "https://github.com/debauchee/barrier",
-    "winget": "DebaucheeOpenSourceGroup.Barrier"
-  },
-  "WPFInstallbat": {
-    "category": "Utilities",
-    "choco": "bat",
-    "content": "Bat (Cat)",
-    "description": "Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files.",
-    "link": "https://github.com/sharkdp/bat",
-    "winget": "sharkdp.bat"
-  },
-  "WPFInstallbitcomet": {
-    "category": "Utilities",
-    "choco": "bitcomet",
-    "content": "BitComet",
-    "description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
-    "link": "https://www.bitcomet.com/",
-    "winget": "CometNetwork.BitComet"
-  },
-  "WPFInstallbitwarden": {
-    "category": "Utilities",
-    "choco": "bitwarden",
-    "content": "Bitwarden",
-    "description": "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices.",
-    "link": "https://bitwarden.com/",
-    "winget": "Bitwarden.Bitwarden"
-  },
-  "WPFInstallbleachbit": {
-    "category": "Utilities",
-    "choco": "bleachbit",
-    "content": "BleachBit",
-    "description": "Clean Your System and Free Disk Space",
-    "link": "https://www.bleachbit.org/",
-    "winget": "BleachBit.BleachBit"
-  },
-  "WPFInstallblender": {
-    "category": "Multimedia Tools",
-    "choco": "blender",
-    "content": "Blender (3D Graphics)",
-    "description": "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
-    "link": "https://www.blender.org/",
-    "winget": "BlenderFoundation.Blender"
-  },
-  "WPFInstallbluestacks": {
-    "category": "Games",
-    "choco": "bluestacks",
-    "content": "Bluestacks",
-    "description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
-    "link": "https://www.bluestacks.com/",
-    "winget": "BlueStack.BlueStacks"
-  },
-  "WPFInstallbrave": {
-    "category": "Browsers",
-    "choco": "brave",
-    "content": "Brave",
-    "description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
-    "link": "https://www.brave.com",
-    "winget": "Brave.Brave"
-  },
-  "WPFInstallbulkcrapuninstaller": {
-    "category": "Utilities",
-    "choco": "bulk-crap-uninstaller",
-    "content": "Bulk Crap Uninstaller",
-    "description": "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
-    "link": "https://www.bcuninstaller.com/",
-    "winget": "Klocman.BulkCrapUninstaller"
-  },
-  "WPFInstallbulkrenameutility": {
-    "category": "Utilities",
-    "choco": "bulkrenameutility",
-    "content": "Bulk Rename Utility",
-    "description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
-    "link": "https://www.bulkrenameutility.co.uk",
-    "winget": "TGRMNSoftware.BulkRenameUtility"
-  },
-  "WPFInstallcalibre": {
-    "category": "Document",
-    "choco": "calibre",
-    "content": "Calibre",
-    "description": "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
-    "link": "https://calibre-ebook.com/",
-    "winget": "calibre.calibre"
-  },
-  "WPFInstallcarnac": {
-    "category": "Utilities",
-    "choco": "carnac",
-    "content": "Carnac",
-    "description": "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
-    "link": "https://carnackeys.com/",
-    "winget": "code52.Carnac"
-  },
-  "WPFInstallcemu": {
-    "category": "Games",
-    "choco": "cemu",
-    "content": "Cemu",
-    "description": "Cemu is a highly experimental software to emulate Wii U applications on PC.",
-    "link": "https://cemu.info/",
-    "winget": "Cemu.Cemu"
-  },
-  "WPFInstallchatterino": {
-    "category": "Communications",
-    "choco": "chatterino",
-    "content": "Chatterino",
-    "description": "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
-    "link": "https://www.chatterino.com/",
-    "winget": "ChatterinoTeam.Chatterino"
-  },
-  "WPFInstallchrome": {
-    "category": "Browsers",
-    "choco": "googlechrome",
-    "content": "Chrome",
-    "description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
-    "link": "https://www.google.com/chrome/",
-    "winget": "Google.Chrome"
-  },
-  "WPFInstallchromium": {
-    "category": "Browsers",
-    "choco": "chromium",
-    "content": "Chromium",
-    "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-    "link": "https://github.com/Hibbiki/chromium-win64",
-    "winget": "Hibbiki.Chromium"
-  },
-  "WPFInstallclementine": {
-    "category": "Multimedia Tools",
-    "choco": "clementine",
-    "content": "Clementine",
-    "description": "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
-    "link": "https://www.clementine-player.org/",
-    "winget": "Clementine.Clementine"
-  },
-  "WPFInstallclink": {
-    "category": "Development",
-    "choco": "clink",
-    "content": "Clink",
-    "description": "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
-    "link": "https://mridgers.github.io/clink/",
-    "winget": "chrisant996.Clink"
-  },
-  "WPFInstallclonehero": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Clone Hero",
-    "description": "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller.",
-    "link": "https://clonehero.net/",
-    "winget": "CloneHeroTeam.CloneHero"
-  },
-  "WPFInstallcmake": {
-    "category": "Development",
-    "choco": "cmake",
-    "content": "CMake",
-    "description": "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
-    "link": "https://cmake.org/",
-    "winget": "Kitware.CMake"
-  },
-  "WPFInstallcopyq": {
-    "category": "Utilities",
-    "choco": "copyq",
-    "content": "CopyQ (Clipboard Manager)",
-    "description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
-    "link": "https://copyq.readthedocs.io/",
-    "winget": "hluk.CopyQ"
-  },
-  "WPFInstallditto": {
-    "category": "Utilities",
-    "choco": "ditto",
-    "content": "Ditto (Clipboard Manager)",
-    "description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
-    "link": "https://github.com/sabrogden/Ditto",
-    "winget": "Ditto.Ditto"
-  },
-  "WPFInstallcpuz": {
-    "category": "Utilities",
-    "choco": "cpu-z",
-    "content": "CPU-Z",
-    "description": "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer&#39;s hardware components, including the CPU, memory, and motherboard.",
-    "link": "https://www.cpuid.com/softwares/cpu-z.html",
-    "winget": "CPUID.CPU-Z"
-  },
-  "WPFInstallcrystaldiskinfo": {
-    "category": "Utilities",
-    "choco": "crystaldiskinfo",
-    "content": "Crystal Disk Info",
-    "description": "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
-    "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
-    "winget": "CrystalDewWorld.CrystalDiskInfo"
-  },
-  "WPFInstallcapframex": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "CapFrameX",
-    "description": "Frametimes capture and analysis tool based on Intel&#39;s PresentMon. Overlay provided by Rivatuner Statistics Server.",
-    "link": "https://www.capframex.com/",
-    "winget": "CXWorld.CapFrameX"
-  },
-  "WPFInstallcrystaldiskmark": {
-    "category": "Utilities",
-    "choco": "crystaldiskmark",
-    "content": "Crystal Disk Mark",
-    "description": "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs.",
-    "link": "https://crystalmark.info/en/software/crystaldiskmark/",
-    "winget": "CrystalDewWorld.CrystalDiskMark"
-  },
-  "WPFInstalldarktable": {
-    "category": "Multimedia Tools",
-    "choco": "darktable",
-    "content": "darktable",
-    "description": "Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement.",
-    "link": "https://www.darktable.org/install/",
-    "winget": "darktable.darktable"
-  },
-  "WPFInstallDaxStudio": {
-    "category": "Development",
-    "choco": "daxstudio",
-    "content": "DaxStudio",
-    "description": "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models.",
-    "link": "https://daxstudio.org/",
-    "winget": "DaxStudio.DaxStudio"
-  },
-  "WPFInstallddu": {
-    "category": "Utilities",
-    "choco": "ddu",
-    "content": "Display Driver Uninstaller",
-    "description": "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
-    "link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
-    "winget": "ddu"
-  },
-  "WPFInstalldeluge": {
-    "category": "Utilities",
-    "choco": "deluge",
-    "content": "Deluge",
-    "description": "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely.",
-    "link": "https://deluge-torrent.org/",
-    "winget": "DelugeTeam.Deluge"
-  },
-  "WPFInstalldevtoys": {
-    "category": "Utilities",
-    "choco": "devtoys",
-    "content": "DevToys",
-    "description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
-    "link": "https://devtoys.app/",
-    "winget": "9PGCV4V3BK4W"
-  },
-  "WPFInstalldigikam": {
-    "category": "Multimedia Tools",
-    "choco": "digikam",
-    "content": "digiKam",
-    "description": "digiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
-    "link": "https://www.digikam.org/",
-    "winget": "KDE.digikam"
-  },
-  "WPFInstalldiscord": {
-    "category": "Communications",
-    "choco": "discord",
-    "content": "Discord",
-    "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
-    "link": "https://discord.com/",
-    "winget": "Discord.Discord"
-  },
-  "WPFInstalldockerdesktop": {
-    "category": "Development",
-    "choco": "docker-desktop",
-    "content": "Docker Desktop",
-    "description": "Docker Desktop is a powerful tool for containerized application development and deployment.",
-    "link": "https://www.docker.com/products/docker-desktop",
-    "winget": "Docker.DockerDesktop"
-  },
-  "WPFInstalldotnet3": {
-    "category": "Microsoft Tools",
-    "choco": "dotnetcore3-desktop-runtime",
-    "content": ".NET Desktop Runtime 3.1",
-    "description": ".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1.",
-    "link": "https://dotnet.microsoft.com/download/dotnet/3.1",
-    "winget": "Microsoft.DotNet.DesktopRuntime.3_1"
-  },
-  "WPFInstalldotnet5": {
-    "category": "Microsoft Tools",
-    "choco": "dotnet-5.0-runtime",
-    "content": ".NET Desktop Runtime 5",
-    "description": ".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5.",
-    "link": "https://dotnet.microsoft.com/download/dotnet/5.0",
-    "winget": "Microsoft.DotNet.DesktopRuntime.5"
-  },
-  "WPFInstalldotnet6": {
-    "category": "Microsoft Tools",
-    "choco": "dotnet-6.0-runtime",
-    "content": ".NET Desktop Runtime 6",
-    "description": ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
-    "link": "https://dotnet.microsoft.com/download/dotnet/6.0",
-    "winget": "Microsoft.DotNet.DesktopRuntime.6"
-  },
-  "WPFInstalldotnet7": {
-    "category": "Microsoft Tools",
-    "choco": "dotnet-7.0-runtime",
-    "content": ".NET Desktop Runtime 7",
-    "description": ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
-    "link": "https://dotnet.microsoft.com/download/dotnet/7.0",
-    "winget": "Microsoft.DotNet.DesktopRuntime.7"
-  },
-  "WPFInstalldotnet8": {
-    "category": "Microsoft Tools",
-    "choco": "dotnet-8.0-runtime",
-    "content": ".NET Desktop Runtime 8",
-    "description": ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8.",
-    "link": "https://dotnet.microsoft.com/download/dotnet/8.0",
-    "winget": "Microsoft.DotNet.DesktopRuntime.8"
-  },
-  "WPFInstalldmt": {
-    "winget": "GNE.DualMonitorTools",
-    "choco": "dual-monitor-tools",
-    "category": "Utilities",
-    "content": "Dual Monitor Tools",
-    "link": "https://dualmonitortool.sourceforge.net/",
-    "description": "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
-  },
-  "WPFInstallduplicati": {
-    "category": "Utilities",
-    "choco": "duplicati",
-    "content": "Duplicati",
-    "description": "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
-    "link": "https://www.duplicati.com/",
-    "winget": "Duplicati.Duplicati"
-  },
-  "WPFInstalleaapp": {
-    "category": "Games",
-    "choco": "ea-app",
-    "content": "EA App",
-    "description": "EA App is a platform for accessing and playing Electronic Arts games.",
-    "link": "https://www.ea.com/ea-app",
-    "winget": "ElectronicArts.EADesktop"
-  },
-  "WPFInstalleartrumpet": {
-    "category": "Multimedia Tools",
-    "choco": "eartrumpet",
-    "content": "EarTrumpet (Audio)",
-    "description": "EarTrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
-    "link": "https://eartrumpet.app/",
-    "winget": "File-New-Project.EarTrumpet"
-  },
-  "WPFInstalledge": {
-    "category": "Browsers",
-    "choco": "microsoft-edge",
-    "content": "Edge",
-    "description": "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
-    "link": "https://www.microsoft.com/edge",
-    "winget": "Microsoft.Edge"
-  },
-  "WPFInstallefibooteditor": {
-    "category": "Pro Tools",
-    "choco": "na",
-    "content": "EFI Boot Editor",
-    "description": "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer.",
-    "link": "https://www.easyuefi.com/",
-    "winget": "EFIBootEditor.EFIBootEditor"
-  },
-  "WPFInstallemulationstation": {
-    "category": "Games",
-    "choco": "emulationstation",
-    "content": "Emulation Station",
-    "description": "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
-    "link": "https://emulationstation.org/",
-    "winget": "Emulationstation.Emulationstation"
-  },
-  "WPFInstallepicgames": {
-    "category": "Games",
-    "choco": "epicgameslauncher",
-    "content": "Epic Games Launcher",
-    "description": "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
-    "link": "https://www.epicgames.com/store/en-US/",
-    "winget": "EpicGames.EpicGamesLauncher"
-  },
-  "WPFInstallerrorlookup": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Windows Error Code Lookup",
-    "description": "ErrorLookup is a tool for looking up Windows error codes and their descriptions.",
-    "link": "https://github.com/HenryPP/ErrorLookup",
-    "winget": "Henry++.ErrorLookup"
-  },
-  "WPFInstallesearch": {
-    "category": "Utilities",
-    "choco": "everything",
-    "content": "Everything Search",
-    "description": "Everything Search is a fast and efficient file search utility for Windows.",
-    "link": "https://www.voidtools.com/",
-    "winget": "voidtools.Everything"
-  },
-  "WPFInstallespanso": {
-    "category": "Utilities",
-    "choco": "espanso",
-    "content": "Espanso",
-    "description": "Cross-platform and open-source Text Expander written in Rust",
-    "link": "https://espanso.org/",
-    "winget": "Espanso.Espanso"
-  },
-  "WPFInstalletcher": {
-    "category": "Utilities",
-    "choco": "etcher",
-    "content": "Etcher USB Creator",
-    "description": "Etcher is a powerful tool for creating bootable USB drives with ease.",
-    "link": "https://www.balena.io/etcher/",
-    "winget": "Balena.Etcher"
-  },
-  "WPFInstallfalkon": {
-    "category": "Browsers",
-    "choco": "falkon",
-    "content": "Falkon",
-    "description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
-    "link": "https://www.falkon.org/",
-    "winget": "KDE.Falkon"
-  },
-  "WPFInstallferdium": {
-    "category": "Communications",
-    "choco": "ferdium",
-    "content": "Ferdium",
-    "description": "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management.",
-    "link": "https://ferdium.org/",
-    "winget": "Ferdium.Ferdium"
-  },
-  "WPFInstallffmpeg": {
-    "category": "Multimedia Tools",
-    "choco": "ffmpeg-full",
-    "content": "FFmpeg (full)",
-    "description": "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
-    "link": "https://ffmpeg.org/",
-    "winget": "Gyan.FFmpeg"
-  },
-  "WPFInstallfileconverter": {
-    "category": "Utilities",
-    "choco": "files",
-    "content": "File-Converter",
-    "description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
-    "link": "https://file-converter.io/",
-    "winget": "AdrienAllard.FileConverter"
-  },
-  "WPFInstallfirealpaca": {
-    "category": "Multimedia Tools",
-    "choco": "firealpaca",
-    "content": "Fire Alpaca",
-    "description": "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
-    "link": "https://firealpaca.com/",
-    "winget": "FireAlpaca.FireAlpaca"
-  },
-  "WPFInstallfirefox": {
-    "category": "Browsers",
-    "choco": "firefox",
-    "content": "Firefox",
-    "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
-    "link": "https://www.mozilla.org/en-US/firefox/new/",
-    "winget": "Mozilla.Firefox"
-  },
-  "WPFInstallfirefoxesr": {
-    "category": "Browsers",
-    "choco": "FirefoxESR",
-    "content": "Firefox ESR",
-    "description": "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
-    "link": "https://www.mozilla.org/en-US/firefox/enterprise/",
-    "winget": "Mozilla.Firefox.ESR"
-  },
-  "WPFInstallflameshot": {
-    "category": "Multimedia Tools",
-    "choco": "flameshot",
-    "content": "Flameshot (Screenshots)",
-    "description": "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
-    "link": "https://flameshot.org/",
-    "winget": "Flameshot.Flameshot"
-  },
-  "WPFInstalllightshot": {
-    "category": "Multimedia Tools",
-    "choco": "lightshot",
-    "content": "Lightshot (Screenshots)",
-    "description": "Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
-    "link": "https://app.prntscr.com/",
-    "winget": "Skillbrains.Lightshot"
-  },
-  "WPFInstallfloorp": {
-    "category": "Browsers",
-    "choco": "na",
-    "content": "Floorp",
-    "description": "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
-    "link": "https://floorp.app/",
-    "winget": "Ablaze.Floorp"
-  },
-  "WPFInstallflow": {
-    "category": "Utilities",
-    "choco": "flow-launcher",
-    "content": "Flow launcher",
-    "description": "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
-    "link": "https://www.flowlauncher.com/",
-    "winget": "Flow-Launcher.Flow-Launcher"
-  },
-  "WPFInstallflux": {
-    "category": "Utilities",
-    "choco": "flux",
-    "content": "F.lux",
-    "description": "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
-    "link": "https://justgetflux.com/",
-    "winget": "flux.flux"
-  },
-  "WPFInstallfoobar": {
-    "category": "Multimedia Tools",
-    "choco": "foobar2000",
-    "content": "foobar2000 (Music Player)",
-    "description": "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
-    "link": "https://www.foobar2000.org/",
-    "winget": "PeterPawlowski.foobar2000"
-  },
-  "WPFInstallfoxpdfeditor": {
-    "category": "Document",
-    "choco": "na",
-    "content": "Foxit PDF Editor",
-    "description": "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
-    "link": "https://www.foxit.com/pdf-editor/",
-    "winget": "Foxit.PhantomPDF"
-  },
-  "WPFInstallfoxpdfreader": {
-    "category": "Document",
-    "choco": "foxitreader",
-    "content": "Foxit PDF Reader",
-    "description": "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
-    "link": "https://www.foxit.com/pdf-reader/",
-    "winget": "Foxit.FoxitReader"
-  },
-  "WPFInstallfreecad": {
-    "category": "Multimedia Tools",
-    "choco": "freecad",
-    "content": "FreeCAD",
-    "description": "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
-    "link": "https://www.freecadweb.org/",
-    "winget": "FreeCAD.FreeCAD"
-  },
-  "WPFInstallorcaslicer": {
-    "category": "Multimedia Tools",
-    "choco": "orcaslicer",
-    "content": "OrcaSlicer",
-    "description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
-    "link": "https://github.com/SoftFever/OrcaSlicer",
-    "winget": "SoftFever.OrcaSlicer"
-  },
-  "WPFInstallfxsound": {
-    "category": "Multimedia Tools",
-    "choco": "fxsound",
-    "content": "FxSound",
-    "description": "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
-    "link": "https://www.fxsound.com/",
-    "winget": "FxSoundLLC.FxSound"
-  },
-  "WPFInstallfzf": {
-    "category": "Utilities",
-    "choco": "fzf",
-    "content": "Fzf",
-    "description": "A command-line fuzzy finder",
-    "link": "https://github.com/junegunn/fzf/",
-    "winget": "junegunn.fzf"
-  },
-  "WPFInstallgeforcenow": {
-    "category": "Games",
-    "choco": "nvidia-geforce-now",
-    "content": "GeForce NOW",
-    "description": "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
-    "link": "https://www.nvidia.com/en-us/geforce-now/",
-    "winget": "Nvidia.GeForceNow"
-  },
-  "WPFInstallgimp": {
-    "category": "Multimedia Tools",
-    "choco": "gimp",
-    "content": "GIMP (Image Editor)",
-    "description": "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
-    "link": "https://www.gimp.org/",
-    "winget": "GIMP.GIMP"
-  },
-  "WPFInstallgit": {
-    "category": "Development",
-    "choco": "git",
-    "content": "Git",
-    "description": "Git is a distributed version control system widely used for tracking changes in source code during software development.",
-    "link": "https://git-scm.com/",
-    "winget": "Git.Git"
-  },
-  "WPFInstallgitextensions": {
-    "category": "Development",
-    "choco": "git;gitextensions",
-    "content": "Git Extensions",
-    "description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
-    "link": "https://gitextensions.github.io/",
-    "winget": "Git.Git;GitExtensionsTeam.GitExtensions"
-  },
-  "WPFInstallgithubcli": {
-    "category": "Development",
-    "choco": "git;gh",
-    "content": "GitHub CLI",
-    "description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
-    "link": "https://cli.github.com/",
-    "winget": "Git.Git;GitHub.cli"
-  },
-  "WPFInstallgithubdesktop": {
-    "category": "Development",
-    "choco": "git;github-desktop",
-    "content": "GitHub Desktop",
-    "description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
-    "link": "https://desktop.github.com/",
-    "winget": "Git.Git;GitHub.GitHubDesktop"
-  },
-  "WPFInstallglaryutilities": {
-    "category": "Utilities",
-    "choco": "glaryutilities-free",
-    "content": "Glary Utilities",
-    "description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
-    "link": "https://www.glarysoft.com/glary-utilities/",
-    "winget": "Glarysoft.GlaryUtilities"
-  },
-  "WPFInstallgog": {
-    "category": "Games",
-    "choco": "goggalaxy",
-    "content": "GOG Galaxy",
-    "description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
-    "link": "https://www.gog.com/galaxy",
-    "winget": "GOG.Galaxy"
-  },
-  "WPFInstallgolang": {
-    "category": "Development",
-    "choco": "golang",
-    "content": "GoLang",
-    "description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-    "link": "https://golang.org/",
-    "winget": "GoLang.Go"
-  },
-  "WPFInstallgoogledrive": {
-    "category": "Utilities",
-    "choco": "googledrive",
-    "content": "Google Drive",
-    "description": "File syncing across devices all tied to your google account",
-    "link": "https://www.google.com/drive/",
-    "winget": "Google.Drive"
-  },
-  "WPFInstallgpuz": {
-    "category": "Utilities",
-    "choco": "gpu-z",
-    "content": "GPU-Z",
-    "description": "GPU-Z provides detailed information about your graphics card and GPU.",
-    "link": "https://www.techpowerup.com/gpuz/",
-    "winget": "TechPowerUp.GPU-Z"
-  },
-  "WPFInstallgreenshot": {
-    "category": "Multimedia Tools",
-    "choco": "greenshot",
-    "content": "Greenshot (Screenshots)",
-    "description": "Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options.",
-    "link": "https://getgreenshot.org/",
-    "winget": "Greenshot.Greenshot"
-  },
-  "WPFInstallgsudo": {
-    "category": "Utilities",
-    "choco": "gsudo",
-    "content": "Gsudo",
-    "description": "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
-    "link": "https://gerardog.github.io/gsudo/",
-    "winget": "gerardog.gsudo"
-  },
-  "WPFInstallguilded": {
-    "category": "Communications",
-    "choco": "na",
-    "content": "Guilded",
-    "description": "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities.",
-    "link": "https://www.guilded.gg/",
-    "winget": "Guilded.Guilded"
-  },
-  "WPFInstallhandbrake": {
-    "category": "Multimedia Tools",
-    "choco": "handbrake",
-    "content": "HandBrake",
-    "description": "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
-    "link": "https://handbrake.fr/",
-    "winget": "HandBrake.HandBrake"
-  },
-  "WPFInstallharmonoid": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "Harmonoid",
-    "description": "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
-    "link": "https://harmonoid.com/",
-    "winget": "Harmonoid.Harmonoid"
-  },
-  "WPFInstallheidisql": {
-    "category": "Pro Tools",
-    "choco": "heidisql",
-    "content": "HeidiSQL",
-    "description": "HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development.",
-    "link": "https://www.heidisql.com/",
-    "winget": "HeidiSQL.HeidiSQL"
-  },
-  "WPFInstallhelix": {
-    "category": "Development",
-    "choco": "helix",
-    "content": "Helix",
-    "description": "Helix is a neovim alternative built in rust.",
-    "link": "https://helix-editor.com/",
-    "winget": "Helix.Helix"
-  },
-  "WPFInstallheroiclauncher": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Heroic Games Launcher",
-    "description": "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
-    "link": "https://heroicgameslauncher.com/",
-    "winget": "HeroicGamesLauncher.HeroicGamesLauncher"
-  },
-  "WPFInstallhexchat": {
-    "category": "Communications",
-    "choco": "hexchat",
-    "content": "Hexchat",
-    "description": "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication.",
-    "link": "https://hexchat.github.io/",
-    "winget": "HexChat.HexChat"
-  },
-  "WPFInstallhwinfo": {
-    "category": "Utilities",
-    "choco": "hwinfo",
-    "content": "HWiNFO",
-    "description": "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
-    "link": "https://www.hwinfo.com/",
-    "winget": "REALiX.HWiNFO"
-  },
-  "WPFInstallhwmonitor": {
-    "category": "Utilities",
-    "choco": "hwmonitor",
-    "content": "HWMonitor",
-    "description": "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
-    "link": "https://www.cpuid.com/softwares/hwmonitor.html",
-    "winget": "CPUID.HWMonitor"
-  },
-  "WPFInstallimageglass": {
-    "category": "Multimedia Tools",
-    "choco": "imageglass",
-    "content": "ImageGlass (Image Viewer)",
-    "description": "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
-    "link": "https://imageglass.org/",
-    "winget": "DuongDieuPhap.ImageGlass"
-  },
-  "WPFInstallimgburn": {
-    "category": "Multimedia Tools",
-    "choco": "imgburn",
-    "content": "ImgBurn",
-    "description": "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
-    "link": "http://www.imgburn.com/",
-    "winget": "LIGHTNINGUK.ImgBurn"
-  },
-  "WPFInstallinkscape": {
-    "category": "Multimedia Tools",
-    "choco": "inkscape",
-    "content": "Inkscape",
-    "description": "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
-    "link": "https://inkscape.org/",
-    "winget": "Inkscape.Inkscape"
-  },
-  "WPFInstallitch": {
-    "category": "Games",
-    "choco": "itch",
-    "content": "Itch.io",
-    "description": "Itch.io is a digital distribution platform for indie games and creative projects.",
-    "link": "https://itch.io/",
-    "winget": "ItchIo.Itch"
-  },
-  "WPFInstallitunes": {
-    "category": "Multimedia Tools",
-    "choco": "itunes",
-    "content": "iTunes",
-    "description": "iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc.",
-    "link": "https://www.apple.com/itunes/",
-    "winget": "Apple.iTunes"
-  },
-  "WPFInstalljami": {
-    "category": "Communications",
-    "choco": "jami",
-    "content": "Jami",
-    "description": "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
-    "link": "https://jami.net/",
-    "winget": "SFLinux.Jami"
-  },
-  "WPFInstalljava16": {
-    "category": "Development",
-    "choco": "temurin16jre",
-    "content": "OpenJDK Java 16",
-    "description": "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
-    "link": "https://adoptopenjdk.net/",
-    "winget": "AdoptOpenJDK.OpenJDK.16"
-  },
-  "WPFInstalljava18": {
-    "category": "Development",
-    "choco": "temurin18jre",
-    "content": "Oracle Java 18",
-    "description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
-    "link": "https://www.oracle.com/java/",
-    "winget": "EclipseAdoptium.Temurin.18.JRE"
-  },
-  "WPFInstalljava20": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Azul Zulu JDK 20",
-    "description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-    "link": "https://www.azul.com/downloads/zulu-community/",
-    "winget": "Azul.Zulu.20.JDK"
-  },
-  "WPFInstalljava21": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Azul Zulu JDK 21",
-    "description": "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-    "link": "https://www.azul.com/downloads/zulu-community/",
-    "winget": "Azul.Zulu.21.JDK"
-  },
-  "WPFInstalljava8": {
-    "category": "Development",
-    "choco": "temurin8jre",
-    "content": "OpenJDK Java 8",
-    "description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
-    "link": "https://adoptopenjdk.net/",
-    "winget": "EclipseAdoptium.Temurin.8.JRE"
-  },
-  "WPFInstalljava11runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 11",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.11.JRE"
-  },
-  "WPFInstalljava17runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 17",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.17.JRE"
-  },
-  "WPFInstalljava18runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 18",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.18.JRE"
-  },
-  "WPFInstalljava19runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 19",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.19.JRE"
-  },
-  "WPFInstalljdownloader": {
-    "category": "Utilities",
-    "choco": "jdownloader",
-    "content": "JDownloader",
-    "description": "JDownloader is a feature-rich download manager with support for various file hosting services.",
-    "link": "http://jdownloader.org/",
-    "winget": "AppWork.JDownloader"
-  },
-  "WPFInstalljellyfinmediaplayer": {
-    "category": "Multimedia Tools",
-    "choco": "jellyfin-media-player",
-    "content": "Jellyfin Media Player",
-    "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-    "link": "https://github.com/jellyfin/jellyfin-media-playerf",
-    "winget": "Jellyfin.JellyfinMediaPlayer"
-  },
-  "WPFInstalljellyfinserver": {
-    "category": "Multimedia Tools",
-    "choco": "jellyfin",
-    "content": "Jellyfin Server",
-    "description": "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
-    "link": "https://jellyfin.org/",
-    "winget": "Jellyfin.Server"
-  },
-  "WPFInstalljetbrains": {
-    "category": "Development",
-    "choco": "jetbrainstoolbox",
-    "content": "Jetbrains Toolbox",
-    "description": "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
-    "link": "https://www.jetbrains.com/toolbox/",
-    "winget": "JetBrains.Toolbox"
-  },
-  "WPFInstalljoplin": {
-    "category": "Document",
-    "choco": "joplin",
-    "content": "Joplin (FOSS Notes)",
-    "description": "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
-    "link": "https://joplinapp.org/",
-    "winget": "Joplin.Joplin"
-  },
-  "WPFInstalljpegview": {
-    "category": "Utilities",
-    "choco": "jpegview",
-    "content": "JPEG View",
-    "description": "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
-    "link": "https://github.com/sylikc/jpegview",
-    "winget": "sylikc.JPEGView"
-  },
-  "WPFInstallkdeconnect": {
-    "category": "Utilities",
-    "choco": "kdeconnect-kde",
-    "content": "KDE Connect",
-    "description": "KDE Connect allows seamless integration between your KDE desktop and mobile devices.",
-    "link": "https://community.kde.org/KDEConnect",
-    "winget": "KDE.KDEConnect"
-  },
-  "WPFInstallkdenlive": {
-    "category": "Multimedia Tools",
-    "choco": "kdenlive",
-    "content": "Kdenlive (Video Editor)",
-    "description": "Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos.",
-    "link": "https://kdenlive.org/",
-    "winget": "KDE.Kdenlive"
-  },
-  "WPFInstallkeepass": {
-    "category": "Utilities",
-    "choco": "keepassxc",
-    "content": "KeePassXC",
-    "description": "KeePassXC is a cross-platform, open-source password manager with strong encryption features.",
-    "link": "https://keepassxc.org/",
-    "winget": "KeePassXCTeam.KeePassXC"
-  },
-  "WPFInstallklite": {
-    "category": "Multimedia Tools",
-    "choco": "k-litecodecpack-standard",
-    "content": "K-Lite Codec Standard",
-    "description": "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
-    "link": "https://www.codecguide.com/",
-    "winget": "CodecGuide.K-LiteCodecPack.Standard"
-  },
-  "WPFInstallkodi": {
-    "category": "Multimedia Tools",
-    "choco": "kodi",
-    "content": "Kodi Media Center",
-    "description": "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
-    "link": "https://kodi.tv/",
-    "winget": "XBMCFoundation.Kodi"
-  },
-  "WPFInstallkrita": {
-    "category": "Multimedia Tools",
-    "choco": "krita",
-    "content": "Krita (Image Editor)",
-    "description": "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry.",
-    "link": "https://krita.org/en/features/",
-    "winget": "KDE.Krita"
-  },
-  "WPFInstalllazygit": {
-    "category": "Development",
-    "choco": "lazygit",
-    "content": "Lazygit",
-    "description": "Simple terminal UI for git commands",
-    "link": "https://github.com/jesseduffield/lazygit/",
-    "winget": "JesseDuffield.lazygit"
-  },
-  "WPFInstalllibreoffice": {
-    "category": "Document",
-    "choco": "libreoffice-fresh",
-    "content": "LibreOffice",
-    "description": "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
-    "link": "https://www.libreoffice.org/",
-    "winget": "TheDocumentFoundation.LibreOffice"
-  },
-  "WPFInstalllibrewolf": {
-    "category": "Browsers",
-    "choco": "librewolf",
-    "content": "LibreWolf",
-    "description": "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
-    "link": "https://librewolf-community.gitlab.io/",
-    "winget": "LibreWolf.LibreWolf"
-  },
-  "WPFInstalllinkshellextension": {
-    "category": "Utilities",
-    "choco": "linkshellextension",
-    "content": "Link Shell extension",
-    "description": "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
-    "link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
-    "winget": "HermannSchinagl.LinkShellExtension"
-  },
-  "WPFInstalllinphone": {
-    "category": "Communications",
-    "choco": "linphone",
-    "content": "Linphone",
-    "description": "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more.",
-    "link": "https://www.linphone.org/",
-    "winget": "BelledonneCommunications.Linphone"
-  },
-  "WPFInstalllivelywallpaper": {
-    "category": "Utilities",
-    "choco": "lively",
-    "content": "Lively Wallpaper",
-    "description": "Free and open-source software that allows users to set animated desktop wallpapers and screensavers.",
-    "link": "https://www.rocksdanister.com/lively/",
-    "winget": "rocksdanister.LivelyWallpaper"
-  },
-  "WPFInstalllocalsend": {
-    "category": "Utilities",
-    "choco": "localsend.install",
-    "content": "LocalSend",
-    "description": "An open source cross-platform alternative to AirDrop.",
-    "link": "https://localsend.org/",
-    "winget": "LocalSend.LocalSend"
-  },
-  "WPFInstalllockhunter": {
-    "category": "Utilities",
-    "choco": "lockhunter",
-    "content": "LockHunter",
-    "description": "LockHunter is a free tool to delete files blocked by something you do not know.",
-    "link": "https://lockhunter.com/",
-    "winget": "CrystalRich.LockHunter"
-  },
-  "WPFInstalllogseq": {
-    "category": "Document",
-    "choco": "logseq",
-    "content": "Logseq",
-    "description": "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights.",
-    "link": "https://logseq.com/",
-    "winget": "Logseq.Logseq"
-  },
-  "WPFInstallmalwarebytes": {
-    "category": "Utilities",
-    "choco": "malwarebytes",
-    "content": "Malwarebytes",
-    "description": "Malwarebytes is an anti-malware software that provides real-time protection against threats.",
-    "link": "https://www.malwarebytes.com/",
-    "winget": "Malwarebytes.Malwarebytes"
-  },
-  "WPFInstallmasscode": {
-    "category": "Document",
-    "choco": "na",
-    "content": "massCode (Snippet Manager)",
-    "description": "massCode is a fast and efficient open-source code snippet manager for developers.",
-    "link": "https://masscode.io/",
-    "winget": "antonreshetov.massCode"
-  },
-  "WPFInstallmatrix": {
-    "category": "Communications",
-    "choco": "element-desktop",
-    "content": "Matrix",
-    "description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
-    "link": "https://element.io/",
-    "winget": "Element.Element"
-  },
-  "WPFInstallmeld": {
-    "category": "Utilities",
-    "choco": "meld",
-    "content": "Meld",
-    "description": "Meld is a visual diff and merge tool for files and directories.",
-    "link": "https://meldmerge.org/",
-    "winget": "Meld.Meld"
-  },
-  "WPFInstallmonitorian": {
-    "category": "Utilities",
-    "choco": "monitorian",
-    "content": "Monitorian",
-    "description": "Monitorian is a utility for adjusting monitor brightness and contrast on Windows.",
-    "link": "https://github.com/emoacht/Monitorian",
-    "winget": "emoacht.Monitorian"
-  },
-  "WPFInstallmoonlight": {
-    "category": "Games",
-    "choco": "moonlight-qt",
-    "content": "Moonlight/GameStream Client",
-    "description": "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
-    "link": "https://moonlight-stream.org/",
-    "winget": "MoonlightGameStreamingProject.Moonlight"
-  },
-  "WPFInstallMotrix": {
-    "category": "Utilities",
-    "choco": "motrix",
-    "content": "Motrix Download Manager",
-    "description": "A full-featured download manager.",
-    "link": "https://motrix.app/",
-    "winget": "agalwood.Motrix"
-  },
-  "WPFInstallmpc": {
-    "category": "Multimedia Tools",
-    "choco": "mpc-hc",
-    "content": "Media Player Classic (Video Player)",
-    "description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
-    "link": "https://mpc-hc.org/",
-    "winget": "clsid2.mpc-hc"
-  },
-  "WPFInstallmremoteng": {
-    "category": "Pro Tools",
-    "choco": "mremoteng",
-    "content": "mRemoteNG",
-    "description": "mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface.",
-    "link": "https://mremoteng.org/",
-    "winget": "mRemoteNG.mRemoteNG"
-  },
-  "WPFInstallmsedgeredirect": {
-    "category": "Utilities",
-    "choco": "msedgeredirect",
-    "content": "MSEdgeRedirect",
-    "description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
-    "link": "https://github.com/rcmaehl/MSEdgeRedirect",
-    "winget": "rcmaehl.MSEdgeRedirect"
-  },
-  "WPFInstallmsiafterburner": {
-    "category": "Utilities",
-    "choco": "msiafterburner",
-    "content": "MSI Afterburner",
-    "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
-    "link": "https://www.msi.com/Landing/afterburner",
-    "winget": "Guru3D.Afterburner"
-  },
-  "WPFInstallmullvadbrowser": {
-    "category": "Browsers",
-    "choco": "na",
-    "content": "Mullvad Browser",
-    "description": "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
-    "link": "https://mullvad.net/browser",
-    "winget": "MullvadVPN.MullvadBrowser"
-  },
-  "WPFInstallmusescore": {
-    "category": "Multimedia Tools",
-    "choco": "musescore",
-    "content": "MuseScore",
-    "description": "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
-    "link": "https://musescore.org/en",
-    "winget": "Musescore.Musescore"
-  },
-  "WPFInstallmusicbee": {
-    "category": "Multimedia Tools",
-    "choco": "musicbee",
-    "content": "MusicBee (Music Player)",
-    "description": "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more.",
-    "link": "https://getmusicbee.com/",
-    "winget": "MusicBee.MusicBee"
-  },
-  "WPFInstallmp3tag": {
-    "category": "Multimedia Tools",
-    "choco": "mp3tag",
-    "content": "Mp3tag (Metadata Audio Editor)",
-    "description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
-    "link": "https://www.mp3tag.de/en/",
-    "winget": "Mp3tag.Mp3tag"
-  },
-  "WPFInstallnanazip": {
-    "category": "Utilities",
-    "choco": "nanazip",
-    "content": "NanaZip",
-    "description": "NanaZip is a fast and efficient file compression and decompression tool.",
-    "link": "https://github.com/M2Team/NanaZip",
-    "winget": "M2Team.NanaZip"
-  },
-  "WPFInstallnetbird": {
-    "category": "Pro Tools",
-    "choco": "netbird",
-    "content": "NetBird",
-    "description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
-    "link": "https://netbird.io/",
-    "winget": "netbird"
-  },
-  "WPFInstallnaps2": {
-    "category": "Document",
-    "choco": "naps2",
-    "content": "NAPS2 (Document Scanner)",
-    "description": "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
-    "link": "https://www.naps2.com/",
-    "winget": "Cyanfish.NAPS2"
-  },
-  "WPFInstallneofetchwin": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Neofetch",
-    "description": "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
-    "link": "https://github.com/nepnep39/neofetch-win",
-    "winget": "nepnep.neofetch-win"
-  },
-  "WPFInstallneovim": {
-    "category": "Development",
-    "choco": "neovim",
-    "content": "Neovim",
-    "description": "Neovim is a highly extensible text editor and an improvement over the original Vim editor.",
-    "link": "https://neovim.io/",
-    "winget": "Neovim.Neovim"
-  },
-  "WPFInstallnextclouddesktop": {
-    "category": "Utilities",
-    "choco": "nextcloud-client",
-    "content": "Nextcloud Desktop",
-    "description": "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
-    "link": "https://nextcloud.com/install/#install-clients",
-    "winget": "Nextcloud.NextcloudDesktop"
-  },
-  "WPFInstallnglide": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "nGlide (3dfx compatibility)",
-    "description": "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
-    "link": "http://www.zeus-software.com/downloads/nglide",
-    "winget": "ZeusSoftware.nGlide"
-  },
-  "WPFInstallnmap": {
-    "category": "Pro Tools",
-    "choco": "nmap",
-    "content": "Nmap",
-    "description": "Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services.",
-    "link": "https://nmap.org/",
-    "winget": "Insecure.Nmap"
-  },
-  "WPFInstallnodejs": {
-    "category": "Development",
-    "choco": "nodejs",
-    "content": "NodeJS",
-    "description": "NodeJS is a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine for building server-side and networking applications.",
-    "link": "https://nodejs.org/",
-    "winget": "OpenJS.NodeJS"
-  },
-  "WPFInstallnodejslts": {
-    "category": "Development",
-    "choco": "nodejs-lts",
-    "content": "NodeJS LTS",
-    "description": "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
-    "link": "https://nodejs.org/",
-    "winget": "OpenJS.NodeJS.LTS"
-  },
-  "WPFInstallnomacs": {
-    "category": "Multimedia Tools",
-    "choco": "nomacs",
-    "content": "Nomacs (Image viewer)",
-    "description": "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
-    "link": "https://nomacs.org/",
-    "winget": "nomacs.nomacs"
-  },
-  "WPFInstallnotepadplus": {
-    "category": "Document",
-    "choco": "notepadplusplus",
-    "content": "Notepad++",
-    "description": "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
-    "link": "https://notepad-plus-plus.org/",
-    "winget": "Notepad++.Notepad++"
-  },
-  "WPFInstallnuget": {
-    "category": "Microsoft Tools",
-    "choco": "nuget.commandline",
-    "content": "NuGet",
-    "description": "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
-    "link": "https://www.nuget.org/",
-    "winget": "Microsoft.NuGet"
-  },
-  "WPFInstallnushell": {
-    "category": "Utilities",
-    "choco": "nushell",
-    "content": "Nushell",
-    "description": "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience.",
-    "link": "https://www.nushell.sh/",
-    "winget": "Nushell.Nushell"
-  },
-  "WPFInstallnvclean": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "NVCleanstall",
-    "description": "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
-    "link": "https://www.techpowerup.com/nvcleanstall/",
-    "winget": "TechPowerUp.NVCleanstall"
-  },
-  "WPFInstallnvm": {
-    "category": "Development",
-    "choco": "nvm",
-    "content": "Node Version Manager",
-    "description": "Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions.",
-    "link": "https://github.com/coreybutler/nvm-windows",
-    "winget": "CoreyButler.NVMforWindows"
-  },
-  "WPFInstallobs": {
-    "category": "Multimedia Tools",
-    "choco": "obs-studio",
-    "content": "OBS Studio",
-    "description": "OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators.",
-    "link": "https://obsproject.com/",
-    "winget": "OBSProject.OBSStudio"
-  },
-  "WPFInstallobsidian": {
-    "category": "Document",
-    "choco": "obsidian",
-    "content": "Obsidian",
-    "description": "Obsidian is a powerful note-taking and knowledge management application.",
-    "link": "https://obsidian.md/",
-    "winget": "Obsidian.Obsidian"
-  },
-  "WPFInstallokular": {
-    "category": "Document",
-    "choco": "okular",
-    "content": "Okular",
-    "description": "Okular is a versatile document viewer with advanced features.",
-    "link": "https://okular.kde.org/",
-    "winget": "KDE.Okular"
-  },
-  "WPFInstallonedrive": {
-    "category": "Microsoft Tools",
-    "choco": "onedrive",
-    "content": "OneDrive",
-    "description": "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
-    "link": "https://onedrive.live.com/",
-    "winget": "Microsoft.OneDrive"
-  },
-  "WPFInstallonlyoffice": {
-    "category": "Document",
-    "choco": "onlyoffice",
-    "content": "ONLYOffice Desktop",
-    "description": "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
-    "link": "https://www.onlyoffice.com/desktop.aspx",
-    "winget": "ONLYOFFICE.DesktopEditors"
-  },
-  "WPFInstallOPAutoClicker": {
-    "category": "Utilities",
-    "choco": "autoclicker",
-    "content": "OPAutoClicker",
-    "description": "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
-    "link": "https://www.opautoclicker.com",
-    "winget": "OPAutoClicker.OPAutoClicker"
-  },
-  "WPFInstallopenhashtab": {
-    "category": "Utilities",
-    "choco": "openhashtab",
-    "content": "OpenHashTab",
-    "description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
-    "link": "https://github.com/namazso/OpenHashTab/",
-    "winget": "namazso.OpenHashTab"
-  },
-  "WPFInstallopenoffice": {
-    "category": "Document",
-    "choco": "openoffice",
-    "content": "Apache OpenOffice",
-    "description": "Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more.",
-    "link": "https://www.openoffice.org/",
-    "winget": "Apache.OpenOffice"
-  },
-  "WPFInstallopenrgb": {
-    "category": "Utilities",
-    "choco": "openrgb",
-    "content": "OpenRGB",
-    "description": "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
-    "link": "https://openrgb.org/",
-    "winget": "CalcProgrammer1.OpenRGB"
-  },
-  "WPFInstallopenscad": {
-    "category": "Multimedia Tools",
-    "choco": "openscad",
-    "content": "OpenSCAD",
-    "description": "OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing.",
-    "link": "https://www.openscad.org/",
-    "winget": "OpenSCAD.OpenSCAD"
-  },
-  "WPFInstallopenshell": {
-    "category": "Utilities",
-    "choco": "open-shell",
-    "content": "Open Shell (Start Menu)",
-    "description": "Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options.",
-    "link": "https://github.com/Open-Shell/Open-Shell-Menu",
-    "winget": "Open-Shell.Open-Shell-Menu"
-  },
-  "WPFInstallOpenVPN": {
-    "category": "Pro Tools",
-    "choco": "openvpn-connect",
-    "content": "OpenVPN Connect",
-    "description": "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
-    "link": "https://openvpn.net/",
-    "winget": "OpenVPNTechnologies.OpenVPNConnect"
-  },
-  "WPFInstallOVirtualBox": {
-    "category": "Utilities",
-    "choco": "virtualbox",
-    "content": "Oracle VirtualBox",
-    "description": "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures.",
-    "link": "https://www.virtualbox.org/",
-    "winget": "Oracle.VirtualBox"
-  },
-  "WPFInstallownclouddesktop": {
-    "category": "Utilities",
-    "choco": "owncloud-client",
-    "content": "ownCloud Desktop",
-    "description": "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform.",
-    "link": "https://owncloud.com/desktop-app/",
-    "winget": "ownCloud.ownCloudDesktop"
-  },
-  "WPFInstallPaintdotnet": {
-    "category": "Multimedia Tools",
-    "choco": "paint.net",
-    "content": "Paint.NET",
-    "description": "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
-    "link": "https://www.getpaint.net/",
-    "winget": "dotPDN.PaintDotNet"
-  },
-  "WPFInstallparsec": {
-    "category": "Utilities",
-    "choco": "parsec",
-    "content": "Parsec",
-    "description": "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
-    "link": "https://parsec.app/",
-    "winget": "Parsec.Parsec"
-  },
-  "WPFInstallpdf24creator": {
-    "category": "Document",
-    "choco": "pdf24",
-    "content": "PDF24 creator",
-    "description": "Free and easy-to-use online/desktop PDF tools that make you more productive",
-    "link": "https://tools.pdf24.org/en/",
-    "winget": "geeksoftwareGmbH.PDF24Creator"
-  },
-  "WPFInstallpdfsam": {
-    "category": "Document",
-    "choco": "pdfsam",
-    "content": "PDFsam Basic",
-    "description": "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
-    "link": "https://pdfsam.org/",
-    "winget": "PDFsam.PDFsam"
-  },
-  "WPFInstallpeazip": {
-    "category": "Utilities",
-    "choco": "peazip",
-    "content": "PeaZip",
-    "description": "PeaZip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
-    "link": "https://peazip.github.io/",
-    "winget": "Giorgiotani.Peazip"
-  },
-  "WPFInstallpiimager": {
-    "category": "Utilities",
-    "choco": "rpi-imager",
-    "content": "Raspberry Pi Imager",
-    "description": "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices.",
-    "link": "https://www.raspberrypi.com/software/",
-    "winget": "RaspberryPiFoundation.RaspberryPiImager"
-  },
-  "WPFInstallplaynite": {
-    "category": "Games",
-    "choco": "playnite",
-    "content": "Playnite",
-    "description": "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
-    "link": "https://playnite.link/",
-    "winget": "Playnite.Playnite"
-  },
-  "WPFInstallplex": {
-    "category": "Multimedia Tools",
-    "choco": "plexmediaserver",
-    "content": "Plex Media Server",
-    "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
-    "link": "https://www.plex.tv/your-media/",
-    "winget": "Plex.PlexMediaServer"
-  },
-  "WPFInstallPortmaster": {
-    "category": "Pro Tools",
-    "choco": "portmaster",
-    "content": "Portmaster",
-    "description": "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
-    "link": "https://safing.io/",
-    "winget": "Safing.Portmaster"
-  },
-  "WPFInstallposh": {
-    "category": "Development",
-    "choco": "oh-my-posh",
-    "content": "Oh My Posh (Prompt)",
-    "description": "Oh My Posh is a cross-platform prompt theme engine for any shell.",
-    "link": "https://ohmyposh.dev/",
-    "winget": "JanDeDobbeleer.OhMyPosh"
-  },
-  "WPFInstallpostman": {
-    "category": "Development",
-    "choco": "postman",
-    "content": "Postman",
-    "description": "Postman is a collaboration platform for API development that simplifies the process of developing APIs.",
-    "link": "https://www.postman.com/",
-    "winget": "Postman.Postman"
-  },
-  "WPFInstallpowerautomate": {
-    "category": "Microsoft Tools",
-    "choco": "powerautomatedesktop",
-    "content": "Power Automate",
-    "description": "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
-    "link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
-    "winget": "Microsoft.PowerAutomateDesktop"
-  },
-  "WPFInstallpowerbi": {
-    "category": "Microsoft Tools",
-    "choco": "powerbi",
-    "content": "Power BI",
-    "description": "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
-    "link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/",
-    "winget": "Microsoft.PowerBI"
-  },
-  "WPFInstallpowershell": {
-    "category": "Microsoft Tools",
-    "choco": "powershell-core",
-    "content": "PowerShell",
-    "description": "PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities.",
-    "link": "https://github.com/PowerShell/PowerShell",
-    "winget": "Microsoft.PowerShell"
-  },
-  "WPFInstallpowertoys": {
-    "category": "Microsoft Tools",
-    "choco": "powertoys",
-    "content": "PowerToys",
-    "description": "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
-    "link": "https://github.com/microsoft/PowerToys",
-    "winget": "Microsoft.PowerToys"
-  },
-  "WPFInstallprismlauncher": {
-    "category": "Games",
-    "choco": "prismlauncher",
-    "content": "Prism Launcher",
-    "description": "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
-    "link": "https://prismlauncher.org/",
-    "winget": "PrismLauncher.PrismLauncher"
-  },
-  "WPFInstallprocesslasso": {
-    "category": "Utilities",
-    "choco": "plasso",
-    "content": "Process Lasso",
-    "description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
-    "link": "https://bitsum.com/",
-    "winget": "BitSum.ProcessLasso"
-  },
-  "WPFInstallprocessmonitor": {
-    "category": "Microsoft Tools",
-    "choco": "procexp",
-    "content": "SysInternals Process Monitor",
-    "description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
-    "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
-    "winget": "Microsoft.Sysinternals.ProcessMonitor"
-  },
-  "WPFInstallprucaslicer": {
-    "category": "Utilities",
-    "choco": "prusaslicer",
-    "content": "PrusaSlicer",
-    "description": "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
-    "link": "https://www.prusa3d.com/prusaslicer/",
-    "winget": "Prusa3d.PrusaSlicer"
-  },
-  "WPFInstallpsremoteplay": {
-    "category": "Games",
-    "choco": "ps-remote-play",
-    "content": "PS Remote Play",
-    "description": "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device.",
-    "link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
-    "winget": "PlayStation.PSRemotePlay"
-  },
-  "WPFInstallputty": {
-    "category": "Pro Tools",
-    "choco": "putty",
-    "content": "PuTTY",
-    "description": "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP.",
-    "link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
-    "winget": "PuTTY.PuTTY"
-  },
-  "WPFInstallpython3": {
-    "category": "Development",
-    "choco": "python",
-    "content": "Python3",
-    "description": "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
-    "link": "https://www.python.org/",
-    "winget": "Python.Python.3.12"
-  },
-  "WPFInstallqbittorrent": {
-    "category": "Utilities",
-    "choco": "qbittorrent",
-    "content": "qBittorrent",
-    "description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
-    "link": "https://www.qbittorrent.org/",
-    "winget": "qBittorrent.qBittorrent"
-  },
-  "WPFInstalltixati": {
-    "category": "Utilities",
-    "choco": "tixati.portable",
-    "content": "Tixati",
-    "description": "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
-    "link": "https://www.tixati.com/",
-    "winget": "Tixati.Tixati.Portable"
-  },
-  "WPFInstallqtox": {
-    "category": "Communications",
-    "choco": "qtox",
-    "content": "QTox",
-    "description": "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
-    "link": "https://qtox.github.io/",
-    "winget": "Tox.qTox"
-  },
-  "WPFInstallquicklook": {
-    "category": "Utilities",
-    "choco": "quicklook",
-    "content": "Quicklook",
-    "description": "Bring macOS &#8220;Quick Look&#8221; feature to Windows",
-    "link": "https://github.com/QL-Win/QuickLook",
-    "winget": "QL-Win.QuickLook"
-  },
-  "WPFInstallrainmeter": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Rainmeter",
-    "description": "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop.",
-    "link": "https://www.rainmeter.net/",
-    "winget": "Rainmeter.Rainmeter"
-  },
-  "WPFInstallrevo": {
-    "category": "Utilities",
-    "choco": "revo-uninstaller",
-    "content": "Revo Uninstaller",
-    "description": "Revo Uninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
-    "link": "https://www.revouninstaller.com/",
-    "winget": "RevoUninstaller.RevoUninstaller"
-  },
-  "WPFInstallrevolt": {
-    "category": "Communications",
-    "choco": "na",
-    "content": "Revolt",
-    "description": "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
-    "link": "https://revolt.chat/",
-    "winget": "Revolt.RevoltDesktop"
-  },
-  "WPFInstallripgrep": {
-    "category": "Utilities",
-    "choco": "ripgrep",
-    "content": "Ripgrep",
-    "description": "Fast and powerful commandline search tool",
-    "link": "https://github.com/BurntSushi/ripgrep/",
-    "winget": "BurntSushi.ripgrep.MSVC"
-  },
-  "WPFInstallrufus": {
-    "category": "Utilities",
-    "choco": "rufus",
-    "content": "Rufus Imager",
-    "description": "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
-    "link": "https://rufus.ie/",
-    "winget": "Rufus.Rufus"
-  },
-  "WPFInstallrustdesk": {
-    "category": "Pro Tools",
-    "choco": "rustdesk.portable",
-    "content": "RustDesk",
-    "description": "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
-    "link": "https://rustdesk.com/",
-    "winget": "RustDesk.RustDesk"
-  },
-  "WPFInstallrustlang": {
-    "category": "Development",
-    "choco": "rust",
-    "content": "Rust",
-    "description": "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
-    "link": "https://www.rust-lang.org/",
-    "winget": "Rustlang.Rust.MSVC"
-  },
-  "WPFInstallsamsungmagician": {
-    "category": "Utilities",
-    "choco": "samsung-magician",
-    "content": "Samsung Magician",
-    "description": "Samsung Magician is a utility for managing and optimizing Samsung SSDs.",
-    "link": "https://semiconductor.samsung.com/consumer-storage/magician/",
-    "winget": "Samsung.SamsungMagician"
-  },
-  "WPFInstallsandboxie": {
-    "category": "Utilities",
-    "choco": "sandboxie",
-    "content": "Sandboxie Plus",
-    "description": "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment.",
-    "link": "https://github.com/sandboxie-plus/Sandboxie",
-    "winget": "Sandboxie.Plus"
-  },
-  "WPFInstallsdio": {
-    "category": "Utilities",
-    "choco": "sdio",
-    "content": "Snappy Driver Installer Origin",
-    "description": "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
-    "link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
-    "winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
-  },
-  "WPFInstallsession": {
-    "category": "Communications",
-    "choco": "session",
-    "content": "Session",
-    "description": "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection.",
-    "link": "https://getsession.org/",
-    "winget": "Oxen.Session"
-  },
-  "WPFInstallsharex": {
-    "category": "Multimedia Tools",
-    "choco": "sharex",
-    "content": "ShareX (Screenshots)",
-    "description": "ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots.",
-    "link": "https://getsharex.com/",
-    "winget": "ShareX.ShareX"
-  },
-  "WPFInstallnilesoftShel": {
-    "category": "Utilities",
-    "choco": "nilesoft-shell",
-    "content": "Shell (Expanded Context Menu)",
-    "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
-    "link": "https://nilesoft.org/",
-    "winget": "Nilesoft.Shell"
-  },
-  "WPFInstallsidequest": {
-    "category": "Games",
-    "choco": "sidequest",
-    "content": "SideQuestVR",
-    "description": "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
-    "link": "https://sidequestvr.com/",
-    "winget": "SideQuestVR.SideQuest"
-  },
-  "WPFInstallsignal": {
-    "category": "Communications",
-    "choco": "signal",
-    "content": "Signal",
-    "description": "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
-    "link": "https://signal.org/",
-    "winget": "OpenWhisperSystems.Signal"
-  },
-  "WPFInstallsignalrgb": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "SignalRGB",
-    "description": "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
-    "link": "https://www.signalrgb.com/",
-    "winget": "WhirlwindFX.SignalRgb"
-  },
-  "WPFInstallsimplenote": {
-    "category": "Document",
-    "choco": "simplenote",
-    "content": "simplenote",
-    "description": "Simplenote is an easy way to keep notes, lists, ideas and more.",
-    "link": "https://simplenote.com/",
-    "winget": "Automattic.Simplenote"
-  },
-  "WPFInstallsimplewall": {
-    "category": "Pro Tools",
-    "choco": "simplewall",
-    "content": "Simplewall",
-    "description": "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
-    "link": "https://github.com/henrypp/simplewall",
-    "winget": "Henry++.simplewall"
-  },
-  "WPFInstallskype": {
-    "category": "Communications",
-    "choco": "skype",
-    "content": "Skype",
-    "description": "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services.",
-    "link": "https://www.skype.com/",
-    "winget": "Microsoft.Skype"
-  },
-  "WPFInstallslack": {
-    "category": "Communications",
-    "choco": "slack",
-    "content": "Slack",
-    "description": "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing.",
-    "link": "https://slack.com/",
-    "winget": "SlackTechnologies.Slack"
-  },
-  "WPFInstallspacedrive": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Spacedrive File Manager",
-    "description": "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
-    "link": "https://www.spacedrive.com/",
-    "winget": "spacedrive.Spacedrive"
-  },
-  "WPFInstallspacesniffer": {
-    "category": "Utilities",
-    "choco": "spacesniffer",
-    "content": "SpaceSniffer",
-    "description": "A tool application that lets you understand how folders and files are structured on your disks",
-    "link": "http://www.uderzo.it/main_products/space_sniffer/",
-    "winget": "UderzoSoftware.SpaceSniffer"
-  },
-  "WPFInstallstarship": {
-    "category": "Development",
-    "choco": "starship",
-    "content": "Starship (Shell Prompt)",
-    "description": "Starship is a minimal, fast, and customizable prompt for any shell.",
-    "link": "https://starship.rs/",
-    "winget": "starship"
-  },
-  "WPFInstallsteam": {
-    "category": "Games",
-    "choco": "steam-client",
-    "content": "Steam",
-    "description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
-    "link": "https://store.steampowered.com/about/",
-    "winget": "Valve.Steam"
-  },
-  "WPFInstallstrawberry": {
-    "category": "Multimedia Tools",
-    "choco": "strawberrymusicplayer",
-    "content": "Strawberry (Music Player)",
-    "description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
-    "link": "https://www.strawberrymusicplayer.org/",
-    "winget": "StrawberryMusicPlayer.Strawberry"
-  },
-  "WPFInstallstremio": {
-    "winget": "Stremio.Stremio",
-    "choco": "stremio",
-    "category": "Multimedia Tools",
-    "content": "Stremio",
-    "link": "https://www.stremio.com/",
-    "description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
-  },
-  "WPFInstallsublimemerge": {
-    "category": "Development",
-    "choco": "sublimemerge",
-    "content": "Sublime Merge",
-    "description": "Sublime Merge is a Git client with advanced features and a beautiful interface.",
-    "link": "https://www.sublimemerge.com/",
-    "winget": "SublimeHQ.SublimeMerge"
-  },
-  "WPFInstallsublimetext": {
-    "category": "Development",
-    "choco": "sublimetext4",
-    "content": "Sublime Text",
-    "description": "Sublime Text is a sophisticated text editor for code, markup, and prose.",
-    "link": "https://www.sublimetext.com/",
-    "winget": "SublimeHQ.SublimeText.4"
-  },
-  "WPFInstallsumatra": {
-    "category": "Document",
-    "choco": "sumatrapdf",
-    "content": "Sumatra PDF",
-    "description": "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
-    "link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
-    "winget": "SumatraPDF.SumatraPDF"
-  },
-  "WPFInstallpdfgear": {
-    "category": "Document",
-    "choco": "na",
-    "content": "PDFgear",
-    "description": "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it&#39;s completely free to use.",
-    "link": "https://www.pdfgear.com/",
-    "winget": "PDFgear.PDFgear"
-  },
-  "WPFInstallsunshine": {
-    "category": "Games",
-    "choco": "sunshine",
-    "content": "Sunshine/GameStream Server",
-    "description": "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
-    "link": "https://github.com/LizardByte/Sunshine",
-    "winget": "LizardByte.Sunshine"
-  },
-  "WPFInstallsuperf4": {
-    "category": "Utilities",
-    "choco": "superf4",
-    "content": "SuperF4",
-    "description": "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
-    "link": "https://stefansundin.github.io/superf4/",
-    "winget": "StefanSundin.Superf4"
-  },
-  "WPFInstallswift": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Swift toolchain",
-    "description": "Swift is a general-purpose programming language that&#39;s approachable for newcomers and powerful for experts.",
-    "link": "https://www.swift.org/",
-    "winget": "Swift.Toolchain"
-  },
-  "WPFInstallsynctrayzor": {
-    "category": "Utilities",
-    "choco": "synctrayzor",
-    "content": "SyncTrayzor",
-    "description": "Windows tray utility / filesystem watcher / launcher for Syncthing",
-    "link": "https://github.com/canton7/SyncTrayzor/",
-    "winget": "SyncTrayzor.SyncTrayzor"
-  },
-  "WPFInstallsqlmanagementstudio": {
-    "category": "Microsoft Tools",
-    "choco": "sql-server-management-studio",
-    "content": "Microsoft SQL Server Management Studio",
-    "description": "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
-    "link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
-    "winget": "Microsoft.SQLServerManagementStudio"
-  },
-  "WPFInstalltabby": {
-    "category": "Utilities",
-    "choco": "tabby",
-    "content": "Tabby.sh",
-    "description": "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
-    "link": "https://tabby.sh/",
-    "winget": "Eugeny.Tabby"
-  },
-  "WPFInstalltailscale": {
-    "category": "Utilities",
-    "choco": "tailscale",
-    "content": "Tailscale",
-    "description": "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks.",
-    "link": "https://tailscale.com/",
-    "winget": "tailscale.tailscale"
-  },
-  "WPFInstallTcNoAccSwitcher": {
-    "category": "Games",
-    "choco": "tcno-acc-switcher",
-    "content": "TCNO Account Switcher",
-    "description": "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!",
-    "link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
-    "winget": "TechNobo.TcNoAccountSwitcher"
-  },
-  "WPFInstalltcpview": {
-    "category": "Microsoft Tools",
-    "choco": "tcpview",
-    "content": "SysInternals TCPView",
-    "description": "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
-    "link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
-    "winget": "Microsoft.Sysinternals.TCPView"
-  },
-  "WPFInstallteams": {
-    "category": "Communications",
-    "choco": "microsoft-teams",
-    "content": "Teams",
-    "description": "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
-    "link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-    "winget": "Microsoft.Teams"
-  },
-  "WPFInstallteamviewer": {
-    "category": "Utilities",
-    "choco": "teamviewer9",
-    "content": "TeamViewer",
-    "description": "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
-    "link": "https://www.teamviewer.com/",
-    "winget": "TeamViewer.TeamViewer"
-  },
-  "WPFInstalltelegram": {
-    "category": "Communications",
-    "choco": "telegram",
-    "content": "Telegram",
-    "description": "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
-    "link": "https://telegram.org/",
-    "winget": "Telegram.TelegramDesktop"
-  },
-  "WPFInstallunigram": {
-    "category": "Communications",
-    "choco": "na",
-    "content": "Unigram",
-    "description": "Unigram - Telegram for Windows",
-    "link": "https://unigramdev.github.io/",
-    "winget": "Telegram.Unigram"
-  },
-  "WPFInstallterminal": {
-    "category": "Microsoft Tools",
-    "choco": "microsoft-windows-terminal",
-    "content": "Windows Terminal",
-    "description": "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
-    "link": "https://aka.ms/terminal",
-    "winget": "Microsoft.WindowsTerminal"
-  },
-  "WPFInstallThonny": {
-    "category": "Development",
-    "choco": "thonny",
-    "content": "Thonny Python IDE",
-    "description": "Python IDE for beginners.",
-    "link": "https://github.com/thonny/thonny",
-    "winget": "AivarAnnamaa.Thonny"
-  },
-  "WPFInstallthorium": {
-    "category": "Browsers",
-    "choco": "na",
-    "content": "Thorium Browser AVX2",
-    "description": "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
-    "link": "http://thorium.rocks/",
-    "winget": "Alex313031.Thorium.AVX2"
-  },
-  "WPFInstallthunderbird": {
-    "category": "Communications",
-    "choco": "thunderbird",
-    "content": "Thunderbird",
-    "description": "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features.",
-    "link": "https://www.thunderbird.net/",
-    "winget": "Mozilla.Thunderbird"
-  },
-  "WPFInstallbetterbird": {
-    "category": "Communications",
-    "choco": "betterbird",
-    "content": "Betterbird",
-    "description": "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
-    "link": "https://www.betterbird.eu/",
-    "winget": "Betterbird.Betterbird"
-  },
-  "WPFInstalltidal": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "Tidal",
-    "description": "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists.",
-    "link": "https://tidal.com/",
-    "winget": "9NNCB5BS59PH"
-  },
-  "WPFInstalltor": {
-    "category": "Browsers",
-    "choco": "tor-browser",
-    "content": "Tor Browser",
-    "description": "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security.",
-    "link": "https://www.torproject.org/",
-    "winget": "TorProject.TorBrowser"
-  },
-  "WPFInstalltotalcommander": {
-    "category": "Utilities",
-    "choco": "TotalCommander",
-    "content": "Total Commander",
-    "description": "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management.",
-    "link": "https://www.ghisler.com/",
-    "winget": "Ghisler.TotalCommander"
-  },
-  "WPFInstalltreesize": {
-    "category": "Utilities",
-    "choco": "treesizefree",
-    "content": "TreeSize Free",
-    "description": "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives.",
-    "link": "https://www.jam-software.com/treesize_free/",
-    "winget": "JAMSoftware.TreeSize.Free"
-  },
-  "WPFInstallttaskbar": {
-    "category": "Utilities",
-    "choco": "translucenttb",
-    "content": "Translucent Taskbar",
-    "description": "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar.",
-    "link": "https://github.com/TranslucentTB/TranslucentTB",
-    "winget": "9PF4KZ2VN4W9"
-  },
-  "WPFInstalltwinkletray": {
-    "category": "Utilities",
-    "choco": "twinkle-tray",
-    "content": "Twinkle Tray",
-    "description": "Twinkle Tray lets you easily manage the brightness levels of multiple monitors.",
-    "link": "https://twinkletray.com/",
-    "winget": "xanderfrangos.twinkletray"
-  },
-  "WPFInstallubisoft": {
-    "category": "Games",
-    "choco": "ubisoft-connect",
-    "content": "Ubisoft Connect",
-    "description": "Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services.",
-    "link": "https://ubisoftconnect.com/",
-    "winget": "Ubisoft.Connect"
-  },
-  "WPFInstallungoogled": {
-    "category": "Browsers",
-    "choco": "ungoogled-chromium",
-    "content": "Ungoogled",
-    "description": "Ungoogled Chromium is a version of Chromium without Google&#39;s integration for enhanced privacy and control.",
-    "link": "https://github.com/Eloston/ungoogled-chromium",
-    "winget": "eloston.ungoogled-chromium"
-  },
-  "WPFInstallunity": {
-    "category": "Development",
-    "choco": "unityhub",
-    "content": "Unity Game Engine",
-    "description": "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
-    "link": "https://unity.com/",
-    "winget": "Unity.UnityHub"
-  },
-  "WPFInstallvagrant": {
-    "category": "Development",
-    "choco": "vagrant",
-    "content": "Vagrant",
-    "description": "Vagrant is an open-source tool for building and managing virtualized development environments.",
-    "link": "https://www.vagrantup.com/",
-    "winget": "Hashicorp.Vagrant"
-  },
-  "WPFInstallvc2015_32": {
-    "category": "Microsoft Tools",
-    "choco": "na",
-    "content": "Visual C++ 2015-2022 32-bit",
-    "description": "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
-    "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-    "winget": "Microsoft.VCRedist.2015+.x86"
-  },
-  "WPFInstallvc2015_64": {
-    "category": "Microsoft Tools",
-    "choco": "na",
-    "content": "Visual C++ 2015-2022 64-bit",
-    "description": "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
-    "link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-    "winget": "Microsoft.VCRedist.2015+.x64"
-  },
-  "WPFInstallvencord": {
-    "category": "Communications",
-    "choco": "na",
-    "content": "Vencord",
-    "description": "Vencord is a modification for Discord that adds plugins, custom styles, and more!",
-    "link": "https://vencord.dev/",
-    "winget": "Vendicated.Vencord"
-  },
-  "WPFInstallventoy": {
-    "category": "Pro Tools",
-    "choco": "ventoy",
-    "content": "Ventoy",
-    "description": "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems.",
-    "link": "https://www.ventoy.net/",
-    "winget": "Ventoy.Ventoy"
-  },
-  "WPFInstallvesktop": {
-    "category": "Communications",
-    "choco": "na",
-    "content": "Vesktop",
-    "description": "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
-    "link": "https://github.com/Vencord/Vesktop",
-    "winget": "Vencord.Vesktop"
-  },
-  "WPFInstallviber": {
-    "category": "Communications",
-    "choco": "viber",
-    "content": "Viber",
-    "description": "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
-    "link": "https://www.viber.com/",
-    "winget": "Viber.Viber"
-  },
-  "WPFInstallvideomass": {
-    "category": "Multimedia Tools",
-    "choco": "na",
-    "content": "Videomass",
-    "description": "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
-    "link": "https://jeanslack.github.io/Videomass/",
-    "winget": "GianlucaPernigotto.Videomass"
-  },
-  "WPFInstallvisualstudio": {
-    "category": "Development",
-    "choco": "visualstudio2022community",
-    "content": "Visual Studio 2022",
-    "description": "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
-    "link": "https://visualstudio.microsoft.com/",
-    "winget": "Microsoft.VisualStudio.2022.Community"
-  },
-  "WPFInstallvivaldi": {
-    "category": "Browsers",
-    "choco": "vivaldi",
-    "content": "Vivaldi",
-    "description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
-    "link": "https://vivaldi.com/",
-    "winget": "Vivaldi.Vivaldi"
-  },
-  "WPFInstallvlc": {
-    "category": "Multimedia Tools",
-    "choco": "vlc",
-    "content": "VLC (Video Player)",
-    "description": "VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility.",
-    "link": "https://www.videolan.org/vlc/",
-    "winget": "VideoLAN.VLC"
-  },
-  "WPFInstallvoicemeeter": {
-    "category": "Multimedia Tools",
-    "choco": "voicemeeter",
-    "content": "Voicemeeter (Audio)",
-    "description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes.",
-    "link": "https://www.vb-audio.com/Voicemeeter/",
-    "winget": "VB-Audio.Voicemeeter"
-  },
-  "WPFInstallvrdesktopstreamer": {
-    "category": "Games",
-    "choco": "na",
-    "content": "Virtual Desktop Streamer",
-    "description": "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
-    "link": "https://www.vrdesktop.net/",
-    "winget": "VirtualDesktop.Streamer"
-  },
-  "WPFInstallvscode": {
-    "category": "Development",
-    "choco": "vscode",
-    "content": "VS Code",
-    "description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
-    "link": "https://code.visualstudio.com/",
-    "winget": "Git.Git;Microsoft.VisualStudioCode"
-  },
-  "WPFInstallvscodium": {
-    "category": "Development",
-    "choco": "vscodium",
-    "content": "VS Codium",
-    "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft&#39;s VS Code.",
-    "link": "https://vscodium.com/",
-    "winget": "Git.Git;VSCodium.VSCodium"
-  },
-  "WPFInstallwaterfox": {
-    "category": "Browsers",
-    "choco": "waterfox",
-    "content": "Waterfox",
-    "description": "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
-    "link": "https://www.waterfox.net/",
-    "winget": "Waterfox.Waterfox"
-  },
-  "WPFInstallwezterm": {
-    "category": "Development",
-    "choco": "wezterm",
-    "content": "Wezterm",
-    "description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
-    "link": "https://wezfurlong.org/wezterm/index.html",
-    "winget": "wez.wezterm"
-  },
-  "WPFInstallwindirstat": {
-    "category": "Utilities",
-    "choco": "windirstat",
-    "content": "WinDirStat",
-    "description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
-    "link": "https://windirstat.net/",
-    "winget": "WinDirStat.WinDirStat"
-  },
-  "WPFInstallwindowspchealth": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Windows PC Health Check",
-    "description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
-    "link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
-    "winget": "Microsoft.WindowsPCHealthCheck"
-  },
-  "WPFInstallwingetui": {
-    "category": "Utilities",
-    "choco": "wingetui",
-    "content": "WingetUI",
-    "description": "WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget).",
-    "link": "https://www.marticliment.com/wingetui/",
-    "winget": "SomePythonThings.WingetUIStore"
-  },
-  "WPFInstallwinmerge": {
-    "category": "Document",
-    "choco": "winmerge",
-    "content": "WinMerge",
-    "description": "WinMerge is a visual text file and directory comparison tool for Windows.",
-    "link": "https://winmerge.org/",
-    "winget": "WinMerge.WinMerge"
-  },
-  "WPFInstallwinpaletter": {
-    "category": "Utilities",
-    "choco": "WinPaletter",
-    "content": "WinPaletter",
-    "description": "WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors.",
-    "link": "https://github.com/Abdelrhman-AK/WinPaletter",
-    "winget": "Abdelrhman-AK.WinPaletter"
-  },
-  "WPFInstallwinrar": {
-    "category": "Utilities",
-    "choco": "winrar",
-    "content": "WinRAR",
-    "description": "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files.",
-    "link": "https://www.win-rar.com/",
-    "winget": "RARLab.WinRAR"
-  },
-  "WPFInstallwinscp": {
-    "category": "Pro Tools",
-    "choco": "winscp",
-    "content": "WinSCP",
-    "description": "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
-    "link": "https://winscp.net/",
-    "winget": "WinSCP.WinSCP"
-  },
-  "WPFInstallwireguard": {
-    "category": "Pro Tools",
-    "choco": "wireguard",
-    "content": "WireGuard",
-    "description": "WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections.",
-    "link": "https://www.wireguard.com/",
-    "winget": "WireGuard.WireGuard"
-  },
-  "WPFInstallwireshark": {
-    "category": "Pro Tools",
-    "choco": "wireshark",
-    "content": "Wireshark",
-    "description": "Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities.",
-    "link": "https://www.wireshark.org/",
-    "winget": "WiresharkFoundation.Wireshark"
-  },
-  "WPFInstallwisetoys": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "WiseToys",
-    "description": "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience.",
-    "link": "https://toys.wisecleaner.com/",
-    "winget": "WiseCleaner.WiseToys"
-  },
-  "WPFInstallwizfile": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "WizFile",
-    "description": "Find files by name on your hard drives almost instantly.",
-    "link": "https://antibody-software.com/wizfile/",
-    "winget": "AntibodySoftware.WizFile"
-  },
-  "WPFInstallwiztree": {
-    "category": "Utilities",
-    "choco": "wiztree",
-    "content": "WizTree",
-    "description": "WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive.",
-    "link": "https://wiztreefree.com/",
-    "winget": "AntibodySoftware.WizTree"
-  },
-  "WPFInstallxdm": {
-    "category": "Utilities",
-    "choco": "xdm",
-    "content": "Xtreme Download Manager",
-    "description": "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
-    "link": "https://xtremedownloadmanager.com/",
-    "winget": "subhra74.XtremeDownloadManager"
-  },
-  "WPFInstallxeheditor": {
-    "category": "Utilities",
-    "choco": "HxD",
-    "content": "HxD Hex Editor",
-    "description": "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
-    "link": "https://mh-nexus.de/en/hxd/",
-    "winget": "MHNexus.HxD"
-  },
-  "WPFInstallxemu": {
-    "category": "Games",
-    "choco": "na",
-    "content": "XEMU",
-    "description": "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
-    "link": "https://xemu.app/",
-    "winget": "xemu-project.xemu"
-  },
-  "WPFInstallxnview": {
-    "category": "Utilities",
-    "choco": "xnview",
-    "content": "XnView classic",
-    "description": "XnView is an efficient image viewer, browser and converter for Windows.",
-    "link": "https://www.xnview.com/en/xnview/",
-    "winget": "XnSoft.XnView.Classic"
-  },
-  "WPFInstallxournal": {
-    "category": "Document",
-    "choco": "xournalplusplus",
-    "content": "Xournal++",
-    "description": "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
-    "link": "https://xournalpp.github.io/",
-    "winget": "Xournal++.Xournal++"
-  },
-  "WPFInstallxpipe": {
-    "category": "Pro Tools",
-    "choco": "xpipe",
-    "content": "XPipe",
-    "description": "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
-    "link": "https://xpipe.io/",
-    "winget": "xpipe-io.xpipe"
-  },
-  "WPFInstallyarn": {
-    "category": "Development",
-    "choco": "yarn",
-    "content": "Yarn",
-    "description": "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects.",
-    "link": "https://yarnpkg.com/",
-    "winget": "Yarn.Yarn"
-  },
-  "WPFInstallytdlp": {
-    "category": "Multimedia Tools",
-    "choco": "yt-dlp",
-    "content": "Yt-dlp",
-    "description": "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
-    "link": "https://github.com/yt-dlp/yt-dlp",
-    "winget": "yt-dlp.yt-dlp"
-  },
-  "WPFInstallzerotierone": {
-    "category": "Utilities",
-    "choco": "zerotier-one",
-    "content": "ZeroTier One",
-    "description": "ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks.",
-    "link": "https://zerotier.com/",
-    "winget": "ZeroTier.ZeroTierOne"
-  },
-  "WPFInstallzim": {
-    "category": "Document",
-    "choco": "zim",
-    "content": "Zim Desktop Wiki",
-    "description": "Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages.",
-    "link": "https://zim-wiki.org/",
-    "winget": "Zimwiki.Zim"
-  },
-  "WPFInstallznote": {
-    "category": "Document",
-    "choco": "na",
-    "content": "Znote",
-    "description": "Znote is a note-taking application.",
-    "link": "https://znote.io/",
-    "winget": "alagrede.znote"
-  },
-  "WPFInstallzoom": {
-    "category": "Communications",
-    "choco": "zoom",
-    "content": "Zoom",
-    "description": "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
-    "link": "https://zoom.us/",
-    "winget": "Zoom.Zoom"
-  },
-  "WPFInstallzotero": {
-    "category": "Document",
-    "choco": "zotero",
-    "content": "Zotero",
-    "description": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
-    "link": "https://www.zotero.org/",
-    "winget": "DigitalScholar.Zotero"
-  },
-  "WPFInstallzoxide": {
-    "category": "Utilities",
-    "choco": "zoxide",
-    "content": "Zoxide",
-    "description": "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease.",
-    "link": "https://github.com/ajeetdsouza/zoxide",
-    "winget": "ajeetdsouza.zoxide"
-  },
-  "WPFInstallzulip": {
-    "category": "Communications",
-    "choco": "zulip",
-    "content": "Zulip",
-    "description": "Zulip is an open-source team collaboration tool with chat streams for productive and organized communication.",
-    "link": "https://zulipchat.com/",
-    "winget": "Zulip.Zulip"
-  },
-  "WPFInstallsyncthingtray": {
-    "category": "Utilities",
-    "choco": "syncthingtray",
-    "content": "Syncthingtray",
-    "description": "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
-    "link": "https://github.com/Martchus/syncthingtray",
-    "winget": "Martchus.syncthingtray"
-  },
-  "WPFInstallminiconda": {
-    "category": "Development",
-    "choco": "miniconda3",
-    "content": "Miniconda",
-    "description": "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
-    "link": "https://docs.conda.io/projects/miniconda",
-    "winget": "Anaconda.Miniconda3"
-  },
-  "WPFInstalltemurin": {
-    "category": "Development",
-    "choco": "temurin",
-    "content": "Eclipse Temurin",
-    "description": "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
-    "link": "https://adoptium.net/temurin/",
-    "winget": "EclipseAdoptium.Temurin.21.JDK"
-  },
-  "WPFInstallintelpresentmon": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "Intel-PresentMon",
-    "description": "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
-    "link": "https://game.intel.com/us/stories/intel-presentmon/",
-    "winget": "Intel.PresentMon.Beta"
-  },
-  "WPFInstallpyenvwin": {
-    "category": "Development",
-    "choco": "pyenv-win",
-    "content": "Python Version Manager (pyenv-win)",
-    "description": "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
-    "link": "https://pyenv-win.github.io/pyenv-win/",
-    "winget": "na"
-  },
-  "WPFInstalltightvnc": {
-    "category": "Utilities",
-    "choco": "TightVNC",
-    "content": "TightVNC",
-    "description": "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
-    "link": "https://www.tightvnc.com/",
-    "winget": "GlavSoft.TightVNC"
-  },
-  "WPFInstallultravnc": {
-    "category": "Utilities",
-    "choco": "ultravnc",
-    "content": "UltraVNC",
-    "description": "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
-    "link": "https://uvnc.com/",
-    "winget": "uvncbvba.UltraVnc"
-  },
-  "WPFInstallwindowsfirewallcontrol": {
-    "category": "Utilities",
-    "choco": "windowsfirewallcontrol",
-    "content": "Windows Firewall Control",
-    "description": "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
-    "link": "https://www.binisoft.org/wfc",
-    "winget": "BiniSoft.WindowsFirewallControl"
-  },
-  "WPFInstallvistaswitcher": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "VistaSwitcher",
-    "description": "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
-    "link": "https://www.ntwind.com/freeware/vistaswitcher.html",
-    "winget": "ntwind.VistaSwitcher"
-  },
-  "WPFInstallautodarkmode": {
-    "category": "Utilities",
-    "choco": "auto-dark-mode",
-    "content": "Windows Auto Dark Mode",
-    "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
-    "link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
-    "winget": "Armin2208.WindowsAutoNightMode"
-  },
-  "WPFInstallmagicwormhole": {
-    "category": "Utilities",
-    "choco": "magic-wormhole",
-    "content": "Magic Wormhole",
-    "description": "get things from one computer to another, safely",
-    "link": "https://github.com/magic-wormhole/magic-wormhole",
-    "winget": "magic-wormhole.magic-wormhole"
-  },
-  "WPFInstallfancontrol": {
-    "category": "Utilities",
-    "choco": "na",
-    "content": "FanControl",
-    "description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
-    "link": "https://getfancontrol.com/",
-    "winget": "Rem0o.FanControl"
-  },
-  "WPFInstallfnm": {
-    "category": "Development",
-    "choco": "fnm",
-    "content": "Fast Node Manager",
-    "description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
-    "link": "https://github.com/Schniz/fnm",
-    "winget": "Schniz.fnm"
-  },
-  "WPFInstallWindhawk": {
-    "category": "Utilities",
-    "choco": "windhawk",
-    "content": "Windhawk",
-    "description": "The customization marketplace for Windows programs",
-    "link": "https://windhawk.net",
-    "winget": "RamenSoftware.Windhawk"
-  }
+    "WPFInstall1password":  {
+                                "category":  "Utilities",
+                                "choco":  "1password",
+                                "content":  "1Password",
+                                "description":  "1Password is a password manager that allows you to store and manage your passwords securely.",
+                                "link":  "https://1password.com/",
+                                "winget":  "AgileBits.1Password"
+                            },
+    "WPFInstall7zip":  {
+                           "category":  "Utilities",
+                           "choco":  "7zip",
+                           "content":  "7-Zip",
+                           "description":  "7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression.",
+                           "link":  "https://www.7-zip.org/",
+                           "winget":  "7zip.7zip"
+                       },
+    "WPFInstalladobe":  {
+                            "category":  "Document",
+                            "choco":  "adobereader",
+                            "content":  "Adobe Acrobat Reader",
+                            "description":  "Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents.",
+                            "link":  "https://www.adobe.com/acrobat/pdf-reader.html",
+                            "winget":  "Adobe.Acrobat.Reader.64-bit"
+                        },
+    "WPFInstalladvancedip":  {
+                                 "category":  "Pro Tools",
+                                 "choco":  "advanced-ip-scanner",
+                                 "content":  "Advanced IP Scanner",
+                                 "description":  "Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices.",
+                                 "link":  "https://www.advanced-ip-scanner.com/",
+                                 "winget":  "Famatech.AdvancedIPScanner"
+                             },
+    "WPFInstallaffine":  {
+                             "category":  "Document",
+                             "choco":  "na",
+                             "content":  "AFFiNE",
+                             "description":  "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+                             "link":  "https://affine.pro/",
+                             "winget":  "AFFiNE.stable"
+                         },
+    "WPFInstallaimp":  {
+                           "category":  "Multimedia Tools",
+                           "choco":  "aimp",
+                           "content":  "AIMP (Music Player)",
+                           "description":  "AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface.",
+                           "link":  "https://www.aimp.ru/",
+                           "winget":  "AIMP.AIMP"
+                       },
+    "WPFInstallalacritty":  {
+                                "category":  "Utilities",
+                                "choco":  "alacritty",
+                                "content":  "Alacritty Terminal",
+                                "description":  "Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available.",
+                                "link":  "https://alacritty.org/",
+                                "winget":  "Alacritty.Alacritty"
+                            },
+    "WPFInstallanaconda3":  {
+                                "category":  "Development",
+                                "choco":  "anaconda3",
+                                "content":  "Anaconda",
+                                "description":  "Anaconda is a distribution of the Python and R programming languages for scientific computing.",
+                                "link":  "https://www.anaconda.com/products/distribution",
+                                "winget":  "Anaconda.Anaconda3"
+                            },
+    "WPFInstallangryipscanner":  {
+                                     "category":  "Pro Tools",
+                                     "choco":  "angryip",
+                                     "content":  "Angry IP Scanner",
+                                     "description":  "Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity.",
+                                     "link":  "https://angryip.org/",
+                                     "winget":  "angryziber.AngryIPScanner"
+                                 },
+    "WPFInstallanki":  {
+                           "category":  "Document",
+                           "choco":  "anki",
+                           "content":  "Anki",
+                           "description":  "Anki is a flashcard application that helps you memorize information with intelligent spaced repetition.",
+                           "link":  "https://apps.ankiweb.net/",
+                           "winget":  "Anki.Anki"
+                       },
+    "WPFInstallanydesk":  {
+                              "category":  "Utilities",
+                              "choco":  "anydesk",
+                              "content":  "AnyDesk",
+                              "description":  "AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency.",
+                              "link":  "https://anydesk.com/",
+                              "winget":  "AnyDeskSoftwareGmbH.AnyDesk"
+                          },
+    "WPFInstallATLauncher":  {
+                                 "category":  "Games",
+                                 "choco":  "na",
+                                 "content":  "ATLauncher",
+                                 "description":  "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly.",
+                                 "link":  "https://github.com/ATLauncher/ATLauncher",
+                                 "winget":  "ATLauncher.ATLauncher"
+                             },
+    "WPFInstallaudacity":  {
+                               "category":  "Multimedia Tools",
+                               "choco":  "audacity",
+                               "content":  "Audacity",
+                               "description":  "Audacity is a free and open-source audio editing software known for its powerful recording and editing capabilities.",
+                               "link":  "https://www.audacityteam.org/",
+                               "winget":  "Audacity.Audacity"
+                           },
+    "WPFInstallautoruns":  {
+                               "category":  "Microsoft Tools",
+                               "choco":  "autoruns",
+                               "content":  "Autoruns",
+                               "description":  "This utility shows you what programs are configured to run during system bootup or login",
+                               "link":  "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
+                               "winget":  "Microsoft.Sysinternals.Autoruns"
+                           },
+    "WPFInstallrdcman":  {
+                             "category":  "Microsoft Tools",
+                             "choco":  "rdcman",
+                             "content":  "RDCMan",
+                             "description":  "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+                             "link":  "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+                             "winget":  "Microsoft.Sysinternals.RDCMan"
+                         },
+    "WPFInstallautohotkey":  {
+                                 "category":  "Utilities",
+                                 "choco":  "autohotkey",
+                                 "content":  "AutoHotkey",
+                                 "description":  "AutoHotkey is a scripting language for Windows that allows users to create custom automation scripts and macros. It is often used for automating repetitive tasks and customizing keyboard shortcuts.",
+                                 "link":  "https://www.autohotkey.com/",
+                                 "winget":  "AutoHotkey.AutoHotkey"
+                             },
+    "WPFInstallazuredatastudio":  {
+                                      "category":  "Microsoft Tools",
+                                      "choco":  "azure-data-studio",
+                                      "content":  "Microsoft Azure Data Studio",
+                                      "description":  "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
+                                      "link":  "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
+                                      "winget":  "Microsoft.AzureDataStudio"
+                                  },
+    "WPFInstallbarrier":  {
+                              "category":  "Utilities",
+                              "choco":  "barrier",
+                              "content":  "Barrier",
+                              "description":  "Barrier is an open-source software KVM (keyboard, video, and mouseswitch). It allows users to control multiple computers with a single keyboard and mouse, even if they have different operating systems.",
+                              "link":  "https://github.com/debauchee/barrier",
+                              "winget":  "DebaucheeOpenSourceGroup.Barrier"
+                          },
+    "WPFInstallbat":  {
+                          "category":  "Utilities",
+                          "choco":  "bat",
+                          "content":  "Bat (Cat)",
+                          "description":  "Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files.",
+                          "link":  "https://github.com/sharkdp/bat",
+                          "winget":  "sharkdp.bat"
+                      },
+    "WPFInstallbitcomet":  {
+                               "category":  "Utilities",
+                               "choco":  "bitcomet",
+                               "content":  "BitComet",
+                               "description":  "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
+                               "link":  "https://www.bitcomet.com/",
+                               "winget":  "CometNetwork.BitComet"
+                           },
+    "WPFInstallbitwarden":  {
+                                "category":  "Utilities",
+                                "choco":  "bitwarden",
+                                "content":  "Bitwarden",
+                                "description":  "Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices.",
+                                "link":  "https://bitwarden.com/",
+                                "winget":  "Bitwarden.Bitwarden"
+                            },
+    "WPFInstallbleachbit":  {
+                                "category":  "Utilities",
+                                "choco":  "bleachbit",
+                                "content":  "BleachBit",
+                                "description":  "Clean Your System and Free Disk Space",
+                                "link":  "https://www.bleachbit.org/",
+                                "winget":  "BleachBit.BleachBit"
+                            },
+    "WPFInstallblender":  {
+                              "category":  "Multimedia Tools",
+                              "choco":  "blender",
+                              "content":  "Blender (3D Graphics)",
+                              "description":  "Blender is a powerful open-source 3D creation suite, offering modeling, sculpting, animation, and rendering tools.",
+                              "link":  "https://www.blender.org/",
+                              "winget":  "BlenderFoundation.Blender"
+                          },
+    "WPFInstallbluestacks":  {
+                                 "category":  "Games",
+                                 "choco":  "bluestacks",
+                                 "content":  "Bluestacks",
+                                 "description":  "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
+                                 "link":  "https://www.bluestacks.com/",
+                                 "winget":  "BlueStack.BlueStacks"
+                             },
+    "WPFInstallbrave":  {
+                            "category":  "Browsers",
+                            "choco":  "brave",
+                            "content":  "Brave",
+                            "description":  "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
+                            "link":  "https://www.brave.com",
+                            "winget":  "Brave.Brave"
+                        },
+    "WPFInstallbulkcrapuninstaller":  {
+                                          "category":  "Utilities",
+                                          "choco":  "bulk-crap-uninstaller",
+                                          "content":  "Bulk Crap Uninstaller",
+                                          "description":  "Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once.",
+                                          "link":  "https://www.bcuninstaller.com/",
+                                          "winget":  "Klocman.BulkCrapUninstaller"
+                                      },
+    "WPFInstallbulkrenameutility":  {
+                                        "category":  "Utilities",
+                                        "choco":  "bulkrenameutility",
+                                        "content":  "Bulk Rename Utility",
+                                        "description":  "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
+                                        "link":  "https://www.bulkrenameutility.co.uk",
+                                        "winget":  "TGRMNSoftware.BulkRenameUtility"
+                                    },
+    "WPFInstallcalibre":  {
+                              "category":  "Document",
+                              "choco":  "calibre",
+                              "content":  "Calibre",
+                              "description":  "Calibre is a powerful and easy-to-use e-book manager, viewer, and converter.",
+                              "link":  "https://calibre-ebook.com/",
+                              "winget":  "calibre.calibre"
+                          },
+    "WPFInstallcarnac":  {
+                             "category":  "Utilities",
+                             "choco":  "carnac",
+                             "content":  "Carnac",
+                             "description":  "Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations.",
+                             "link":  "https://carnackeys.com/",
+                             "winget":  "code52.Carnac"
+                         },
+    "WPFInstallcemu":  {
+                           "category":  "Games",
+                           "choco":  "cemu",
+                           "content":  "Cemu",
+                           "description":  "Cemu is a highly experimental software to emulate Wii U applications on PC.",
+                           "link":  "https://cemu.info/",
+                           "winget":  "Cemu.Cemu"
+                       },
+    "WPFInstallchatterino":  {
+                                 "category":  "Communications",
+                                 "choco":  "chatterino",
+                                 "content":  "Chatterino",
+                                 "description":  "Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience.",
+                                 "link":  "https://www.chatterino.com/",
+                                 "winget":  "ChatterinoTeam.Chatterino"
+                             },
+    "WPFInstallchrome":  {
+                             "category":  "Browsers",
+                             "choco":  "googlechrome",
+                             "content":  "Chrome",
+                             "description":  "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
+                             "link":  "https://www.google.com/chrome/",
+                             "winget":  "Google.Chrome"
+                         },
+    "WPFInstallchromium":  {
+                               "category":  "Browsers",
+                               "choco":  "chromium",
+                               "content":  "Chromium",
+                               "description":  "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
+                               "link":  "https://github.com/Hibbiki/chromium-win64",
+                               "winget":  "Hibbiki.Chromium"
+                           },
+    "WPFInstallclementine":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "clementine",
+                                 "content":  "Clementine",
+                                 "description":  "Clementine is a modern music player and library organizer, supporting various audio formats and online radio services.",
+                                 "link":  "https://www.clementine-player.org/",
+                                 "winget":  "Clementine.Clementine"
+                             },
+    "WPFInstallclink":  {
+                            "category":  "Development",
+                            "choco":  "clink",
+                            "content":  "Clink",
+                            "description":  "Clink is a powerful Bash-compatible command-line interface (CLIenhancement for Windows, adding features like syntax highlighting and improved history).",
+                            "link":  "https://mridgers.github.io/clink/",
+                            "winget":  "chrisant996.Clink"
+                        },
+    "WPFInstallclonehero":  {
+                                "category":  "Games",
+                                "choco":  "na",
+                                "content":  "Clone Hero",
+                                "description":  "Clone Hero is a free rhythm game, which can be played with any 5 or 6 button guitar controller.",
+                                "link":  "https://clonehero.net/",
+                                "winget":  "CloneHeroTeam.CloneHero"
+                            },
+    "WPFInstallcmake":  {
+                            "category":  "Development",
+                            "choco":  "cmake",
+                            "content":  "CMake",
+                            "description":  "CMake is an open-source, cross-platform family of tools designed to build, test and package software.",
+                            "link":  "https://cmake.org/",
+                            "winget":  "Kitware.CMake"
+                        },
+    "WPFInstallcopyq":  {
+                            "category":  "Utilities",
+                            "choco":  "copyq",
+                            "content":  "CopyQ (Clipboard Manager)",
+                            "description":  "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
+                            "link":  "https://copyq.readthedocs.io/",
+                            "winget":  "hluk.CopyQ"
+                        },
+    "WPFInstallditto":  {
+                            "category":  "Utilities",
+                            "choco":  "ditto",
+                            "content":  "Ditto (Clipboard Manager)",
+                            "description":  "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
+                            "link":  "https://github.com/sabrogden/Ditto",
+                            "winget":  "Ditto.Ditto"
+                        },
+    "WPFInstallcpuz":  {
+                           "category":  "Utilities",
+                           "choco":  "cpu-z",
+                           "content":  "CPU-Z",
+                           "description":  "CPU-Z is a system monitoring and diagnostic tool for Windows. It provides detailed information about the computer\u0026#39;s hardware components, including the CPU, memory, and motherboard.",
+                           "link":  "https://www.cpuid.com/softwares/cpu-z.html",
+                           "winget":  "CPUID.CPU-Z"
+                       },
+    "WPFInstallcrystaldiskinfo":  {
+                                      "category":  "Utilities",
+                                      "choco":  "crystaldiskinfo",
+                                      "content":  "Crystal Disk Info",
+                                      "description":  "Crystal Disk Info is a disk health monitoring tool that provides information about the status and performance of hard drives. It helps users anticipate potential issues and monitor drive health.",
+                                      "link":  "https://crystalmark.info/en/software/crystaldiskinfo/",
+                                      "winget":  "CrystalDewWorld.CrystalDiskInfo"
+                                  },
+    "WPFInstallcapframex":  {
+                                "category":  "Utilities",
+                                "choco":  "na",
+                                "content":  "CapFrameX",
+                                "description":  "Frametimes capture and analysis tool based on Intel\u0026#39;s PresentMon. Overlay provided by Rivatuner Statistics Server.",
+                                "link":  "https://www.capframex.com/",
+                                "winget":  "CXWorld.CapFrameX"
+                            },
+    "WPFInstallcrystaldiskmark":  {
+                                      "category":  "Utilities",
+                                      "choco":  "crystaldiskmark",
+                                      "content":  "Crystal Disk Mark",
+                                      "description":  "Crystal Disk Mark is a disk benchmarking tool that measures the read and write speeds of storage devices. It helps users assess the performance of their hard drives and SSDs.",
+                                      "link":  "https://crystalmark.info/en/software/crystaldiskmark/",
+                                      "winget":  "CrystalDewWorld.CrystalDiskMark"
+                                  },
+    "WPFInstalldarktable":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "darktable",
+                                "content":  "darktable",
+                                "description":  "Open-source photo editing tool, offering an intuitive interface, advanced editing capabilities, and a non-destructive workflow for seamless image enhancement.",
+                                "link":  "https://www.darktable.org/install/",
+                                "winget":  "darktable.darktable"
+                            },
+    "WPFInstallDaxStudio":  {
+                                "category":  "Development",
+                                "choco":  "daxstudio",
+                                "content":  "DaxStudio",
+                                "description":  "DAX (Data Analysis eXpressions) Studio is the ultimate tool for executing and analyzing DAX queries against Microsoft Tabular models.",
+                                "link":  "https://daxstudio.org/",
+                                "winget":  "DaxStudio.DaxStudio"
+                            },
+    "WPFInstallddu":  {
+                          "category":  "Utilities",
+                          "choco":  "ddu",
+                          "content":  "Display Driver Uninstaller",
+                          "description":  "Display Driver Uninstaller (DDU) is a tool for completely uninstalling graphics drivers from NVIDIA, AMD, and Intel. It is useful for troubleshooting graphics driver-related issues.",
+                          "link":  "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
+                          "winget":  "ddu"
+                      },
+    "WPFInstalldeluge":  {
+                             "category":  "Utilities",
+                             "choco":  "deluge",
+                             "content":  "Deluge",
+                             "description":  "Deluge is a free and open-source BitTorrent client. It features a user-friendly interface, support for plugins, and the ability to manage torrents remotely.",
+                             "link":  "https://deluge-torrent.org/",
+                             "winget":  "DelugeTeam.Deluge"
+                         },
+    "WPFInstalldevtoys":  {
+                              "category":  "Utilities",
+                              "choco":  "devtoys",
+                              "content":  "DevToys",
+                              "description":  "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
+                              "link":  "https://devtoys.app/",
+                              "winget":  "9PGCV4V3BK4W"
+                          },
+    "WPFInstalldigikam":  {
+                              "category":  "Multimedia Tools",
+                              "choco":  "digikam",
+                              "content":  "digiKam",
+                              "description":  "digiKam is an advanced open-source photo management software with features for organizing, editing, and sharing photos.",
+                              "link":  "https://www.digikam.org/",
+                              "winget":  "KDE.digikam"
+                          },
+    "WPFInstalldiscord":  {
+                              "category":  "Communications",
+                              "choco":  "discord",
+                              "content":  "Discord",
+                              "description":  "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
+                              "link":  "https://discord.com/",
+                              "winget":  "Discord.Discord"
+                          },
+    "WPFInstalldockerdesktop":  {
+                                    "category":  "Development",
+                                    "choco":  "docker-desktop",
+                                    "content":  "Docker Desktop",
+                                    "description":  "Docker Desktop is a powerful tool for containerized application development and deployment.",
+                                    "link":  "https://www.docker.com/products/docker-desktop",
+                                    "winget":  "Docker.DockerDesktop"
+                                },
+    "WPFInstalldotnet3":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "dotnetcore3-desktop-runtime",
+                              "content":  ".NET Desktop Runtime 3.1",
+                              "description":  ".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1.",
+                              "link":  "https://dotnet.microsoft.com/download/dotnet/3.1",
+                              "winget":  "Microsoft.DotNet.DesktopRuntime.3_1"
+                          },
+    "WPFInstalldotnet5":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "dotnet-5.0-runtime",
+                              "content":  ".NET Desktop Runtime 5",
+                              "description":  ".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5.",
+                              "link":  "https://dotnet.microsoft.com/download/dotnet/5.0",
+                              "winget":  "Microsoft.DotNet.DesktopRuntime.5"
+                          },
+    "WPFInstalldotnet6":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "dotnet-6.0-runtime",
+                              "content":  ".NET Desktop Runtime 6",
+                              "description":  ".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6.",
+                              "link":  "https://dotnet.microsoft.com/download/dotnet/6.0",
+                              "winget":  "Microsoft.DotNet.DesktopRuntime.6"
+                          },
+    "WPFInstalldotnet7":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "dotnet-7.0-runtime",
+                              "content":  ".NET Desktop Runtime 7",
+                              "description":  ".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7.",
+                              "link":  "https://dotnet.microsoft.com/download/dotnet/7.0",
+                              "winget":  "Microsoft.DotNet.DesktopRuntime.7"
+                          },
+    "WPFInstalldotnet8":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "dotnet-8.0-runtime",
+                              "content":  ".NET Desktop Runtime 8",
+                              "description":  ".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8.",
+                              "link":  "https://dotnet.microsoft.com/download/dotnet/8.0",
+                              "winget":  "Microsoft.DotNet.DesktopRuntime.8"
+                          },
+    "WPFInstalldmt":  {
+                          "winget":  "GNE.DualMonitorTools",
+                          "choco":  "dual-monitor-tools",
+                          "category":  "Utilities",
+                          "content":  "Dual Monitor Tools",
+                          "link":  "https://dualmonitortool.sourceforge.net/",
+                          "description":  "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
+                      },
+    "WPFInstallduplicati":  {
+                                "category":  "Utilities",
+                                "choco":  "duplicati",
+                                "content":  "Duplicati",
+                                "description":  "Duplicati is an open-source backup solution that supports encrypted, compressed, and incremental backups. It is designed to securely store data on cloud storage services.",
+                                "link":  "https://www.duplicati.com/",
+                                "winget":  "Duplicati.Duplicati"
+                            },
+    "WPFInstalleaapp":  {
+                            "category":  "Games",
+                            "choco":  "ea-app",
+                            "content":  "EA App",
+                            "description":  "EA App is a platform for accessing and playing Electronic Arts games.",
+                            "link":  "https://www.ea.com/ea-app",
+                            "winget":  "ElectronicArts.EADesktop"
+                        },
+    "WPFInstalleartrumpet":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "eartrumpet",
+                                 "content":  "EarTrumpet (Audio)",
+                                 "description":  "EarTrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings.",
+                                 "link":  "https://eartrumpet.app/",
+                                 "winget":  "File-New-Project.EarTrumpet"
+                             },
+    "WPFInstalledge":  {
+                           "category":  "Browsers",
+                           "choco":  "microsoft-edge",
+                           "content":  "Edge",
+                           "description":  "Microsoft Edge is a modern web browser built on Chromium, offering performance, security, and integration with Microsoft services.",
+                           "link":  "https://www.microsoft.com/edge",
+                           "winget":  "Microsoft.Edge"
+                       },
+    "WPFInstallefibooteditor":  {
+                                    "category":  "Pro Tools",
+                                    "choco":  "na",
+                                    "content":  "EFI Boot Editor",
+                                    "description":  "EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer.",
+                                    "link":  "https://www.easyuefi.com/",
+                                    "winget":  "EFIBootEditor.EFIBootEditor"
+                                },
+    "WPFInstallemulationstation":  {
+                                       "category":  "Games",
+                                       "choco":  "emulationstation",
+                                       "content":  "Emulation Station",
+                                       "description":  "Emulation Station is a graphical and themeable emulator front-end that allows you to access all your favorite games in one place.",
+                                       "link":  "https://emulationstation.org/",
+                                       "winget":  "Emulationstation.Emulationstation"
+                                   },
+    "WPFInstallepicgames":  {
+                                "category":  "Games",
+                                "choco":  "epicgameslauncher",
+                                "content":  "Epic Games Launcher",
+                                "description":  "Epic Games Launcher is the client for accessing and playing games from the Epic Games Store.",
+                                "link":  "https://www.epicgames.com/store/en-US/",
+                                "winget":  "EpicGames.EpicGamesLauncher"
+                            },
+    "WPFInstallerrorlookup":  {
+                                  "category":  "Utilities",
+                                  "choco":  "na",
+                                  "content":  "Windows Error Code Lookup",
+                                  "description":  "ErrorLookup is a tool for looking up Windows error codes and their descriptions.",
+                                  "link":  "https://github.com/HenryPP/ErrorLookup",
+                                  "winget":  "Henry++.ErrorLookup"
+                              },
+    "WPFInstallesearch":  {
+                              "category":  "Utilities",
+                              "choco":  "everything",
+                              "content":  "Everything Search",
+                              "description":  "Everything Search is a fast and efficient file search utility for Windows.",
+                              "link":  "https://www.voidtools.com/",
+                              "winget":  "voidtools.Everything"
+                          },
+    "WPFInstallespanso":  {
+                              "category":  "Utilities",
+                              "choco":  "espanso",
+                              "content":  "Espanso",
+                              "description":  "Cross-platform and open-source Text Expander written in Rust",
+                              "link":  "https://espanso.org/",
+                              "winget":  "Espanso.Espanso"
+                          },
+    "WPFInstalletcher":  {
+                             "category":  "Utilities",
+                             "choco":  "etcher",
+                             "content":  "Etcher USB Creator",
+                             "description":  "Etcher is a powerful tool for creating bootable USB drives with ease.",
+                             "link":  "https://www.balena.io/etcher/",
+                             "winget":  "Balena.Etcher"
+                         },
+    "WPFInstallfalkon":  {
+                             "category":  "Browsers",
+                             "choco":  "falkon",
+                             "content":  "Falkon",
+                             "description":  "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
+                             "link":  "https://www.falkon.org/",
+                             "winget":  "KDE.Falkon"
+                         },
+    "WPFInstallferdium":  {
+                              "category":  "Communications",
+                              "choco":  "ferdium",
+                              "content":  "Ferdium",
+                              "description":  "Ferdium is a messaging application that combines multiple messaging services into a single app for easy management.",
+                              "link":  "https://ferdium.org/",
+                              "winget":  "Ferdium.Ferdium"
+                          },
+    "WPFInstallffmpeg":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "ffmpeg-full",
+                             "content":  "FFmpeg (full)",
+                             "description":  "FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats.",
+                             "link":  "https://ffmpeg.org/",
+                             "winget":  "Gyan.FFmpeg"
+                         },
+    "WPFInstallfileconverter":  {
+                                    "category":  "Utilities",
+                                    "choco":  "files",
+                                    "content":  "File-Converter",
+                                    "description":  "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
+                                    "link":  "https://file-converter.io/",
+                                    "winget":  "AdrienAllard.FileConverter"
+                                },
+    "WPFInstallfirealpaca":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "firealpaca",
+                                 "content":  "Fire Alpaca",
+                                 "description":  "Fire Alpaca is a free digital painting software that provides a wide range of drawing tools and a user-friendly interface.",
+                                 "link":  "https://firealpaca.com/",
+                                 "winget":  "FireAlpaca.FireAlpaca"
+                             },
+    "WPFInstallfirefox":  {
+                              "category":  "Browsers",
+                              "choco":  "firefox",
+                              "content":  "Firefox",
+                              "description":  "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions.",
+                              "link":  "https://www.mozilla.org/en-US/firefox/new/",
+                              "winget":  "Mozilla.Firefox"
+                          },
+    "WPFInstallfirefoxesr":  {
+                                 "category":  "Browsers",
+                                 "choco":  "FirefoxESR",
+                                 "content":  "Firefox ESR",
+                                 "description":  "Mozilla Firefox is an open-source web browser known for its customization options, privacy features, and extensions. Firefox ESR (Extended Support Release) receives major updates every 42 weeks with minor updates such as crash fixes, security fixes and policy updates as needed, but at least every four weeks.",
+                                 "link":  "https://www.mozilla.org/en-US/firefox/enterprise/",
+                                 "winget":  "Mozilla.Firefox.ESR"
+                             },
+    "WPFInstallflameshot":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "flameshot",
+                                "content":  "Flameshot (Screenshots)",
+                                "description":  "Flameshot is a powerful yet simple to use screenshot software, offering annotation and editing features.",
+                                "link":  "https://flameshot.org/",
+                                "winget":  "Flameshot.Flameshot"
+                            },
+    "WPFInstalllightshot":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "lightshot",
+                                "content":  "Lightshot (Screenshots)",
+                                "description":  "Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options.",
+                                "link":  "https://app.prntscr.com/",
+                                "winget":  "Skillbrains.Lightshot"
+                            },
+    "WPFInstallfloorp":  {
+                             "category":  "Browsers",
+                             "choco":  "na",
+                             "content":  "Floorp",
+                             "description":  "Floorp is an open-source web browser project that aims to provide a simple and fast browsing experience.",
+                             "link":  "https://floorp.app/",
+                             "winget":  "Ablaze.Floorp"
+                         },
+    "WPFInstallflow":  {
+                           "category":  "Utilities",
+                           "choco":  "flow-launcher",
+                           "content":  "Flow launcher",
+                           "description":  "Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more.",
+                           "link":  "https://www.flowlauncher.com/",
+                           "winget":  "Flow-Launcher.Flow-Launcher"
+                       },
+    "WPFInstallflux":  {
+                           "category":  "Utilities",
+                           "choco":  "flux",
+                           "content":  "F.lux",
+                           "description":  "f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use.",
+                           "link":  "https://justgetflux.com/",
+                           "winget":  "flux.flux"
+                       },
+    "WPFInstallfoobar":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "foobar2000",
+                             "content":  "foobar2000 (Music Player)",
+                             "description":  "foobar2000 is a highly customizable and extensible music player for Windows, known for its modular design and advanced features.",
+                             "link":  "https://www.foobar2000.org/",
+                             "winget":  "PeterPawlowski.foobar2000"
+                         },
+    "WPFInstallfoxpdfeditor":  {
+                                   "category":  "Document",
+                                   "choco":  "na",
+                                   "content":  "Foxit PDF Editor",
+                                   "description":  "Foxit PDF Editor is a feature-rich PDF editor and viewer with a familiar ribbon-style interface.",
+                                   "link":  "https://www.foxit.com/pdf-editor/",
+                                   "winget":  "Foxit.PhantomPDF"
+                               },
+    "WPFInstallfoxpdfreader":  {
+                                   "category":  "Document",
+                                   "choco":  "foxitreader",
+                                   "content":  "Foxit PDF Reader",
+                                   "description":  "Foxit PDF Reader is a free PDF viewer with a familiar ribbon-style interface.",
+                                   "link":  "https://www.foxit.com/pdf-reader/",
+                                   "winget":  "Foxit.FoxitReader"
+                               },
+    "WPFInstallfreecad":  {
+                              "category":  "Multimedia Tools",
+                              "choco":  "freecad",
+                              "content":  "FreeCAD",
+                              "description":  "FreeCAD is a parametric 3D CAD modeler, designed for product design and engineering tasks, with a focus on flexibility and extensibility.",
+                              "link":  "https://www.freecadweb.org/",
+                              "winget":  "FreeCAD.FreeCAD"
+                          },
+    "WPFInstallorcaslicer":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "orcaslicer",
+                                 "content":  "OrcaSlicer",
+                                 "description":  "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+                                 "link":  "https://github.com/SoftFever/OrcaSlicer",
+                                 "winget":  "SoftFever.OrcaSlicer"
+                             },
+    "WPFInstallfxsound":  {
+                              "category":  "Multimedia Tools",
+                              "choco":  "fxsound",
+                              "content":  "FxSound",
+                              "description":  "FxSound is a cutting-edge audio enhancement software that elevates your listening experience across all media.",
+                              "link":  "https://www.fxsound.com/",
+                              "winget":  "FxSoundLLC.FxSound"
+                          },
+    "WPFInstallfzf":  {
+                          "category":  "Utilities",
+                          "choco":  "fzf",
+                          "content":  "Fzf",
+                          "description":  "A command-line fuzzy finder",
+                          "link":  "https://github.com/junegunn/fzf/",
+                          "winget":  "junegunn.fzf"
+                      },
+    "WPFInstallgeforcenow":  {
+                                 "category":  "Games",
+                                 "choco":  "nvidia-geforce-now",
+                                 "content":  "GeForce NOW",
+                                 "description":  "GeForce NOW is a cloud gaming service that allows you to play high-quality PC games on your device.",
+                                 "link":  "https://www.nvidia.com/en-us/geforce-now/",
+                                 "winget":  "Nvidia.GeForceNow"
+                             },
+    "WPFInstallgimp":  {
+                           "category":  "Multimedia Tools",
+                           "choco":  "gimp",
+                           "content":  "GIMP (Image Editor)",
+                           "description":  "GIMP is a versatile open-source raster graphics editor used for tasks such as photo retouching, image editing, and image composition.",
+                           "link":  "https://www.gimp.org/",
+                           "winget":  "GIMP.GIMP"
+                       },
+    "WPFInstallgit":  {
+                          "category":  "Development",
+                          "choco":  "git",
+                          "content":  "Git",
+                          "description":  "Git is a distributed version control system widely used for tracking changes in source code during software development.",
+                          "link":  "https://git-scm.com/",
+                          "winget":  "Git.Git"
+                      },
+    "WPFInstallgitextensions":  {
+                                    "category":  "Development",
+                                    "choco":  "git;gitextensions",
+                                    "content":  "Git Extensions",
+                                    "description":  "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
+                                    "link":  "https://gitextensions.github.io/",
+                                    "winget":  "Git.Git;GitExtensionsTeam.GitExtensions"
+                                },
+    "WPFInstallgithubcli":  {
+                                "category":  "Development",
+                                "choco":  "git;gh",
+                                "content":  "GitHub CLI",
+                                "description":  "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
+                                "link":  "https://cli.github.com/",
+                                "winget":  "Git.Git;GitHub.cli"
+                            },
+    "WPFInstallgithubdesktop":  {
+                                    "category":  "Development",
+                                    "choco":  "git;github-desktop",
+                                    "content":  "GitHub Desktop",
+                                    "description":  "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
+                                    "link":  "https://desktop.github.com/",
+                                    "winget":  "Git.Git;GitHub.GitHubDesktop"
+                                },
+    "WPFInstallglaryutilities":  {
+                                     "category":  "Utilities",
+                                     "choco":  "glaryutilities-free",
+                                     "content":  "Glary Utilities",
+                                     "description":  "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
+                                     "link":  "https://www.glarysoft.com/glary-utilities/",
+                                     "winget":  "Glarysoft.GlaryUtilities"
+                                 },
+    "WPFInstallgog":  {
+                          "category":  "Games",
+                          "choco":  "goggalaxy",
+                          "content":  "GOG Galaxy",
+                          "description":  "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
+                          "link":  "https://www.gog.com/galaxy",
+                          "winget":  "GOG.Galaxy"
+                      },
+    "WPFInstallgolang":  {
+                             "category":  "Development",
+                             "choco":  "golang",
+                             "content":  "GoLang",
+                             "description":  "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+                             "link":  "https://golang.org/",
+                             "winget":  "GoLang.Go"
+                         },
+    "WPFInstallgoogledrive":  {
+                                  "category":  "Utilities",
+                                  "choco":  "googledrive",
+                                  "content":  "Google Drive",
+                                  "description":  "File syncing across devices all tied to your google account",
+                                  "link":  "https://www.google.com/drive/",
+                                  "winget":  "Google.Drive"
+                              },
+    "WPFInstallgpuz":  {
+                           "category":  "Utilities",
+                           "choco":  "gpu-z",
+                           "content":  "GPU-Z",
+                           "description":  "GPU-Z provides detailed information about your graphics card and GPU.",
+                           "link":  "https://www.techpowerup.com/gpuz/",
+                           "winget":  "TechPowerUp.GPU-Z"
+                       },
+    "WPFInstallgreenshot":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "greenshot",
+                                "content":  "Greenshot (Screenshots)",
+                                "description":  "Greenshot is a light-weight screenshot software tool with built-in image editor and customizable capture options.",
+                                "link":  "https://getgreenshot.org/",
+                                "winget":  "Greenshot.Greenshot"
+                            },
+    "WPFInstallgsudo":  {
+                            "category":  "Utilities",
+                            "choco":  "gsudo",
+                            "content":  "Gsudo",
+                            "description":  "Gsudo is a sudo implementation for Windows, allowing elevated privilege execution.",
+                            "link":  "https://gerardog.github.io/gsudo/",
+                            "winget":  "gerardog.gsudo"
+                        },
+    "WPFInstallguilded":  {
+                              "category":  "Communications",
+                              "choco":  "na",
+                              "content":  "Guilded",
+                              "description":  "Guilded is a communication and productivity platform that includes chat, scheduling, and collaborative tools for gaming and communities.",
+                              "link":  "https://www.guilded.gg/",
+                              "winget":  "Guilded.Guilded"
+                          },
+    "WPFInstallhandbrake":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "handbrake",
+                                "content":  "HandBrake",
+                                "description":  "HandBrake is an open-source video transcoder, allowing you to convert video from nearly any format to a selection of widely supported codecs.",
+                                "link":  "https://handbrake.fr/",
+                                "winget":  "HandBrake.HandBrake"
+                            },
+    "WPFInstallharmonoid":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "na",
+                                "content":  "Harmonoid",
+                                "description":  "Plays and manages your music library. Looks beautiful and juicy. Playlists, visuals, synced lyrics, pitch shift, volume boost and more.",
+                                "link":  "https://harmonoid.com/",
+                                "winget":  "Harmonoid.Harmonoid"
+                            },
+    "WPFInstallheidisql":  {
+                               "category":  "Pro Tools",
+                               "choco":  "heidisql",
+                               "content":  "HeidiSQL",
+                               "description":  "HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development.",
+                               "link":  "https://www.heidisql.com/",
+                               "winget":  "HeidiSQL.HeidiSQL"
+                           },
+    "WPFInstallhelix":  {
+                            "category":  "Development",
+                            "choco":  "helix",
+                            "content":  "Helix",
+                            "description":  "Helix is a neovim alternative built in rust.",
+                            "link":  "https://helix-editor.com/",
+                            "winget":  "Helix.Helix"
+                        },
+    "WPFInstallheroiclauncher":  {
+                                     "category":  "Games",
+                                     "choco":  "na",
+                                     "content":  "Heroic Games Launcher",
+                                     "description":  "Heroic Games Launcher is an open-source alternative game launcher for Epic Games Store.",
+                                     "link":  "https://heroicgameslauncher.com/",
+                                     "winget":  "HeroicGamesLauncher.HeroicGamesLauncher"
+                                 },
+    "WPFInstallhexchat":  {
+                              "category":  "Communications",
+                              "choco":  "hexchat",
+                              "content":  "Hexchat",
+                              "description":  "HexChat is a free, open-source IRC (Internet Relay Chat) client with a graphical interface for easy communication.",
+                              "link":  "https://hexchat.github.io/",
+                              "winget":  "HexChat.HexChat"
+                          },
+    "WPFInstallhwinfo":  {
+                             "category":  "Utilities",
+                             "choco":  "hwinfo",
+                             "content":  "HWiNFO",
+                             "description":  "HWiNFO provides comprehensive hardware information and diagnostics for Windows.",
+                             "link":  "https://www.hwinfo.com/",
+                             "winget":  "REALiX.HWiNFO"
+                         },
+    "WPFInstallhwmonitor":  {
+                                "category":  "Utilities",
+                                "choco":  "hwmonitor",
+                                "content":  "HWMonitor",
+                                "description":  "HWMonitor is a hardware monitoring program that reads PC systems main health sensors.",
+                                "link":  "https://www.cpuid.com/softwares/hwmonitor.html",
+                                "winget":  "CPUID.HWMonitor"
+                            },
+    "WPFInstallimageglass":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "imageglass",
+                                 "content":  "ImageGlass (Image Viewer)",
+                                 "description":  "ImageGlass is a versatile image viewer with support for various image formats and a focus on simplicity and speed.",
+                                 "link":  "https://imageglass.org/",
+                                 "winget":  "DuongDieuPhap.ImageGlass"
+                             },
+    "WPFInstallimgburn":  {
+                              "category":  "Multimedia Tools",
+                              "choco":  "imgburn",
+                              "content":  "ImgBurn",
+                              "description":  "ImgBurn is a lightweight CD, DVD, HD-DVD, and Blu-ray burning application with advanced features for creating and burning disc images.",
+                              "link":  "http://www.imgburn.com/",
+                              "winget":  "LIGHTNINGUK.ImgBurn"
+                          },
+    "WPFInstallinkscape":  {
+                               "category":  "Multimedia Tools",
+                               "choco":  "inkscape",
+                               "content":  "Inkscape",
+                               "description":  "Inkscape is a powerful open-source vector graphics editor, suitable for tasks such as illustrations, icons, logos, and more.",
+                               "link":  "https://inkscape.org/",
+                               "winget":  "Inkscape.Inkscape"
+                           },
+    "WPFInstallitch":  {
+                           "category":  "Games",
+                           "choco":  "itch",
+                           "content":  "Itch.io",
+                           "description":  "Itch.io is a digital distribution platform for indie games and creative projects.",
+                           "link":  "https://itch.io/",
+                           "winget":  "ItchIo.Itch"
+                       },
+    "WPFInstallitunes":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "itunes",
+                             "content":  "iTunes",
+                             "description":  "iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc.",
+                             "link":  "https://www.apple.com/itunes/",
+                             "winget":  "Apple.iTunes"
+                         },
+    "WPFInstalljami":  {
+                           "category":  "Communications",
+                           "choco":  "jami",
+                           "content":  "Jami",
+                           "description":  "Jami is a secure and privacy-focused communication platform that offers audio and video calls, messaging, and file sharing.",
+                           "link":  "https://jami.net/",
+                           "winget":  "SFLinux.Jami"
+                       },
+    "WPFInstalljava16":  {
+                             "category":  "Development",
+                             "choco":  "temurin16jre",
+                             "content":  "OpenJDK Java 16",
+                             "description":  "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
+                             "link":  "https://adoptopenjdk.net/",
+                             "winget":  "AdoptOpenJDK.OpenJDK.16"
+                         },
+    "WPFInstalljava18":  {
+                             "category":  "Development",
+                             "choco":  "temurin18jre",
+                             "content":  "Oracle Java 18",
+                             "description":  "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
+                             "link":  "https://www.oracle.com/java/",
+                             "winget":  "EclipseAdoptium.Temurin.18.JRE"
+                         },
+    "WPFInstalljava20":  {
+                             "category":  "Development",
+                             "choco":  "na",
+                             "content":  "Azul Zulu JDK 20",
+                             "description":  "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
+                             "link":  "https://www.azul.com/downloads/zulu-community/",
+                             "winget":  "Azul.Zulu.20.JDK"
+                         },
+    "WPFInstalljava21":  {
+                             "category":  "Development",
+                             "choco":  "na",
+                             "content":  "Azul Zulu JDK 21",
+                             "description":  "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
+                             "link":  "https://www.azul.com/downloads/zulu-community/",
+                             "winget":  "Azul.Zulu.21.JDK"
+                         },
+    "WPFInstalljava8":  {
+                            "category":  "Development",
+                            "choco":  "temurin8jre",
+                            "content":  "OpenJDK Java 8",
+                            "description":  "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
+                            "link":  "https://adoptopenjdk.net/",
+                            "winget":  "EclipseAdoptium.Temurin.8.JRE"
+                        },
+    "WPFInstalljava11runtime":  {
+                                    "category":  "Development",
+                                    "choco":  "na",
+                                    "content":  "Eclipse Temurin JRE 11",
+                                    "description":  "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+                                    "link":  "https://adoptium.net/",
+                                    "winget":  "EclipseAdoptium.Temurin.11.JRE"
+                                },
+    "WPFInstalljava17runtime":  {
+                                    "category":  "Development",
+                                    "choco":  "na",
+                                    "content":  "Eclipse Temurin JRE 17",
+                                    "description":  "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+                                    "link":  "https://adoptium.net/",
+                                    "winget":  "EclipseAdoptium.Temurin.17.JRE"
+                                },
+    "WPFInstalljava18runtime":  {
+                                    "category":  "Development",
+                                    "choco":  "na",
+                                    "content":  "Eclipse Temurin JRE 18",
+                                    "description":  "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+                                    "link":  "https://adoptium.net/",
+                                    "winget":  "EclipseAdoptium.Temurin.18.JRE"
+                                },
+    "WPFInstalljava19runtime":  {
+                                    "category":  "Development",
+                                    "choco":  "na",
+                                    "content":  "Eclipse Temurin JRE 19",
+                                    "description":  "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
+                                    "link":  "https://adoptium.net/",
+                                    "winget":  "EclipseAdoptium.Temurin.19.JRE"
+                                },
+    "WPFInstalljdownloader":  {
+                                  "category":  "Utilities",
+                                  "choco":  "jdownloader",
+                                  "content":  "JDownloader",
+                                  "description":  "JDownloader is a feature-rich download manager with support for various file hosting services.",
+                                  "link":  "http://jdownloader.org/",
+                                  "winget":  "AppWork.JDownloader"
+                              },
+    "WPFInstalljellyfinmediaplayer":  {
+                                          "category":  "Multimedia Tools",
+                                          "choco":  "jellyfin-media-player",
+                                          "content":  "Jellyfin Media Player",
+                                          "description":  "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
+                                          "link":  "https://github.com/jellyfin/jellyfin-media-playerf",
+                                          "winget":  "Jellyfin.JellyfinMediaPlayer"
+                                      },
+    "WPFInstalljellyfinserver":  {
+                                     "category":  "Multimedia Tools",
+                                     "choco":  "jellyfin",
+                                     "content":  "Jellyfin Server",
+                                     "description":  "Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library.",
+                                     "link":  "https://jellyfin.org/",
+                                     "winget":  "Jellyfin.Server"
+                                 },
+    "WPFInstalljetbrains":  {
+                                "category":  "Development",
+                                "choco":  "jetbrainstoolbox",
+                                "content":  "Jetbrains Toolbox",
+                                "description":  "Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools.",
+                                "link":  "https://www.jetbrains.com/toolbox/",
+                                "winget":  "JetBrains.Toolbox"
+                            },
+    "WPFInstalljoplin":  {
+                             "category":  "Document",
+                             "choco":  "joplin",
+                             "content":  "Joplin (FOSS Notes)",
+                             "description":  "Joplin is an open-source note-taking and to-do application with synchronization capabilities.",
+                             "link":  "https://joplinapp.org/",
+                             "winget":  "Joplin.Joplin"
+                         },
+    "WPFInstalljpegview":  {
+                               "category":  "Utilities",
+                               "choco":  "jpegview",
+                               "content":  "JPEG View",
+                               "description":  "JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI",
+                               "link":  "https://github.com/sylikc/jpegview",
+                               "winget":  "sylikc.JPEGView"
+                           },
+    "WPFInstallkdeconnect":  {
+                                 "category":  "Utilities",
+                                 "choco":  "kdeconnect-kde",
+                                 "content":  "KDE Connect",
+                                 "description":  "KDE Connect allows seamless integration between your KDE desktop and mobile devices.",
+                                 "link":  "https://community.kde.org/KDEConnect",
+                                 "winget":  "KDE.KDEConnect"
+                             },
+    "WPFInstallkdenlive":  {
+                               "category":  "Multimedia Tools",
+                               "choco":  "kdenlive",
+                               "content":  "Kdenlive (Video Editor)",
+                               "description":  "Kdenlive is an open-source video editing software with powerful features for creating and editing professional-quality videos.",
+                               "link":  "https://kdenlive.org/",
+                               "winget":  "KDE.Kdenlive"
+                           },
+    "WPFInstallkeepass":  {
+                              "category":  "Utilities",
+                              "choco":  "keepassxc",
+                              "content":  "KeePassXC",
+                              "description":  "KeePassXC is a cross-platform, open-source password manager with strong encryption features.",
+                              "link":  "https://keepassxc.org/",
+                              "winget":  "KeePassXCTeam.KeePassXC"
+                          },
+    "WPFInstallklite":  {
+                            "category":  "Multimedia Tools",
+                            "choco":  "k-litecodecpack-standard",
+                            "content":  "K-Lite Codec Standard",
+                            "description":  "K-Lite Codec Pack Standard is a collection of audio and video codecs and related tools, providing essential components for media playback.",
+                            "link":  "https://www.codecguide.com/",
+                            "winget":  "CodecGuide.K-LiteCodecPack.Standard"
+                        },
+    "WPFInstallkodi":  {
+                           "category":  "Multimedia Tools",
+                           "choco":  "kodi",
+                           "content":  "Kodi Media Center",
+                           "description":  "Kodi is an open-source media center application that allows you to play and view most videos, music, podcasts, and other digital media files.",
+                           "link":  "https://kodi.tv/",
+                           "winget":  "XBMCFoundation.Kodi"
+                       },
+    "WPFInstallkrita":  {
+                            "category":  "Multimedia Tools",
+                            "choco":  "krita",
+                            "content":  "Krita (Image Editor)",
+                            "description":  "Krita is a powerful open-source painting application. It is designed for concept artists, illustrators, matte and texture artists, and the VFX industry.",
+                            "link":  "https://krita.org/en/features/",
+                            "winget":  "KDE.Krita"
+                        },
+    "WPFInstalllazygit":  {
+                              "category":  "Development",
+                              "choco":  "lazygit",
+                              "content":  "Lazygit",
+                              "description":  "Simple terminal UI for git commands",
+                              "link":  "https://github.com/jesseduffield/lazygit/",
+                              "winget":  "JesseDuffield.lazygit"
+                          },
+    "WPFInstalllibreoffice":  {
+                                  "category":  "Document",
+                                  "choco":  "libreoffice-fresh",
+                                  "content":  "LibreOffice",
+                                  "description":  "LibreOffice is a powerful and free office suite, compatible with other major office suites.",
+                                  "link":  "https://www.libreoffice.org/",
+                                  "winget":  "TheDocumentFoundation.LibreOffice"
+                              },
+    "WPFInstalllibrewolf":  {
+                                "category":  "Browsers",
+                                "choco":  "librewolf",
+                                "content":  "LibreWolf",
+                                "description":  "LibreWolf is a privacy-focused web browser based on Firefox, with additional privacy and security enhancements.",
+                                "link":  "https://librewolf-community.gitlab.io/",
+                                "winget":  "LibreWolf.LibreWolf"
+                            },
+    "WPFInstalllinkshellextension":  {
+                                         "category":  "Utilities",
+                                         "choco":  "linkshellextension",
+                                         "content":  "Link Shell extension",
+                                         "description":  "Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers.",
+                                         "link":  "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
+                                         "winget":  "HermannSchinagl.LinkShellExtension"
+                                     },
+    "WPFInstalllinphone":  {
+                               "category":  "Communications",
+                               "choco":  "linphone",
+                               "content":  "Linphone",
+                               "description":  "Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more.",
+                               "link":  "https://www.linphone.org/",
+                               "winget":  "BelledonneCommunications.Linphone"
+                           },
+    "WPFInstalllivelywallpaper":  {
+                                      "category":  "Utilities",
+                                      "choco":  "lively",
+                                      "content":  "Lively Wallpaper",
+                                      "description":  "Free and open-source software that allows users to set animated desktop wallpapers and screensavers.",
+                                      "link":  "https://www.rocksdanister.com/lively/",
+                                      "winget":  "rocksdanister.LivelyWallpaper"
+                                  },
+    "WPFInstalllocalsend":  {
+                                "category":  "Utilities",
+                                "choco":  "localsend.install",
+                                "content":  "LocalSend",
+                                "description":  "An open source cross-platform alternative to AirDrop.",
+                                "link":  "https://localsend.org/",
+                                "winget":  "LocalSend.LocalSend"
+                            },
+    "WPFInstalllockhunter":  {
+                                 "category":  "Utilities",
+                                 "choco":  "lockhunter",
+                                 "content":  "LockHunter",
+                                 "description":  "LockHunter is a free tool to delete files blocked by something you do not know.",
+                                 "link":  "https://lockhunter.com/",
+                                 "winget":  "CrystalRich.LockHunter"
+                             },
+    "WPFInstalllogseq":  {
+                             "category":  "Document",
+                             "choco":  "logseq",
+                             "content":  "Logseq",
+                             "description":  "Logseq is a versatile knowledge management and note-taking application designed for the digital thinker. With a focus on the interconnectedness of ideas, Logseq allows users to seamlessly organize their thoughts through a combination of hierarchical outlines and bi-directional linking. It supports both structured and unstructured content, enabling users to create a personalized knowledge graph that adapts to their evolving ideas and insights.",
+                             "link":  "https://logseq.com/",
+                             "winget":  "Logseq.Logseq"
+                         },
+    "WPFInstallmalwarebytes":  {
+                                   "category":  "Utilities",
+                                   "choco":  "malwarebytes",
+                                   "content":  "Malwarebytes",
+                                   "description":  "Malwarebytes is an anti-malware software that provides real-time protection against threats.",
+                                   "link":  "https://www.malwarebytes.com/",
+                                   "winget":  "Malwarebytes.Malwarebytes"
+                               },
+    "WPFInstallmasscode":  {
+                               "category":  "Document",
+                               "choco":  "na",
+                               "content":  "massCode (Snippet Manager)",
+                               "description":  "massCode is a fast and efficient open-source code snippet manager for developers.",
+                               "link":  "https://masscode.io/",
+                               "winget":  "antonreshetov.massCode"
+                           },
+    "WPFInstallmatrix":  {
+                             "category":  "Communications",
+                             "choco":  "element-desktop",
+                             "content":  "Matrix",
+                             "description":  "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
+                             "link":  "https://element.io/",
+                             "winget":  "Element.Element"
+                         },
+    "WPFInstallmeld":  {
+                           "category":  "Utilities",
+                           "choco":  "meld",
+                           "content":  "Meld",
+                           "description":  "Meld is a visual diff and merge tool for files and directories.",
+                           "link":  "https://meldmerge.org/",
+                           "winget":  "Meld.Meld"
+                       },
+    "WPFInstallmonitorian":  {
+                                 "category":  "Utilities",
+                                 "choco":  "monitorian",
+                                 "content":  "Monitorian",
+                                 "description":  "Monitorian is a utility for adjusting monitor brightness and contrast on Windows.",
+                                 "link":  "https://github.com/emoacht/Monitorian",
+                                 "winget":  "emoacht.Monitorian"
+                             },
+    "WPFInstallmoonlight":  {
+                                "category":  "Games",
+                                "choco":  "moonlight-qt",
+                                "content":  "Moonlight/GameStream Client",
+                                "description":  "Moonlight/GameStream Client allows you to stream PC games to other devices over your local network.",
+                                "link":  "https://moonlight-stream.org/",
+                                "winget":  "MoonlightGameStreamingProject.Moonlight"
+                            },
+    "WPFInstallMotrix":  {
+                             "category":  "Utilities",
+                             "choco":  "motrix",
+                             "content":  "Motrix Download Manager",
+                             "description":  "A full-featured download manager.",
+                             "link":  "https://motrix.app/",
+                             "winget":  "agalwood.Motrix"
+                         },
+    "WPFInstallmpc":  {
+                          "category":  "Multimedia Tools",
+                          "choco":  "mpc-hc",
+                          "content":  "Media Player Classic (Video Player)",
+                          "description":  "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
+                          "link":  "https://mpc-hc.org/",
+                          "winget":  "clsid2.mpc-hc"
+                      },
+    "WPFInstallmremoteng":  {
+                                "category":  "Pro Tools",
+                                "choco":  "mremoteng",
+                                "content":  "mRemoteNG",
+                                "description":  "mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface.",
+                                "link":  "https://mremoteng.org/",
+                                "winget":  "mRemoteNG.mRemoteNG"
+                            },
+    "WPFInstallmsedgeredirect":  {
+                                     "category":  "Utilities",
+                                     "choco":  "msedgeredirect",
+                                     "content":  "MSEdgeRedirect",
+                                     "description":  "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+                                     "link":  "https://github.com/rcmaehl/MSEdgeRedirect",
+                                     "winget":  "rcmaehl.MSEdgeRedirect"
+                                 },
+    "WPFInstallmsiafterburner":  {
+                                     "category":  "Utilities",
+                                     "choco":  "msiafterburner",
+                                     "content":  "MSI Afterburner",
+                                     "description":  "MSI Afterburner is a graphics card overclocking utility with advanced features.",
+                                     "link":  "https://www.msi.com/Landing/afterburner",
+                                     "winget":  "Guru3D.Afterburner"
+                                 },
+    "WPFInstallmullvadbrowser":  {
+                                     "category":  "Browsers",
+                                     "choco":  "na",
+                                     "content":  "Mullvad Browser",
+                                     "description":  "Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project.",
+                                     "link":  "https://mullvad.net/browser",
+                                     "winget":  "MullvadVPN.MullvadBrowser"
+                                 },
+    "WPFInstallmusescore":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "musescore",
+                                "content":  "MuseScore",
+                                "description":  "Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore.",
+                                "link":  "https://musescore.org/en",
+                                "winget":  "Musescore.Musescore"
+                            },
+    "WPFInstallmusicbee":  {
+                               "category":  "Multimedia Tools",
+                               "choco":  "musicbee",
+                               "content":  "MusicBee (Music Player)",
+                               "description":  "MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more.",
+                               "link":  "https://getmusicbee.com/",
+                               "winget":  "MusicBee.MusicBee"
+                           },
+    "WPFInstallmp3tag":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "mp3tag",
+                             "content":  "Mp3tag (Metadata Audio Editor)",
+                             "description":  "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
+                             "link":  "https://www.mp3tag.de/en/",
+                             "winget":  "Mp3tag.Mp3tag"
+                         },
+    "WPFInstallnanazip":  {
+                              "category":  "Utilities",
+                              "choco":  "nanazip",
+                              "content":  "NanaZip",
+                              "description":  "NanaZip is a fast and efficient file compression and decompression tool.",
+                              "link":  "https://github.com/M2Team/NanaZip",
+                              "winget":  "M2Team.NanaZip"
+                          },
+    "WPFInstallnetbird":  {
+                              "category":  "Pro Tools",
+                              "choco":  "netbird",
+                              "content":  "NetBird",
+                              "description":  "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+                              "link":  "https://netbird.io/",
+                              "winget":  "netbird"
+                          },
+    "WPFInstallnaps2":  {
+                            "category":  "Document",
+                            "choco":  "naps2",
+                            "content":  "NAPS2 (Document Scanner)",
+                            "description":  "NAPS2 is a document scanning application that simplifies the process of creating electronic documents.",
+                            "link":  "https://www.naps2.com/",
+                            "winget":  "Cyanfish.NAPS2"
+                        },
+    "WPFInstallneofetchwin":  {
+                                  "category":  "Utilities",
+                                  "choco":  "na",
+                                  "content":  "Neofetch",
+                                  "description":  "Neofetch is a command-line utility for displaying system information in a visually appealing way.",
+                                  "link":  "https://github.com/nepnep39/neofetch-win",
+                                  "winget":  "nepnep.neofetch-win"
+                              },
+    "WPFInstallneovim":  {
+                             "category":  "Development",
+                             "choco":  "neovim",
+                             "content":  "Neovim",
+                             "description":  "Neovim is a highly extensible text editor and an improvement over the original Vim editor.",
+                             "link":  "https://neovim.io/",
+                             "winget":  "Neovim.Neovim"
+                         },
+    "WPFInstallnextclouddesktop":  {
+                                       "category":  "Utilities",
+                                       "choco":  "nextcloud-client",
+                                       "content":  "Nextcloud Desktop",
+                                       "description":  "Nextcloud Desktop is the official desktop client for the Nextcloud file synchronization and sharing platform.",
+                                       "link":  "https://nextcloud.com/install/#install-clients",
+                                       "winget":  "Nextcloud.NextcloudDesktop"
+                                   },
+    "WPFInstallnglide":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "na",
+                             "content":  "nGlide (3dfx compatibility)",
+                             "description":  "nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card.",
+                             "link":  "http://www.zeus-software.com/downloads/nglide",
+                             "winget":  "ZeusSoftware.nGlide"
+                         },
+    "WPFInstallnmap":  {
+                           "category":  "Pro Tools",
+                           "choco":  "nmap",
+                           "content":  "Nmap",
+                           "description":  "Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services.",
+                           "link":  "https://nmap.org/",
+                           "winget":  "Insecure.Nmap"
+                       },
+    "WPFInstallnodejs":  {
+                             "category":  "Development",
+                             "choco":  "nodejs",
+                             "content":  "NodeJS",
+                             "description":  "NodeJS is a JavaScript runtime built on Chrome\u0026#39;s V8 JavaScript engine for building server-side and networking applications.",
+                             "link":  "https://nodejs.org/",
+                             "winget":  "OpenJS.NodeJS"
+                         },
+    "WPFInstallnodejslts":  {
+                                "category":  "Development",
+                                "choco":  "nodejs-lts",
+                                "content":  "NodeJS LTS",
+                                "description":  "NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development.",
+                                "link":  "https://nodejs.org/",
+                                "winget":  "OpenJS.NodeJS.LTS"
+                            },
+    "WPFInstallnomacs":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "nomacs",
+                             "content":  "Nomacs (Image viewer)",
+                             "description":  "Nomacs is a free, open-source image viewer that supports multiple platforms. It features basic image editing capabilities and supports a variety of image formats.",
+                             "link":  "https://nomacs.org/",
+                             "winget":  "nomacs.nomacs"
+                         },
+    "WPFInstallnotepadplus":  {
+                                  "category":  "Document",
+                                  "choco":  "notepadplusplus",
+                                  "content":  "Notepad++",
+                                  "description":  "Notepad++ is a free, open-source code editor and Notepad replacement with support for multiple languages.",
+                                  "link":  "https://notepad-plus-plus.org/",
+                                  "winget":  "Notepad++.Notepad++"
+                              },
+    "WPFInstallnuget":  {
+                            "category":  "Microsoft Tools",
+                            "choco":  "nuget.commandline",
+                            "content":  "NuGet",
+                            "description":  "NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications.",
+                            "link":  "https://www.nuget.org/",
+                            "winget":  "Microsoft.NuGet"
+                        },
+    "WPFInstallnushell":  {
+                              "category":  "Utilities",
+                              "choco":  "nushell",
+                              "content":  "Nushell",
+                              "description":  "Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience.",
+                              "link":  "https://www.nushell.sh/",
+                              "winget":  "Nushell.Nushell"
+                          },
+    "WPFInstallnvclean":  {
+                              "category":  "Utilities",
+                              "choco":  "na",
+                              "content":  "NVCleanstall",
+                              "description":  "NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process.",
+                              "link":  "https://www.techpowerup.com/nvcleanstall/",
+                              "winget":  "TechPowerUp.NVCleanstall"
+                          },
+    "WPFInstallnvm":  {
+                          "category":  "Development",
+                          "choco":  "nvm",
+                          "content":  "Node Version Manager",
+                          "description":  "Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions.",
+                          "link":  "https://github.com/coreybutler/nvm-windows",
+                          "winget":  "CoreyButler.NVMforWindows"
+                      },
+    "WPFInstallobs":  {
+                          "category":  "Multimedia Tools",
+                          "choco":  "obs-studio",
+                          "content":  "OBS Studio",
+                          "description":  "OBS Studio is a free and open-source software for video recording and live streaming. It supports real-time video/audio capturing and mixing, making it popular among content creators.",
+                          "link":  "https://obsproject.com/",
+                          "winget":  "OBSProject.OBSStudio"
+                      },
+    "WPFInstallobsidian":  {
+                               "category":  "Document",
+                               "choco":  "obsidian",
+                               "content":  "Obsidian",
+                               "description":  "Obsidian is a powerful note-taking and knowledge management application.",
+                               "link":  "https://obsidian.md/",
+                               "winget":  "Obsidian.Obsidian"
+                           },
+    "WPFInstallokular":  {
+                             "category":  "Document",
+                             "choco":  "okular",
+                             "content":  "Okular",
+                             "description":  "Okular is a versatile document viewer with advanced features.",
+                             "link":  "https://okular.kde.org/",
+                             "winget":  "KDE.Okular"
+                         },
+    "WPFInstallonedrive":  {
+                               "category":  "Microsoft Tools",
+                               "choco":  "onedrive",
+                               "content":  "OneDrive",
+                               "description":  "OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices.",
+                               "link":  "https://onedrive.live.com/",
+                               "winget":  "Microsoft.OneDrive"
+                           },
+    "WPFInstallonlyoffice":  {
+                                 "category":  "Document",
+                                 "choco":  "onlyoffice",
+                                 "content":  "ONLYOffice Desktop",
+                                 "description":  "ONLYOffice Desktop is a comprehensive office suite for document editing and collaboration.",
+                                 "link":  "https://www.onlyoffice.com/desktop.aspx",
+                                 "winget":  "ONLYOFFICE.DesktopEditors"
+                             },
+    "WPFInstallOPAutoClicker":  {
+                                    "category":  "Utilities",
+                                    "choco":  "autoclicker",
+                                    "content":  "OPAutoClicker",
+                                    "description":  "A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location.",
+                                    "link":  "https://www.opautoclicker.com",
+                                    "winget":  "OPAutoClicker.OPAutoClicker"
+                                },
+    "WPFInstallopenhashtab":  {
+                                  "category":  "Utilities",
+                                  "choco":  "openhashtab",
+                                  "content":  "OpenHashTab",
+                                  "description":  "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
+                                  "link":  "https://github.com/namazso/OpenHashTab/",
+                                  "winget":  "namazso.OpenHashTab"
+                              },
+    "WPFInstallopenoffice":  {
+                                 "category":  "Document",
+                                 "choco":  "openoffice",
+                                 "content":  "Apache OpenOffice",
+                                 "description":  "Apache OpenOffice is an open-source office software suite for word processing, spreadsheets, presentations, and more.",
+                                 "link":  "https://www.openoffice.org/",
+                                 "winget":  "Apache.OpenOffice"
+                             },
+    "WPFInstallopenrgb":  {
+                              "category":  "Utilities",
+                              "choco":  "openrgb",
+                              "content":  "OpenRGB",
+                              "description":  "OpenRGB is an open-source RGB lighting control software designed to manage and control RGB lighting for various components and peripherals.",
+                              "link":  "https://openrgb.org/",
+                              "winget":  "CalcProgrammer1.OpenRGB"
+                          },
+    "WPFInstallopenscad":  {
+                               "category":  "Multimedia Tools",
+                               "choco":  "openscad",
+                               "content":  "OpenSCAD",
+                               "description":  "OpenSCAD is a free and open-source script-based 3D CAD modeler. It is especially useful for creating parametric designs for 3D printing.",
+                               "link":  "https://www.openscad.org/",
+                               "winget":  "OpenSCAD.OpenSCAD"
+                           },
+    "WPFInstallopenshell":  {
+                                "category":  "Utilities",
+                                "choco":  "open-shell",
+                                "content":  "Open Shell (Start Menu)",
+                                "description":  "Open Shell is a Windows Start Menu replacement with enhanced functionality and customization options.",
+                                "link":  "https://github.com/Open-Shell/Open-Shell-Menu",
+                                "winget":  "Open-Shell.Open-Shell-Menu"
+                            },
+    "WPFInstallOpenVPN":  {
+                              "category":  "Pro Tools",
+                              "choco":  "openvpn-connect",
+                              "content":  "OpenVPN Connect",
+                              "description":  "OpenVPN Connect is an open-source VPN client that allows you to connect securely to a VPN server. It provides a secure and encrypted connection for protecting your online privacy.",
+                              "link":  "https://openvpn.net/",
+                              "winget":  "OpenVPNTechnologies.OpenVPNConnect"
+                          },
+    "WPFInstallOVirtualBox":  {
+                                  "category":  "Utilities",
+                                  "choco":  "virtualbox",
+                                  "content":  "Oracle VirtualBox",
+                                  "description":  "Oracle VirtualBox is a powerful and free open-source virtualization tool for x86 and AMD64/Intel64 architectures.",
+                                  "link":  "https://www.virtualbox.org/",
+                                  "winget":  "Oracle.VirtualBox"
+                              },
+    "WPFInstallownclouddesktop":  {
+                                      "category":  "Utilities",
+                                      "choco":  "owncloud-client",
+                                      "content":  "ownCloud Desktop",
+                                      "description":  "ownCloud Desktop is the official desktop client for the ownCloud file synchronization and sharing platform.",
+                                      "link":  "https://owncloud.com/desktop-app/",
+                                      "winget":  "ownCloud.ownCloudDesktop"
+                                  },
+    "WPFInstallPaintdotnet":  {
+                                  "category":  "Multimedia Tools",
+                                  "choco":  "paint.net",
+                                  "content":  "Paint.NET",
+                                  "description":  "Paint.NET is a free image and photo editing software for Windows. It features an intuitive user interface and supports a wide range of powerful editing tools.",
+                                  "link":  "https://www.getpaint.net/",
+                                  "winget":  "dotPDN.PaintDotNet"
+                              },
+    "WPFInstallparsec":  {
+                             "category":  "Utilities",
+                             "choco":  "parsec",
+                             "content":  "Parsec",
+                             "description":  "Parsec is a low-latency, high-quality remote desktop sharing application for collaborating and gaming across devices.",
+                             "link":  "https://parsec.app/",
+                             "winget":  "Parsec.Parsec"
+                         },
+    "WPFInstallpdf24creator":  {
+                                   "category":  "Document",
+                                   "choco":  "pdf24",
+                                   "content":  "PDF24 creator",
+                                   "description":  "Free and easy-to-use online/desktop PDF tools that make you more productive",
+                                   "link":  "https://tools.pdf24.org/en/",
+                                   "winget":  "geeksoftwareGmbH.PDF24Creator"
+                               },
+    "WPFInstallpdfsam":  {
+                             "category":  "Document",
+                             "choco":  "pdfsam",
+                             "content":  "PDFsam Basic",
+                             "description":  "PDFsam Basic is a free and open-source tool for splitting, merging, and rotating PDF files.",
+                             "link":  "https://pdfsam.org/",
+                             "winget":  "PDFsam.PDFsam"
+                         },
+    "WPFInstallpeazip":  {
+                             "category":  "Utilities",
+                             "choco":  "peazip",
+                             "content":  "PeaZip",
+                             "description":  "PeaZip is a free, open-source file archiver utility that supports multiple archive formats and provides encryption features.",
+                             "link":  "https://peazip.github.io/",
+                             "winget":  "Giorgiotani.Peazip"
+                         },
+    "WPFInstallpiimager":  {
+                               "category":  "Utilities",
+                               "choco":  "rpi-imager",
+                               "content":  "Raspberry Pi Imager",
+                               "description":  "Raspberry Pi Imager is a utility for writing operating system images to SD cards for Raspberry Pi devices.",
+                               "link":  "https://www.raspberrypi.com/software/",
+                               "winget":  "RaspberryPiFoundation.RaspberryPiImager"
+                           },
+    "WPFInstallplaynite":  {
+                               "category":  "Games",
+                               "choco":  "playnite",
+                               "content":  "Playnite",
+                               "description":  "Playnite is an open-source video game library manager with one simple goal: To provide a unified interface for all of your games.",
+                               "link":  "https://playnite.link/",
+                               "winget":  "Playnite.Playnite"
+                           },
+    "WPFInstallplex":  {
+                           "category":  "Multimedia Tools",
+                           "choco":  "plexmediaserver",
+                           "content":  "Plex Media Server",
+                           "description":  "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
+                           "link":  "https://www.plex.tv/your-media/",
+                           "winget":  "Plex.PlexMediaServer"
+                       },
+    "WPFInstallPortmaster":  {
+                                 "category":  "Pro Tools",
+                                 "choco":  "portmaster",
+                                 "content":  "Portmaster",
+                                 "description":  "Portmaster is a free and open-source application that puts you back in charge over all your computers network connections.",
+                                 "link":  "https://safing.io/",
+                                 "winget":  "Safing.Portmaster"
+                             },
+    "WPFInstallposh":  {
+                           "category":  "Development",
+                           "choco":  "oh-my-posh",
+                           "content":  "Oh My Posh (Prompt)",
+                           "description":  "Oh My Posh is a cross-platform prompt theme engine for any shell.",
+                           "link":  "https://ohmyposh.dev/",
+                           "winget":  "JanDeDobbeleer.OhMyPosh"
+                       },
+    "WPFInstallpostman":  {
+                              "category":  "Development",
+                              "choco":  "postman",
+                              "content":  "Postman",
+                              "description":  "Postman is a collaboration platform for API development that simplifies the process of developing APIs.",
+                              "link":  "https://www.postman.com/",
+                              "winget":  "Postman.Postman"
+                          },
+    "WPFInstallpowerautomate":  {
+                                    "category":  "Microsoft Tools",
+                                    "choco":  "powerautomatedesktop",
+                                    "content":  "Power Automate",
+                                    "description":  "Using Power Automate Desktop you can automate tasks on the desktop as well as the Web.",
+                                    "link":  "https://www.microsoft.com/en-us/power-platform/products/power-automate",
+                                    "winget":  "Microsoft.PowerAutomateDesktop"
+                                },
+    "WPFInstallpowerbi":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "powerbi",
+                              "content":  "Power BI",
+                              "description":  "Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations.",
+                              "link":  "https://www.microsoft.com/en-us/power-platform/products/power-bi/",
+                              "winget":  "Microsoft.PowerBI"
+                          },
+    "WPFInstallpowershell":  {
+                                 "category":  "Microsoft Tools",
+                                 "choco":  "powershell-core",
+                                 "content":  "PowerShell",
+                                 "description":  "PowerShell is a task automation framework and scripting language designed for system administrators, offering powerful command-line capabilities.",
+                                 "link":  "https://github.com/PowerShell/PowerShell",
+                                 "winget":  "Microsoft.PowerShell"
+                             },
+    "WPFInstallpowertoys":  {
+                                "category":  "Microsoft Tools",
+                                "choco":  "powertoys",
+                                "content":  "PowerToys",
+                                "description":  "PowerToys is a set of utilities for power users to enhance productivity, featuring tools like FancyZones, PowerRename, and more.",
+                                "link":  "https://github.com/microsoft/PowerToys",
+                                "winget":  "Microsoft.PowerToys"
+                            },
+    "WPFInstallprismlauncher":  {
+                                    "category":  "Games",
+                                    "choco":  "prismlauncher",
+                                    "content":  "Prism Launcher",
+                                    "description":  "Prism Launcher is a game launcher and manager designed to provide a clean and intuitive interface for organizing and launching your games.",
+                                    "link":  "https://prismlauncher.org/",
+                                    "winget":  "PrismLauncher.PrismLauncher"
+                                },
+    "WPFInstallprocesslasso":  {
+                                   "category":  "Utilities",
+                                   "choco":  "plasso",
+                                   "content":  "Process Lasso",
+                                   "description":  "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
+                                   "link":  "https://bitsum.com/",
+                                   "winget":  "BitSum.ProcessLasso"
+                               },
+    "WPFInstallprocessmonitor":  {
+                                     "category":  "Microsoft Tools",
+                                     "choco":  "procexp",
+                                     "content":  "SysInternals Process Monitor",
+                                     "description":  "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
+                                     "link":  "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
+                                     "winget":  "Microsoft.Sysinternals.ProcessMonitor"
+                                 },
+    "WPFInstallprucaslicer":  {
+                                  "category":  "Utilities",
+                                  "choco":  "prusaslicer",
+                                  "content":  "PrusaSlicer",
+                                  "description":  "PrusaSlicer is a powerful and easy-to-use slicing software for 3D printing with Prusa 3D printers.",
+                                  "link":  "https://www.prusa3d.com/prusaslicer/",
+                                  "winget":  "Prusa3d.PrusaSlicer"
+                              },
+    "WPFInstallpsremoteplay":  {
+                                   "category":  "Games",
+                                   "choco":  "ps-remote-play",
+                                   "content":  "PS Remote Play",
+                                   "description":  "PS Remote Play is a free application that allows you to stream games from your PlayStation console to a PC or mobile device.",
+                                   "link":  "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
+                                   "winget":  "PlayStation.PSRemotePlay"
+                               },
+    "WPFInstallputty":  {
+                            "category":  "Pro Tools",
+                            "choco":  "putty",
+                            "content":  "PuTTY",
+                            "description":  "PuTTY is a free and open-source terminal emulator, serial console, and network file transfer application. It supports various network protocols such as SSH, Telnet, and SCP.",
+                            "link":  "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
+                            "winget":  "PuTTY.PuTTY"
+                        },
+    "WPFInstallpython3":  {
+                              "category":  "Development",
+                              "choco":  "python",
+                              "content":  "Python3",
+                              "description":  "Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more.",
+                              "link":  "https://www.python.org/",
+                              "winget":  "Python.Python.3.12"
+                          },
+    "WPFInstallqbittorrent":  {
+                                  "category":  "Utilities",
+                                  "choco":  "qbittorrent",
+                                  "content":  "qBittorrent",
+                                  "description":  "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
+                                  "link":  "https://www.qbittorrent.org/",
+                                  "winget":  "qBittorrent.qBittorrent"
+                              },
+    "WPFInstalltixati":  {
+                             "category":  "Utilities",
+                             "choco":  "tixati.portable",
+                             "content":  "Tixati",
+                             "description":  "Tixati is a cross-platform BitTorrent client written in C++ that has been designed to be light on system resources.",
+                             "link":  "https://www.tixati.com/",
+                             "winget":  "Tixati.Tixati.Portable"
+                         },
+    "WPFInstallqtox":  {
+                           "category":  "Communications",
+                           "choco":  "qtox",
+                           "content":  "QTox",
+                           "description":  "QTox is a free and open-source messaging app that prioritizes user privacy and security in its design.",
+                           "link":  "https://qtox.github.io/",
+                           "winget":  "Tox.qTox"
+                       },
+    "WPFInstallquicklook":  {
+                                "category":  "Utilities",
+                                "choco":  "quicklook",
+                                "content":  "Quicklook",
+                                "description":  "Bring macOS \u0026#8220;Quick Look\u0026#8221; feature to Windows",
+                                "link":  "https://github.com/QL-Win/QuickLook",
+                                "winget":  "QL-Win.QuickLook"
+                            },
+    "WPFInstallrainmeter":  {
+                                "category":  "Utilities",
+                                "choco":  "na",
+                                "content":  "Rainmeter",
+                                "description":  "Rainmeter is a desktop customization tool that allows you to create and share customizable skins for your desktop.",
+                                "link":  "https://www.rainmeter.net/",
+                                "winget":  "Rainmeter.Rainmeter"
+                            },
+    "WPFInstallrevo":  {
+                           "category":  "Utilities",
+                           "choco":  "revo-uninstaller",
+                           "content":  "Revo Uninstaller",
+                           "description":  "Revo Uninstaller is an advanced uninstaller tool that helps you remove unwanted software and clean up your system.",
+                           "link":  "https://www.revouninstaller.com/",
+                           "winget":  "RevoUninstaller.RevoUninstaller"
+                       },
+    "WPFInstallrevolt":  {
+                             "category":  "Communications",
+                             "choco":  "na",
+                             "content":  "Revolt",
+                             "description":  "Find your community, connect with the world. Revolt is one of the best ways to stay connected with your friends and community without sacrificing any usability.",
+                             "link":  "https://revolt.chat/",
+                             "winget":  "Revolt.RevoltDesktop"
+                         },
+    "WPFInstallripgrep":  {
+                              "category":  "Utilities",
+                              "choco":  "ripgrep",
+                              "content":  "Ripgrep",
+                              "description":  "Fast and powerful commandline search tool",
+                              "link":  "https://github.com/BurntSushi/ripgrep/",
+                              "winget":  "BurntSushi.ripgrep.MSVC"
+                          },
+    "WPFInstallrufus":  {
+                            "category":  "Utilities",
+                            "choco":  "rufus",
+                            "content":  "Rufus Imager",
+                            "description":  "Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives.",
+                            "link":  "https://rufus.ie/",
+                            "winget":  "Rufus.Rufus"
+                        },
+    "WPFInstallrustdesk":  {
+                               "category":  "Pro Tools",
+                               "choco":  "rustdesk.portable",
+                               "content":  "RustDesk",
+                               "description":  "RustDesk is a free and open-source remote desktop application. It provides a secure way to connect to remote machines and access desktop environments.",
+                               "link":  "https://rustdesk.com/",
+                               "winget":  "RustDesk.RustDesk"
+                           },
+    "WPFInstallrustlang":  {
+                               "category":  "Development",
+                               "choco":  "rust",
+                               "content":  "Rust",
+                               "description":  "Rust is a programming language designed for safety and performance, particularly focused on systems programming.",
+                               "link":  "https://www.rust-lang.org/",
+                               "winget":  "Rustlang.Rust.MSVC"
+                           },
+    "WPFInstallsamsungmagician":  {
+                                      "category":  "Utilities",
+                                      "choco":  "samsung-magician",
+                                      "content":  "Samsung Magician",
+                                      "description":  "Samsung Magician is a utility for managing and optimizing Samsung SSDs.",
+                                      "link":  "https://semiconductor.samsung.com/consumer-storage/magician/",
+                                      "winget":  "Samsung.SamsungMagician"
+                                  },
+    "WPFInstallsandboxie":  {
+                                "category":  "Utilities",
+                                "choco":  "sandboxie",
+                                "content":  "Sandboxie Plus",
+                                "description":  "Sandboxie Plus is a sandbox-based isolation program that provides enhanced security by running applications in an isolated environment.",
+                                "link":  "https://github.com/sandboxie-plus/Sandboxie",
+                                "winget":  "Sandboxie.Plus"
+                            },
+    "WPFInstallsdio":  {
+                           "category":  "Utilities",
+                           "choco":  "sdio",
+                           "content":  "Snappy Driver Installer Origin",
+                           "description":  "Snappy Driver Installer Origin is a free and open-source driver updater with a vast driver database for Windows.",
+                           "link":  "https://sourceforge.net/projects/snappy-driver-installer-origin",
+                           "winget":  "GlennDelahoy.SnappyDriverInstallerOrigin"
+                       },
+    "WPFInstallsession":  {
+                              "category":  "Communications",
+                              "choco":  "session",
+                              "content":  "Session",
+                              "description":  "Session is a private and secure messaging app built on a decentralized network for user privacy and data protection.",
+                              "link":  "https://getsession.org/",
+                              "winget":  "Oxen.Session"
+                          },
+    "WPFInstallsharex":  {
+                             "category":  "Multimedia Tools",
+                             "choco":  "sharex",
+                             "content":  "ShareX (Screenshots)",
+                             "description":  "ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots.",
+                             "link":  "https://getsharex.com/",
+                             "winget":  "ShareX.ShareX"
+                         },
+    "WPFInstallnilesoftShel":  {
+                                   "category":  "Utilities",
+                                   "choco":  "nilesoft-shell",
+                                   "content":  "Shell (Expanded Context Menu)",
+                                   "description":  "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
+                                   "link":  "https://nilesoft.org/",
+                                   "winget":  "Nilesoft.Shell"
+                               },
+    "WPFInstallsidequest":  {
+                                "category":  "Games",
+                                "choco":  "sidequest",
+                                "content":  "SideQuestVR",
+                                "description":  "SideQuestVR is a community-driven platform that enables users to discover, install, and manage virtual reality content on Oculus Quest devices.",
+                                "link":  "https://sidequestvr.com/",
+                                "winget":  "SideQuestVR.SideQuest"
+                            },
+    "WPFInstallsignal":  {
+                             "category":  "Communications",
+                             "choco":  "signal",
+                             "content":  "Signal",
+                             "description":  "Signal is a privacy-focused messaging app that offers end-to-end encryption for secure and private communication.",
+                             "link":  "https://signal.org/",
+                             "winget":  "OpenWhisperSystems.Signal"
+                         },
+    "WPFInstallsignalrgb":  {
+                                "category":  "Utilities",
+                                "choco":  "na",
+                                "content":  "SignalRGB",
+                                "description":  "SignalRGB lets you control and sync your favorite RGB devices with one free application.",
+                                "link":  "https://www.signalrgb.com/",
+                                "winget":  "WhirlwindFX.SignalRgb"
+                            },
+    "WPFInstallsimplenote":  {
+                                 "category":  "Document",
+                                 "choco":  "simplenote",
+                                 "content":  "simplenote",
+                                 "description":  "Simplenote is an easy way to keep notes, lists, ideas and more.",
+                                 "link":  "https://simplenote.com/",
+                                 "winget":  "Automattic.Simplenote"
+                             },
+    "WPFInstallsimplewall":  {
+                                 "category":  "Pro Tools",
+                                 "choco":  "simplewall",
+                                 "content":  "Simplewall",
+                                 "description":  "Simplewall is a free and open-source firewall application for Windows. It allows users to control and manage the inbound and outbound network traffic of applications.",
+                                 "link":  "https://github.com/henrypp/simplewall",
+                                 "winget":  "Henry++.simplewall"
+                             },
+    "WPFInstallskype":  {
+                            "category":  "Communications",
+                            "choco":  "skype",
+                            "content":  "Skype",
+                            "description":  "Skype is a widely used communication platform offering video calls, voice calls, and instant messaging services.",
+                            "link":  "https://www.skype.com/",
+                            "winget":  "Microsoft.Skype"
+                        },
+    "WPFInstallslack":  {
+                            "category":  "Communications",
+                            "choco":  "slack",
+                            "content":  "Slack",
+                            "description":  "Slack is a collaboration hub that connects teams and facilitates communication through channels, messaging, and file sharing.",
+                            "link":  "https://slack.com/",
+                            "winget":  "SlackTechnologies.Slack"
+                        },
+    "WPFInstallspacedrive":  {
+                                 "category":  "Utilities",
+                                 "choco":  "na",
+                                 "content":  "Spacedrive File Manager",
+                                 "description":  "Spacedrive is a file manager that offers cloud storage integration and file synchronization across devices.",
+                                 "link":  "https://www.spacedrive.com/",
+                                 "winget":  "spacedrive.Spacedrive"
+                             },
+    "WPFInstallspacesniffer":  {
+                                   "category":  "Utilities",
+                                   "choco":  "spacesniffer",
+                                   "content":  "SpaceSniffer",
+                                   "description":  "A tool application that lets you understand how folders and files are structured on your disks",
+                                   "link":  "http://www.uderzo.it/main_products/space_sniffer/",
+                                   "winget":  "UderzoSoftware.SpaceSniffer"
+                               },
+    "WPFInstallstarship":  {
+                               "category":  "Development",
+                               "choco":  "starship",
+                               "content":  "Starship (Shell Prompt)",
+                               "description":  "Starship is a minimal, fast, and customizable prompt for any shell.",
+                               "link":  "https://starship.rs/",
+                               "winget":  "starship"
+                           },
+    "WPFInstallsteam":  {
+                            "category":  "Games",
+                            "choco":  "steam-client",
+                            "content":  "Steam",
+                            "description":  "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
+                            "link":  "https://store.steampowered.com/about/",
+                            "winget":  "Valve.Steam"
+                        },
+    "WPFInstallstrawberry":  {
+                                 "category":  "Multimedia Tools",
+                                 "choco":  "strawberrymusicplayer",
+                                 "content":  "Strawberry (Music Player)",
+                                 "description":  "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
+                                 "link":  "https://www.strawberrymusicplayer.org/",
+                                 "winget":  "StrawberryMusicPlayer.Strawberry"
+                             },
+    "WPFInstallstremio":  {
+                              "winget":  "Stremio.Stremio",
+                              "choco":  "stremio",
+                              "category":  "Multimedia Tools",
+                              "content":  "Stremio",
+                              "link":  "https://www.stremio.com/",
+                              "description":  "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
+                          },
+    "WPFInstallsublimemerge":  {
+                                   "category":  "Development",
+                                   "choco":  "sublimemerge",
+                                   "content":  "Sublime Merge",
+                                   "description":  "Sublime Merge is a Git client with advanced features and a beautiful interface.",
+                                   "link":  "https://www.sublimemerge.com/",
+                                   "winget":  "SublimeHQ.SublimeMerge"
+                               },
+    "WPFInstallsublimetext":  {
+                                  "category":  "Development",
+                                  "choco":  "sublimetext4",
+                                  "content":  "Sublime Text",
+                                  "description":  "Sublime Text is a sophisticated text editor for code, markup, and prose.",
+                                  "link":  "https://www.sublimetext.com/",
+                                  "winget":  "SublimeHQ.SublimeText.4"
+                              },
+    "WPFInstallsumatra":  {
+                              "category":  "Document",
+                              "choco":  "sumatrapdf",
+                              "content":  "Sumatra PDF",
+                              "description":  "Sumatra PDF is a lightweight and fast PDF viewer with minimalistic design.",
+                              "link":  "https://www.sumatrapdfreader.org/free-pdf-reader.html",
+                              "winget":  "SumatraPDF.SumatraPDF"
+                          },
+    "WPFInstallpdfgear":  {
+                              "category":  "Document",
+                              "choco":  "na",
+                              "content":  "PDFgear",
+                              "description":  "PDFgear is a piece of full-featured PDF management software for Windows, Mac, and mobile, and it\u0026#39;s completely free to use.",
+                              "link":  "https://www.pdfgear.com/",
+                              "winget":  "PDFgear.PDFgear"
+                          },
+    "WPFInstallsunshine":  {
+                               "category":  "Games",
+                               "choco":  "sunshine",
+                               "content":  "Sunshine/GameStream Server",
+                               "description":  "Sunshine is a GameStream server that allows you to remotely play PC games on Android devices, offering low-latency streaming.",
+                               "link":  "https://github.com/LizardByte/Sunshine",
+                               "winget":  "LizardByte.Sunshine"
+                           },
+    "WPFInstallsuperf4":  {
+                              "category":  "Utilities",
+                              "choco":  "superf4",
+                              "content":  "SuperF4",
+                              "description":  "SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey.",
+                              "link":  "https://stefansundin.github.io/superf4/",
+                              "winget":  "StefanSundin.Superf4"
+                          },
+    "WPFInstallswift":  {
+                            "category":  "Development",
+                            "choco":  "na",
+                            "content":  "Swift toolchain",
+                            "description":  "Swift is a general-purpose programming language that\u0026#39;s approachable for newcomers and powerful for experts.",
+                            "link":  "https://www.swift.org/",
+                            "winget":  "Swift.Toolchain"
+                        },
+    "WPFInstallsynctrayzor":  {
+                                  "category":  "Utilities",
+                                  "choco":  "synctrayzor",
+                                  "content":  "SyncTrayzor",
+                                  "description":  "Windows tray utility / filesystem watcher / launcher for Syncthing",
+                                  "link":  "https://github.com/canton7/SyncTrayzor/",
+                                  "winget":  "SyncTrayzor.SyncTrayzor"
+                              },
+    "WPFInstallsqlmanagementstudio":  {
+                                          "category":  "Microsoft Tools",
+                                          "choco":  "sql-server-management-studio",
+                                          "content":  "Microsoft SQL Server Management Studio",
+                                          "description":  "SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases.",
+                                          "link":  "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
+                                          "winget":  "Microsoft.SQLServerManagementStudio"
+                                      },
+    "WPFInstalltabby":  {
+                            "category":  "Utilities",
+                            "choco":  "tabby",
+                            "content":  "Tabby.sh",
+                            "description":  "Tabby is a highly configurable terminal emulator, SSH and serial client for Windows, macOS and Linux",
+                            "link":  "https://tabby.sh/",
+                            "winget":  "Eugeny.Tabby"
+                        },
+    "WPFInstalltailscale":  {
+                                "category":  "Utilities",
+                                "choco":  "tailscale",
+                                "content":  "Tailscale",
+                                "description":  "Tailscale is a secure and easy-to-use VPN solution for connecting your devices and networks.",
+                                "link":  "https://tailscale.com/",
+                                "winget":  "tailscale.tailscale"
+                            },
+    "WPFInstallTcNoAccSwitcher":  {
+                                      "category":  "Games",
+                                      "choco":  "tcno-acc-switcher",
+                                      "content":  "TCNO Account Switcher",
+                                      "description":  "A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!",
+                                      "link":  "https://github.com/TCNOco/TcNo-Acc-Switcher",
+                                      "winget":  "TechNobo.TcNoAccountSwitcher"
+                                  },
+    "WPFInstalltcpview":  {
+                              "category":  "Microsoft Tools",
+                              "choco":  "tcpview",
+                              "content":  "SysInternals TCPView",
+                              "description":  "SysInternals TCPView is a network monitoring tool that displays a detailed list of all TCP and UDP endpoints on your system.",
+                              "link":  "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
+                              "winget":  "Microsoft.Sysinternals.TCPView"
+                          },
+    "WPFInstallteams":  {
+                            "category":  "Communications",
+                            "choco":  "microsoft-teams",
+                            "content":  "Teams",
+                            "description":  "Microsoft Teams is a collaboration platform that integrates with Office 365 and offers chat, video conferencing, file sharing, and more.",
+                            "link":  "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
+                            "winget":  "Microsoft.Teams"
+                        },
+    "WPFInstallteamviewer":  {
+                                 "category":  "Utilities",
+                                 "choco":  "teamviewer9",
+                                 "content":  "TeamViewer",
+                                 "description":  "TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices.",
+                                 "link":  "https://www.teamviewer.com/",
+                                 "winget":  "TeamViewer.TeamViewer"
+                             },
+    "WPFInstalltelegram":  {
+                               "category":  "Communications",
+                               "choco":  "telegram",
+                               "content":  "Telegram",
+                               "description":  "Telegram is a cloud-based instant messaging app known for its security features, speed, and simplicity.",
+                               "link":  "https://telegram.org/",
+                               "winget":  "Telegram.TelegramDesktop"
+                           },
+    "WPFInstallunigram":  {
+                              "category":  "Communications",
+                              "choco":  "na",
+                              "content":  "Unigram",
+                              "description":  "Unigram - Telegram for Windows",
+                              "link":  "https://unigramdev.github.io/",
+                              "winget":  "Telegram.Unigram"
+                          },
+    "WPFInstallterminal":  {
+                               "category":  "Microsoft Tools",
+                               "choco":  "microsoft-windows-terminal",
+                               "content":  "Windows Terminal",
+                               "description":  "Windows Terminal is a modern, fast, and efficient terminal application for command-line users, supporting multiple tabs, panes, and more.",
+                               "link":  "https://aka.ms/terminal",
+                               "winget":  "Microsoft.WindowsTerminal"
+                           },
+    "WPFInstallThonny":  {
+                             "category":  "Development",
+                             "choco":  "thonny",
+                             "content":  "Thonny Python IDE",
+                             "description":  "Python IDE for beginners.",
+                             "link":  "https://github.com/thonny/thonny",
+                             "winget":  "AivarAnnamaa.Thonny"
+                         },
+    "WPFInstallthorium":  {
+                              "category":  "Browsers",
+                              "choco":  "na",
+                              "content":  "Thorium Browser AVX2",
+                              "description":  "Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market.",
+                              "link":  "http://thorium.rocks/",
+                              "winget":  "Alex313031.Thorium.AVX2"
+                          },
+    "WPFInstallthunderbird":  {
+                                  "category":  "Communications",
+                                  "choco":  "thunderbird",
+                                  "content":  "Thunderbird",
+                                  "description":  "Mozilla Thunderbird is a free and open-source email client, news client, and chat client with advanced features.",
+                                  "link":  "https://www.thunderbird.net/",
+                                  "winget":  "Mozilla.Thunderbird"
+                              },
+    "WPFInstallbetterbird":  {
+                                 "category":  "Communications",
+                                 "choco":  "betterbird",
+                                 "content":  "Betterbird",
+                                 "description":  "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
+                                 "link":  "https://www.betterbird.eu/",
+                                 "winget":  "Betterbird.Betterbird"
+                             },
+    "WPFInstalltidal":  {
+                            "category":  "Multimedia Tools",
+                            "choco":  "na",
+                            "content":  "Tidal",
+                            "description":  "Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists.",
+                            "link":  "https://tidal.com/",
+                            "winget":  "9NNCB5BS59PH"
+                        },
+    "WPFInstalltor":  {
+                          "category":  "Browsers",
+                          "choco":  "tor-browser",
+                          "content":  "Tor Browser",
+                          "description":  "Tor Browser is designed for anonymous web browsing, utilizing the Tor network to protect user privacy and security.",
+                          "link":  "https://www.torproject.org/",
+                          "winget":  "TorProject.TorBrowser"
+                      },
+    "WPFInstalltotalcommander":  {
+                                     "category":  "Utilities",
+                                     "choco":  "TotalCommander",
+                                     "content":  "Total Commander",
+                                     "description":  "Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management.",
+                                     "link":  "https://www.ghisler.com/",
+                                     "winget":  "Ghisler.TotalCommander"
+                                 },
+    "WPFInstalltreesize":  {
+                               "category":  "Utilities",
+                               "choco":  "treesizefree",
+                               "content":  "TreeSize Free",
+                               "description":  "TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives.",
+                               "link":  "https://www.jam-software.com/treesize_free/",
+                               "winget":  "JAMSoftware.TreeSize.Free"
+                           },
+    "WPFInstallttaskbar":  {
+                               "category":  "Utilities",
+                               "choco":  "translucenttb",
+                               "content":  "Translucent Taskbar",
+                               "description":  "Translucent Taskbar is a tool that allows you to customize the transparency of the Windows taskbar.",
+                               "link":  "https://github.com/TranslucentTB/TranslucentTB",
+                               "winget":  "9PF4KZ2VN4W9"
+                           },
+    "WPFInstalltwinkletray":  {
+                                  "category":  "Utilities",
+                                  "choco":  "twinkle-tray",
+                                  "content":  "Twinkle Tray",
+                                  "description":  "Twinkle Tray lets you easily manage the brightness levels of multiple monitors.",
+                                  "link":  "https://twinkletray.com/",
+                                  "winget":  "xanderfrangos.twinkletray"
+                              },
+    "WPFInstallubisoft":  {
+                              "category":  "Games",
+                              "choco":  "ubisoft-connect",
+                              "content":  "Ubisoft Connect",
+                              "description":  "Ubisoft Connect is Ubisoft\u0026#39;s digital distribution and online gaming service, providing access to Ubisoft\u0026#39;s games and services.",
+                              "link":  "https://ubisoftconnect.com/",
+                              "winget":  "Ubisoft.Connect"
+                          },
+    "WPFInstallungoogled":  {
+                                "category":  "Browsers",
+                                "choco":  "ungoogled-chromium",
+                                "content":  "Ungoogled",
+                                "description":  "Ungoogled Chromium is a version of Chromium without Google\u0026#39;s integration for enhanced privacy and control.",
+                                "link":  "https://github.com/Eloston/ungoogled-chromium",
+                                "winget":  "eloston.ungoogled-chromium"
+                            },
+    "WPFInstallunity":  {
+                            "category":  "Development",
+                            "choco":  "unityhub",
+                            "content":  "Unity Game Engine",
+                            "description":  "Unity is a powerful game development platform for creating 2D, 3D, augmented reality, and virtual reality games.",
+                            "link":  "https://unity.com/",
+                            "winget":  "Unity.UnityHub"
+                        },
+    "WPFInstallvagrant":  {
+                              "category":  "Development",
+                              "choco":  "vagrant",
+                              "content":  "Vagrant",
+                              "description":  "Vagrant is an open-source tool for building and managing virtualized development environments.",
+                              "link":  "https://www.vagrantup.com/",
+                              "winget":  "Hashicorp.Vagrant"
+                          },
+    "WPFInstallvc2015_32":  {
+                                "category":  "Microsoft Tools",
+                                "choco":  "na",
+                                "content":  "Visual C++ 2015-2022 32-bit",
+                                "description":  "Visual C++ 2015-2022 32-bit redistributable package installs runtime components of Visual C++ libraries required to run 32-bit applications.",
+                                "link":  "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
+                                "winget":  "Microsoft.VCRedist.2015+.x86"
+                            },
+    "WPFInstallvc2015_64":  {
+                                "category":  "Microsoft Tools",
+                                "choco":  "na",
+                                "content":  "Visual C++ 2015-2022 64-bit",
+                                "description":  "Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications.",
+                                "link":  "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
+                                "winget":  "Microsoft.VCRedist.2015+.x64"
+                            },
+    "WPFInstallvencord":  {
+                              "category":  "Communications",
+                              "choco":  "na",
+                              "content":  "Vencord",
+                              "description":  "Vencord is a modification for Discord that adds plugins, custom styles, and more!",
+                              "link":  "https://vencord.dev/",
+                              "winget":  "Vendicated.Vencord"
+                          },
+    "WPFInstallventoy":  {
+                             "category":  "Pro Tools",
+                             "choco":  "ventoy",
+                             "content":  "Ventoy",
+                             "description":  "Ventoy is an open-source tool for creating bootable USB drives. It supports multiple ISO files on a single USB drive, making it a versatile solution for installing operating systems.",
+                             "link":  "https://www.ventoy.net/",
+                             "winget":  "Ventoy.Ventoy"
+                         },
+    "WPFInstallvesktop":  {
+                              "category":  "Communications",
+                              "choco":  "na",
+                              "content":  "Vesktop",
+                              "description":  "A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed.",
+                              "link":  "https://github.com/Vencord/Vesktop",
+                              "winget":  "Vencord.Vesktop"
+                          },
+    "WPFInstallviber":  {
+                            "category":  "Communications",
+                            "choco":  "viber",
+                            "content":  "Viber",
+                            "description":  "Viber is a free messaging and calling app with features like group chats, video calls, and more.",
+                            "link":  "https://www.viber.com/",
+                            "winget":  "Viber.Viber"
+                        },
+    "WPFInstallvideomass":  {
+                                "category":  "Multimedia Tools",
+                                "choco":  "na",
+                                "content":  "Videomass",
+                                "description":  "Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features.",
+                                "link":  "https://jeanslack.github.io/Videomass/",
+                                "winget":  "GianlucaPernigotto.Videomass"
+                            },
+    "WPFInstallvisualstudio":  {
+                                   "category":  "Development",
+                                   "choco":  "visualstudio2022community",
+                                   "content":  "Visual Studio 2022",
+                                   "description":  "Visual Studio 2022 is an integrated development environment (IDE) for building, debugging, and deploying applications.",
+                                   "link":  "https://visualstudio.microsoft.com/",
+                                   "winget":  "Microsoft.VisualStudio.2022.Community"
+                               },
+    "WPFInstallvivaldi":  {
+                              "category":  "Browsers",
+                              "choco":  "vivaldi",
+                              "content":  "Vivaldi",
+                              "description":  "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
+                              "link":  "https://vivaldi.com/",
+                              "winget":  "Vivaldi.Vivaldi"
+                          },
+    "WPFInstallvlc":  {
+                          "category":  "Multimedia Tools",
+                          "choco":  "vlc",
+                          "content":  "VLC (Video Player)",
+                          "description":  "VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility.",
+                          "link":  "https://www.videolan.org/vlc/",
+                          "winget":  "VideoLAN.VLC"
+                      },
+    "WPFInstallvoicemeeter":  {
+                                  "category":  "Multimedia Tools",
+                                  "choco":  "voicemeeter",
+                                  "content":  "Voicemeeter (Audio)",
+                                  "description":  "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes.",
+                                  "link":  "https://www.vb-audio.com/Voicemeeter/",
+                                  "winget":  "VB-Audio.Voicemeeter"
+                              },
+    "WPFInstallvrdesktopstreamer":  {
+                                        "category":  "Games",
+                                        "choco":  "na",
+                                        "content":  "Virtual Desktop Streamer",
+                                        "description":  "Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices.",
+                                        "link":  "https://www.vrdesktop.net/",
+                                        "winget":  "VirtualDesktop.Streamer"
+                                    },
+    "WPFInstallvscode":  {
+                             "category":  "Development",
+                             "choco":  "vscode",
+                             "content":  "VS Code",
+                             "description":  "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
+                             "link":  "https://code.visualstudio.com/",
+                             "winget":  "Git.Git;Microsoft.VisualStudioCode"
+                         },
+    "WPFInstallvscodium":  {
+                               "category":  "Development",
+                               "choco":  "vscodium",
+                               "content":  "VS Codium",
+                               "description":  "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft\u0026#39;s VS Code.",
+                               "link":  "https://vscodium.com/",
+                               "winget":  "Git.Git;VSCodium.VSCodium"
+                           },
+    "WPFInstallwaterfox":  {
+                               "category":  "Browsers",
+                               "choco":  "waterfox",
+                               "content":  "Waterfox",
+                               "description":  "Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy.",
+                               "link":  "https://www.waterfox.net/",
+                               "winget":  "Waterfox.Waterfox"
+                           },
+    "WPFInstallwazuh":  {
+                            "category":  "Utilities",
+                            "choco":  "wazuh-agent",
+                            "content":  "Wazuh.",
+                            "description":  "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+                            "link":  "https://wazuh.com/",
+                            "winget":  "Wazuh.WazuhAgent"
+                        },
+    "WPFInstallwezterm":  {
+                              "category":  "Development",
+                              "choco":  "wezterm",
+                              "content":  "Wezterm",
+                              "description":  "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
+                              "link":  "https://wezfurlong.org/wezterm/index.html",
+                              "winget":  "wez.wezterm"
+                          },
+    "WPFInstallwindirstat":  {
+                                 "category":  "Utilities",
+                                 "choco":  "windirstat",
+                                 "content":  "WinDirStat",
+                                 "description":  "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
+                                 "link":  "https://windirstat.net/",
+                                 "winget":  "WinDirStat.WinDirStat"
+                             },
+    "WPFInstallwindowspchealth":  {
+                                      "category":  "Utilities",
+                                      "choco":  "na",
+                                      "content":  "Windows PC Health Check",
+                                      "description":  "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
+                                      "link":  "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
+                                      "winget":  "Microsoft.WindowsPCHealthCheck"
+                                  },
+    "WPFInstallwingetui":  {
+                               "category":  "Utilities",
+                               "choco":  "wingetui",
+                               "content":  "WingetUI",
+                               "description":  "WingetUI is a graphical user interface for Microsoft\u0026#39;s Windows Package Manager (winget).",
+                               "link":  "https://www.marticliment.com/wingetui/",
+                               "winget":  "SomePythonThings.WingetUIStore"
+                           },
+    "WPFInstallwinmerge":  {
+                               "category":  "Document",
+                               "choco":  "winmerge",
+                               "content":  "WinMerge",
+                               "description":  "WinMerge is a visual text file and directory comparison tool for Windows.",
+                               "link":  "https://winmerge.org/",
+                               "winget":  "WinMerge.WinMerge"
+                           },
+    "WPFInstallwinpaletter":  {
+                                  "category":  "Utilities",
+                                  "choco":  "WinPaletter",
+                                  "content":  "WinPaletter",
+                                  "description":  "WinPaletter is a tool for adjusting the color palette of Windows 10, providing customization options for window colors.",
+                                  "link":  "https://github.com/Abdelrhman-AK/WinPaletter",
+                                  "winget":  "Abdelrhman-AK.WinPaletter"
+                              },
+    "WPFInstallwinrar":  {
+                             "category":  "Utilities",
+                             "choco":  "winrar",
+                             "content":  "WinRAR",
+                             "description":  "WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files.",
+                             "link":  "https://www.win-rar.com/",
+                             "winget":  "RARLab.WinRAR"
+                         },
+    "WPFInstallwinscp":  {
+                             "category":  "Pro Tools",
+                             "choco":  "winscp",
+                             "content":  "WinSCP",
+                             "description":  "WinSCP is a popular open-source SFTP, FTP, and SCP client for Windows. It allows secure file transfers between a local and a remote computer.",
+                             "link":  "https://winscp.net/",
+                             "winget":  "WinSCP.WinSCP"
+                         },
+    "WPFInstallwireguard":  {
+                                "category":  "Pro Tools",
+                                "choco":  "wireguard",
+                                "content":  "WireGuard",
+                                "description":  "WireGuard is a fast and modern VPN (Virtual Private Network) protocol. It aims to be simpler and more efficient than other VPN protocols, providing secure and reliable connections.",
+                                "link":  "https://www.wireguard.com/",
+                                "winget":  "WireGuard.WireGuard"
+                            },
+    "WPFInstallwireshark":  {
+                                "category":  "Pro Tools",
+                                "choco":  "wireshark",
+                                "content":  "Wireshark",
+                                "description":  "Wireshark is a widely-used open-source network protocol analyzer. It allows users to capture and analyze network traffic in real-time, providing detailed insights into network activities.",
+                                "link":  "https://www.wireshark.org/",
+                                "winget":  "WiresharkFoundation.Wireshark"
+                            },
+    "WPFInstallwisetoys":  {
+                               "category":  "Utilities",
+                               "choco":  "na",
+                               "content":  "WiseToys",
+                               "description":  "WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience.",
+                               "link":  "https://toys.wisecleaner.com/",
+                               "winget":  "WiseCleaner.WiseToys"
+                           },
+    "WPFInstallwizfile":  {
+                              "category":  "Utilities",
+                              "choco":  "na",
+                              "content":  "WizFile",
+                              "description":  "Find files by name on your hard drives almost instantly.",
+                              "link":  "https://antibody-software.com/wizfile/",
+                              "winget":  "AntibodySoftware.WizFile"
+                          },
+    "WPFInstallwiztree":  {
+                              "category":  "Utilities",
+                              "choco":  "wiztree",
+                              "content":  "WizTree",
+                              "description":  "WizTree is a fast disk space analyzer that helps you quickly find the files and folders consuming the most space on your hard drive.",
+                              "link":  "https://wiztreefree.com/",
+                              "winget":  "AntibodySoftware.WizTree"
+                          },
+    "WPFInstallxdm":  {
+                          "category":  "Utilities",
+                          "choco":  "xdm",
+                          "content":  "Xtreme Download Manager",
+                          "description":  "Xtreme Download Manager is an advanced download manager with support for various protocols and browsers.*Browser integration deprecated by google store. No official release.*",
+                          "link":  "https://xtremedownloadmanager.com/",
+                          "winget":  "subhra74.XtremeDownloadManager"
+                      },
+    "WPFInstallxeheditor":  {
+                                "category":  "Utilities",
+                                "choco":  "HxD",
+                                "content":  "HxD Hex Editor",
+                                "description":  "HxD is a free hex editor that allows you to edit, view, search, and analyze binary files.",
+                                "link":  "https://mh-nexus.de/en/hxd/",
+                                "winget":  "MHNexus.HxD"
+                            },
+    "WPFInstallxemu":  {
+                           "category":  "Games",
+                           "choco":  "na",
+                           "content":  "XEMU",
+                           "description":  "XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility.",
+                           "link":  "https://xemu.app/",
+                           "winget":  "xemu-project.xemu"
+                       },
+    "WPFInstallxnview":  {
+                             "category":  "Utilities",
+                             "choco":  "xnview",
+                             "content":  "XnView classic",
+                             "description":  "XnView is an efficient image viewer, browser and converter for Windows.",
+                             "link":  "https://www.xnview.com/en/xnview/",
+                             "winget":  "XnSoft.XnView.Classic"
+                         },
+    "WPFInstallxournal":  {
+                              "category":  "Document",
+                              "choco":  "xournalplusplus",
+                              "content":  "Xournal++",
+                              "description":  "Xournal++ is an open-source handwriting notetaking software with PDF annotation capabilities.",
+                              "link":  "https://xournalpp.github.io/",
+                              "winget":  "Xournal++.Xournal++"
+                          },
+    "WPFInstallxpipe":  {
+                            "category":  "Pro Tools",
+                            "choco":  "xpipe",
+                            "content":  "XPipe",
+                            "description":  "XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment.",
+                            "link":  "https://xpipe.io/",
+                            "winget":  "xpipe-io.xpipe"
+                        },
+    "WPFInstallyarn":  {
+                           "category":  "Development",
+                           "choco":  "yarn",
+                           "content":  "Yarn",
+                           "description":  "Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects.",
+                           "link":  "https://yarnpkg.com/",
+                           "winget":  "Yarn.Yarn"
+                       },
+    "WPFInstallytdlp":  {
+                            "category":  "Multimedia Tools",
+                            "choco":  "yt-dlp",
+                            "content":  "Yt-dlp",
+                            "description":  "Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl.",
+                            "link":  "https://github.com/yt-dlp/yt-dlp",
+                            "winget":  "yt-dlp.yt-dlp"
+                        },
+    "WPFInstallzerotierone":  {
+                                  "category":  "Utilities",
+                                  "choco":  "zerotier-one",
+                                  "content":  "ZeroTier One",
+                                  "description":  "ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks.",
+                                  "link":  "https://zerotier.com/",
+                                  "winget":  "ZeroTier.ZeroTierOne"
+                              },
+    "WPFInstallzim":  {
+                          "category":  "Document",
+                          "choco":  "zim",
+                          "content":  "Zim Desktop Wiki",
+                          "description":  "Zim Desktop Wiki is a graphical text editor used to maintain a collection of wiki pages.",
+                          "link":  "https://zim-wiki.org/",
+                          "winget":  "Zimwiki.Zim"
+                      },
+    "WPFInstallznote":  {
+                            "category":  "Document",
+                            "choco":  "na",
+                            "content":  "Znote",
+                            "description":  "Znote is a note-taking application.",
+                            "link":  "https://znote.io/",
+                            "winget":  "alagrede.znote"
+                        },
+    "WPFInstallzoom":  {
+                           "category":  "Communications",
+                           "choco":  "zoom",
+                           "content":  "Zoom",
+                           "description":  "Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects.",
+                           "link":  "https://zoom.us/",
+                           "winget":  "Zoom.Zoom"
+                       },
+    "WPFInstallzotero":  {
+                             "category":  "Document",
+                             "choco":  "zotero",
+                             "content":  "Zotero",
+                             "description":  "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials.",
+                             "link":  "https://www.zotero.org/",
+                             "winget":  "DigitalScholar.Zotero"
+                         },
+    "WPFInstallzoxide":  {
+                             "category":  "Utilities",
+                             "choco":  "zoxide",
+                             "content":  "Zoxide",
+                             "description":  "Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease.",
+                             "link":  "https://github.com/ajeetdsouza/zoxide",
+                             "winget":  "ajeetdsouza.zoxide"
+                         },
+    "WPFInstallzulip":  {
+                            "category":  "Communications",
+                            "choco":  "zulip",
+                            "content":  "Zulip",
+                            "description":  "Zulip is an open-source team collaboration tool with chat streams for productive and organized communication.",
+                            "link":  "https://zulipchat.com/",
+                            "winget":  "Zulip.Zulip"
+                        },
+    "WPFInstallsyncthingtray":  {
+                                    "category":  "Utilities",
+                                    "choco":  "syncthingtray",
+                                    "content":  "Syncthingtray",
+                                    "description":  "Might be the alternative for Synctrayzor. Windows tray utility / filesystem watcher / launcher for Syncthing",
+                                    "link":  "https://github.com/Martchus/syncthingtray",
+                                    "winget":  "Martchus.syncthingtray"
+                                },
+    "WPFInstallminiconda":  {
+                                "category":  "Development",
+                                "choco":  "miniconda3",
+                                "content":  "Miniconda",
+                                "description":  "Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).",
+                                "link":  "https://docs.conda.io/projects/miniconda",
+                                "winget":  "Anaconda.Miniconda3"
+                            },
+    "WPFInstalltemurin":  {
+                              "category":  "Development",
+                              "choco":  "temurin",
+                              "content":  "Eclipse Temurin",
+                              "description":  "Eclipse Temurin is the open source Java SE build based upon OpenJDK.",
+                              "link":  "https://adoptium.net/temurin/",
+                              "winget":  "EclipseAdoptium.Temurin.21.JDK"
+                          },
+    "WPFInstallintelpresentmon":  {
+                                      "category":  "Utilities",
+                                      "choco":  "na",
+                                      "content":  "Intel-PresentMon",
+                                      "description":  "A new gaming performance overlay and telemetry application to monitor and measure your gaming experience.",
+                                      "link":  "https://game.intel.com/us/stories/intel-presentmon/",
+                                      "winget":  "Intel.PresentMon.Beta"
+                                  },
+    "WPFInstallpyenvwin":  {
+                               "category":  "Development",
+                               "choco":  "pyenv-win",
+                               "content":  "Python Version Manager (pyenv-win)",
+                               "description":  "pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python.",
+                               "link":  "https://pyenv-win.github.io/pyenv-win/",
+                               "winget":  "na"
+                           },
+    "WPFInstalltightvnc":  {
+                               "category":  "Utilities",
+                               "choco":  "TightVNC",
+                               "content":  "TightVNC",
+                               "description":  "TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there",
+                               "link":  "https://www.tightvnc.com/",
+                               "winget":  "GlavSoft.TightVNC"
+                           },
+    "WPFInstallultravnc":  {
+                               "category":  "Utilities",
+                               "choco":  "ultravnc",
+                               "content":  "UltraVNC",
+                               "description":  "UltraVNC is a powerful, easy to use and free - remote pc access softwares - that can display the screen of another computer (via internet or network) on your own screen. The program allows you to use your mouse and keyboard to control the other PC remotely. It means that you can work on a remote computer, as if you were sitting in front of it, right from your current location.",
+                               "link":  "https://uvnc.com/",
+                               "winget":  "uvncbvba.UltraVnc"
+                           },
+    "WPFInstallwindowsfirewallcontrol":  {
+                                             "category":  "Utilities",
+                                             "choco":  "windowsfirewallcontrol",
+                                             "content":  "Windows Firewall Control",
+                                             "description":  "Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better.",
+                                             "link":  "https://www.binisoft.org/wfc",
+                                             "winget":  "BiniSoft.WindowsFirewallControl"
+                                         },
+    "WPFInstallvistaswitcher":  {
+                                    "category":  "Utilities",
+                                    "choco":  "na",
+                                    "content":  "VistaSwitcher",
+                                    "description":  "VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task.",
+                                    "link":  "https://www.ntwind.com/freeware/vistaswitcher.html",
+                                    "winget":  "ntwind.VistaSwitcher"
+                                },
+    "WPFInstallautodarkmode":  {
+                                   "category":  "Utilities",
+                                   "choco":  "auto-dark-mode",
+                                   "content":  "Windows Auto Dark Mode",
+                                   "description":  "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
+                                   "link":  "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
+                                   "winget":  "Armin2208.WindowsAutoNightMode"
+                               },
+    "WPFInstallmagicwormhole":  {
+                                    "category":  "Utilities",
+                                    "choco":  "magic-wormhole",
+                                    "content":  "Magic Wormhole",
+                                    "description":  "get things from one computer to another, safely",
+                                    "link":  "https://github.com/magic-wormhole/magic-wormhole",
+                                    "winget":  "magic-wormhole.magic-wormhole"
+                                },
+    "WPFInstallfancontrol":  {
+                                 "category":  "Utilities",
+                                 "choco":  "na",
+                                 "content":  "FanControl",
+                                 "description":  "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
+                                 "link":  "https://getfancontrol.com/",
+                                 "winget":  "Rem0o.FanControl"
+                             },
+    "WPFInstallfnm":  {
+                          "category":  "Development",
+                          "choco":  "fnm",
+                          "content":  "Fast Node Manager",
+                          "description":  "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
+                          "link":  "https://github.com/Schniz/fnm",
+                          "winget":  "Schniz.fnm"
+                      },
+    "WPFInstallWindhawk":  {
+                               "category":  "Utilities",
+                               "choco":  "windhawk",
+                               "content":  "Windhawk",
+                               "description":  "The customization marketplace for Windows programs",
+                               "link":  "https://windhawk.net",
+                               "winget":  "RamenSoftware.Windhawk"
+                           }
 }' | convertfrom-json
 $sync.configs.dns = '{
-  "Google": {
-    "Primary": "8.8.8.8",
-    "Secondary": "8.8.4.4"
-  },
-  "Cloudflare": {
-    "Primary": "1.1.1.1",
-    "Secondary": "1.0.0.1"
-  },
-  "Cloudflare_Malware": {
-    "Primary": "1.1.1.2",
-    "Secondary": "1.0.0.2"
-  },
-  "Cloudflare_Malware_Adult": {
-    "Primary": "1.1.1.3",
-    "Secondary": "1.0.0.3"
-  },
-  "Level3": {
-    "Primary": "4.2.2.2",
-    "Secondary": "4.2.2.1"
-  },
-  "Open_DNS": {
-    "Primary": "208.67.222.222",
-    "Secondary": "208.67.220.220"
-  },
-  "Quad9": {
-    "Primary": "9.9.9.9",
-    "Secondary": "149.112.112.112"
-  }
+    "Google":  {
+                   "Primary":  "8.8.8.8",
+                   "Secondary":  "8.8.4.4"
+               },
+    "Cloudflare":  {
+                       "Primary":  "1.1.1.1",
+                       "Secondary":  "1.0.0.1"
+                   },
+    "Cloudflare_Malware":  {
+                               "Primary":  "1.1.1.2",
+                               "Secondary":  "1.0.0.2"
+                           },
+    "Cloudflare_Malware_Adult":  {
+                                     "Primary":  "1.1.1.3",
+                                     "Secondary":  "1.0.0.3"
+                                 },
+    "Level3":  {
+                   "Primary":  "4.2.2.2",
+                   "Secondary":  "4.2.2.1"
+               },
+    "Open_DNS":  {
+                     "Primary":  "208.67.222.222",
+                     "Secondary":  "208.67.220.220"
+                 },
+    "Quad9":  {
+                  "Primary":  "9.9.9.9",
+                  "Secondary":  "149.112.112.112"
+              }
 }' | convertfrom-json
 $sync.configs.feature = '{
-  "WPFFeaturesdotnet": {
-    "Content": "All .Net Framework (2,3,4)",
-    "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a010_",
-    "feature": [
-      "NetFx4-AdvSrvs",
-      "NetFx3"
-    ],
-    "InvokeScript": []
-  },
-  "WPFFeatureshyperv": {
-    "Content": "HyperV Virtualization",
-    "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a011_",
-    "feature": [
-      "HypervisorPlatform",
-      "Microsoft-Hyper-V-All",
-      "Microsoft-Hyper-V",
-      "Microsoft-Hyper-V-Tools-All",
-      "Microsoft-Hyper-V-Management-PowerShell",
-      "Microsoft-Hyper-V-Hypervisor",
-      "Microsoft-Hyper-V-Services",
-      "Microsoft-Hyper-V-Management-Clients"
-    ],
-    "InvokeScript": [
-      "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
-    ]
-  },
-  "WPFFeatureslegacymedia": {
-    "Content": "Legacy Media (WMP, DirectPlay)",
-    "Description": "Enables legacy programs from previous versions of windows",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a012_",
-    "feature": [
-      "WindowsMediaPlayer",
-      "MediaPlayback",
-      "DirectPlay",
-      "LegacyComponents"
-    ],
-    "InvokeScript": []
-  },
-  "WPFFeaturewsl": {
-    "Content": "Windows Subsystem for Linux",
-    "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a020_",
-    "feature": [
-      "VirtualMachinePlatform",
-      "Microsoft-Windows-Subsystem-Linux"
-    ],
-    "InvokeScript": []
-  },
-  "WPFFeaturenfs": {
-    "Content": "NFS - Network File System",
-    "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a014_",
-    "feature": [
-      "ServicesForNFS-ClientOnly",
-      "ClientForNFS-Infrastructure",
-      "NFS-Administration"
-    ],
-    "InvokeScript": [
-      "nfsadmin client stop",
-      "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousUID'' -Type DWord -Value 0",
-      "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0",
-      "nfsadmin client start",
-      "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-    ]
-  },
-  "WPFFeatureEnableSearchSuggestions": {
-    "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
-    "Description": "Enables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a015_",
-    "feature": [],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
-            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
+    "WPFFeaturesdotnet":  {
+                              "Content":  "All .Net Framework (2,3,4)",
+                              "Description":  ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
+                              "category":  "Features",
+                              "panel":  "1",
+                              "Order":  "a010_",
+                              "feature":  [
+                                              "NetFx4-AdvSrvs",
+                                              "NetFx3"
+                                          ],
+                              "InvokeScript":  [
+
+                                               ]
+                          },
+    "WPFFeatureshyperv":  {
+                              "Content":  "HyperV Virtualization",
+                              "Description":  "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
+                              "category":  "Features",
+                              "panel":  "1",
+                              "Order":  "a011_",
+                              "feature":  [
+                                              "HypervisorPlatform",
+                                              "Microsoft-Hyper-V-All",
+                                              "Microsoft-Hyper-V",
+                                              "Microsoft-Hyper-V-Tools-All",
+                                              "Microsoft-Hyper-V-Management-PowerShell",
+                                              "Microsoft-Hyper-V-Hypervisor",
+                                              "Microsoft-Hyper-V-Services",
+                                              "Microsoft-Hyper-V-Management-Clients"
+                                          ],
+                              "InvokeScript":  [
+                                                   "Start-Process -FilePath cmd.exe -ArgumentList \u0027\u0027/c bcdedit /set hypervisorschedulertype classic\u0027\u0027 -Wait"
+                                               ]
+                          },
+    "WPFFeatureslegacymedia":  {
+                                   "Content":  "Legacy Media (WMP, DirectPlay)",
+                                   "Description":  "Enables legacy programs from previous versions of windows",
+                                   "category":  "Features",
+                                   "panel":  "1",
+                                   "Order":  "a012_",
+                                   "feature":  [
+                                                   "WindowsMediaPlayer",
+                                                   "MediaPlayback",
+                                                   "DirectPlay",
+                                                   "LegacyComponents"
+                                               ],
+                                   "InvokeScript":  [
+
+                                                    ]
+                               },
+    "WPFFeaturewsl":  {
+                          "Content":  "Windows Subsystem for Linux",
+                          "Description":  "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+                          "category":  "Features",
+                          "panel":  "1",
+                          "Order":  "a020_",
+                          "feature":  [
+                                          "VirtualMachinePlatform",
+                                          "Microsoft-Windows-Subsystem-Linux"
+                                      ],
+                          "InvokeScript":  [
+
+                                           ]
+                      },
+    "WPFFeaturenfs":  {
+                          "Content":  "NFS - Network File System",
+                          "Description":  "Network File System (NFS) is a mechanism for storing files on a network.",
+                          "category":  "Features",
+                          "panel":  "1",
+                          "Order":  "a014_",
+                          "feature":  [
+                                          "ServicesForNFS-ClientOnly",
+                                          "ClientForNFS-Infrastructure",
+                                          "NFS-Administration"
+                                      ],
+                          "InvokeScript":  [
+                                               "nfsadmin client stop",
+                                               "Set-ItemProperty -Path \u0027\u0027HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default\u0027\u0027 -Name \u0027\u0027AnonymousUID\u0027\u0027 -Type DWord -Value 0",
+                                               "Set-ItemProperty -Path \u0027\u0027HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default\u0027\u0027 -Name \u0027\u0027AnonymousGID\u0027\u0027 -Type DWord -Value 0",
+                                               "nfsadmin client start",
+                                               "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
+                                           ]
+                      },
+    "WPFFeatureEnableSearchSuggestions":  {
+                                              "Content":  "Enable Search Box Web Suggestions in Registry(explorer restart)",
+                                              "Description":  "Enables web suggestions when searching using Windows Search.",
+                                              "category":  "Features",
+                                              "panel":  "1",
+                                              "Order":  "a015_",
+                                              "feature":  [
+
+                                                          ],
+                                              "InvokeScript":  [
+                                                                   "
+      If (!(Test-Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027)) {
+            New-Item -Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027 -Force | Out-Null
       }
-      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
+      New-ItemProperty -Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027 -Name \u0027\u0027DisableSearchBoxSuggestions\u0027\u0027 -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
       "
-    ]
-  },
-  "WPFFeatureDisableSearchSuggestions": {
-    "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
-    "Description": "Disables web suggestions when searching using Windows Search.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a016_",
-    "feature": [],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'')) {
-            New-Item -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Force | Out-Null
+                                                               ]
+                                          },
+    "WPFFeatureDisableSearchSuggestions":  {
+                                               "Content":  "Disable Search Box Web Suggestions in Registry(explorer restart)",
+                                               "Description":  "Disables web suggestions when searching using Windows Search.",
+                                               "category":  "Features",
+                                               "panel":  "1",
+                                               "Order":  "a016_",
+                                               "feature":  [
+
+                                                           ],
+                                               "InvokeScript":  [
+                                                                    "
+      If (!(Test-Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027)) {
+            New-Item -Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027 -Force | Out-Null
       }
-      New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force
+      New-ItemProperty -Path \u0027\u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027\u0027 -Name \u0027\u0027DisableSearchBoxSuggestions\u0027\u0027 -Type DWord -Value 1 -Force
       Stop-Process -name explorer -force
       "
-    ]
-  },
-  "WPFFeatureRegBackup": {
-    "Content": "Enable Daily Registry Backup Task 12.30am",
-    "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a017_",
-    "feature": [],
-    "InvokeScript": [
-      "
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''EnablePeriodicBackup'' -Type DWord -Value 1 -Force
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager'' -Name ''BackupCount'' -Type DWord -Value 2 -Force
-      $action = New-ScheduledTaskAction -Execute ''schtasks'' -Argument ''/run /i /tn \"\\Microsoft\\Windows\\Registry\\RegIdleBackup\"''
+                                                                ]
+                                           },
+    "WPFFeatureRegBackup":  {
+                                "Content":  "Enable Daily Registry Backup Task 12.30am",
+                                "Description":  "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
+                                "category":  "Features",
+                                "panel":  "1",
+                                "Order":  "a017_",
+                                "feature":  [
+
+                                            ],
+                                "InvokeScript":  [
+                                                     "
+      New-ItemProperty -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\u0027\u0027 -Name \u0027\u0027EnablePeriodicBackup\u0027\u0027 -Type DWord -Value 1 -Force
+      New-ItemProperty -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\u0027\u0027 -Name \u0027\u0027BackupCount\u0027\u0027 -Type DWord -Value 2 -Force
+      $action = New-ScheduledTaskAction -Execute \u0027\u0027schtasks\u0027\u0027 -Argument \u0027\u0027/run /i /tn \"\\Microsoft\\Windows\\Registry\\RegIdleBackup\"\u0027\u0027
       $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
-      Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''
+      Register-ScheduledTask -Action $action -Trigger $trigger -TaskName \u0027\u0027AutoRegBackup\u0027\u0027 -Description \u0027\u0027Create System Registry Backups\u0027\u0027 -User \u0027\u0027System\u0027\u0027
       "
-    ]
-  },
-  "WPFFeatureEnableLegacyRecovery": {
-    "Content": "Enable Legacy F8 Boot Recovery",
-    "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a018_",
-    "feature": [],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
-            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
+                                                 ]
+                            },
+    "WPFFeatureEnableLegacyRecovery":  {
+                                           "Content":  "Enable Legacy F8 Boot Recovery",
+                                           "Description":  "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+                                           "category":  "Features",
+                                           "panel":  "1",
+                                           "Order":  "a018_",
+                                           "feature":  [
+
+                                                       ],
+                                           "InvokeScript":  [
+                                                                "
+      If (!(Test-Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027)) {
+            New-Item -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027 -Force | Out-Null
       }
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
+      New-ItemProperty -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027 -Name \u0027\u0027Enabled\u0027\u0027 -Type DWord -Value 1 -Force
+      Start-Process -FilePath cmd.exe -ArgumentList \u0027\u0027/c bcdedit /Set {Current} BootMenuPolicy Legacy\u0027\u0027 -Wait
       "
-    ]
-  },
-  "WPFFeatureDisableLegacyRecovery": {
-    "Content": "Disable Legacy F8 Boot Recovery",
-    "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a019_",
-    "feature": [],
-    "InvokeScript": [
-      "
-      If (!(Test-Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'')) {
-            New-Item -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Force | Out-Null
+                                                            ]
+                                       },
+    "WPFFeatureDisableLegacyRecovery":  {
+                                            "Content":  "Disable Legacy F8 Boot Recovery",
+                                            "Description":  "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+                                            "category":  "Features",
+                                            "panel":  "1",
+                                            "Order":  "a019_",
+                                            "feature":  [
+
+                                                        ],
+                                            "InvokeScript":  [
+                                                                 "
+      If (!(Test-Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027)) {
+            New-Item -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027 -Force | Out-Null
       }
-      New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
+      New-ItemProperty -Path \u0027\u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027\u0027 -Name \u0027\u0027Enabled\u0027\u0027 -Type DWord -Value 0 -Force
+      Start-Process -FilePath cmd.exe -ArgumentList \u0027\u0027/c bcdedit /Set {Current} BootMenuPolicy Standard\u0027\u0027 -Wait
       "
-    ]
-  },
-  "WPFFeaturesandbox": {
-    "Content": "Windows Sandbox",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
-  },
-  "WPFFeatureInstall": {
-    "Content": "Install Features",
-    "category": "Features",
-    "panel": "1",
-    "Order": "a060_",
-    "Type": "150"
-  },
-  "WPFPanelAutologin": {
-    "Content": "Set Up Autologin",
-    "category": "Fixes",
-    "Order": "a040_",
-    "panel": "1",
-    "Type": "300"
-  },
-  "WPFFixesUpdate": {
-    "Content": "Reset Windows Update",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "300"
-  },
-  "WPFFixesNetwork": {
-    "Content": "Reset Network",
-    "category": "Fixes",
-    "Order": "a042_",
-    "panel": "1",
-    "Type": "300"
-  },
-  "WPFPanelDISM": {
-    "Content": "System Corruption Scan",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a043_",
-    "Type": "300"
-  },
-  "WPFFixesWinget": {
-    "Content": "WinGet Reinstall",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a044_",
-    "Type": "300"
-  },
-  "WPFRunAdobeCCCleanerTool": {
-    "Content": "Remove Adobe Creative Cloud",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a045_",
-    "Type": "300"
-  },
-  "WPFPanelnetwork": {
-    "Content": "Network Connections",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelcontrol": {
-    "Content": "Control Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelpower": {
-    "Content": "Power Panel",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelregion": {
-    "Content": "Region",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelsound": {
-    "Content": "Sound Settings",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPanelsystem": {
-    "Content": "System Properties",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  },
-  "WPFPaneluser": {
-    "Content": "User Accounts",
-    "category": "Legacy Windows Panels",
-    "panel": "2",
-    "Type": "200"
-  }
+                                                             ]
+                                        },
+    "WPFFeaturesandbox":  {
+                              "Content":  "Windows Sandbox",
+                              "category":  "Features",
+                              "panel":  "1",
+                              "Order":  "a021_",
+                              "Description":  "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+                          },
+    "WPFFeatureInstall":  {
+                              "Content":  "Install Features",
+                              "category":  "Features",
+                              "panel":  "1",
+                              "Order":  "a060_",
+                              "Type":  "150"
+                          },
+    "WPFPanelAutologin":  {
+                              "Content":  "Set Up Autologin",
+                              "category":  "Fixes",
+                              "Order":  "a040_",
+                              "panel":  "1",
+                              "Type":  "300"
+                          },
+    "WPFFixesUpdate":  {
+                           "Content":  "Reset Windows Update",
+                           "category":  "Fixes",
+                           "panel":  "1",
+                           "Order":  "a041_",
+                           "Type":  "300"
+                       },
+    "WPFFixesNetwork":  {
+                            "Content":  "Reset Network",
+                            "category":  "Fixes",
+                            "Order":  "a042_",
+                            "panel":  "1",
+                            "Type":  "300"
+                        },
+    "WPFPanelDISM":  {
+                         "Content":  "System Corruption Scan",
+                         "category":  "Fixes",
+                         "panel":  "1",
+                         "Order":  "a043_",
+                         "Type":  "300"
+                     },
+    "WPFFixesWinget":  {
+                           "Content":  "WinGet Reinstall",
+                           "category":  "Fixes",
+                           "panel":  "1",
+                           "Order":  "a044_",
+                           "Type":  "300"
+                       },
+    "WPFRunAdobeCCCleanerTool":  {
+                                     "Content":  "Remove Adobe Creative Cloud",
+                                     "category":  "Fixes",
+                                     "panel":  "1",
+                                     "Order":  "a045_",
+                                     "Type":  "300"
+                                 },
+    "WPFPanelnetwork":  {
+                            "Content":  "Network Connections",
+                            "category":  "Legacy Windows Panels",
+                            "panel":  "2",
+                            "Type":  "200"
+                        },
+    "WPFPanelcontrol":  {
+                            "Content":  "Control Panel",
+                            "category":  "Legacy Windows Panels",
+                            "panel":  "2",
+                            "Type":  "200"
+                        },
+    "WPFPanelpower":  {
+                          "Content":  "Power Panel",
+                          "category":  "Legacy Windows Panels",
+                          "panel":  "2",
+                          "Type":  "200"
+                      },
+    "WPFPanelregion":  {
+                           "Content":  "Region",
+                           "category":  "Legacy Windows Panels",
+                           "panel":  "2",
+                           "Type":  "200"
+                       },
+    "WPFPanelsound":  {
+                          "Content":  "Sound Settings",
+                          "category":  "Legacy Windows Panels",
+                          "panel":  "2",
+                          "Type":  "200"
+                      },
+    "WPFPanelsystem":  {
+                           "Content":  "System Properties",
+                           "category":  "Legacy Windows Panels",
+                           "panel":  "2",
+                           "Type":  "200"
+                       },
+    "WPFPaneluser":  {
+                         "Content":  "User Accounts",
+                         "category":  "Legacy Windows Panels",
+                         "panel":  "2",
+                         "Type":  "200"
+                     }
 }' | convertfrom-json
 $sync.configs.preset = '{
-  "desktop": [
-    "WPFTweaksAH",
-    "WPFTweaksDVR",
-    "WPFTweaksHiber",
-    "WPFTweaksHome",
-    "WPFTweaksLoc",
-    "WPFTweaksOO",
-    "WPFTweaksServices",
-    "WPFTweaksStorage",
-    "WPFTweaksTele",
-    "WPFTweaksWifi"
-  ],
-  "laptop": [
-    "WPFTweaksAH",
-    "WPFTweaksDVR",
-    "WPFTweaksHome",
-    "WPFTweaksLoc",
-    "WPFTweaksOO",
-    "WPFTweaksServices",
-    "WPFTweaksStorage",
-    "WPFTweaksTele",
-    "WPFTweaksWifi",
-    "WPFMiscTweaksLapPower"
-  ],
-  "minimal": [
-    "WPFTweaksHome",
-    "WPFTweaksOO",
-    "WPFTweaksServices",
-    "WPFTweaksTele"
-  ]
+    "desktop":  [
+                    "WPFTweaksAH",
+                    "WPFTweaksDVR",
+                    "WPFTweaksHiber",
+                    "WPFTweaksHome",
+                    "WPFTweaksLoc",
+                    "WPFTweaksOO",
+                    "WPFTweaksServices",
+                    "WPFTweaksStorage",
+                    "WPFTweaksTele",
+                    "WPFTweaksWifi"
+                ],
+    "laptop":  [
+                   "WPFTweaksAH",
+                   "WPFTweaksDVR",
+                   "WPFTweaksHome",
+                   "WPFTweaksLoc",
+                   "WPFTweaksOO",
+                   "WPFTweaksServices",
+                   "WPFTweaksStorage",
+                   "WPFTweaksTele",
+                   "WPFTweaksWifi",
+                   "WPFMiscTweaksLapPower"
+               ],
+    "minimal":  [
+                    "WPFTweaksHome",
+                    "WPFTweaksOO",
+                    "WPFTweaksServices",
+                    "WPFTweaksTele"
+                ]
 }' | convertfrom-json
 $sync.configs.themes = '{
-  "Classic": {
-    "ComboBoxBackgroundColor": "#FFFFFF",
-    "LabelboxForegroundColor": "#000000",
-    "MainForegroundColor": "#000000",
-    "MainBackgroundColor": "#FFFFFF",
-    "LabelBackgroundColor": "#FAFAFA",
-    "LinkForegroundColor": "#000000",
-    "LinkHoverForegroundColor": "#000000",
-    "GroupBorderBackgroundColor": "#000000",
-    "ComboBoxForegroundColor": "#000000",
-    "ButtonInstallBackgroundColor": "#FFFFFF",
-    "ButtonTweaksBackgroundColor": "#FFFFFF",
-    "ButtonConfigBackgroundColor": "#FFFFFF",
-    "ButtonUpdatesBackgroundColor": "#FFFFFF",
-    "ButtonInstallForegroundColor": "#000000",
-    "ButtonTweaksForegroundColor": "#000000",
-    "ButtonConfigForegroundColor": "#000000",
-    "ButtonUpdatesForegroundColor": "#000000",
-    "ButtonBackgroundColor": "#F5F5F5",
-    "ButtonBackgroundPressedColor": "#1A1A1A",
-    "CheckboxMouseOverColor": "#999999",
-    "ButtonBackgroundMouseoverColor": "#C2C2C2",
-    "ButtonBackgroundSelectedColor": "#F0F0F0",
-    "ButtonForegroundColor": "#000000",
-    "ButtonBorderThickness": "1",
-    "ButtonMargin": "1",
-    "ButtonCornerRadius": "2",
-    "ToggleButtonHeight": "25",
-    "BorderColor": "#000000",
-    "BorderOpacity": "0.2",
-    "ShadowPulse": "Forever"
-  },
-  "Matrix": {
-    "ComboBoxBackgroundColor": "#000000",
-    "LabelboxForegroundColor": "#FFEE58",
-    "MainForegroundColor": "#9CCC65",
-    "MainBackgroundColor": "#000000",
-    "LabelBackgroundColor": "#000000",
-    "LinkForegroundColor": "#add8e6",
-    "LinkHoverForegroundColor": "#FFFFFF",
-    "ComboBoxForegroundColor": "#FFEE58",
-    "ButtonInstallBackgroundColor": "#222222",
-    "ButtonTweaksBackgroundColor": "#333333",
-    "ButtonConfigBackgroundColor": "#444444",
-    "ButtonUpdatesBackgroundColor": "#555555",
-    "ButtonInstallForegroundColor": "#FFFFFF",
-    "ButtonTweaksForegroundColor": "#FFFFFF",
-    "ButtonConfigForegroundColor": "#FFFFFF",
-    "ButtonUpdatesForegroundColor": "#FFFFFF",
-    "ButtonBackgroundColor": "#000019",
-    "ButtonBackgroundPressedColor": "#FFFFFF",
-    "ButtonBackgroundMouseoverColor": "#A55A64",
-    "ButtonBackgroundSelectedColor": "#FF5733",
-    "ButtonForegroundColor": "#9CCC65",
-    "ButtonBorderThickness": "1",
-    "ButtonMargin": "1",
-    "ButtonCornerRadius": "2",
-    "ToggleButtonHeight": "25",
-    "BorderColor": "#FFAC1C",
-    "BorderOpacity": "0.8",
-    "ShadowPulse": "0:0:3"
-  },
-  "Dark": {
-    "ComboBoxBackgroundColor": "#000000",
-    "LabelboxForegroundColor": "#FFEE58",
-    "MainForegroundColor": "#9CCC65",
-    "MainBackgroundColor": "#000000",
-    "LabelBackgroundColor": "#000000",
-    "LinkForegroundColor": "#add8e6",
-    "LinkHoverForegroundColor": "#FFFFFF",
-    "ComboBoxForegroundColor": "#FFEE58",
-    "ButtonInstallBackgroundColor": "#222222",
-    "ButtonTweaksBackgroundColor": "#333333",
-    "ButtonConfigBackgroundColor": "#444444",
-    "ButtonUpdatesBackgroundColor": "#555555",
-    "ButtonInstallForegroundColor": "#FFFFFF",
-    "ButtonTweaksForegroundColor": "#FFFFFF",
-    "ButtonConfigForegroundColor": "#FFFFFF",
-    "ButtonUpdatesForegroundColor": "#FFFFFF",
-    "ButtonBackgroundColor": "#000019",
-    "ButtonBackgroundPressedColor": "#9CCC65",
-    "ButtonBackgroundMouseoverColor": "#FF5733",
-    "ButtonBackgroundSelectedColor": "#FF5733",
-    "ButtonForegroundColor": "#9CCC65",
-    "ButtonBorderThickness": "1",
-    "ButtonMargin": "1",
-    "ButtonCornerRadius": "2",
-    "ToggleButtonHeight": "25",
-    "BorderColor": "#FFAC1C",
-    "BorderOpacity": "0.2",
-    "ShadowPulse": "Forever"
-  }
+    "Classic":  {
+                    "ComboBoxBackgroundColor":  "#FFFFFF",
+                    "LabelboxForegroundColor":  "#000000",
+                    "MainForegroundColor":  "#000000",
+                    "MainBackgroundColor":  "#FFFFFF",
+                    "LabelBackgroundColor":  "#FAFAFA",
+                    "LinkForegroundColor":  "#000000",
+                    "LinkHoverForegroundColor":  "#000000",
+                    "GroupBorderBackgroundColor":  "#000000",
+                    "ComboBoxForegroundColor":  "#000000",
+                    "ButtonInstallBackgroundColor":  "#FFFFFF",
+                    "ButtonTweaksBackgroundColor":  "#FFFFFF",
+                    "ButtonConfigBackgroundColor":  "#FFFFFF",
+                    "ButtonUpdatesBackgroundColor":  "#FFFFFF",
+                    "ButtonInstallForegroundColor":  "#000000",
+                    "ButtonTweaksForegroundColor":  "#000000",
+                    "ButtonConfigForegroundColor":  "#000000",
+                    "ButtonUpdatesForegroundColor":  "#000000",
+                    "ButtonBackgroundColor":  "#F5F5F5",
+                    "ButtonBackgroundPressedColor":  "#1A1A1A",
+                    "CheckboxMouseOverColor":  "#999999",
+                    "ButtonBackgroundMouseoverColor":  "#C2C2C2",
+                    "ButtonBackgroundSelectedColor":  "#F0F0F0",
+                    "ButtonForegroundColor":  "#000000",
+                    "ButtonBorderThickness":  "1",
+                    "ButtonMargin":  "1",
+                    "ButtonCornerRadius":  "2",
+                    "ToggleButtonHeight":  "25",
+                    "BorderColor":  "#000000",
+                    "BorderOpacity":  "0.2",
+                    "ShadowPulse":  "Forever"
+                },
+    "Matrix":  {
+                   "ComboBoxBackgroundColor":  "#000000",
+                   "LabelboxForegroundColor":  "#FFEE58",
+                   "MainForegroundColor":  "#9CCC65",
+                   "MainBackgroundColor":  "#000000",
+                   "LabelBackgroundColor":  "#000000",
+                   "LinkForegroundColor":  "#add8e6",
+                   "LinkHoverForegroundColor":  "#FFFFFF",
+                   "ComboBoxForegroundColor":  "#FFEE58",
+                   "ButtonInstallBackgroundColor":  "#222222",
+                   "ButtonTweaksBackgroundColor":  "#333333",
+                   "ButtonConfigBackgroundColor":  "#444444",
+                   "ButtonUpdatesBackgroundColor":  "#555555",
+                   "ButtonInstallForegroundColor":  "#FFFFFF",
+                   "ButtonTweaksForegroundColor":  "#FFFFFF",
+                   "ButtonConfigForegroundColor":  "#FFFFFF",
+                   "ButtonUpdatesForegroundColor":  "#FFFFFF",
+                   "ButtonBackgroundColor":  "#000019",
+                   "ButtonBackgroundPressedColor":  "#FFFFFF",
+                   "ButtonBackgroundMouseoverColor":  "#A55A64",
+                   "ButtonBackgroundSelectedColor":  "#FF5733",
+                   "ButtonForegroundColor":  "#9CCC65",
+                   "ButtonBorderThickness":  "1",
+                   "ButtonMargin":  "1",
+                   "ButtonCornerRadius":  "2",
+                   "ToggleButtonHeight":  "25",
+                   "BorderColor":  "#FFAC1C",
+                   "BorderOpacity":  "0.8",
+                   "ShadowPulse":  "0:0:3"
+               },
+    "Dark":  {
+                 "ComboBoxBackgroundColor":  "#000000",
+                 "LabelboxForegroundColor":  "#FFEE58",
+                 "MainForegroundColor":  "#9CCC65",
+                 "MainBackgroundColor":  "#000000",
+                 "LabelBackgroundColor":  "#000000",
+                 "LinkForegroundColor":  "#add8e6",
+                 "LinkHoverForegroundColor":  "#FFFFFF",
+                 "ComboBoxForegroundColor":  "#FFEE58",
+                 "ButtonInstallBackgroundColor":  "#222222",
+                 "ButtonTweaksBackgroundColor":  "#333333",
+                 "ButtonConfigBackgroundColor":  "#444444",
+                 "ButtonUpdatesBackgroundColor":  "#555555",
+                 "ButtonInstallForegroundColor":  "#FFFFFF",
+                 "ButtonTweaksForegroundColor":  "#FFFFFF",
+                 "ButtonConfigForegroundColor":  "#FFFFFF",
+                 "ButtonUpdatesForegroundColor":  "#FFFFFF",
+                 "ButtonBackgroundColor":  "#000019",
+                 "ButtonBackgroundPressedColor":  "#9CCC65",
+                 "ButtonBackgroundMouseoverColor":  "#FF5733",
+                 "ButtonBackgroundSelectedColor":  "#FF5733",
+                 "ButtonForegroundColor":  "#9CCC65",
+                 "ButtonBorderThickness":  "1",
+                 "ButtonMargin":  "1",
+                 "ButtonCornerRadius":  "2",
+                 "ToggleButtonHeight":  "25",
+                 "BorderColor":  "#FFAC1C",
+                 "BorderOpacity":  "0.2",
+                 "ShadowPulse":  "Forever"
+             }
 }' | convertfrom-json
 $sync.configs.tweaks = '{
-  "WPFTweaksAH": {
-    "Content": "Disable Activity History",
-    "Description": "This erases recent docs, clipboard, and run history.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a005_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-        "Name": "EnableActivityFeed",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-        "Name": "PublishUserActivities",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-        "Name": "UploadUserActivities",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
+    "WPFTweaksAH":  {
+                        "Content":  "Disable Activity History",
+                        "Description":  "This erases recent docs, clipboard, and run history.",
+                        "category":  "Essential Tweaks",
+                        "panel":  "1",
+                        "Order":  "a005_",
+                        "registry":  [
+                                         {
+                                             "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+                                             "Name":  "EnableActivityFeed",
+                                             "Type":  "DWord",
+                                             "Value":  "0",
+                                             "OriginalValue":  "1"
+                                         },
+                                         {
+                                             "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+                                             "Name":  "PublishUserActivities",
+                                             "Type":  "DWord",
+                                             "Value":  "0",
+                                             "OriginalValue":  "1"
+                                         },
+                                         {
+                                             "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+                                             "Name":  "UploadUserActivities",
+                                             "Type":  "DWord",
+                                             "Value":  "0",
+                                             "OriginalValue":  "1"
+                                         }
+                                     ]
+                    },
+    "WPFTweaksHiber":  {
+                           "Content":  "Disable Hibernation",
+                           "Description":  "Hibernation is really meant for laptops as it saves what\u0026#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don\u0026#39;t be like Bob. Bob likes hibernation.",
+                           "category":  "Essential Tweaks",
+                           "panel":  "1",
+                           "Order":  "a012_",
+                           "registry":  [
+                                            {
+                                                "Path":  "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
+                                                "Name":  "HibernateEnabled",
+                                                "Type":  "DWord",
+                                                "Value":  "0",
+                                                "OriginalValue":  "1"
+                                            },
+                                            {
+                                                "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+                                                "Name":  "ShowHibernateOption",
+                                                "Type":  "DWord",
+                                                "Value":  "0",
+                                                "OriginalValue":  "1"
+                                            }
+                                        ],
+                           "InvokeScript":  [
+                                                "powercfg.exe /hibernate off"
+                                            ],
+                           "UndoScript":  [
+                                              "powercfg.exe /hibernate on"
+                                          ]
+                       },
+    "WPFTweaksHome":  {
+                          "Content":  "Disable Homegroup",
+                          "Description":  "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+                          "category":  "Essential Tweaks",
+                          "panel":  "1",
+                          "Order":  "a011_",
+                          "service":  [
+                                          {
+                                              "Name":  "HomeGroupListener",
+                                              "StartupType":  "Manual",
+                                              "OriginalType":  "Automatic"
+                                          },
+                                          {
+                                              "Name":  "HomeGroupProvider",
+                                              "StartupType":  "Manual",
+                                              "OriginalType":  "Automatic"
+                                          }
+                                      ]
+                      },
+    "WPFTweaksDebloatAdobe":  {
+                                  "Content":  "Debloat Adobe",
+                                  "Description":  "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
+                                  "category":  "Essential Tweaks",
+                                  "panel":  "1",
+                                  "Order":  "a009_",
+                                  "InvokeScript":  [
+                                                       "
+      function CCStopper {
+        $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+        
+        # Test if the path exists before proceeding
+        if (Test-Path $path) {
+            Takeown /f $path
+            $acl = Get-Acl $path
+            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
+            $acl | Set-Acl $path
+    
+            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
+        } else {
+            Write-Host \"Adobe Desktop Service is not in the default location.\"
+        }
       }
-    ]
-  },
-  "WPFTweaksHiber": {
-    "Content": "Disable Hibernation",
-    "Description": "Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a011_",
-    "registry": [
-      {
-        "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
-        "Name": "HibernateEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
-        "Name": "ShowHibernateOption",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
+    
+
+      function AcrobatUpdates {
+        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
+        # Possible Values for the edited key:
+        # 0 = Do not download or install updates automatically
+        # 2 = Automatically download updates but let the user choose when to install them
+        # 3 = Automatically download and install updates (default value)
+        # 4 = Notify the user when an update is available but don\u0027\u0027t download or install it automatically
+    
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+    
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+    
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 0
+                Write-Host \"Acrobat Updates have been disabled.\"
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
       }
-    ],
-    "InvokeScript": [
-      "powercfg.exe /hibernate off"
-    ],
-    "UndoScript": [
-      "powercfg.exe /hibernate on"
-    ]
-  },
-  "WPFTweaksHome": {
-    "Content": "Disable Homegroup",
-    "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "service": [
-      {
-        "Name": "HomeGroupListener",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "HomeGroupProvider",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      }
-    ]
-  },
-  "WPFTweaksAdobe": {
-    "Content": "Disable Adobe Services",
-    "Description": "Disables many of the services that come with Adobe and run in the background.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "service": [
-      {
-        "Name": "AGSService",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeUpdateService",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Acrobat Update",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Genuine Monitor Service",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeARMservice",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Adobe Licensing Console",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CCXProcess",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AdobeIPCBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CoreSync",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      }
-    ]
-  },
-  "WPFTweaksLoc": {
-    "Content": "Disable Location Tracking",
-    "Description": "Disables Location Tracking...DUH!",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a008_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
-        "Name": "Value",
-        "Type": "String",
-        "Value": "Deny",
-        "OriginalValue": "Allow"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
-        "Name": "SensorPermissionState",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
-        "Name": "Status",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\Maps",
-        "Name": "AutoUpdateEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
-  "WPFTweaksServices": {
-    "Content": "Set Services to Manual",
-    "Description": "Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a014_",
-    "service": [
-      {
-        "Name": "AJRouter",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ALG",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AppIDSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AppMgmt",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AppReadiness",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AppVClient",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "AppXSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Appinfo",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AssignedAccessManagerSvc",
-        "StartupType": "Disabled",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "AudioEndpointBuilder",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AudioSrv",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Audiosrv",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "AxInstSV",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BDESVC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BFE",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "BITS",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "BTAGService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BcastDVRUserService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BluetoothUserService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BrokerInfrastructure",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Browser",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "BthAvctpSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "BthHFSrv",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CDPSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CDPUserSvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "COMSysApp",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "CaptureService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "CertPropSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ClipSVC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ConsentUxUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "CoreMessagingRegistrar",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CredentialEnrollmentManagerUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "CryptSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "CscService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DPS",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DcomLaunch",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DcpSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DevQueryBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DeviceAssociationBrokerSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DeviceAssociationService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DeviceInstall",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DevicePickerUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DevicesFlowUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Dhcp",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DiagTrack",
-        "StartupType": "Disabled",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DialogBlockingService",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "DispBrokerDesktopSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DisplayEnhancementService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DmEnrollmentSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Dnscache",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DoSvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "DsSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DsmSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "DusmSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "EFS",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "EapHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "EntAppSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "EventLog",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "EventSystem",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "FDResPub",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Fax",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "FontCache",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "FrameServer",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "FrameServerMonitor",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "GraphicsPerfSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "HomeGroupListener",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "HomeGroupProvider",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "HvHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "IEEtwCollectorService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "IKEEXT",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "InstallService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "InventorySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "IpxlatCfgSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "KeyIso",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "KtmRm",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "LSM",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "LanmanServer",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "LanmanWorkstation",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "LicenseManager",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "LxpSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MSDTC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MSiSCSI",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MapsBroker",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "McpManagementService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MessagingService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MicrosoftEdgeElevationService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MixedRealityOpenXRSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "MpsSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "MsKeyboardFilter",
-        "StartupType": "Manual",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "NPSMSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NaturalAuthentication",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NcaSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NcbService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NcdAutoSetup",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NetSetupSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NetTcpPortSharing",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "Netlogon",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Netman",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NgcCtnrSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NgcSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "NlaSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "OneSyncSvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "P9RdrService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PNRPAutoReg",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PNRPsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PcaSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "PeerDistSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PenService_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PerfHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PhoneSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PimIndexMaintenanceSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PlugPlay",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PolicyAgent",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Power",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "PrintNotify",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "PrintWorkflowUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ProfSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "PushToInstall",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "QWAVE",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RasAuto",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RasMan",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RemoteAccess",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "RemoteRegistry",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "RetailDemo",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RmSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RpcEptMapper",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "RpcLocator",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "RpcSs",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SCPolicySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SCardSvr",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SDRSVC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SEMgrSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SENS",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SNMPTRAP",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SNMPTrap",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SSDPSRV",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SamSs",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "ScDeviceEnum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Schedule",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SecurityHealthService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Sense",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SensorDataService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SensorService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SensrSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SessionEnv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SgrmBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SharedAccess",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "SharedRealitySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "ShellHWDetection",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SmsRouter",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Spooler",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SstpSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "StateRepository",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "StiSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "StorSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SysMain",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "SystemEventsBroker",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TabletInputService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TapiSrv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TermService",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TextInputManagementService",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "Themes",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TieringEngineService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TimeBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TimeBrokerSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TokenBroker",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TrkWks",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "TroubleshootingSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "TrustedInstaller",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UI0Detect",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UdkUserSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UevAgentService",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "UmRdpService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UnistoreSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UserDataSvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "UserManager",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "UsoSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "VGAuthService",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "VMTools",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "VSS",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "VacSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "VaultSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "W32Time",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WEPHOSTSVC",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WFDSConMgrSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WMPNetworkSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WManSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WPDBusEnum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WSService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WSearch",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WaaSMedicSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WalletService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WarpJITSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WbioSrvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Wcmsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WcsPlugInService",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WdNisSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WdiServiceHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WdiSystemHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WebClient",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Wecsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WerSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WiaRpc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WinDefend",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WinHttpAutoProxySvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WinRM",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "Winmgmt",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WlanSvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WpcMonSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "WpnService",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WpnUserService_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WwanSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "XblAuthManager",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "XblGameSave",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "XboxGipSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "XboxNetApiSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "autotimesvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "bthserv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "camsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "cbdhsvc_*",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "cloudidsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "dcsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "defragsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "diagnosticshub.standardcollector.service",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "diagsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "dmwappushservice",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "dot3svc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "edgeupdate",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "edgeupdatem",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "embeddedmode",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "fdPHost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "fhsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "gpsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "hidserv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "icssvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "iphlpsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "lfsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "lltdsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "lmhosts",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "mpssvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "msiserver",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "netprofm",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "nsi",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "p2pimsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "p2psvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "perceptionsimulation",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "pla",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "seclogon",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "shpamsvc",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "smphost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "spectrum",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "sppsvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "ssh-agent",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "svsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "swprv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "tiledatamodelsvc",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "tzautoupdate",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "uhssvc",
-        "StartupType": "Disabled",
-        "OriginalType": "Disabled"
-      },
-      {
-        "Name": "upnphost",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vds",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vm3dservice",
-        "StartupType": "Manual",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "vmicguestinterface",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmicheartbeat",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmickvpexchange",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmicrdv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmicshutdown",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmictimesync",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmicvmsession",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmicvss",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "vmvss",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wbengine",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wcncsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "webthreatdefsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "webthreatdefusersvc_*",
-        "StartupType": "Automatic",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "wercplsupport",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wisvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wlidsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wlpasvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wmiApSrv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "workfolderssvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wscsvc",
-        "StartupType": "AutomaticDelayedStart",
-        "OriginalType": "Automatic"
-      },
-      {
-        "Name": "wuauserv",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
-        "Name": "wudfsvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      }
-    ]
-  },
-  "WPFTweaksTele": {
-    "Content": "Disable Telemetry",
-    "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a003_",
-    "ScheduledTask": [
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Autochk\\Proxy",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\MareBackup",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\StartupAppTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      },
-      {
-        "Name": "Microsoft\\Windows\\Maps\\MapsUpdateTask",
-        "State": "Disabled",
-        "OriginalState": "Enabled"
-      }
-    ],
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
-        "Type": "DWord",
-        "Value": "0",
-        "Name": "AllowTelemetry",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "1",
-        "Name": "AllowTelemetry",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "ContentDeliveryAllowed",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "OemPreInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "PreInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "PreInstalledAppsEverEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SilentInstalledAppsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338387Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338388Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-338389Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SubscribedContent-353698Enabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "OriginalValue": "1",
-        "Name": "SystemPaneSuggestionsEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
-        "Name": "DisableWindowsConsumerFeatures",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
-        "OriginalValue": "0",
-        "Name": "NumberOfSIUFInPeriod",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-        "OriginalValue": "0",
-        "Name": "DoNotShowFeedbackNotifications",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
-        "Name": "DisableTailoredExperiencesWithDiagnosticData",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
-        "OriginalValue": "0",
-        "Name": "DisabledByGroupPolicy",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
-        "OriginalValue": "0",
-        "Name": "Disabled",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
-        "OriginalValue": "1",
-        "Name": "DODownloadMode",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
-        "OriginalValue": "1",
-        "Name": "fAllowToGetHelp",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
-        "OriginalValue": "0",
-        "Name": "EnthusiastMode",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
-        "OriginalValue": "1",
-        "Name": "PeopleBand",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "LaunchTo",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "OriginalValue": "0",
-        "Name": "LongPathsEnabled",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "_Comment": "Driver searching is a function that should be left in",
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
-        "OriginalValue": "1",
-        "Name": "SearchOrderConfig",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "OriginalValue": "1",
-        "Name": "SystemResponsiveness",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "OriginalValue": "1",
-        "Name": "NetworkThrottlingIndex",
-        "Value": "4294967295",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "MenuShowDelay",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "AutoEndTasks",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "OriginalValue": "0",
-        "Name": "ClearPageFileAtShutdown",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
-        "OriginalValue": "1",
-        "Name": "Start",
-        "Value": "2",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Mouse",
-        "OriginalValue": "400",
-        "Name": "MouseHoverTime",
-        "Value": "400",
-        "Type": "String"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "OriginalValue": "20",
-        "Name": "IRPStackSize",
-        "Value": "30",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
-        "OriginalValue": "1",
-        "Name": "EnableFeeds",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
-        "OriginalValue": "1",
-        "Name": "ShellFeedsTaskbarViewMode",
-        "Value": "2",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
-        "OriginalValue": "1",
-        "Name": "HideSCAMeetNow",
-        "Value": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "GPU Priority",
-        "Value": "8",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "Priority",
-        "Value": "6",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "High",
-        "Name": "Scheduling Category",
-        "Value": "High",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
-        "OriginalValue": "1",
-        "Name": "ScoobeSystemSettingEnabled",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
+
+      CCStopper
+      AcrobatUpdates
       "
+                                                   ],
+                                  "UndoScript":  [
+                                                     "
+      function RestoreCCService {
+        $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
+        $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+    
+        if (Test-Path -Path $originalPath) {
+            Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
+            Write-Host \"Adobe Desktop Service has been restored.\"
+        } else {
+            Write-Host \"Backup file does not exist. No changes were made.\"
+        }
+      }
+
+      function AcrobatUpdates {
+        # Default Value:
+        # 3 = Automatically download and install updates
+    
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+    
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+    
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 3
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
+      }
+
+      RestoreCCService
+      AcrobatUpdates
+      "
+                                                 ],
+                                  "service":  [
+                                                  {
+                                                      "Name":  "AGSService",
+                                                      "StartupType":  "Disabled",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "AGMService",
+                                                      "StartupType":  "Disabled",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "AdobeUpdateService",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "Adobe Acrobat Update",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "Adobe Genuine Monitor Service",
+                                                      "StartupType":  "Disabled",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "AdobeARMservice",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "Adobe Licensing Console",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "CCXProcess",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "AdobeIPCBroker",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  },
+                                                  {
+                                                      "Name":  "CoreSync",
+                                                      "StartupType":  "Manual",
+                                                      "OriginalType":  "Automatic"
+                                                  }
+                                              ]
+                              },
+    "WPFTweaksBlockAdobeNet":  {
+                                   "Content":  "Block Adobe Networking",
+                                   "Description":  "Reduce user interruptions by selectively blocking connections to Adobe\u0026#39;s activation and telemetry servers. ",
+                                   "category":  "Essential Tweaks",
+                                   "panel":  "1",
+                                   "Order":  "a010_",
+                                   "InvokeScript":  [
+                                                        "
+      # Define the URL of the remote HOSTS file and the local paths
+      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
+      
+      # Download the remote HOSTS file to a temporary location
+      try {
+          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
+          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
+      }
+      catch {
+          Write-Error \"Failed to download the HOSTS file. Error: $_\"
+      }
+      
+      # Check if the AdobeNetBlock has already been started
+      try {
+          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      
+          # Check if AdobeNetBlock markers exist
+          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
+          if ($blockStartExists) {
+              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"
+          } else {
+              # Load the new block from the downloaded file
+              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop
+              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
+              $newBlockHeader = \"#AdobeNetBlock-start\"
+              $newBlockFooter = \"#AdobeNetBlock-end\"
+      
+              # Combine the contents, ensuring new block is properly formatted
+              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
+      
+              # Write the combined content back to the original HOSTS file
+              $combinedContent | Set-Content $localHostsPath -Encoding ASCII
+              Write-Output \"Successfully added the AdobeNetBlock.\"
+          }
+      }
+      catch {
+          Write-Error \"Error during processing: $_\"
+      }
+      
+      # Clean up temporary file
+      Remove-Item $tempHostsPath -ErrorAction Ignore
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
+                                                    ],
+                                   "UndoScript":  [
+                                                      "
+      # Define the local path of the HOSTS file
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      
+      # Load the content of the HOSTS file
+      try {
+          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      }
+      catch {
+          Write-Error \"Failed to load the HOSTS file. Error: $_\"
+          return
+      }
+      
+      # Initialize flags and buffer for new content
+      $recording = $true
+      $newContent = @()
+      
+      # Iterate over each line of the HOSTS file
+      foreach ($line in $hostsContent) {
+          if ($line -match \"#AdobeNetBlock-start\") {
+              $recording = $false
+          }
+          if ($recording) {
+              $newContent += $line
+          }
+          if ($line -match \"#AdobeNetBlock-end\") {
+              $recording = $true
+          }
+      }
+      
+      # Write the filtered content back to the HOSTS file
+      try {
+          $newContent | Set-Content $localHostsPath -Encoding ASCII
+          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
+      }
+      catch {
+          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
+      }
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
+                                                  ]
+                               },
+    "WPFTweaksLoc":  {
+                         "Content":  "Disable Location Tracking",
+                         "Description":  "Disables Location Tracking...DUH!",
+                         "category":  "Essential Tweaks",
+                         "panel":  "1",
+                         "Order":  "a008_",
+                         "registry":  [
+                                          {
+                                              "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
+                                              "Name":  "Value",
+                                              "Type":  "String",
+                                              "Value":  "Deny",
+                                              "OriginalValue":  "Allow"
+                                          },
+                                          {
+                                              "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
+                                              "Name":  "SensorPermissionState",
+                                              "Type":  "DWord",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1"
+                                          },
+                                          {
+                                              "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
+                                              "Name":  "Status",
+                                              "Type":  "DWord",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1"
+                                          },
+                                          {
+                                              "Path":  "HKLM:\\SYSTEM\\Maps",
+                                              "Name":  "AutoUpdateEnabled",
+                                              "Type":  "DWord",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1"
+                                          }
+                                      ]
+                     },
+    "WPFTweaksServices":  {
+                              "Content":  "Set Services to Manual",
+                              "Description":  "Turns a bunch of system services to manual that don\u0026#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
+                              "category":  "Essential Tweaks",
+                              "panel":  "1",
+                              "Order":  "a014_",
+                              "service":  [
+                                              {
+                                                  "Name":  "AJRouter",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "ALG",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AppIDSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AppMgmt",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AppReadiness",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AppVClient",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "AppXSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Appinfo",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AssignedAccessManagerSvc",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "AudioEndpointBuilder",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "AudioSrv",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "Audiosrv",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "AxInstSV",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BDESVC",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BFE",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "BITS",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "BTAGService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BcastDVRUserService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BluetoothUserService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BrokerInfrastructure",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "Browser",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "BthAvctpSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "BthHFSrv",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "CDPSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "CDPUserSvc_*",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "COMSysApp",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "CaptureService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "CertPropSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "ClipSVC",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "ConsentUxUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "CoreMessagingRegistrar",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "CredentialEnrollmentManagerUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "CryptSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "CscService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DPS",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DcomLaunch",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DcpSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DevQueryBroker",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DeviceAssociationBrokerSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DeviceAssociationService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DeviceInstall",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DevicePickerUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DevicesFlowUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Dhcp",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DiagTrack",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DialogBlockingService",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "DispBrokerDesktopSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DisplayEnhancementService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DmEnrollmentSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Dnscache",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DoSvc",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "DsSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DsmSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "DusmSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "EFS",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "EapHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "EntAppSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "EventLog",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "EventSystem",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "FDResPub",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Fax",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "FontCache",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "FrameServer",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "FrameServerMonitor",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "GraphicsPerfSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "HomeGroupListener",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "HomeGroupProvider",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "HvHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "IEEtwCollectorService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "IKEEXT",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "InstallService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "InventorySvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "IpxlatCfgSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "KeyIso",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "KtmRm",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "LSM",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "LanmanServer",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "LanmanWorkstation",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "LicenseManager",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "LxpSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MSDTC",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MSiSCSI",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MapsBroker",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "McpManagementService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MessagingService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MicrosoftEdgeElevationService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MixedRealityOpenXRSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "MpsSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "MsKeyboardFilter",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "NPSMSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NaturalAuthentication",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NcaSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NcbService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NcdAutoSetup",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NetSetupSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NetTcpPortSharing",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "Netlogon",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "Netman",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NgcCtnrSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NgcSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "NlaSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "OneSyncSvc_*",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "P9RdrService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PNRPAutoReg",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PNRPsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PcaSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "PeerDistSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PenService_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PerfHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PhoneSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PimIndexMaintenanceSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PlugPlay",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PolicyAgent",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Power",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "PrintNotify",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "PrintWorkflowUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "ProfSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "PushToInstall",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "QWAVE",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RasAuto",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RasMan",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RemoteAccess",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "RemoteRegistry",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "RetailDemo",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RmSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RpcEptMapper",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "RpcLocator",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "RpcSs",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SCPolicySvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SCardSvr",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SDRSVC",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SEMgrSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SENS",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SNMPTRAP",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SNMPTrap",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SSDPSRV",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SamSs",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "ScDeviceEnum",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Schedule",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SecurityHealthService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Sense",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SensorDataService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SensorService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SensrSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SessionEnv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SgrmBroker",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SharedAccess",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "SharedRealitySvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "ShellHWDetection",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SmsRouter",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Spooler",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SstpSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "StateRepository",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "StiSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "StorSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SysMain",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "SystemEventsBroker",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "TabletInputService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TapiSrv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TermService",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "TextInputManagementService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "Themes",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "TieringEngineService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TimeBroker",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TimeBrokerSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TokenBroker",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TrkWks",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "TroubleshootingSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "TrustedInstaller",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UI0Detect",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UdkUserSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UevAgentService",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "UmRdpService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UnistoreSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UserDataSvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "UserManager",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "UsoSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "VGAuthService",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "VMTools",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "VSS",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "VacSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "VaultSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "W32Time",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WEPHOSTSVC",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WFDSConMgrSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WMPNetworkSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WManSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WPDBusEnum",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WSService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WSearch",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WaaSMedicSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WalletService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WarpJITSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WbioSrvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Wcmsvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WcsPlugInService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WdNisSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WdiServiceHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WdiSystemHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WebClient",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Wecsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WerSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WiaRpc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WinDefend",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WinHttpAutoProxySvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WinRM",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "Winmgmt",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WlanSvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WpcMonSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "WpnService",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WpnUserService_*",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "WwanSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "XblAuthManager",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "XblGameSave",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "XboxGipSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "XboxNetApiSvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "autotimesvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "bthserv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "camsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "cbdhsvc_*",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "cloudidsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "dcsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "defragsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "diagnosticshub.standardcollector.service",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "diagsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "dmwappushservice",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "dot3svc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "edgeupdate",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "edgeupdatem",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "embeddedmode",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "fdPHost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "fhsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "gpsvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "hidserv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "icssvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "iphlpsvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "lfsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "lltdsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "lmhosts",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "mpssvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "msiserver",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "netprofm",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "nsi",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "p2pimsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "p2psvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "perceptionsimulation",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "pla",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "seclogon",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "shpamsvc",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "smphost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "spectrum",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "sppsvc",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "ssh-agent",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "svsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "swprv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "tiledatamodelsvc",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "tzautoupdate",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "uhssvc",
+                                                  "StartupType":  "Disabled",
+                                                  "OriginalType":  "Disabled"
+                                              },
+                                              {
+                                                  "Name":  "upnphost",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vds",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vm3dservice",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "vmicguestinterface",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmicheartbeat",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmickvpexchange",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmicrdv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmicshutdown",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmictimesync",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmicvmsession",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmicvss",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "vmvss",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wbengine",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wcncsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "webthreatdefsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "webthreatdefusersvc_*",
+                                                  "StartupType":  "Automatic",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "wercplsupport",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wisvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wlidsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wlpasvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wmiApSrv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "workfolderssvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wscsvc",
+                                                  "StartupType":  "AutomaticDelayedStart",
+                                                  "OriginalType":  "Automatic"
+                                              },
+                                              {
+                                                  "Name":  "wuauserv",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              },
+                                              {
+                                                  "Name":  "wudfsvc",
+                                                  "StartupType":  "Manual",
+                                                  "OriginalType":  "Manual"
+                                              }
+                                          ]
+                          },
+    "WPFTweaksTele":  {
+                          "Content":  "Disable Telemetry",
+                          "Description":  "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+                          "category":  "Essential Tweaks",
+                          "panel":  "1",
+                          "Order":  "a003_",
+                          "ScheduledTask":  [
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Application Experience\\ProgramDataUpdater",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Autochk\\Proxy",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\DiskDiagnostic\\Microsoft-Windows-DiskDiagnosticDataCollector",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Feedback\\Siuf\\DmClient",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Feedback\\Siuf\\DmClientOnScenarioDownload",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Windows Error Reporting\\QueueReporting",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Application Experience\\MareBackup",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Application Experience\\StartupAppTask",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Application Experience\\PcaPatchDbTask",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                },
+                                                {
+                                                    "Name":  "Microsoft\\Windows\\Maps\\MapsUpdateTask",
+                                                    "State":  "Disabled",
+                                                    "OriginalState":  "Enabled"
+                                                }
+                                            ],
+                          "registry":  [
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+                                               "Type":  "DWord",
+                                               "Value":  "0",
+                                               "Name":  "AllowTelemetry",
+                                               "OriginalValue":  "1"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+                                               "OriginalValue":  "1",
+                                               "Name":  "AllowTelemetry",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "ContentDeliveryAllowed",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "OemPreInstalledAppsEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "PreInstalledAppsEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "PreInstalledAppsEverEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SilentInstalledAppsEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SubscribedContent-338387Enabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SubscribedContent-338388Enabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SubscribedContent-338389Enabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SubscribedContent-353698Enabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SystemPaneSuggestionsEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+                                               "OriginalValue":  "0",
+                                               "Name":  "DisableWindowsConsumerFeatures",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Siuf\\Rules",
+                                               "OriginalValue":  "0",
+                                               "Name":  "NumberOfSIUFInPeriod",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+                                               "OriginalValue":  "0",
+                                               "Name":  "DoNotShowFeedbackNotifications",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+                                               "OriginalValue":  "0",
+                                               "Name":  "DisableTailoredExperiencesWithDiagnosticData",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+                                               "OriginalValue":  "0",
+                                               "Name":  "DisabledByGroupPolicy",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+                                               "OriginalValue":  "0",
+                                               "Name":  "Disabled",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+                                               "OriginalValue":  "1",
+                                               "Name":  "DODownloadMode",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance",
+                                               "OriginalValue":  "1",
+                                               "Name":  "fAllowToGetHelp",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\OperationStatusManager",
+                                               "OriginalValue":  "0",
+                                               "Name":  "EnthusiastMode",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                               "OriginalValue":  "1",
+                                               "Name":  "ShowTaskViewButton",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\People",
+                                               "OriginalValue":  "1",
+                                               "Name":  "PeopleBand",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                               "OriginalValue":  "1",
+                                               "Name":  "LaunchTo",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+                                               "OriginalValue":  "0",
+                                               "Name":  "LongPathsEnabled",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "_Comment":  "Driver searching is a function that should be left in",
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SearchOrderConfig",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+                                               "OriginalValue":  "1",
+                                               "Name":  "SystemResponsiveness",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
+                                               "OriginalValue":  "1",
+                                               "Name":  "NetworkThrottlingIndex",
+                                               "Value":  "4294967295",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Control Panel\\Desktop",
+                                               "OriginalValue":  "1",
+                                               "Name":  "MenuShowDelay",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Control Panel\\Desktop",
+                                               "OriginalValue":  "1",
+                                               "Name":  "AutoEndTasks",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+                                               "OriginalValue":  "0",
+                                               "Name":  "ClearPageFileAtShutdown",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SYSTEM\\ControlSet001\\Services\\Ndu",
+                                               "OriginalValue":  "1",
+                                               "Name":  "Start",
+                                               "Value":  "2",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Control Panel\\Mouse",
+                                               "OriginalValue":  "400",
+                                               "Name":  "MouseHoverTime",
+                                               "Value":  "400",
+                                               "Type":  "String"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
+                                               "OriginalValue":  "20",
+                                               "Name":  "IRPStackSize",
+                                               "Value":  "30",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+                                               "OriginalValue":  "1",
+                                               "Name":  "EnableFeeds",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Feeds",
+                                               "OriginalValue":  "1",
+                                               "Name":  "ShellFeedsTaskbarViewMode",
+                                               "Value":  "2",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+                                               "OriginalValue":  "1",
+                                               "Name":  "HideSCAMeetNow",
+                                               "Value":  "1",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+                                               "OriginalValue":  "1",
+                                               "Name":  "GPU Priority",
+                                               "Value":  "8",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+                                               "OriginalValue":  "1",
+                                               "Name":  "Priority",
+                                               "Value":  "6",
+                                               "Type":  "DWord"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
+                                               "OriginalValue":  "High",
+                                               "Name":  "Scheduling Category",
+                                               "Value":  "High",
+                                               "Type":  "String"
+                                           },
+                                           {
+                                               "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
+                                               "OriginalValue":  "1",
+                                               "Name":  "ScoobeSystemSettingEnabled",
+                                               "Value":  "0",
+                                               "Type":  "DWord"
+                                           }
+                                       ],
+                          "InvokeScript":  [
+                                               "
       bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\" -Name CurrentBuild).CurrentBuild -lt 22557) {
             $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
@@ -10029,239 +10361,239 @@ $sync.configs.tweaks = '{
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
-    ]
-  },
-  "WPFTweaksWifi": {
-    "Content": "Disable Wifi-Sense",
-    "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a004_",
-    "registry": [
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
-        "Name": "Value",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
-  "WPFTweaksUTC": {
-    "Content": "Set Time to UTC (Dual Boot)",
-    "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a022_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
-        "Name": "RealTimeIsUniversal",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      }
-    ]
-  },
-  "WPFTweaksDisplay": {
-    "Content": "Set Display for Performance",
-    "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a021_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "DragFullWindows",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop",
-        "OriginalValue": "1",
-        "Name": "MenuShowDelay",
-        "Value": "200",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
-        "OriginalValue": "1",
-        "Name": "MinAnimate",
-        "Value": "0",
-        "Type": "String"
-      },
-      {
-        "Path": "HKCU:\\Control Panel\\Keyboard",
-        "OriginalValue": "1",
-        "Name": "KeyboardDelay",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "ListviewAlphaSelect",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "ListviewShadow",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "TaskbarAnimations",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
-        "OriginalValue": "1",
-        "Name": "VisualFXSetting",
-        "Value": "3",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\DWM",
-        "OriginalValue": "1",
-        "Name": "EnableAeroPeek",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "TaskbarMn",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "TaskbarDa",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "OriginalValue": "1",
-        "Name": "ShowTaskViewButton",
-        "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "OriginalValue": "1",
-        "Name": "SearchboxTaskbarMode",
-        "Value": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
-    ],
-    "UndoScript": [
-      "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
-    ]
-  },
-  "WPFTweaksDeBloat": {
-    "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-    "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a025_",
-    "appx": [
-      "Microsoft.Microsoft3DViewer",
-      "Microsoft.AppConnector",
-      "Microsoft.BingFinance",
-      "Microsoft.BingNews",
-      "Microsoft.BingSports",
-      "Microsoft.BingTranslator",
-      "Microsoft.BingWeather",
-      "Microsoft.BingFoodAndDrink",
-      "Microsoft.BingHealthAndFitness",
-      "Microsoft.BingTravel",
-      "Microsoft.MinecraftUWP",
-      "Microsoft.GamingServices",
-      "Microsoft.GetHelp",
-      "Microsoft.Getstarted",
-      "Microsoft.Messaging",
-      "Microsoft.Microsoft3DViewer",
-      "Microsoft.MicrosoftSolitaireCollection",
-      "Microsoft.NetworkSpeedTest",
-      "Microsoft.News",
-      "Microsoft.Office.Lens",
-      "Microsoft.Office.Sway",
-      "Microsoft.Office.OneNote",
-      "Microsoft.OneConnect",
-      "Microsoft.People",
-      "Microsoft.Print3D",
-      "Microsoft.SkypeApp",
-      "Microsoft.Wallet",
-      "Microsoft.Whiteboard",
-      "Microsoft.WindowsAlarms",
-      "microsoft.windowscommunicationsapps",
-      "Microsoft.WindowsFeedbackHub",
-      "Microsoft.WindowsMaps",
-      "Microsoft.WindowsPhone",
-      "Microsoft.WindowsSoundRecorder",
-      "Microsoft.XboxApp",
-      "Microsoft.ConnectivityStore",
-      "Microsoft.CommsPhone",
-      "Microsoft.ScreenSketch",
-      "Microsoft.Xbox.TCUI",
-      "Microsoft.XboxGameOverlay",
-      "Microsoft.XboxGameCallableUI",
-      "Microsoft.XboxSpeechToTextOverlay",
-      "Microsoft.MixedReality.Portal",
-      "Microsoft.XboxIdentityProvider",
-      "Microsoft.ZuneMusic",
-      "Microsoft.ZuneVideo",
-      "Microsoft.Getstarted",
-      "Microsoft.MicrosoftOfficeHub",
-      "*EclipseManager*",
-      "*ActiproSoftwareLLC*",
-      "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
-      "*Duolingo-LearnLanguagesforFree*",
-      "*PandoraMediaInc*",
-      "*CandyCrush*",
-      "*BubbleWitch3Saga*",
-      "*Wunderlist*",
-      "*Flipboard*",
-      "*Twitter*",
-      "*Facebook*",
-      "*Royal Revolt*",
-      "*Sway*",
-      "*Speed Test*",
-      "*Dolby*",
-      "*Viber*",
-      "*ACGMediaPlayer*",
-      "*Netflix*",
-      "*OneCalendar*",
-      "*LinkedInforWindows*",
-      "*HiddenCityMysteryofShadows*",
-      "*Hulu*",
-      "*HiddenCity*",
-      "*AdobePhotoshopExpress*",
-      "*HotspotShieldFreeVPN*",
-      "*Microsoft.Advertising.Xaml*"
-    ],
-    "InvokeScript": [
-      "
-        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, ''Microsoft'', ''Teams'')
-        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, ''Update.exe'')
+                                           ]
+                      },
+    "WPFTweaksWifi":  {
+                          "Content":  "Disable Wifi-Sense",
+                          "Description":  "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+                          "category":  "Essential Tweaks",
+                          "panel":  "1",
+                          "Order":  "a004_",
+                          "registry":  [
+                                           {
+                                               "Path":  "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+                                               "Name":  "Value",
+                                               "Type":  "DWord",
+                                               "Value":  "0",
+                                               "OriginalValue":  "1"
+                                           },
+                                           {
+                                               "Path":  "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+                                               "Name":  "Value",
+                                               "Type":  "DWord",
+                                               "Value":  "0",
+                                               "OriginalValue":  "1"
+                                           }
+                                       ]
+                      },
+    "WPFTweaksUTC":  {
+                         "Content":  "Set Time to UTC (Dual Boot)",
+                         "Description":  "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+                         "category":  "z__Advanced Tweaks - CAUTION",
+                         "panel":  "1",
+                         "Order":  "a022_",
+                         "registry":  [
+                                          {
+                                              "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+                                              "Name":  "RealTimeIsUniversal",
+                                              "Type":  "DWord",
+                                              "Value":  "1",
+                                              "OriginalValue":  "0"
+                                          }
+                                      ]
+                     },
+    "WPFTweaksDisplay":  {
+                             "Content":  "Set Display for Performance",
+                             "Description":  "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+                             "category":  "z__Advanced Tweaks - CAUTION",
+                             "panel":  "1",
+                             "Order":  "a021_",
+                             "registry":  [
+                                              {
+                                                  "Path":  "HKCU:\\Control Panel\\Desktop",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "DragFullWindows",
+                                                  "Value":  "0",
+                                                  "Type":  "String"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Control Panel\\Desktop",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "MenuShowDelay",
+                                                  "Value":  "200",
+                                                  "Type":  "String"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Control Panel\\Desktop\\WindowMetrics",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "MinAnimate",
+                                                  "Value":  "0",
+                                                  "Type":  "String"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Control Panel\\Keyboard",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "KeyboardDelay",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "ListviewAlphaSelect",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "ListviewShadow",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "TaskbarAnimations",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "VisualFXSetting",
+                                                  "Value":  "3",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\DWM",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "EnableAeroPeek",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "TaskbarMn",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "TaskbarDa",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "ShowTaskViewButton",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              },
+                                              {
+                                                  "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+                                                  "OriginalValue":  "1",
+                                                  "Name":  "SearchboxTaskbarMode",
+                                                  "Value":  "0",
+                                                  "Type":  "DWord"
+                                              }
+                                          ],
+                             "InvokeScript":  [
+                                                  "Set-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))"
+                                              ],
+                             "UndoScript":  [
+                                                "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
+                                            ]
+                         },
+    "WPFTweaksDeBloat":  {
+                             "Content":  "Remove ALL MS Store Apps - NOT RECOMMENDED",
+                             "Description":  "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+                             "category":  "z__Advanced Tweaks - CAUTION",
+                             "panel":  "1",
+                             "Order":  "a025_",
+                             "appx":  [
+                                          "Microsoft.Microsoft3DViewer",
+                                          "Microsoft.AppConnector",
+                                          "Microsoft.BingFinance",
+                                          "Microsoft.BingNews",
+                                          "Microsoft.BingSports",
+                                          "Microsoft.BingTranslator",
+                                          "Microsoft.BingWeather",
+                                          "Microsoft.BingFoodAndDrink",
+                                          "Microsoft.BingHealthAndFitness",
+                                          "Microsoft.BingTravel",
+                                          "Microsoft.MinecraftUWP",
+                                          "Microsoft.GamingServices",
+                                          "Microsoft.GetHelp",
+                                          "Microsoft.Getstarted",
+                                          "Microsoft.Messaging",
+                                          "Microsoft.Microsoft3DViewer",
+                                          "Microsoft.MicrosoftSolitaireCollection",
+                                          "Microsoft.NetworkSpeedTest",
+                                          "Microsoft.News",
+                                          "Microsoft.Office.Lens",
+                                          "Microsoft.Office.Sway",
+                                          "Microsoft.Office.OneNote",
+                                          "Microsoft.OneConnect",
+                                          "Microsoft.People",
+                                          "Microsoft.Print3D",
+                                          "Microsoft.SkypeApp",
+                                          "Microsoft.Wallet",
+                                          "Microsoft.Whiteboard",
+                                          "Microsoft.WindowsAlarms",
+                                          "microsoft.windowscommunicationsapps",
+                                          "Microsoft.WindowsFeedbackHub",
+                                          "Microsoft.WindowsMaps",
+                                          "Microsoft.WindowsPhone",
+                                          "Microsoft.WindowsSoundRecorder",
+                                          "Microsoft.XboxApp",
+                                          "Microsoft.ConnectivityStore",
+                                          "Microsoft.CommsPhone",
+                                          "Microsoft.ScreenSketch",
+                                          "Microsoft.Xbox.TCUI",
+                                          "Microsoft.XboxGameOverlay",
+                                          "Microsoft.XboxGameCallableUI",
+                                          "Microsoft.XboxSpeechToTextOverlay",
+                                          "Microsoft.MixedReality.Portal",
+                                          "Microsoft.XboxIdentityProvider",
+                                          "Microsoft.ZuneMusic",
+                                          "Microsoft.ZuneVideo",
+                                          "Microsoft.Getstarted",
+                                          "Microsoft.MicrosoftOfficeHub",
+                                          "*EclipseManager*",
+                                          "*ActiproSoftwareLLC*",
+                                          "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
+                                          "*Duolingo-LearnLanguagesforFree*",
+                                          "*PandoraMediaInc*",
+                                          "*CandyCrush*",
+                                          "*BubbleWitch3Saga*",
+                                          "*Wunderlist*",
+                                          "*Flipboard*",
+                                          "*Twitter*",
+                                          "*Facebook*",
+                                          "*Royal Revolt*",
+                                          "*Sway*",
+                                          "*Speed Test*",
+                                          "*Dolby*",
+                                          "*Viber*",
+                                          "*ACGMediaPlayer*",
+                                          "*Netflix*",
+                                          "*OneCalendar*",
+                                          "*LinkedInforWindows*",
+                                          "*HiddenCityMysteryofShadows*",
+                                          "*Hulu*",
+                                          "*HiddenCity*",
+                                          "*AdobePhotoshopExpress*",
+                                          "*HotspotShieldFreeVPN*",
+                                          "*Microsoft.Advertising.Xaml*"
+                                      ],
+                             "InvokeScript":  [
+                                                  "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, \u0027\u0027Microsoft\u0027\u0027, \u0027\u0027Teams\u0027\u0027)
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, \u0027\u0027Update.exe\u0027\u0027)
 
         Write-Host \"Stopping Teams process...\"
         Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
@@ -10284,26 +10616,26 @@ $sync.configs.tweaks = '{
 
         Write-Host \"Deleting Teams uninstall registry key\"
         # Uninstall from Uninstall registry key UninstallString
-        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like ''*Teams*''}).UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like \u0027\u0027*Teams*\u0027\u0027}).UninstallString
         if ($us.Length -gt 0) {
-            $us = ($us.Replace(''/I'', ''/uninstall '') + '' /quiet'').Replace(''  '', '' '')
-            $FilePath = ($us.Substring(0, $us.IndexOf(''.exe'') + 4).Trim())
-            $ProcessArgs = ($us.Substring($us.IndexOf(''.exe'') + 5).Trim().replace(''  '', '' ''))
+            $us = ($us.Replace(\u0027\u0027/I\u0027\u0027, \u0027\u0027/uninstall \u0027\u0027) + \u0027\u0027 /quiet\u0027\u0027).Replace(\u0027\u0027  \u0027\u0027, \u0027\u0027 \u0027\u0027)
+            $FilePath = ($us.Substring(0, $us.IndexOf(\u0027\u0027.exe\u0027\u0027) + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf(\u0027\u0027.exe\u0027\u0027) + 5).Trim().replace(\u0027\u0027  \u0027\u0027, \u0027\u0027 \u0027\u0027))
             $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
             $proc.WaitForExit()
         }
       "
-    ]
-  },
-  "WPFTweaksRestorePoint": {
-    "Content": "Create Restore Point",
-    "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Checked": "True",
-    "Order": "a001_",
-    "InvokeScript": [
-      "
+                                              ]
+                         },
+    "WPFTweaksRestorePoint":  {
+                                  "Content":  "Create Restore Point",
+                                  "Description":  "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+                                  "category":  "Essential Tweaks",
+                                  "panel":  "1",
+                                  "Checked":  "True",
+                                  "Order":  "a001_",
+                                  "InvokeScript":  [
+                                                       "
         # Check if the user has administrative privileges
         if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
             Write-Host \"Please run this script as an administrator.\"
@@ -10321,7 +10653,7 @@ $sync.configs.tweaks = '{
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
         if($null -eq $exists){
-            write-host ''Changing system to allow multiple restore points per day''
+            write-host \u0027\u0027Changing system to allow multiple restore points per day\u0027\u0027
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
     
@@ -10349,108 +10681,108 @@ $sync.configs.tweaks = '{
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
       "
-    ]
-  },
-  "WPFTweaksEndTaskOnTaskbar": {
-    "Content": "Enable End Task With Right Click",
-    "Description": "Enables option to end task when right clicking a program in the taskbar",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a002_",
-    "InvokeScript": [
-      "
+                                                   ]
+                              },
+    "WPFTweaksEndTaskOnTaskbar":  {
+                                      "Content":  "Enable End Task With Right Click",
+                                      "Description":  "Enables option to end task when right clicking a program in the taskbar",
+                                      "category":  "Essential Tweaks",
+                                      "panel":  "1",
+                                      "Order":  "a002_",
+                                      "InvokeScript":  [
+                                                           "
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
       "
-    ],
-    "UndoScript": [
-      "
+                                                       ],
+                                      "UndoScript":  [
+                                                         "
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
       "
-    ]
-  },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a002_",
-    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
-    "InvokeScript": [
-      "Invoke-WPFOOSU -action \"recommended\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFOOSU -action \"undo\""
-    ]
-  },
-  "WPFTweaksStorage": {
-    "Content": "Disable Storage Sense",
-    "Description": "Storage Sense deletes temp files automatically.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a010_",
-    "InvokeScript": [
-      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
-    ],
-    "UndoScript": [
-      "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
-    ]
-  },
-  "WPFTweaksRemoveEdge": {
-    "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a026_",
-    "InvokeScript": [
-      "
+                                                     ]
+                                  },
+    "WPFTweaksOO":  {
+                        "Content":  "Run OO Shutup",
+                        "Description":  "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
+                        "category":  "Essential Tweaks",
+                        "panel":  "1",
+                        "Order":  "a002_",
+                        "ToolTip":  "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
+                        "InvokeScript":  [
+                                             "Invoke-WPFOOSU -action \"recommended\""
+                                         ],
+                        "UndoScript":  [
+                                           "Invoke-WPFOOSU -action \"undo\""
+                                       ]
+                    },
+    "WPFTweaksStorage":  {
+                             "Content":  "Disable Storage Sense",
+                             "Description":  "Storage Sense deletes temp files automatically.",
+                             "category":  "Essential Tweaks",
+                             "panel":  "1",
+                             "Order":  "a010_",
+                             "InvokeScript":  [
+                                                  "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
+                                              ],
+                             "UndoScript":  [
+                                                "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
+                                            ]
+                         },
+    "WPFTweaksRemoveEdge":  {
+                                "Content":  "Remove Microsoft Edge - NOT RECOMMENDED",
+                                "Description":  "Removes MS Edge when it gets reinstalled by updates.",
+                                "category":  "z__Advanced Tweaks - CAUTION",
+                                "panel":  "1",
+                                "Order":  "a026_",
+                                "InvokeScript":  [
+                                                     "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
         curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
         Start-Process $ENV:temp\\edgeremoval.bat
 
         "
-    ],
-    "UndoScript": [
-      "
+                                                 ],
+                                "UndoScript":  [
+                                                   "
       Write-Host \"Install Microsoft Edge\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
       "
-    ]
-  },
-  "WPFTweaksRemoveCopilot": {
-    "Content": "Disables Microsoft Copilot",
-    "Description": "Disables MS Copilot AI built into Windows since 23H2.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a025_",
-    "InvokeScript": [
-      "
+                                               ]
+                            },
+    "WPFTweaksRemoveCopilot":  {
+                                   "Content":  "Disables Microsoft Copilot",
+                                   "Description":  "Disables MS Copilot AI built into Windows since 23H2.",
+                                   "category":  "z__Advanced Tweaks - CAUTION",
+                                   "panel":  "1",
+                                   "Order":  "a025_",
+                                   "InvokeScript":  [
+                                                        "
         Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"0\" 
         New-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force | New-ItemProperty -Name \"TurnOffWindowsCopilot\" -Value \"1\" -Force -Type \"DWord\"
         "
-    ],
-    "UndoScript": [
-      "
+                                                    ],
+                                   "UndoScript":  [
+                                                      "
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" -Name \"ShowCopilotButton\" -Type \"DWord\" -Value \"1\" 
       Remove-Item \"HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot\" -Force
       "
-    ]
-  },
-  "WPFTweaksRemoveOnedrive": {
-    "Content": "Remove OneDrive",
-    "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a027_",
-    "InvokeScript": [
-      "
+                                                  ]
+                               },
+    "WPFTweaksRemoveOnedrive":  {
+                                    "Content":  "Remove OneDrive",
+                                    "Description":  "Copies OneDrive files to Default Home Folders and Uninstalls it.",
+                                    "category":  "z__Advanced Tweaks - CAUTION",
+                                    "panel":  "1",
+                                    "Order":  "a027_",
+                                    "InvokeScript":  [
+                                                         "
 
         Write-Host \"Kill OneDrive process\"
         taskkill.exe /F /IM \"OneDrive.exe\"
         taskkill.exe /F /IM \"explorer.exe\"
 
         Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($env:USERPROFILE.TrimEnd())\\OneDrive'' ''$($env:USERPROFILE.TrimEnd())\\'' /e /xj\" -NoNewWindow -Wait
+        Start-Process -FilePath powershell -ArgumentList \"robocopy \u0027\u0027$($env:USERPROFILE.TrimEnd())\\OneDrive\u0027\u0027 \u0027\u0027$($env:USERPROFILE.TrimEnd())\\\u0027\u0027 /e /xj\" -NoNewWindow -Wait
 
         Write-Host \"Remove OneDrive\"
         Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
@@ -10478,7 +10810,7 @@ $sync.configs.tweaks = '{
         Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
 
         Write-Host \"Removing scheduled task\"
-        Get-ScheduledTask -TaskPath ''\\'' -TaskName ''OneDrive*'' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+        Get-ScheduledTask -TaskPath \u0027\u0027\\\u0027\u0027 -TaskName \u0027\u0027OneDrive*\u0027\u0027 -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
 
         # Add Shell folders restoring default locations
         Write-Host \"Shell Fixing\"
@@ -10511,324 +10843,340 @@ $sync.configs.tweaks = '{
         Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
         Start-Sleep 5
         "
-    ],
-    "UndoScript": [
-      "
+                                                     ],
+                                    "UndoScript":  [
+                                                       "
       Write-Host \"Install OneDrive\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
-    ]
-  },
-  "WPFTweaksDisableNotifications": {
-    "Content": "Disable Notification Tray/Calendar",
-    "Description": "Disables all Notifications INCLUDING Calendar",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a024_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
-        "Name": "DisableNotificationCenter",
-        "Type": "DWord",
-        "Value": "1",
-        "OriginalValue": "0"
-      },
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
-        "Name": "ToastEnabled",
-        "Type": "DWord",
-        "Value": "0",
-        "OriginalValue": "1"
-      }
-    ]
-  },
-  "WPFTweaksRightClickMenu": {
-    "Content": "Set Classic Right-Click Menu ",
-    "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a028_",
-    "InvokeScript": [
-      "
+                                                   ]
+                                },
+    "WPFTweaksDisableNotifications":  {
+                                          "Content":  "Disable Notification Tray/Calendar",
+                                          "Description":  "Disables all Notifications INCLUDING Calendar",
+                                          "category":  "z__Advanced Tweaks - CAUTION",
+                                          "panel":  "1",
+                                          "Order":  "a024_",
+                                          "registry":  [
+                                                           {
+                                                               "Path":  "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+                                                               "Name":  "DisableNotificationCenter",
+                                                               "Type":  "DWord",
+                                                               "Value":  "1",
+                                                               "OriginalValue":  "0"
+                                                           },
+                                                           {
+                                                               "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+                                                               "Name":  "ToastEnabled",
+                                                               "Type":  "DWord",
+                                                               "Value":  "0",
+                                                               "OriginalValue":  "1"
+                                                           }
+                                                       ]
+                                      },
+    "WPFTweaksRightClickMenu":  {
+                                    "Content":  "Set Classic Right-Click Menu ",
+                                    "Description":  "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+                                    "category":  "z__Advanced Tweaks - CAUTION",
+                                    "panel":  "1",
+                                    "Order":  "a028_",
+                                    "InvokeScript":  [
+                                                         "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-    ],
-    "UndoScript": [
-      "
+                                                     ],
+                                    "UndoScript":  [
+                                                       "
       Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
       # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-    ]
-  },
-  "WPFTweaksDiskCleanup": {
-    "Content": "Run Disk Cleanup",
-    "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a007_",
-    "InvokeScript": [
-      "
+                                                   ]
+                                },
+    "WPFTweaksDiskCleanup":  {
+                                 "Content":  "Run Disk Cleanup",
+                                 "Description":  "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+                                 "category":  "Essential Tweaks",
+                                 "panel":  "1",
+                                 "Order":  "a007_",
+                                 "InvokeScript":  [
+                                                      "
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
-    ]
-  },
-  "WPFTweaksDeleteTempFiles": {
-    "Content": "Delete Temporary Files",
-    "Description": "Erases TEMP Folders",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a006_",
-    "InvokeScript": [
-      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+                                                  ]
+                             },
+    "WPFTweaksDeleteTempFiles":  {
+                                     "Content":  "Delete Temporary Files",
+                                     "Description":  "Erases TEMP Folders",
+                                     "category":  "Essential Tweaks",
+                                     "panel":  "1",
+                                     "Order":  "a006_",
+                                     "InvokeScript":  [
+                                                          "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
-  },
-  "WPFTweaksDVR": {
-    "Content": "Disable GameDVR",
-    "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a012_",
-    "registry": [
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_FSEBehavior",
-        "Value": "2",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_Enabled",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_HonorUserFSEBehaviorMode",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_EFSEFeatureFlags",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
-        "Name": "AllowGameDVR",
-        "Value": "0",
-        "OriginalValue": "1",
-        "Type": "DWord"
-      }
-    ]
-  },
-  "WPFTweaksTeredo": {
-    "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a013_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "netsh interface teredo set state disabled"
-    ],
-    "UndoScript": [
-      "netsh interface teredo set state default"
-    ]
-  },
-  "WPFTweaksDisableipsix": {
-    "Content": "Disable IPv6",
-    "Description": "Disables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a031_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "255",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ],
-    "UndoScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
-  },
-  "WPFTweaksEnableipsix": {
-    "Content": "Enable IPv6",
-    "Description": "Enables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a030_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "0",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ],
-    "UndoScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
-  },
-  "WPFToggleDarkMode": {
-    "Content": "Dark Theme",
-    "Description": "Enable/Disable Dark Mode.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a060_",
-    "Type": "Toggle"
-  },
-  "WPFToggleBingSearch": {
-    "Content": "Bing Search in Start Menu",
-    "Description": "If enable then includes web search results from Bing in your Start Menu search.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a061_",
-    "Type": "Toggle"
-  },
-  "WPFToggleNumLock": {
-    "Content": "NumLock on Startup",
-    "Description": "Toggle the Num Lock key state when your computer starts.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a062_",
-    "Type": "Toggle"
-  },
-  "WPFToggleVerboseLogon": {
-    "Content": "Verbose Logon Messages",
-    "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a063_",
-    "Type": "Toggle"
-  },
-  "WPFToggleShowExt": {
-    "Content": "Show File Extensions",
-    "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a064_",
-    "Type": "Toggle"
-  },
-  "WPFToggleSnapFlyout": {
-    "Content": "Snap Assist Flyout",
-    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a065_",
-    "Type": "Toggle"
-  },
-  "WPFToggleMouseAcceleration": {
-    "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a066_",
-    "Type": "Toggle"
-  },
-  "WPFToggleStickyKeys": {
-    "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a067_",
-    "Type": "Toggle"
-  },
-  "WPFOOSUbutton": {
-    "Content": "Customize OO Shutup Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a039_",
-    "Type": "220"
-  },
-  "WPFToggleTaskbarWidgets": {
-    "Content": "Taskbar Widgets",
-    "Description": "If Enabled then Widgets Icon in Taskbar will be shown.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a068_",
-    "Type": "Toggle"
-  },
-  "WPFchangedns": {
-    "Content": "DNS",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a040_",
-    "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
-  },
-  "WPFTweaksbutton": {
-    "Content": "Run Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "160"
-  },
-  "WPFUndoall": {
-    "Content": "Undo Selected Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a042_",
-    "Type": "160"
-  },
-  "WPFAddUltPerf": {
-    "Content": "Add and Activate Ultimate Performance Profile",
-    "category": "Performance Plans",
-    "panel": "2",
-    "Order": "a080_",
-    "Type": "300"
-  },
-  "WPFRemoveUltPerf": {
-    "Content": "Remove Ultimate Performance Profile",
-    "category": "Performance Plans",
-    "panel": "2",
-    "Order": "a081_",
-    "Type": "300"
-  },
-  "WPFWinUtilShortcut": {
-    "Content": "Create WinUtil Shortcut",
-    "category": "Shortcuts",
-    "panel": "2",
-    "Order": "a082_",
-    "Type": "300"
-  }
+                                                      ]
+                                 },
+    "WPFTweaksDVR":  {
+                         "Content":  "Disable GameDVR",
+                         "Description":  "GameDVR is a Windows App that is a dependency for some Store Games. I\u0026#39;ve never met someone that likes it, but it\u0026#39;s there for the XBOX crowd.",
+                         "category":  "Essential Tweaks",
+                         "panel":  "1",
+                         "Order":  "a012_",
+                         "registry":  [
+                                          {
+                                              "Path":  "HKCU:\\System\\GameConfigStore",
+                                              "Name":  "GameDVR_FSEBehavior",
+                                              "Value":  "2",
+                                              "OriginalValue":  "1",
+                                              "Type":  "DWord"
+                                          },
+                                          {
+                                              "Path":  "HKCU:\\System\\GameConfigStore",
+                                              "Name":  "GameDVR_Enabled",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1",
+                                              "Type":  "DWord"
+                                          },
+                                          {
+                                              "Path":  "HKCU:\\System\\GameConfigStore",
+                                              "Name":  "GameDVR_DXGIHonorFSEWindowsCompatible",
+                                              "Value":  "1",
+                                              "OriginalValue":  "0",
+                                              "Type":  "DWord"
+                                          },
+                                          {
+                                              "Path":  "HKCU:\\System\\GameConfigStore",
+                                              "Name":  "GameDVR_HonorUserFSEBehaviorMode",
+                                              "Value":  "1",
+                                              "OriginalValue":  "0",
+                                              "Type":  "DWord"
+                                          },
+                                          {
+                                              "Path":  "HKCU:\\System\\GameConfigStore",
+                                              "Name":  "GameDVR_EFSEFeatureFlags",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1",
+                                              "Type":  "DWord"
+                                          },
+                                          {
+                                              "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
+                                              "Name":  "AllowGameDVR",
+                                              "Value":  "0",
+                                              "OriginalValue":  "1",
+                                              "Type":  "DWord"
+                                          }
+                                      ]
+                     },
+    "WPFTweaksTeredo":  {
+                            "Content":  "Disable Teredo",
+                            "Description":  "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+                            "category":  "Essential Tweaks",
+                            "panel":  "1",
+                            "Order":  "a013_",
+                            "registry":  [
+                                             {
+                                                 "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+                                                 "Name":  "DisabledComponents",
+                                                 "Value":  "1",
+                                                 "OriginalValue":  "0",
+                                                 "Type":  "DWord"
+                                             }
+                                         ],
+                            "InvokeScript":  [
+                                                 "netsh interface teredo set state disabled"
+                                             ],
+                            "UndoScript":  [
+                                               "netsh interface teredo set state default"
+                                           ]
+                        },
+    "WPFTweaksDisableipsix":  {
+                                  "Content":  "Disable IPv6",
+                                  "Description":  "Disables IPv6.",
+                                  "category":  "z__Advanced Tweaks - CAUTION",
+                                  "panel":  "1",
+                                  "Order":  "a031_",
+                                  "registry":  [
+                                                   {
+                                                       "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+                                                       "Name":  "DisabledComponents",
+                                                       "Value":  "255",
+                                                       "OriginalValue":  "0",
+                                                       "Type":  "DWord"
+                                                   }
+                                               ],
+                                  "InvokeScript":  [
+                                                       "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+                                                   ],
+                                  "UndoScript":  [
+                                                     "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+                                                 ]
+                              },
+    "WPFTweaksEnableipsix":  {
+                                 "Content":  "Enable IPv6",
+                                 "Description":  "Enables IPv6.",
+                                 "category":  "z__Advanced Tweaks - CAUTION",
+                                 "panel":  "1",
+                                 "Order":  "a030_",
+                                 "registry":  [
+                                                  {
+                                                      "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+                                                      "Name":  "DisabledComponents",
+                                                      "Value":  "0",
+                                                      "OriginalValue":  "0",
+                                                      "Type":  "DWord"
+                                                  }
+                                              ],
+                                 "InvokeScript":  [
+                                                      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+                                                  ],
+                                 "UndoScript":  [
+                                                    "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+                                                ]
+                             },
+    "WPFToggleDarkMode":  {
+                              "Content":  "Dark Theme",
+                              "Description":  "Enable/Disable Dark Mode.",
+                              "category":  "Customize Preferences",
+                              "panel":  "2",
+                              "Order":  "a060_",
+                              "Type":  "Toggle"
+                          },
+    "WPFToggleBingSearch":  {
+                                "Content":  "Bing Search in Start Menu",
+                                "Description":  "If enable then includes web search results from Bing in your Start Menu search.",
+                                "category":  "Customize Preferences",
+                                "panel":  "2",
+                                "Order":  "a061_",
+                                "Type":  "Toggle"
+                            },
+    "WPFToggleNumLock":  {
+                             "Content":  "NumLock on Startup",
+                             "Description":  "Toggle the Num Lock key state when your computer starts.",
+                             "category":  "Customize Preferences",
+                             "panel":  "2",
+                             "Order":  "a062_",
+                             "Type":  "Toggle"
+                         },
+    "WPFToggleVerboseLogon":  {
+                                  "Content":  "Verbose Logon Messages",
+                                  "Description":  "Show detailed messages during the login process for troubleshooting and diagnostics.",
+                                  "category":  "Customize Preferences",
+                                  "panel":  "2",
+                                  "Order":  "a063_",
+                                  "Type":  "Toggle"
+                              },
+    "WPFToggleShowExt":  {
+                             "Content":  "Show File Extensions",
+                             "Description":  "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+                             "category":  "Customize Preferences",
+                             "panel":  "2",
+                             "Order":  "a064_",
+                             "Type":  "Toggle"
+                         },
+    "WPFToggleSnapWindow":  {
+                                "Content":  "Snap Window",
+                                "Description":  "If enabled you can align windows by dragging them. | Relogin Required",
+                                "category":  "Customize Preferences",
+                                "panel":  "2",
+                                "Order":  "a065_",
+                                "Type":  "Toggle"
+                            },
+    "WPFToggleSnapFlyout":  {
+                                "Content":  "Snap Assist Flyout",
+                                "Description":  "If enabled then Snap preview is disabled when maximize button is hovered.",
+                                "category":  "Customize Preferences",
+                                "panel":  "2",
+                                "Order":  "a066_",
+                                "Type":  "Toggle"
+                            },
+    "WPFToggleSnapSuggestion":  {
+                                    "Content":  "Snap Assist Suggestion",
+                                    "Description":  "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+                                    "category":  "Customize Preferences",
+                                    "panel":  "2",
+                                    "Order":  "a067_",
+                                    "Type":  "Toggle"
+                                },
+    "WPFToggleMouseAcceleration":  {
+                                       "Content":  "Mouse Acceleration",
+                                       "Description":  "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+                                       "category":  "Customize Preferences",
+                                       "panel":  "2",
+                                       "Order":  "a068_",
+                                       "Type":  "Toggle"
+                                   },
+    "WPFToggleStickyKeys":  {
+                                "Content":  "Sticky Keys",
+                                "Description":  "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+                                "category":  "Customize Preferences",
+                                "panel":  "2",
+                                "Order":  "a069_",
+                                "Type":  "Toggle"
+                            },
+    "WPFOOSUbutton":  {
+                          "Content":  "Customize OO Shutup Tweaks",
+                          "category":  "z__Advanced Tweaks - CAUTION",
+                          "panel":  "1",
+                          "Order":  "a039_",
+                          "Type":  "220"
+                      },
+    "WPFToggleTaskbarWidgets":  {
+                                    "Content":  "Taskbar Widgets",
+                                    "Description":  "If Enabled then Widgets Icon in Taskbar will be shown.",
+                                    "category":  "Customize Preferences",
+                                    "panel":  "2",
+                                    "Order":  "a068_",
+                                    "Type":  "Toggle"
+                                },
+    "WPFchangedns":  {
+                         "Content":  "DNS",
+                         "category":  "z__Advanced Tweaks - CAUTION",
+                         "panel":  "1",
+                         "Order":  "a040_",
+                         "Type":  "Combobox",
+                         "ComboItems":  "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
+                     },
+    "WPFTweaksbutton":  {
+                            "Content":  "Run Tweaks",
+                            "category":  "z__Advanced Tweaks - CAUTION",
+                            "panel":  "1",
+                            "Order":  "a041_",
+                            "Type":  "160"
+                        },
+    "WPFUndoall":  {
+                       "Content":  "Undo Selected Tweaks",
+                       "category":  "z__Advanced Tweaks - CAUTION",
+                       "panel":  "1",
+                       "Order":  "a042_",
+                       "Type":  "160"
+                   },
+    "WPFAddUltPerf":  {
+                          "Content":  "Add and Activate Ultimate Performance Profile",
+                          "category":  "Performance Plans",
+                          "panel":  "2",
+                          "Order":  "a080_",
+                          "Type":  "300"
+                      },
+    "WPFRemoveUltPerf":  {
+                             "Content":  "Remove Ultimate Performance Profile",
+                             "category":  "Performance Plans",
+                             "panel":  "2",
+                             "Order":  "a081_",
+                             "Type":  "300"
+                         },
+    "WPFWinUtilShortcut":  {
+                               "Content":  "Create WinUtil Shortcut",
+                               "category":  "Shortcuts",
+                               "panel":  "2",
+                               "Order":  "a082_",
+                               "Type":  "300"
+                           }
 }' | convertfrom-json
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11127,7 +11475,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <Grid Background="{TemplateBinding Background}">
+                        <Grid Background="{TemplateBinding Background}" Margin="6,0,0,0">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
                                     <Grid Width="16" Height="16">
@@ -11235,14 +11583,15 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Grid x:Name="toggleSwitch">
-                            <Border x:Name="Border" CornerRadius="10"
+                        <Grid x:Name="toggleSwitch" Margin="10,0,0,0">
+                            <Border x:Name="Border" CornerRadius="11"
                                     Background="#FFFFFFFF"
-                                    Width="70" Height="25">
+                                    Width="50" Height="25">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
                                 </Border.Effect>
@@ -11255,17 +11604,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                     </Ellipse.Effect>
                                 </Ellipse>
                             </Border>
-
-                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
                         </Grid>
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="ToggleButton.IsChecked" Value="False">
                                 <Setter TargetName="Border" Property="Background" Value="#C2283B" />
                                 <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
-                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
-                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
                             </Trigger>
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
@@ -11278,20 +11622,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="46 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
+                                                    To="26 2 2 1" Duration="0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
-
-                                <!-- Some out fading -->
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
@@ -11302,18 +11636,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
                                                     To="2 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
-
                                 <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -11322,6 +11647,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             </Setter>
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
+
         <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="{MainForegroundColor}" />
             <Setter Property="Background" Value="{MainBackgroundColor}" />
@@ -11740,14 +12066,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
 </StackPanel>
@@ -11808,6 +12134,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Document" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladobe" Content="Adobe Acrobat Reader" ToolTip="Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.adobe.com/acrobat/pdf-reader.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallaffine" Content="AFFiNE" ToolTip="AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaffineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://affine.pro/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanki" Content="Anki" ToolTip="Anki is a flashcard application that helps you memorize information with intelligent spaced repetition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallankiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://apps.ankiweb.net/" />
@@ -11942,14 +12271,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvrdesktopstreamer" Content="Virtual Desktop Streamer" ToolTip="Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvrdesktopstreamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vrdesktop.net/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvrdesktopstreamer" Content="Virtual Desktop Streamer" ToolTip="Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvrdesktopstreamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vrdesktop.net/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
@@ -11997,7 +12326,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallrdcman" Content="Remote Desktop Connection Manager (RDCMan)" ToolTip="RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrdcmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman" />
+<CheckBox Name="WPFInstallrdcman" Content="RDCMan" ToolTip="RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrdcmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsqlmanagementstudio" Content="Microsoft SQL Server Management Studio" ToolTip="SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsqlmanagementstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16" />
@@ -12150,17 +12479,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="3">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="3">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Pro Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
@@ -12352,11 +12681,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
@@ -12366,6 +12690,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/><TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole" />
 </StackPanel>
@@ -12517,6 +12846,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwazuh" Content="Wazuh." ToolTip="Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwazuhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wazuh.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12595,11 +12927,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0"  ToolTip="Disables Location Tracking...DUH!"/>
-<CheckBox Name="WPFTweaksAdobe" Content="Disable Adobe Services" Margin="5,0"  ToolTip="Disables many of the services that come with Adobe and run in the background."/>
-<CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
+<CheckBox Name="WPFTweaksDebloatAdobe" Content="Debloat Adobe" Margin="5,0"  ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
+<CheckBox Name="WPFTweaksBlockAdobeNet" Content="Block Adobe Networking" Margin="5,0"  ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. "/>
 <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0"  ToolTip="Storage Sense deletes temp files automatically."/>
-<CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
+<CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
 <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0"  ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
+<CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
 <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0"  ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
 <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 <Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
@@ -12636,40 +12969,48 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Customize Preferences" FontSize="16"/>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Dark Theme" Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
 <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Dark Theme" Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip="If enable then includes web search results from Bing in your Start Menu search." />
 <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip="If enable then includes web search results from Bing in your Start Menu search." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip="Toggle the Num Lock key state when your computer starts." />
 <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip="Toggle the Num Lock key state when your computer starts." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." />
 <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
+<CheckBox Name="WPFToggleSnapWindow" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Window" Style="{StaticResource labelfortweaks}" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." />
+<CheckBox Name="WPFToggleSnapSuggestion" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Assist Suggestion" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." />
-<CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-</StackPanel>
-<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Taskbar Widgets" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Widgets Icon in Taskbar will be shown." />
 <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Taskbar Widgets" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Widgets Icon in Taskbar will be shown." />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." />
 </StackPanel>
 <Label Content="Performance Plans" FontSize="16"/>
 <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
