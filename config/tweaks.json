@@ -109,6 +109,7 @@
         # 2 = Automatically download updates but let the user choose when to install them
         # 3 = Automatically download and install updates (default value)
         # 4 = Notify the user when an update is available but don't download or install it automatically
+        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
     
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
     
