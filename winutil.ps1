@@ -762,6 +762,7 @@ Function Install-WinUtilProgramWinget {
                     continue
                 }
                 Write-Host "Attempting installation with Chocolatey as a fallback method"
+                Install-WinUtilChoco
                 $status = $(Start-Process -FilePath "choco" -ArgumentList "install $Program -y" -Wait -PassThru).ExitCode
                 if($status -eq 0){
                     Write-Host "$Program installed successfully using Chocolatey."
