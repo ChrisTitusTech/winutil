@@ -36,19 +36,16 @@ Function Get-WinUtilCheckBoxes {
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
-
         if ($group) {
             if ($CheckBox.Value.IsChecked -eq $true) {
                 $feature = switch ($group) {
                     "Install" {
                         # Get the winget value
-                        $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
-
-                        if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
-                            $wingetValue -split ";"
-                        } else {
-                            $sync.configs.applications.$($CheckBox.Name).choco
+                        [PsCustomObject]@{
+                            winget="$($sync.configs.applications.$($CheckBox.Name).winget)";
+                            choco="$($sync.configs.applications.$($CheckBox.Name).choco)";
                         }
+
                     }
                     default {
                         $CheckBox.Name
@@ -72,6 +69,5 @@ Function Get-WinUtilCheckBoxes {
             }
         }
     }
-
     return  $Output
 }
