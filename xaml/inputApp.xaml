@@ -547,7 +547,7 @@
 <CheckBox Name="WPFInstallitunes" Content="iTunes" ToolTip="iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitunesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.apple.com/itunes/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-playerf" />
+<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-player" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" ToolTip="Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinserverLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
