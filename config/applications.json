@@ -2655,7 +2655,7 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
-	"WPFInstalglazewm": {
+	"WPFInstallglazewm": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "GlazeWM",
