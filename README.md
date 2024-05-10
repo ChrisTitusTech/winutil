@@ -10,7 +10,7 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 
 1. **Right-Click Method:**
    - Right-click on the start menu.
-   - Choose "PowerShell As Admin" (for Windows 10) or "Windows Terminal As Admin" (for Windows 11).
+   - Choose "PowerShell (Admin)" (for Windows 10) or "Terminal (Admin)" (for Windows 11).
 
 2. **Search and Launch Method:**
    - Press the Windows key.
