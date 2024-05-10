@@ -845,6 +845,8 @@ function Install-WinUtilWinget {
         Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
         # In case install fails via GitHub method.
         Try {
+        # Install Choco if not already present
+        Install-WinUtilChoco
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Output "Refreshing Environment Variables...`n"
@@ -3228,7 +3230,8 @@ function Invoke-WPFFixesWinget {
     .DESCRIPTION
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
-
+    # Install Choco if not already present
+    Install-WinUtilChoco
     Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
@@ -3357,6 +3360,8 @@ function Invoke-WPFGetIso {
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
+            # Install Choco if not already present
+            Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
             if (!$chocoFound) 
@@ -13704,8 +13709,8 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
-# Check if Chocolatey is installed
-Install-WinUtilChoco
+# Install Winget if not already present
+Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
