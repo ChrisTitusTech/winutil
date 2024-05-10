@@ -996,7 +996,7 @@
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-		"link": "https://github.com/jellyfin/jellyfin-media-playerf",
+		"link": "https://github.com/jellyfin/jellyfin-media-player",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
