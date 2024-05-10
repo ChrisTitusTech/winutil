@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-
+    Version        : 24.05.10
 #>
 param (
     [switch]$Debug,
@@ -12244,10 +12244,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvideomass" Content="Videomass" ToolTip="Videomass by GianlucaPernigotto is a cross-platform GUI for FFmpeg, streamlining multimedia file processing with batch conversions and user-friendly features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvideomassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jeanslack.github.io/Videomass/" />
 </StackPanel>
-
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
@@ -12261,14 +12257,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" ToolTip="EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallefibooteditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.easyuefi.com/" />
 </StackPanel>
@@ -12468,28 +12464,18 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
-
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
-</StackPanel>
-
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
-
-<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-
 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">

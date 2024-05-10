@@ -622,9 +622,6 @@
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -634,14 +631,14 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" ToolTip="EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallefibooteditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.easyuefi.com/" />
 </StackPanel>
@@ -844,17 +841,11 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
