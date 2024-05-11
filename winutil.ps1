@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.05.10
+    Version        : 24.05.11
 #>
 param (
     [switch]$Debug,
@@ -47,21 +47,12 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.05.10"
+$sync.version = "24.05.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-$currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-$principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
-$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
-
-
-if ($principal.IsInRole($adminRole))
-{
-    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-    clear-host
-}
-else
+# If script isn't running as admin, show error message and quit
+If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544")
 {
     Write-Host "===========================================" -Foregroundcolor Red
     Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
@@ -69,6 +60,10 @@ else
     Write-Host "===========================================" -Foregroundcolor Red
     break
 }
+
+# Set PowerShell window title
+$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+clear-host
 function ConvertTo-Icon { 
     <#
     
@@ -351,8 +346,9 @@ function Get-TabXaml {
                 }
                 $appInfo = $organizedData[$panel][$category][$appName]
                 if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n"
+                    $blockXml += "<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n</StackPanel>`n"
                 } elseif ("Combobox" -eq $appInfo.Type) {
                     $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
                     $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
@@ -390,9 +386,6 @@ Function Get-WinUtilCheckBoxes {
     .SYNOPSIS
         Finds all checkboxes that are checked on the specific tab and inputs them into a script.
 
-    .PARAMETER Group
-        The group of checkboxes to check
-
     .PARAMETER unCheck
         Whether to uncheck the checkboxes that are checked. Defaults to true
 
@@ -417,7 +410,20 @@ Function Get-WinUtilCheckBoxes {
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
 
+    # First check and add WPFTweaksRestorePoint if checked
+    $RestorePoint = $CheckBoxes | Where-Object { $_.Key -eq 'WPFTweaksRestorePoint' -and $_.Value.IsChecked -eq $true }
+    if ($RestorePoint) {
+        $Output["WPFTweaks"] = @('WPFTweaksRestorePoint')
+        Write-Debug "Adding WPFTweaksRestorePoint as first in WPFTweaks"
+
+        if ($unCheck) {
+            $RestorePoint.Value.IsChecked = $false
+        }
+    }
+
     foreach ($CheckBox in $CheckBoxes) {
+        if ($CheckBox.Key -eq 'WPFTweaksRestorePoint') { continue }  # Skip since it's already handled
+
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
@@ -426,9 +432,7 @@ Function Get-WinUtilCheckBoxes {
             if ($CheckBox.Value.IsChecked -eq $true) {
                 $feature = switch ($group) {
                     "Install" {
-                        # Get the winget value
                         $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
-
                         if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
                             $wingetValue -split ";"
                         } else {
@@ -451,14 +455,14 @@ Function Get-WinUtilCheckBoxes {
                 Write-Debug "Adding: $($feature) under: $($group)"
                 $Output[$group] += $feature
 
-                if ($uncheck -eq $true) {
+                if ($unCheck) {
                     $CheckBox.Value.IsChecked = $false
                 }
             }
         }
     }
 
-    return  $Output
+    return $Output
 }
 function Get-WinUtilInstallerProcess {
     <#
@@ -545,6 +549,15 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapWindow"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Control Panel\Desktop').WindowArrangementActive
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
     if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
         if($hidesnap -eq 0){
@@ -554,6 +567,15 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }    
+    if($ToggleSwitch -eq "WPFToggleSnapSuggestion"){
+        $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').SnapAssist
+        if($hidesnap -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }        
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
@@ -1947,6 +1969,71 @@ function Invoke-WinUtilSnapFlyout {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapSuggestion {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snap Assist Suggestions on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snap Assist Suggestions on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Assist Suggestion On startup"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Assist Suggestion On startup"
+            $value = 0
+        }
+        # taskkill.exe /F /IM "explorer.exe"
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        taskkill.exe /F /IM "explorer.exe"
+        Set-ItemProperty -Path $Path -Name SnapAssist -Value $value
+        Start-Process "explorer.exe"
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilSnapWindow {
+    <#
+    .SYNOPSIS
+        Disables/Enables Snapping Windows on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Snapping Windows on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Snap Windows On startup | Relogin Required"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Snap Windows On startup | Relogin Required"
+            $value = 0
+        }
+        $Path = "HKCU:\Control Panel\Desktop"
+        Set-ItemProperty -Path $Path -Name WindowArrangementActive -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -4518,7 +4605,9 @@ function Invoke-WPFToggle {
         "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
         "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
         "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
+        "WPFToggleSnapWindow" {Invoke-WinUtilSnapWindow $(Get-WinUtilToggleStatus WPFToggleSnapWindow)}
         "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
+        "WPFToggleSnapSuggestion" {Invoke-WinUtilSnapSuggestion $(Get-WinUtilToggleStatus WPFToggleSnapSuggestion)}
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
         "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
@@ -5075,6 +5164,14 @@ $sync.configs.applications = '{
     "link": "https://www.advanced-ip-scanner.com/",
     "winget": "Famatech.AdvancedIPScanner"
   },
+  "WPFInstallaffine": {
+    "category": "Document",
+    "choco": "na",
+    "content": "AFFiNE",
+    "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+    "link": "https://affine.pro/",
+    "winget": "AFFiNE.stable"
+  },
   "WPFInstallaimp": {
     "category": "Multimedia Tools",
     "choco": "aimp",
@@ -5150,7 +5247,7 @@ $sync.configs.applications = '{
   "WPFInstallrdcman": {
     "category": "Microsoft Tools",
     "choco": "rdcman",
-    "content": "Remote Desktop Connection Manager (RDCMan)",
+    "content": "RDCMan",
     "description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
     "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
     "winget": "Microsoft.Sysinternals.RDCMan"
@@ -5779,6 +5876,14 @@ $sync.configs.applications = '{
     "link": "https://desktop.github.com/",
     "winget": "Git.Git;GitHub.GitHubDesktop"
   },
+  "WPFInstallgitkrakenclient": {
+    "category": "Development",
+    "choco": "gitkraken",
+    "content": "GitKraken Client",
+    "description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+    "link": "https://www.gitkraken.com/git-client",
+    "winget": "Axosoft.GitKraken"
+  },
   "WPFInstallglaryutilities": {
     "category": "Utilities",
     "choco": "glaryutilities-free",
@@ -5786,6 +5891,14 @@ $sync.configs.applications = '{
     "description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
     "link": "https://www.glarysoft.com/glary-utilities/",
     "winget": "Glarysoft.GlaryUtilities"
+  },
+  "WPFInstallgodotengine": {
+    "category": "Development",
+    "choco": "godot",
+    "content": "Godot Engine",
+    "description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+    "link": "https://godotengine.org/",
+    "winget": "GodotEngine.GodotEngine"
   },
   "WPFInstallgog": {
     "category": "Games",
@@ -7395,6 +7508,14 @@ $sync.configs.applications = '{
     "link": "https://www.waterfox.net/",
     "winget": "Waterfox.Waterfox"
   },
+  "WPFInstallwazuh": {
+    "category": "Utilities",
+    "choco": "wazuh-agent",
+    "content": "Wazuh.",
+    "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+    "link": "https://wazuh.com/",
+    "winget": "Wazuh.WazuhAgent"
+  },
   "WPFInstallwezterm": {
     "category": "Development",
     "choco": "wezterm",
@@ -7707,6 +7828,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/magic-wormhole/magic-wormhole",
     "winget": "magic-wormhole.magic-wormhole"
   },
+  "WPFInstallsmplayer": {
+    "category": "Multimedia Tools",
+    "choco": "smplayer",
+    "content": "SMPlayer",
+    "description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
+    "link": "https://www.smplayer.info",
+    "winget": "SMPlayer.SMPlayer"
+  },
   "WPFInstalglazewm": {
     "category": "Utilities",
     "choco": "na",
@@ -7738,6 +7867,14 @@ $sync.configs.applications = '{
     "description": "The customization marketplace for Windows programs",
     "link": "https://windhawk.net",
     "winget": "RamenSoftware.Windhawk"
+  },
+  "WPFInstallForceAutoHDR": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "GUI That Forces Auto HDR In Unsupported Games",
+    "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+    "link": "https://github.com/7gxycn08/ForceAutoHDR",
+    "winget": "ForceAutoHDR.7gxycn08"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -8194,7 +8331,7 @@ $sync.configs.tweaks = '{
     "Description": "Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a011_",
+    "Order": "a012_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -8223,7 +8360,7 @@ $sync.configs.tweaks = '{
     "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
+    "Order": "a011_",
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -8237,16 +8374,110 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksAdobe": {
-    "Content": "Disable Adobe Services",
-    "Description": "Disables many of the services that come with Adobe and run in the background.",
+  "WPFTweaksDebloatAdobe": {
+    "Content": "Debloat Adobe",
+    "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
+    "InvokeScript": [
+      "
+      function CCStopper {
+        $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+        
+        # Test if the path exists before proceeding
+        if (Test-Path $path) {
+            Takeown /f $path
+            $acl = Get-Acl $path
+            $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
+            $acl | Set-Acl $path
+    
+            Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
+        } else {
+            Write-Host \"Adobe Desktop Service is not in the default location.\"
+        }
+      }
+    
+
+      function AcrobatUpdates {
+        # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
+        # Possible Values for the edited key:
+        # 0 = Do not download or install updates automatically
+        # 2 = Automatically download updates but let the user choose when to install them
+        # 3 = Automatically download and install updates (default value)
+        # 4 = Notify the user when an update is available but don''t download or install it automatically
+        #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
+    
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+    
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+    
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 0
+                Write-Host \"Acrobat Updates have been disabled.\"
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
+      }
+
+      CCStopper
+      AcrobatUpdates
+      "
+    ],
+    "UndoScript": [
+      "
+      function RestoreCCService {
+        $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
+        $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
+    
+        if (Test-Path -Path $originalPath) {
+            Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
+            Write-Host \"Adobe Desktop Service has been restored.\"
+        } else {
+            Write-Host \"Backup file does not exist. No changes were made.\"
+        }
+      }
+
+      function AcrobatUpdates {
+        # Default Value:
+        # 3 = Automatically download and install updates
+    
+        $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
+    
+        # Get all subkeys under the specified root path
+        $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
+    
+        # Loop through each subkey
+        foreach ($subKey in $subKeys) {
+            # Get the full registry path
+            $fullPath = Join-Path -Path $rootPath -ChildPath $subKey.PSChildName
+            try {
+                Set-ItemProperty -Path $fullPath -Name Mode -Value 3
+            } catch {
+                Write-Host \"Registry Key for changing Acrobat Updates does not exist in $fullPath\"
+            }
+        }
+      }
+
+      RestoreCCService
+      AcrobatUpdates
+      "
+    ],
     "service": [
       {
         "Name": "AGSService",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
+        "OriginalType": "Automatic"
+      },
+      {
+        "Name": "AGMService",
+        "StartupType": "Disabled",
         "OriginalType": "Automatic"
       },
       {
@@ -8261,7 +8492,7 @@ $sync.configs.tweaks = '{
       },
       {
         "Name": "Adobe Genuine Monitor Service",
-        "StartupType": "Manual",
+        "StartupType": "Disabled",
         "OriginalType": "Automatic"
       },
       {
@@ -8289,6 +8520,119 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
+    ]
+  },
+  "WPFTweaksBlockAdobeNet": {
+    "Content": "Block Adobe Networking",
+    "Description": "Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. ",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a010_",
+    "InvokeScript": [
+      "
+      # Define the URL of the remote HOSTS file and the local paths
+      $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
+      
+      # Download the remote HOSTS file to a temporary location
+      try {
+          Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
+          Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
+      }
+      catch {
+          Write-Error \"Failed to download the HOSTS file. Error: $_\"
+      }
+      
+      # Check if the AdobeNetBlock has already been started
+      try {
+          $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      
+          # Check if AdobeNetBlock markers exist
+          $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
+          if ($blockStartExists) {
+              Write-Output \"AdobeNetBlock-start already exists. Skipping addition of new block.\"
+          } else {
+              # Load the new block from the downloaded file
+              $newBlockContent = Get-Content $tempHostsPath -ErrorAction Stop
+              $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
+              $newBlockHeader = \"#AdobeNetBlock-start\"
+              $newBlockFooter = \"#AdobeNetBlock-end\"
+      
+              # Combine the contents, ensuring new block is properly formatted
+              $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
+      
+              # Write the combined content back to the original HOSTS file
+              $combinedContent | Set-Content $localHostsPath -Encoding ASCII
+              Write-Output \"Successfully added the AdobeNetBlock.\"
+          }
+      }
+      catch {
+          Write-Error \"Error during processing: $_\"
+      }
+      
+      # Clean up temporary file
+      Remove-Item $tempHostsPath -ErrorAction Ignore
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
+    ],
+    "UndoScript": [
+      "
+      # Define the local path of the HOSTS file
+      $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
+      
+      # Load the content of the HOSTS file
+      try {
+          $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
+      }
+      catch {
+          Write-Error \"Failed to load the HOSTS file. Error: $_\"
+          return
+      }
+      
+      # Initialize flags and buffer for new content
+      $recording = $true
+      $newContent = @()
+      
+      # Iterate over each line of the HOSTS file
+      foreach ($line in $hostsContent) {
+          if ($line -match \"#AdobeNetBlock-start\") {
+              $recording = $false
+          }
+          if ($recording) {
+              $newContent += $line
+          }
+          if ($line -match \"#AdobeNetBlock-end\") {
+              $recording = $true
+          }
+      }
+      
+      # Write the filtered content back to the HOSTS file
+      try {
+          $newContent | Set-Content $localHostsPath -Encoding ASCII
+          Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
+      }
+      catch {
+          Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
+      }
+      
+      # Flush the DNS resolver cache
+      try {
+          Invoke-Expression \"ipconfig /flushdns\"
+          Write-Output \"DNS cache flushed successfully.\"
+      }
+      catch {
+          Write-Error \"Failed to flush DNS cache. Error: $_\"
+      }
+      "
     ]
   },
   "WPFTweaksLoc": {
@@ -10846,12 +11190,28 @@ $sync.configs.tweaks = '{
     "Order": "a064_",
     "Type": "Toggle"
   },
+  "WPFToggleSnapWindow": {
+    "Content": "Snap Window",
+    "Description": "If enabled you can align windows by dragging them. | Relogin Required",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a065_",
+    "Type": "Toggle"
+  },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a065_",
+    "Order": "a066_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapSuggestion": {
+    "Content": "Snap Assist Suggestion",
+    "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a067_",
     "Type": "Toggle"
   },
   "WPFToggleMouseAcceleration": {
@@ -10859,7 +11219,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a066_",
+    "Order": "a068_",
     "Type": "Toggle"
   },
   "WPFToggleStickyKeys": {
@@ -10867,7 +11227,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a067_",
+    "Order": "a069_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -11714,7 +12074,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <Grid Background="{TemplateBinding Background}">
+                        <Grid Background="{TemplateBinding Background}" Margin="6,0,0,0">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
                                     <Grid Width="16" Height="16">
@@ -11822,14 +12182,15 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Grid x:Name="toggleSwitch">
-                            <Border x:Name="Border" CornerRadius="10"
+                        <Grid x:Name="toggleSwitch" Margin="10,0,0,0">
+                            <Border x:Name="Border" CornerRadius="11"
                                     Background="#FFFFFFFF"
-                                    Width="70" Height="25">
+                                    Width="50" Height="25">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
                                 </Border.Effect>
@@ -11842,17 +12203,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                     </Ellipse.Effect>
                                 </Ellipse>
                             </Border>
-
-                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
                         </Grid>
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="ToggleButton.IsChecked" Value="False">
                                 <Setter TargetName="Border" Property="Background" Value="#C2283B" />
                                 <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
-                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
-                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
                             </Trigger>
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
@@ -11865,20 +12221,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="46 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
+                                                    To="26 2 2 1" Duration="0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
-
-                                <!-- Some out fading -->
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
@@ -11889,18 +12235,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
                                                     To="2 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
-
                                 <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -11909,6 +12246,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             </Setter>
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
+
         <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="{MainForegroundColor}" />
             <Setter Property="Background" Value="{MainBackgroundColor}" />
@@ -12280,6 +12618,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" ToolTip="GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgithubdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://desktop.github.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgitkrakenclient" Content="GitKraken Client" ToolTip="GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitkrakenclientLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gitkraken.com/git-client" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgodotengine" Content="Godot Engine" ToolTip="Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgodotengineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://godotengine.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgolang" Content="GoLang" ToolTip="GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://golang.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12330,14 +12674,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
 </StackPanel>
@@ -12395,6 +12739,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Document" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladobe" Content="Adobe Acrobat Reader" ToolTip="Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.adobe.com/acrobat/pdf-reader.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallaffine" Content="AFFiNE" ToolTip="AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaffineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://affine.pro/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanki" Content="Anki" ToolTip="Anki is a flashcard application that helps you memorize information with intelligent spaced repetition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallankiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://apps.ankiweb.net/" />
@@ -12536,14 +12883,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
 <Label Content="Microsoft Tools" FontSize="16"/>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallazuredatastudio" Content="Microsoft Azure Data Studio" ToolTip="Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux." Margin="0,0,2,0"/><TextBlock Name="WPFInstallazuredatastudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio" />
 </StackPanel>
@@ -12584,7 +12931,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallrdcman" Content="Remote Desktop Connection Manager (RDCMan)" ToolTip="RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrdcmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman" />
+<CheckBox Name="WPFInstallrdcman" Content="RDCMan" ToolTip="RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrdcmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsqlmanagementstudio" Content="Microsoft SQL Server Management Studio" ToolTip="SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsqlmanagementstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16" />
@@ -12726,6 +13073,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsmplayer" Content="SMPlayer" ToolTip="SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsmplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.smplayer.info" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallspotify" Content="Spotify" ToolTip="Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotifyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spotify.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12750,14 +13100,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
 </StackPanel>
 <Label Content="Pro Tools" FontSize="16"/>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
 </StackPanel>
@@ -12919,6 +13269,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallForceAutoHDR" Content="GUI That Forces Auto HDR In Unsupported Games" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallFreeFileSync" Content="FreeFileSync" ToolTip="Synchronize Files and Folders" Margin="0,0,2,0"/><TextBlock Name="WPFInstallFreeFileSyncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://freefilesync.org" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12960,14 +13313,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
@@ -13125,6 +13478,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwazuh" Content="Wazuh." ToolTip="Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwazuhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wazuh.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13203,11 +13559,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0"  ToolTip="Disables Location Tracking...DUH!"/>
-<CheckBox Name="WPFTweaksAdobe" Content="Disable Adobe Services" Margin="5,0"  ToolTip="Disables many of the services that come with Adobe and run in the background."/>
-<CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
+<CheckBox Name="WPFTweaksDebloatAdobe" Content="Debloat Adobe" Margin="5,0"  ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
+<CheckBox Name="WPFTweaksBlockAdobeNet" Content="Block Adobe Networking" Margin="5,0"  ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. "/>
 <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0"  ToolTip="Storage Sense deletes temp files automatically."/>
-<CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
+<CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0"  ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
 <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0"  ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
+<CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0"  ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
 <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0"  ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
 <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 <Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
@@ -13244,40 +13601,48 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Customize Preferences" FontSize="16"/>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Dark Theme" Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
 <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Dark Theme" Style="{StaticResource labelfortweaks}" ToolTip="Enable/Disable Dark Mode." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip="If enable then includes web search results from Bing in your Start Menu search." />
 <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Bing Search in Start Menu" Style="{StaticResource labelfortweaks}" ToolTip="If enable then includes web search results from Bing in your Start Menu search." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip="Toggle the Num Lock key state when your computer starts." />
 <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="NumLock on Startup" Style="{StaticResource labelfortweaks}" ToolTip="Toggle the Num Lock key state when your computer starts." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." />
 <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Verbose Logon Messages" Style="{StaticResource labelfortweaks}" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
 <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Show File Extensions" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
+<CheckBox Name="WPFToggleSnapWindow" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Window" Style="{StaticResource labelfortweaks}" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Assist Flyout" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." />
+<CheckBox Name="WPFToggleSnapSuggestion" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Snap Assist Suggestion" Style="{StaticResource labelfortweaks}" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Mouse Acceleration" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." />
 </StackPanel>
 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." />
-<CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
-</StackPanel>
-<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-<Label Content="Taskbar Widgets" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Widgets Icon in Taskbar will be shown." />
 <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Taskbar Widgets" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Widgets Icon in Taskbar will be shown." />
+</StackPanel>
+<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+<CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0"/>
+<Label Content="Sticky Keys" Style="{StaticResource labelfortweaks}" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." />
 </StackPanel>
 <Label Content="Performance Plans" FontSize="16"/>
 <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
@@ -13836,10 +14201,14 @@ Add-Type @"
 "@
     }
 
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
-        if ($proc.Id -ne [System.IntPtr]::Zero) {
+   foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        # Check if the process's MainWindowHandle is valid
+    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
+	    } else {
+        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+    
         }
     }
 

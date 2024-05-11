@@ -31,6 +31,14 @@
 		"link": "https://www.advanced-ip-scanner.com/",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
+	"WPFInstallaffine": {
+        "category": "Document",
+        "choco": "na",
+        "content": "AFFiNE",
+        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+        "link": "https://affine.pro/",
+        "winget": "AFFiNE.stable"
+    },
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
@@ -106,7 +114,7 @@
 	"WPFInstallrdcman": {
 		"category": "Microsoft Tools",
 		"choco": "rdcman",
-		"content": "Remote Desktop Connection Manager (RDCMan)",
+		"content": "RDCMan",
 		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
 		"winget": "Microsoft.Sysinternals.RDCMan"
@@ -735,6 +743,14 @@
 		"link": "https://desktop.github.com/",
 		"winget": "Git.Git;GitHub.GitHubDesktop"
 	},
+	"WPFInstallgitkrakenclient": {
+		"category": "Development",
+		"choco": "gitkraken",
+		"content": "GitKraken Client",
+		"description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+		"link": "https://www.gitkraken.com/git-client",
+		"winget": "Axosoft.GitKraken"
+	},
 	"WPFInstallglaryutilities": {
 		"category": "Utilities",
 		"choco": "glaryutilities-free",
@@ -742,6 +758,14 @@
 		"description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
 		"link": "https://www.glarysoft.com/glary-utilities/",
 		"winget": "Glarysoft.GlaryUtilities"
+	},
+	"WPFInstallgodotengine": {
+		"category": "Development",
+		"choco": "godot",
+		"content": "Godot Engine",
+		"description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+		"link": "https://godotengine.org/",
+		"winget": "GodotEngine.GodotEngine"
 	},
 	"WPFInstallgog": {
 		"category": "Games",
@@ -2351,6 +2375,14 @@
 		"link": "https://www.waterfox.net/",
 		"winget": "Waterfox.Waterfox"
 	},
+	"WPFInstallwazuh": {
+        "category": "Utilities",
+        "choco": "wazuh-agent",
+        "content": "Wazuh.",
+        "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+        "link": "https://wazuh.com/",
+        "winget": "Wazuh.WazuhAgent"
+    },
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
@@ -2663,6 +2695,14 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
+	"WPFInstallsmplayer": {
+		"category": "Multimedia Tools",
+		"choco": "smplayer",
+		"content": "SMPlayer",
+		"description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
+		"link": "https://www.smplayer.info",
+		"winget": "SMPlayer.SMPlayer"
+	},
 	"WPFInstalglazewm": {
 		"category": "Utilities",
 		"choco": "na",
@@ -2694,5 +2734,13 @@
 		"description": "The customization marketplace for Windows programs",
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
+	},
+	"WPFInstallForceAutoHDR": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+		"link": "https://github.com/7gxycn08/ForceAutoHDR",
+		"winget": "ForceAutoHDR.7gxycn08"
 	}
 }
