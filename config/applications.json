@@ -31,6 +31,14 @@
 		"link": "https://www.advanced-ip-scanner.com/",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
+	"WPFInstallaffine": {
+        "category": "Document",
+        "choco": "na",
+        "content": "AFFiNE",
+        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+        "link": "https://affine.pro/",
+        "winget": "AFFiNE.stable"
+    },
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
@@ -106,7 +114,7 @@
 	"WPFInstallrdcman": {
 		"category": "Microsoft Tools",
 		"choco": "rdcman",
-		"content": "Remote Desktop Connection Manager (RDCMan)",
+		"content": "RDCMan",
 		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
 		"winget": "Microsoft.Sysinternals.RDCMan"
@@ -2367,6 +2375,14 @@
 		"link": "https://www.waterfox.net/",
 		"winget": "Waterfox.Waterfox"
 	},
+	"WPFInstallwazuh": {
+        "category": "Utilities",
+        "choco": "wazuh-agent",
+        "content": "Wazuh.",
+        "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+        "link": "https://wazuh.com/",
+        "winget": "Wazuh.WazuhAgent"
+    },
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
