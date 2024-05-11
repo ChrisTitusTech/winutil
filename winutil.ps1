@@ -51,17 +51,8 @@ $sync.version = "24.05.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-$currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-$principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
-$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
-
-
-if ($principal.IsInRole($adminRole))
-{
-    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-    clear-host
-}
-else
+# If script isn't running as admin, show error message and quit
+If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544")
 {
     Write-Host "===========================================" -Foregroundcolor Red
     Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
@@ -69,6 +60,10 @@ else
     Write-Host "===========================================" -Foregroundcolor Red
     break
 }
+
+# Set PowerShell window title
+$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+clear-host
 function ConvertTo-Icon { 
     <#
     
