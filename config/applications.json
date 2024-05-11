@@ -2703,7 +2703,7 @@
 		"link": "https://www.smplayer.info",
 		"winget": "SMPlayer.SMPlayer"
 	},
-	"WPFInstalglazewm": {
+	"WPFInstallglazewm": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "GlazeWM",
