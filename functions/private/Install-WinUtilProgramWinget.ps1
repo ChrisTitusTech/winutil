@@ -15,15 +15,18 @@ Function Install-WinUtilProgramWinget {
     #>
     
     param(
-    $ProgramsToInstall,
-    $manage = "Installing"
+        [Parameter(Mandatory, Position=0)]
+        [PsCustomObject]$ProgramsToInstall,
+    
+        [Parameter(Position=1)]
+        [String]$manage = "Installing"
     )
     $x = 0
     $count = $ProgramsToInstall.Count
     
     Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
     Write-Host "==========================================="
-    Write-Host "--     installing winget packages       ---"
+    Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
     Foreach ($Program in $ProgramsToInstall){
         $failedPackages = @()
@@ -60,9 +63,11 @@ Function Install-WinUtilProgramWinget {
                     Write-Host "$($Program.winget) installed successfully with User prompt."
                     continue
                 }
+                Write-Host "Failed to install $($Program.winget). With winget"
+                $failedPackages += $Program
             } catch {
                 Write-Host "Failed to install $($Program.winget). With winget"
-                $failedPackages += $($Program.winget)
+                $failedPackages += $Program
             }
         }
         if($manage -eq "Uninstalling"){
@@ -73,11 +78,11 @@ Function Install-WinUtilProgramWinget {
                     Write-Host "Failed to uninstall $($Program.winget)."
                 } else {
                     Write-Host "$($Program.winget) uninstalled successfully."
-                    $failedPackages += $($Program.winget)
+                    $failedPackages += $Program
                 }
             } catch {
                 Write-Host "Failed to uninstall $($Program.winget) due to an error: $_"
-                $failedPackages += $($Program.winget)
+                $failedPackages += $Program
             }
         }
         $X++
