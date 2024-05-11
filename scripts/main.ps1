@@ -271,10 +271,14 @@ Add-Type @"
 "@
     }
 
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
-        if ($proc.Id -ne [System.IntPtr]::Zero) {
+   foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        # Check if the process's MainWindowHandle is valid
+    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
+	    } else {
+        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+    
         }
     }
 
