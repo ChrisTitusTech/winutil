@@ -11141,13 +11141,6 @@ $sync.configs.tweaks = '{
       },
       {
         "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
         "Name": "GameDVR_HonorUserFSEBehaviorMode",
         "Value": "1",
         "OriginalValue": "0",
@@ -11211,6 +11204,22 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFTweaksDisableFSO": {
+    "Content": "Disable Fullscreen Optimizations",
+    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a032_",
+    "registry": [
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
     ]
   },
   "WPFTweaksEnableipsix": {
@@ -13663,6 +13672,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
 <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
 <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
+<CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0"  ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
 <Button Name="WPFOOSUbutton" Content="Customize OO Shutup Tweaks" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
