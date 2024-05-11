@@ -2679,6 +2679,14 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
+	"WPFInstallsmplayer": {
+		"category": "Multimedia Tools",
+		"choco": "smplayer",
+		"content": "SMPlayer",
+		"description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
+		"link": "https://www.smplayer.info",
+		"winget": "SMPlayer.SMPlayer"
+	},
 	"WPFInstalglazewm": {
 		"category": "Utilities",
 		"choco": "na",
