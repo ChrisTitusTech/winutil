@@ -1944,7 +1944,7 @@
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
@@ -1960,7 +1960,7 @@
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",
+    "Order": "a027_",
     "registry": [
       {
         "Path": "HKCU:\\Control Panel\\Desktop",
@@ -2428,11 +2428,11 @@
     ]
   },
   "WPFTweaksDebloatAdobe": {
-    "Content": "Debloat Adobe",
+    "Content": "Adobe Debloat",
     "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a022_",    
+    "Order": "a021_",    
     "InvokeScript": [
       "
       function CCStopper {
@@ -2576,7 +2576,7 @@
     ]
   },
   "WPFTweaksBlockAdobeNet": {
-    "Content": "Block Adobe Networking",
+    "Content": "Adobe Network Block",
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. ",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
@@ -2808,7 +2808,7 @@
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a024_",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -2830,7 +2830,7 @@
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a032_",
+    "Order": "a024_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
