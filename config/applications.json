@@ -2694,5 +2694,13 @@
 		"description": "The customization marketplace for Windows programs",
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
+	},
+	"WPFInstallForceAutoHDR": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+		"link": "https://github.com/7gxycn08/ForceAutoHDR",
+		"winget": "ForceAutoHDR.7gxycn08"
 	}
 }
