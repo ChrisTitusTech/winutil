@@ -55,6 +55,9 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" | Out-File ./$scriptname -Append -Encoding ascii
 }
+Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
+    Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'" | Out-File ./$scriptname -Append -Encoding ascii
+}
 
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 
