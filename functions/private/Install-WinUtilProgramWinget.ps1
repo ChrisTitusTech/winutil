@@ -34,26 +34,41 @@ Function Install-WinUtilProgramWinget {
             # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                if($status -ne 0){
-                    Write-Host "Attempt with User scope"
-                    $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                    if($status -ne 0){
-                        Write-Host "Attempt with Unelevated prompt"
-                        $status = $(Start-Process -FilePath "powershell" -ArgumentList "-Command Start-Process winget -ArgumentList 'install --id $Program --silent --accept-source-agreements --accept-package-agreements' -Verb runAsUser" -Wait -PassThru).ExitCode
-                        if($status -ne 0){
-                            Write-Host "Failed to install $Program."
-                        } else {
-                            Write-Host "$Program installed successfully with Unelevated prompt."
-                        }
-                    } else {
-                        Write-Host "$Program installed successfully with User scope."
-                    }
-                } else {
+                if($status -eq 0){
                     Write-Host "$Program installed successfully."
+                    continue
                 }
-            } catch {
+                Write-Host "Attempt with User scope"
+                $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully with User scope."
+                    continue
+                }
+                Write-Host "Attempt with User prompt"
+                $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $Program installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User Credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
+                if ($userChoice -eq 'Yes') {
+                    $getcreds = Get-Credential
+                    $process = Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Credential $getcreds -PassThru
+                    Wait-Process -Id $process.Id
+                    $status = $process.ExitCode
+                } else {
+                    Write-Host "Skipping installation with specific user credentials."
+                }
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully with User prompt."
+                    continue
+                }
+                Write-Host "Attempting installation with Chocolatey as a fallback method"
+                Install-WinUtilChoco
+                $status = $(Start-Process -FilePath "choco" -ArgumentList "install $Program -y" -Wait -PassThru).ExitCode
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully using Chocolatey."
+                    continue
+                }
+                Write-Host "Failed to install $Program. You need to install it manually... Sorry!"
+    } catch {
                 Write-Host "Failed to install $Program due to an error: $_"
-            }
+                }
         }
         if($manage -eq "Uninstalling"){
             # Uninstall package via ID using winget directly.

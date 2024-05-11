@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.05.01
+    Version        : 24.05.11
 #>
 param (
     [switch]$Debug,
@@ -47,21 +47,12 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.05.01"
+$sync.version = "24.05.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-$currentPid = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-$principal = new-object System.Security.Principal.WindowsPrincipal($currentPid)
-$adminRole=[System.Security.Principal.WindowsBuiltInRole]::Administrator
-
-
-if ($principal.IsInRole($adminRole))
-{
-    $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
-    clear-host
-}
-else
+# If script isn't running as admin, show error message and quit
+If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544")
 {
     Write-Host "===========================================" -Foregroundcolor Red
     Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
@@ -69,6 +60,10 @@ else
     Write-Host "===========================================" -Foregroundcolor Red
     break
 }
+
+# Set PowerShell window title
+$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
+clear-host
 function ConvertTo-Icon { 
     <#
     
@@ -624,14 +619,17 @@ function Get-WinUtilWingetLatest {
     .DESCRIPTION
         This function grabs the latest version of Winget and returns the download path to Install-WinUtilWinget for installation.
     #>
-
+    # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function  
+    $PreviousProgressPreference = $ProgressPreference 
+    $ProgressPreference = "silentlyContinue"
     Try{
         # Grabs the latest release of Winget from the Github API for the install process.
         $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
         $latestVersion = $response.tag_name #Stores version number of latest release.
-        $licenseWingetUrl = $response.assets.browser_download_url[0] #Index value for License file.
+        $licenseWingetUrl = $response.assets.browser_download_url | Where-Object {$_ -like "*License1.xml"} #Index value for License file.
         Write-Host "Latest Version:`t$($latestVersion)`n"
-        $assetUrl = $response.assets.browser_download_url[2] #Index value for download URL.
+        Write-Host "Downloading..."
+        $assetUrl = $response.assets.browser_download_url | Where-Object {$_ -like "*Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"}
         Invoke-WebRequest -Uri $licenseWingetUrl -OutFile $ENV:TEMP\License1.xml
         # The only pain is that the msixbundle for winget-cli is 246MB. In some situations this can take a bit, with slower connections.
         Invoke-WebRequest -Uri $assetUrl -OutFile $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle
@@ -639,6 +637,7 @@ function Get-WinUtilWingetLatest {
     Catch{
         throw [WingetFailedInstall]::new('Failed to get latest Winget release and license')
     }
+    $ProgressPreference = $PreviousProgressPreference
 }
 function Get-WinUtilWingetPrerequisites {
     <#
@@ -733,26 +732,41 @@ Function Install-WinUtilProgramWinget {
             # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                if($status -ne 0){
-                    Write-Host "Attempt with User scope"
-                    $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
-                    if($status -ne 0){
-                        Write-Host "Attempt with Unelevated prompt"
-                        $status = $(Start-Process -FilePath "powershell" -ArgumentList "-Command Start-Process winget -ArgumentList 'install --id $Program --silent --accept-source-agreements --accept-package-agreements' -Verb runAsUser" -Wait -PassThru).ExitCode
-                        if($status -ne 0){
-                            Write-Host "Failed to install $Program."
-                        } else {
-                            Write-Host "$Program installed successfully with Unelevated prompt."
-                        }
-                    } else {
-                        Write-Host "$Program installed successfully with User scope."
-                    }
-                } else {
+                if($status -eq 0){
                     Write-Host "$Program installed successfully."
+                    continue
                 }
-            } catch {
+                Write-Host "Attempt with User scope"
+                $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $Program --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru).ExitCode
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully with User scope."
+                    continue
+                }
+                Write-Host "Attempt with User prompt"
+                $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $Program installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User Credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
+                if ($userChoice -eq 'Yes') {
+                    $getcreds = Get-Credential
+                    $process = Start-Process -FilePath "winget" -ArgumentList "install --id $Program --silent --accept-source-agreements --accept-package-agreements" -Credential $getcreds -PassThru
+                    Wait-Process -Id $process.Id
+                    $status = $process.ExitCode
+                } else {
+                    Write-Host "Skipping installation with specific user credentials."
+                }
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully with User prompt."
+                    continue
+                }
+                Write-Host "Attempting installation with Chocolatey as a fallback method"
+                Install-WinUtilChoco
+                $status = $(Start-Process -FilePath "choco" -ArgumentList "install $Program -y" -Wait -PassThru).ExitCode
+                if($status -eq 0){
+                    Write-Host "$Program installed successfully using Chocolatey."
+                    continue
+                }
+                Write-Host "Failed to install $Program. You need to install it manually... Sorry!"
+    } catch {
                 Write-Host "Failed to install $Program due to an error: $_"
-            }
+                }
         }
         if($manage -eq "Uninstalling"){
             # Uninstall package via ID using winget directly.
@@ -827,6 +841,8 @@ function Install-WinUtilWinget {
         Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
         # In case install fails via GitHub method.
         Try {
+        # Install Choco if not already present
+        Install-WinUtilChoco
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Output "Refreshing Environment Variables...`n"
@@ -3210,7 +3226,8 @@ function Invoke-WPFFixesWinget {
     .DESCRIPTION
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
-
+    # Install Choco if not already present
+    Install-WinUtilChoco
     Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
@@ -3339,6 +3356,8 @@ function Invoke-WPFGetIso {
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
+            # Install Choco if not already present
+            Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
             if (!$chocoFound) 
@@ -3726,6 +3745,7 @@ public class PowerManagement {
 	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
 	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
 	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+	$importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
@@ -3784,13 +3804,54 @@ public class PowerManagement {
             return
         }
 
+		if ($importDrivers)
+		{
+			Write-Host "Exporting drivers from active installation..."
+			if (Test-Path "$env:TEMP\DRV_EXPORT")
+			{
+				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+			}
+			if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text)))
+			{
+				Write-Host "Using specified driver source..."
+				dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
+				if ($?)
+				{
+					# Don't add exported drivers yet, that is run later
+					Write-Host "Drivers have been exported successfully."
+				}
+				else
+				{
+					Write-Host "Failed to export drivers."
+				}
+			}
+			else
+			{
+				New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+				dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+				if ($?)
+				{
+					Write-Host "Adding exported drivers..."
+					dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+				}
+				else
+				{
+					Write-Host "Failed to export drivers. Continuing without importing them..."
+				}
+				if (Test-Path "$env:TEMP\DRV_EXPORT")
+				{
+					Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+				}				
+			}
+		}
+
 		if ($injectDrivers)
 		{
 			$driverPath = $sync.MicrowinDriverLocation.Text
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Recurse -Driver "$driverPath"
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -4008,7 +4069,7 @@ public class PowerManagement {
 			if (Test-Path $driverPath)
 			{
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				Add-WindowsDriver -Path "$scratchDir" -Driver "$driverPath" -Recurse
+				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
 			else 
 			{
@@ -4138,14 +4199,12 @@ function Invoke-WPFOOSU {
             Start-Process $OOSU_filepath
         }
         "recommended"{
-            $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
+            New-Item -Path $ENV:temp\ooshutup10_recommended.cfg -ItemType File -Value $sync.configs.ooshutup10_recommended -Force
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
-            $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
+            New-Item -Path $ENV:temp\ooshutup10_factory.cfg -ItemType File -Value $sync.configs.ooshutup10_factory -Force
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
@@ -5715,6 +5774,14 @@ $sync.configs.applications = '{
     "link": "https://desktop.github.com/",
     "winget": "Git.Git;GitHub.GitHubDesktop"
   },
+  "WPFInstallgitkrakenclient": {
+    "category": "Development",
+    "choco": "gitkraken",
+    "content": "GitKraken Client",
+    "description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+    "link": "https://www.gitkraken.com/git-client",
+    "winget": "Axosoft.GitKraken"
+  },
   "WPFInstallglaryutilities": {
     "category": "Utilities",
     "choco": "glaryutilities-free",
@@ -5722,6 +5789,14 @@ $sync.configs.applications = '{
     "description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
     "link": "https://www.glarysoft.com/glary-utilities/",
     "winget": "Glarysoft.GlaryUtilities"
+  },
+  "WPFInstallgodotengine": {
+    "category": "Development",
+    "choco": "godot",
+    "content": "Godot Engine",
+    "description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+    "link": "https://godotengine.org/",
+    "winget": "GodotEngine.GodotEngine"
   },
   "WPFInstallgog": {
     "category": "Games",
@@ -5976,7 +6051,7 @@ $sync.configs.applications = '{
     "choco": "jellyfin-media-player",
     "content": "Jellyfin Media Player",
     "description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-    "link": "https://github.com/jellyfin/jellyfin-media-playerf",
+    "link": "https://github.com/jellyfin/jellyfin-media-player",
     "winget": "Jellyfin.JellyfinMediaPlayer"
   },
   "WPFInstalljellyfinserver": {
@@ -6150,8 +6225,8 @@ $sync.configs.applications = '{
   "WPFInstallmatrix": {
     "category": "Communications",
     "choco": "element-desktop",
-    "content": "Matrix",
-    "description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
+    "content": "Element",
+    "description": "Element is a client for Matrix?an open network for secure, decentralized communication.",
     "link": "https://element.io/",
     "winget": "Element.Element"
   },
@@ -6218,6 +6293,46 @@ $sync.configs.applications = '{
     "description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
     "link": "https://www.msi.com/Landing/afterburner",
     "winget": "Guru3D.Afterburner"
+  },
+  "WPFInstallBorderlessGaming": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Borderless Gaming",
+    "description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
+    "link": "https://github.com/Codeusa/Borderless-Gaming",
+    "winget": "Codeusa.BorderlessGaming"
+  },
+  "WPFInstallEqualizerAPO": {
+    "category": "Multimedia Tools",
+    "choco": "equalizerapo",
+    "content": "Equalizer APO",
+    "description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
+    "link": "https://sourceforge.net/projects/equalizerapo",
+    "winget": "na"
+  },
+  "WPFInstallFreeFileSync": {
+    "category": "Utilities",
+    "choco": "freefilesync",
+    "content": "FreeFileSync",
+    "description": "Synchronize Files and Folders",
+    "link": "https://freefilesync.org",
+    "winget": "na"
+  },
+  "WPFInstallCompactGUI": {
+    "category": "Utilities",
+    "choco": "compactgui",
+    "content": "Compact GUI",
+    "description": "Transparently compress active games and programs using Windows 10/11 APIs",
+    "link": "https://github.com/IridiumIO/CompactGUI",
+    "winget": "IridiumIO.CompactGUI"
+  },
+  "WPFInstallExifCleaner": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "ExifCleaner",
+    "description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
+    "link": "https://github.com/szTheory/exifcleaner",
+    "winget": "szTheory.exifcleaner"
   },
   "WPFInstallmullvadbrowser": {
     "category": "Browsers",
@@ -6626,6 +6741,14 @@ $sync.configs.applications = '{
     "description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
     "link": "https://bitsum.com/",
     "winget": "BitSum.ProcessLasso"
+  },
+  "WPFInstallspotify": {
+    "category": "Multimedia Tools",
+    "choco": "spotify",
+    "content": "Spotify",
+    "description": "Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world.",
+    "link": "https://www.spotify.com/",
+    "winget": "Spotify.Spotify"
   },
   "WPFInstallprocessmonitor": {
     "category": "Microsoft Tools",
@@ -7595,6 +7718,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/magic-wormhole/magic-wormhole",
     "winget": "magic-wormhole.magic-wormhole"
   },
+  "WPFInstalglazewm": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "GlazeWM",
+    "description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
+    "link": "https://github.com/glzr-io/glazewm",
+    "winget": "glzr-io.glazewm"
+  },
   "WPFInstallfancontrol": {
     "category": "Utilities",
     "choco": "na",
@@ -7618,6 +7749,14 @@ $sync.configs.applications = '{
     "description": "The customization marketplace for Windows programs",
     "link": "https://windhawk.net",
     "winget": "RamenSoftware.Windhawk"
+  },
+  "WPFInstallForceAutoHDR": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "GUI That Forces Auto HDR In Unsupported Games",
+    "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+    "link": "https://github.com/7gxycn08/ForceAutoHDR",
+    "winget": "ForceAutoHDR.7gxycn08"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -9967,27 +10106,6 @@ $sync.configs.tweaks = '{
         "Type": "DWord"
       },
       {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "GPU Priority",
-        "Value": "8",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "1",
-        "Name": "Priority",
-        "Value": "6",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "OriginalValue": "High",
-        "Name": "Scheduling Category",
-        "Value": "High",
-        "Type": "String"
-      },
-      {
         "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement",
         "OriginalValue": "1",
         "Name": "ScoobeSystemSettingEnabled",
@@ -10830,6 +10948,494 @@ $sync.configs.tweaks = '{
     "Type": "300"
   }
 }' | convertfrom-json
+$sync.configs.ooshutup10_factory = '############################################################################
+# This file was created with O&O ShutUp10++ V1.9.1436
+# and can be imported onto another computer. 
+#
+# Download the application at https://www.oo-software.com/shutup10
+# You can then import the file from within the program. 
+#
+# Alternatively you can import it automatically over a command line.
+# Simply use the following parameter: 
+# OOSU10.exe <path to file>
+# 
+# Selecting the Option /quiet ends the app right after the import and the
+# user does not get any feedback about the import.
+#
+# We are always happy to answer any questions you may have!
+# ? 2015-2023 O&O Software GmbH, Berlin. All rights reserved.
+# https://www.oo-software.com/
+############################################################################
+
+P001	-
+P002	-
+P003	-
+P004	-
+P005	-
+P006	-
+P008	-
+P026	-
+P027	-
+P028	-
+P064	-
+P065	-
+P066	-
+P067	-
+P070	-
+P069	-
+P009	-
+P010	-
+P015	-
+P068	-
+P016	-
+A001	-
+A002	-
+A003	-
+A004	-
+A006	-
+A005	-
+P007	-
+P036	-
+P025	-
+P033	-
+P023	-
+P056	-
+P057	-
+P012	-
+P034	-
+P013	-
+P035	-
+P062	-
+P063	-
+P081	-
+P047	-
+P019	-
+P048	-
+P049	-
+P020	-
+P037	-
+P011	-
+P038	-
+P050	-
+P051	-
+P018	-
+P039	-
+P021	-
+P040	-
+P022	-
+P041	-
+P014	-
+P042	-
+P052	-
+P053	-
+P054	-
+P055	-
+P029	-
+P043	-
+P030	-
+P044	-
+P031	-
+P045	-
+P032	-
+P046	-
+P058	-
+P059	-
+P060	-
+P061	-
+P071	-
+P072	-
+P073	-
+P074	-
+P075	-
+P076	-
+P077	-
+P078	-
+P079	-
+P080	-
+P024	-
+S001	-
+S002	-
+S003	-
+S008	-
+E101	-
+E201	-
+E115	-
+E215	-
+E118	-
+E218	-
+E107	-
+E207	-
+E111	-
+E211	-
+E112	-
+E212	-
+E109	-
+E209	-
+E121	-
+E221	-
+E103	-
+E203	-
+E123	-
+E223	-
+E124	-
+E224	-
+E128	-
+E228	-
+E119	-
+E219	-
+E120	-
+E220	-
+E122	-
+E222	-
+E125	-
+E225	-
+E126	-
+E226	-
+E106	-
+E206	-
+E127	-
+E227	-
+E001	-
+E002	-
+E003	-
+E008	-
+E007	-
+E010	-
+E011	+
+E012	+
+E009	-
+E004	-
+E005	-
+E013	-
+E014	-
+E006	-
+F002	-
+F014	-
+F015	-
+F016	-
+F001	-
+F003	-
+F004	-
+F005	-
+F007	-
+F008	-
+F009	-
+F006	-
+F010	-
+F011	-
+F012	-
+F013	-
+Y001	-
+Y002	-
+Y003	-
+Y004	-
+Y005	-
+Y006	-
+Y007	-
+C012	-
+C002	-
+C013	-
+C007	-
+C008	-
+C009	-
+C010	-
+C011	-
+C014	-
+C015	-
+C101	-
+C201	-
+C102	-
+L001	-
+L003	-
+L004	-
+L005	-
+U001	-
+U004	-
+U005	-
+U006	-
+U007	-
+W001	-
+W011	-
+W004	-
+W005	-
+W010	-
+W009	-
+P017	-
+W006	-
+W008	-
+M006	-
+M011	-
+M010	-
+O003	-
+O001	-
+S012	-
+S013	-
+S014	-
+K001	-
+K002	-
+K005	-
+M025	-
+M003	-
+M015	-
+M016	-
+M017	-
+M018	-
+M019	-
+M020	-
+M021	-
+M022	-
+M001	-
+M004	-
+M005	-
+M024	-
+M012	-
+M013	-
+M014	-
+N001	-'
+$sync.configs.ooshutup10_recommended = '############################################################################
+# This file was created with O&O ShutUp10++ V1.9.1436
+# and can be imported onto another computer. 
+#
+# Download the application at https://www.oo-software.com/shutup10
+# You can then import the file from within the program. 
+#
+# Alternatively you can import it automatically over a command line.
+# Simply use the following parameter: 
+# OOSU10.exe <path to file>
+# 
+# Selecting the Option /quiet ends the app right after the import and the
+# user does not get any feedback about the import.
+#
+# We are always happy to answer any questions you may have!
+# ? 2015-2023 O&O Software GmbH, Berlin. All rights reserved.
+# https://www.oo-software.com/
+############################################################################
+
+P001	+
+P002	+
+P003	+
+P004	+
+P005	+
+P006	+
+P008	+
+P026	+
+P027	+
+P028	+
+P064	+
+P065	+
+P066	+
+P067	+
+P070	+
+P069	+
+P009	-
+P010	-
+P015	-
+P068	-
+P016	-
+A001	+
+A002	+
+A003	+
+A004	+
+A006	+
+A005	+
+P007	+
+P036	+
+P025	+
+P033	+
+P023	+
+P056	-
+P057	-
+P012	-
+P034	-
+P013	-
+P035	-
+P062	-
+P063	-
+P081	-
+P047	-
+P019	-
+P048	-
+P049	-
+P020	-
+P037	-
+P011	-
+P038	-
+P050	-
+P051	-
+P018	-
+P039	-
+P021	-
+P040	-
+P022	-
+P041	-
+P014	-
+P042	-
+P052	-
+P053	-
+P054	-
+P055	-
+P029	-
+P043	-
+P030	-
+P044	-
+P031	-
+P045	-
+P032	-
+P046	-
+P058	-
+P059	-
+P060	-
+P061	-
+P071	-
+P072	-
+P073	-
+P074	-
+P075	-
+P076	-
+P077	-
+P078	-
+P079	-
+P080	-
+P024	-
+S001	+
+S002	+
+S003	+
+S008	-
+E101	+
+E201	+
+E115	+
+E215	+
+E118	+
+E218	+
+E107	+
+E207	+
+E111	+
+E211	+
+E112	+
+E212	+
+E109	+
+E209	+
+E121	+
+E221	+
+E103	+
+E203	+
+E123	+
+E223	+
+E124	+
+E224	+
+E128	+
+E228	+
+E119	-
+E219	-
+E120	-
+E220	-
+E122	-
+E222	-
+E125	-
+E225	-
+E126	-
+E226	-
+E106	-
+E206	-
+E127	-
+E227	-
+E001	+
+E002	+
+E003	+
+E008	+
+E007	+
+E010	+
+E011	+
+E012	+
+E009	-
+E004	-
+E005	-
+E013	-
+E014	-
+E006	-
+F002	+
+F014	+
+F015	+
+F016	+
+F001	+
+F003	+
+F004	+
+F005	+
+F007	+
+F008	+
+F009	+
+F006	-
+F010	-
+F011	-
+F012	-
+F013	-
+Y001	+
+Y002	+
+Y003	+
+Y004	+
+Y005	+
+Y006	+
+Y007	+
+C012	+
+C002	+
+C013	+
+C007	+
+C008	+
+C009	+
+C010	+
+C011	+
+C014	+
+C015	+
+C101	+
+C201	+
+C102	+
+L001	+
+L003	+
+L004	-
+L005	-
+U001	+
+U004	+
+U005	+
+U006	+
+U007	+
+W001	+
+W011	+
+W004	-
+W005	-
+W010	-
+W009	-
+P017	-
+W006	-
+W008	-
+M006	+
+M011	-
+M010	-
+O003	-
+O001	-
+S012	-
+S013	-
+S014	-
+K001	+
+K002	+
+K005	+
+M025	+
+M003	-
+M015	-
+M016	-
+M017	-
+M018	-
+M019	-
+M020	-
+M021	-
+M022	+
+M001	+
+M004	+
+M005	+
+M024	+
+M012	-
+M013	-
+M014	-
+N001	-'
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11614,7 +12220,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalllinphone" Content="Linphone" ToolTip="Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinphoneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.linphone.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallmatrix" Content="Matrix" ToolTip="Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
+<CheckBox Name="WPFInstallmatrix" Content="Element" ToolTip="Element is a client for Matrix?an open network for secure, decentralized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallqtox" Content="QTox" ToolTip="QTox is a free and open-source messaging app that prioritizes user privacy and security in its design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqtoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qtox.github.io/" />
@@ -11691,6 +12297,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" ToolTip="GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgithubdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://desktop.github.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgitkrakenclient" Content="GitKraken Client" ToolTip="GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitkrakenclientLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gitkraken.com/git-client" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgodotengine" Content="Godot Engine" ToolTip="Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgodotengineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://godotengine.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgolang" Content="GoLang" ToolTip="GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://golang.org/" />
@@ -11942,17 +12554,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="2">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvrdesktopstreamer" Content="Virtual Desktop Streamer" ToolTip="Virtual Desktop Streamer is a tool that allows you to stream your desktop screen to VR devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvrdesktopstreamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vrdesktop.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Microsoft Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
@@ -12037,6 +12649,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalleartrumpet" Content="EarTrumpet (Audio)" ToolTip="EarTrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings." Margin="0,0,2,0"/><TextBlock Name="WPFInstalleartrumpetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://eartrumpet.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallEqualizerAPO" Content="Equalizer APO" ToolTip="Equalizer APO is a parametric / graphic equalizer for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallEqualizerAPOLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sourceforge.net/projects/equalizerapo" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallffmpeg" Content="FFmpeg (full)" ToolTip="FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallffmpegLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ffmpeg.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12079,7 +12694,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallitunes" Content="iTunes" ToolTip="iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitunesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.apple.com/itunes/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-playerf" />
+<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-player" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" ToolTip="Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinserverLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
@@ -12136,6 +12751,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspotify" Content="Spotify" ToolTip="Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotifyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spotify.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.strawberrymusicplayer.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12150,17 +12768,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="3">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="3">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Pro Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
@@ -12215,6 +12833,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <Label Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalglazewm" Content="GlazeWM" ToolTip="GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar" Margin="0,0,2,0"/><TextBlock Name="WPFInstalglazewmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/glzr-io/glazewm" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12248,6 +12869,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallbleachbit" Content="BleachBit" ToolTip="Clean Your System and Free Disk Space" Margin="0,0,2,0"/><TextBlock Name="WPFInstallbleachbitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bleachbit.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallBorderlessGaming" Content="Borderless Gaming" ToolTip="Play your favorite games in a borderless window; no more time consuming alt-tabs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallBorderlessGamingLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Codeusa/Borderless-Gaming" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12258,6 +12882,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://carnackeys.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallCompactGUI" Content="Compact GUI" ToolTip="Transparently compress active games and programs using Windows 10/11 APIs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallCompactGUILink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/IridiumIO/CompactGUI" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcopyq" Content="CopyQ (Clipboard Manager)" ToolTip="CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcopyqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://copyq.readthedocs.io/" />
@@ -12302,6 +12929,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" ToolTip="Etcher is a powerful tool for creating bootable USB drives with ease." Margin="0,0,2,0"/><TextBlock Name="WPFInstalletcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.balena.io/etcher/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallExifCleaner" Content="ExifCleaner" ToolTip="Desktop app to clean metadata from images, videos, PDFs, and other files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallExifCleanerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/szTheory/exifcleaner" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfancontrol" Content="FanControl" ToolTip="Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfancontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getfancontrol.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12312,6 +12942,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallForceAutoHDR" Content="GUI That Forces Auto HDR In Unsupported Games" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallFreeFileSync" Content="FreeFileSync" ToolTip="Synchronize Files and Folders" Margin="0,0,2,0"/><TextBlock Name="WPFInstallFreeFileSyncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://freefilesync.org" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfzf" Content="Fzf" ToolTip="A command-line fuzzy finder" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfzfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/junegunn/fzf/" />
@@ -12346,17 +12982,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
@@ -12851,6 +13487,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 Foreground="{LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="5,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
@@ -13101,8 +13738,8 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
-# Check if Chocolatey is installed
-Install-WinUtilChoco
+# Install Winget if not already present
+Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -13227,10 +13864,14 @@ Add-Type @"
 "@
     }
 
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
-        if ($proc.Id -ne [System.IntPtr]::Zero) {
+   foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        # Check if the process's MainWindowHandle is valid
+    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
+	    } else {
+        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+    
         }
     }
 

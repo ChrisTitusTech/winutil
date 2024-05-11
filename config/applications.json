@@ -735,6 +735,14 @@
 		"link": "https://desktop.github.com/",
 		"winget": "Git.Git;GitHub.GitHubDesktop"
 	},
+	"WPFInstallgitkrakenclient": {
+		"category": "Development",
+		"choco": "gitkraken",
+		"content": "GitKraken Client",
+		"description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+		"link": "https://www.gitkraken.com/git-client",
+		"winget": "Axosoft.GitKraken"
+	},
 	"WPFInstallglaryutilities": {
 		"category": "Utilities",
 		"choco": "glaryutilities-free",
@@ -742,6 +750,14 @@
 		"description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
 		"link": "https://www.glarysoft.com/glary-utilities/",
 		"winget": "Glarysoft.GlaryUtilities"
+	},
+	"WPFInstallgodotengine": {
+		"category": "Development",
+		"choco": "godot",
+		"content": "Godot Engine",
+		"description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+		"link": "https://godotengine.org/",
+		"winget": "GodotEngine.GodotEngine"
 	},
 	"WPFInstallgog": {
 		"category": "Games",
@@ -996,7 +1012,7 @@
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-		"link": "https://github.com/jellyfin/jellyfin-media-playerf",
+		"link": "https://github.com/jellyfin/jellyfin-media-player",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
@@ -1170,8 +1186,8 @@
 	"WPFInstallmatrix": {
 		"category": "Communications",
 		"choco": "element-desktop",
-		"content": "Matrix",
-		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
+		"content": "Element",
+		"description": "Element is a client for Matrix—an open network for secure, decentralized communication.",
 		"link": "https://element.io/",
 		"winget": "Element.Element"
 	},
@@ -1238,6 +1254,46 @@
 		"description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
+	},
+	"WPFInstallBorderlessGaming": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Borderless Gaming",
+		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
+		"link": "https://github.com/Codeusa/Borderless-Gaming",
+		"winget": "Codeusa.BorderlessGaming"
+	},
+	"WPFInstallEqualizerAPO": {
+		"category": "Multimedia Tools",
+		"choco": "equalizerapo",
+		"content": "Equalizer APO",
+		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
+		"link": "https://sourceforge.net/projects/equalizerapo",
+		"winget": "na"
+	},
+	"WPFInstallFreeFileSync": {
+		"category": "Utilities",
+		"choco": "freefilesync",
+		"content": "FreeFileSync",
+		"description": "Synchronize Files and Folders",
+		"link": "https://freefilesync.org",
+		"winget": "na"
+	},
+	"WPFInstallCompactGUI": {
+		"category": "Utilities",
+		"choco": "compactgui",
+		"content": "Compact GUI",
+		"description": "Transparently compress active games and programs using Windows 10/11 APIs",
+		"link": "https://github.com/IridiumIO/CompactGUI",
+		"winget": "IridiumIO.CompactGUI"
+	},
+	"WPFInstallExifCleaner": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "ExifCleaner",
+		"description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
+		"link": "https://github.com/szTheory/exifcleaner",
+		"winget": "szTheory.exifcleaner"
 	},
 	"WPFInstallmullvadbrowser": {
 		"category": "Browsers",
@@ -1646,6 +1702,14 @@
 		"description": "Process Lasso is a system optimization and automation tool that improves system responsiveness and stability by adjusting process priorities and CPU affinities.",
 		"link": "https://bitsum.com/",
 		"winget": "BitSum.ProcessLasso"
+	},
+	"WPFInstallspotify": {
+		"category": "Multimedia Tools",
+		"choco": "spotify",
+		"content": "Spotify",
+		"description": "Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world.",
+		"link": "https://www.spotify.com/",
+		"winget": "Spotify.Spotify"
 	},
 	"WPFInstallprocessmonitor": {
 		"category": "Microsoft Tools",
@@ -2623,6 +2687,14 @@
 		"link": "https://www.smplayer.info",
 		"winget": "SMPlayer.SMPlayer"
 	},
+	"WPFInstalglazewm": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GlazeWM",
+		"description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
+		"link": "https://github.com/glzr-io/glazewm",
+		"winget": "glzr-io.glazewm"
+  },
 	"WPFInstallfancontrol": {
 		"category": "Utilities",
 		"choco": "na",
@@ -2646,5 +2718,13 @@
 		"description": "The customization marketplace for Windows programs",
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
+	},
+	"WPFInstallForceAutoHDR": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+		"link": "https://github.com/7gxycn08/ForceAutoHDR",
+		"winget": "ForceAutoHDR.7gxycn08"
 	}
 }

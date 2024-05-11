@@ -41,6 +41,8 @@ function Invoke-WPFGetIso {
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
+            # Install Choco if not already present
+            Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
             if (!$chocoFound) 
