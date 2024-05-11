@@ -696,8 +696,7 @@
                     {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
-                        <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
-                        <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
+                        <Button Name="WPFstandard" Content=" Standard " Margin="1"/>
                         <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
                         <Button Name="WPFclear" Content=" Clear " Margin="1"/>
                         <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
