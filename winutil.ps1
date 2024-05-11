@@ -7921,7 +7921,7 @@ $sync.configs.applications = '{
     "link": "https://www.smplayer.info",
     "winget": "SMPlayer.SMPlayer"
   },
-  "WPFInstalglazewm": {
+  "WPFInstallglazewm": {
     "category": "Utilities",
     "choco": "na",
     "content": "GlazeWM",
@@ -13252,9 +13252,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <Label Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalglazewm" Content="GlazeWM" ToolTip="GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar" Margin="0,0,2,0"/><TextBlock Name="WPFInstalglazewmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/glzr-io/glazewm" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13373,6 +13370,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" ToolTip="Glary Utilities is a comprehensive system optimization and maintenance tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallglaryutilitiesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.glarysoft.com/glary-utilities/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallglazewm" Content="GlazeWM" ToolTip="GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar" Margin="0,0,2,0"/><TextBlock Name="WPFInstallglazewmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/glzr-io/glazewm" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgoogledrive" Content="Google Drive" ToolTip="File syncing across devices all tied to your google account" Margin="0,0,2,0"/><TextBlock Name="WPFInstallgoogledriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.google.com/drive/" />
