@@ -34,7 +34,7 @@
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a012_",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
@@ -63,7 +63,7 @@
     "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a011_",
+    "Order": "a005_",
     "service": [
       {
         "Name": "HomeGroupListener",
@@ -82,7 +82,7 @@
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a008_",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
@@ -1921,7 +1921,7 @@
     "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a004_",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
@@ -2241,7 +2241,7 @@
     "Description": "Enables option to end task when right clicking a program in the taskbar",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a002_",
+    "Order": "a006_",
     "InvokeScript": [
       "
       Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
@@ -2258,7 +2258,7 @@
     "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a002_",
+    "Order": "a009_",
     "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
     "InvokeScript": [
       "Invoke-WPFOOSU -action \"recommended\""
@@ -2272,7 +2272,7 @@
     "Description": "Storage Sense deletes temp files automatically.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a010_",
+    "Order": "a005_",
     "InvokeScript": [
       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
     ],
@@ -2717,7 +2717,7 @@
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a007_",
+    "Order": "a009_",
     "InvokeScript": [
       "
       cleanmgr.exe /d C: /VERYLOWDISK
@@ -2730,7 +2730,7 @@
     "Description": "Erases TEMP Folders",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a006_",
+    "Order": "a009_",
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
@@ -2741,7 +2741,7 @@
     "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a012_",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKCU:\\System\\GameConfigStore",
@@ -2785,8 +2785,7 @@
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a029_",
-    "Order": "a013_",
+    "Order": "a005_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
