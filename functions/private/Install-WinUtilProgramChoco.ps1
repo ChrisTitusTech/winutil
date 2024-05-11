@@ -14,13 +14,21 @@ function Install-WinUtilProgramChoco {
     #>
     
     param(
-    $ProgramsToInstall,
-    $manage = "Installing"
+    [Parameter(Mandatory, Position=0)]
+    [PsCustomObject]$ProgramsToInstall,
+
+    [Parameter(Mandatory, Position=1)]
+    [String]$manage = "Installing"
     )
     
     $x = 0
     $count = $ProgramsToInstall.Count
-    
+
+    # This check isn't really necessary, as there's a couple of checks before this Private Function gets called, but just to make sure ;)
+    if($count -le 0) {
+        throw "Private Function 'Install-WinUtilProgramChoco' expected Parameter 'ProgramsToInstall' to be of size 1 or greater, instead got $count,`nPlease double check your code and re-compile WinUtil."
+    }
+
     Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
     Write-Host "==========================================="
     Write-Host "--   insstalling Chocolatey pacakages   ---"
