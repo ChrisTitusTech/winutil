@@ -2759,13 +2759,6 @@
       },
       {
         "Path": "HKCU:\\System\\GameConfigStore",
-        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKCU:\\System\\GameConfigStore",
         "Name": "GameDVR_HonorUserFSEBehaviorMode",
         "Value": "1",
         "OriginalValue": "0",
@@ -2830,6 +2823,22 @@
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFTweaksDisableFSO": {
+    "Content": "Disable Fullscreen Optimizations",
+    "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a032_",
+    "registry": [
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
     ]
   },
   "WPFTweaksEnableipsix": {
