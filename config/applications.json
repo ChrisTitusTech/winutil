@@ -2271,14 +2271,6 @@
 		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
 		"winget": "Microsoft.VCRedist.2015+.x64"
 	},
-	"WPFInstallvencord": {
-		"category": "Communications",
-		"choco": "na",
-		"content": "Vencord",
-		"description": "Vencord is a modification for Discord that adds plugins, custom styles, and more!",
-		"link": "https://vencord.dev/",
-		"winget": "Vendicated.Vencord"
-	},
 	"WPFInstallventoy": {
 		"category": "Pro Tools",
 		"choco": "ventoy",
