@@ -2590,5 +2590,21 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallqgis": {
+   		"category": "Multimedia Tools",
+		"choco": "qgis",
+		"content": "QGIS",
+		"description": "QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms.",
+		"link": "https://qgis.org/en/site/",
+		"winget": "OSGeo.QGIS"
+	},
+	"WPFInstallqgisltr": {
+		"category": "Multimedia Tools",
+		"choco": "qgis-ltr",
+		"content": "QGIS LTR",
+		"description": "QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms.",
+		"link": "https://qgis.org/en/site/",
+		"winget": "OSGeo.QGIS_LTR"
 	}
 }
