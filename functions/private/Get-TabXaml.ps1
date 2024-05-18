@@ -77,7 +77,10 @@ function Get-TabXaml {
                     $panelcount++
                 }
             }
-            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
+            $categorycontent = $($category -replace '^.__', '')
+            # Remove all special Characters from the name because it will later be used as a Powershell Variable
+            $categoryname = "WPFLabel"+$($categorycontent -replace '[^a-zA-Z0-9]','')
+            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
