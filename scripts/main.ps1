@@ -416,16 +416,18 @@ $sync["CheckboxFilter"].Add_TextChanged({
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
     foreach ($category in $activeCategories){
-        $label = $labels["WPFLabel"+$($category -replace '[^a-zA-Z0-9]')]
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Visible"
     }
-    if ($activeCategories -ne $null){
+    if ($activeCategories){
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
-        foreach ($category in $inactiveCategories){
-            $label = $labels["WPFLabel"+$($category -replace '[^a-zA-Z0-9]')]
-            $label.Visibility = "Collapsed"}
     }
-
+    else{
+        $inactiveCategories = $allCategories
+    }
+    foreach ($category in $inactiveCategories){
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
+        $label.Visibility = "Collapsed"}
 })
 
 # Define event handler for button click

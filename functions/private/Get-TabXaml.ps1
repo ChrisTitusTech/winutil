@@ -77,9 +77,12 @@ function Get-TabXaml {
                     $panelcount++
                 }
             }
+
+            # Dot-source the Get-WPFObjectName function
+            . .\functions\private\Get-WPFObjectName
+            
             $categorycontent = $($category -replace '^.__', '')
-            # Remove all special Characters from the name because it will later be used as a Powershell Variable
-            $categoryname = "WPFLabel"+$($categorycontent -replace '[^a-zA-Z0-9]','')
+            $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
             $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
