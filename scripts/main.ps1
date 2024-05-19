@@ -368,7 +368,8 @@ $filter = Get-WinUtilVariables -Type CheckBox
 $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
 
 $filter = Get-WinUtilVariables -Type Label
-$labels = $sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter}
+$labels = @{}
+$sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
 
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
 
@@ -415,14 +416,14 @@ $sync["CheckboxFilter"].Add_TextChanged({
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
     foreach ($category in $activeCategories){
-        $label = $Labels | Where-Object {$_.Key -eq "WPFLabel"+$($category -replace '[^a-zA-Z0-9]','')}
-        $label.Value.Visibility = "Visible"
+        $label = $labels["WPFLabel"+$($category -replace '[^a-zA-Z0-9]')]
+        $label.Visibility = "Visible"
     }
     if ($activeCategories -ne $null){
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
         foreach ($category in $inactiveCategories){
-            $label = $Labels | Where-Object {$_.Key -eq "WPFLabel"+$($category -replace '[^a-zA-Z0-9]','')}
-            $label.Value.Visibility = "Collapsed"}
+            $label = $labels["WPFLabel"+$($category -replace '[^a-zA-Z0-9]')]
+            $label.Visibility = "Collapsed"}
     }
 
 })
