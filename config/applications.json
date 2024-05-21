@@ -32,13 +32,13 @@
 		"winget": "Famatech.AdvancedIPScanner"
 	},
 	"WPFInstallaffine": {
-        "category": "Document",
-        "choco": "na",
-        "content": "AFFiNE",
-        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
-        "link": "https://affine.pro/",
-        "winget": "AFFiNE.stable"
-    },
+		"category": "Document",
+		"choco": "na",
+		"content": "AFFiNE",
+		"description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+		"link": "https://affine.pro/",
+		"winget": "AFFiNE.stable"
+	},
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
@@ -134,7 +134,7 @@
 		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
 		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
 		"winget": "Microsoft.AzureDataStudio"
-	},	
+	},
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -526,6 +526,14 @@
 		"description": "Everything Search is a fast and efficient file search utility for Windows.",
 		"link": "https://www.voidtools.com/",
 		"winget": "voidtools.Everything"
+	},
+	"WPFInstallesearcha": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Everything Search 1.5a",
+		"description": "Everything Search is a fast and efficient file search utility for Windows. Alpha release (Includes Dark Theme).",
+		"link": "https://www.voidtools.com/",
+		"winget": "voidtools.Everything.Alpha"
 	},
 	"WPFInstallespanso": {
 		"category": "Utilities",
@@ -2376,13 +2384,13 @@
 		"winget": "Waterfox.Waterfox"
 	},
 	"WPFInstallwazuh": {
-        "category": "Utilities",
-        "choco": "wazuh-agent",
-        "content": "Wazuh.",
-        "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
-        "link": "https://wazuh.com/",
-        "winget": "Wazuh.WazuhAgent"
-    },
+		"category": "Utilities",
+		"choco": "wazuh-agent",
+		"content": "Wazuh.",
+		"description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+		"link": "https://wazuh.com/",
+		"winget": "Wazuh.WazuhAgent"
+	},
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
@@ -2710,7 +2718,7 @@
 		"description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
 		"link": "https://github.com/glzr-io/glazewm",
 		"winget": "glzr-io.glazewm"
-  },
+	},
 	"WPFInstallfancontrol": {
 		"category": "Utilities",
 		"choco": "na",
