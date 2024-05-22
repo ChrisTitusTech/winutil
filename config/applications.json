@@ -510,6 +510,14 @@
 		"description": "Everything Search is a fast and efficient file search utility for Windows.",
 		"link": "https://www.voidtools.com/",
 		"winget": "voidtools.Everything"
+	},	
+	"WPFInstallesearcha": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Everything Search 1.5a",
+		"description": "Everything Search is a fast and efficient file search utility for Windows. Alpha release (Includes Dark Theme).",
+		"link": "https://www.voidtools.com/",
+		"winget": "voidtools.Everything.Alpha"
 	},
 	"WPFInstallespanso": {
 		"category": "Utilities",
