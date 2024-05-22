@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.05.11
+    Version        : 24.05.22
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.05.11"
+$sync.version = "24.05.22"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -10627,6 +10627,41 @@ $sync.configs.tweaks = '{
       "
     ]
   },
+  "WPFTweaksPowershell7": {
+    "Content": "Replace Default Powershell 5 to Powershell 7",
+    "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a006_",
+    "InvokeScript": [
+      "
+      if (Test-Path -Path \"$env:ProgramFiles\\PowerShell\\7\") {
+        Write-Host ''Powershell 7 is already installed.''
+      } else {
+        Write-Host ''Installing Powershell 7...''
+        winget install --id Microsoft.PowerShell --silent --accept-source-agreements --accept-package-agreements
+      }
+
+      $settingsPath = \"$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json\"
+      
+      if (Test-Path -Path $settingsPath) {
+          Write-Host ''Settings file found.''
+          $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
+          $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.source -eq ''Windows.Terminal.PowershellCore'' }
+          if ($ps7Profile) {
+              $settingsContent.defaultProfile = $ps7Profile.guid
+              $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
+              Set-Content -Path $settingsPath -Value $updatedSettings
+              Write-Host ''Default profile updated to PowerShell 7 using the source attribute.''
+          } else {
+              Write-Host ''No PowerShell 7 profile found in Windows Terminal settings using the source attribute.''
+          }
+      } else {
+          Write-Host ''Settings file not found at $settingsPath''
+      }
+      "
+    ]
+  },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
     "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
@@ -13647,6 +13682,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0"  ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
+<CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0"  ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7"/>
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10"/>
