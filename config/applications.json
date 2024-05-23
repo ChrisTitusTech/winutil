@@ -383,6 +383,14 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
+		"WPFInstallditto": {
+		"category": "Utilities",
+		"choco": "ditto",
+		"content": "Ditto",
+		"description": "Ditto is an extension to the standard windows clipboard.",
+		"link": "https://ditto-cp.sourceforge.io/",
+		"winget": "Ditto.Ditto"
+	},
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
@@ -553,11 +561,19 @@
 	},
 	"WPFInstallfileconverter": {
 		"category": "Utilities",
-		"choco": "files",
+		"choco": "file-converter",
 		"content": "File-Converter",
 		"description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
+	},
+		"WPFInstallfiles": {
+		"category": "Utilities",
+		"choco": "files",
+		"content": "Files",
+		"description": "Alternative file explorer.",
+		"link": "https://github.com/files-community/Files",
+		"winget": "na"
 	},
 	"WPFInstallfirealpaca": {
 		"category": "Multimedia Tools",
@@ -1743,6 +1759,14 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
+		"WPFInstallsagethumbs": {
+		"category": "Utilies",
+		"choco": "sagethumbs",
+		"content": "SageThumbs",
+		"description": "Provides support for thumbnails in Explorer with more formats.",
+		"link": "https://sagethumbs.en.lo4d.com/windows",
+		"winget": "CherubicSoftware.SageThumbs"
+	},
 	"WPFInstallsamsungmagician": {
 		"category": "Utilities",
 		"choco": "samsung-magician",
@@ -1862,6 +1886,14 @@
 		"description": "A tool application that lets you understand how folders and files are structured on your disks",
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
+	},
+		"WPFInstallspotube": {
+		"category": "Multimedia Tools",
+		"choco": "spotube",
+		"content": "Spotube",
+		"description": "Open source Spotify client that doesn't require Premium nor uses Electron! Available for both desktop & mobile! ",
+		"link": "https://github.com/KRTirtho/spotube",
+		"winget": "KRTirtho.Spotube"
 	},
 	"WPFInstallstarship": {
 		"category": "Development",
