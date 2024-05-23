@@ -2258,33 +2258,35 @@
     "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a006_",
+    "Order": "a007_",
     "InvokeScript": [
       "
       if (Test-Path -Path \"$env:ProgramFiles\\PowerShell\\7\") {
-        Write-Host 'Powershell 7 is already installed.'
+        Write-Host \"Powershell 7 is already installed.\"
       } else {
-        Write-Host 'Installing Powershell 7...'
-        winget install --id Microsoft.PowerShell --silent --accept-source-agreements --accept-package-agreements
+        Write-Host \"Installing Powershell 7...\"
+        Install-WinUtilProgramWinget -ProgramsToInstall \"Microsoft.PowerShell\"
       }
 
       $settingsPath = \"$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json\"
       
       if (Test-Path -Path $settingsPath) {
-          Write-Host 'Settings file found.'
-          $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
-          $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.source -eq 'Windows.Terminal.PowershellCore' }
-          if ($ps7Profile) {
-              $settingsContent.defaultProfile = $ps7Profile.guid
-              $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
-              Set-Content -Path $settingsPath -Value $updatedSettings
-              Write-Host 'Default profile updated to PowerShell 7 using the source attribute.'
-          } else {
-              Write-Host 'No PowerShell 7 profile found in Windows Terminal settings using the source attribute.'
-          }
-      } else {
-          Write-Host 'Settings file not found at $settingsPath'
-      }
+        Write-Host \"Settings file found.\"
+        $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
+        $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.source -eq \"Windows.Terminal.PowershellCore\" }
+        if ($ps7Profile) {
+            $settingsContent.defaultProfile = $ps7Profile.guid
+            $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
+            Set-Content -Path $settingsPath -Value $updatedSettings
+            Write-Host \"Default profile updated to PowerShell 7 using the source attribute.\"
+        } else {
+            Write-Host \"No PowerShell 7 profile found in Windows Terminal settings using the source attribute.\"
+        }
+    } else {
+        Write-Host \"Settings file not found at $settingsPath\"
+    }
+
+
       "
     ]
   },
