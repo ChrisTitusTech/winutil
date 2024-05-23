@@ -2253,6 +2253,19 @@
       "
     ]
   },
+  "WPFTweaksPowershell7": {
+    "Content": "Replace Default Powershell 5 to Powershell 7",
+    "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a007_",
+    "InvokeScript": [
+      "Invoke-WPFTweakPS7 -action \"PS7\""
+    ],
+    "UndoScript": [
+      "Invoke-WPFTweakPS7 -action \"PS5\""
+    ]
+  },
   "WPFTweaksOO": {
     "Content": "Run OO Shutup",
     "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
