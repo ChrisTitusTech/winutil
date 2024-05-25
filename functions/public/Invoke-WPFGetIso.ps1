@@ -131,8 +131,8 @@ function Invoke-WPFGetIso {
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
     $mountedISOPath = (Split-Path -Path $filePath)
-     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
-        $sync.MicrowinScratchDirBox.Text =""
+     if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch_Directory") {
+        $sync.MicrowinScratchDirBox.Text = ""
     }
 
      $UseISOScratchDir = $sync.WPFMicrowinISOScratchDir.IsChecked
