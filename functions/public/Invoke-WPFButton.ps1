@@ -21,9 +21,8 @@ function Invoke-WPFButton {
         "WPFinstall" {Invoke-WPFInstall}
         "WPFuninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
-        "WPFdesktop" {Invoke-WPFPresets "Desktop"}
-        "WPFlaptop" {Invoke-WPFPresets "laptop"}
-        "WPFminimal" {Invoke-WPFPresets "minimal"}
+        "WPFstandard" {Invoke-WPFPresets "Standard"}
+        "WPFminimal" {Invoke-WPFPresets "Minimal"}
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
         "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}

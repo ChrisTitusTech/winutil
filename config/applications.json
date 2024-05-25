@@ -31,6 +31,14 @@
 		"link": "https://www.advanced-ip-scanner.com/",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
+	"WPFInstallaffine": {
+        "category": "Document",
+        "choco": "na",
+        "content": "AFFiNE",
+        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+        "link": "https://affine.pro/",
+        "winget": "AFFiNE.stable"
+    },
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
@@ -95,14 +103,6 @@
 		"link": "https://www.audacityteam.org/",
 		"winget": "Audacity.Audacity"
 	},
-	"WPFInstallauthy": {
-		"category": "Utilities",
-		"choco": "authy-desktop",
-		"content": "Authy",
-		"description": "Simple and cross-platform 2FA app",
-		"link": "https://authy.com/",
-		"winget": "Twilio.Authy"
-	},
 	"WPFInstallautoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
@@ -110,6 +110,14 @@
 		"description": "This utility shows you what programs are configured to run during system bootup or login",
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
 		"winget": "Microsoft.Sysinternals.Autoruns"
+	},
+	"WPFInstallrdcman": {
+		"category": "Microsoft Tools",
+		"choco": "rdcman",
+		"content": "RDCMan",
+		"description": "RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
+		"winget": "Microsoft.Sysinternals.RDCMan"
 	},
 	"WPFInstallautohotkey": {
 		"category": "Utilities",
@@ -294,6 +302,14 @@
 		"description": "CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history.",
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
+	},
+	"WPFInstallditto": {
+		"category": "Utilities",
+		"choco": "ditto",
+		"content": "Ditto (Clipboard Manager)",
+		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
+		"link": "https://github.com/sabrogden/Ditto",
+		"winget": "Ditto.Ditto"
 	},
 	"WPFInstallcpuz": {
 		"category": "Utilities",
@@ -727,6 +743,14 @@
 		"link": "https://desktop.github.com/",
 		"winget": "Git.Git;GitHub.GitHubDesktop"
 	},
+	"WPFInstallgitkrakenclient": {
+		"category": "Development",
+		"choco": "gitkraken",
+		"content": "GitKraken Client",
+		"description": "GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment.",
+		"link": "https://www.gitkraken.com/git-client",
+		"winget": "Axosoft.GitKraken"
+	},
 	"WPFInstallglaryutilities": {
 		"category": "Utilities",
 		"choco": "glaryutilities-free",
@@ -734,6 +758,14 @@
 		"description": "Glary Utilities is a comprehensive system optimization and maintenance tool for Windows.",
 		"link": "https://www.glarysoft.com/glary-utilities/",
 		"winget": "Glarysoft.GlaryUtilities"
+	},
+	"WPFInstallgodotengine": {
+		"category": "Development",
+		"choco": "godot",
+		"content": "Godot Engine",
+		"description": "Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility.",
+		"link": "https://godotengine.org/",
+		"winget": "GodotEngine.GodotEngine"
 	},
 	"WPFInstallgog": {
 		"category": "Games",
@@ -988,7 +1020,7 @@
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
 		"description": "Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library.",
-		"link": "https://github.com/jellyfin/jellyfin-media-playerf",
+		"link": "https://github.com/jellyfin/jellyfin-media-player",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
 	"WPFInstalljellyfinserver": {
@@ -1162,8 +1194,8 @@
 	"WPFInstallmatrix": {
 		"category": "Communications",
 		"choco": "element-desktop",
-		"content": "Matrix",
-		"description": "Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools.",
+		"content": "Element",
+		"description": "Element is a client for Matrix—an open network for secure, decentralized communication.",
 		"link": "https://element.io/",
 		"winget": "Element.Element"
 	},
@@ -1215,6 +1247,14 @@
 		"link": "https://mremoteng.org/",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
+	"WPFInstallmsedgeredirect": {
+		"category": "Utilities",
+		"choco": "msedgeredirect",
+		"content": "MSEdgeRedirect",
+		"description": "A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser.",
+		"link": "https://github.com/rcmaehl/MSEdgeRedirect",
+		"winget": "rcmaehl.MSEdgeRedirect"
+	},
 	"WPFInstallmsiafterburner": {
 		"category": "Utilities",
 		"choco": "msiafterburner",
@@ -1222,6 +1262,46 @@
 		"description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
+	},
+	"WPFInstallBorderlessGaming": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Borderless Gaming",
+		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
+		"link": "https://github.com/Codeusa/Borderless-Gaming",
+		"winget": "Codeusa.BorderlessGaming"
+	},
+	"WPFInstallEqualizerAPO": {
+		"category": "Multimedia Tools",
+		"choco": "equalizerapo",
+		"content": "Equalizer APO",
+		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
+		"link": "https://sourceforge.net/projects/equalizerapo",
+		"winget": "na"
+	},
+	"WPFInstallFreeFileSync": {
+		"category": "Utilities",
+		"choco": "freefilesync",
+		"content": "FreeFileSync",
+		"description": "Synchronize Files and Folders",
+		"link": "https://freefilesync.org",
+		"winget": "na"
+	},
+	"WPFInstallCompactGUI": {
+		"category": "Utilities",
+		"choco": "compactgui",
+		"content": "Compact GUI",
+		"description": "Transparently compress active games and programs using Windows 10/11 APIs",
+		"link": "https://github.com/IridiumIO/CompactGUI",
+		"winget": "IridiumIO.CompactGUI"
+	},
+	"WPFInstallExifCleaner": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "ExifCleaner",
+		"description": "Desktop app to clean metadata from images, videos, PDFs, and other files.",
+		"link": "https://github.com/szTheory/exifcleaner",
+		"winget": "szTheory.exifcleaner"
 	},
 	"WPFInstallmullvadbrowser": {
 		"category": "Browsers",
@@ -1247,6 +1327,14 @@
 		"link": "https://getmusicbee.com/",
 		"winget": "MusicBee.MusicBee"
 	},
+	"WPFInstallmp3tag": {
+		"category": "Multimedia Tools",
+		"choco": "mp3tag",
+		"content": "Mp3tag (Metadata Audio Editor)",
+		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
+		"link": "https://www.mp3tag.de/en/",
+		"winget": "Mp3tag.Mp3tag"
+	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
 		"choco": "nanazip",
@@ -1254,6 +1342,14 @@
 		"description": "NanaZip is a fast and efficient file compression and decompression tool.",
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
+	},
+	"WPFInstallnetbird": {
+		"category": "Pro Tools",
+		"choco": "netbird",
+		"content": "NetBird",
+		"description": "NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server.",
+		"link": "https://netbird.io/",
+		"winget": "netbird"
 	},
 	"WPFInstallnaps2": {
 		"category": "Document",
@@ -1615,6 +1711,14 @@
 		"link": "https://bitsum.com/",
 		"winget": "BitSum.ProcessLasso"
 	},
+	"WPFInstallspotify": {
+		"category": "Multimedia Tools",
+		"choco": "spotify",
+		"content": "Spotify",
+		"description": "Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world.",
+		"link": "https://www.spotify.com/",
+		"winget": "Spotify.Spotify"
+	},
 	"WPFInstallprocessmonitor": {
 		"category": "Microsoft Tools",
 		"choco": "procexp",
@@ -1871,14 +1975,6 @@
 		"link": "https://starship.rs/",
 		"winget": "starship"
 	},
-	"WPFInstallstartallback": {
-		"category": "Utilities",
-		"choco": "na",
-		"content": "StartAllBack",
-		"description": "StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)",
-		"link": "https://www.startallback.com/",
-		"winget": "startallback"
-	},
 	"WPFInstallsteam": {
 		"category": "Games",
 		"choco": "steam-client",
@@ -2071,6 +2167,14 @@
 		"link": "https://www.thunderbird.net/",
 		"winget": "Mozilla.Thunderbird"
 	},
+	"WPFInstallbetterbird": {
+		"category": "Communications",
+		"choco": "betterbird",
+		"content": "Betterbird",
+		"description": "Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes.",
+		"link": "https://www.betterbird.eu/",
+		"winget": "Betterbird.Betterbird"
+	},
 	"WPFInstalltidal": {
 		"category": "Multimedia Tools",
 		"choco": "na",
@@ -2221,7 +2325,7 @@
 		"content": "Vivaldi",
 		"description": "Vivaldi is a highly customizable web browser with a focus on user personalization and productivity features.",
 		"link": "https://vivaldi.com/",
-		"winget": "VivaldiTechnologies.Vivaldi"
+		"winget": "Vivaldi.Vivaldi"
 	},
 	"WPFInstallvlc": {
 		"category": "Multimedia Tools",
@@ -2271,6 +2375,14 @@
 		"link": "https://www.waterfox.net/",
 		"winget": "Waterfox.Waterfox"
 	},
+	"WPFInstallwazuh": {
+        "category": "Utilities",
+        "choco": "wazuh-agent",
+        "content": "Wazuh.",
+        "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+        "link": "https://wazuh.com/",
+        "winget": "Wazuh.WazuhAgent"
+    },
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
@@ -2278,14 +2390,6 @@
 		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
-	},
-	"WPFInstallwhatsapp": {
-		"category": "Communications",
-		"choco": "whatsapp",
-		"content": "Whatsapp",
-		"description": "WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer.",
-		"link": "https://www.whatsapp.com/",
-		"winget": "WhatsApp.WhatsApp"
 	},
 	"WPFInstallwindirstat": {
 		"category": "Utilities",
@@ -2590,5 +2694,53 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallsmplayer": {
+		"category": "Multimedia Tools",
+		"choco": "smplayer",
+		"content": "SMPlayer",
+		"description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats.",
+		"link": "https://www.smplayer.info",
+		"winget": "SMPlayer.SMPlayer"
+	},
+	"WPFInstallglazewm": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GlazeWM",
+		"description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
+		"link": "https://github.com/glzr-io/glazewm",
+		"winget": "glzr-io.glazewm"
+  },
+	"WPFInstallfancontrol": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "FanControl",
+		"description": "Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures.",
+		"link": "https://getfancontrol.com/",
+		"winget": "Rem0o.FanControl"
+	},
+	"WPFInstallfnm": {
+		"category": "Development",
+		"choco": "fnm",
+		"content": "Fast Node Manager",
+		"description": "Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal",
+		"link": "https://github.com/Schniz/fnm",
+		"winget": "Schniz.fnm"
+	},
+	"WPFInstallWindhawk": {
+		"category": "Utilities",
+		"choco": "windhawk",
+		"content": "Windhawk",
+		"description": "The customization marketplace for Windows programs",
+		"link": "https://windhawk.net",
+		"winget": "RamenSoftware.Windhawk"
+	},
+	"WPFInstallForceAutoHDR": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
+		"link": "https://github.com/7gxycn08/ForceAutoHDR",
+		"winget": "ForceAutoHDR.7gxycn08"
 	}
 }
