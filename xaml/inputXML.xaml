@@ -801,7 +801,7 @@
                                 <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
                             </Grid.ColumnDefinitions>
                                 <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                        Text="Scratch_Directory"
+                                        Text="Scratch"
                                         Margin="2"
                                         IsReadOnly="False"
                                         ToolTip="Alt Path For Scratch Directory"
