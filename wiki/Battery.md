@@ -1,5 +1,5 @@
 # Battery drains too fast.
-When your battery on teh laptop drains too fast please perform these steps and report the results back to Winutil community.
+When your battery on the laptop drains too fast, please perform these steps and report the results back to the Winutil community.
 
 1. **Check Battery Health:**
    - Open a Command Prompt as an administrator.
