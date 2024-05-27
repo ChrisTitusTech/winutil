@@ -2590,5 +2590,13 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"Arc": {
+		"category": "Browser",
+		"choco": "na",
+		"content": "Arc",
+		"description": "Arc browser prioritizes focus & privacy, offering a clean interface & organization tools for a distraction-free web experience.",
+		"link": "https://arc.net/",
+		"winget": "TheBrowserCompany.Arc"
 	}
 }
