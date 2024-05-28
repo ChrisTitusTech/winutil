@@ -263,6 +263,14 @@
 		"link": "https://github.com/Hibbiki/chromium-win64",
 		"winget": "Hibbiki.Chromium"
 	},
+	"WPFInstallarc": {
+		"category": "Browsers",
+		"choco": "na",
+		"content": "Arc",
+		"description": "Arc is a Chromium based browser, known for it's clean and modern design.",
+		"link": "https://arc.net/",
+		"winget": "TheBrowserCompany.Arc"
+	},
 	"WPFInstallclementine": {
 		"category": "Multimedia Tools",
 		"choco": "clementine",
