@@ -2742,5 +2742,13 @@
 		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
+	},
+	"Arc": {
+		"category": "Browser",
+		"choco": "na",
+		"content": "Arc",
+		"description": "Arc browser prioritizes focus & privacy, offering a clean interface & organization tools for a distraction-free web experience.",
+		"link": "https://arc.net/",
+		"winget": "TheBrowserCompany.Arc"
 	}
 }
