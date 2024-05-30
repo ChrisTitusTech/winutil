@@ -1847,6 +1847,14 @@
 		"link": "https://slack.com/",
 		"winget": "SlackTechnologies.Slack"
 	},
+	"WPFInstallsnagit": {
+		"category": "Utilities",
+		"choco": "snagit",
+		"content": "Snagit",
+		"description": "Snagit allows you to easily grab screenshots or record your screen.",
+		"link": "https://www.techsmith.com/screen-capture.html",
+		"winget": "TechSmith.Snagit.2024"
+	},
 	"WPFInstallspacedrive": {
 		"category": "Utilities",
 		"choco": "na",
