@@ -2623,6 +2623,14 @@
 		"link": "https://docs.conda.io/projects/miniconda",
 		"winget": "Anaconda.Miniconda3"
 	},
+	"WPFInstallpixi": {
+		"category": "Development",
+		"choco": "pixi",
+		"content": "Pixi",
+		"description": "Pixi is a fast software package manager built on top of the existing conda ecosystem. Spins up development environments quickly on Windows, macOS and Linux. Pixi supports Python, R, C/C++, Rust, Ruby, and many other languages.",
+		"link": "https://pixi.sh",
+		"winget": "prefix-dev.pixi"
+	},
 	"WPFInstalltemurin": {
 		"category": "Development",
 		"choco": "temurin",
