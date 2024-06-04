@@ -12,7 +12,7 @@ function Invoke-WPFGetIso {
         return
     }
 
-  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
 
 
@@ -23,10 +23,6 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
-   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
-   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
-}
-
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
