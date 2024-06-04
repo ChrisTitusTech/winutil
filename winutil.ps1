@@ -11256,7 +11256,7 @@ $sync.configs.tweaks = '{
     "Description": "Erases TEMP Folders",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Order": "a009_",
+    "Order": "a002_",
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
@@ -13828,6 +13828,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
 <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0"  ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
@@ -13838,7 +13839,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0"  ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
-<CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0"  ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
