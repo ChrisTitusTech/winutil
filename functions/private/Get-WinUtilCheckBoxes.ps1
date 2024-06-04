@@ -5,9 +5,6 @@ Function Get-WinUtilCheckBoxes {
     .SYNOPSIS
         Finds all checkboxes that are checked on the specific tab and inputs them into a script.
 
-    .PARAMETER Group
-        The group of checkboxes to check
-
     .PARAMETER unCheck
         Whether to uncheck the checkboxes that are checked. Defaults to true
 
@@ -32,23 +29,33 @@ Function Get-WinUtilCheckBoxes {
 
     $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] }
 
+    # First check and add WPFTweaksRestorePoint if checked
+    $RestorePoint = $CheckBoxes | Where-Object { $_.Key -eq 'WPFTweaksRestorePoint' -and $_.Value.IsChecked -eq $true }
+    if ($RestorePoint) {
+        $Output["WPFTweaks"] = @('WPFTweaksRestorePoint')
+        Write-Debug "Adding WPFTweaksRestorePoint as first in WPFTweaks"
+
+        if ($unCheck) {
+            $RestorePoint.Value.IsChecked = $false
+        }
+    }
+
     foreach ($CheckBox in $CheckBoxes) {
+        if ($CheckBox.Key -eq 'WPFTweaksRestorePoint') { continue }  # Skip since it's already handled
+
         $group = if ($CheckBox.Key.StartsWith("WPFInstall")) { "Install" }
                 elseif ($CheckBox.Key.StartsWith("WPFTweaks")) { "WPFTweaks" }
                 elseif ($CheckBox.Key.StartsWith("WPFFeature")) { "WPFFeature" }
-
         if ($group) {
             if ($CheckBox.Value.IsChecked -eq $true) {
                 $feature = switch ($group) {
                     "Install" {
                         # Get the winget value
-                        $wingetValue = $sync.configs.applications.$($CheckBox.Name).winget
-
-                        if (-not [string]::IsNullOrWhiteSpace($wingetValue) -and $wingetValue -ne "na") {
-                            $wingetValue -split ";"
-                        } else {
-                            $sync.configs.applications.$($CheckBox.Name).choco
+                        [PsCustomObject]@{
+                            winget="$($sync.configs.applications.$($CheckBox.Name).winget)";
+                            choco="$($sync.configs.applications.$($CheckBox.Name).choco)";
                         }
+
                     }
                     default {
                         $CheckBox.Name
@@ -66,12 +73,11 @@ Function Get-WinUtilCheckBoxes {
                 Write-Debug "Adding: $($feature) under: $($group)"
                 $Output[$group] += $feature
 
-                if ($uncheck -eq $true) {
+                if ($unCheck) {
                     $CheckBox.Value.IsChecked = $false
                 }
             }
         }
     }
-
     return  $Output
 }

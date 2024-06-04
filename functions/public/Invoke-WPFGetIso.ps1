@@ -12,7 +12,7 @@ function Invoke-WPFGetIso {
         return
     }
 
-  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
 
 
@@ -23,10 +23,6 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
-   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
-   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
-}
-
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
@@ -41,6 +37,8 @@ function Invoke-WPFGetIso {
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
+            # Install Choco if not already present
+            Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
             if (!$chocoFound) 
