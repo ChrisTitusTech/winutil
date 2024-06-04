@@ -332,7 +332,13 @@ function Get-TabXaml {
                     $panelcount++
                 }
             }
-            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
+
+            # Dot-source the Get-WPFObjectName function
+            . .\functions\private\Get-WPFObjectName
+            
+            $categorycontent = $($category -replace '^.__', '')
+            $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
+            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
@@ -691,6 +697,33 @@ function Get-WinUtilWingetPrerequisites {
     Catch{
         throw [WingetFailedInstall]::new('Failed to install prerequsites')
     }
+}
+function Get-WPFObjectName {
+        <#
+    .SYNOPSIS
+        This is a helper function that generates an objectname with the prefix WPF that can be used as a Powershell Variable after compilation.
+        To achieve this, all characters that are not a-z, A-Z or 0-9 are simply removed from the name.
+    .PARAMETER type
+        The type of object for which the name should be generated. (e.g. Label, Button, CheckBox...)
+    .PARAMETER name
+        The name or description to be used for the object. (invalid characters are removed)
+    .OUTPUTS
+        A string that can be used as a object/variable name in powershell.
+        For example: WPFLabelMicrosoftTools
+        
+    .EXAMPLE
+        Get-WPFObjectName -type Label -name "Microsoft Tools"
+    #>
+
+    param( [Parameter(Mandatory=$true)] 
+    $type, 
+    $name
+)
+
+$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', '' 
+
+return $Output
+
 }
 function Install-WinUtilChoco {
 
@@ -12764,7 +12797,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </Grid.ColumnDefinitions>
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Browsers" FontSize="16"/>
+<Label Name="WPFLabelBrowsers" Content="Browsers" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallarc" Content="Arc" ToolTip="Arc is a Chromium based browser, known for it&#39;s clean and modern design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallarcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://arc.net/" />
 </StackPanel>
@@ -12813,7 +12846,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" ToolTip="Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwaterfoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.waterfox.net/" />
 </StackPanel>
-<Label Content="Communications" FontSize="16"/>
+<Label Name="WPFLabelCommunications" Content="Communications" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbetterbird" Content="Betterbird" ToolTip="Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbetterbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.betterbird.eu/" />
 </StackPanel>
@@ -12883,7 +12916,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzulip" Content="Zulip" ToolTip="Zulip is an open-source team collaboration tool with chat streams for productive and organized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzulipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zulipchat.com/" />
 </StackPanel>
-<Label Content="Development" FontSize="16"/>
+<Label Name="WPFLabelDevelopment" Content="Development" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanaconda3" Content="Anaconda" ToolTip="Anaconda is a distribution of the Python and R programming languages for scientific computing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanaconda3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.anaconda.com/products/distribution" />
 </StackPanel>
@@ -13036,7 +13069,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallyarn" Content="Yarn" ToolTip="Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallyarnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://yarnpkg.com/" />
 </StackPanel>
-<Label Content="Document" FontSize="16"/>
+<Label Name="WPFLabelDocument" Content="Document" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladobe" Content="Adobe Acrobat Reader" ToolTip="Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.adobe.com/acrobat/pdf-reader.html" />
 </StackPanel>
@@ -13115,7 +13148,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzotero" Content="Zotero" ToolTip="Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoteroLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.zotero.org/" />
 </StackPanel>
-<Label Content="Games" FontSize="16"/>
+<Label Name="WPFLabelGames" Content="Games" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallATLauncher" Content="ATLauncher" ToolTip="ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly." Margin="0,0,2,0"/><TextBlock Name="WPFInstallATLauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ATLauncher/ATLauncher" />
 </StackPanel>
@@ -13182,7 +13215,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
-<Label Content="Microsoft Tools" FontSize="16"/>
+<Label Name="WPFLabelMicrosoftTools" Content="Microsoft Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
 </StackPanel>
@@ -13248,7 +13281,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" ToolTip="Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvc2015_64Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads" />
 </StackPanel>
-<Label Content="Multimedia Tools" FontSize="16"/>
+<Label Name="WPFLabelMultimediaTools" Content="Multimedia Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" ToolTip="AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaimpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.aimp.ru/" />
 </StackPanel>
@@ -13405,7 +13438,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
 </StackPanel>
-<Label Content="Pro Tools" FontSize="16"/>
+<Label Name="WPFLabelProTools" Content="Pro Tools" FontSize="16"/>
 
 </StackPanel>
 </Border>
@@ -13462,11 +13495,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxpipe" Content="XPipe" ToolTip="XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxpipeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xpipe.io/" />
 </StackPanel>
-<Label Content="Utilies" FontSize="16"/>
+<Label Name="WPFLabelUtilies" Content="Utilies" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsagethumbs" Content="SageThumbs" ToolTip="Provides support for thumbnails in Explorer with more formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsagethumbsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sagethumbs.en.lo4d.com/windows" />
 </StackPanel>
-<Label Content="Utilities" FontSize="16"/>
+<Label Name="WPFLabelUtilities" Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
 </StackPanel>
@@ -13862,7 +13895,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </Grid.ColumnDefinitions>
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Essential Tweaks" FontSize="16"/>
+<Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
@@ -13880,7 +13913,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0"  ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
 <CheckBox Name="WPFToggleTweaksLaptopHybernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0"  ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
 <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-<Label Content="Advanced Tweaks - CAUTION" FontSize="16"/>
+<Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="16"/>
 <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" Margin="5,0"  ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. "/>
 <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" Margin="5,0"  ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
 <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
@@ -13915,7 +13948,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Customize Preferences" FontSize="16"/>
+<Label Name="WPFLabelCustomizePreferences" Content="Customize Preferences" FontSize="16"/>
 <DockPanel LastChildFill="True">
 <Label Content="Dark Theme" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left"/>
 <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
@@ -13960,10 +13993,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Content="Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left"/>
 <CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
 </DockPanel>
-<Label Content="Performance Plans" FontSize="16"/>
+<Label Name="WPFLabelPerformancePlans" Content="Performance Plans" FontSize="16"/>
 <Button Name="WPFAddUltPerf" Content="Add and Activate Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Button Name="WPFRemoveUltPerf" Content="Remove Ultimate Performance Profile" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
-<Label Content="Shortcuts" FontSize="16"/>
+<Label Name="WPFLabelShortcuts" Content="Shortcuts" FontSize="16"/>
 <Button Name="WPFWinUtilShortcut" Content="Create WinUtil Shortcut" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 
 </StackPanel>
@@ -13998,7 +14031,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </Grid.ColumnDefinitions>
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Features" FontSize="16"/>
+<Label Name="WPFLabelFeatures" Content="Features" FontSize="16"/>
 <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0"  ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
 <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0"  ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
 <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0"  ToolTip="Enables legacy programs from previous versions of windows"/>
@@ -14011,7 +14044,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0"  ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
 <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0"  ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
 <Button Name="WPFFeatureInstall" Content="Install Features" HorizontalAlignment = "Left" Width="150" Margin="5" Padding="20,5" />
-<Label Content="Fixes" FontSize="16"/>
+<Label Name="WPFLabelFixes" Content="Fixes" FontSize="16"/>
 <Button Name="WPFPanelAutologin" Content="Set Up Autologin" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Button Name="WPFFixesUpdate" Content="Reset Windows Update" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
 <Button Name="WPFFixesNetwork" Content="Reset Network" HorizontalAlignment = "Left" Width="300" Margin="5" Padding="20,5" />
@@ -14023,7 +14056,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Legacy Windows Panels" FontSize="16"/>
+<Label Name="WPFLabelLegacyWindowsPanels" Content="Legacy Windows Panels" FontSize="16"/>
 <Button Name="WPFPanelcontrol" Content="Control Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
 <Button Name="WPFPanelnetwork" Content="Network Connections" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
 <Button Name="WPFPanelpower" Content="Power Panel" HorizontalAlignment = "Left" Width="200" Margin="5" Padding="20,5" />
@@ -14621,6 +14654,16 @@ Add-Type @"
 
 })
 
+# Load Checkboxes and Labels outside of the Filter fuction only once on startup for performance reasons
+$filter = Get-WinUtilVariables -Type CheckBox
+$CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+
+$filter = Get-WinUtilVariables -Type Label
+$labels = @{}
+$sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
+
+$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
+
 $sync["CheckboxFilter"].Add_TextChanged({
 
     if ($sync.CheckboxFilter.Text -ne "") {
@@ -14630,8 +14673,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
         $sync.CheckboxFilterClear.Visibility = "Collapsed"
     }
 
-    $filter = Get-WinUtilVariables -Type CheckBox
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    $activeApplications = @()
 
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
@@ -14648,6 +14690,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
+            $activeApplications += $sync.configs.applications.$checkboxName
              # Set the corresponding text block visibility
             if ($textBlock -ne $null) {
                 $textBlock.Visibility = "Visible"
@@ -14661,7 +14704,21 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
+    $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
+    foreach ($category in $activeCategories){
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
+        $label.Visibility = "Visible"
+    }
+    if ($activeCategories){
+        $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
+    }
+    else{
+        $inactiveCategories = $allCategories
+    }
+    foreach ($category in $inactiveCategories){
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
+        $label.Visibility = "Collapsed"}
 })
 
 # Define event handler for button click
