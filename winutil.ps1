@@ -3465,7 +3465,7 @@ function Invoke-WPFGetIso {
         return
     }
 
-  $sync.BusyMessage.Visibility="Visible"
+    $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
 
 
@@ -3476,10 +3476,6 @@ function Invoke-WPFGetIso {
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
-   if( ! (Test-Path $oscdimgPath -PathType Leaf)  ) {
-   $oscdimgPath = Join-Path '.\releases\' 'oscdimg.exe'   
-}
-
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
     
@@ -4094,26 +4090,27 @@ public class PowerManagement {
 		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
 		New-Item -ItemType Directory -Force -Path "$desktopDir"
 	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-		$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-		$shortcutPath = "$desktopDir\WinUtil.lnk"
-		$shell = New-Object -ComObject WScript.Shell
-		$shortcut = $shell.CreateShortcut($shortcutPath)
 
-		if (Test-Path -Path "$env:TEMP\cttlogo.png")
-		{
-			$pngPath = "$env:TEMP\cttlogo.png"
-			$icoPath = "$env:TEMP\cttlogo.ico"
-			ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
-			Write-Host "ICO file created at: $icoPath"
-			Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-			Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
-			$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
-		}
+		# $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+		# $shortcutPath = "$desktopDir\WinUtil.lnk"
+		# $shell = New-Object -ComObject WScript.Shell
+		# $shortcut = $shell.CreateShortcut($shortcutPath)
 
-		$shortcut.TargetPath = "powershell.exe"
-		$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-		$shortcut.Save()
-		Write-Host "Shortcut to winutil created at: $shortcutPath"
+		# if (Test-Path -Path "$env:TEMP\cttlogo.png")
+		# {
+		# 	$pngPath = "$env:TEMP\cttlogo.png"
+		# 	$icoPath = "$env:TEMP\cttlogo.ico"
+		# 	ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
+		# 	Write-Host "ICO file created at: $icoPath"
+		# 	Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
+		# 	Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
+		# 	$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
+		# }
+
+		# $shortcut.TargetPath = "powershell.exe"
+		# $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+		# $shortcut.Save()
+		# Write-Host "Shortcut to winutil created at: $shortcutPath"
 		# *************************** Automation black ***************************
 
 		Write-Host "Copy checkinstall.cmd into the ISO"
@@ -13895,20 +13892,29 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             </TextBlock>
                             <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
                                 ToolTip="Use ISO directory for ScratchDir " />
-
-                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
-                              <Button.Content>
+                            <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
+                                <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
+                            </Grid.ColumnDefinitions>
                                 <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                    Text="Scratch" Padding="0"
-                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
-                                    Margin="0,0,0,3" HorizontalAlignment="Left"
-                                    IsReadOnly="False"
-                                    Height="Auto"
-                                    Width="110"
-                                    Foreground="{ButtonForegroundColor}"
-                                  />
-                              </Button.Content>
-                            </Button>
+                                        Text="Scratch"
+                                        Margin="2"
+                                        IsReadOnly="False"
+                                        ToolTip="Alt Path For Scratch Directory"
+                                        Grid.Column="0" 
+                                        VerticalAlignment="Center"
+                                        Foreground="{LabelboxForegroundColor}">
+                                </TextBox>
+                                <Button Name="MicrowinScratchDirBT" 
+                                    Grid.Column="1" 
+                                    Margin="2" 
+                                    Padding="1"  VerticalAlignment="Center">
+                                    <Button.Content>
+                                    ...
+                                    </Button.Content>
+                                </Button>
+                            </Grid>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
