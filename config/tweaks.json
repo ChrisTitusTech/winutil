@@ -2363,7 +2363,7 @@
     ]
   },
   "WPFTweaksRemoveCopilot": {
-    "Content": "Disables Microsoft Copilot",
+    "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
