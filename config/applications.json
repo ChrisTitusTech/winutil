@@ -2380,7 +2380,7 @@
 		"choco": "voicemeeter",
 		"content": "Voicemeeter (Audio)",
 		"description": "Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes.",
-		"link": "https://www.vb-audio.com/Voicemeeter/",
+		"link": "https://voicemeeter.com/",
 		"winget": "VB-Audio.Voicemeeter"
 	},
 	"WPFInstallvrdesktopstreamer": {
