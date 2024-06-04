@@ -77,7 +77,13 @@ function Get-TabXaml {
                     $panelcount++
                 }
             }
-            $blockXml += "<Label Content=""$($category -replace '^.__', '')"" FontSize=""16""/>`n"
+
+            # Dot-source the Get-WPFObjectName function
+            . .\functions\private\Get-WPFObjectName
+            
+            $categorycontent = $($category -replace '^.__', '')
+            $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
+            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
@@ -91,8 +97,8 @@ function Get-TabXaml {
                 }
                 $appInfo = $organizedData[$panel][$category][$appName]
                 if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,10,0,0`">`n<Label Content=`"$($appInfo.Content)`" Style=`"{StaticResource labelfortweaks}`" ToolTip=`"$($appInfo.Description)`" />`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`"/>`n</StackPanel>`n"
+                    $blockXml += "<DockPanel LastChildFill=`"True`">`n<Label Content=`"$($appInfo.Content)`" ToolTip=`"$($appInfo.Description)`" HorizontalAlignment=`"Left`"/>`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`" HorizontalAlignment=`"Right`"/>`n</DockPanel>`n"
                 } elseif ("Combobox" -eq $appInfo.Type) {
                     $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
                     $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"

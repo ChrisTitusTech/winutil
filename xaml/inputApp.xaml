@@ -7,7 +7,10 @@
 </Grid.ColumnDefinitions>
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<Label Content="Browsers" FontSize="16"/>
+<Label Name="WPFLabelBrowsers" Content="Browsers" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallarc" Content="Arc" ToolTip="Arc is a Chromium based browser, known for it&#39;s clean and modern design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallarcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://arc.net/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbrave" Content="Brave" ToolTip="Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbraveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.brave.com" />
 </StackPanel>
@@ -53,7 +56,10 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwaterfox" Content="Waterfox" ToolTip="Waterfox is a fast, privacy-focused web browser based on Firefox, designed to preserve user choice and privacy." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwaterfoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.waterfox.net/" />
 </StackPanel>
-<Label Content="Communications" FontSize="16"/>
+<Label Name="WPFLabelCommunications" Content="Communications" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallbetterbird" Content="Betterbird" ToolTip="Betterbird is a fork of Mozilla Thunderbird with additional features and bugfixes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbetterbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.betterbird.eu/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallchatterino" Content="Chatterino" ToolTip="Chatterino is a chat client for Twitch chat that offers a clean and customizable interface for a better streaming experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallchatterinoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.chatterino.com/" />
 </StackPanel>
@@ -76,7 +82,7 @@
 <CheckBox Name="WPFInstalllinphone" Content="Linphone" ToolTip="Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinphoneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.linphone.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallmatrix" Content="Matrix" ToolTip="Matrix is an open network for secure, decentralized communication with features like chat, VoIP, and collaboration tools." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
+<CheckBox Name="WPFInstallmatrix" Content="Element" ToolTip="Element is a client for Matrix?an open network for secure, decentralized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallqtox" Content="QTox" ToolTip="QTox is a free and open-source messaging app that prioritizes user privacy and security in its design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqtoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qtox.github.io/" />
@@ -109,16 +115,10 @@
 <CheckBox Name="WPFInstallunigram" Content="Unigram" ToolTip="Unigram - Telegram for Windows" Margin="0,0,2,0"/><TextBlock Name="WPFInstallunigramLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://unigramdev.github.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvencord" Content="Vencord" ToolTip="Vencord is a modification for Discord that adds plugins, custom styles, and more!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallvencordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://vencord.dev/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvesktop" Content="Vesktop" ToolTip="A cross platform electron-based desktop app aiming to give you a snappier Discord experience with Vencord pre-installed." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Vencord/Vesktop" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallviber" Content="Viber" ToolTip="Viber is a free messaging and calling app with features like group chats, video calls, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallviberLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.viber.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallwhatsapp" Content="Whatsapp" ToolTip="WhatsApp Desktop is a desktop version of the popular messaging app, allowing users to send and receive messages, share files, and connect with contacts from their computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwhatsappLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.whatsapp.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzoom" Content="Zoom" ToolTip="Zoom is a popular video conferencing and web conferencing service for online meetings, webinars, and collaborative projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoomLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zoom.us/" />
@@ -126,7 +126,7 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzulip" Content="Zulip" ToolTip="Zulip is an open-source team collaboration tool with chat streams for productive and organized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzulipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zulipchat.com/" />
 </StackPanel>
-<Label Content="Development" FontSize="16"/>
+<Label Name="WPFLabelDevelopment" Content="Development" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanaconda3" Content="Anaconda" ToolTip="Anaconda is a distribution of the Python and R programming languages for scientific computing." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanaconda3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.anaconda.com/products/distribution" />
 </StackPanel>
@@ -143,6 +143,9 @@
 <CheckBox Name="WPFInstalldockerdesktop" Content="Docker Desktop" ToolTip="Docker Desktop is a powerful tool for containerized application development and deployment." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldockerdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.docker.com/products/docker-desktop" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfnm" Content="Fast Node Manager" ToolTip="Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfnmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Schniz/fnm" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgit" Content="Git" ToolTip="Git is a distributed version control system widely used for tracking changes in source code during software development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-scm.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -153,6 +156,12 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgithubdesktop" Content="GitHub Desktop" ToolTip="GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgithubdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://desktop.github.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgitkrakenclient" Content="GitKraken Client" ToolTip="GitKraken Client is a powerful visual Git client from Axosoft that works with ALL git repositories on any hosting environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgitkrakenclientLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.gitkraken.com/git-client" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallgodotengine" Content="Godot Engine" ToolTip="Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgodotengineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://godotengine.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgolang" Content="GoLang" ToolTip="GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://golang.org/" />
@@ -202,16 +211,19 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnodejs" Content="NodeJS" ToolTip="NodeJS is a JavaScript runtime built on Chrome&#39;s V8 JavaScript engine for building server-side and networking applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnodejslts" Content="NodeJS LTS" ToolTip="NodeJS LTS provides Long-Term Support releases for stable and reliable server-side JavaScript development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnodejsltsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nodejs.org/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallnvm" Content="Node Version Manager" ToolTip="Node Version Manager (NVM) for Windows allows you to easily switch between multiple Node.js versions." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/coreybutler/nvm-windows" />
+<CheckBox Name="WPFInstallpixi" Content="Pixi" ToolTip="Pixi is a fast software package manager built on top of the existing conda ecosystem. Spins up development environments quickly on Windows, macOS and Linux. Pixi supports Python, R, C/C++, Rust, Ruby, and many other languages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpixiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pixi.sh" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
@@ -267,9 +279,12 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallyarn" Content="Yarn" ToolTip="Yarn is a fast, reliable, and secure dependency management tool for JavaScript projects." Margin="0,0,2,0"/><TextBlock Name="WPFInstallyarnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://yarnpkg.com/" />
 </StackPanel>
-<Label Content="Document" FontSize="16"/>
+<Label Name="WPFLabelDocument" Content="Document" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladobe" Content="Adobe Acrobat Reader" ToolTip="Adobe Acrobat Reader is a free PDF viewer with essential features for viewing, printing, and annotating PDF documents." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.adobe.com/acrobat/pdf-reader.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallaffine" Content="AFFiNE" ToolTip="AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaffineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://affine.pro/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanki" Content="Anki" ToolTip="Anki is a flashcard application that helps you memorize information with intelligent spaced repetition." Margin="0,0,2,0"/><TextBlock Name="WPFInstallankiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://apps.ankiweb.net/" />
@@ -343,7 +358,7 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallzotero" Content="Zotero" ToolTip="Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share your research materials." Margin="0,0,2,0"/><TextBlock Name="WPFInstallzoteroLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.zotero.org/" />
 </StackPanel>
-<Label Content="Games" FontSize="16"/>
+<Label Name="WPFLabelGames" Content="Games" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallATLauncher" Content="ATLauncher" ToolTip="ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly." Margin="0,0,2,0"/><TextBlock Name="WPFInstallATLauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ATLauncher/ATLauncher" />
 </StackPanel>
@@ -401,11 +416,6 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallTcNoAccSwitcher" Content="TCNO Account Switcher" ToolTip="A Super-fast account switcher for Steam, Battle.net, Epic Games, Origin, Riot, Ubisoft and many others!" Margin="0,0,2,0"/><TextBlock Name="WPFInstallTcNoAccSwitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/TCNOco/TcNo-Acc-Switcher" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="2">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallubisoft" Content="Ubisoft Connect" ToolTip="Ubisoft Connect is Ubisoft&#39;s digital distribution and online gaming service, providing access to Ubisoft&#39;s games and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallubisoftLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ubisoftconnect.com/" />
 </StackPanel>
@@ -415,10 +425,15 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxemu" Content="XEMU" ToolTip="XEMU is an open-source Xbox emulator that allows you to play Xbox games on your PC, aiming for accuracy and compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xemu.app/" />
 </StackPanel>
-<Label Content="Microsoft Tools" FontSize="16"/>
+<Label Name="WPFLabelMicrosoftTools" Content="Microsoft Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautoruns" Content="Autoruns" ToolTip="This utility shows you what programs are configured to run during system bootup or login" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautorunsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallazuredatastudio" Content="Microsoft Azure Data Studio" ToolTip="Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux." Margin="0,0,2,0"/><TextBlock Name="WPFInstallazuredatastudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio" />
 </StackPanel>
@@ -459,6 +474,9 @@
 <CheckBox Name="WPFInstallprocessmonitor" Content="SysInternals Process Monitor" ToolTip="SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallprocessmonitorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.microsoft.com/en-us/sysinternals/downloads/procmon" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallrdcman" Content="RDCMan" ToolTip="RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrdcmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsqlmanagementstudio" Content="Microsoft SQL Server Management Studio" ToolTip="SQL Server Management Studio (SSMS) is an integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database. SSMS provides tools to configure, monitor, and administer instances of SQL Server and databases." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsqlmanagementstudioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -473,7 +491,7 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvc2015_64" Content="Visual C++ 2015-2022 64-bit" ToolTip="Visual C++ 2015-2022 64-bit redistributable package installs runtime components of Visual C++ libraries required to run 64-bit applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvc2015_64Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads" />
 </StackPanel>
-<Label Content="Multimedia Tools" FontSize="16"/>
+<Label Name="WPFLabelMultimediaTools" Content="Multimedia Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallaimp" Content="AIMP (Music Player)" ToolTip="AIMP is a feature-rich music player with support for various audio formats, playlists, and customizable user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallaimpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.aimp.ru/" />
 </StackPanel>
@@ -494,6 +512,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalleartrumpet" Content="EarTrumpet (Audio)" ToolTip="EarTrumpet is an audio control app for Windows, providing a simple and intuitive interface for managing sound settings." Margin="0,0,2,0"/><TextBlock Name="WPFInstalleartrumpetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://eartrumpet.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallEqualizerAPO" Content="Equalizer APO" ToolTip="Equalizer APO is a parametric / graphic equalizer for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallEqualizerAPOLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sourceforge.net/projects/equalizerapo" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallffmpeg" Content="FFmpeg (full)" ToolTip="FFmpeg is a powerful multimedia processing tool that enables users to convert, edit, and stream audio and video files with a vast range of codecs and formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallffmpegLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ffmpeg.org/" />
@@ -538,7 +559,7 @@
 <CheckBox Name="WPFInstallitunes" Content="iTunes" ToolTip="iTunes is a media player, media library, and online radio broadcaster application developed by Apple Inc." Margin="0,0,2,0"/><TextBlock Name="WPFInstallitunesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.apple.com/itunes/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-playerf" />
+<CheckBox Name="WPFInstalljellyfinmediaplayer" Content="Jellyfin Media Player" ToolTip="Jellyfin Media Player is a client application for the Jellyfin media server, providing access to your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinmediaplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/jellyfin/jellyfin-media-player" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljellyfinserver" Content="Jellyfin Server" ToolTip="Jellyfin Server is an open-source media server software, allowing you to organize and stream your media library." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljellyfinserverLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://jellyfin.org/" />
@@ -559,6 +580,9 @@
 <CheckBox Name="WPFInstalllightshot" Content="Lightshot (Screenshots)" ToolTip="Ligthshot is an Easy-to-use, light-weight screenshot software tool, where you can optionally edit your screenshots using different tools, share them via Internet and/or save to disk, and customize the available options." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllightshotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://app.prntscr.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmp3tag" Content="Mp3tag (Metadata Audio Editor)" ToolTip="Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmp3tagLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mp3tag.de/en/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -566,6 +590,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmusicbee" Content="MusicBee (Music Player)" ToolTip="MusicBee is a customizable music player with support for various audio formats. It includes features like an integrated search function, tag editing, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmusicbeeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getmusicbee.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnditools" Content="NDI Tools" ToolTip="NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnditoolsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ndi.video/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnglide" Content="nGlide (3dfx compatibility)" ToolTip="nGlide is a 3Dfx Voodoo Glide wrapper. It allows you to play games that use Glide API on modern graphics cards without the need for a 3Dfx Voodoo graphics card." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnglideLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.zeus-software.com/downloads/nglide" />
@@ -592,6 +619,15 @@
 <CheckBox Name="WPFInstallsharex" Content="ShareX (Screenshots)" ToolTip="ShareX is a free and open-source screen capture and file sharing tool. It supports various capture methods and offers advanced features for editing and sharing screenshots." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsharexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getsharex.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsmplayer" Content="SMPlayer" ToolTip="SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsmplayerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.smplayer.info" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspotify" Content="Spotify" ToolTip="Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotifyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spotify.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspotube" Content="Spotube" ToolTip="Open source Spotify client that doesn&#39;t require Premium nor uses Electron! Available for both desktop &#38; mobile! " Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotubeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/KRTirtho/spotube" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.strawberrymusicplayer.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -606,18 +642,18 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvlc" Content="VLC (Video Player)" ToolTip="VLC Media Player is a free and open-source multimedia player that supports a wide range of audio and video formats. It is known for its versatility and cross-platform compatibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvlcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.videolan.org/vlc/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://voicemeeter.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
+</StackPanel>
+<Label Name="WPFLabelProTools" Content="Pro Tools" FontSize="16"/>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.vb-audio.com/Voicemeeter/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
-</StackPanel>
-<Label Content="Pro Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
 </StackPanel>
@@ -632,6 +668,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallnetbird" Content="NetBird" ToolTip="NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnetbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://netbird.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnmap" Content="Nmap" ToolTip="Nmap (Network Mapper) is an open-source tool for network exploration and security auditing. It discovers devices on a network and provides information about their ports and services." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnmapLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nmap.org/" />
@@ -666,7 +705,11 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxpipe" Content="XPipe" ToolTip="XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxpipeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xpipe.io/" />
 </StackPanel>
-<Label Content="Utilities" FontSize="16"/>
+<Label Name="WPFLabelUtilies" Content="Utilies" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsagethumbs" Content="SageThumbs" ToolTip="Provides support for thumbnails in Explorer with more formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsagethumbsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sagethumbs.en.lo4d.com/windows" />
+</StackPanel>
+<Label Name="WPFLabelUtilities" Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
 </StackPanel>
@@ -678,9 +721,6 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" ToolTip="AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanydeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://anydesk.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallauthy" Content="Authy" ToolTip="Simple and cross-platform 2FA app" Margin="0,0,2,0"/><TextBlock Name="WPFInstallauthyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://authy.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallautodarkmode" Content="Windows Auto Dark Mode" ToolTip="Automatically switches between the dark and light theme of Windows 10 and Windows 11" Margin="0,0,2,0"/><TextBlock Name="WPFInstallautodarkmodeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/AutoDarkMode/Windows-Auto-Night-Mode" />
@@ -704,6 +744,9 @@
 <CheckBox Name="WPFInstallbleachbit" Content="BleachBit" ToolTip="Clean Your System and Free Disk Space" Margin="0,0,2,0"/><TextBlock Name="WPFInstallbleachbitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bleachbit.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallBorderlessGaming" Content="Borderless Gaming" ToolTip="Play your favorite games in a borderless window; no more time consuming alt-tabs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallBorderlessGamingLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Codeusa/Borderless-Gaming" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbulkcrapuninstaller" Content="Bulk Crap Uninstaller" ToolTip="Bulk Crap Uninstaller is a free and open-source uninstaller utility for Windows. It helps users remove unwanted programs and clean up their system by uninstalling multiple applications at once." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbulkcrapuninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bcuninstaller.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -714,6 +757,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcarnac" Content="Carnac" ToolTip="Carnac is a keystroke visualizer for Windows. It displays keystrokes in an overlay, making it useful for presentations, tutorials, and live demonstrations." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcarnacLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://carnackeys.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallCompactGUI" Content="Compact GUI" ToolTip="Transparently compress active games and programs using Windows 10/11 APIs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallCompactGUILink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/IridiumIO/CompactGUI" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcopyq" Content="CopyQ (Clipboard Manager)" ToolTip="CopyQ is a clipboard manager with advanced features, allowing you to store, edit, and retrieve clipboard history." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcopyqLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://copyq.readthedocs.io/" />
@@ -737,6 +783,9 @@
 <CheckBox Name="WPFInstalldevtoys" Content="DevToys" ToolTip="DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldevtoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://devtoys.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallditto" Content="Ditto" ToolTip="Ditto is an extension to the standard windows clipboard." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldittoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ditto-cp.sourceforge.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldmt" Content="Dual Monitor Tools" ToolTip="Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldmtLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dualmonitortool.sourceforge.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -755,7 +804,16 @@
 <CheckBox Name="WPFInstalletcher" Content="Etcher USB Creator" ToolTip="Etcher is a powerful tool for creating bootable USB drives with ease." Margin="0,0,2,0"/><TextBlock Name="WPFInstalletcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.balena.io/etcher/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallExifCleaner" Content="ExifCleaner" ToolTip="Desktop app to clean metadata from images, videos, PDFs, and other files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallExifCleanerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/szTheory/exifcleaner" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfancontrol" Content="FanControl" ToolTip="Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfancontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getfancontrol.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfileconverter" Content="File-Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfiles" Content="Files" ToolTip="Alternative file explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfilesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/files-community/Files" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallflow" Content="Flow launcher" ToolTip="Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallflowLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.flowlauncher.com/" />
@@ -764,10 +822,19 @@
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallForceAutoHDR" Content="GUI That Forces Auto HDR In Unsupported Games" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallFreeFileSync" Content="FreeFileSync" ToolTip="Synchronize Files and Folders" Margin="0,0,2,0"/><TextBlock Name="WPFInstallFreeFileSyncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://freefilesync.org" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfzf" Content="Fzf" ToolTip="A command-line fuzzy finder" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfzfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/junegunn/fzf/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallglaryutilities" Content="Glary Utilities" ToolTip="Glary Utilities is a comprehensive system optimization and maintenance tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallglaryutilitiesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.glarysoft.com/glary-utilities/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallglazewm" Content="GlazeWM" ToolTip="GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar" Margin="0,0,2,0"/><TextBlock Name="WPFInstallglazewmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/glzr-io/glazewm" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallgoogledrive" Content="Google Drive" ToolTip="File syncing across devices all tied to your google account" Margin="0,0,2,0"/><TextBlock Name="WPFInstallgoogledriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.google.com/drive/" />
@@ -796,6 +863,11 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
@@ -805,11 +877,6 @@
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
@@ -830,6 +897,9 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallMotrix" Content="Motrix Download Manager" ToolTip="A full-featured download manager." Margin="0,0,2,0"/><TextBlock Name="WPFInstallMotrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://motrix.app/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmsedgeredirect" Content="MSEdgeRedirect" ToolTip="A Tool to Redirect News, Search, Widgets, Weather, and More to Your Default Browser." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsedgeredirectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/rcmaehl/MSEdgeRedirect" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmsiafterburner" Content="MSI Afterburner" ToolTip="MSI Afterburner is a graphics card overclocking utility with advanced features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmsiafterburnerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.msi.com/Landing/afterburner" />
@@ -922,9 +992,6 @@
 <CheckBox Name="WPFInstallspacesniffer" Content="SpaceSniffer" ToolTip="A tool application that lets you understand how folders and files are structured on your disks" Margin="0,0,2,0"/><TextBlock Name="WPFInstallspacesnifferLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://www.uderzo.it/main_products/space_sniffer/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallstartallback" Content="StartAllBack" ToolTip="StartAllBack is a Tool that can be used to edit the Windows appearance by your liking (Taskbar, Start Menu, File Explorer, Control Panel, Context Menu ...)" Margin="0,0,2,0"/><TextBlock Name="WPFInstallstartallbackLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.startallback.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsuperf4" Content="SuperF4" ToolTip="SuperF4 is a utility that allows you to terminate programs instantly by pressing a customizable hotkey." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsuperf4Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://stefansundin.github.io/superf4/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -965,6 +1032,12 @@
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvistaswitcher" Content="VistaSwitcher" ToolTip="VistaSwitcher makes it easier for you to locate windows and switch focus, even on multi-monitor systems. The switcher window consists of an easy-to-read list of all tasks running with clearly shown titles and a full-sized preview of the selected task." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvistaswitcherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ntwind.com/freeware/vistaswitcher.html" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallwazuh" Content="Wazuh." ToolTip="Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwazuhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://wazuh.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />

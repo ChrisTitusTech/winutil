@@ -53,6 +53,8 @@ function Install-WinUtilWinget {
         Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
         # In case install fails via GitHub method.
         Try {
+        # Install Choco if not already present
+        Install-WinUtilChoco
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Output "Refreshing Environment Variables...`n"

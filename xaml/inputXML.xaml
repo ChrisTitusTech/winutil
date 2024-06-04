@@ -295,7 +295,7 @@
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <Grid Background="{TemplateBinding Background}">
+                        <Grid Background="{TemplateBinding Background}" Margin="6,0,0,0">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
                                     <Grid Width="16" Height="16">
@@ -403,86 +403,93 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Grid x:Name="toggleSwitch">
-                            <Border x:Name="Border" CornerRadius="10"
-                                    Background="#FFFFFFFF"
-                                    Width="70" Height="25">
-                                <Border.Effect>
-                                    <DropShadowEffect ShadowDepth="0.5" Direction="0" Opacity="0.3" />
-                                </Border.Effect>
-                                <Ellipse x:Name="Ellipse" Fill="#FFFFFFFF" Stretch="Uniform"
-                                        Margin="2 2 2 1"
-                                        Stroke="Gray" StrokeThickness="0.2"
-                                        HorizontalAlignment="Left" Width="22">
-                                    <Ellipse.Effect>
-                                        <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3" Direction="260" />
-                                    </Ellipse.Effect>
-                                </Ellipse>
-                            </Border>
+                    
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" x:Name="txtToggle" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{MainForegroundColor}" FontSize="12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Off"/>
+                                <Setter Property="Margin" Value="4,0,4,0"/>
+                                    <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsChecked}" Value="True">
+                                        <Setter Property="Text" Value="On"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        </TextBlock>
 
-                            <TextBlock x:Name="txtDisable" Text="Disable " VerticalAlignment="Center" FontWeight="DemiBold" HorizontalAlignment="Right" Foreground="White" FontSize="12" />
-                            <TextBlock x:Name="txtEnable" Text="  Enable" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="White" HorizontalAlignment="Left" FontSize="12" />
+                        <Border Grid.Column="1" x:Name="Border" CornerRadius="8"
+                                BorderThickness="1"
+                                Width="34" Height="17">
+                            <Ellipse x:Name="Ellipse" Fill="{MainForegroundColor}" Stretch="Uniform"
+                                    Margin="2,2,2,1"
+                                    HorizontalAlignment="Left" Width="12">
+                            </Ellipse>
+                        </Border>
                         </Grid>
 
                         <ControlTemplate.Triggers>
-                            <Trigger Property="ToggleButton.IsChecked" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="#C2283B" />
-                                <Setter TargetName="Ellipse" Property="Margin" Value="2 2 2 1" />
-                                <Setter TargetName="txtDisable" Property="Opacity" Value="1.0" />
-                                <Setter TargetName="txtEnable" Property="Opacity" Value="0.0" />
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
+                                <Setter TargetName="Border" Property="Background" Value="{LinkHoverForegroundColor}"/>
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Panel.ZIndex" Value="1000"/>
                             </Trigger>
+                            <Trigger Property="ToggleButton.IsChecked" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
 
+                            </Trigger>
+                            
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
+
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <ColorAnimation Storyboard.TargetName="Border"
                                                     Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#34A543" Duration="0:0:0.1" />
+                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />
+                                            <ColorAnimation Storyboard.TargetName="Border"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />                                                    
 
+                                            <ColorAnimation Storyboard.TargetName="Ellipse"
+                                                    Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"
+                                                    To="White" Duration="0:0:0.1" />                                                    
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="46 2 2 1" Duration="0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
+                                                    To="18,2,2,2" Duration="0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
-
-                                <!-- Some out fading -->
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <ColorAnimation Storyboard.TargetName="Border"
                                                     Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="#C2283B" Duration="0:0:0.1" />
+                                                    To="{MainBackgroundColor}" Duration="0:0:0.1" />
 
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
-                                                    To="2 2 2 1" Duration="0:0:0.1" />
+                                                    To="2,2,2,1" Duration="0:0:0.1" />
 
-                                            <DoubleAnimation Storyboard.TargetName="txtDisable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="1.0" Duration="0:0:0:0.1" />
-
-                                            <DoubleAnimation Storyboard.TargetName="txtEnable"
-                                                    Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                    To="0.0" Duration="0:0:0:0.1" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
-
-                                <Setter Property="Foreground" Value="{DynamicResource IdealForegroundColorBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -490,6 +497,7 @@
             </Setter>
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
+
         <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="{MainForegroundColor}" />
             <Setter Property="Background" Value="{MainBackgroundColor}" />
@@ -718,8 +726,7 @@
                     {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Label Content="Recommended Selections:" FontSize="14" VerticalAlignment="Center"/>
-                        <Button Name="WPFdesktop" Content=" Desktop " Margin="1"/>
-                        <Button Name="WPFlaptop" Content=" Laptop " Margin="1"/>
+                        <Button Name="WPFstandard" Content=" Standard " Margin="1"/>
                         <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
                         <Button Name="WPFclear" Content=" Clear " Margin="1"/>
                         <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
@@ -795,20 +802,29 @@
                             </TextBlock>
                             <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
                                 ToolTip="Use ISO directory for ScratchDir " />
-
-                            <Button Name="MicrowinScratchDirBT" Margin="2" Padding="1">
-                              <Button.Content>
+                            <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
+                                <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
+                            </Grid.ColumnDefinitions>
                                 <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                    Text="Scratch" Padding="0"
-                                    ToolTip="Alt Path For Scratch Directory" BorderThickness="1"
-                                    Margin="0,0,0,3" HorizontalAlignment="Left"
-                                    IsReadOnly="False"
-                                    Height="Auto"
-                                    Width="110"
-                                    Foreground="{ButtonForegroundColor}"
-                                  />
-                              </Button.Content>
-                            </Button>
+                                        Text="Scratch"
+                                        Margin="2"
+                                        IsReadOnly="False"
+                                        ToolTip="Alt Path For Scratch Directory"
+                                        Grid.Column="0" 
+                                        VerticalAlignment="Center"
+                                        Foreground="{LabelboxForegroundColor}">
+                                </TextBox>
+                                <Button Name="MicrowinScratchDirBT" 
+                                    Grid.Column="1" 
+                                    Margin="2" 
+                                    Padding="1"  VerticalAlignment="Center">
+                                    <Button.Content>
+                                    ...
+                                    </Button.Content>
+                                </Button>
+                            </Grid>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
@@ -843,6 +859,7 @@
                                 Foreground="{LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="5,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
