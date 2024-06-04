@@ -4399,12 +4399,14 @@ function Invoke-WPFOOSU {
             Start-Process $OOSU_filepath
         }
         "recommended"{
-            New-Item -Path $ENV:temp\ooshutup10_recommended.cfg -ItemType File -Value $sync.configs.ooshutup10_recommended -Force
+            $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
-            New-Item -Path $ENV:temp\ooshutup10_factory.cfg -ItemType File -Value $sync.configs.ooshutup10_factory -Force
+            $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
@@ -11750,22 +11752,6 @@ E005	-
 E013	-
 E014	-
 E006	-
-F002	-
-F014	-
-F015	-
-F016	-
-F001	-
-F003	-
-F004	-
-F005	-
-F007	-
-F008	-
-F009	-
-F006	-
-F010	-
-F011	-
-F012	-
-F013	-
 Y001	-
 Y002	-
 Y003	-
@@ -11815,7 +11801,6 @@ S014	-
 K001	-
 K002	-
 K005	-
-M025	-
 M003	-
 M015	-
 M016	-
@@ -11869,8 +11854,8 @@ P067	+
 P070	+
 P069	+
 P009	-
-P010	-
-P015	-
+P010	+
+P015	+
 P068	-
 P016	-
 A001	+
@@ -11884,7 +11869,7 @@ P036	+
 P025	+
 P033	+
 P023	+
-P056	-
+P056	+
 P057	-
 P012	-
 P034	-
@@ -11937,7 +11922,7 @@ P077	-
 P078	-
 P079	-
 P080	-
-P024	-
+P024	+
 S001	+
 S002	+
 S003	+
@@ -11994,22 +11979,6 @@ E005	-
 E013	-
 E014	-
 E006	-
-F002	+
-F014	+
-F015	+
-F016	+
-F001	+
-F003	+
-F004	+
-F005	+
-F007	+
-F008	+
-F009	+
-F006	-
-F010	-
-F011	-
-F012	-
-F013	-
 Y001	+
 Y002	+
 Y003	+
@@ -12045,12 +12014,12 @@ W004	-
 W005	-
 W010	-
 W009	-
-P017	-
+P017	+
 W006	-
 W008	-
 M006	+
 M011	-
-M010	-
+M010	+
 O003	-
 O001	-
 S012	-
@@ -12059,15 +12028,14 @@ S014	-
 K001	+
 K002	+
 K005	+
-M025	+
 M003	-
-M015	-
+M015	+
 M016	-
 M017	-
-M018	-
+M018	+
 M019	-
-M020	-
-M021	-
+M020	+
+M021	+
 M022	+
 M001	+
 M004	+
