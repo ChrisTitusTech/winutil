@@ -5570,14 +5570,6 @@ $sync.configs.applications = '{
     "link": "https://copyq.readthedocs.io/",
     "winget": "hluk.CopyQ"
   },
-  "WPFInstallditto": {
-    "category": "Utilities",
-    "choco": "ditto",
-    "content": "Ditto (Clipboard Manager)",
-    "description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
-    "link": "https://github.com/sabrogden/Ditto",
-    "winget": "Ditto.Ditto"
-  },
   "WPFInstallcpuz": {
     "category": "Utilities",
     "choco": "cpu-z",
@@ -5665,6 +5657,14 @@ $sync.configs.applications = '{
     "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
     "link": "https://discord.com/",
     "winget": "Discord.Discord"
+  },
+  "WPFInstallditto": {
+    "category": "Utilities",
+    "choco": "ditto",
+    "content": "Ditto",
+    "description": "Ditto is an extension to the standard windows clipboard.",
+    "link": "https://ditto-cp.sourceforge.io/",
+    "winget": "Ditto.Ditto"
   },
   "WPFInstalldockerdesktop": {
     "category": "Development",
@@ -5836,11 +5836,19 @@ $sync.configs.applications = '{
   },
   "WPFInstallfileconverter": {
     "category": "Utilities",
-    "choco": "files",
+    "choco": "file-converter",
     "content": "File-Converter",
     "description": "File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer.",
     "link": "https://file-converter.io/",
     "winget": "AdrienAllard.FileConverter"
+  },
+  "WPFInstallfiles": {
+    "category": "Utilities",
+    "choco": "files",
+    "content": "Files",
+    "description": "Alternative file explorer.",
+    "link": "https://github.com/files-community/Files",
+    "winget": "na"
   },
   "WPFInstallfirealpaca": {
     "category": "Multimedia Tools",
@@ -7114,6 +7122,14 @@ $sync.configs.applications = '{
     "link": "https://www.rust-lang.org/",
     "winget": "Rustlang.Rust.MSVC"
   },
+  "WPFInstallsagethumbs": {
+    "category": "Utilies",
+    "choco": "sagethumbs",
+    "content": "SageThumbs",
+    "description": "Provides support for thumbnails in Explorer with more formats.",
+    "link": "https://sagethumbs.en.lo4d.com/windows",
+    "winget": "CherubicSoftware.SageThumbs"
+  },
   "WPFInstallsamsungmagician": {
     "category": "Utilities",
     "choco": "samsung-magician",
@@ -7233,6 +7249,14 @@ $sync.configs.applications = '{
     "description": "A tool application that lets you understand how folders and files are structured on your disks",
     "link": "http://www.uderzo.it/main_products/space_sniffer/",
     "winget": "UderzoSoftware.SpaceSniffer"
+  },
+  "WPFInstallspotube": {
+    "category": "Multimedia Tools",
+    "choco": "spotube",
+    "content": "Spotube",
+    "description": "Open source Spotify client that doesn&#39;t require Premium nor uses Electron! Available for both desktop &#38; mobile! ",
+    "link": "https://github.com/KRTirtho/spotube",
+    "winget": "KRTirtho.Spotube"
   },
   "WPFInstallstarship": {
     "category": "Development",
@@ -13356,6 +13380,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallspotify" Content="Spotify" ToolTip="Spotify is a digital music service that gives you access to millions of songs, podcasts, and videos from artists all over the world." Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotifyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.spotify.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallspotube" Content="Spotube" ToolTip="Open source Spotify client that doesn&#39;t require Premium nor uses Electron! Available for both desktop &#38; mobile! " Margin="0,0,2,0"/><TextBlock Name="WPFInstallspotubeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/KRTirtho/spotube" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallstrawberry" Content="Strawberry (Music Player)" ToolTip="Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstrawberryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.strawberrymusicplayer.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13376,12 +13403,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
 </StackPanel>
-<Label Content="Pro Tools" FontSize="16"/>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<Label Content="Pro Tools" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalladvancedip" Content="Advanced IP Scanner" ToolTip="Advanced IP Scanner is a fast and easy-to-use network scanner. It is designed to analyze LAN networks and provides information about connected devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstalladvancedipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advanced-ip-scanner.com/" />
 </StackPanel>
@@ -13432,6 +13459,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxpipe" Content="XPipe" ToolTip="XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxpipeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xpipe.io/" />
+</StackPanel>
+<Label Content="Utilies" FontSize="16"/>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsagethumbs" Content="SageThumbs" ToolTip="Provides support for thumbnails in Explorer with more formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsagethumbsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sagethumbs.en.lo4d.com/windows" />
 </StackPanel>
 <Label Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
@@ -13507,7 +13538,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalldevtoys" Content="DevToys" ToolTip="DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldevtoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://devtoys.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallditto" Content="Ditto (Clipboard Manager)" ToolTip="Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldittoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sabrogden/Ditto" />
+<CheckBox Name="WPFInstallditto" Content="Ditto" ToolTip="Ditto is an extension to the standard windows clipboard." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldittoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ditto-cp.sourceforge.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldmt" Content="Dual Monitor Tools" ToolTip="Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldmtLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dualmonitortool.sourceforge.net/" />
@@ -13535,6 +13566,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfileconverter" Content="File-Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.io/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfiles" Content="Files" ToolTip="Alternative file explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfilesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/files-community/Files" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallflow" Content="Flow launcher" ToolTip="Keystroke launcher for Windows to search, manage and launch files, folders bookmarks, websites and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstallflowLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.flowlauncher.com/" />
@@ -13581,6 +13615,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljpegview" Content="JPEG View" ToolTip="JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI" Margin="0,0,2,0"/><TextBlock Name="WPFInstalljpegviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sylikc/jpegview" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
 </StackPanel>
@@ -13593,11 +13632,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
