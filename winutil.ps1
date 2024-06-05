@@ -1987,7 +1987,7 @@ function Invoke-WinUtilNumLock {
             Write-Host "Disabling Numlock on startup"
             $value = 0
         }
-        $Path = "HKCU:\Control Panel\Keyboard"
+        $Path = "HKU:\.Default\Control Panel\Keyboard"
         Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
     }
     Catch [System.Security.SecurityException] {
