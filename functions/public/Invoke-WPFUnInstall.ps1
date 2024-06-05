@@ -50,10 +50,10 @@ function Invoke-WPFUnInstall {
 
             # Install all selected programs in new window
             if($packagesWinget.Count -gt 0){
-                Install-WinUtilProgramWinget -ProgramsToInstall $PackagesToInstall -Manage "Uninstalling"
+                Install-WinUtilProgramWinget -ProgramsToInstall $packagesWinget -Manage "Uninstalling"
             }
             if($packagesChoco.Count -gt 0){
-                Install-WinUtilProgramChoco -ProgramsToInstall $PackagesToInstall -Manage "Uninstalling"
+                Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
             $ButtonType = [System.Windows.MessageBoxButton]::OK
@@ -69,7 +69,7 @@ function Invoke-WPFUnInstall {
         }
         Catch {
             Write-Host "==========================================="
-            Write-Host "--       Winget failed to install       ---"
+            Write-Host "Error: $_"
             Write-Host "==========================================="
         }
         $sync.ProcessRunning = $False
