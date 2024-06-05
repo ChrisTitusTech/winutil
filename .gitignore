@@ -44,3 +44,4 @@ Microsoft.PowerShell.ConsoleHost.dll
 microwin.log
 True
 test.ps1
+winutil.ps1

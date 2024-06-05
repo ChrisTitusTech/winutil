@@ -145,8 +145,8 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
-# Check if Chocolatey is installed
-Install-WinUtilChoco
+# Install Winget if not already present
+Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -271,10 +271,14 @@ Add-Type @"
 "@
     }
 
-    foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
-        if ($proc.Id -ne [System.IntPtr]::Zero) {
+   foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+        # Check if the process's MainWindowHandle is valid
+    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
+	    } else {
+        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+    
         }
     }
 
@@ -363,6 +367,16 @@ Add-Type @"
 
 })
 
+# Load Checkboxes and Labels outside of the Filter fuction only once on startup for performance reasons
+$filter = Get-WinUtilVariables -Type CheckBox
+$CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+
+$filter = Get-WinUtilVariables -Type Label
+$labels = @{}
+$sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
+
+$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
+
 $sync["CheckboxFilter"].Add_TextChanged({
 
     if ($sync.CheckboxFilter.Text -ne "") {
@@ -372,8 +386,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
         $sync.CheckboxFilterClear.Visibility = "Collapsed"
     }
 
-    $filter = Get-WinUtilVariables -Type CheckBox
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+    $activeApplications = @()
 
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
@@ -390,6 +403,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
 
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
+            $activeApplications += $sync.configs.applications.$checkboxName
              # Set the corresponding text block visibility
             if ($textBlock -ne $null) {
                 $textBlock.Visibility = "Visible"
@@ -403,7 +417,21 @@ $sync["CheckboxFilter"].Add_TextChanged({
             }
         }
     }
+    $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
+    foreach ($category in $activeCategories){
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
+        $label.Visibility = "Visible"
+    }
+    if ($activeCategories){
+        $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
+    }
+    else{
+        $inactiveCategories = $allCategories
+    }
+    foreach ($category in $inactiveCategories){
+        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
+        $label.Visibility = "Collapsed"}
 })
 
 # Define event handler for button click
