@@ -7213,7 +7213,7 @@ $sync.configs.applications = '{
     "winget": "Rustlang.Rust.MSVC"
   },
   "WPFInstallsagethumbs": {
-    "category": "Utilies",
+    "category": "Utilities",
     "choco": "sagethumbs",
     "content": "SageThumbs",
     "description": "Provides support for thumbnails in Explorer with more formats.",
@@ -13516,10 +13516,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallxpipe" Content="XPipe" ToolTip="XPipe is an open-source tool for orchestrating containerized applications. It simplifies the deployment and management of containerized services in a distributed environment." Margin="0,0,2,0"/><TextBlock Name="WPFInstallxpipeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://xpipe.io/" />
 </StackPanel>
-<Label Name="WPFLabelUtilies" Content="Utilies" FontSize="16"/>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallsagethumbs" Content="SageThumbs" ToolTip="Provides support for thumbnails in Explorer with more formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsagethumbsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sagethumbs.en.lo4d.com/windows" />
-</StackPanel>
 <Label Name="WPFLabelUtilities" Content="Utilities" FontSize="16"/>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstall1password" Content="1Password" ToolTip="1Password is a password manager that allows you to store and manage your passwords securely." Margin="0,0,2,0"/><TextBlock Name="WPFInstall1passwordLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://1password.com/" />
@@ -13671,17 +13667,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljpegview" Content="JPEG View" ToolTip="JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI" Margin="0,0,2,0"/><TextBlock Name="WPFInstalljpegviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sylikc/jpegview" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
@@ -13783,6 +13779,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallrufus" Content="Rufus Imager" ToolTip="Rufus is a utility that helps format and create bootable USB drives, such as USB keys or pen drives." Margin="0,0,2,0"/><TextBlock Name="WPFInstallrufusLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://rufus.ie/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallsagethumbs" Content="SageThumbs" ToolTip="Provides support for thumbnails in Explorer with more formats." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsagethumbsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://sagethumbs.en.lo4d.com/windows" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallsamsungmagician" Content="Samsung Magician" ToolTip="Samsung Magician is a utility for managing and optimizing Samsung SSDs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallsamsungmagicianLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://semiconductor.samsung.com/consumer-storage/magician/" />
