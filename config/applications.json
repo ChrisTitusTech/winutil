@@ -2735,6 +2735,14 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
+	"WPFInstallqgis": {
+   		"category": "Multimedia Tools",
+		"choco": "qgis",
+		"content": "QGIS",
+		"description": "QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms.",
+		"link": "https://qgis.org/en/site/",
+		"winget": "OSGeo.QGIS"
+	},
 	"WPFInstallsmplayer": {
 		"category": "Multimedia Tools",
 		"choco": "smplayer",
