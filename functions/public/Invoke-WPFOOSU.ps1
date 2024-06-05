@@ -27,12 +27,14 @@ function Invoke-WPFOOSU {
             Start-Process $OOSU_filepath
         }
         "recommended"{
-            New-Item -Path $ENV:temp\ooshutup10_recommended.cfg -ItemType File -Value $sync.configs.ooshutup10_recommended -Force
+            $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
-            New-Item -Path $ENV:temp\ooshutup10_factory.cfg -ItemType File -Value $sync.configs.ooshutup10_factory -Force
+            $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }

@@ -21,7 +21,7 @@ This error code typically indicates an issue related to Windows Management Instr
    - Press `Win + R` to open the Run dialog.
    - Type `services.msc` and press Enter.
    - Locate "Windows Management Instrumentation" in the list.
-   - Make sure its status is set to "Running" and the startup type is set to "Automatic."
+   - Make sure to set its status to "Running" and the startup type to "Automatic."
 
 5. **Check for Security Software Interference:**
    Security software can sometimes interfere with WMI operations. Temporarily disable your antivirus or security software and check if the issue persists.
@@ -31,9 +31,9 @@ This error code typically indicates an issue related to Windows Management Instr
 
    - Press `Win + X` and select "Event Viewer."
    - Navigate to "Windows Logs" -> "Application" or "System."
-   - Look for entries with the source related to WMI or the application you're using to mount the ISO.
+   - Look for entries with the source related to WMI or the application use to mount the ISO.
 
 7. **ISO File Integrity:**
-   Ensure that the ISO file you are trying to mount is not corrupted. Try mounting a different ISO file to see if the issue persists.
+   Ensure that the ISO file you are trying to mount is uncorrupted. Try mounting a different ISO file to see if the issue persists.
 
-If the problem persists after trying these steps, additional troubleshooting may be required. Consider seeking assistance from Microsoft support or community forums for more specific guidance based on your system configuration and the software you are using to mount the ISO.
+If the problem persists after trying these steps, additional troubleshooting is required. Consider seeking assistance from Microsoft support or community forums for more specific guidance based on your system configuration and the software you use to mount the ISO.
