@@ -1872,7 +1872,7 @@
 		"winget": "Rustlang.Rust.MSVC"
 	},
 		"WPFInstallsagethumbs": {
-		"category": "Utilies",
+		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
 		"description": "Provides support for thumbnails in Explorer with more formats.",
