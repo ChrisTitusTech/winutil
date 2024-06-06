@@ -37,7 +37,7 @@
 		"content": "AFFiNE",
 		"description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
 		"link": "https://affine.pro/",
-		"winget": "AFFiNE.stable"
+		"winget": "ToEverything.AFFiNE"
 	},
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
