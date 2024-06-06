@@ -10950,7 +10950,7 @@ $sync.configs.tweaks = '{
     ],
     "InvokeScript": [
       "
-      Write-Host \"Remove Popilot\"
+      Write-Host \"Remove Copilot\"
       dism /online /remove-package /package-name:Microsoft.Windows.Copilot  
       "
     ],
