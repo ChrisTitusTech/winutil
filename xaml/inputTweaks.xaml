@@ -40,7 +40,7 @@
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
-<ComboBoxItem IsSelected="True" Content="Default"/>
+<ComboBoxItem IsSelected="True" Content="Custom"/>
 <ComboBoxItem  Content="DHCP"/>
 <ComboBoxItem  Content="Google"/>
 <ComboBoxItem  Content="Cloudflare"/>

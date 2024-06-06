@@ -434,6 +434,8 @@ $sync["CheckboxFilter"].Add_TextChanged({
         $label.Visibility = "Collapsed"}
 })
 
+Get-WinUtilDNS
+
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
