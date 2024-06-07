@@ -32,10 +32,9 @@ or by executing:
 iwr -useb https://christitus.com/win | iex
 ```
 
-if for some reason this site is not reachable from your country please try running it directly from github
-
+if for some reason this site is not reachable from your country please try running it directly from github (replace 24.06.07 with current release that you are interested in)
 ```
-irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1 | iex
+irm "https://raw.githubusercontent.com/ChrisTitusTech/winutil/24.06.07/winutil.ps1" | iex
 ```
 
 #### Automation
