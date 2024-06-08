@@ -1,10 +1,11 @@
 name: Release WinUtil
 
 on:
-  push: 
-    branches: 
-      - main
-      
+  workflow_run:
+    workflows: ["Compile WinUtil"] #Ensure Compile winget.ps1 is done
+    types:
+      - completed
+
 jobs:
   build-runspace:
     runs-on: windows-latest
