@@ -10,11 +10,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Run compile.ps1
-        run: Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
-        shell: pwsh
+        uses: actions/checkout@v4
         
       - name: Extract Version from winutil.ps1
         id: extract_version
@@ -23,7 +19,7 @@ jobs:
           Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
-              echo "##[set-output name=version;]$version"
+              echo "version=$version" >> $GITHUB_ENV
               break
             }
           }
@@ -33,24 +29,13 @@ jobs:
           }
         shell: pwsh       
 
-      - name: Create Release
+      - name: Create and Upload Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
-          release_name: Release ${{ steps.extract_version.outputs.version }}
-          body: Release Notes
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+          name: Release ${{ steps.extract_version.outputs.version }}
+          body_path: path/to/release-notes.md
+          files: ./winutil.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./winutil.ps1
-          asset_name: winutil.ps1
-          asset_content_type: text/plain
