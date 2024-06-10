@@ -11,6 +11,17 @@ param (
     [switch]$Run
 )
 
+#exit if not running Powershell on Windows OS
+if ($env:OS -ne "Windows_NT") {
+    Write-Host "============================================" -Foregroundcolor Red
+    Write-Host "--- Unsupported Operating System Detected --" -Foregroundcolor Red
+    Write-Host "------ Scripts must be run on Windows ------" -Foregroundcolor Red
+    Write-Host "============================================" -Foregroundcolor Red
+    Write-Host ""
+    Write-Host "Detected OS: $env:OS"
+    exit
+}
+
 # Set DebugPreference based on the -Debug switch
 if ($Debug) {
     $DebugPreference = "Continue"
