@@ -467,14 +467,18 @@ $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
     $sync["SettingsPopup"].IsOpen = $false
-    # Example usage
+    # Extract date from version
+    $versionDate = $sync.version
+    $date = [datetime]::ParseExact($versionDate, "yy.MM.dd", $null)
+    $formattedDate = $date.ToString("yyyy-MM-dd")
+    $commitLink = "https://github.com/ChrisTitusTech/winutil/commits/main/?since=$formattedDate&until=$formattedDate"
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
-Version  : $($sync.version)
+Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
+GUI      : <a href="https://github.com/KonTy">@KonTy</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">https://github.com/ChrisTitusTech/winutil</a>
+Version  : <a href="$commitLink">$($sync.version)</a>
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
