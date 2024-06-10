@@ -1,24 +1,42 @@
-name: Update Branch
+name: Release WinUtil
 
 on:
-  push: 
-    branches: 
-      - main
-      - test*
+  workflow_run:
+    workflows: ["Compile WinUtil"] #Ensure Compile winget.ps1 is done
+    types:
+      - completed
 
 jobs:
   build-runspace:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
-    - name: Compile project
-      shell: pwsh
-      run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
-      continue-on-error: false # Directly fail the job on error, removing the need for a separate check
-    - uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: Compile Winutil
-      if: success()
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Extract Version from winutil.ps1
+        id: extract_version
+        run: |
+          $version = ''
+          Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
+            if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
+              $version = $matches[1]
+              echo "version=$version" >> $GITHUB_ENV
+              break
+            }
+          }
+          if (-not $version) {
+            Write-Error "Version not found in winutil.ps1"
+            exit 1
+          }
+        shell: pwsh       
+
+      - name: Create and Upload Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          name: Release ${{ steps.extract_version.outputs.version }}
+          body_path: path/to/release-notes.md
+          files: ./winutil.ps1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

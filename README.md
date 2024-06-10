@@ -32,10 +32,9 @@ or by executing:
 iwr -useb https://christitus.com/win | iex
 ```
 
-if for some reason this site is not reachable from your country please try running it directly from github
-
+if for some reason this site is not reachable from your country please try running it directly from github (replace 24.06.07 with current release that you are interested in)
 ```
-irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1 | iex
+irm "https://raw.githubusercontent.com/ChrisTitusTech/winutil/24.06.07/winutil.ps1" | iex
 ```
 
 #### Automation
@@ -128,7 +127,9 @@ If you encounter any challenges or problems with the script, I kindly request th
 
 ## Contribute Code
 
-To contribute new code, please ensure that it is submitted to the **TEST BRANCH**. Please note that merges will not be performed directly on the MAIN branch.
+If you adding, changing, or deleting an Application... submit to **APPLICATIONS branch**. We batch these in at the end of the month.
+
+If doing a code change and you can submit a PR to main branch, but I am very selective about these. Do not use a code formatter, massive amounts of line changes, and make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN Pull Request!
 
 When creating pull requests, it is essential to thoroughly document all changes made. This includes documenting any additions made to the tweaks section and ensuring that corresponding undo measures are in place to remove the newly added tweaks if necessary. Failure to adhere to this format may result in denial of the pull request. Additionally, comprehensive documentation is required for all code changes. Any code lacking sufficient documentation may also be denied.
 
