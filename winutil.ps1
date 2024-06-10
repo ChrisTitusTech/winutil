@@ -10,7 +10,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.06
+    Version        : 24.06.10
 #>
 param (
     [switch]$Debug,
@@ -47,7 +47,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.06"
+$sync.version = "24.06.10"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -4442,13 +4442,13 @@ function Invoke-WPFOOSU {
         }
         "recommended"{
             $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_recommended.cfg" -OutFile $oosu_config
+            $sync.configs.ooshutup10_recommended | Out-File -FilePath $oosu_config -Force
             Write-Host "Applying recommended OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
         "undo"{
             $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/config/ooshutup10_factory.cfg" -OutFile $oosu_config
+            $sync.configs.ooshutup10_factory | Out-File -FilePath $oosu_config -Force
             Write-Host "Resetting all OO Shutup 10 Policies"
             Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
         }
@@ -10789,7 +10789,7 @@ $sync.configs.tweaks = '{
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
     "category": "Essential Tweaks",
     "panel": "1",
-    "Checked": "True",
+    "Checked": "False",
     "Order": "a001_",
     "InvokeScript": [
       "
@@ -10958,6 +10958,64 @@ $sync.configs.tweaks = '{
       "
       Write-Host \"Install Copilot\"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
+      "
+    ]
+  },
+  "WPFTweaksDisableLMS1": {
+    "Content": "Disable Intel MM (vPro LMS)",
+    "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a0015_",
+    "InvokeScript": [
+      "
+        Write-Host \"Kill OneDrive process\"
+        $serviceName = \"LMS\"   
+        Write-Host \"Stopping and disabling service: $serviceName\"
+        Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
+        Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;
+        
+        Write-Host \"Removing service: $serviceName\";
+        sc.exe delete $serviceName;
+
+        Write-Host \"Removing LMS driver packages\";
+        $lmsDriverPackages = Get-ChildItem -Path \"C:\\Windows\\System32\\DriverStore\\FileRepository\" -Recurse -Filter \"lms.inf*\";
+        foreach ($package in $lmsDriverPackages) {
+            Write-Host \"Removing driver package: $($package.Name)\";
+            pnputil /delete-driver $($package.Name) /uninstall /force;
+        }
+        if ($lmsDriverPackages.Count -eq 0) {
+            Write-Host \"No LMS driver packages found in the driver store.\";
+        } else {
+            Write-Host \"All found LMS driver packages have been removed.\";
+        }
+        
+        Write-Host \"Searching and deleting LMS executable files\";
+        $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");
+        $lmsFiles = @();
+        foreach ($dir in $programFilesDirs) {
+            $lmsFiles += Get-ChildItem -Path $dir -Recurse -Filter \"LMS.exe\" -ErrorAction SilentlyContinue;
+        }
+        foreach ($file in $lmsFiles) {
+            Write-Host \"Taking ownership of file: $($file.FullName)\";
+            & icacls $($file.FullName) /grant Administrators:F /T /C /Q;
+            & takeown /F $($file.FullName) /A /R /D Y;
+            Write-Host \"Deleting file: $($file.FullName)\";
+            Remove-Item $($file.FullName) -Force -ErrorAction SilentlyContinue;
+        }
+        if ($lmsFiles.Count -eq 0) {
+            Write-Host \"No LMS.exe files found in Program Files directories.\";
+        } else {
+            Write-Host \"All found LMS.exe files have been deleted.\";
+        }        
+        Write-Host ''Intel LMS vPro service has been disabled, removed, and blocked.'';
+       "
+    ],
+    "UndoScript": [
+      "
+      Write-Host \"Install Microsoft Edge\"
+      taskkill.exe /F /IM \"OneDrive.exe\"
+
       "
     ]
   },
@@ -11869,7 +11927,7 @@ M013	-
 M014	-
 N001	-'
 $sync.configs.ooshutup10_recommended = '############################################################################
-# This file was created with O&O ShutUp10++ V1.9.1436
+# This file was created with O&O ShutUp10++ V1.9.1438
 # and can be imported onto another computer. 
 #
 # Download the application at https://www.oo-software.com/shutup10
@@ -11883,7 +11941,7 @@ $sync.configs.ooshutup10_recommended = '########################################
 # user does not get any feedback about the import.
 #
 # We are always happy to answer any questions you may have!
-# ? 2015-2023 O&O Software GmbH, Berlin. All rights reserved.
+# ? 2015-2024 O&O Software GmbH, Berlin. All rights reserved.
 # https://www.oo-software.com/
 ############################################################################
 
@@ -12049,6 +12107,8 @@ C015	+
 C101	+
 C201	+
 C102	+
+C103	+
+C203	+
 L001	+
 L003	+
 L004	-
@@ -12078,9 +12138,9 @@ S014	-
 K001	+
 K002	+
 K005	+
-M003	-
+M003	+
 M015	+
-M016	-
+M016	+
 M017	-
 M018	+
 M019	-
@@ -12091,6 +12151,8 @@ M001	+
 M004	+
 M005	+
 M024	+
+M026	+
+M027	+
 M012	-
 M013	-
 M014	-
@@ -13916,7 +13978,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Border Grid.Row="1" Grid.Column="0">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="16"/>
-<CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="True" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
+<CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0"  ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
