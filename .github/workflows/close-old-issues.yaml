@@ -4,91 +4,20 @@ on:
   schedule:
     - cron: '0 0 * * *'  # Run daily
   workflow_dispatch:  # This line enables manual triggering
+
 jobs:
   close-issues:
     runs-on: ubuntu-latest
     permissions:
       issues: write  # Ensure necessary permissions for issues
-
+      pull-requests: none
+      contents: none
     steps:
     - name: Close inactive issues
-      uses: actions/github-script@v7
+      uses: actions/stale@v9.0.0
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const octokit = github;
-
-          // Get the repository owner and name
-          const { owner, repo } = context.repo;
-
-          // Define the inactivity period (14 days)
-          const inactivityPeriod = new Date();
-          inactivityPeriod.setDate(inactivityPeriod.getDate() - 14);
-
-          const labelKeepIssue = 'Keep Issue Open';
-
-          try {
-            // Get all open issues with pagination
-            for await (const response of octokit.paginate.iterator(octokit.rest.issues.listForRepo, {
-              owner,
-              repo,
-              state: 'open',
-            })) {
-              const issues = response.data;
-
-              // Close issues inactive for more than the inactivity period
-              for (const issue of issues) {
-                let closeIssue = true;
-
-                // Get all Labels of issue, and compared each label with the labelKeepIssue const variable
-                try {
-                  const respondIssueLabels = await octokit.request("GET /repos/{owner}/{repo}/issues/{issue_number}/labels", {
-                    owner: owner,
-                    repo: repo,
-                    issue_number: issue.number
-                  });
-                  const labels = respondIssueLabels.data;
-
-                  for (let i = 0; i < labels.length; i++) {
-                    const label = labels[i]
-                    if (label.name === labelKeepIssue) {
-                      console.log(`Issue #${issue.number} will not be closed`);
-                      closeIssue = false;
-                      break; // Break from the loop, no need to check the remaining Labels.
-                    }
-                  }
-                } catch (error) {
-                  console.error(`Error while Fetching Labels for Issue #${issue.number}, Error: ${error}`);
-                }
-
-                if (!closeIssue) {
-                  continue; // Skip the next bit of code
-                }
-
-                const lastCommentDate = issue.updated_at;
-                if (new Date(lastCommentDate) < inactivityPeriod) {
-                  try {
-                    // Close the issue
-                    await octokit.rest.issues.update({
-                      owner,
-                      repo,
-                      issue_number: issue.number,
-                      state: 'closed',
-                    });
-
-                    // Add a comment
-                    await octokit.rest.issues.createComment({
-                      owner,
-                      repo,
-                      issue_number: issue.number,
-                      body: 'Closed due to inactivity',
-                    });
-                  } catch (error) {
-                    console.error(`Error updating or commenting on issue #${issue.number}: ${error}`);
-                  }
-                }
-              }
-            }
-          } catch (error) {
-            console.error(`Error fetching issues: ${error}`);
-          }
+        exempt-issue-labels: "Keep Issue Open"
+        days-before-issue-close: 14
+        close-issue-message: "This issue was closed because it has been inactive for 14 days"
+        debug-only: false # Make this field equal true if you want to test your configuration if it works or not
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
