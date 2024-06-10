@@ -32,13 +32,13 @@
 		"winget": "Famatech.AdvancedIPScanner"
 	},
 	"WPFInstallaffine": {
-        "category": "Document",
-        "choco": "na",
-        "content": "AFFiNE",
-        "description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
-        "link": "https://affine.pro/",
-        "winget": "AFFiNE.stable"
-    },
+		"category": "Document",
+		"choco": "na",
+		"content": "AFFiNE",
+		"description": "AFFiNE is an open source alternative to Notion. Write, draw, plan all at once. Selfhost it to sync across devices.",
+		"link": "https://affine.pro/",
+		"winget": "ToEverything.AFFiNE"
+	},
 	"WPFInstallaimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
@@ -2408,13 +2408,13 @@
 		"winget": "Waterfox.Waterfox"
 	},
 	"WPFInstallwazuh": {
-        "category": "Utilities",
-        "choco": "wazuh-agent",
-        "content": "Wazuh.",
-        "description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
-        "link": "https://wazuh.com/",
-        "winget": "Wazuh.WazuhAgent"
-    },
+		"category": "Utilities",
+		"choco": "wazuh-agent",
+		"content": "Wazuh.",
+		"description": "Wazuh is an open-source security monitoring platform that offers intrusion detection, compliance checks, and log analysis.",
+		"link": "https://wazuh.com/",
+		"winget": "Wazuh.WazuhAgent"
+	},
 	"WPFInstallwezterm": {
 		"category": "Development",
 		"choco": "wezterm",
@@ -2736,7 +2736,7 @@
 		"winget": "magic-wormhole.magic-wormhole"
 	},
 	"WPFInstallqgis": {
-   		"category": "Multimedia Tools",
+		"category": "Multimedia Tools",
 		"choco": "qgis",
 		"content": "QGIS",
 		"description": "QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms.",
@@ -2758,7 +2758,7 @@
 		"description": "GlazeWM is a tiling window manager for Windows inspired by i3 and Polybar",
 		"link": "https://github.com/glzr-io/glazewm",
 		"winget": "glzr-io.glazewm"
-  },
+	},
 	"WPFInstallfancontrol": {
 		"category": "Utilities",
 		"choco": "na",
