@@ -2623,6 +2623,14 @@
 		"link": "https://www.zotero.org/",
 		"winget": "DigitalScholar.Zotero"
 	},
+	"WPFInstallfigma": {
+		"category": "Document",
+		"choco": "na",
+		"content": "Figma",
+		"description": "Figma is the leading collaborative design tool for building meaningful products. Seamlessly design, prototype, develop, and collect feedback in a single platform.",
+		"link": "https://www.figma.com/",
+		"winget": "Figma.Figma"
+	},
 	"WPFInstallzoxide": {
 		"category": "Utilities",
 		"choco": "zoxide",
