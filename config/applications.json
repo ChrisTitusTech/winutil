@@ -2503,6 +2503,14 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallTeraCopy": {
+		"category": "Utilities",
+		"choco": "TeraCopy",
+		"content": "TeraCopy",
+		"description": "Copy your files faster and more securely",
+		"link": "https://codesector.com/teracopy",
+		"winget": "CodeSector.TeraCopy"
+	},
 	"WPFInstallwizfile": {
 		"category": "Utilities",
 		"choco": "na",
