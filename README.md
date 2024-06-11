@@ -32,9 +32,9 @@ or by executing:
 iwr -useb https://christitus.com/win | iex
 ```
 
-if for some reason this site is not reachable from your country please try running it directly from github (replace 24.06.07 with current release that you are interested in)
+if for some reason this site is not reachable from your country please try running it directly from github (replace `RELEASE_TAG` with current release that you are interested in, for example `v2024.06.05`)
 ```
-irm "https://raw.githubusercontent.com/ChrisTitusTech/winutil/24.06.07/winutil.ps1" | iex
+irm "https://github.com/ChrisTitusTech/winutil/releases/download/RELEASE_TAG/winutil.ps1" | iex
 ```
 
 #### Automation
@@ -127,7 +127,7 @@ If you encounter any challenges or problems with the script, I kindly request th
 
 ## Contribute Code
 
-If you adding, changing, or deleting an Application... submit to **APPLICATIONS branch**. We batch these in at the end of the month.
+Pull Requests are now handled directly on the MAIN branch. This was done since we can now select specific releases to launch via releases in GitHub. 
 
 If doing a code change and you can submit a PR to main branch, but I am very selective about these. Do not use a code formatter, massive amounts of line changes, and make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN Pull Request!
 

@@ -2,13 +2,15 @@ name: Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile WinUtil"] #Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
     types:
       - completed
 
 jobs:
   build-runspace:
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,6 +23,7 @@ jobs:
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
               echo "version=$version" >> $GITHUB_ENV
+              echo "::set-output name=version::$version"
               break
             }
           }
@@ -28,7 +31,7 @@ jobs:
             Write-Error "Version not found in winutil.ps1"
             exit 1
           }
-        shell: pwsh       
+        shell: pwsh
 
       - name: Create and Upload Release
         id: create_release
@@ -36,7 +39,6 @@ jobs:
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Release ${{ steps.extract_version.outputs.version }}
-          body_path: path/to/release-notes.md
           files: ./winutil.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
