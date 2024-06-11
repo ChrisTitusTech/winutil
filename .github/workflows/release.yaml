@@ -2,7 +2,7 @@ name: Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile WinUtil"] #Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
     types:
       - completed
 
@@ -36,7 +36,6 @@ jobs:
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Release ${{ steps.extract_version.outputs.version }}
-          body_path: path/to/release-notes.md
           files: ./winutil.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
