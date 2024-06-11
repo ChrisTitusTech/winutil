@@ -1831,6 +1831,14 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
+	"WPFInstallWiseProgramUninstaller": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Wise Program Uninstaller (WiseCleaner)",
+		"description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
+		"link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
+		"winget": "WiseCleaner.WiseProgramUninstaller"
+	},
 	"WPFInstallrevolt": {
 		"category": "Communications",
 		"choco": "na",
