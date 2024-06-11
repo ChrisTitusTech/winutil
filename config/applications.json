@@ -2727,6 +2727,14 @@
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
 	},
+	"WPFInstallAmbieWhiteNoise": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Ambie White Noise",
+		"description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
+		"link": "https://ambieapp.com/",
+		"winget": "9P07XNM5CHP0"
+	},
 	"WPFInstallmagicwormhole": {
 		"category": "Utilities",
 		"choco": "magic-wormhole",
