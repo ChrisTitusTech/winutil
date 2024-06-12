@@ -1,5 +1,6 @@
 param (
-    [switch]$Debug
+    [switch]$Debug,
+    [switch]$Run
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
@@ -107,3 +108,7 @@ else {
 
 Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
+
+if ($run){
+    Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+}
