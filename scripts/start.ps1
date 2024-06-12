@@ -11,7 +11,7 @@ param (
     [switch]$Run
 )
 
-#exit if not running Powershell on Windows OS
+#exit if not running on Windows OS
 if ($env:OS -ne "Windows_NT") {
     Write-Host "============================================" -Foregroundcolor Red
     Write-Host "--- Unsupported Operating System Detected --" -Foregroundcolor Red
