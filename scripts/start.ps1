@@ -19,7 +19,7 @@ if ($env:OS -ne "Windows_NT") {
     Write-Host "============================================" -Foregroundcolor Red
     Write-Host ""
     Write-Host "Detected OS: $env:OS"
-    exit
+    break
 }
 
 # Set DebugPreference based on the -Debug switch
