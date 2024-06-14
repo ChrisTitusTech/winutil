@@ -1663,6 +1663,14 @@
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
 	},
+	"WPFInstallplexdesktop": {
+		"category": "Multimedia Tools",
+		"choco": "plex",
+		"content": "Plex Desktop",
+		"description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+		"link": "https://www.plex.tv",
+		"winget": "Plex.Plex"
+	},
 	"WPFInstallPortmaster": {
 		"category": "Pro Tools",
 		"choco": "portmaster",
