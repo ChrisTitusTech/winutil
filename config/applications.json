@@ -442,7 +442,7 @@
 	},
 	"WPFInstallgitify": {
 		"winget": "Gitify.Gitify",
-		"choco": "",
+		"choco": " ",
 		"category": "Development",
 		"panel": "1",
 		"content": "Gitify",
