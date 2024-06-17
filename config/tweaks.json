@@ -2413,7 +2413,6 @@
     "Order": "a0015_",
     "InvokeScript": [
         "
-        Write-Host \"Kill OneDrive process\"
         $serviceName = \"LMS\"   
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
@@ -2457,9 +2456,7 @@
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Microsoft Edge\"
-      taskkill.exe /F /IM \"OneDrive.exe\"
-
+      Write-Host \"Undo for Disable Intel MM not implemented\"
       "
     ]
   },  
