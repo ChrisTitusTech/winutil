@@ -1303,14 +1303,6 @@
 		"link": "https://sourceforge.net/projects/equalizerapo",
 		"winget": "na"
 	},
-	"WPFInstallFreeFileSync": {
-		"category": "Utilities",
-		"choco": "freefilesync",
-		"content": "FreeFileSync",
-		"description": "Synchronize Files and Folders",
-		"link": "https://freefilesync.org",
-		"winget": "na"
-	},
 	"WPFInstallCompactGUI": {
 		"category": "Utilities",
 		"choco": "compactgui",
