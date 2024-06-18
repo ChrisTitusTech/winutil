@@ -15,6 +15,7 @@ function Invoke-WinUtilNumLock {
             Write-Host "Disabling Numlock on startup"
             $value = 0
         }
+        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
         $Path = "HKU:\.Default\Control Panel\Keyboard"
         Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
     }
