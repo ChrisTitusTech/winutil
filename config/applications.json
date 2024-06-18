@@ -741,7 +741,7 @@
 		"content": "Git Extensions",
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
 		"link": "https://gitextensions.github.io/",
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions"
+		"winget": "GitExtensionsTeam.GitExtensions"
 	},
 	"WPFInstallgithubcli": {
 		"category": "Development",
@@ -749,7 +749,7 @@
 		"content": "GitHub CLI",
 		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
 		"link": "https://cli.github.com/",
-		"winget": "Git.Git;GitHub.cli"
+		"winget": "GitHub.cli"
 	},
 	"WPFInstallgithubdesktop": {
 		"category": "Development",
@@ -757,7 +757,7 @@
 		"content": "GitHub Desktop",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
 		"link": "https://desktop.github.com/",
-		"winget": "Git.Git;GitHub.GitHubDesktop"
+		"winget": "GitHub.GitHubDesktop"
 	},
 	"WPFInstallgitkrakenclient": {
 		"category": "Development",
@@ -2381,7 +2381,7 @@
 		"content": "VS Code",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
 		"link": "https://code.visualstudio.com/",
-		"winget": "Git.Git;Microsoft.VisualStudioCode"
+		"winget": "Microsoft.VisualStudioCode"
 	},
 	"WPFInstallvscodium": {
 		"category": "Development",
@@ -2389,7 +2389,7 @@
 		"content": "VS Codium",
 		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
 		"link": "https://vscodium.com/",
-		"winget": "Git.Git;VSCodium.VSCodium"
+		"winget": "VSCodium.VSCodium"
 	},
 	"WPFInstallwaterfox": {
 		"category": "Browsers",
