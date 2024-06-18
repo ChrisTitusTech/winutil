@@ -2801,7 +2801,7 @@
 	},
 	"WPFInstallModrinth": {
 		"category": "Games",
-		"choco": "modrinth",
+		"choco": "na",
 		"content": "Modrinth",
 		"description": "Modrinth is a modding platform for Minecraft that provides a curated selection of mods, modpacks, and tools for the Minecraft community.",
 		"link": "https://modrinth.com/",
