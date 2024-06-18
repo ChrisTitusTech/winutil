@@ -1,3 +1,19 @@
+function Invoke-MicroWin-Helper {
+<#
+
+    .SYNOPSIS
+        checking unit tests
+
+    .PARAMETER Name
+        no parameters
+
+    .EXAMPLE
+        placeholder
+
+#>
+
+}
+
 function Test-CompatibleImage() {
 <#
 
