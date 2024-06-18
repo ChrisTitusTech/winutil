@@ -71,29 +71,21 @@ Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-O
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
 }
 
+Write-Progress -Activity "Compiling" -Status "Writing xaml"
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
-
-# Dot-source the Get-TabXaml function
-. .\functions\private\Get-TabXaml.ps1
-
-Write-Progress -Activity "Compiling" -Status "Building: Xaml " -PercentComplete 75
-$appXamlContent = Get-TabXaml "applications" 5
-$tweaksXamlContent = Get-TabXaml "tweaks"
-$featuresXamlContent = Get-TabXaml "feature"
-
-
-Write-Progress -Activity "Compiling" -Status "Adding: Xaml " -PercentComplete 90
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
-$xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
-
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
 $script_content.Add($(Get-Content .\scripts\main.ps1))
 
 if ($Debug){
     Write-Progress -Activity "Compiling" -Status "Writing debug files" -PercentComplete 95
+    # Dot-source the Get-TabXaml function
+    . .\functions\private\Get-TabXaml.ps1
+
+    $appXamlContent = Get-TabXaml "applications" 5
+    $tweaksXamlContent = Get-TabXaml "tweaks"
+    $featuresXamlContent = Get-TabXaml "feature"
+
     $appXamlContent | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
     $tweaksXamlContent | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
     $featuresXamlContent | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii

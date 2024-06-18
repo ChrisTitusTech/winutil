@@ -52,6 +52,15 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+# Dynamically Generate the xaml code for the different panels at Runtime
+$appXamlContent = Get-TabXaml "applications" 5
+$tweaksXamlContent = Get-TabXaml "tweaks"
+$featuresXamlContent = Get-TabXaml "feature"
+
+$inputXML = $inputXML -replace "{{InstallPanel_applications}}", $appXamlContent
+$inputXML = $inputXML -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
+$inputXML = $inputXML -replace "{{InstallPanel_features}}", $featuresXamlContent
+
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
