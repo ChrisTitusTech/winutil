@@ -9,6 +9,21 @@ $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.configs = @{}
 
+function Update-Progress {
+    param (
+        [Parameter(Mandatory, position=0)]
+        [string]$StatusMessage,
+
+	[Parameter(Mandatory, position=1)]
+        [int]$Percent,
+
+	[Parameter(position=2)]
+	[string]$Activity = "Compiling"
+    )
+
+    Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
+}
+
 $header = @"
 ################################################################################################################
 ###                                                                                                          ###
@@ -17,20 +32,22 @@ $header = @"
 ################################################################################################################
 "@
 
+
 # Create the script in memory.
+Update-Progress "Pre-req: Allocating Memory" 0
 $script_content = [System.Collections.Generic.List[string]]::new()
 
-Write-Progress -Activity "Compiling" -Status "Adding: Header" -PercentComplete 5
+Update-Progress "Adding: Header" 5
 $script_content.Add($header)
 
-Write-Progress -Activity "Compiling" -Status "Adding: Version" -PercentComplete 10
+Update-Progress "Adding: Version" 10
 $script_content.Add($(Get-Content .\scripts\start.ps1).replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
 
-Write-Progress -Activity "Compiling" -Status "Adding: Functions" -PercentComplete 20
+Update-Progress "Adding: Functions" 20
 Get-ChildItem .\functions -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
     }
-Write-Progress -Activity "Compiling" -Status "Adding: Config *.json" -PercentComplete 40
+Update-Progress "Adding: Config *.json" 40
 Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
 
     $json = (Get-Content $psitem.FullName).replace("'","''")
@@ -64,7 +81,7 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
-Write-Progress -Activity "Compiling" -Status "Adding: Config *.cfg" -PercentComplete 45
+Update-Progress "Adding: Config *.cfg" 45
 Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
 }
@@ -77,13 +94,13 @@ $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 # Dot-source the Get-TabXaml function
 . .\functions\private\Get-TabXaml.ps1
 
-Write-Progress -Activity "Compiling" -Status "Building: Xaml " -PercentComplete 75
+Update-Progress "Building: Xaml " 75
 $appXamlContent = Get-TabXaml "applications" 5
 $tweaksXamlContent = Get-TabXaml "tweaks"
 $featuresXamlContent = Get-TabXaml "feature"
 
 
-Write-Progress -Activity "Compiling" -Status "Adding: Xaml " -PercentComplete 90
+Update-Progress "Adding: Xaml " 90
 # Replace the placeholder in $inputXML with the content of inputApp.xaml
 $xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
 $xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
@@ -94,17 +111,17 @@ $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 $script_content.Add($(Get-Content .\scripts\main.ps1))
 
 if ($Debug){
-    Write-Progress -Activity "Compiling" -Status "Writing debug files" -PercentComplete 95
+    Update-Progress "Writing debug files" 95
     $appXamlContent | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
     $tweaksXamlContent | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
     $featuresXamlContent | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii
 }
 else {
-    Write-Progress -Activity "Compiling" -Status "Removing temporary files" -PercentComplete 99
+    Update-Progress "Removing temporary files" 99
     Remove-Item ".\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
     Remove-Item ".\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
     Remove-Item ".\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
 Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
-Write-Progress -Activity "Compiling" -Completed
+Update-Progress "Finished" 100
