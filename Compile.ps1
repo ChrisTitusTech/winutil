@@ -15,6 +15,7 @@ function Update-Progress {
         [string]$StatusMessage,
 
 	[Parameter(Mandatory, position=1)]
+	[ValidateRange(0,100)]
         [int]$Percent,
 
 	[Parameter(position=2)]
