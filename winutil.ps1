@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.18
+    Version        : 24.06.20
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.18"
+$sync.version = "24.06.20"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -7171,6 +7171,14 @@ $sync.configs.applications = '{
     "link": "https://www.revouninstaller.com/",
     "winget": "RevoUninstaller.RevoUninstaller"
   },
+  "WPFInstallWiseProgramUninstaller": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Wise Program Uninstaller (WiseCleaner)",
+    "description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
+    "link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
+    "winget": "WiseCleaner.WiseProgramUninstaller"
+  },
   "WPFInstallrevolt": {
     "category": "Communications",
     "choco": "na",
@@ -8130,6 +8138,14 @@ $sync.configs.applications = '{
     "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
     "link": "https://github.com/7gxycn08/ForceAutoHDR",
     "winget": "ForceAutoHDR.7gxycn08"
+  },
+  "WPFInstallJoyToKey": {
+    "category": "Utilities",
+    "choco": "joytokey",
+    "content": "JoyToKey",
+    "description": "enables PC game controllers to emulate the keyboard and mouse input",
+    "link": "https://joytokey.net/en/",
+    "winget": "JTKsoftware.JoyToKey"
   },
   "WPFInstallnditools": {
     "category": "Multimedia Tools",
@@ -14184,19 +14200,22 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalljdownloader" Content="JDownloader" ToolTip="JDownloader is a feature-rich download manager with support for various file hosting services." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljdownloaderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://jdownloader.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallJoyToKey" Content="JoyToKey" ToolTip="enables PC game controllers to emulate the keyboard and mouse input" Margin="0,0,2,0"/><TextBlock Name="WPFInstallJoyToKeyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://joytokey.net/en/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljpegview" Content="JPEG View" ToolTip="JPEGView is a lean, fast and highly configurable viewer/editor for JPEG, BMP, PNG, WEBP, TGA, GIF, JXL, HEIC, HEIF, AVIF and TIFF images with a minimal GUI" Margin="0,0,2,0"/><TextBlock Name="WPFInstalljpegviewLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sylikc/jpegview" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkdeconnect" Content="KDE Connect" ToolTip="KDE Connect allows seamless integration between your KDE desktop and mobile devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkdeconnectLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://community.kde.org/KDEConnect" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
@@ -14385,6 +14404,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwinrar" Content="WinRAR" ToolTip="WinRAR is a powerful archive manager that allows you to create, manage, and extract compressed files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwinrarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.win-rar.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallWiseProgramUninstaller" Content="Wise Program Uninstaller (WiseCleaner)" ToolTip="Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallWiseProgramUninstallerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.wisecleaner.com/wise-program-uninstaller.html" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwisetoys" Content="WiseToys" ToolTip="WiseToys is a set of utilities and tools designed to enhance and optimize your Windows experience." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwisetoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://toys.wisecleaner.com/" />
