@@ -39,6 +39,12 @@ function Invoke-WPFtweaksbutton {
     }
 
     $sync.ProcessRunning = $false
+    $ButtonType = [System.Windows.MessageBoxButton]::OK
+    $MessageboxTitle = "Tweaks"
+    $Messageboxbody = ("Tweaks are Finished!")
+    $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
