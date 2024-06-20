@@ -49,6 +49,12 @@ function Invoke-WPFInstall {
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco
             }
+            $ButtonType = [System.Windows.MessageBoxButton]::OK
+            $MessageboxTitle = "Install"
+            $Messageboxbody = ("Installs have finished!")
+            $MessageIcon = [System.Windows.MessageBoxImage]::Information
+
+            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
