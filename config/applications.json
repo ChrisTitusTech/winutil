@@ -2802,7 +2802,7 @@
 	"WPFInstallnvidiageforce": {
 		"category": "Games",
 		"choco": "na",
-		"content": "Nvidia GeFource Experience",
+		"content": "Nvidia GeForce Experience",
 		"description": "The NVIDIA app is the essential companion for PC gamers and creators. Keep your PC up to date with the latest NVIDIA drivers and technology.",
 		"link": "https://www.nvidia.com/en-us/software/nvidia-app/",
 		"winget": "Nvidia.GeForceExperience"
