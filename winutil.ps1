@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.11
+    Version        : 24.06.18
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.11"
+$sync.version = "24.06.18"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1985,6 +1985,7 @@ function Invoke-WinUtilNumLock {
             Write-Host "Disabling Numlock on startup"
             $value = 0
         }
+        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
         $Path = "HKU:\.Default\Control Panel\Keyboard"
         Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
     }
