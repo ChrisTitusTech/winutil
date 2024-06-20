@@ -2743,6 +2743,14 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
+	"WPFInstallcroc": {
+		"category": "Utilities",
+		"choco": "croc",
+		"content": "croc",
+		"description": "Easily and securely send things from one computer to another.",
+		"link": "https://github.com/schollz/croc",
+		"winget": "schollz.croc"
+	},
 	"WPFInstallqgis": {
 		"category": "Multimedia Tools",
 		"choco": "qgis",
