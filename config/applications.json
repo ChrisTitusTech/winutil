@@ -1831,6 +1831,14 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
+	"WPFInstallWiseProgramUninstaller": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Wise Program Uninstaller (WiseCleaner)",
+		"description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
+		"link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
+		"winget": "WiseCleaner.WiseProgramUninstaller"
+	},
 	"WPFInstallrevolt": {
 		"category": "Communications",
 		"choco": "na",
@@ -2503,6 +2511,14 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallTeraCopy": {
+		"category": "Utilities",
+		"choco": "TeraCopy",
+		"content": "TeraCopy",
+		"description": "Copy your files faster and more securely",
+		"link": "https://codesector.com/teracopy",
+		"winget": "CodeSector.TeraCopy"
+	},
 	"WPFInstallwizfile": {
 		"category": "Utilities",
 		"choco": "na",
@@ -2727,6 +2743,14 @@
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
 	},
+	"WPFInstallAmbieWhiteNoise": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Ambie White Noise",
+		"description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
+		"link": "https://ambieapp.com/",
+		"winget": "9P07XNM5CHP0"
+	},
 	"WPFInstallmagicwormhole": {
 		"category": "Utilities",
 		"choco": "magic-wormhole",
@@ -2734,6 +2758,14 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallcroc": {
+		"category": "Utilities",
+		"choco": "croc",
+		"content": "croc",
+		"description": "Easily and securely send things from one computer to another.",
+		"link": "https://github.com/schollz/croc",
+		"winget": "schollz.croc"
 	},
 	"WPFInstallqgis": {
 		"category": "Multimedia Tools",
@@ -2790,6 +2822,14 @@
 		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
+	},
+	"WPFInstallJoyToKey": {
+		"category": "Utilities",
+		"choco": "joytokey",
+		"content": "JoyToKey",
+		"description": "enables PC game controllers to emulate the keyboard and mouse input",
+		"link": "https://joytokey.net/en/",
+		"winget": "JTKsoftware.JoyToKey"
 	},
 	"WPFInstallnditools": {
 		"category": "Multimedia Tools",
