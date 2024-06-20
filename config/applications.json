@@ -2831,6 +2831,7 @@
 		"link": "https://joytokey.net/en/",
 		"winget": "JTKsoftware.JoyToKey"
 	},
+	
 	"WPFInstallnditools": {
 		"category": "Multimedia Tools",
 		"choco": "na",
@@ -2838,5 +2839,13 @@
 		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallkicad": {
+		"category": "Pro Tools",
+		"choco": "na",
+		"content": "Kicad",
+		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+		"link": "https://www.kicad.org/",
+		"winget": "KiCad.KiCad"
 	}
 }
