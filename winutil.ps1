@@ -7851,6 +7851,14 @@ $sync.configs.applications = '{
     "link": "https://toys.wisecleaner.com/",
     "winget": "WiseCleaner.WiseToys"
   },
+  "WPFInstallTeraCopy": {
+    "category": "Utilities",
+    "choco": "TeraCopy",
+    "content": "TeraCopy",
+    "description": "Copy your files faster and more securely",
+    "link": "https://codesector.com/teracopy",
+    "winget": "CodeSector.TeraCopy"
+  },
   "WPFInstallwizfile": {
     "category": "Utilities",
     "choco": "na",
@@ -8074,6 +8082,14 @@ $sync.configs.applications = '{
     "description": "Automatically switches between the dark and light theme of Windows 10 and Windows 11",
     "link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
     "winget": "Armin2208.WindowsAutoNightMode"
+  },
+  "WPFInstallAmbieWhiteNoise": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Ambie White Noise",
+    "description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
+    "link": "https://ambieapp.com/",
+    "winget": "9P07XNM5CHP0"
   },
   "WPFInstallmagicwormhole": {
     "category": "Utilities",
@@ -14070,6 +14086,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" ToolTip="Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available." Margin="0,0,2,0"/><TextBlock Name="WPFInstallalacrittyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://alacritty.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallAmbieWhiteNoise" Content="Ambie White Noise" ToolTip="Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work." Margin="0,0,2,0"/><TextBlock Name="WPFInstallAmbieWhiteNoiseLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ambieapp.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallanydesk" Content="AnyDesk" ToolTip="AnyDesk is a remote desktop software that enables users to access and control computers remotely. It is known for its fast connection and low latency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallanydeskLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://anydesk.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -14225,14 +14244,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
-</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
+</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
@@ -14367,6 +14386,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallteamviewer" Content="TeamViewer" ToolTip="TeamViewer is a popular remote access and support software that allows you to connect to and control remote devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallteamviewerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.teamviewer.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallTeraCopy" Content="TeraCopy" ToolTip="Copy your files faster and more securely" Margin="0,0,2,0"/><TextBlock Name="WPFInstallTeraCopyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://codesector.com/teracopy" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltightvnc" Content="TightVNC" ToolTip="TightVNC is a free and Open Source remote desktop software that lets you access and control a computer over the network. With its intuitive interface, you can interact with the remote screen as if you were sitting in front of it. You can open files, launch applications, and perform other actions on the remote desktop almost as if you were physically there" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltightvncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.tightvnc.com/" />
