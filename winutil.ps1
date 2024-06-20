@@ -607,6 +607,15 @@ Function Get-WinUtilToggleStatus {
             return $true
 	}
     }
+    if ($ToggleSwitch -eq "WPFToggleTaskView") {
+      $TaskView = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').ShowTaskViewButton
+      if($TaskView -eq 0){
+          return $false
+      }
+      else{
+          return $true
+      }
+  }
 }
 function Get-WinUtilVariables {
 
@@ -2372,6 +2381,41 @@ function Invoke-WinUtilVerboseLogon {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
+}
+
+function Invoke-WinUtilTaskView {
+  <#
+
+  .SYNOPSIS
+      Enable/Disable Task View
+
+  .PARAMETER Enabled
+      Indicates whether to enable or disable Task View
+
+  #>
+  Param($Enabled)
+  Try{
+      if ($Enabled -eq $false){
+          Write-Host "Enabling Task View"
+          $value = 1
+      }
+      else {
+          Write-Host "Disabling Task View"
+          $value = 0
+      }
+      $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+      Set-ItemProperty -Path $Path -Name ShowTaskViewButton -Value $value
+  }
+  Catch [System.Security.SecurityException] {
+      Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+  }
+  Catch [System.Management.Automation.ItemNotFoundException] {
+      Write-Warning $psitem.Exception.ErrorRecord
+  }
+  Catch{
+      Write-Warning "Unable to set $Name due to unhandled exception"
+      Write-Warning $psitem.Exception.StackTrace
+  }
 }
 function Remove-WinUtilAPPX {
     <#
@@ -8131,6 +8175,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/7gxycn08/ForceAutoHDR",
     "winget": "ForceAutoHDR.7gxycn08"
   },
+  "WPFInstallnvidiageforce": {
+		"category": "Games",
+		"choco": "na",
+		"content": "Nvidia GeFource Experience",
+		"description": "The NVIDIA app is the essential companion for PC gamers and creators. Keep your PC up to date with the latest NVIDIA drivers and technology.",
+		"link": "https://www.nvidia.com/en-us/software/nvidia-app/",
+		"winget": "Nvidia.GeForceExperience"
+	},
   "WPFInstallnditools": {
     "category": "Multimedia Tools",
     "choco": "na",

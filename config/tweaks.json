@@ -3141,5 +3141,13 @@
     "panel": "2",
     "Order": "a082_",
     "Type": "300"
+  },
+  "WPFTweaksTaskView": {
+    "Content": "Disable Task View",
+    "Description": "Disables Task View...DUH!",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a069_",
+    "Type": "Toggle"
   }
 }

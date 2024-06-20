@@ -134,7 +134,7 @@
 		"description": "Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.",
 		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
 		"winget": "Microsoft.AzureDataStudio"
-	},	
+	},
 	"WPFInstallbarrier": {
 		"category": "Utilities",
 		"choco": "barrier",
@@ -407,7 +407,7 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-		"WPFInstallditto": {
+	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
 		"content": "Ditto",
@@ -591,7 +591,7 @@
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
-		"WPFInstallfiles": {
+	"WPFInstallfiles": {
 		"category": "Utilities",
 		"choco": "files",
 		"content": "Files",
@@ -1871,7 +1871,7 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
-		"WPFInstallsagethumbs": {
+	"WPFInstallsagethumbs": {
 		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
@@ -1999,7 +1999,7 @@
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
 	},
-		"WPFInstallspotube": {
+	"WPFInstallspotube": {
 		"category": "Multimedia Tools",
 		"choco": "spotube",
 		"content": "Spotube",
@@ -2795,8 +2795,16 @@
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "NDI Tools",
-		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
+		"description": "NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallnvidiageforce": {
+		"category": "Games",
+		"choco": "na",
+		"content": "Nvidia GeFource Experience",
+		"description": "The NVIDIA app is the essential companion for PC gamers and creators. Keep your PC up to date with the latest NVIDIA drivers and technology.",
+		"link": "https://www.nvidia.com/en-us/software/nvidia-app/",
+		"winget": "Nvidia.GeForceExperience"
 	}
 }
