@@ -28,5 +28,6 @@ function Invoke-WPFToggle {
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
         "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
+        "WPFToggleShowTaskView" {Invoke-WinUtilShowTaskView $(Get-WinUtilToggleStatus WPFToggleShowTaskView)}
     }
 }
