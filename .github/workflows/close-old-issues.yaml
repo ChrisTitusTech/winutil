@@ -14,8 +14,20 @@ jobs:
     - name: Close inactive issues
       uses: actions/stale@v9.0.0
       with:
+        # A list of labels to reference when looking through issues,
+        # and only when one (or even more) of these labels are found..
+        # then skip this issue, and never try to stale and/or close it.
         exempt-issue-labels: "Keep Issue Open"
-        days-before-issue-close: 14
-        close-issue-message: "This issue was closed because it has been inactive for 14 days"
-        debug-only: false # Make this field equal true if you want to test your configuration if it works or not
+        # Split it into two weeks, after one week the issue will be marked as stale,
+        # after another week have pasted without any update.. the issue will then be closed.
+        days-before-issue-stale: 7
+        days-before-issue-close: 7
+        # NEVER mark PRs as Stale or Close + this workflow should never have write permissions on PRs, EVER!
+        days-before-pr-stale: -1
+        days-before-pr-close: -1
+        # Sends a message for both the Stale and Close events of an issue.
+        stale-issue-message: "This issue was marked as stale because it has been inactive for 7 days"
+        close-issue-message: "This issue was closed because it has been inactive for 7 days since it was marked as stale"
+        # Make this field equal true if you want to test your configuration if it works correctly or not
+        debug-only: false
         repo-token: ${{ secrets.GITHUB_TOKEN }}
