@@ -205,7 +205,7 @@ $cttLogoPath = @"
         $hyperlink.Foreground = $foregroundColor
         $hyperlink.Add_Click({
             param($sender, $args)
-            [System.Diagnostics.Process]::Start($sender.NavigateUri.AbsoluteUri)
+            Start-Process $sender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
