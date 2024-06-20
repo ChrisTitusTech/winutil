@@ -2347,6 +2347,7 @@
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
+<<<<<<< Updated upstream
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
 
@@ -2354,6 +2355,11 @@
         Start-Process $ENV:temp\\edgeremoval.bat
 
         "
+=======
+      "#:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat",
+      "Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"",
+      "Start-Process $ENV:temp\\edgeremoval.bat"
+>>>>>>> Stashed changes
     ],
     "UndoScript": [
       "
