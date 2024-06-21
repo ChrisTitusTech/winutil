@@ -2838,5 +2838,37 @@
 		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallkicad": {
+		"category": "Pro Tools",
+		"choco": "na",
+		"content": "Kicad",
+		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+		"link": "https://www.kicad.org/",
+		"winget": "KiCad.KiCad"
+	},
+	"WPFInstallnvidiageforce": {
+		"category": "Games",
+		"choco": "na",
+		"content": "Nvidia GeForce Experience",
+		"description": "The NVIDIA app is the essential companion for PC gamers and creators. Keep your PC up to date with the latest NVIDIA drivers and technology.",
+		"link": "https://www.nvidia.com/en-us/software/nvidia-app/",
+		"winget": "Nvidia.GeForceExperience"
+	},
+	"WPFInstallamazongames": {
+		"category": "Games",
+		"choco": "na",
+		"content": "Amazon Games",
+		"description": "The Amazon Games app is a Windows PC game launcher that allows you to claim, install, and play new and classic Windows PC games every month from Prime Gaming — included with your Prime membership at no additional cost.",
+		"link": "https://www.amazongames.com/en-us/support/prime-gaming/articles/download-and-install-the-amazon-games-app",
+		"winget": "Amazon.Games"
+	},
+	"WPFInstallwd": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "WD Dashbaord",
+		"description": "The software helps check on Western Digital drives in Windows. Tools for checking health, firmware versions and updates are included.",
+		"link": "https://support-en.wd.com/app/answers/detailweb/a_id/31759/~/download,-install,-test-drive-and-update-firmware-using-western-digital",
+		"winget": "9WZDNCRFHV9L"
 	}
 }
