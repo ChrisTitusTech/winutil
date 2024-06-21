@@ -1359,6 +1359,14 @@
 		"link": "https://www.mp3tag.de/en/",
 		"winget": "Mp3tag.Mp3tag"
 	},
+	"WPFInstalltagscanner": {
+		"category": "Multimedia Tools",
+		"choco": "tagscanner",
+		"content": "TagScanner (Tag Scanner)",
+		"description": "TagScanner is a powerful tool for organizing and managing your music collection",
+		"link": "https://www.xdlab.ru/en/",
+		"winget": "SergeySerkov.TagScanner"
+	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
 		"choco": "nanazip",
