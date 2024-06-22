@@ -2465,7 +2465,7 @@
   },  
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
-    "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
+    "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
