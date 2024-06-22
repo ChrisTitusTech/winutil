@@ -2982,28 +2982,6 @@
       }
     ]
   },
-  "WPFTweaksEnableipsix": {
-    "Content": "Enable IPv6",
-    "Description": "Enables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "0",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ],
-    "UndoScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
-  },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme",
     "Description": "Enable/Disable Dark Mode.",
