@@ -2470,17 +2470,16 @@
     "panel": "1",
     "Order": "a030_",
     "InvokeScript": [
-        "
-
-        Write-Host \"Kill OneDrive process\"
-        taskkill.exe /F /IM \"OneDrive.exe\"
-        taskkill.exe /F /IM \"explorer.exe\"
-
-        Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath powershell -ArgumentList \"robocopy '$($env:USERPROFILE.TrimEnd())\\OneDrive' '$($env:USERPROFILE.TrimEnd())\\' /e /xj\" -NoNewWindow -Wait
-
-        Write-Host \"Remove OneDrive\"
-        Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
+        "       
+        $OneDrivePath = $($env:OneDrive)
+        Write-Host \"Removing OneDrive\"
+        $regPath = \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
+        $OneDriveUninstallString = Get-ItemPropertyValue \"Registry::$regPath\" -Name \"UninstallString\"
+        $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
+        Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
+        if (-not (Test-Path $regPath)){
+        Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
+        Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait     
 
         Write-Host \"Removing OneDrive leftovers\"
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
@@ -2488,8 +2487,8 @@
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
         # check if directory is empty before removing:
-        If ((Get-ChildItem \"$env:userprofile\\OneDrive\" -Recurse | Measure-Object).Count -eq 0) {
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:userprofile\\OneDrive\"
+        If ((Get-ChildItem \"$OneDrivePath\" -Recurse | Measure-Object).Count -eq 0) {
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$OneDrivePath\"
         }
 
         Write-Host \"Remove Onedrive from explorer sidebar\"
@@ -2532,11 +2531,17 @@
         Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
         Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
         Write-Host \"Restarting explorer\"
+        taskkill.exe /F /IM \"explorer.exe\"
         Start-Process \"explorer.exe\"
 
         Write-Host \"Waiting for explorer to complete loading\"
-        Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
+        Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
+        Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
         Start-Sleep 5
+        }
+        else{
+        Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
+        }
         "
     ],
     "UndoScript": [
