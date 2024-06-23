@@ -13,7 +13,7 @@ function Invoke-WPFtweaksbutton {
   }
 
   $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
-  
+
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){

@@ -278,7 +278,7 @@ Add-Type @"
             $windowHandle = $proc.MainWindowHandle
 	    } else {
         	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
-    
+
         }
     }
 
@@ -375,7 +375,7 @@ $filter = Get-WinUtilVariables -Type Label
 $labels = @{}
 $sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
 
-$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
+$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
 $sync["CheckboxFilter"].Add_TextChanged({
 

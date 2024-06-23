@@ -20,7 +20,7 @@ function Invoke-WPFOOSU {
     $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
     Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
 
-    switch ($action) 
+    switch ($action)
     {
         "customize"{
             Write-Host "Starting OO Shutup 10 ..."

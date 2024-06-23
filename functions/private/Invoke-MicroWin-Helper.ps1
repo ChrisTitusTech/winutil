@@ -121,8 +121,8 @@ function Remove-Packages
 			$_ -NotLike "*DesktopAppInstaller*" -AND
 			$_ -NotLike "*WebMediaExtensions*" -AND
 			$_ -NotLike "*WMIC*" -AND
-			$_ -NotLike "*UI.XaML*"	
-		} 
+			$_ -NotLike "*UI.XaML*"
+		}
 
 	foreach ($pkg in $pkglist)
 	{
@@ -164,9 +164,9 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 			$_.PackageName -NotLike "*Notepad*" -and
 			$_.PackageName -NotLike "*Printing*" -and
 			$_.PackageName -NotLike "*Wifi*" -and
-			$_.PackageName -NotLike "*Foundation*" 
-		} 
-    
+			$_.PackageName -NotLike "*Foundation*"
+		}
+
     if ($?)
     {
         if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
@@ -227,13 +227,13 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	# Remove-Item -Path $directoryPath -Recurse -Force
 
 	# # Grant full control to BUILTIN\Administrators using icacls
-	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc"
 	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
 	# icacls "$($directoryPath)" /q /c /t /reset > $null
 	# icacls $directoryPath /setowner "*S-1-5-32-544"
 	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 	# Remove-Item -Path $directoryPath -Recurse -Force
-	
+
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
@@ -241,9 +241,9 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		Write-Debug "Adding $($pathToDelete) to array."
 		[void]$itemsToDelete.Add($pathToDelete)
 	}
-	else 
+	else
 	{
-		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)" 
+		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)"
 		if ($Directory)	{ $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory }
 		else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
 	}
@@ -253,7 +253,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		$status = "Deleting $($itemToDelete)"
 		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
 
-		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
+		if (Test-Path -Path "$($itemToDelete)" -PathType Container)
 		{
 			$status = "Deleting directory: $($itemToDelete)"
 
@@ -473,16 +473,16 @@ function New-FirstRun {
 		param (
 			[Parameter(Mandatory = $true)]
 			[string]$RegistryPath,
-	
+
 			[Parameter(Mandatory = $true)]
 			[string]$ValueName
 		)
-	
+
 		# Check if the registry path exists
 		if (Test-Path -Path $RegistryPath)
 		{
 			$registryValue = Get-ItemProperty -Path $RegistryPath -Name $ValueName -ErrorAction SilentlyContinue
-	
+
 			# Check if the registry value exists
 			if ($registryValue)
 			{
@@ -500,7 +500,7 @@ function New-FirstRun {
 			Write-Host "Registry path '$RegistryPath' not found."
 		}
 	}
-	
+
 	function Stop-UnnecessaryServices
 	{
 		$servicesToExclude = @(
@@ -566,8 +566,8 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-)	
-	
+)
+
 		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
 		foreach($service in $runningServices)
 		{
@@ -576,28 +576,28 @@ function New-FirstRun {
 			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
-	
+
 	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-	
+
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
 	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
 
 	# figure this out later how to set updates to security only
-	#Import-Module -Name PSWindowsUpdate; 
+	#Import-Module -Name PSWindowsUpdate;
 	#Stop-Service -Name wuauserv
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
-	
+
 	Stop-UnnecessaryServices
-	
+
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files on the Taskbar 
+	# Delete all files on the Taskbar
 	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
-	
+
 	# Stop-Process -Name explorer -Force
 
 	$process = Get-Process -Name "explorer"
@@ -609,9 +609,9 @@ function New-FirstRun {
 	# Delete Edge Icon from the desktop
 	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
 	# Check if Edge shortcuts exist on the desktop
-	if ($edgeShortcutFiles) 
+	if ($edgeShortcutFiles)
 	{
-		foreach ($shortcutFile in $edgeShortcutFiles) 
+		foreach ($shortcutFile in $edgeShortcutFiles)
 		{
 			# Remove each Edge shortcut
 			Remove-Item -Path $shortcutFile.FullName -Force
@@ -631,7 +631,7 @@ function New-FirstRun {
 	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
 	# Create a shell object
 	$shell = New-Object -ComObject WScript.Shell
-	
+
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
@@ -639,26 +639,26 @@ function New-FirstRun {
 	{
 		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
 	}
-	
+
 	# Set properties of the shortcut
 	$shortcut.TargetPath = "powershell.exe"
 	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 	# Save the shortcut
 	$shortcut.Save()
-	
+
         # Make the shortcut have 'Run as administrator' property on
         $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
         # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
         $bytes[0x15] = $bytes[0x15] -bor 0x20
         [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
-        
+
 	Write-Host "Shortcut created at: $shortcutPath"
-	# 
+	#
 	# Done create WinUtil shortcut on the desktop
 	# ************************************************
 
 	Start-Process explorer
-	
+
 '@
-	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
+	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }

@@ -5,8 +5,8 @@ function Get-WinUtilWingetLatest {
     .DESCRIPTION
         This function grabs the latest version of Winget and returns the download path to Install-WinUtilWinget for installation.
     #>
-    # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function  
-    $PreviousProgressPreference = $ProgressPreference 
+    # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function
+    $PreviousProgressPreference = $ProgressPreference
     $ProgressPreference = "silentlyContinue"
     Try{
         # Grabs the latest release of Winget from the Github API for the install process.

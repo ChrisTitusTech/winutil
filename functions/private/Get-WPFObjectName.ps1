@@ -10,17 +10,17 @@ function Get-WPFObjectName {
     .OUTPUTS
         A string that can be used as a object/variable name in powershell.
         For example: WPFLabelMicrosoftTools
-        
+
     .EXAMPLE
         Get-WPFObjectName -type Label -name "Microsoft Tools"
     #>
 
-    param( [Parameter(Mandatory=$true)] 
-    $type, 
+    param( [Parameter(Mandatory=$true)]
+    $type,
     $name
 )
 
-$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', '' 
+$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', ''
 
 return $Output
 

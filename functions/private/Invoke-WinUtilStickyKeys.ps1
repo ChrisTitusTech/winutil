@@ -6,7 +6,7 @@ Function Invoke-WinUtilStickyKeys {
         Indicates whether to enable or disable Sticky Keys on startup
     #>
     Param($Enabled)
-    Try { 
+    Try {
         if ($Enabled -eq $false){
             Write-Host "Enabling Sticky Keys On startup"
             $value = 510

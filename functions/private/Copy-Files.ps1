@@ -1,22 +1,22 @@
 function Copy-Files {
     <#
-    
+
         .DESCRIPTION
         This function will make all modifications to the registry
 
         .EXAMPLE
 
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-    
-    #>    
+
+    #>
     param (
-        [string] $Path, 
-        [string] $Destination, 
-        [switch] $Recurse = $false, 
+        [string] $Path,
+        [string] $Destination,
+        [switch] $Recurse = $false,
         [switch] $Force = $false
     )
 
-    try {   
+    try {
 
  	$files = Get-ChildItem -Path $path -Recurse:$recurse
 	Write-Host "Copy $($files.Count)(s) from $path to $destination"
@@ -35,9 +35,9 @@ function Copy-Files {
             else
             {
                 Write-Debug "Copy from $($file.FullName) to $($destination+$restpath)"
-                Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force 
+                Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force
                 Set-ItemProperty -Path ($destination+$restpath) -Name IsReadOnly -Value $false
-            }        
+            }
         }
         Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
     }

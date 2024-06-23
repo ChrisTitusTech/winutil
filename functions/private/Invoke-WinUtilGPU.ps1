@@ -1,6 +1,6 @@
 function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
-    
+
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*NVIDIA*") {
@@ -11,19 +11,19 @@ function Invoke-WinUtilGPU {
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*AMD Radeon RX*") {
-            return $true # AMD GPU Found 
+            return $true # AMD GPU Found
         }
     }
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*UHD*") {
-            return $false # Intel Intergrated GPU Found 
+            return $false # Intel Intergrated GPU Found
         }
     }
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*AMD Radeon(TM)*") {
-            return $false # AMD Intergrated GPU Found 
+            return $false # AMD Intergrated GPU Found
         }
     }
 }

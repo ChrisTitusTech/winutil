@@ -35,7 +35,7 @@ function Invoke-WPFPresets {
             Write-Debug $_
         }
     }
-    
+
     foreach ($CheckBox in $CheckBoxes) {
         $checkboxName = $CheckBox.Key
 
