@@ -84,7 +84,7 @@
       "
       Write-Host \"Turn on Hibernation\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
-  
+
       # Set hibernation as the default action
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
@@ -96,14 +96,14 @@
       "
       Write-Host \"Turn off Hibernation\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
-  
+
       # Set standby to detault values
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
-    ]    
+    ]
   },
   "WPFTweaksHome": {
     "Content": "Disable Homegroup",
@@ -2241,7 +2241,7 @@
             Write-Host \"Please run this script as an administrator.\"
             return
         }
-    
+
         # Check if System Restore is enabled for the main drive
         try {
             # Try getting restore points to check if System Restore is enabled
@@ -2249,14 +2249,14 @@
         } catch {
             Write-Host \"An error occurred while enabling System Restore: $_\"
         }
-    
+
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
         if($null -eq $exists){
             write-host 'Changing system to allow multiple restore points per day'
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
-    
+
         # Attempt to load the required module for Get-ComputerRestorePoint
         try {
             Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
@@ -2264,7 +2264,7 @@
             Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
             return
         }
-    
+
         # Get all the restore points for the current day
         try {
             $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
@@ -2272,11 +2272,11 @@
             Write-Host \"Failed to retrieve restore points: $_\"
             return
         }
-    
+
         # Check if there is already a restore point created today
         if ($existingRestorePoints.Count -eq 0) {
             $description = \"System Restore Point created by WinUtil\"
-    
+
             Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
@@ -2370,7 +2370,7 @@
     "Order": "a025_",
     "registry": [
       {
-        
+
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
@@ -2395,7 +2395,7 @@
     "InvokeScript": [
       "
       Write-Host \"Remove Copilot\"
-      dism /online /remove-package /package-name:Microsoft.Windows.Copilot  
+      dism /online /remove-package /package-name:Microsoft.Windows.Copilot
       "
     ],
     "UndoScript": [
@@ -2414,11 +2414,11 @@
     "InvokeScript": [
         "
         Write-Host \"Kill OneDrive process\"
-        $serviceName = \"LMS\"   
+        $serviceName = \"LMS\"
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
         Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;
-        
+
         Write-Host \"Removing service: $serviceName\";
         sc.exe delete $serviceName;
 
@@ -2433,7 +2433,7 @@
         } else {
             Write-Host \"All found LMS driver packages have been removed.\";
         }
-        
+
         Write-Host \"Searching and deleting LMS executable files\";
         $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");
         $lmsFiles = @();
@@ -2451,7 +2451,7 @@
             Write-Host \"No LMS.exe files found in Program Files directories.\";
         } else {
             Write-Host \"All found LMS.exe files have been deleted.\";
-        }        
+        }
         Write-Host 'Intel LMS vPro service has been disabled, removed, and blocked.';
        "
     ],
@@ -2462,7 +2462,7 @@
 
       "
     ]
-  },  
+  },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
@@ -2574,25 +2574,25 @@
     "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",    
+    "Order": "a021_",
     "InvokeScript": [
       "
       function CCStopper {
         $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-        
+
         # Test if the path exists before proceeding
         if (Test-Path $path) {
             Takeown /f $path
             $acl = Get-Acl $path
             $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
             $acl | Set-Acl $path
-    
+
             Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
         } else {
             Write-Host \"Adobe Desktop Service is not in the default location.\"
         }
       }
-    
+
 
       function AcrobatUpdates {
         # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
@@ -2602,12 +2602,12 @@
         # 3 = Automatically download and install updates (default value)
         # 4 = Notify the user when an update is available but don't download or install it automatically
         #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
-    
+
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-    
+
         # Get all subkeys under the specified root path
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-    
+
         # Loop through each subkey
         foreach ($subKey in $subKeys) {
             # Get the full registry path
@@ -2630,7 +2630,7 @@
       function RestoreCCService {
         $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
         $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-    
+
         if (Test-Path -Path $originalPath) {
             Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
             Write-Host \"Adobe Desktop Service has been restored.\"
@@ -2642,12 +2642,12 @@
       function AcrobatUpdates {
         # Default Value:
         # 3 = Automatically download and install updates
-    
+
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-    
+
         # Get all subkeys under the specified root path
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-    
+
         # Loop through each subkey
         foreach ($subKey in $subKeys) {
             # Get the full registry path
@@ -2722,14 +2722,14 @@
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. ",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a021_",    
+    "Order": "a021_",
     "InvokeScript": [
       "
       # Define the URL of the remote HOSTS file and the local paths
       $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
       $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
-      
+
       # Download the remote HOSTS file to a temporary location
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
@@ -2738,11 +2738,11 @@
       catch {
           Write-Error \"Failed to download the HOSTS file. Error: $_\"
       }
-      
+
       # Check if the AdobeNetBlock has already been started
       try {
           $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      
+
           # Check if AdobeNetBlock markers exist
           $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
           if ($blockStartExists) {
@@ -2753,10 +2753,10 @@
               $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
               $newBlockHeader = \"#AdobeNetBlock-start\"
               $newBlockFooter = \"#AdobeNetBlock-end\"
-      
+
               # Combine the contents, ensuring new block is properly formatted
               $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
-      
+
               # Write the combined content back to the original HOSTS file
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output \"Successfully added the AdobeNetBlock.\"
@@ -2765,10 +2765,10 @@
       catch {
           Write-Error \"Error during processing: $_\"
       }
-      
+
       # Clean up temporary file
       Remove-Item $tempHostsPath -ErrorAction Ignore
-      
+
       # Flush the DNS resolver cache
       try {
           Invoke-Expression \"ipconfig /flushdns\"
@@ -2783,7 +2783,7 @@
       "
       # Define the local path of the HOSTS file
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
-      
+
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
@@ -2792,11 +2792,11 @@
           Write-Error \"Failed to load the HOSTS file. Error: $_\"
           return
       }
-      
+
       # Initialize flags and buffer for new content
       $recording = $true
       $newContent = @()
-      
+
       # Iterate over each line of the HOSTS file
       foreach ($line in $hostsContent) {
           if ($line -match \"#AdobeNetBlock-start\") {
@@ -2809,7 +2809,7 @@
               $recording = $true
           }
       }
-      
+
       # Write the filtered content back to the HOSTS file
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
@@ -2818,7 +2818,7 @@
       catch {
           Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
       }
-      
+
       # Flush the DNS resolver cache
       try {
           Invoke-Expression \"ipconfig /flushdns\"

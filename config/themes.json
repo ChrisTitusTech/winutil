@@ -6,7 +6,7 @@
                     "MainBackgroundColor":  "#FFFFFF",
                     "LabelBackgroundColor":  "#FAFAFA",
                     "LinkForegroundColor":  "#000000",
-                    "LinkHoverForegroundColor":  "#000000",                    
+                    "LinkHoverForegroundColor":  "#000000",
                     "GroupBorderBackgroundColor":  "#000000",
                     "ComboBoxForegroundColor":  "#000000",
                     "ButtonInstallBackgroundColor":  "#FFFFFF",
@@ -31,7 +31,7 @@
                     "BorderColor": "#000000",
                     "BorderOpacity": "0.2",
                     "ShadowPulse": "Forever"
-                },                
+                },
     "Matrix":  {
                    "ComboBoxBackgroundColor":  "#000000",
                    "LabelboxForegroundColor":  "#FFEE58",
