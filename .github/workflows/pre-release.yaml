@@ -1,4 +1,4 @@
-name: Release WinUtil
+name: Pre-Release WinUtil
 
 on:
   workflow_run:
