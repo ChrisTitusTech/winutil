@@ -215,6 +215,14 @@
 		"link": "https://www.bulkrenameutility.co.uk",
 		"winget": "TGRMNSoftware.BulkRenameUtility"
 	},
+	"WPFInstallAdvancedRenamer": {
+		"category": "Utilities",
+		"choco": "advanced-renamer",
+		"content": "Advanced Renamer",
+		"description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
+		"link": "https://www.advancedrenamer.com/",
+		"winget": "XP9MD3S1KFCPH1"
+	},
 	"WPFInstallcalibre": {
 		"category": "Document",
 		"choco": "calibre",
@@ -1790,6 +1798,14 @@
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
+	},
+	"WPFInstalltransmission": {
+		"category": "Utilities",
+		"choco": "transmission",
+		"content": "Transmission",
+		"description": "Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean.",
+		"link": "https://transmissionbt.com/",
+		"winget": "Transmission.Transmission"
 	},
 	"WPFInstalltixati": {
 		"category": "Utilities",
