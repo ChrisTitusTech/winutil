@@ -2391,7 +2391,7 @@
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a0026_",
+    "Order": "a026_",
     "InvokeScript": [
         "
         Write-Host \"Kill LMS\"
