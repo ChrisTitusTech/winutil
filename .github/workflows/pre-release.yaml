@@ -2,7 +2,7 @@ name: Pre-Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile"] # Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
     types:
       - completed
   workflow_dispatch: # Manual trigger added
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+        
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
@@ -24,7 +24,7 @@ jobs:
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
               echo "version=$version" >> $GITHUB_ENV
-              echo "version=$version" >> $GITHUB_OUTPUT
+              echo "::set-output name=version::$version"
               break
             }
           }
@@ -34,19 +34,12 @@ jobs:
           }
         shell: pwsh
 
-      - name: Draft Release Changelog
-        id: draft_release
-        uses: release-drafter/release-drafter@v5.25.0 # Using latest to support Node.js 20
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Pre-Release ${{ steps.extract_version.outputs.version }}
-          body: ${{ steps.draft_release.outputs.draft_body }}
           files: ./winutil.ps1
           prerelease: true
         env:
