@@ -2,7 +2,7 @@ name: Pre-Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile"] # Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
     types:
       - completed
   workflow_dispatch: # Manual trigger added
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+        
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
@@ -34,10 +34,11 @@ jobs:
           }
         shell: pwsh
 
-      - name: Create Release Notes Draft
+      - name: Draft Release Changelog
+        id: draft_release
         uses: release-drafter/release-drafter@v5
         with:
-          config-name: .github/release-drafter.yml
+          version: ${{ steps.extract_version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -47,6 +48,7 @@ jobs:
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Pre-Release ${{ steps.extract_version.outputs.version }}
+          body: ${{ steps.draft_release.outputs.draft_body }}
           files: ./winutil.ps1
           prerelease: true
         env:
