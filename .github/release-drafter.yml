@@ -5,9 +5,6 @@ template: |
 
   $CHANGES
 
-  ## Contributors
-
-  Thanks to everyone who contributed to this release:
 
   $CONTRIBUTORS
 
