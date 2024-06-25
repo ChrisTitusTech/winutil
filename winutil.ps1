@@ -15062,9 +15062,17 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    $sync.ConfigLoaded = $False
-    $sync.ComputerInfo = Get-ComputerInfo
-    $sync.ConfigLoaded = $True
+    try{
+        $oldProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue"
+        $sync.ConfigLoaded = $False
+        $sync.ComputerInfo = Get-ComputerInfo
+        $sync.ConfigLoaded = $True
+    }
+    finally{
+        $ProgressPreference = "Continue"
+    }
+    
 } | Out-Null
 
 #===========================================================================
@@ -15073,9 +15081,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-
-# Install Winget if not already present
-Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
