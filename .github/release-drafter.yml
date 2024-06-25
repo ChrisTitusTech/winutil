@@ -6,8 +6,6 @@ template: |
   $CHANGES
 
 
-  $CONTRIBUTORS
-
 categories:
   - title: 🚀 Features
     labels:
