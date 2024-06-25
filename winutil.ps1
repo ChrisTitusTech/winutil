@@ -9870,11 +9870,6 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WwanSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "XblAuthManager",
         "StartupType": "Manual",
         "OriginalType": "Manual"
