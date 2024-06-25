@@ -2323,7 +2323,7 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates.",
+    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
