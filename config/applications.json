@@ -2839,5 +2839,13 @@
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
+	},
+	"WPFInstallModrinth": {
+		"category": "Games",
+		"choco": "na",
+		"content": "Modrinth",
+		"description": "Modrinth is a modding platform for Minecraft that provides a curated selection of mods, modpacks, and tools for the Minecraft community.",
+		"link": "https://modrinth.com/",
+		"winget": "Modrinth.ModrinthApp"
 	}
 }
