@@ -2,7 +2,7 @@ name: Pre-Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] # Ensure Compile winget.ps1 is done
     types:
       - completed
   workflow_dispatch: # Manual trigger added
@@ -39,10 +39,19 @@ jobs:
         uses: release-drafter/release-drafter@v5
         with:
           version: ${{ steps.extract_version.outputs.version }}
+          name: Pre-Release ${{ steps.extract_version.outputs.version }}
+          tag: ${{ steps.extract_version.outputs.version }}
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create and Upload Release
+      - name: Upload winutil.ps1
+        uses: actions/upload-artifact@v3
+        with:
+          name: winutil.ps1
+          path: ./winutil.ps1
+
+      - name: Publish Draft Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
@@ -50,6 +59,7 @@ jobs:
           name: Pre-Release ${{ steps.extract_version.outputs.version }}
           body: ${{ steps.draft_release.outputs.draft_body }}
           files: ./winutil.ps1
+          draft: true
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
