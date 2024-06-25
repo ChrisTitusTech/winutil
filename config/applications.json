@@ -2415,14 +2415,6 @@
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
 	},
-	"WPFInstallwindirstat": {
-		"category": "Utilities",
-		"choco": "windirstat",
-		"content": "WinDirStat",
-		"description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
-		"link": "https://windirstat.net/",
-		"winget": "WinDirStat.WinDirStat"
-	},
 	"WPFInstallwindowspchealth": {
 		"category": "Utilities",
 		"choco": "na",
