@@ -2308,20 +2308,6 @@
       "Invoke-WPFTweakPS7 -action \"PS5\""
     ]
   },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
-    "InvokeScript": [
-      "Invoke-WPFOOSU -action \"recommended\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFOOSU -action \"undo\""
-    ]
-  },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
@@ -3079,7 +3065,7 @@
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
-    "Content": "Customize OO Shutup Tweaks",
+    "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a039_",

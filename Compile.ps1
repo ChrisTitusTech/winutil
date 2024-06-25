@@ -64,13 +64,6 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
-Write-Progress -Activity "Compiling" -Status "Adding: Config *.cfg" -PercentComplete 45
-Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
-    $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
-}
-Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
-    $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
-}
 
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 

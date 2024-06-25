@@ -5,7 +5,6 @@
     "WPFTweaksHiber",
     "WPFTweaksHome",
     "WPFTweaksLoc",
-    "WPFTweaksOO",
     "WPFTweaksServices",
     "WPFTweaksStorage",
     "WPFTweaksTele",
@@ -18,7 +17,6 @@
   ],
   "Minimal": [
     "WPFTweaksHome",
-    "WPFTweaksOO",
     "WPFTweaksServices",
     "WPFTweaksTele"
   ]
