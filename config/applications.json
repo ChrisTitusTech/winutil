@@ -975,14 +975,6 @@
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"WPFInstalljava20": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 20",
-		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.20.JDK"
-	},
 	"WPFInstalljava21": {
 		"category": "Development",
 		"choco": "na",
@@ -1662,6 +1654,14 @@
 		"description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
+	},
+	"WPFInstallplexdesktop": {
+		"category": "Multimedia Tools",
+		"choco": "plex",
+		"content": "Plex Desktop",
+		"description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+		"link": "https://www.plex.tv",
+		"winget": "Plex.Plex"
 	},
 	"WPFInstallPortmaster": {
 		"category": "Pro Tools",

@@ -6365,14 +6365,6 @@ $sync.configs.applications = '{
     "link": "https://www.oracle.com/java/",
     "winget": "EclipseAdoptium.Temurin.18.JRE"
   },
-  "WPFInstalljava20": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Azul Zulu JDK 20",
-    "description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-    "link": "https://www.azul.com/downloads/zulu-community/",
-    "winget": "Azul.Zulu.20.JDK"
-  },
   "WPFInstalljava21": {
     "category": "Development",
     "choco": "na",
@@ -7052,6 +7044,14 @@ $sync.configs.applications = '{
     "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
     "link": "https://www.plex.tv/your-media/",
     "winget": "Plex.PlexMediaServer"
+  },
+  "WPFInstallplexdesktop": {
+    "category": "Multimedia Tools",
+    "choco": "plex",
+    "content": "Plex Desktop",
+    "description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+    "link": "https://www.plex.tv",
+    "winget": "Plex.Plex"
   },
   "WPFInstallPortmaster": {
     "category": "Pro Tools",
@@ -9868,11 +9868,6 @@ $sync.configs.tweaks = '{
         "Name": "WpnUserService_*",
         "StartupType": "Automatic",
         "OriginalType": "Automatic"
-      },
-      {
-        "Name": "WwanSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
       },
       {
         "Name": "XblAuthManager",
@@ -13605,9 +13600,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalljava19runtime" Content="Eclipse Temurin JRE 19" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava19runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" ToolTip="Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava20Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" ToolTip="Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava21Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13637,14 +13629,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpixi" Content="Pixi" ToolTip="Pixi is a fast software package manager built on top of the existing conda ecosystem. Spins up development environments quickly on Windows, macOS and Linux. Pixi supports Python, R, C/C++, Rust, Ruby, and many other languages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpixiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pixi.sh" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/" />
 </StackPanel>
@@ -13852,14 +13844,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" ToolTip=".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/3.1" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" ToolTip=".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet6Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/6.0" />
 </StackPanel>
@@ -14031,6 +14023,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallplex" Content="Plex Media Server" ToolTip="Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv/your-media/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallplexdesktop" Content="Plex Desktop" ToolTip="Plex Desktop for Windows is the front end for Plex Media Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallqgis" Content="QGIS" ToolTip="QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqgisLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qgis.org/en/site/" />
