@@ -11053,7 +11053,7 @@ $sync.configs.tweaks = '{
     "Order": "a0015_",
     "InvokeScript": [
       "
-        Write-Host \"Kill OneDrive process\"
+        Write-Host \"Kill LMS\"
         $serviceName = \"LMS\"   
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
@@ -11097,8 +11097,7 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Microsoft Edge\"
-      taskkill.exe /F /IM \"OneDrive.exe\"
+      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
     ]
