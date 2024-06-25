@@ -567,6 +567,14 @@
 		"link": "https://www.falkon.org/",
 		"winget": "KDE.Falkon"
 	},
+	"WPFInstallfastfetch": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Fastfetch",
+		"description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
+		"link": "https://github.com/fastfetch-cli/fastfetch/",
+		"winget": "fastfetch"
+	},
 	"WPFInstallferdium": {
 		"category": "Communications",
 		"choco": "ferdium",
