@@ -24,6 +24,7 @@ jobs:
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
               echo "version=$version" >> $GITHUB_ENV
+              echo "version=$version" >> $GITHUB_OUTPUT
               break
             }
           }
@@ -35,7 +36,7 @@ jobs:
 
       - name: Draft Release Changelog
         id: draft_release
-        uses: release-drafter/release-drafter@v5.20.0
+        uses: release-drafter/release-drafter@v5.24.0 # Ensuring Node.js 20 support
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -50,4 +51,3 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
