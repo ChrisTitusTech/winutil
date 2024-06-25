@@ -8208,7 +8208,7 @@ $sync.configs.applications = '{
   "WPFInstallForceAutoHDR": {
     "category": "Utilities",
     "choco": "na",
-    "content": "GUI That Forces Auto HDR In Unsupported Games",
+    "content": "ForceAutoHDR",
     "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
     "link": "https://github.com/7gxycn08/ForceAutoHDR",
     "winget": "ForceAutoHDR.7gxycn08"
@@ -14244,7 +14244,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallForceAutoHDR" Content="GUI That Forces Auto HDR In Unsupported Games" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
+<CheckBox Name="WPFInstallForceAutoHDR" Content="ForceAutoHDR" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallFreeFileSync" Content="FreeFileSync" ToolTip="Synchronize Files and Folders" Margin="0,0,2,0"/><TextBlock Name="WPFInstallFreeFileSyncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://freefilesync.org" />
