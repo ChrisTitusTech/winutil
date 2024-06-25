@@ -1,19 +1,24 @@
-name-template: 'v$NEXT_PATCH_VERSION'
-tag-template: 'v$NEXT_PATCH_VERSION'
-categories:
-  - title: '🚀 New Features'
-    labels:
-      - 'feature'
-  - title: '🐛 Bug Fixes'
-    labels:
-      - 'bug'
-  - title: '🛠 Maintenance'
-    labels:
-      - 'chore'
+name: Release Drafter
+
 template: |
-  ## Changes
+  ## What’s Changed
+
   $CHANGES
+
   ## Contributors
+
+  Thanks to everyone who contributed to this release:
+
   $CONTRIBUTORS
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
-no-changes-template: '- No changes'
+
+categories:
+  - title: 🚀 Features
+    labels:
+      - feature
+
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
+version-template: 'v$MAJOR.$MINOR.$PATCH'
