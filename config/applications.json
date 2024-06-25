@@ -975,14 +975,6 @@
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"WPFInstalljava20": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 20",
-		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.20.JDK"
-	},
 	"WPFInstalljava21": {
 		"category": "Development",
 		"choco": "na",
