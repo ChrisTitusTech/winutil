@@ -1,0 +1,24 @@
+name: Release Drafter
+
+template: |
+  ## What’s Changed
+
+  $CHANGES
+
+  ## Contributors
+
+  Thanks to everyone who contributed to this release:
+
+  $CONTRIBUTORS
+
+categories:
+  - title: 🚀 Features
+    labels:
+      - feature
+
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
+version-template: 'v$MAJOR.$MINOR.$PATCH'
