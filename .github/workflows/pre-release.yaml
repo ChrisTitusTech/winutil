@@ -2,7 +2,7 @@ name: Pre-Release WinUtil
 
 on:
   workflow_run:
-    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
+    workflows: ["Compile"] # Ensure Compile winget.ps1 is done
     types:
       - completed
   workflow_dispatch: # Manual trigger added
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        
+
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
@@ -24,7 +24,6 @@ jobs:
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
               echo "version=$version" >> $GITHUB_ENV
-              echo "::set-output name=version::$version"
               break
             }
           }
@@ -36,9 +35,7 @@ jobs:
 
       - name: Draft Release Changelog
         id: draft_release
-        uses: release-drafter/release-drafter@v5
-        with:
-          version: ${{ steps.extract_version.outputs.version }}
+        uses: release-drafter/release-drafter@v5.20.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
