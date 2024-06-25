@@ -1,18 +1,19 @@
-name: Release Drafter
-
-template: |
-  ## What’s Changed
-
-  $CHANGES
-
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
-  - title: 🚀 Features
+  - title: '🚀 New Features'
     labels:
-      - feature
-
-  - title: 🐛 Bug Fixes
+      - 'feature'
+  - title: '🐛 Bug Fixes'
     labels:
-      - bug
-
-change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
-version-template: 'v$MAJOR.$MINOR.$PATCH'
+      - 'bug'
+  - title: '🛠 Maintenance'
+    labels:
+      - 'chore'
+template: |
+  ## Changes
+  $CHANGES
+  ## Contributors
+  $CONTRIBUTORS
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+no-changes-template: '- No changes'
