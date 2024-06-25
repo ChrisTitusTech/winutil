@@ -1,7 +1,7 @@
-name: Release WinUtil
+name: Full Release WinUtil
 
 on:
-  workflow_dispatch: # Manual trigger added
+  workflow_dispatch: # Manual trigger
 
 jobs:
   build-runspace:
@@ -30,13 +30,30 @@ jobs:
           }
         shell: pwsh
 
-      - name: Create and Upload Release
+      - name: Draft Release Changelog
+        id: draft_release
+        uses: release-drafter/release-drafter@v5
+        with:
+          version: ${{ steps.extract_version.outputs.version }}
+          name: Release ${{ steps.extract_version.outputs.version }}
+          tag: ${{ steps.extract_version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload winutil.ps1
+        uses: actions/upload-artifact@v3
+        with:
+          name: winutil.ps1
+          path: ./winutil.ps1
+
+      - name: Publish Draft Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Release ${{ steps.extract_version.outputs.version }}
+          body: ${{ steps.draft_release.outputs.draft_body }}
           files: ./winutil.ps1
-          prerelease: false
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
