@@ -175,14 +175,6 @@
 		"link": "https://www.blender.org/",
 		"winget": "BlenderFoundation.Blender"
 	},
-	"WPFInstallbluestacks": {
-		"category": "Games",
-		"choco": "bluestacks",
-		"content": "Bluestacks",
-		"description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
-		"link": "https://www.bluestacks.com/",
-		"winget": "BlueStack.BlueStacks"
-	},
 	"WPFInstallbrave": {
 		"category": "Browsers",
 		"choco": "brave",
