@@ -5,15 +5,5 @@ template: |
 
   $CHANGES
 
-
-categories:
-  - title: 🚀 Features
-    labels:
-      - feature
-
-  - title: 🐛 Bug Fixes
-    labels:
-      - bug
-
 change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
 version-template: 'v$MAJOR.$MINOR.$PATCH'
