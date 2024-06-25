@@ -36,7 +36,7 @@ jobs:
 
       - name: Draft Release Changelog
         id: draft_release
-        uses: release-drafter/release-drafter@v5.25.0 # Ensuring Node.js 20 support
+        uses: release-drafter/release-drafter@v5.25.0 # Using latest to support Node.js 20
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
