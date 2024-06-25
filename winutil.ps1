@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.20
+    Version        : 24.06.25
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.20"
+$sync.version = "24.06.25"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2810,16 +2810,66 @@ $cttLogoPath = @"
     $winutilTextBlock.Foreground = $foregroundColor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
-
     # Add TextBlock for information with text wrapping and margins
     $messageTextBlock = New-Object Windows.Controls.TextBlock
-    $messageTextBlock.Text = $Message
     $messageTextBlock.TextWrapping = [Windows.TextWrapping]::Wrap  # Enable text wrapping
     $messageTextBlock.HorizontalAlignment = [Windows.HorizontalAlignment]::Left
     $messageTextBlock.VerticalAlignment = [Windows.VerticalAlignment]::Top
     $messageTextBlock.Margin = New-Object Windows.Thickness(10)  # Add margins around the text block
+
+    # Define the Regex to find hyperlinks formatted as HTML <a> tags
+    $regex = [regex]::new('<a href="([^"]+)">([^<]+)</a>')
+    $lastPos = 0
+
+    # Iterate through each match and add regular text and hyperlinks
+    foreach ($match in $regex.Matches($Message)) {
+        # Add the text before the hyperlink, if any
+        $textBefore = $Message.Substring($lastPos, $match.Index - $lastPos)
+        if ($textBefore.Length -gt 0) {
+            $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textBefore)))
+        }
+
+        # Create and add the hyperlink
+        $hyperlink = New-Object Windows.Documents.Hyperlink
+        $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
+        $hyperlink.Inlines.Add($match.Groups[2].Value)
+        $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
+        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Add_Click({
+            param($sender, $args)
+            Start-Process $sender.NavigateUri.AbsoluteUri
+        })
+        $hyperlink.Add_MouseEnter({
+            param($sender, $args)
+            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+        })
+        $hyperlink.Add_MouseLeave({
+            param($sender, $args)
+            $sender.Foreground = $foregroundColor
+        })
+        
+        $messageTextBlock.Inlines.Add($hyperlink)
+
+        # Update the last position
+        $lastPos = $match.Index + $match.Length
+    }
+
+    # Add any remaining text after the last hyperlink
+    if ($lastPos -lt $Message.Length) {
+        $textAfter = $Message.Substring($lastPos)
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textAfter)))
+    }
+
+    # If no matches, add the entire message as a run
+    if ($regex.Matches($Message).Count -eq 0) {
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
+    }
+
+
+    # Add the TextBlock to the Grid
     $grid.Children.Add($messageTextBlock)
     [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
@@ -15346,14 +15396,13 @@ $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
     $sync["SettingsPopup"].IsOpen = $false
-    # Example usage
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
-Version  : $($sync.version)
+Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
+GUI      : <a href="https://github.com/KonTy">@KonTy</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
