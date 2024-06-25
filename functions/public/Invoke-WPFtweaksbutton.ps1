@@ -22,6 +22,14 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
+  Set-WinUtilSearchBox -SearchBox $sync["WPFSearchBox"].text
+
+  if ($tweaks.count -eq 0 -and  $sync["WPFSearchBox"].text -eq "Box"){
+    $msg = "Please check the tweaks you wish to perform."
+    [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
+    return
+  }
+
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
   Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {

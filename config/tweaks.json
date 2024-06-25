@@ -3113,6 +3113,14 @@
     "Order": "a081_",
     "Type": "300"
   },
+  "WPFSearchBox": {
+    "Content": "Search Box",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a041_",
+    "Type": "Combobox",
+    "ComboItems": "Icon Box Hidden"
+  },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
     "category": "Shortcuts",
