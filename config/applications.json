@@ -183,14 +183,6 @@
 		"link": "https://www.bluestacks.com/",
 		"winget": "BlueStack.BlueStacks"
 	},
-	"WPFInstallbrave": {
-		"category": "Browsers",
-		"choco": "brave",
-		"content": "Brave",
-		"description": "Brave is a privacy-focused web browser that blocks ads and trackers, offering a faster and safer browsing experience.",
-		"link": "https://www.brave.com",
-		"winget": "Brave.Brave"
-	},
 	"WPFInstallbulkcrapuninstaller": {
 		"category": "Utilities",
 		"choco": "bulk-crap-uninstaller",
