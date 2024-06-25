@@ -103,5 +103,11 @@ Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding as
 Write-Progress -Activity "Compiling" -Completed
 
 if ($run){
-    Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+    try {
+        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
+    }
+    catch {
+        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+    }
+    
 }
