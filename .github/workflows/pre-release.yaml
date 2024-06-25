@@ -59,7 +59,7 @@ jobs:
           name: Pre-Release ${{ steps.extract_version.outputs.version }}
           body: ${{ steps.draft_release.outputs.draft_body }}
           files: ./winutil.ps1
-          draft: true
+          draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
