@@ -1,10 +1,11 @@
 name: Compile
 
 on:
-  push: 
-    branches: 
+  push:
+    branches:
       - main
       - test*
+  workflow_dispatch: # Manual trigger added
 
 jobs:
   build-runspace:

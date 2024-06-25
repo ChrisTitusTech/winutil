@@ -5,6 +5,7 @@ on:
     workflows: ["Compile"] #Ensure Compile winget.ps1 is done
     types:
       - completed
+  workflow_dispatch: # Manual trigger added
 
 jobs:
   build-runspace:
