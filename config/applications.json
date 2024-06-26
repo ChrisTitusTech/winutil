@@ -1823,7 +1823,7 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
-	"WPFInstallWiseProgramUninstaller": {
+	"WiseProgramUninstaller": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Wise Program Uninstaller (WiseCleaner)",
@@ -2503,7 +2503,7 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
-	"WPFInstallTeraCopy": {
+	"TeraCopy": {
 		"category": "Utilities",
 		"choco": "TeraCopy",
 		"content": "TeraCopy",
@@ -2735,7 +2735,7 @@
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
 	},
-	"WPFInstallAmbieWhiteNoise": {
+	"AmbieWhiteNoise": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Ambie White Noise",
@@ -2751,7 +2751,7 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
-	"WPFInstallcroc": {
+	"croc": {
 		"category": "Utilities",
 		"choco": "croc",
 		"content": "croc",
@@ -2815,7 +2815,7 @@
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
 	},
-	"WPFInstallJoyToKey": {
+	"JoyToKey": {
 		"category": "Utilities",
 		"choco": "joytokey",
 		"content": "JoyToKey",
@@ -2831,7 +2831,7 @@
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
 	},
-	"WPFInstallkicad": {
+	"kicad": {
 		"category": "Pro Tools",
 		"choco": "na",
 		"content": "Kicad",
