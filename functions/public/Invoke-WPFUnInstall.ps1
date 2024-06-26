@@ -15,7 +15,7 @@ function Invoke-WPFUnInstall {
     $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($PackagesToInstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install"
+        $WarningMsg = "Please select the program(s) to uninstall"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
