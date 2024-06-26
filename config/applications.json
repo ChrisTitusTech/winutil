@@ -2844,8 +2844,8 @@
 		"category": "Games",
 		"choco": "na",
 		"content": "Modrinth",
-		"description": "Modrinth is a modding platform for Minecraft that provides a curated selection of mods, modpacks, and tools for the Minecraft community.",
-		"link": "https://modrinth.com/",
+		"description": "Modrinth is a modding platform for Minecraft that provides a curated selection of mods, modpacks, and tools for the Minecraft community. Modrinth is not affiliated with Mojang Studios or Microsoft.",
+		"link": "https://github.com/modrinth/theseus",
 		"winget": "Modrinth.ModrinthApp"
 	}
 }
