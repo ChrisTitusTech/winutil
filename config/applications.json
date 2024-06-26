@@ -389,7 +389,7 @@
 		"content": "DevToys",
 		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://devtoys.app/",
-		"winget": "9PGCV4V3BK4W"
+		"winget": "DevToys-app.DevToys"
 	},
 	"WPFInstalldigikam": {
 		"category": "Multimedia Tools",
