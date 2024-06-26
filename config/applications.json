@@ -802,8 +802,8 @@
 	"WPFInstallgolang": {
 		"category": "Development",
 		"choco": "golang",
-		"content": "GoLang",
-		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+		"content": "Go",
+		"description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
 		"link": "https://golang.org/",
 		"winget": "GoLang.Go"
 	},
