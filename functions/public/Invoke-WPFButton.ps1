@@ -26,7 +26,7 @@ function Invoke-WPFButton {
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
         "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFOOSUbutton" {Invoke-WPFOOSU -action "customize"}
+        "WPFOOSUbutton" {Invoke-WPFOOSU}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
         "WPFundoall" {Invoke-WPFundoall}

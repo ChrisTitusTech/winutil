@@ -133,9 +133,17 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    $sync.ConfigLoaded = $False
-    $sync.ComputerInfo = Get-ComputerInfo
-    $sync.ConfigLoaded = $True
+    try{
+        $oldProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue"
+        $sync.ConfigLoaded = $False
+        $sync.ComputerInfo = Get-ComputerInfo
+        $sync.ConfigLoaded = $True
+    }
+    finally{
+        $ProgressPreference = "Continue"
+    }
+    
 } | Out-Null
 
 #===========================================================================
@@ -144,9 +152,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-
-# Install Winget if not already present
-Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -467,14 +472,13 @@ $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
     $sync["SettingsPopup"].IsOpen = $false
-    # Example usage
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
-Version  : $($sync.version)
+Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
+GUI      : <a href="https://github.com/KonTy">@KonTy</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
