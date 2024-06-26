@@ -1,13 +1,30 @@
 function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
-    
+           
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*NVIDIA GeForce*M*") {
+            return $false  # NVIDIA M series GPU found
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*NVIDIA GeForce*Laptop*") {
+            return $false  # NVIDIA Laptop series GPU found
+        }
+    }
+    foreach ($gpu in $gpuInfo) {
+        $gpuName = $gpu.Name
+        if ($gpuName -like "*NVIDIA GeForce*GT*") {
+            return $false  # NVIDIA GT series GPU found
+        }
+    }
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*NVIDIA*") {
             return $true  # NVIDIA GPU found
         }
     }
-
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
         if ($gpuName -like "*AMD Radeon RX*") {
