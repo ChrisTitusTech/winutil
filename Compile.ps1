@@ -1,5 +1,6 @@
 param (
-    [switch]$Debug
+    [switch]$Debug,
+    [switch]$Run
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
@@ -95,13 +96,6 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
-Update-Progress "Adding: Config *.cfg" 45
-Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
-    $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
-}
-Get-ChildItem .\config | Where-Object {$PSItem.Extension -eq ".cfg"} | ForEach-Object {
-    $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$(Get-Content $PSItem.FullName)'"))
-}
 
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 
@@ -138,4 +132,14 @@ else {
 }
 
 Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
-Update-Progress "Finished" 100
+Write-Progress -Activity "Compiling" -Completed
+
+if ($run){
+    try {
+        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
+    }
+    catch {
+        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+    }
+    
+}

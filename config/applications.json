@@ -407,7 +407,7 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-		"ditto": {
+	"ditto": {
 		"category": "Utilities",
 		"choco": "ditto",
 		"content": "Ditto",
@@ -591,7 +591,7 @@
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
-		"files": {
+	"files": {
 		"category": "Utilities",
 		"choco": "files",
 		"content": "Files",
@@ -975,14 +975,6 @@
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"java20": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 20",
-		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.20.JDK"
-	},
 	"java21": {
 		"category": "Development",
 		"choco": "na",
@@ -1301,14 +1293,6 @@
 		"content": "Equalizer APO",
 		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
 		"link": "https://sourceforge.net/projects/equalizerapo",
-		"winget": "na"
-	},
-	"FreeFileSync": {
-		"category": "Utilities",
-		"choco": "freefilesync",
-		"content": "FreeFileSync",
-		"description": "Synchronize Files and Folders",
-		"link": "https://freefilesync.org",
 		"winget": "na"
 	},
 	"CompactGUI": {
@@ -1663,6 +1647,14 @@
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
 	},
+	"plexdesktop": {
+		"category": "Multimedia Tools",
+		"choco": "plex",
+		"content": "Plex Desktop",
+		"description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+		"link": "https://www.plex.tv",
+		"winget": "Plex.Plex"
+	},
 	"Portmaster": {
 		"category": "Pro Tools",
 		"choco": "portmaster",
@@ -1831,6 +1823,14 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
+	"WPFInstallWiseProgramUninstaller": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Wise Program Uninstaller (WiseCleaner)",
+		"description": "Wise Program Uninstaller is the perfect solution for uninstalling Windows programs, allowing you to uninstall applications quickly and completely using its simple and user-friendly interface.",
+		"link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
+		"winget": "WiseCleaner.WiseProgramUninstaller"
+	},
 	"revolt": {
 		"category": "Communications",
 		"choco": "na",
@@ -1871,7 +1871,7 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
-		"sagethumbs": {
+	"sagethumbs": {
 		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
@@ -1999,7 +1999,7 @@
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
 	},
-		"spotube": {
+	"spotube": {
 		"category": "Multimedia Tools",
 		"choco": "spotube",
 		"content": "Spotube",
@@ -2503,6 +2503,14 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
+	"WPFInstallTeraCopy": {
+		"category": "Utilities",
+		"choco": "TeraCopy",
+		"content": "TeraCopy",
+		"description": "Copy your files faster and more securely",
+		"link": "https://codesector.com/teracopy",
+		"winget": "CodeSector.TeraCopy"
+	},
 	"wizfile": {
 		"category": "Utilities",
 		"choco": "na",
@@ -2727,6 +2735,14 @@
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
 	},
+	"WPFInstallAmbieWhiteNoise": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Ambie White Noise",
+		"description": "Ambie is the ultimate app to help you focus, study, or relax. We use white noise and nature sounds combined with an innovative focus timer to keep you concentrated on doing your best work.",
+		"link": "https://ambieapp.com/",
+		"winget": "9P07XNM5CHP0"
+	},
 	"magicwormhole": {
 		"category": "Utilities",
 		"choco": "magic-wormhole",
@@ -2734,6 +2750,14 @@
 		"description": "get things from one computer to another, safely",
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
+	},
+	"WPFInstallcroc": {
+		"category": "Utilities",
+		"choco": "croc",
+		"content": "croc",
+		"description": "Easily and securely send things from one computer to another.",
+		"link": "https://github.com/schollz/croc",
+		"winget": "schollz.croc"
 	},
 	"qgis": {
 		"category": "Multimedia Tools",
@@ -2786,10 +2810,18 @@
 	"ForceAutoHDR": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"content": "ForceAutoHDR",
 		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
+	},
+	"WPFInstallJoyToKey": {
+		"category": "Utilities",
+		"choco": "joytokey",
+		"content": "JoyToKey",
+		"description": "enables PC game controllers to emulate the keyboard and mouse input",
+		"link": "https://joytokey.net/en/",
+		"winget": "JTKsoftware.JoyToKey"
 	},
 	"nditools": {
 		"category": "Multimedia Tools",
@@ -2798,5 +2830,13 @@
 		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallkicad": {
+		"category": "Pro Tools",
+		"choco": "na",
+		"content": "Kicad",
+		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+		"link": "https://www.kicad.org/",
+		"winget": "KiCad.KiCad"
 	}
 }
