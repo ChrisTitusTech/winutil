@@ -1211,7 +1211,7 @@
 		"category": "Communications",
 		"choco": "element-desktop",
 		"content": "Element",
-		"description": "Element is a client for Matrix—an open network for secure, decentralized communication.",
+		"description": "Element is a client for Matrix. An open network for secure, decentralized communication.",
 		"link": "https://element.io/",
 		"winget": "Element.Element"
 	},
