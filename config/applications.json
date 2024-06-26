@@ -804,7 +804,7 @@
 		"choco": "golang",
 		"content": "Go",
 		"description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-		"link": "https://golang.org/",
+		"link": "https://go.dev/",
 		"winget": "GoLang.Go"
 	},
 	"WPFInstallgoogledrive": {
