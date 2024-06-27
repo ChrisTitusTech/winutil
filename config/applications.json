@@ -2841,7 +2841,7 @@
 		"winget": "KiCad.KiCad"
 	},
 	"WPFInstallProtonDrive": {
-		"category": "Pro Tools",
+		"category": "Utilities",
 		"choco": "protondrive",
 		"content": "Proton Drive",
 		"description":"Proton Drive is an end-to-end encrypted Swiss vault for your files that protects your data.",
