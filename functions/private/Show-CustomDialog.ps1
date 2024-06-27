@@ -178,16 +178,66 @@ $cttLogoPath = @"
     $winutilTextBlock.Foreground = $foregroundColor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
-
     # Add TextBlock for information with text wrapping and margins
     $messageTextBlock = New-Object Windows.Controls.TextBlock
-    $messageTextBlock.Text = $Message
     $messageTextBlock.TextWrapping = [Windows.TextWrapping]::Wrap  # Enable text wrapping
     $messageTextBlock.HorizontalAlignment = [Windows.HorizontalAlignment]::Left
     $messageTextBlock.VerticalAlignment = [Windows.VerticalAlignment]::Top
     $messageTextBlock.Margin = New-Object Windows.Thickness(10)  # Add margins around the text block
+
+    # Define the Regex to find hyperlinks formatted as HTML <a> tags
+    $regex = [regex]::new('<a href="([^"]+)">([^<]+)</a>')
+    $lastPos = 0
+
+    # Iterate through each match and add regular text and hyperlinks
+    foreach ($match in $regex.Matches($Message)) {
+        # Add the text before the hyperlink, if any
+        $textBefore = $Message.Substring($lastPos, $match.Index - $lastPos)
+        if ($textBefore.Length -gt 0) {
+            $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textBefore)))
+        }
+
+        # Create and add the hyperlink
+        $hyperlink = New-Object Windows.Documents.Hyperlink
+        $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
+        $hyperlink.Inlines.Add($match.Groups[2].Value)
+        $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
+        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Add_Click({
+            param($sender, $args)
+            Start-Process $sender.NavigateUri.AbsoluteUri
+        })
+        $hyperlink.Add_MouseEnter({
+            param($sender, $args)
+            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+        })
+        $hyperlink.Add_MouseLeave({
+            param($sender, $args)
+            $sender.Foreground = $foregroundColor
+        })
+        
+        $messageTextBlock.Inlines.Add($hyperlink)
+
+        # Update the last position
+        $lastPos = $match.Index + $match.Length
+    }
+
+    # Add any remaining text after the last hyperlink
+    if ($lastPos -lt $Message.Length) {
+        $textAfter = $Message.Substring($lastPos)
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textAfter)))
+    }
+
+    # If no matches, add the entire message as a run
+    if ($regex.Matches($Message).Count -eq 0) {
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
+    }
+
+
+    # Add the TextBlock to the Grid
     $grid.Children.Add($messageTextBlock)
     [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button

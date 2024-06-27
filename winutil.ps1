@@ -170,60 +170,6 @@ function Get-LocalizedYesNo {
     # Return the array of characters
     return $charactersArray
   }
-  
-
-function Get-LocalizedYesNoTakeown {
-    <#
-    .SYNOPSIS
-    This function runs takeown.exe and captures its output to extract yes no in a localized Windows 
-    
-    .DESCRIPTION
-    The function retrieves lines from the output of takeown.exe until there are at least 2 characters
-    captured in a specific format, such as "Yes=<first character>, No=<second character>".
-    
-    .EXAMPLE
-    $yesNoArray = Get-LocalizedYesNo
-    Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
-    #>
-  
-    # Run takeown.exe and capture its output
-    $takeownOutput = & takeown.exe /? | Out-String
-
-    # Parse the output and retrieve lines until there are at least 2 characters in the array
-    $found = $false
-    $charactersArray = @()
-    foreach ($line in $takeownOutput -split "`r`n") 
-    {
-        # skip everything before /D flag help
-        if ($found) 
-        {
-            # now that /D is found start looking for a single character in double quotes
-            # in help text there is another string in double quotes but it is not a single character
-            $regexPattern = '"([a-zA-Z])"'
-
-            $charactersArray = [regex]::Matches($line, $regexPattern) | ForEach-Object { $_.Groups[1].Value }
-            
-            # if ($charactersArray.Count -gt 0) {
-            #     Write-Output "Extracted symbols: $($matches -join ', ')"
-            # } else {
-            #     Write-Output "No matches found."
-            # }
-
-            if ($charactersArray.Count -ge 2) 
-            {
-                break
-            }    
-        }
-        elseif ($line -match "/D   ") 
-        {
-            $found = $true
-        }
-    }
-
-    Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
-    # Return the array of characters
-    return $charactersArray
-  }
 function Get-Oscdimg { 
     <#
     
@@ -1011,22 +957,6 @@ function Install-WinUtilWinget {
         }
     }
 }
-function Invoke-MicroWin-Helper {
-<#
-
-    .SYNOPSIS
-        checking unit tests
-
-    .PARAMETER Name
-        no parameters
-
-    .EXAMPLE
-        placeholder
-
-#>
-
-}
-
 function Test-CompatibleImage() {
 <#
 
@@ -2810,16 +2740,66 @@ $cttLogoPath = @"
     $winutilTextBlock.Foreground = $foregroundColor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
-
     # Add TextBlock for information with text wrapping and margins
     $messageTextBlock = New-Object Windows.Controls.TextBlock
-    $messageTextBlock.Text = $Message
     $messageTextBlock.TextWrapping = [Windows.TextWrapping]::Wrap  # Enable text wrapping
     $messageTextBlock.HorizontalAlignment = [Windows.HorizontalAlignment]::Left
     $messageTextBlock.VerticalAlignment = [Windows.VerticalAlignment]::Top
     $messageTextBlock.Margin = New-Object Windows.Thickness(10)  # Add margins around the text block
+
+    # Define the Regex to find hyperlinks formatted as HTML <a> tags
+    $regex = [regex]::new('<a href="([^"]+)">([^<]+)</a>')
+    $lastPos = 0
+
+    # Iterate through each match and add regular text and hyperlinks
+    foreach ($match in $regex.Matches($Message)) {
+        # Add the text before the hyperlink, if any
+        $textBefore = $Message.Substring($lastPos, $match.Index - $lastPos)
+        if ($textBefore.Length -gt 0) {
+            $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textBefore)))
+        }
+
+        # Create and add the hyperlink
+        $hyperlink = New-Object Windows.Documents.Hyperlink
+        $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
+        $hyperlink.Inlines.Add($match.Groups[2].Value)
+        $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
+        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Add_Click({
+            param($sender, $args)
+            Start-Process $sender.NavigateUri.AbsoluteUri
+        })
+        $hyperlink.Add_MouseEnter({
+            param($sender, $args)
+            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+        })
+        $hyperlink.Add_MouseLeave({
+            param($sender, $args)
+            $sender.Foreground = $foregroundColor
+        })
+        
+        $messageTextBlock.Inlines.Add($hyperlink)
+
+        # Update the last position
+        $lastPos = $match.Index + $match.Length
+    }
+
+    # Add any remaining text after the last hyperlink
+    if ($lastPos -lt $Message.Length) {
+        $textAfter = $Message.Substring($lastPos)
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($textAfter)))
+    }
+
+    # If no matches, add the entire message as a run
+    if ($regex.Matches($Message).Count -eq 0) {
+        $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
+    }
+
+
+    # Add the TextBlock to the Grid
     $grid.Children.Add($messageTextBlock)
     [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
@@ -3026,7 +3006,7 @@ function Invoke-WPFButton {
         "WPFclear" {Invoke-WPFPresets -preset $null -imported $true}
         "WPFclearWinget" {Invoke-WPFPresets -preset $null -imported $true -CheckBox "WPFInstall"}
         "WPFtweaksbutton" {Invoke-WPFtweaksbutton}
-        "WPFOOSUbutton" {Invoke-WPFOOSU -action "customize"}
+        "WPFOOSUbutton" {Invoke-WPFOOSU}
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -State "Enabled"}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance -State "Disabled"}
         "WPFundoall" {Invoke-WPFundoall}
@@ -4414,45 +4394,22 @@ public class PowerManagement {
 function Invoke-WPFOOSU {
     <#
     .SYNOPSIS
-        Downloads and runs OO Shutup 10 with or without config files
-    .PARAMETER action
-        Specifies how OOSU should be started
-        customize:      Opens the OOSU GUI
-        recommended:    Loads and applies the recommended OOSU policies silently
-        undo:           Resets all policies to factory silently
+        Downloads and runs OO Shutup 10
     #>
-
-    param (
-        [ValidateSet("customize", "recommended", "undo")]
-        [string]$action
-    )
-
-    $OOSU_filepath = "$ENV:temp\OOSU10.exe"
-
-    $Initial_ProgressPreference = $ProgressPreference
-    $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
-    Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
-
-    switch ($action) 
-    {
-        "customize"{
-            Write-Host "Starting OO Shutup 10 ..."
-            Start-Process $OOSU_filepath
-        }
-        "recommended"{
-            $oosu_config = "$ENV:temp\ooshutup10_recommended.cfg"
-            $sync.configs.ooshutup10_recommended | Out-File -FilePath $oosu_config -Force
-            Write-Host "Applying recommended OO Shutup 10 Policies"
-            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
-        }
-        "undo"{
-            $oosu_config = "$ENV:temp\ooshutup10_factory.cfg"
-            $sync.configs.ooshutup10_factory | Out-File -FilePath $oosu_config -Force
-            Write-Host "Resetting all OO Shutup 10 Policies"
-            Start-Process $OOSU_filepath -ArgumentList "$oosu_config /quiet" -Wait
-        }
+    try {
+        $OOSU_filepath = "$ENV:temp\OOSU10.exe"
+        $Initial_ProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
+        Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
+        Write-Host "Starting OO Shutup 10 ..."
+        Start-Process $OOSU_filepath    
     }
-    $ProgressPreference = $Initial_ProgressPreference
+    catch {
+        Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
+    }
+    finally {
+        $ProgressPreference = $Initial_ProgressPreference
+    }   
 }
 function Invoke-WPFPanelAutologin {
     <#
@@ -6315,14 +6272,6 @@ $sync.configs.applications = '{
     "link": "https://www.oracle.com/java/",
     "winget": "EclipseAdoptium.Temurin.18.JRE"
   },
-  "WPFInstalljava20": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Azul Zulu JDK 20",
-    "description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-    "link": "https://www.azul.com/downloads/zulu-community/",
-    "winget": "Azul.Zulu.20.JDK"
-  },
   "WPFInstalljava21": {
     "category": "Development",
     "choco": "na",
@@ -6641,14 +6590,6 @@ $sync.configs.applications = '{
     "content": "Equalizer APO",
     "description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
     "link": "https://sourceforge.net/projects/equalizerapo",
-    "winget": "na"
-  },
-  "WPFInstallFreeFileSync": {
-    "category": "Utilities",
-    "choco": "freefilesync",
-    "content": "FreeFileSync",
-    "description": "Synchronize Files and Folders",
-    "link": "https://freefilesync.org",
     "winget": "na"
   },
   "WPFInstallCompactGUI": {
@@ -7002,6 +6943,14 @@ $sync.configs.applications = '{
     "description": "Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features.",
     "link": "https://www.plex.tv/your-media/",
     "winget": "Plex.PlexMediaServer"
+  },
+  "WPFInstallplexdesktop": {
+    "category": "Multimedia Tools",
+    "choco": "plex",
+    "content": "Plex Desktop",
+    "description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+    "link": "https://www.plex.tv",
+    "winget": "Plex.Plex"
   },
   "WPFInstallPortmaster": {
     "category": "Pro Tools",
@@ -8158,7 +8107,7 @@ $sync.configs.applications = '{
   "WPFInstallForceAutoHDR": {
     "category": "Utilities",
     "choco": "na",
-    "content": "GUI That Forces Auto HDR In Unsupported Games",
+    "content": "ForceAutoHDR",
     "description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
     "link": "https://github.com/7gxycn08/ForceAutoHDR",
     "winget": "ForceAutoHDR.7gxycn08"
@@ -8178,6 +8127,14 @@ $sync.configs.applications = '{
     "description": "NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
     "link": "https://ndi.video/",
     "winget": "NDI.NDITools"
+  },
+  "WPFInstallkicad": {
+    "category": "Pro Tools",
+    "choco": "na",
+    "content": "Kicad",
+    "description": "Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+    "link": "https://www.kicad.org/",
+    "winget": "KiCad.KiCad"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -8479,7 +8436,6 @@ $sync.configs.preset = '{
     "WPFTweaksHiber",
     "WPFTweaksHome",
     "WPFTweaksLoc",
-    "WPFTweaksOO",
     "WPFTweaksServices",
     "WPFTweaksStorage",
     "WPFTweaksTele",
@@ -8492,7 +8448,6 @@ $sync.configs.preset = '{
   ],
   "Minimal": [
     "WPFTweaksHome",
-    "WPFTweaksOO",
     "WPFTweaksServices",
     "WPFTweaksTele"
   ]
@@ -9820,11 +9775,6 @@ $sync.configs.tweaks = '{
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WwanSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "XblAuthManager",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -10909,20 +10859,6 @@ $sync.configs.tweaks = '{
       "Invoke-WPFTweakPS7 -action \"PS5\""
     ]
   },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
-    "InvokeScript": [
-      "Invoke-WPFOOSU -action \"recommended\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFOOSU -action \"undo\""
-    ]
-  },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
@@ -10938,17 +10874,15 @@ $sync.configs.tweaks = '{
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates.",
+    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
       "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
-
-        curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
         Start-Process $ENV:temp\\edgeremoval.bat
-
         "
     ],
     "UndoScript": [
@@ -11003,12 +10937,12 @@ $sync.configs.tweaks = '{
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a0015_",
+    "Order": "a026_",
     "InvokeScript": [
       "
-        Write-Host \"Kill OneDrive process\"
+        Write-Host \"Kill LMS\"
         $serviceName = \"LMS\"   
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
@@ -11052,8 +10986,7 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Microsoft Edge\"
-      taskkill.exe /F /IM \"OneDrive.exe\"
+      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
     ]
@@ -11680,7 +11613,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
-    "Content": "Customize OO Shutup Tweaks",
+    "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a039_",
@@ -11738,922 +11671,6 @@ $sync.configs.tweaks = '{
     "Type": "300"
   }
 }' | convertfrom-json
-$sync.configs.ooshutup10_factory = '############################################################################
-# This file was created with O&O ShutUp10++ V1.9.1436
-# and can be imported onto another computer. 
-#
-# Download the application at https://www.oo-software.com/shutup10
-# You can then import the file from within the program. 
-#
-# Alternatively you can import it automatically over a command line.
-# Simply use the following parameter: 
-# OOSU10.exe <path to file>
-# 
-# Selecting the Option /quiet ends the app right after the import and the
-# user does not get any feedback about the import.
-#
-# We are always happy to answer any questions you may have!
-# ? 2015-2023 O&O Software GmbH, Berlin. All rights reserved.
-# https://www.oo-software.com/
-############################################################################
-
-P001	-
-P002	-
-P003	-
-P004	-
-P005	-
-P006	-
-P008	-
-P026	-
-P027	-
-P028	-
-P064	-
-P065	-
-P066	-
-P067	-
-P070	-
-P069	-
-P009	-
-P010	-
-P015	-
-P068	-
-P016	-
-A001	-
-A002	-
-A003	-
-A004	-
-A006	-
-A005	-
-P007	-
-P036	-
-P025	-
-P033	-
-P023	-
-P056	-
-P057	-
-P012	-
-P034	-
-P013	-
-P035	-
-P062	-
-P063	-
-P081	-
-P047	-
-P019	-
-P048	-
-P049	-
-P020	-
-P037	-
-P011	-
-P038	-
-P050	-
-P051	-
-P018	-
-P039	-
-P021	-
-P040	-
-P022	-
-P041	-
-P014	-
-P042	-
-P052	-
-P053	-
-P054	-
-P055	-
-P029	-
-P043	-
-P030	-
-P044	-
-P031	-
-P045	-
-P032	-
-P046	-
-P058	-
-P059	-
-P060	-
-P061	-
-P071	-
-P072	-
-P073	-
-P074	-
-P075	-
-P076	-
-P077	-
-P078	-
-P079	-
-P080	-
-P024	-
-S001	-
-S002	-
-S003	-
-S008	-
-E101	-
-E201	-
-E115	-
-E215	-
-E118	-
-E218	-
-E107	-
-E207	-
-E111	-
-E211	-
-E112	-
-E212	-
-E109	-
-E209	-
-E121	-
-E221	-
-E103	-
-E203	-
-E123	-
-E223	-
-E124	-
-E224	-
-E128	-
-E228	-
-E119	-
-E219	-
-E120	-
-E220	-
-E122	-
-E222	-
-E125	-
-E225	-
-E126	-
-E226	-
-E106	-
-E206	-
-E127	-
-E227	-
-E001	-
-E002	-
-E003	-
-E008	-
-E007	-
-E010	-
-E011	+
-E012	+
-E009	-
-E004	-
-E005	-
-E013	-
-E014	-
-E006	-
-Y001	-
-Y002	-
-Y003	-
-Y004	-
-Y005	-
-Y006	-
-Y007	-
-C012	-
-C002	-
-C013	-
-C007	-
-C008	-
-C009	-
-C010	-
-C011	-
-C014	-
-C015	-
-C101	-
-C201	-
-C102	-
-L001	-
-L003	-
-L004	-
-L005	-
-U001	-
-U004	-
-U005	-
-U006	-
-U007	-
-W001	-
-W011	-
-W004	-
-W005	-
-W010	-
-W009	-
-P017	-
-W006	-
-W008	-
-M006	-
-M011	-
-M010	-
-O003	-
-O001	-
-S012	-
-S013	-
-S014	-
-K001	-
-K002	-
-K005	-
-M003	-
-M015	-
-M016	-
-M017	-
-M018	-
-M019	-
-M020	-
-M021	-
-M022	-
-M001	-
-M004	-
-M005	-
-M024	-
-M012	-
-M013	-
-M014	-
-N001	-'
-$sync.configs.ooshutup10_recommended = '############################################################################
-# This file was created with O&O ShutUp10++ V1.9.1438
-# and can be imported onto another computer. 
-#
-# Download the application at https://www.oo-software.com/shutup10
-# You can then import the file from within the program. 
-#
-# Alternatively you can import it automatically over a command line.
-# Simply use the following parameter: 
-# OOSU10.exe <path to file>
-# 
-# Selecting the Option /quiet ends the app right after the import and the
-# user does not get any feedback about the import.
-#
-# We are always happy to answer any questions you may have!
-# ? 2015-2024 O&O Software GmbH, Berlin. All rights reserved.
-# https://www.oo-software.com/
-############################################################################
-
-P001	+
-P002	+
-P003	+
-P004	+
-P005	+
-P006	+
-P008	+
-P026	+
-P027	+
-P028	+
-P064	+
-P065	+
-P066	+
-P067	+
-P070	+
-P069	+
-P009	-
-P010	+
-P015	+
-P068	-
-P016	-
-A001	+
-A002	+
-A003	+
-A004	+
-A006	+
-A005	+
-P007	+
-P036	+
-P025	+
-P033	+
-P023	+
-P056	+
-P057	-
-P012	-
-P034	-
-P013	-
-P035	-
-P062	-
-P063	-
-P081	-
-P047	-
-P019	-
-P048	-
-P049	-
-P020	-
-P037	-
-P011	-
-P038	-
-P050	-
-P051	-
-P018	-
-P039	-
-P021	-
-P040	-
-P022	-
-P041	-
-P014	-
-P042	-
-P052	-
-P053	-
-P054	-
-P055	-
-P029	-
-P043	-
-P030	-
-P044	-
-P031	-
-P045	-
-P032	-
-P046	-
-P058	-
-P059	-
-P060	-
-P061	-
-P071	-
-P072	-
-P073	-
-P074	-
-P075	-
-P076	-
-P077	-
-P078	-
-P079	-
-P080	-
-P024	+
-S001	+
-S002	+
-S003	+
-S008	-
-E101	+
-E201	+
-E115	+
-E215	+
-E118	+
-E218	+
-E107	+
-E207	+
-E111	+
-E211	+
-E112	+
-E212	+
-E109	+
-E209	+
-E121	+
-E221	+
-E103	+
-E203	+
-E123	+
-E223	+
-E124	+
-E224	+
-E128	+
-E228	+
-E119	-
-E219	-
-E120	-
-E220	-
-E122	-
-E222	-
-E125	-
-E225	-
-E126	-
-E226	-
-E106	-
-E206	-
-E127	-
-E227	-
-E001	+
-E002	+
-E003	+
-E008	+
-E007	+
-E010	+
-E011	+
-E012	+
-E009	-
-E004	-
-E005	-
-E013	-
-E014	-
-E006	-
-Y001	+
-Y002	+
-Y003	+
-Y004	+
-Y005	+
-Y006	+
-Y007	+
-C012	+
-C002	+
-C013	+
-C007	+
-C008	+
-C009	+
-C010	+
-C011	+
-C014	+
-C015	+
-C101	+
-C201	+
-C102	+
-C103	+
-C203	+
-L001	+
-L003	+
-L004	-
-L005	-
-U001	+
-U004	+
-U005	+
-U006	+
-U007	+
-W001	+
-W011	+
-W004	-
-W005	-
-W010	-
-W009	-
-P017	+
-W006	-
-W008	-
-M006	+
-M011	-
-M010	+
-O003	-
-O001	-
-S012	-
-S013	-
-S014	-
-K001	+
-K002	+
-K005	+
-M003	+
-M015	+
-M016	+
-M017	-
-M018	+
-M019	-
-M020	+
-M021	+
-M022	+
-M001	+
-M004	+
-M005	+
-M024	+
-M026	+
-M027	+
-M012	-
-M013	-
-M014	-
-N001	-'
-$sync.configs.ooshutup10_factory = '############################################################################
-# This file was created with O&O ShutUp10++ V1.9.1436
-# and can be imported onto another computer. 
-#
-# Download the application at https://www.oo-software.com/shutup10
-# You can then import the file from within the program. 
-#
-# Alternatively you can import it automatically over a command line.
-# Simply use the following parameter: 
-# OOSU10.exe <path to file>
-# 
-# Selecting the Option /quiet ends the app right after the import and the
-# user does not get any feedback about the import.
-#
-# We are always happy to answer any questions you may have!
-# ? 2015-2023 O&O Software GmbH, Berlin. All rights reserved.
-# https://www.oo-software.com/
-############################################################################
-
-P001	-
-P002	-
-P003	-
-P004	-
-P005	-
-P006	-
-P008	-
-P026	-
-P027	-
-P028	-
-P064	-
-P065	-
-P066	-
-P067	-
-P070	-
-P069	-
-P009	-
-P010	-
-P015	-
-P068	-
-P016	-
-A001	-
-A002	-
-A003	-
-A004	-
-A006	-
-A005	-
-P007	-
-P036	-
-P025	-
-P033	-
-P023	-
-P056	-
-P057	-
-P012	-
-P034	-
-P013	-
-P035	-
-P062	-
-P063	-
-P081	-
-P047	-
-P019	-
-P048	-
-P049	-
-P020	-
-P037	-
-P011	-
-P038	-
-P050	-
-P051	-
-P018	-
-P039	-
-P021	-
-P040	-
-P022	-
-P041	-
-P014	-
-P042	-
-P052	-
-P053	-
-P054	-
-P055	-
-P029	-
-P043	-
-P030	-
-P044	-
-P031	-
-P045	-
-P032	-
-P046	-
-P058	-
-P059	-
-P060	-
-P061	-
-P071	-
-P072	-
-P073	-
-P074	-
-P075	-
-P076	-
-P077	-
-P078	-
-P079	-
-P080	-
-P024	-
-S001	-
-S002	-
-S003	-
-S008	-
-E101	-
-E201	-
-E115	-
-E215	-
-E118	-
-E218	-
-E107	-
-E207	-
-E111	-
-E211	-
-E112	-
-E212	-
-E109	-
-E209	-
-E121	-
-E221	-
-E103	-
-E203	-
-E123	-
-E223	-
-E124	-
-E224	-
-E128	-
-E228	-
-E119	-
-E219	-
-E120	-
-E220	-
-E122	-
-E222	-
-E125	-
-E225	-
-E126	-
-E226	-
-E106	-
-E206	-
-E127	-
-E227	-
-E001	-
-E002	-
-E003	-
-E008	-
-E007	-
-E010	-
-E011	+
-E012	+
-E009	-
-E004	-
-E005	-
-E013	-
-E014	-
-E006	-
-Y001	-
-Y002	-
-Y003	-
-Y004	-
-Y005	-
-Y006	-
-Y007	-
-C012	-
-C002	-
-C013	-
-C007	-
-C008	-
-C009	-
-C010	-
-C011	-
-C014	-
-C015	-
-C101	-
-C201	-
-C102	-
-L001	-
-L003	-
-L004	-
-L005	-
-U001	-
-U004	-
-U005	-
-U006	-
-U007	-
-W001	-
-W011	-
-W004	-
-W005	-
-W010	-
-W009	-
-P017	-
-W006	-
-W008	-
-M006	-
-M011	-
-M010	-
-O003	-
-O001	-
-S012	-
-S013	-
-S014	-
-K001	-
-K002	-
-K005	-
-M003	-
-M015	-
-M016	-
-M017	-
-M018	-
-M019	-
-M020	-
-M021	-
-M022	-
-M001	-
-M004	-
-M005	-
-M024	-
-M012	-
-M013	-
-M014	-
-N001	-'
-$sync.configs.ooshutup10_recommended = '############################################################################
-# This file was created with O&O ShutUp10++ V1.9.1438
-# and can be imported onto another computer. 
-#
-# Download the application at https://www.oo-software.com/shutup10
-# You can then import the file from within the program. 
-#
-# Alternatively you can import it automatically over a command line.
-# Simply use the following parameter: 
-# OOSU10.exe <path to file>
-# 
-# Selecting the Option /quiet ends the app right after the import and the
-# user does not get any feedback about the import.
-#
-# We are always happy to answer any questions you may have!
-# ? 2015-2024 O&O Software GmbH, Berlin. All rights reserved.
-# https://www.oo-software.com/
-############################################################################
-
-P001	+
-P002	+
-P003	+
-P004	+
-P005	+
-P006	+
-P008	+
-P026	+
-P027	+
-P028	+
-P064	+
-P065	+
-P066	+
-P067	+
-P070	+
-P069	+
-P009	-
-P010	+
-P015	+
-P068	-
-P016	-
-A001	+
-A002	+
-A003	+
-A004	+
-A006	+
-A005	+
-P007	+
-P036	+
-P025	+
-P033	+
-P023	+
-P056	+
-P057	-
-P012	-
-P034	-
-P013	-
-P035	-
-P062	-
-P063	-
-P081	-
-P047	-
-P019	-
-P048	-
-P049	-
-P020	-
-P037	-
-P011	-
-P038	-
-P050	-
-P051	-
-P018	-
-P039	-
-P021	-
-P040	-
-P022	-
-P041	-
-P014	-
-P042	-
-P052	-
-P053	-
-P054	-
-P055	-
-P029	-
-P043	-
-P030	-
-P044	-
-P031	-
-P045	-
-P032	-
-P046	-
-P058	-
-P059	-
-P060	-
-P061	-
-P071	-
-P072	-
-P073	-
-P074	-
-P075	-
-P076	-
-P077	-
-P078	-
-P079	-
-P080	-
-P024	+
-S001	+
-S002	+
-S003	+
-S008	-
-E101	+
-E201	+
-E115	+
-E215	+
-E118	+
-E218	+
-E107	+
-E207	+
-E111	+
-E211	+
-E112	+
-E212	+
-E109	+
-E209	+
-E121	+
-E221	+
-E103	+
-E203	+
-E123	+
-E223	+
-E124	+
-E224	+
-E128	+
-E228	+
-E119	-
-E219	-
-E120	-
-E220	-
-E122	-
-E222	-
-E125	-
-E225	-
-E126	-
-E226	-
-E106	-
-E206	-
-E127	-
-E227	-
-E001	+
-E002	+
-E003	+
-E008	+
-E007	+
-E010	+
-E011	+
-E012	+
-E009	-
-E004	-
-E005	-
-E013	-
-E014	-
-E006	-
-Y001	+
-Y002	+
-Y003	+
-Y004	+
-Y005	+
-Y006	+
-Y007	+
-C012	+
-C002	+
-C013	+
-C007	+
-C008	+
-C009	+
-C010	+
-C011	+
-C014	+
-C015	+
-C101	+
-C201	+
-C102	+
-C103	+
-C203	+
-L001	+
-L003	+
-L004	-
-L005	-
-U001	+
-U004	+
-U005	+
-U006	+
-U007	+
-W001	+
-W011	+
-W004	-
-W005	-
-W010	-
-W009	-
-P017	+
-W006	-
-W008	-
-M006	+
-M011	-
-M010	+
-O003	-
-O001	-
-S012	-
-S013	-
-S014	-
-K001	+
-K002	+
-K005	+
-M003	+
-M015	+
-M016	+
-M017	-
-M018	+
-M019	-
-M020	+
-M021	+
-M022	+
-M001	+
-M004	+
-M005	+
-M024	+
-M026	+
-M027	+
-M012	-
-M013	-
-M014	-
-N001	-'
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13227,6 +12244,18 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ScrollVisibilityRectangle" TargetType="Rectangle">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Path=ComputedHorizontalScrollBarVisibility, ElementName=scrollViewer}" Value="Visible"/>
+                        <Condition Binding="{Binding Path=ComputedVerticalScrollBarVisibility, ElementName=scrollViewer}" Value="Visible"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -13362,10 +12391,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                        BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                                BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions>
 <ColumnDefinition Width="*"/>
 <ColumnDefinition Width="*"/>
 <ColumnDefinition Width="*"/>
@@ -13555,9 +12584,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalljava19runtime" Content="Eclipse Temurin JRE 19" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava19runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalljava20" Content="Azul Zulu JDK 20" ToolTip="Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava20Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" ToolTip="Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/><TextBlock Name="WPFInstalljava21Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13587,14 +12613,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpixi" Content="Pixi" ToolTip="Pixi is a fast software package manager built on top of the existing conda ecosystem. Spins up development environments quickly on Windows, macOS and Linux. Pixi supports Python, R, C/C++, Rust, Ruby, and many other languages." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpixiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pixi.sh" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/" />
 </StackPanel>
@@ -13802,14 +12828,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet3" Content=".NET Desktop Runtime 3.1" ToolTip=".NET Desktop Runtime 3.1 is a runtime environment required for running applications developed with .NET Core 3.1." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/3.1" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="2">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" ToolTip=".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet6Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/6.0" />
 </StackPanel>
@@ -13983,6 +13009,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallplex" Content="Plex Media Server" ToolTip="Plex Media Server is a media server software that allows you to organize and stream your media library. It supports various media formats and offers a wide range of features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv/your-media/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallplexdesktop" Content="Plex Desktop" ToolTip="Plex Desktop for Windows is the front end for Plex Media Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallplexdesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.plex.tv" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallqgis" Content="QGIS" ToolTip="QGIS (Quantum GIS) is an open-source Geographic Information System (GIS) software that enables users to create, edit, visualize, analyze, and publish geospatial information on Windows, Mac, and Linux platforms." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqgisLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qgis.org/en/site/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -14035,6 +13064,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/><TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallkicad" Content="Kicad" ToolTip="Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkicadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.kicad.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
@@ -14194,10 +13226,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallflux" Content="F.lux" ToolTip="f.lux adjusts the color temperature of your screen to reduce eye strain during nighttime use." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfluxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://justgetflux.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallForceAutoHDR" Content="GUI That Forces Auto HDR In Unsupported Games" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallFreeFileSync" Content="FreeFileSync" ToolTip="Synchronize Files and Folders" Margin="0,0,2,0"/><TextBlock Name="WPFInstallFreeFileSyncLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://freefilesync.org" />
+<CheckBox Name="WPFInstallForceAutoHDR" Content="ForceAutoHDR" ToolTip="ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry" Margin="0,0,2,0"/><TextBlock Name="WPFInstallForceAutoHDRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/7gxycn08/ForceAutoHDR" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfzf" Content="Fzf" ToolTip="A command-line fuzzy finder" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfzfLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/junegunn/fzf/" />
@@ -14472,6 +13501,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         </Grid>
                     </ScrollViewer>
 
+                    <Rectangle Grid.Row="1" Grid.Column="0" Width="18" Height="18" Fill="{MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
@@ -14490,7 +13521,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
-<CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0"  ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
@@ -14503,7 +13533,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0"  ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-<CheckBox Name="WPFTweaksOO" Content="Run OO Shutup" Margin="5,0"  ToolTip="Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10"/>
 <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0"  ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
 <CheckBox Name="WPFToggleTweaksLaptopHybernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0"  ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
 <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
@@ -14514,14 +13543,15 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
 <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0"  ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
 <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" Margin="5,0"  ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
+<CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0"  ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
 <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0"  ToolTip="Disables all Notifications INCLUDING Calendar"/>
 <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0"  ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
 <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0"  ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-<CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates."/>
+<CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: AveYo"/>
 <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0"  ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
-<Button Name="WPFOOSUbutton" Content="Customize OO Shutup Tweaks" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
+<Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 <ComboBox Name="WPFchangedns"  Height="32" Width="186" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5">
@@ -15012,9 +14042,17 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    $sync.ConfigLoaded = $False
-    $sync.ComputerInfo = Get-ComputerInfo
-    $sync.ConfigLoaded = $True
+    try{
+        $oldProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue"
+        $sync.ConfigLoaded = $False
+        $sync.ComputerInfo = Get-ComputerInfo
+        $sync.ConfigLoaded = $True
+    }
+    finally{
+        $ProgressPreference = "Continue"
+    }
+    
 } | Out-Null
 
 #===========================================================================
@@ -15023,9 +14061,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-
-# Install Winget if not already present
-Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -15346,14 +14381,13 @@ $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
     $sync["SettingsPopup"].IsOpen = $false
-    # Example usage
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
-Version  : $($sync.version)
+Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
+GUI      : <a href="https://github.com/KonTy">@KonTy</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
