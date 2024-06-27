@@ -407,7 +407,7 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-		"WPFInstallditto": {
+	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
 		"content": "Ditto",
@@ -591,7 +591,7 @@
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
-		"WPFInstallfiles": {
+	"WPFInstallfiles": {
 		"category": "Utilities",
 		"choco": "files",
 		"content": "Files",
@@ -975,14 +975,6 @@
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"WPFInstalljava20": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 20",
-		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.20.JDK"
-	},
 	"WPFInstalljava21": {
 		"category": "Development",
 		"choco": "na",
@@ -1301,14 +1293,6 @@
 		"content": "Equalizer APO",
 		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
 		"link": "https://sourceforge.net/projects/equalizerapo",
-		"winget": "na"
-	},
-	"WPFInstallFreeFileSync": {
-		"category": "Utilities",
-		"choco": "freefilesync",
-		"content": "FreeFileSync",
-		"description": "Synchronize Files and Folders",
-		"link": "https://freefilesync.org",
 		"winget": "na"
 	},
 	"WPFInstallCompactGUI": {
@@ -1663,6 +1647,14 @@
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
 	},
+	"WPFInstallplexdesktop": {
+		"category": "Multimedia Tools",
+		"choco": "plex",
+		"content": "Plex Desktop",
+		"description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+		"link": "https://www.plex.tv",
+		"winget": "Plex.Plex"
+	},
 	"WPFInstallPortmaster": {
 		"category": "Pro Tools",
 		"choco": "portmaster",
@@ -1879,7 +1871,7 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
-		"WPFInstallsagethumbs": {
+	"WPFInstallsagethumbs": {
 		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
@@ -2007,7 +1999,7 @@
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
 	},
-		"WPFInstallspotube": {
+	"WPFInstallspotube": {
 		"category": "Multimedia Tools",
 		"choco": "spotube",
 		"content": "Spotube",
@@ -2818,7 +2810,7 @@
 	"WPFInstallForceAutoHDR": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"content": "ForceAutoHDR",
 		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
@@ -2831,6 +2823,7 @@
 		"link": "https://joytokey.net/en/",
 		"winget": "JTKsoftware.JoyToKey"
 	},
+	
 	"WPFInstallnditools": {
 		"category": "Multimedia Tools",
 		"choco": "na",
@@ -2838,5 +2831,13 @@
 		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallkicad": {
+		"category": "Pro Tools",
+		"choco": "na",
+		"content": "Kicad",
+		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+		"link": "https://www.kicad.org/",
+		"winget": "KiCad.KiCad"
 	}
 }

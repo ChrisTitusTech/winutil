@@ -1224,11 +1224,6 @@
         "OriginalType": "Automatic"
       },
       {
-        "Name": "WwanSvc",
-        "StartupType": "Manual",
-        "OriginalType": "Manual"
-      },
-      {
         "Name": "XblAuthManager",
         "StartupType": "Manual",
         "OriginalType": "Manual"
@@ -2313,20 +2308,6 @@
       "Invoke-WPFTweakPS7 -action \"PS5\""
     ]
   },
-  "WPFTweaksOO": {
-    "Content": "Run OO Shutup",
-    "Description": "Runs OO Shutup and applies the recommended Tweaks. https://www.oo-software.com/en/shutup10",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a009_",
-    "ToolTip": "Runs OO Shutup and applies the recommended Tweaks https://www.oo-software.com/en/shutup10",
-    "InvokeScript": [
-      "Invoke-WPFOOSU -action \"recommended\""
-    ],
-    "UndoScript": [
-      "Invoke-WPFOOSU -action \"undo\""
-    ]
-  },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
@@ -2342,17 +2323,15 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates.",
+    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
         "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
-
-        curl.exe -s \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -o $ENV:temp\\edgeremoval.bat
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
         Start-Process $ENV:temp\\edgeremoval.bat
-
         "
     ],
     "UndoScript": [
@@ -2408,12 +2387,12 @@
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
-    "category": "Essential Tweaks",
+    "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "Order": "a0015_",
+    "Order": "a026_",
     "InvokeScript": [
         "
-        Write-Host \"Kill OneDrive process\"
+        Write-Host \"Kill LMS\"
         $serviceName = \"LMS\"   
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
@@ -2457,8 +2436,7 @@
     ],
     "UndoScript": [
       "
-      Write-Host \"Install Microsoft Edge\"
-      taskkill.exe /F /IM \"OneDrive.exe\"
+      Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
     ]
@@ -3090,7 +3068,7 @@
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
-    "Content": "Customize OO Shutup Tweaks",
+    "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a039_",
