@@ -1,46 +1,24 @@
 function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
-           
+
+    # GPUs to blacklist from using Demanding Theming
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
-        if ($gpuName -like "*NVIDIA GeForce*M*") {
-            return $false  # NVIDIA M series GPU found
+        if ($gpuName -like "*NVIDIA GeForce*M*" -OR
+            $gpuName -like "*NVIDIA GeForce*Laptop*" -OR
+            $gpuName -like "*NVIDIA GeForce*GT*" -OR
+            $gpuName -like "*AMD Radeon(TM)*" -OR
+            $gpuName -like "*UHD*") {
+            return $false
         }
     }
+
+    # GPUs to whitelist on using Demanding Theming
     foreach ($gpu in $gpuInfo) {
         $gpuName = $gpu.Name
-        if ($gpuName -like "*NVIDIA GeForce*Laptop*") {
-            return $false  # NVIDIA Laptop series GPU found
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*NVIDIA GeForce*GT*") {
-            return $false  # NVIDIA GT series GPU found
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*NVIDIA*") {
-            return $true  # NVIDIA GPU found
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*AMD Radeon RX*") {
-            return $true # AMD GPU Found 
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*UHD*") {
-            return $false # Intel Intergrated GPU Found 
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*AMD Radeon(TM)*") {
-            return $false # AMD Intergrated GPU Found 
+        if ($gpuName -like "*NVIDIA*" -OR
+            $gpuName -like "*AMD Radeon RX*") {
+            return $true
         }
     }
 }
