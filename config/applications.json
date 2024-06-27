@@ -2840,7 +2840,6 @@
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
 	},
-
 	"WPFInstallFormatFactory": {
 		"category": "Utilities",
 		"choco": "formatfactory",
