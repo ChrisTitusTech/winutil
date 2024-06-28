@@ -11,9 +11,7 @@ function Get-WinUtilVariables {
         [Parameter()]
         [string[]]$Type
     )
-
-    $keys = $sync.keys | Where-Object { $_ -like "WPF*" }
-
+    $keys = ($sync.keys).where{ $_ -like "WPF*" }
     if ($Type) {
         $output = $keys | ForEach-Object {
             Try {
