@@ -1281,7 +1281,7 @@
 	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
-		"choco": "na",
+		"choco": "borderlessgaming",
 		"content": "Borderless Gaming",
 		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
 		"link": "https://github.com/Codeusa/Borderless-Gaming",
