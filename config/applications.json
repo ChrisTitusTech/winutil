@@ -365,7 +365,7 @@
 		"content": "DevToys",
 		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://devtoys.app/",
-		"winget": "9PGCV4V3BK4W"
+		"winget": "DevToys-app.DevToys"
 	},
 	"WPFInstalldigikam": {
 		"category": "Multimedia Tools",
@@ -383,6 +383,7 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
+<<<<<<< purging-applications
 	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
@@ -391,6 +392,8 @@
 		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
+=======
+>>>>>>> main
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
@@ -671,14 +674,6 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
-	"WPFInstallorcaslicer": {
-		"category": "Multimedia Tools",
-		"choco": "orcaslicer",
-		"content": "OrcaSlicer",
-		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
-		"link": "https://github.com/SoftFever/OrcaSlicer",
-		"winget": "SoftFever.OrcaSlicer"
-	},
 	"WPFInstallfxsound": {
 		"category": "Multimedia Tools",
 		"choco": "fxsound",
@@ -725,7 +720,7 @@
 		"content": "Git Extensions",
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
 		"link": "https://gitextensions.github.io/",
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions"
+		"winget": "GitExtensionsTeam.GitExtensions"
 	},
 	"WPFInstallgithubcli": {
 		"category": "Development",
@@ -733,7 +728,7 @@
 		"content": "GitHub CLI",
 		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
 		"link": "https://cli.github.com/",
-		"winget": "Git.Git;GitHub.cli"
+		"winget": "GitHub.cli"
 	},
 	"WPFInstallgithubdesktop": {
 		"category": "Development",
@@ -741,7 +736,7 @@
 		"content": "GitHub Desktop",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
 		"link": "https://desktop.github.com/",
-		"winget": "Git.Git;GitHub.GitHubDesktop"
+		"winget": "GitHub.GitHubDesktop"
 	},
 	"WPFInstallgitkrakenclient": {
 		"category": "Development",
@@ -775,12 +770,20 @@
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
 	},
+	"WPFInstallgitify": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Gitify",
+		"description": "GitHub notifications on your menu bar.",
+		"link": "https://www.gitify.io/",
+		"winget": "Gitify.Gitify"
+	},
 	"WPFInstallgolang": {
 		"category": "Development",
 		"choco": "golang",
-		"content": "GoLang",
-		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-		"link": "https://golang.org/",
+		"content": "Go",
+		"description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+		"link": "https://go.dev/",
 		"winget": "GoLang.Go"
 	},
 	"WPFInstallgoogledrive": {
@@ -1255,9 +1258,17 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"WPFInstallmullvadvpn": {
+		"category": "Pro Tools",
+		"choco": "mullvad-app",
+		"content": "Mullvad VPN",
+		"description": "This is the VPN client software for the Mullvad VPN service.",
+		"link": "https://github.com/mullvad/mullvadvpn-app",
+		"winget": "MullvadVPN.MullvadVPN"
+	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
-		"choco": "na",
+		"choco": "borderlessgaming",
 		"content": "Borderless Gaming",
 		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
 		"link": "https://github.com/Codeusa/Borderless-Gaming",
@@ -1718,6 +1729,14 @@
 		"description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
+	},
+	"WPFInstallorcaslicer": {
+		"category": "Utilities",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
 	},
 	"WPFInstallprucaslicer": {
 		"category": "Utilities",
@@ -2365,7 +2384,7 @@
 		"content": "VS Code",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
 		"link": "https://code.visualstudio.com/",
-		"winget": "Git.Git;Microsoft.VisualStudioCode"
+		"winget": "Microsoft.VisualStudioCode"
 	},
 	"WPFInstallvscodium": {
 		"category": "Development",
@@ -2373,7 +2392,7 @@
 		"content": "VS Codium",
 		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
 		"link": "https://vscodium.com/",
-		"winget": "Git.Git;VSCodium.VSCodium"
+		"winget": "VSCodium.VSCodium"
 	},
 	"WPFInstallwaterfox": {
 		"category": "Browsers",
@@ -2807,5 +2826,21 @@
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
+	},
+	"WPFInstallFormatFactory": {
+		"category": "Utilities",
+		"choco": "formatfactory",
+		"content": "Format Factory",
+		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
+		"link": "http://www.pcfreetime.com/formatfactory/",
+		"winget": "na"
+  },
+	"WPFInstalldropox": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Dropbox",
+		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+		"link": "https://www.dropbox.com/en_GB/desktop",
+		"winget": "Dropbox.Dropbox"
 	}
 }
