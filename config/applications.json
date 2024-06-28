@@ -2848,6 +2848,14 @@
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
 	},
+	"WPFInstallFormatFactory": {
+		"category": "Utilities",
+		"choco": "formatfactory",
+		"content": "Format Factory",
+		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
+		"link": "http://www.pcfreetime.com/formatfactory/",
+		"winget": "na"
+  },
 	"WPFInstalldropox": {
 		"category": "Utilities",
 		"choco": "na",
