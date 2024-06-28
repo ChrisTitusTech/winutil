@@ -2375,6 +2375,14 @@
 		"link": "https://voicemeeter.com/",
 		"winget": "VB-Audio.Voicemeeter"
 	},
+	"WPFInstallVoicemeeterPotato": {
+		"category": "Multimedia Tools",
+		"choco": "voicemeeter-potato",
+		"content": "Voicemeeter Potato",
+		"description": "Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications.",
+		"link": "https://voicemeeter.com/",
+		"winget": "VB-Audio.Voicemeeter.Potato"
+	},
 	"WPFInstallvrdesktopstreamer": {
 		"category": "Games",
 		"choco": "na",
