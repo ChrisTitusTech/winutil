@@ -391,7 +391,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-<<<<<<< purging-applications
 	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
@@ -400,8 +399,6 @@
 		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
-=======
->>>>>>> main
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
