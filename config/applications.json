@@ -407,14 +407,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-	"WPFInstallditto": {
-		"category": "Utilities",
-		"choco": "ditto",
-		"content": "Ditto",
-		"description": "Ditto is an extension to the standard windows clipboard.",
-		"link": "https://ditto-cp.sourceforge.io/",
-		"winget": "Ditto.Ditto"
-	},
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
