@@ -6576,6 +6576,14 @@ $sync.configs.applications = '{
     "link": "https://www.msi.com/Landing/afterburner",
     "winget": "Guru3D.Afterburner"
   },
+  "WPFInstallmullvadvpn": {
+    "category": "Pro Tools",
+    "choco": "mullvad-app",
+    "content": "Mullvad VPN",
+    "description": "This is the VPN client software for the Mullvad VPN service.",
+    "link": "https://github.com/mullvad/mullvadvpn-app",
+    "winget": "MullvadVPN.MullvadVPN"
+  },
   "WPFInstallBorderlessGaming": {
     "category": "Utilities",
     "choco": "na",
@@ -12624,14 +12632,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/><TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="1">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/><TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/" />
 </StackPanel>
@@ -12839,17 +12847,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet5" Content=".NET Desktop Runtime 5" ToolTip=".NET Desktop Runtime 5 is a runtime environment required for running applications developed with .NET 5." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet5Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/5.0" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="2">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" ToolTip=".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet6Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/6.0" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" ToolTip=".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet7Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/7.0" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet8" Content=".NET Desktop Runtime 8" ToolTip=".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/8.0" />
 </StackPanel>
@@ -13062,11 +13070,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallangryipscanner" Content="Angry IP Scanner" ToolTip="Angry IP Scanner is an open-source and cross-platform network scanner. It is used to scan IP addresses and ports, providing information about network connectivity." Margin="0,0,2,0"/><TextBlock Name="WPFInstallangryipscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://angryip.org/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="3">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" ToolTip="EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallefibooteditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.easyuefi.com/" />
 </StackPanel>
@@ -13076,8 +13079,16 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkicad" Content="Kicad" ToolTip="Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkicadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.kicad.org/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="3">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnetbird" Content="NetBird" ToolTip="NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnetbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://netbird.io/" />
@@ -13281,11 +13292,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkeepass" Content="KeePassXC" ToolTip="KeePassXC is a cross-platform, open-source password manager with strong encryption features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="4">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html" />
 </StackPanel>
@@ -13295,6 +13301,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="4">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/" />
 </StackPanel>
@@ -14207,19 +14218,37 @@ Add-Type @"
         }
     }
 
-    # need to experiemnt more
-    # setting icon for the windows is still not working
-    # $pngUrl = "https://christitus.com/images/logo-full.png"
-    # $pngPath = "$env:TEMP\cttlogo.png"
-    # $iconPath = "$env:TEMP\cttlogo.ico"
-    # # Download the PNG file
-    # Invoke-WebRequest -Uri $pngUrl -OutFile $pngPath
-    # if (Test-Path -Path $pngPath) {
-    #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $iconPath
-    # }
-    # $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
-    # Write-Host $icon.Handle
-    # [Window]::SendMessage($windowHandle, 0x80, [IntPtr]::Zero, $icon.Handle)
+
+    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
+
+    # URL of the image
+    $imageUrl = "https://christitus.com/images/logo-full.png"
+
+    # Download the image
+    $imagePath = "$env:TEMP\logo-full.png"
+    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
+
+    # Read the image file as a byte array
+    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
+
+    # Convert the byte array to a Base64 string
+    $base64String = [System.Convert]::ToBase64String($imageBytes)
+
+    # Create a streaming image by streaming the base64 string to a bitmap streamsource
+    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+    $bitmap.BeginInit()
+    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
+    $bitmap.EndInit()
+    $bitmap.Freeze()
+
+    # Ensure TaskbarItemInfo is created if not already
+    if (-not $sync["Form"].TaskbarItemInfo) {
+        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+    }
+
+    # Set the overlay icon for the taskbar
+    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
+
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
