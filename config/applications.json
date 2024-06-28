@@ -407,14 +407,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-	"WPFInstallditto": {
-		"category": "Utilities",
-		"choco": "ditto",
-		"content": "Ditto",
-		"description": "Ditto is an extension to the standard windows clipboard.",
-		"link": "https://ditto-cp.sourceforge.io/",
-		"winget": "Ditto.Ditto"
-	},
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
@@ -798,6 +790,14 @@
 		"description": "GOG Galaxy is a gaming client that offers DRM-free games, additional content, and more.",
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
+	},
+	"WPFInstallgitify": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Gitify",
+		"description": "GitHub notifications on your menu bar.",
+		"link": "https://www.gitify.io/",
+		"winget": "Gitify.Gitify"
 	},
 	"WPFInstallgolang": {
 		"category": "Development",
@@ -1278,6 +1278,14 @@
 		"description": "MSI Afterburner is a graphics card overclocking utility with advanced features.",
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
+	},
+	"WPFInstallmullvadvpn": {
+		"category": "Pro Tools",
+		"choco": "mullvad-app",
+		"content": "Mullvad VPN",
+		"description": "This is the VPN client software for the Mullvad VPN service.",
+		"link": "https://github.com/mullvad/mullvadvpn-app",
+		"winget": "MullvadVPN.MullvadVPN"
 	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
@@ -2847,5 +2855,13 @@
 		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
 		"link": "http://www.pcfreetime.com/formatfactory/",
 		"winget": "na"
+  },
+	"WPFInstalldropox": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Dropbox",
+		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+		"link": "https://www.dropbox.com/en_GB/desktop",
+		"winget": "Dropbox.Dropbox"
 	}
 }
