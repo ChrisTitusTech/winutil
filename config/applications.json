@@ -407,7 +407,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-	},
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
