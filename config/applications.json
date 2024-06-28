@@ -391,17 +391,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-<<<<<<< purging-applications
-	"WPFInstallditto": {
-		"category": "Utilities",
-		"choco": "ditto",
-		"content": "Ditto",
-		"description": "Ditto is an extension to the standard windows clipboard.",
-		"link": "https://github.com/sabrogden/Ditto",
-		"winget": "Ditto.Ditto"
-	},
-=======
->>>>>>> main
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
