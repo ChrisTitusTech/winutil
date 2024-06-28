@@ -2886,7 +2886,7 @@
 		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
 		"link": "http://www.pcfreetime.com/formatfactory/",
 		"winget": "na"
-  },
+	},
 	"dropox": {
 		"category": "Utilities",
 		"choco": "na",
@@ -2894,5 +2894,13 @@
 		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
 		"link": "https://www.dropbox.com/en_GB/desktop",
 		"winget": "Dropbox.Dropbox"
+	},
+	"OFGB": {
+		"category": "Utilities",
+		"choco": "ofgb",
+		"content": "OFGB (Oh Frick Go Back)",
+		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
+		"link": "https://github.com/xM4ddy/OFGB",
+		"winget": "xM4ddy.OFGB"
 	}
 }
