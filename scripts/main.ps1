@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MIT
 # Set the maximum number of threads for the RunspacePool to the number of threads on the machine
-$sw = [System.Diagnostics.Stopwatch]::StartNew()
 $maxthreads = [int]$env:NUMBER_OF_PROCESSORS
 
 # Create a new session state for parsing variables into our runspace
@@ -500,6 +499,5 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
-Write-Host "Main Script Runtime $($sw.Elapsed.ToString())"
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
