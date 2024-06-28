@@ -151,14 +151,6 @@
 		"link": "https://github.com/sharkdp/bat",
 		"winget": "sharkdp.bat"
 	},
-	"WPFInstallbitcomet": {
-		"category": "Utilities",
-		"choco": "bitcomet",
-		"content": "BitComet",
-		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
-		"link": "https://www.bitcomet.com/",
-		"winget": "CometNetwork.BitComet"
-	},
 	"WPFInstallbitwarden": {
 		"category": "Utilities",
 		"choco": "bitwarden",
@@ -183,14 +175,6 @@
 		"link": "https://www.blender.org/",
 		"winget": "BlenderFoundation.Blender"
 	},
-	"WPFInstallbluestacks": {
-		"category": "Games",
-		"choco": "bluestacks",
-		"content": "Bluestacks",
-		"description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
-		"link": "https://www.bluestacks.com/",
-		"winget": "BlueStack.BlueStacks"
-	},
 	"WPFInstallbrave": {
 		"category": "Browsers",
 		"choco": "brave",
@@ -214,6 +198,14 @@
 		"description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
 		"link": "https://www.bulkrenameutility.co.uk",
 		"winget": "TGRMNSoftware.BulkRenameUtility"
+	},
+	"WPFInstallAdvancedRenamer": {
+		"category": "Utilities",
+		"choco": "advanced-renamer",
+		"content": "Advanced Renamer",
+		"description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
+		"link": "https://www.advancedrenamer.com/",
+		"winget": "XP9MD3S1KFCPH1"
 	},
 	"WPFInstallcalibre": {
 		"category": "Document",
@@ -311,14 +303,6 @@
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
 	},
-	"WPFInstallditto": {
-		"category": "Utilities",
-		"choco": "ditto",
-		"content": "Ditto (Clipboard Manager)",
-		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
-		"link": "https://github.com/sabrogden/Ditto",
-		"winget": "Ditto.Ditto"
-	},
 	"WPFInstallcpuz": {
 		"category": "Utilities",
 		"choco": "cpu-z",
@@ -389,7 +373,7 @@
 		"content": "DevToys",
 		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://devtoys.app/",
-		"winget": "9PGCV4V3BK4W"
+		"winget": "DevToys-app.DevToys"
 	},
 	"WPFInstalldigikam": {
 		"category": "Multimedia Tools",
@@ -407,14 +391,17 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-		"WPFInstallditto": {
+<<<<<<< purging-applications
+	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
 		"content": "Ditto",
 		"description": "Ditto is an extension to the standard windows clipboard.",
-		"link": "https://ditto-cp.sourceforge.io/",
+		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
+=======
+>>>>>>> main
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
@@ -567,6 +554,14 @@
 		"link": "https://www.falkon.org/",
 		"winget": "KDE.Falkon"
 	},
+	"WPFInstallfastfetch": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Fastfetch",
+		"description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
+		"link": "https://github.com/fastfetch-cli/fastfetch/",
+		"winget": "fastfetch"
+	},
 	"WPFInstallferdium": {
 		"category": "Communications",
 		"choco": "ferdium",
@@ -591,7 +586,7 @@
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
-		"WPFInstallfiles": {
+	"WPFInstallfiles": {
 		"category": "Utilities",
 		"choco": "files",
 		"content": "Files",
@@ -695,14 +690,6 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
-	"WPFInstallorcaslicer": {
-		"category": "Multimedia Tools",
-		"choco": "orcaslicer",
-		"content": "OrcaSlicer",
-		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
-		"link": "https://github.com/SoftFever/OrcaSlicer",
-		"winget": "SoftFever.OrcaSlicer"
-	},
 	"WPFInstallfxsound": {
 		"category": "Multimedia Tools",
 		"choco": "fxsound",
@@ -749,7 +736,7 @@
 		"content": "Git Extensions",
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
 		"link": "https://gitextensions.github.io/",
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions"
+		"winget": "GitExtensionsTeam.GitExtensions"
 	},
 	"WPFInstallgithubcli": {
 		"category": "Development",
@@ -757,7 +744,7 @@
 		"content": "GitHub CLI",
 		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
 		"link": "https://cli.github.com/",
-		"winget": "Git.Git;GitHub.cli"
+		"winget": "GitHub.cli"
 	},
 	"WPFInstallgithubdesktop": {
 		"category": "Development",
@@ -765,7 +752,7 @@
 		"content": "GitHub Desktop",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
 		"link": "https://desktop.github.com/",
-		"winget": "Git.Git;GitHub.GitHubDesktop"
+		"winget": "GitHub.GitHubDesktop"
 	},
 	"WPFInstallgitkrakenclient": {
 		"category": "Development",
@@ -799,12 +786,20 @@
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
 	},
+	"WPFInstallgitify": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Gitify",
+		"description": "GitHub notifications on your menu bar.",
+		"link": "https://www.gitify.io/",
+		"winget": "Gitify.Gitify"
+	},
 	"WPFInstallgolang": {
 		"category": "Development",
 		"choco": "golang",
-		"content": "GoLang",
-		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-		"link": "https://golang.org/",
+		"content": "Go",
+		"description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+		"link": "https://go.dev/",
 		"winget": "GoLang.Go"
 	},
 	"WPFInstallgoogledrive": {
@@ -974,14 +969,6 @@
 		"description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
-	},
-	"WPFInstalljava20": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 20",
-		"description": "Azul Zulu JDK 20 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.20.JDK"
 	},
 	"WPFInstalljava21": {
 		"category": "Development",
@@ -1287,9 +1274,17 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"WPFInstallmullvadvpn": {
+		"category": "Pro Tools",
+		"choco": "mullvad-app",
+		"content": "Mullvad VPN",
+		"description": "This is the VPN client software for the Mullvad VPN service.",
+		"link": "https://github.com/mullvad/mullvadvpn-app",
+		"winget": "MullvadVPN.MullvadVPN"
+	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
-		"choco": "na",
+		"choco": "borderlessgaming",
 		"content": "Borderless Gaming",
 		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
 		"link": "https://github.com/Codeusa/Borderless-Gaming",
@@ -1301,14 +1296,6 @@
 		"content": "Equalizer APO",
 		"description": "Equalizer APO is a parametric / graphic equalizer for Windows.",
 		"link": "https://sourceforge.net/projects/equalizerapo",
-		"winget": "na"
-	},
-	"WPFInstallFreeFileSync": {
-		"category": "Utilities",
-		"choco": "freefilesync",
-		"content": "FreeFileSync",
-		"description": "Synchronize Files and Folders",
-		"link": "https://freefilesync.org",
 		"winget": "na"
 	},
 	"WPFInstallCompactGUI": {
@@ -1358,6 +1345,14 @@
 		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
 		"link": "https://www.mp3tag.de/en/",
 		"winget": "Mp3tag.Mp3tag"
+	},
+	"WPFInstalltagscanner": {
+		"category": "Multimedia Tools",
+		"choco": "tagscanner",
+		"content": "TagScanner (Tag Scanner)",
+		"description": "TagScanner is a powerful tool for organizing and managing your music collection",
+		"link": "https://www.xdlab.ru/en/",
+		"winget": "SergeySerkov.TagScanner"
 	},
 	"WPFInstallnanazip": {
 		"category": "Utilities",
@@ -1663,6 +1658,14 @@
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
 	},
+	"WPFInstallplexdesktop": {
+		"category": "Multimedia Tools",
+		"choco": "plex",
+		"content": "Plex Desktop",
+		"description": "Plex Desktop for Windows is the front end for Plex Media Server.",
+		"link": "https://www.plex.tv",
+		"winget": "Plex.Plex"
+	},
 	"WPFInstallPortmaster": {
 		"category": "Pro Tools",
 		"choco": "portmaster",
@@ -1751,6 +1754,14 @@
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
 	},
+	"WPFInstallorcaslicer": {
+		"category": "Utilities",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
 	"WPFInstallprucaslicer": {
 		"category": "Utilities",
 		"choco": "prusaslicer",
@@ -1790,6 +1801,14 @@
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
+	},
+	"WPFInstalltransmission": {
+		"category": "Utilities",
+		"choco": "transmission",
+		"content": "Transmission",
+		"description": "Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean.",
+		"link": "https://transmissionbt.com/",
+		"winget": "Transmission.Transmission"
 	},
 	"WPFInstalltixati": {
 		"category": "Utilities",
@@ -1879,7 +1898,7 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
-		"WPFInstallsagethumbs": {
+	"WPFInstallsagethumbs": {
 		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
@@ -2007,7 +2026,7 @@
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
 	},
-		"WPFInstallspotube": {
+	"WPFInstallspotube": {
 		"category": "Multimedia Tools",
 		"choco": "spotube",
 		"content": "Spotube",
@@ -2198,6 +2217,14 @@
 		"description": "Python IDE for beginners.",
 		"link": "https://github.com/thonny/thonny",
 		"winget": "AivarAnnamaa.Thonny"
+	},
+	"WPFInstallMuEditor": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Code With Mu (Mu Editor)",
+		"description": "Mu is a Python code editor for beginner programmers",
+		"link": "https://codewith.mu/",
+		"winget": "Mu.Mu"
 	},
 	"WPFInstallthorium": {
 		"category": "Browsers",
@@ -2397,7 +2424,7 @@
 		"content": "VS Code",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
 		"link": "https://code.visualstudio.com/",
-		"winget": "Git.Git;Microsoft.VisualStudioCode"
+		"winget": "Microsoft.VisualStudioCode"
 	},
 	"WPFInstallvscodium": {
 		"category": "Development",
@@ -2405,7 +2432,7 @@
 		"content": "VS Codium",
 		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
 		"link": "https://vscodium.com/",
-		"winget": "Git.Git;VSCodium.VSCodium"
+		"winget": "VSCodium.VSCodium"
 	},
 	"WPFInstallwaterfox": {
 		"category": "Browsers",
@@ -2430,14 +2457,6 @@
 		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
-	},
-	"WPFInstallwindirstat": {
-		"category": "Utilities",
-		"choco": "windirstat",
-		"content": "WinDirStat",
-		"description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
-		"link": "https://windirstat.net/",
-		"winget": "WinDirStat.WinDirStat"
 	},
 	"WPFInstallwindowspchealth": {
 		"category": "Utilities",
@@ -2818,7 +2837,7 @@
 	"WPFInstallForceAutoHDR": {
 		"category": "Utilities",
 		"choco": "na",
-		"content": "GUI That Forces Auto HDR In Unsupported Games",
+		"content": "ForceAutoHDR",
 		"description": "ForceAutoHDR simplifies the process of adding games to the AutoHDR list in the Windows Registry",
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
@@ -2831,6 +2850,7 @@
 		"link": "https://joytokey.net/en/",
 		"winget": "JTKsoftware.JoyToKey"
 	},
+	
 	"WPFInstallnditools": {
 		"category": "Multimedia Tools",
 		"choco": "na",
@@ -2838,5 +2858,29 @@
 		"description":"NDI, or Network Device Interface, is a video connectivity standard that enables multimedia systems to identify and communicate with one another over IP and to encode, transmit, and receive high-quality, low latency, frame-accurate video and audio, and exchange metadata in real-time.",
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
+	},
+	"WPFInstallkicad": {
+		"category": "Pro Tools",
+		"choco": "na",
+		"content": "Kicad",
+		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
+		"link": "https://www.kicad.org/",
+		"winget": "KiCad.KiCad"
+	},
+	"WPFInstallFormatFactory": {
+		"category": "Utilities",
+		"choco": "formatfactory",
+		"content": "Format Factory",
+		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
+		"link": "http://www.pcfreetime.com/formatfactory/",
+		"winget": "na"
+  },
+	"WPFInstalldropox": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Dropbox",
+		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+		"link": "https://www.dropbox.com/en_GB/desktop",
+		"winget": "Dropbox.Dropbox"
 	}
 }
