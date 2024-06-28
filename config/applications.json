@@ -804,7 +804,7 @@
 		"choco": "na",
 		"content": "Gitify",
 		"description": "GitHub notifications on your menu bar.",
-		"link": "https://github.com/gitify-app/gitify",
+		"link": "https://www.gitify.io/",
 		"winget": "Gitify.Gitify"
 	},
 	"WPFInstallgolang": {
