@@ -12,7 +12,7 @@ function Invoke-WPFTweakPS7{
     )
 
     switch ($action) {
-        "PS7"{ 
+        "PS7"{
             if (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
                 Write-Host "Powershell 7 is already installed."
             } else {
@@ -41,6 +41,6 @@ function Invoke-WPFTweakPS7{
         }
     } else {
         Write-Host "Settings file not found at $settingsPath"
-    } 
+    }
 }
 

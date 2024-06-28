@@ -37,7 +37,7 @@ function global:prepare_edge {
   ri 'Registry::HKEY_Users\S-1-5-21*\Software\Classes\microsoft-edge' -recurse -force -ea 0
   ri 'Registry::HKEY_Users\S-1-5-21*\Software\Classes\MSEdgeHTM' -recurse -force -ea 0
   ni "HKLM:\SOFTWARE\Classes\microsoft-edge\shell\open\command" -force -ea 0 >''
-  sp "HKLM:\SOFTWARE\Classes\microsoft-edge\shell\open\command" '(Default)' "`"$MS`" --single-argument %%1" -force -ea 0 
+  sp "HKLM:\SOFTWARE\Classes\microsoft-edge\shell\open\command" '(Default)' "`"$MS`" --single-argument %%1" -force -ea 0
   ni "HKLM:\SOFTWARE\Classes\MSEdgeHTM\shell\open\command" -force -ea 0 >''
   sp "HKLM:\SOFTWARE\Classes\MSEdgeHTM\shell\open\command" '(Default)' "`"$MS`" --single-argument %%1" -force -ea 0
   foreach ($p in 'HKLM:\SOFTWARE\Policies','HKLM:\SOFTWARE','HKLM:\SOFTWARE\WOW6432Node') {
@@ -54,7 +54,7 @@ function global:prepare_edge {
 }
 ## helper for webview reinstall - restore webexperience (widgets) if available
 function global:prepare_webview {
-  $cfg = @{Register=$true; ForceApplicationShutdown=$true; ForceUpdateFromAnyVersion=$true; DisableDevelopmentMode=$true} 
+  $cfg = @{Register=$true; ForceApplicationShutdown=$true; ForceUpdateFromAnyVersion=$true; DisableDevelopmentMode=$true}
   dir "$env:ProgramFiles\WindowsApps\MicrosoftWindows.Client.WebExperience*\AppxManifest.xml" -rec -ea 0 | Add-AppxPackage @cfg
   dir "$env:SystemRoot\SystemApps\Microsoft.Win32WebViewHost*\AppxManifest.xml" -rec -ea 0 | Add-AppxPackage @cfg
   kill -name explorer -ea 0; if ((get-process -name 'explorer' -ea 0) -eq $null) {start explorer}
@@ -66,7 +66,7 @@ $D1=[uri].module.gettype('System.Diagnostics.Process')."GetM`ethods"(42) |where 
 
 ## 3 shut edge & webview clone stuff down and gather install paths
 $shut = 'explorer','Widgets','widgetservice','msedgewebview2','MicrosoftEdge*','chredge','msedge','edge'
-$shut+= 'msteams','msfamily','WebViewHost','Clipchamp' 
+$shut+= 'msteams','msfamily','WebViewHost','Clipchamp'
 cd $env:systemdrive; taskkill /im explorer.exe /f 2>&1 >''; foreach ($p in $shut) {kill -name $p -force -ea 0}
 prepare_edge
 ## clear win32 uninstall block
@@ -93,15 +93,15 @@ $users = @('S-1-5-18'); if (test-path $store) {$users += $((dir $store -ea 0 |wh
 foreach ($choice in $remove_appx) { if ('' -eq $choice.Trim()) {continue}
   foreach ($appx in $($provisioned |where {$_.PackageName -like "*$choice*"})) {
     $next = !1; foreach ($no in $skip) {if ($appx.PackageName -like "*$no*") {$next = !0}} ; if ($next) {continue}
-    $PackageName = $appx.PackageName; $PackageFamilyName = ($appxpackage |where {$_.Name -eq $appx.DisplayName}).PackageFamilyName 
-    ni "$store\Deprovisioned\$PackageFamilyName" -force >''; $PackageFamilyName  
+    $PackageName = $appx.PackageName; $PackageFamilyName = ($appxpackage |where {$_.Name -eq $appx.DisplayName}).PackageFamilyName
+    ni "$store\Deprovisioned\$PackageFamilyName" -force >''; $PackageFamilyName
     foreach ($sid in $users) {ni "$store\EndOfLife\$sid\$PackageName" -force >''} ; $eol += $PackageName
     dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >''
     remove-appxprovisionedpackage -packagename $PackageName -online -allusers >''
   }
   foreach ($appx in $($appxpackage |where {$_.PackageFullName -like "*$choice*"})) {
     $next = !1; foreach ($no in $skip) {if ($appx.PackageFullName -like "*$no*") {$next = !0}} ; if ($next) {continue}
-    $PackageFullName = $appx.PackageFullName; 
+    $PackageFullName = $appx.PackageFullName;
     ni "$store\Deprovisioned\$appx.PackageFamilyName" -force >''; $PackageFullName
     foreach ($sid in $users) {ni "$store\EndOfLife\$sid\$PackageFullName" -force >''} ; $eol += $PackageFullName
     dism /online /set-nonremovableapppolicy /packagefamily:$PackageFamilyName /nonremovable:0 >''
@@ -125,16 +125,16 @@ foreach ($PF in $env:ProgramFiles,${env:ProgramFiles(x86)}) { if (test-path "$PF
   if ($also_remove_webview -eq 1) { foreach ($hk in 'HKCU:','HKLM:') { foreach ($wow in '','\Wow6432Node') {
     ri "$hk\SOFTWARE${wow}\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -rec -force -ea 0 }}
     ri "$PF\Microsoft\EdgeUpdate" -rec -force -ea 0; Unregister-ScheduledTask -TaskName MicrosoftEdgeUpdate* -Confirm:$false -ea 0
-  }  
+  }
 }}
 $appdata = $([Environment]::GetFolderPath('ApplicationData'))
 ri "$appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Tombstones\Microsoft Edge.lnk" -force
 ri "$appdata\Microsoft\Internet Explorer\Quick Launch\Microsoft Edge.lnk" -force
 
-## undo eol unblock trick to prevent latest cumulative update (LCU) failing 
+## undo eol unblock trick to prevent latest cumulative update (LCU) failing
 foreach ($sid in $users) { foreach ($PackageName in $eol) {ri "$store\EndOfLife\$sid\$PackageName" -force >''} }
 
-## set (almost) useless policies to prevent unsolicited reinstalls 
+## set (almost) useless policies to prevent unsolicited reinstalls
 foreach ($p in 'HKLM:\SOFTWARE\Policies','HKLM:\SOFTWARE','HKLM:\SOFTWARE\WOW6432Node') {
   ni "$p\Microsoft\EdgeUpdate" -force >''
   sp "$p\Microsoft\EdgeUpdate" 'InstallDefault' 0 -type Dword -force

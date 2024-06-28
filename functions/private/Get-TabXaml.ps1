@@ -13,8 +13,8 @@ function Get-TabXaml {
     .EXAMPLE
         Get-TabXaml "applications" 3
     #>
-    
-    
+
+
     param( [Parameter(Mandatory=$true)]
         $tabname,
         $columncount = 0
@@ -80,7 +80,7 @@ function Get-TabXaml {
 
             # Dot-source the Get-WPFObjectName function
             . .\functions\private\Get-WPFObjectName
-            
+
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
             $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`r`n"

@@ -1,13 +1,13 @@
-function Get-Oscdimg { 
+function Get-Oscdimg {
     <#
-    
+
         .DESCRIPTION
         This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
     #>
-    param( [Parameter(Mandatory=$true)] 
+    param( [Parameter(Mandatory=$true)]
         [string]$oscdimgPath
     )
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
@@ -24,4 +24,4 @@ function Get-Oscdimg {
     } else {
         Write-Host "Hashes do not match. File may be corrupted or tampered with."
     }
-} 
+}

@@ -70,7 +70,7 @@ function Test-WinUtilPackageManager {
                 Write-Host "    - Winget is Out of Date" -ForegroundColor Red
                 $status = "outdated"
             }
-        } else {        
+        } else {
             Write-Host "===========================================" -ForegroundColor Red
             Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red

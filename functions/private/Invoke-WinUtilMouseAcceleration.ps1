@@ -15,13 +15,13 @@ Function Invoke-WinUtilMouseAcceleration {
             $MouseSpeed = 1
             $MouseThreshold1 = 6
             $MouseThreshold2 = 10
-        } 
+        }
         else {
             Write-Host "Disabling Mouse Acceleration"
             $MouseSpeed = 0
             $MouseThreshold1 = 0
-            $MouseThreshold2 = 0 
-            
+            $MouseThreshold2 = 0
+
         }
 
         $Path = "HKCU:\Control Panel\Mouse"

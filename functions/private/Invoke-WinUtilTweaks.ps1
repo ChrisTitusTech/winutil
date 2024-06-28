@@ -50,7 +50,7 @@ function Invoke-WinUtilTweaks {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
             $changeservice = $true
-            
+
 	    # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
             if($KeepServiceStartup -AND !($undo)) {
                 try {

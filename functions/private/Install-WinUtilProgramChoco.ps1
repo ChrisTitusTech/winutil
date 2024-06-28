@@ -2,17 +2,17 @@ function Install-WinUtilProgramChoco {
     <#
     .SYNOPSIS
     Manages the provided programs using Chocolatey
-    
+
     .PARAMETER ProgramsToInstall
     A list of programs to manage
-    
+
     .PARAMETER manage
     The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
-    
+
     .NOTES
     The triple quotes are required any time you need a " in a normal script block.
     #>
-    
+
     param(
         [Parameter(Mandatory, Position=0)]
         [PsCustomObject]$ProgramsToInstall,
@@ -20,7 +20,7 @@ function Install-WinUtilProgramChoco {
         [Parameter(Position=1)]
         [String]$manage = "Installing"
     )
-    
+
     $x = 0
     $count = $ProgramsToInstall.Count
 

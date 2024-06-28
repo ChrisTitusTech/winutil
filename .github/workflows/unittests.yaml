@@ -1,7 +1,7 @@
 name: Unit Tests
 
 on:
-  push: 
+  push:
 
 jobs:
   lint:
@@ -34,7 +34,7 @@ jobs:
       run: |
         Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
         Invoke-Pester -Path 'pester/*.Tests.ps1' -Output Detailed
-        
+
       shell: pwsh
       env:
         TEMP: ${{ runner.temp }}
