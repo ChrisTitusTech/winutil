@@ -5694,7 +5694,7 @@ $sync.configs.applications = '{
     "content": "DevToys",
     "description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
     "link": "https://devtoys.app/",
-    "winget": "9PGCV4V3BK4W"
+    "winget": "DevToys-app.DevToys"
   },
   "WPFInstalldigikam": {
     "category": "Multimedia Tools",
@@ -6038,7 +6038,7 @@ $sync.configs.applications = '{
     "content": "Git Extensions",
     "description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
     "link": "https://gitextensions.github.io/",
-    "winget": "Git.Git;GitExtensionsTeam.GitExtensions"
+    "winget": "GitExtensionsTeam.GitExtensions"
   },
   "WPFInstallgithubcli": {
     "category": "Development",
@@ -6046,7 +6046,7 @@ $sync.configs.applications = '{
     "content": "GitHub CLI",
     "description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
     "link": "https://cli.github.com/",
-    "winget": "Git.Git;GitHub.cli"
+    "winget": "GitHub.cli"
   },
   "WPFInstallgithubdesktop": {
     "category": "Development",
@@ -6054,7 +6054,7 @@ $sync.configs.applications = '{
     "content": "GitHub Desktop",
     "description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
     "link": "https://desktop.github.com/",
-    "winget": "Git.Git;GitHub.GitHubDesktop"
+    "winget": "GitHub.GitHubDesktop"
   },
   "WPFInstallgitkrakenclient": {
     "category": "Development",
@@ -6099,9 +6099,9 @@ $sync.configs.applications = '{
   "WPFInstallgolang": {
     "category": "Development",
     "choco": "golang",
-    "content": "GoLang",
-    "description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-    "link": "https://golang.org/",
+    "content": "Go",
+    "description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+    "link": "https://go.dev/",
     "winget": "GoLang.Go"
   },
   "WPFInstallgoogledrive": {
@@ -7702,7 +7702,7 @@ $sync.configs.applications = '{
     "content": "VS Code",
     "description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
     "link": "https://code.visualstudio.com/",
-    "winget": "Git.Git;Microsoft.VisualStudioCode"
+    "winget": "Microsoft.VisualStudioCode"
   },
   "WPFInstallvscodium": {
     "category": "Development",
@@ -7710,7 +7710,7 @@ $sync.configs.applications = '{
     "content": "VS Codium",
     "description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft&#39;s VS Code.",
     "link": "https://vscodium.com/",
-    "winget": "Git.Git;VSCodium.VSCodium"
+    "winget": "VSCodium.VSCodium"
   },
   "WPFInstallwaterfox": {
     "category": "Browsers",
@@ -12606,7 +12606,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallgodotengine" Content="Godot Engine" ToolTip="Godot Engine is a free, open-source 2D and 3D game engine with a focus on usability and flexibility." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgodotengineLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://godotengine.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallgolang" Content="GoLang" ToolTip="GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://golang.org/" />
+<CheckBox Name="WPFInstallgolang" Content="Go" ToolTip="Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency." Margin="0,0,2,0"/><TextBlock Name="WPFInstallgolangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://go.dev/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallhelix" Content="Helix" ToolTip="Helix is a neovim alternative built in rust." Margin="0,0,2,0"/><TextBlock Name="WPFInstallhelixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://helix-editor.com/" />
