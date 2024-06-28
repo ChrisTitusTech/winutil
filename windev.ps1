@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-	This Script is used as a target for the https://christitus.com/windev alias.
+    This Script is used as a target for the https://christitus.com/windev alias.
     It queries the latest winget release (no matter if Pre-Release, Draft or Full Release) and invokes It
 .DESCRIPTION
     This Script provides a simple way to always start the bleeding edge release even if it's not yet a full release.
