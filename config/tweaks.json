@@ -3068,7 +3068,15 @@
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a069_",
+    "Order": "a070_",
+    "Type": "Toggle"
+  },
+  "WPFToggleTaskbarSearch": {
+    "Content": "Taskbar Search",
+    "Description": "If Enabled Search Button will be on the taskbar.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a068_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -3083,7 +3091,7 @@
     "Description": "If Enabled then Widgets Icon in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a068_",
+    "Order": "a069_",
     "Type": "Toggle"
   },
   "WPFchangedns": {
