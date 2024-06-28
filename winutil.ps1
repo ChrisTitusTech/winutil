@@ -5950,7 +5950,7 @@ $sync.configs.applications = '{
     "content": "Fastfetch",
     "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
     "link": "https://github.com/fastfetch-cli/fastfetch/",
-    "winget": "fastfetch"
+    "winget": "Fastfetch-cli.Fastfetch"
   },
   "WPFInstallferdium": {
     "category": "Communications",
