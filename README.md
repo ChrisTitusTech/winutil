@@ -74,7 +74,7 @@ If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.
 
 ## Tutorial
 
-[![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
+<iframe width="640" height="360" src="https://www.youtube.com/embed/6UQZ5oQg8XA" title="The Perfect Windows 11 Install" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Overview
 
