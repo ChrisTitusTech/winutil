@@ -2218,6 +2218,14 @@
 		"link": "https://github.com/thonny/thonny",
 		"winget": "AivarAnnamaa.Thonny"
 	},
+	"WPFInstallMuEditor": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Code With Mu (Mu Editor)",
+		"description": "Mu is a Python code editor for beginner programmers",
+		"link": "https://codewith.mu/",
+		"winget": "Mu.Mu"
+	},
 	"WPFInstallthorium": {
 		"category": "Browsers",
 		"choco": "na",
