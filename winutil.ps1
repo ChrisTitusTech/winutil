@@ -8462,6 +8462,7 @@ $sync.configs.feature = '{
 $sync.configs.preset = '{
   "Standard": [
     "WPFTweaksAH",
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksDVR",
     "WPFTweaksHiber",
     "WPFTweaksHome",
@@ -8477,6 +8478,7 @@ $sync.configs.preset = '{
     "WPFTweaksTeredo"
   ],
   "Minimal": [
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksHome",
     "WPFTweaksServices",
     "WPFTweaksTele"
@@ -10161,6 +10163,22 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksConsumerFeatures": {
+    "Content": "Disable ConsumerFeatures",
+    "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a003_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "Name": "DisableWindowsConsumerFeatures",
+        "Value": "1",
+        "Type": "DWord"
+      }
+    ]
+  },
   "WPFTweaksTele": {
     "Content": "Disable Telemetry",
     "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
@@ -10317,13 +10335,6 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Name": "SystemPaneSuggestionsEnabled",
         "Value": "0",
-        "Type": "DWord"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "OriginalValue": "0",
-        "Name": "DisableWindowsConsumerFeatures",
-        "Value": "1",
         "Type": "DWord"
       },
       {
@@ -13561,6 +13572,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="16"/>
 <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" Margin="5,0"  ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
 <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0"  ToolTip="Erases TEMP Folders"/>
+<CheckBox Name="WPFTweaksConsumerFeatures" Content="Disable ConsumerFeatures" Margin="5,0"  ToolTip="Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)"/>
 <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0"  ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
 <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0"  ToolTip="This erases recent docs, clipboard, and run history."/>
 <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0"  ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
