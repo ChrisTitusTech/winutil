@@ -109,5 +109,5 @@ if ($run){
     catch {
         Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
     }
-    
+
 }

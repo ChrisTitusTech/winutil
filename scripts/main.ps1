@@ -143,7 +143,7 @@ Invoke-WPFRunspace -ScriptBlock {
     finally{
         $ProgressPreference = "Continue"
     }
-    
+
 } | Out-Null
 
 #===========================================================================

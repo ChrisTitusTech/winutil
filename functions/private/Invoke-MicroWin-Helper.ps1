@@ -165,7 +165,7 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 			catch {
 				Write-Host "Application $($appx.PackageName) could not be removed"
 				continue
-			}			
+			}
 	    }
 	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }

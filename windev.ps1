@@ -7,7 +7,7 @@
     This function should be run with administrative privileges.
     Because this way of recursively invoking scripts via Invoke-Expression it might very well happen that AV Programs flag this because it's a common way of mulitstage exploits to run
 .EXAMPLE
-    irm https://christitus.com/windev | iex 
+    irm https://christitus.com/windev | iex
     OR
     Run in Admin Powershell >  ./windev.ps1
 #>

@@ -215,7 +215,7 @@ $cttLogoPath = @"
             param($sender, $args)
             $sender.Foreground = $foregroundColor
         })
-        
+
         $messageTextBlock.Inlines.Add($hyperlink)
 
         # Update the last position
