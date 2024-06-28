@@ -799,6 +799,14 @@
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
 	},
+	"WPFInstallgitify": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Gitify",
+		"description": "GitHub notifications on your menu bar.",
+		"link": "https://www.gitify.io/",
+		"winget": "Gitify.Gitify"
+	},
 	"WPFInstallgolang": {
 		"category": "Development",
 		"choco": "golang",
