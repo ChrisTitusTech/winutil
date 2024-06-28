@@ -13,14 +13,9 @@
 ```
 Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
 ```
-- Windows Insider Builds not installing: Telemetry needs to be enabled
-```
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 0
- ```
+
 - Winget requires interaction on first run: Manually type 'y' and 'enter' into the PowerShell console to continue
 - (Windows 11) Quick Settings no longer works: Launch the Script and click 'Enable Action Center'
-- Explorer no longer launches: Go to Control Panel, File Explorer Options, Change the 'Open File Explorer to' option to 'This PC'.
 - Script doesn't run/PowerShell crashes:
   1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
   2. Run:
