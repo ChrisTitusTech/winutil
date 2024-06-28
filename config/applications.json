@@ -1,5 +1,5 @@
 {
-	"WPFInstall1password": {
+	"1password": {
 		"category": "Utilities",
 		"choco": "1password",
 		"content": "1Password",
@@ -7,7 +7,7 @@
 		"link": "https://1password.com/",
 		"winget": "AgileBits.1Password"
 	},
-	"WPFInstall7zip": {
+	"7zip": {
 		"category": "Utilities",
 		"choco": "7zip",
 		"content": "7-Zip",
@@ -15,7 +15,7 @@
 		"link": "https://www.7-zip.org/",
 		"winget": "7zip.7zip"
 	},
-	"WPFInstalladobe": {
+	"adobe": {
 		"category": "Document",
 		"choco": "adobereader",
 		"content": "Adobe Acrobat Reader",
@@ -23,7 +23,7 @@
 		"link": "https://www.adobe.com/acrobat/pdf-reader.html",
 		"winget": "Adobe.Acrobat.Reader.64-bit"
 	},
-	"WPFInstalladvancedip": {
+	"advancedip": {
 		"category": "Pro Tools",
 		"choco": "advanced-ip-scanner",
 		"content": "Advanced IP Scanner",
@@ -31,7 +31,7 @@
 		"link": "https://www.advanced-ip-scanner.com/",
 		"winget": "Famatech.AdvancedIPScanner"
 	},
-	"WPFInstallaffine": {
+	"affine": {
 		"category": "Document",
 		"choco": "na",
 		"content": "AFFiNE",
@@ -39,7 +39,7 @@
 		"link": "https://affine.pro/",
 		"winget": "ToEverything.AFFiNE"
 	},
-	"WPFInstallaimp": {
+	"aimp": {
 		"category": "Multimedia Tools",
 		"choco": "aimp",
 		"content": "AIMP (Music Player)",
@@ -47,7 +47,7 @@
 		"link": "https://www.aimp.ru/",
 		"winget": "AIMP.AIMP"
 	},
-	"WPFInstallalacritty": {
+	"alacritty": {
 		"category": "Utilities",
 		"choco": "alacritty",
 		"content": "Alacritty Terminal",
@@ -55,7 +55,7 @@
 		"link": "https://alacritty.org/",
 		"winget": "Alacritty.Alacritty"
 	},
-	"WPFInstallanaconda3": {
+	"anaconda3": {
 		"category": "Development",
 		"choco": "anaconda3",
 		"content": "Anaconda",
@@ -63,7 +63,7 @@
 		"link": "https://www.anaconda.com/products/distribution",
 		"winget": "Anaconda.Anaconda3"
 	},
-	"WPFInstallangryipscanner": {
+	"angryipscanner": {
 		"category": "Pro Tools",
 		"choco": "angryip",
 		"content": "Angry IP Scanner",
@@ -71,7 +71,7 @@
 		"link": "https://angryip.org/",
 		"winget": "angryziber.AngryIPScanner"
 	},
-	"WPFInstallanki": {
+	"anki": {
 		"category": "Document",
 		"choco": "anki",
 		"content": "Anki",
@@ -79,7 +79,7 @@
 		"link": "https://apps.ankiweb.net/",
 		"winget": "Anki.Anki"
 	},
-	"WPFInstallanydesk": {
+	"anydesk": {
 		"category": "Utilities",
 		"choco": "anydesk",
 		"content": "AnyDesk",
@@ -87,7 +87,7 @@
 		"link": "https://anydesk.com/",
 		"winget": "AnyDeskSoftwareGmbH.AnyDesk"
 	},
-	"WPFInstallATLauncher": {
+	"ATLauncher": {
 		"category": "Games",
 		"choco": "na",
 		"content": "ATLauncher",
@@ -95,7 +95,7 @@
 		"link": "https://github.com/ATLauncher/ATLauncher",
 		"winget": "ATLauncher.ATLauncher"
 	},
-	"WPFInstallaudacity": {
+	"audacity": {
 		"category": "Multimedia Tools",
 		"choco": "audacity",
 		"content": "Audacity",
@@ -103,7 +103,7 @@
 		"link": "https://www.audacityteam.org/",
 		"winget": "Audacity.Audacity"
 	},
-	"WPFInstallautoruns": {
+	"autoruns": {
 		"category": "Microsoft Tools",
 		"choco": "autoruns",
 		"content": "Autoruns",
@@ -111,7 +111,7 @@
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns",
 		"winget": "Microsoft.Sysinternals.Autoruns"
 	},
-	"WPFInstallrdcman": {
+	"rdcman": {
 		"category": "Microsoft Tools",
 		"choco": "rdcman",
 		"content": "RDCMan",
@@ -119,7 +119,7 @@
 		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/rdcman",
 		"winget": "Microsoft.Sysinternals.RDCMan"
 	},
-	"WPFInstallautohotkey": {
+	"autohotkey": {
 		"category": "Utilities",
 		"choco": "autohotkey",
 		"content": "AutoHotkey",
@@ -127,7 +127,7 @@
 		"link": "https://www.autohotkey.com/",
 		"winget": "AutoHotkey.AutoHotkey"
 	},
-	"WPFInstallazuredatastudio": {
+	"azuredatastudio": {
 		"category": "Microsoft Tools",
 		"choco": "azure-data-studio",
 		"content": "Microsoft Azure Data Studio",
@@ -135,7 +135,7 @@
 		"link": "https://docs.microsoft.com/sql/azure-data-studio/what-is-azure-data-studio",
 		"winget": "Microsoft.AzureDataStudio"
 	},
-	"WPFInstallbarrier": {
+	"barrier": {
 		"category": "Utilities",
 		"choco": "barrier",
 		"content": "Barrier",
@@ -143,7 +143,7 @@
 		"link": "https://github.com/debauchee/barrier",
 		"winget": "DebaucheeOpenSourceGroup.Barrier"
 	},
-	"WPFInstallbat": {
+	"bat": {
 		"category": "Utilities",
 		"choco": "bat",
 		"content": "Bat (Cat)",
@@ -151,7 +151,7 @@
 		"link": "https://github.com/sharkdp/bat",
 		"winget": "sharkdp.bat"
 	},
-	"WPFInstallbitwarden": {
+	"bitwarden": {
 		"category": "Utilities",
 		"choco": "bitwarden",
 		"content": "Bitwarden",
@@ -159,7 +159,7 @@
 		"link": "https://bitwarden.com/",
 		"winget": "Bitwarden.Bitwarden"
 	},
-	"WPFInstallbleachbit": {
+	"bleachbit": {
 		"category": "Utilities",
 		"choco": "bleachbit",
 		"content": "BleachBit",
@@ -167,7 +167,7 @@
 		"link": "https://www.bleachbit.org/",
 		"winget": "BleachBit.BleachBit"
 	},
-	"WPFInstallblender": {
+	"blender": {
 		"category": "Multimedia Tools",
 		"choco": "blender",
 		"content": "Blender (3D Graphics)",
@@ -175,7 +175,7 @@
 		"link": "https://www.blender.org/",
 		"winget": "BlenderFoundation.Blender"
 	},
-	"WPFInstallbrave": {
+	"brave": {
 		"category": "Browsers",
 		"choco": "brave",
 		"content": "Brave",
@@ -183,7 +183,7 @@
 		"link": "https://www.brave.com",
 		"winget": "Brave.Brave"
 	},
-	"WPFInstallbulkcrapuninstaller": {
+	"bulkcrapuninstaller": {
 		"category": "Utilities",
 		"choco": "bulk-crap-uninstaller",
 		"content": "Bulk Crap Uninstaller",
@@ -191,7 +191,7 @@
 		"link": "https://www.bcuninstaller.com/",
 		"winget": "Klocman.BulkCrapUninstaller"
 	},
-	"WPFInstallbulkrenameutility": {
+	"bulkrenameutility": {
 		"category": "Utilities",
 		"choco": "bulkrenameutility",
 		"content": "Bulk Rename Utility",
@@ -199,7 +199,7 @@
 		"link": "https://www.bulkrenameutility.co.uk",
 		"winget": "TGRMNSoftware.BulkRenameUtility"
 	},
-	"WPFInstallAdvancedRenamer": {
+	"AdvancedRenamer": {
 		"category": "Utilities",
 		"choco": "advanced-renamer",
 		"content": "Advanced Renamer",
@@ -207,7 +207,7 @@
 		"link": "https://www.advancedrenamer.com/",
 		"winget": "XP9MD3S1KFCPH1"
 	},
-	"WPFInstallcalibre": {
+	"calibre": {
 		"category": "Document",
 		"choco": "calibre",
 		"content": "Calibre",
@@ -215,7 +215,7 @@
 		"link": "https://calibre-ebook.com/",
 		"winget": "calibre.calibre"
 	},
-	"WPFInstallcarnac": {
+	"carnac": {
 		"category": "Utilities",
 		"choco": "carnac",
 		"content": "Carnac",
@@ -223,7 +223,7 @@
 		"link": "https://carnackeys.com/",
 		"winget": "code52.Carnac"
 	},
-	"WPFInstallcemu": {
+	"cemu": {
 		"category": "Games",
 		"choco": "cemu",
 		"content": "Cemu",
@@ -231,7 +231,7 @@
 		"link": "https://cemu.info/",
 		"winget": "Cemu.Cemu"
 	},
-	"WPFInstallchatterino": {
+	"chatterino": {
 		"category": "Communications",
 		"choco": "chatterino",
 		"content": "Chatterino",
@@ -239,7 +239,7 @@
 		"link": "https://www.chatterino.com/",
 		"winget": "ChatterinoTeam.Chatterino"
 	},
-	"WPFInstallchrome": {
+	"chrome": {
 		"category": "Browsers",
 		"choco": "googlechrome",
 		"content": "Chrome",
@@ -247,7 +247,7 @@
 		"link": "https://www.google.com/chrome/",
 		"winget": "Google.Chrome"
 	},
-	"WPFInstallchromium": {
+	"chromium": {
 		"category": "Browsers",
 		"choco": "chromium",
 		"content": "Chromium",
@@ -255,7 +255,7 @@
 		"link": "https://github.com/Hibbiki/chromium-win64",
 		"winget": "Hibbiki.Chromium"
 	},
-	"WPFInstallarc": {
+	"arc": {
 		"category": "Browsers",
 		"choco": "na",
 		"content": "Arc",
@@ -263,7 +263,7 @@
 		"link": "https://arc.net/",
 		"winget": "TheBrowserCompany.Arc"
 	},
-	"WPFInstallclementine": {
+	"clementine": {
 		"category": "Multimedia Tools",
 		"choco": "clementine",
 		"content": "Clementine",
@@ -271,7 +271,7 @@
 		"link": "https://www.clementine-player.org/",
 		"winget": "Clementine.Clementine"
 	},
-	"WPFInstallclink": {
+	"clink": {
 		"category": "Development",
 		"choco": "clink",
 		"content": "Clink",
@@ -279,7 +279,7 @@
 		"link": "https://mridgers.github.io/clink/",
 		"winget": "chrisant996.Clink"
 	},
-	"WPFInstallclonehero": {
+	"clonehero": {
 		"category": "Games",
 		"choco": "na",
 		"content": "Clone Hero",
@@ -287,7 +287,7 @@
 		"link": "https://clonehero.net/",
 		"winget": "CloneHeroTeam.CloneHero"
 	},
-	"WPFInstallcmake": {
+	"cmake": {
 		"category": "Development",
 		"choco": "cmake",
 		"content": "CMake",
@@ -295,7 +295,7 @@
 		"link": "https://cmake.org/",
 		"winget": "Kitware.CMake"
 	},
-	"WPFInstallcopyq": {
+	"copyq": {
 		"category": "Utilities",
 		"choco": "copyq",
 		"content": "CopyQ (Clipboard Manager)",
@@ -303,7 +303,7 @@
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
 	},
-	"WPFInstallcpuz": {
+	"cpuz": {
 		"category": "Utilities",
 		"choco": "cpu-z",
 		"content": "CPU-Z",
@@ -311,7 +311,7 @@
 		"link": "https://www.cpuid.com/softwares/cpu-z.html",
 		"winget": "CPUID.CPU-Z"
 	},
-	"WPFInstallcrystaldiskinfo": {
+	"crystaldiskinfo": {
 		"category": "Utilities",
 		"choco": "crystaldiskinfo",
 		"content": "Crystal Disk Info",
@@ -319,7 +319,7 @@
 		"link": "https://crystalmark.info/en/software/crystaldiskinfo/",
 		"winget": "CrystalDewWorld.CrystalDiskInfo"
 	},
-	"WPFInstallcapframex": {
+	"capframex": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "CapFrameX",
@@ -327,7 +327,7 @@
 		"link": "https://www.capframex.com/",
 		"winget": "CXWorld.CapFrameX"
 	},
-	"WPFInstallcrystaldiskmark": {
+	"crystaldiskmark": {
 		"category": "Utilities",
 		"choco": "crystaldiskmark",
 		"content": "Crystal Disk Mark",
@@ -335,7 +335,7 @@
 		"link": "https://crystalmark.info/en/software/crystaldiskmark/",
 		"winget": "CrystalDewWorld.CrystalDiskMark"
 	},
-	"WPFInstalldarktable": {
+	"darktable": {
 		"category": "Multimedia Tools",
 		"choco": "darktable",
 		"content": "darktable",
@@ -343,7 +343,7 @@
 		"link": "https://www.darktable.org/install/",
 		"winget": "darktable.darktable"
 	},
-	"WPFInstallDaxStudio": {
+	"DaxStudio": {
 		"category": "Development",
 		"choco": "daxstudio",
 		"content": "DaxStudio",
@@ -351,7 +351,7 @@
 		"link": "https://daxstudio.org/",
 		"winget": "DaxStudio.DaxStudio"
 	},
-	"WPFInstallddu": {
+	"ddu": {
 		"category": "Utilities",
 		"choco": "ddu",
 		"content": "Display Driver Uninstaller",
@@ -359,7 +359,7 @@
 		"link": "https://www.wagnardsoft.com/display-driver-uninstaller-DDU-",
 		"winget": "ddu"
 	},
-	"WPFInstalldeluge": {
+	"deluge": {
 		"category": "Utilities",
 		"choco": "deluge",
 		"content": "Deluge",
@@ -367,7 +367,7 @@
 		"link": "https://deluge-torrent.org/",
 		"winget": "DelugeTeam.Deluge"
 	},
-	"WPFInstalldevtoys": {
+	"devtoys": {
 		"category": "Utilities",
 		"choco": "devtoys",
 		"content": "DevToys",
@@ -375,7 +375,7 @@
 		"link": "https://devtoys.app/",
 		"winget": "DevToys-app.DevToys"
 	},
-	"WPFInstalldigikam": {
+	"digikam": {
 		"category": "Multimedia Tools",
 		"choco": "digikam",
 		"content": "digiKam",
@@ -383,7 +383,7 @@
 		"link": "https://www.digikam.org/",
 		"winget": "KDE.digikam"
 	},
-	"WPFInstalldiscord": {
+	"discord": {
 		"category": "Communications",
 		"choco": "discord",
 		"content": "Discord",
@@ -391,7 +391,7 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-	"WPFInstallditto": {
+	"ditto": {
 		"category": "Utilities",
 		"choco": "ditto",
 		"content": "Ditto",
@@ -399,7 +399,7 @@
 		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
-	"WPFInstalldockerdesktop": {
+	"dockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
 		"content": "Docker Desktop",
@@ -407,7 +407,7 @@
 		"link": "https://www.docker.com/products/docker-desktop",
 		"winget": "Docker.DockerDesktop"
 	},
-	"WPFInstalldotnet3": {
+	"dotnet3": {
 		"category": "Microsoft Tools",
 		"choco": "dotnetcore3-desktop-runtime",
 		"content": ".NET Desktop Runtime 3.1",
@@ -415,7 +415,7 @@
 		"link": "https://dotnet.microsoft.com/download/dotnet/3.1",
 		"winget": "Microsoft.DotNet.DesktopRuntime.3_1"
 	},
-	"WPFInstalldotnet5": {
+	"dotnet5": {
 		"category": "Microsoft Tools",
 		"choco": "dotnet-5.0-runtime",
 		"content": ".NET Desktop Runtime 5",
@@ -423,7 +423,7 @@
 		"link": "https://dotnet.microsoft.com/download/dotnet/5.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.5"
 	},
-	"WPFInstalldotnet6": {
+	"dotnet6": {
 		"category": "Microsoft Tools",
 		"choco": "dotnet-6.0-runtime",
 		"content": ".NET Desktop Runtime 6",
@@ -431,7 +431,7 @@
 		"link": "https://dotnet.microsoft.com/download/dotnet/6.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.6"
 	},
-	"WPFInstalldotnet7": {
+	"dotnet7": {
 		"category": "Microsoft Tools",
 		"choco": "dotnet-7.0-runtime",
 		"content": ".NET Desktop Runtime 7",
@@ -439,7 +439,7 @@
 		"link": "https://dotnet.microsoft.com/download/dotnet/7.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.7"
 	},
-	"WPFInstalldotnet8": {
+	"dotnet8": {
 		"category": "Microsoft Tools",
 		"choco": "dotnet-8.0-runtime",
 		"content": ".NET Desktop Runtime 8",
@@ -447,7 +447,7 @@
 		"link": "https://dotnet.microsoft.com/download/dotnet/8.0",
 		"winget": "Microsoft.DotNet.DesktopRuntime.8"
 	},
-	"WPFInstalldmt": {
+	"dmt": {
 		"winget": "GNE.DualMonitorTools",
 		"choco": "dual-monitor-tools",
 		"category": "Utilities",
@@ -455,7 +455,7 @@
 		"link": "https://dualmonitortool.sourceforge.net/",
 		"description": "Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow."
 	},
-	"WPFInstallduplicati": {
+	"duplicati": {
 		"category": "Utilities",
 		"choco": "duplicati",
 		"content": "Duplicati",
@@ -463,7 +463,7 @@
 		"link": "https://www.duplicati.com/",
 		"winget": "Duplicati.Duplicati"
 	},
-	"WPFInstalleaapp": {
+	"eaapp": {
 		"category": "Games",
 		"choco": "ea-app",
 		"content": "EA App",
@@ -471,7 +471,7 @@
 		"link": "https://www.ea.com/ea-app",
 		"winget": "ElectronicArts.EADesktop"
 	},
-	"WPFInstalleartrumpet": {
+	"eartrumpet": {
 		"category": "Multimedia Tools",
 		"choco": "eartrumpet",
 		"content": "EarTrumpet (Audio)",
@@ -479,7 +479,7 @@
 		"link": "https://eartrumpet.app/",
 		"winget": "File-New-Project.EarTrumpet"
 	},
-	"WPFInstalledge": {
+	"edge": {
 		"category": "Browsers",
 		"choco": "microsoft-edge",
 		"content": "Edge",
@@ -487,7 +487,7 @@
 		"link": "https://www.microsoft.com/edge",
 		"winget": "Microsoft.Edge"
 	},
-	"WPFInstallefibooteditor": {
+	"efibooteditor": {
 		"category": "Pro Tools",
 		"choco": "na",
 		"content": "EFI Boot Editor",
@@ -495,7 +495,7 @@
 		"link": "https://www.easyuefi.com/",
 		"winget": "EFIBootEditor.EFIBootEditor"
 	},
-	"WPFInstallemulationstation": {
+	"emulationstation": {
 		"category": "Games",
 		"choco": "emulationstation",
 		"content": "Emulation Station",
@@ -503,7 +503,7 @@
 		"link": "https://emulationstation.org/",
 		"winget": "Emulationstation.Emulationstation"
 	},
-	"WPFInstallepicgames": {
+	"epicgames": {
 		"category": "Games",
 		"choco": "epicgameslauncher",
 		"content": "Epic Games Launcher",
@@ -511,7 +511,7 @@
 		"link": "https://www.epicgames.com/store/en-US/",
 		"winget": "EpicGames.EpicGamesLauncher"
 	},
-	"WPFInstallerrorlookup": {
+	"errorlookup": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Windows Error Code Lookup",
@@ -519,7 +519,7 @@
 		"link": "https://github.com/HenryPP/ErrorLookup",
 		"winget": "Henry++.ErrorLookup"
 	},
-	"WPFInstallesearch": {
+	"esearch": {
 		"category": "Utilities",
 		"choco": "everything",
 		"content": "Everything Search",
@@ -527,7 +527,7 @@
 		"link": "https://www.voidtools.com/",
 		"winget": "voidtools.Everything"
 	},
-	"WPFInstallespanso": {
+	"espanso": {
 		"category": "Utilities",
 		"choco": "espanso",
 		"content": "Espanso",
@@ -535,7 +535,7 @@
 		"link": "https://espanso.org/",
 		"winget": "Espanso.Espanso"
 	},
-	"WPFInstalletcher": {
+	"etcher": {
 		"category": "Utilities",
 		"choco": "etcher",
 		"content": "Etcher USB Creator",
@@ -543,7 +543,7 @@
 		"link": "https://www.balena.io/etcher/",
 		"winget": "Balena.Etcher"
 	},
-	"WPFInstallfalkon": {
+	"falkon": {
 		"category": "Browsers",
 		"choco": "falkon",
 		"content": "Falkon",
@@ -551,7 +551,7 @@
 		"link": "https://www.falkon.org/",
 		"winget": "KDE.Falkon"
 	},
-	"WPFInstallfastfetch": {
+	"fastfetch": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Fastfetch",
@@ -559,7 +559,7 @@
 		"link": "https://github.com/fastfetch-cli/fastfetch/",
 		"winget": "Fastfetch-cli.Fastfetch"
 	},
-	"WPFInstallferdium": {
+	"ferdium": {
 		"category": "Communications",
 		"choco": "ferdium",
 		"content": "Ferdium",
@@ -567,7 +567,7 @@
 		"link": "https://ferdium.org/",
 		"winget": "Ferdium.Ferdium"
 	},
-	"WPFInstallffmpeg": {
+	"ffmpeg": {
 		"category": "Multimedia Tools",
 		"choco": "ffmpeg-full",
 		"content": "FFmpeg (full)",
@@ -575,7 +575,7 @@
 		"link": "https://ffmpeg.org/",
 		"winget": "Gyan.FFmpeg"
 	},
-	"WPFInstallfileconverter": {
+	"fileconverter": {
 		"category": "Utilities",
 		"choco": "file-converter",
 		"content": "File-Converter",
@@ -583,7 +583,7 @@
 		"link": "https://file-converter.io/",
 		"winget": "AdrienAllard.FileConverter"
 	},
-	"WPFInstallfiles": {
+	"files": {
 		"category": "Utilities",
 		"choco": "files",
 		"content": "Files",
@@ -591,7 +591,7 @@
 		"link": "https://github.com/files-community/Files",
 		"winget": "na"
 	},
-	"WPFInstallfirealpaca": {
+	"firealpaca": {
 		"category": "Multimedia Tools",
 		"choco": "firealpaca",
 		"content": "Fire Alpaca",
@@ -599,7 +599,7 @@
 		"link": "https://firealpaca.com/",
 		"winget": "FireAlpaca.FireAlpaca"
 	},
-	"WPFInstallfirefox": {
+	"firefox": {
 		"category": "Browsers",
 		"choco": "firefox",
 		"content": "Firefox",
@@ -607,7 +607,7 @@
 		"link": "https://www.mozilla.org/en-US/firefox/new/",
 		"winget": "Mozilla.Firefox"
 	},
-	"WPFInstallfirefoxesr": {
+	"firefoxesr": {
 		"category": "Browsers",
 		"choco": "FirefoxESR",
 		"content": "Firefox ESR",
@@ -615,7 +615,7 @@
 		"link": "https://www.mozilla.org/en-US/firefox/enterprise/",
 		"winget": "Mozilla.Firefox.ESR"
 	},
-	"WPFInstallflameshot": {
+	"flameshot": {
 		"category": "Multimedia Tools",
 		"choco": "flameshot",
 		"content": "Flameshot (Screenshots)",
@@ -623,7 +623,7 @@
 		"link": "https://flameshot.org/",
 		"winget": "Flameshot.Flameshot"
 	},
-	"WPFInstalllightshot": {
+	"lightshot": {
 		"category": "Multimedia Tools",
 		"choco": "lightshot",
 		"content": "Lightshot (Screenshots)",
@@ -631,7 +631,7 @@
 		"link": "https://app.prntscr.com/",
 		"winget": "Skillbrains.Lightshot"
 	},
-	"WPFInstallfloorp": {
+	"floorp": {
 		"category": "Browsers",
 		"choco": "na",
 		"content": "Floorp",
@@ -639,7 +639,7 @@
 		"link": "https://floorp.app/",
 		"winget": "Ablaze.Floorp"
 	},
-	"WPFInstallflow": {
+	"flow": {
 		"category": "Utilities",
 		"choco": "flow-launcher",
 		"content": "Flow launcher",
@@ -647,7 +647,7 @@
 		"link": "https://www.flowlauncher.com/",
 		"winget": "Flow-Launcher.Flow-Launcher"
 	},
-	"WPFInstallflux": {
+	"flux": {
 		"category": "Utilities",
 		"choco": "flux",
 		"content": "F.lux",
@@ -655,7 +655,7 @@
 		"link": "https://justgetflux.com/",
 		"winget": "flux.flux"
 	},
-	"WPFInstallfoobar": {
+	"foobar": {
 		"category": "Multimedia Tools",
 		"choco": "foobar2000",
 		"content": "foobar2000 (Music Player)",
@@ -663,7 +663,7 @@
 		"link": "https://www.foobar2000.org/",
 		"winget": "PeterPawlowski.foobar2000"
 	},
-	"WPFInstallfoxpdfeditor": {
+	"foxpdfeditor": {
 		"category": "Document",
 		"choco": "na",
 		"content": "Foxit PDF Editor",
@@ -671,7 +671,7 @@
 		"link": "https://www.foxit.com/pdf-editor/",
 		"winget": "Foxit.PhantomPDF"
 	},
-	"WPFInstallfoxpdfreader": {
+	"foxpdfreader": {
 		"category": "Document",
 		"choco": "foxitreader",
 		"content": "Foxit PDF Reader",
@@ -679,7 +679,7 @@
 		"link": "https://www.foxit.com/pdf-reader/",
 		"winget": "Foxit.FoxitReader"
 	},
-	"WPFInstallfreecad": {
+	"freecad": {
 		"category": "Multimedia Tools",
 		"choco": "freecad",
 		"content": "FreeCAD",
@@ -687,7 +687,7 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
-	"WPFInstallfxsound": {
+	"fxsound": {
 		"category": "Multimedia Tools",
 		"choco": "fxsound",
 		"content": "FxSound",
@@ -695,7 +695,7 @@
 		"link": "https://www.fxsound.com/",
 		"winget": "FxSoundLLC.FxSound"
 	},
-	"WPFInstallfzf": {
+	"fzf": {
 		"category": "Utilities",
 		"choco": "fzf",
 		"content": "Fzf",
@@ -703,7 +703,7 @@
 		"link": "https://github.com/junegunn/fzf/",
 		"winget": "junegunn.fzf"
 	},
-	"WPFInstallgeforcenow": {
+	"geforcenow": {
 		"category": "Games",
 		"choco": "nvidia-geforce-now",
 		"content": "GeForce NOW",
@@ -711,7 +711,7 @@
 		"link": "https://www.nvidia.com/en-us/geforce-now/",
 		"winget": "Nvidia.GeForceNow"
 	},
-	"WPFInstallgimp": {
+	"gimp": {
 		"category": "Multimedia Tools",
 		"choco": "gimp",
 		"content": "GIMP (Image Editor)",
@@ -719,7 +719,7 @@
 		"link": "https://www.gimp.org/",
 		"winget": "GIMP.GIMP"
 	},
-	"WPFInstallgit": {
+	"git": {
 		"category": "Development",
 		"choco": "git",
 		"content": "Git",
@@ -727,7 +727,7 @@
 		"link": "https://git-scm.com/",
 		"winget": "Git.Git"
 	},
-	"WPFInstallgitextensions": {
+	"gitextensions": {
 		"category": "Development",
 		"choco": "git;gitextensions",
 		"content": "Git Extensions",
@@ -735,7 +735,7 @@
 		"link": "https://gitextensions.github.io/",
 		"winget": "GitExtensionsTeam.GitExtensions"
 	},
-	"WPFInstallgithubcli": {
+	"githubcli": {
 		"category": "Development",
 		"choco": "git;gh",
 		"content": "GitHub CLI",
@@ -743,7 +743,7 @@
 		"link": "https://cli.github.com/",
 		"winget": "GitHub.cli"
 	},
-	"WPFInstallgithubdesktop": {
+	"githubdesktop": {
 		"category": "Development",
 		"choco": "git;github-desktop",
 		"content": "GitHub Desktop",
@@ -751,7 +751,7 @@
 		"link": "https://desktop.github.com/",
 		"winget": "GitHub.GitHubDesktop"
 	},
-	"WPFInstallgitkrakenclient": {
+	"gitkrakenclient": {
 		"category": "Development",
 		"choco": "gitkraken",
 		"content": "GitKraken Client",
@@ -759,7 +759,7 @@
 		"link": "https://www.gitkraken.com/git-client",
 		"winget": "Axosoft.GitKraken"
 	},
-	"WPFInstallglaryutilities": {
+	"glaryutilities": {
 		"category": "Utilities",
 		"choco": "glaryutilities-free",
 		"content": "Glary Utilities",
@@ -767,7 +767,7 @@
 		"link": "https://www.glarysoft.com/glary-utilities/",
 		"winget": "Glarysoft.GlaryUtilities"
 	},
-	"WPFInstallgodotengine": {
+	"godotengine": {
 		"category": "Development",
 		"choco": "godot",
 		"content": "Godot Engine",
@@ -775,7 +775,7 @@
 		"link": "https://godotengine.org/",
 		"winget": "GodotEngine.GodotEngine"
 	},
-	"WPFInstallgog": {
+	"gog": {
 		"category": "Games",
 		"choco": "goggalaxy",
 		"content": "GOG Galaxy",
@@ -783,7 +783,7 @@
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
 	},
-	"WPFInstallgitify": {
+	"gitify": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Gitify",
@@ -791,7 +791,7 @@
 		"link": "https://www.gitify.io/",
 		"winget": "Gitify.Gitify"
 	},
-	"WPFInstallgolang": {
+	"golang": {
 		"category": "Development",
 		"choco": "golang",
 		"content": "Go",
@@ -799,7 +799,7 @@
 		"link": "https://go.dev/",
 		"winget": "GoLang.Go"
 	},
-	"WPFInstallgoogledrive": {
+	"googledrive": {
 		"category": "Utilities",
 		"choco": "googledrive",
 		"content": "Google Drive",
@@ -807,7 +807,7 @@
 		"link": "https://www.google.com/drive/",
 		"winget": "Google.Drive"
 	},
-	"WPFInstallgpuz": {
+	"gpuz": {
 		"category": "Utilities",
 		"choco": "gpu-z",
 		"content": "GPU-Z",
@@ -815,7 +815,7 @@
 		"link": "https://www.techpowerup.com/gpuz/",
 		"winget": "TechPowerUp.GPU-Z"
 	},
-	"WPFInstallgreenshot": {
+	"greenshot": {
 		"category": "Multimedia Tools",
 		"choco": "greenshot",
 		"content": "Greenshot (Screenshots)",
@@ -823,7 +823,7 @@
 		"link": "https://getgreenshot.org/",
 		"winget": "Greenshot.Greenshot"
 	},
-	"WPFInstallgsudo": {
+	"gsudo": {
 		"category": "Utilities",
 		"choco": "gsudo",
 		"content": "Gsudo",
@@ -831,7 +831,7 @@
 		"link": "https://gerardog.github.io/gsudo/",
 		"winget": "gerardog.gsudo"
 	},
-	"WPFInstallguilded": {
+	"guilded": {
 		"category": "Communications",
 		"choco": "na",
 		"content": "Guilded",
@@ -839,7 +839,7 @@
 		"link": "https://www.guilded.gg/",
 		"winget": "Guilded.Guilded"
 	},
-	"WPFInstallhandbrake": {
+	"handbrake": {
 		"category": "Multimedia Tools",
 		"choco": "handbrake",
 		"content": "HandBrake",
@@ -847,7 +847,7 @@
 		"link": "https://handbrake.fr/",
 		"winget": "HandBrake.HandBrake"
 	},
-	"WPFInstallharmonoid": {
+	"harmonoid": {
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Harmonoid",
@@ -855,7 +855,7 @@
 		"link": "https://harmonoid.com/",
 		"winget": "Harmonoid.Harmonoid"
 	},
-	"WPFInstallheidisql": {
+	"heidisql": {
 		"category": "Pro Tools",
 		"choco": "heidisql",
 		"content": "HeidiSQL",
@@ -863,7 +863,7 @@
 		"link": "https://www.heidisql.com/",
 		"winget": "HeidiSQL.HeidiSQL"
 	},
-	"WPFInstallhelix": {
+	"helix": {
 		"category": "Development",
 		"choco": "helix",
 		"content": "Helix",
@@ -871,7 +871,7 @@
 		"link": "https://helix-editor.com/",
 		"winget": "Helix.Helix"
 	},
-	"WPFInstallheroiclauncher": {
+	"heroiclauncher": {
 		"category": "Games",
 		"choco": "na",
 		"content": "Heroic Games Launcher",
@@ -879,7 +879,7 @@
 		"link": "https://heroicgameslauncher.com/",
 		"winget": "HeroicGamesLauncher.HeroicGamesLauncher"
 	},
-	"WPFInstallhexchat": {
+	"hexchat": {
 		"category": "Communications",
 		"choco": "hexchat",
 		"content": "Hexchat",
@@ -887,7 +887,7 @@
 		"link": "https://hexchat.github.io/",
 		"winget": "HexChat.HexChat"
 	},
-	"WPFInstallhwinfo": {
+	"hwinfo": {
 		"category": "Utilities",
 		"choco": "hwinfo",
 		"content": "HWiNFO",
@@ -895,7 +895,7 @@
 		"link": "https://www.hwinfo.com/",
 		"winget": "REALiX.HWiNFO"
 	},
-	"WPFInstallhwmonitor": {
+	"hwmonitor": {
 		"category": "Utilities",
 		"choco": "hwmonitor",
 		"content": "HWMonitor",
@@ -903,7 +903,7 @@
 		"link": "https://www.cpuid.com/softwares/hwmonitor.html",
 		"winget": "CPUID.HWMonitor"
 	},
-	"WPFInstallimageglass": {
+	"imageglass": {
 		"category": "Multimedia Tools",
 		"choco": "imageglass",
 		"content": "ImageGlass (Image Viewer)",
@@ -911,7 +911,7 @@
 		"link": "https://imageglass.org/",
 		"winget": "DuongDieuPhap.ImageGlass"
 	},
-	"WPFInstallimgburn": {
+	"imgburn": {
 		"category": "Multimedia Tools",
 		"choco": "imgburn",
 		"content": "ImgBurn",
@@ -919,7 +919,7 @@
 		"link": "http://www.imgburn.com/",
 		"winget": "LIGHTNINGUK.ImgBurn"
 	},
-	"WPFInstallinkscape": {
+	"inkscape": {
 		"category": "Multimedia Tools",
 		"choco": "inkscape",
 		"content": "Inkscape",
@@ -927,7 +927,7 @@
 		"link": "https://inkscape.org/",
 		"winget": "Inkscape.Inkscape"
 	},
-	"WPFInstallitch": {
+	"itch": {
 		"category": "Games",
 		"choco": "itch",
 		"content": "Itch.io",
@@ -935,7 +935,7 @@
 		"link": "https://itch.io/",
 		"winget": "ItchIo.Itch"
 	},
-	"WPFInstallitunes": {
+	"itunes": {
 		"category": "Multimedia Tools",
 		"choco": "itunes",
 		"content": "iTunes",
@@ -943,7 +943,7 @@
 		"link": "https://www.apple.com/itunes/",
 		"winget": "Apple.iTunes"
 	},
-	"WPFInstalljami": {
+	"jami": {
 		"category": "Communications",
 		"choco": "jami",
 		"content": "Jami",
@@ -951,7 +951,7 @@
 		"link": "https://jami.net/",
 		"winget": "SFLinux.Jami"
 	},
-	"WPFInstalljava16": {
+	"java16": {
 		"category": "Development",
 		"choco": "temurin16jre",
 		"content": "OpenJDK Java 16",
@@ -959,7 +959,7 @@
 		"link": "https://adoptopenjdk.net/",
 		"winget": "AdoptOpenJDK.OpenJDK.16"
 	},
-	"WPFInstalljava18": {
+	"java18": {
 		"category": "Development",
 		"choco": "temurin18jre",
 		"content": "Oracle Java 18",
@@ -967,7 +967,7 @@
 		"link": "https://www.oracle.com/java/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"WPFInstalljava21": {
+	"java21": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Azul Zulu JDK 21",
@@ -975,7 +975,7 @@
 		"link": "https://www.azul.com/downloads/zulu-community/",
 		"winget": "Azul.Zulu.21.JDK"
 	},
-	"WPFInstalljava8": {
+	"java8": {
 		"category": "Development",
 		"choco": "temurin8jre",
 		"content": "OpenJDK Java 8",
@@ -983,7 +983,7 @@
 		"link": "https://adoptopenjdk.net/",
 		"winget": "EclipseAdoptium.Temurin.8.JRE"
 	},
-	"WPFInstalljava11runtime": {
+	"java11runtime": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Eclipse Temurin JRE 11",
@@ -991,7 +991,7 @@
 		"link": "https://adoptium.net/",
 		"winget": "EclipseAdoptium.Temurin.11.JRE"
 	},
-	"WPFInstalljava17runtime": {
+	"java17runtime": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Eclipse Temurin JRE 17",
@@ -999,7 +999,7 @@
 		"link": "https://adoptium.net/",
 		"winget": "EclipseAdoptium.Temurin.17.JRE"
 	},
-	"WPFInstalljava18runtime": {
+	"java18runtime": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Eclipse Temurin JRE 18",
@@ -1007,7 +1007,7 @@
 		"link": "https://adoptium.net/",
 		"winget": "EclipseAdoptium.Temurin.18.JRE"
 	},
-	"WPFInstalljava19runtime": {
+	"java19runtime": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Eclipse Temurin JRE 19",
@@ -1015,7 +1015,7 @@
 		"link": "https://adoptium.net/",
 		"winget": "EclipseAdoptium.Temurin.19.JRE"
 	},
-	"WPFInstalljdownloader": {
+	"jdownloader": {
 		"category": "Utilities",
 		"choco": "jdownloader",
 		"content": "JDownloader",
@@ -1023,7 +1023,7 @@
 		"link": "http://jdownloader.org/",
 		"winget": "AppWork.JDownloader"
 	},
-	"WPFInstalljellyfinmediaplayer": {
+	"jellyfinmediaplayer": {
 		"category": "Multimedia Tools",
 		"choco": "jellyfin-media-player",
 		"content": "Jellyfin Media Player",
@@ -1031,7 +1031,7 @@
 		"link": "https://github.com/jellyfin/jellyfin-media-player",
 		"winget": "Jellyfin.JellyfinMediaPlayer"
 	},
-	"WPFInstalljellyfinserver": {
+	"jellyfinserver": {
 		"category": "Multimedia Tools",
 		"choco": "jellyfin",
 		"content": "Jellyfin Server",
@@ -1039,7 +1039,7 @@
 		"link": "https://jellyfin.org/",
 		"winget": "Jellyfin.Server"
 	},
-	"WPFInstalljetbrains": {
+	"jetbrains": {
 		"category": "Development",
 		"choco": "jetbrainstoolbox",
 		"content": "Jetbrains Toolbox",
@@ -1047,7 +1047,7 @@
 		"link": "https://www.jetbrains.com/toolbox/",
 		"winget": "JetBrains.Toolbox"
 	},
-	"WPFInstalljoplin": {
+	"joplin": {
 		"category": "Document",
 		"choco": "joplin",
 		"content": "Joplin (FOSS Notes)",
@@ -1055,7 +1055,7 @@
 		"link": "https://joplinapp.org/",
 		"winget": "Joplin.Joplin"
 	},
-	"WPFInstalljpegview": {
+	"jpegview": {
 		"category": "Utilities",
 		"choco": "jpegview",
 		"content": "JPEG View",
@@ -1063,7 +1063,7 @@
 		"link": "https://github.com/sylikc/jpegview",
 		"winget": "sylikc.JPEGView"
 	},
-	"WPFInstallkdeconnect": {
+	"kdeconnect": {
 		"category": "Utilities",
 		"choco": "kdeconnect-kde",
 		"content": "KDE Connect",
@@ -1071,7 +1071,7 @@
 		"link": "https://community.kde.org/KDEConnect",
 		"winget": "KDE.KDEConnect"
 	},
-	"WPFInstallkdenlive": {
+	"kdenlive": {
 		"category": "Multimedia Tools",
 		"choco": "kdenlive",
 		"content": "Kdenlive (Video Editor)",
@@ -1079,7 +1079,7 @@
 		"link": "https://kdenlive.org/",
 		"winget": "KDE.Kdenlive"
 	},
-	"WPFInstallkeepass": {
+	"keepass": {
 		"category": "Utilities",
 		"choco": "keepassxc",
 		"content": "KeePassXC",
@@ -1087,7 +1087,7 @@
 		"link": "https://keepassxc.org/",
 		"winget": "KeePassXCTeam.KeePassXC"
 	},
-	"WPFInstallklite": {
+	"klite": {
 		"category": "Multimedia Tools",
 		"choco": "k-litecodecpack-standard",
 		"content": "K-Lite Codec Standard",
@@ -1095,7 +1095,7 @@
 		"link": "https://www.codecguide.com/",
 		"winget": "CodecGuide.K-LiteCodecPack.Standard"
 	},
-	"WPFInstallkodi": {
+	"kodi": {
 		"category": "Multimedia Tools",
 		"choco": "kodi",
 		"content": "Kodi Media Center",
@@ -1103,7 +1103,7 @@
 		"link": "https://kodi.tv/",
 		"winget": "XBMCFoundation.Kodi"
 	},
-	"WPFInstallkrita": {
+	"krita": {
 		"category": "Multimedia Tools",
 		"choco": "krita",
 		"content": "Krita (Image Editor)",
@@ -1111,7 +1111,7 @@
 		"link": "https://krita.org/en/features/",
 		"winget": "KDE.Krita"
 	},
-	"WPFInstalllazygit": {
+	"lazygit": {
 		"category": "Development",
 		"choco": "lazygit",
 		"content": "Lazygit",
@@ -1119,7 +1119,7 @@
 		"link": "https://github.com/jesseduffield/lazygit/",
 		"winget": "JesseDuffield.lazygit"
 	},
-	"WPFInstalllibreoffice": {
+	"libreoffice": {
 		"category": "Document",
 		"choco": "libreoffice-fresh",
 		"content": "LibreOffice",
@@ -1127,7 +1127,7 @@
 		"link": "https://www.libreoffice.org/",
 		"winget": "TheDocumentFoundation.LibreOffice"
 	},
-	"WPFInstalllibrewolf": {
+	"librewolf": {
 		"category": "Browsers",
 		"choco": "librewolf",
 		"content": "LibreWolf",
@@ -1135,7 +1135,7 @@
 		"link": "https://librewolf-community.gitlab.io/",
 		"winget": "LibreWolf.LibreWolf"
 	},
-	"WPFInstalllinkshellextension": {
+	"linkshellextension": {
 		"category": "Utilities",
 		"choco": "linkshellextension",
 		"content": "Link Shell extension",
@@ -1143,7 +1143,7 @@
 		"link": "https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html",
 		"winget": "HermannSchinagl.LinkShellExtension"
 	},
-	"WPFInstalllinphone": {
+	"linphone": {
 		"category": "Communications",
 		"choco": "linphone",
 		"content": "Linphone",
@@ -1151,7 +1151,7 @@
 		"link": "https://www.linphone.org/",
 		"winget": "BelledonneCommunications.Linphone"
 	},
-	"WPFInstalllivelywallpaper": {
+	"livelywallpaper": {
 		"category": "Utilities",
 		"choco": "lively",
 		"content": "Lively Wallpaper",
@@ -1159,7 +1159,7 @@
 		"link": "https://www.rocksdanister.com/lively/",
 		"winget": "rocksdanister.LivelyWallpaper"
 	},
-	"WPFInstalllocalsend": {
+	"localsend": {
 		"category": "Utilities",
 		"choco": "localsend.install",
 		"content": "LocalSend",
@@ -1167,7 +1167,7 @@
 		"link": "https://localsend.org/",
 		"winget": "LocalSend.LocalSend"
 	},
-	"WPFInstalllockhunter": {
+	"lockhunter": {
 		"category": "Utilities",
 		"choco": "lockhunter",
 		"content": "LockHunter",
@@ -1175,7 +1175,7 @@
 		"link": "https://lockhunter.com/",
 		"winget": "CrystalRich.LockHunter"
 	},
-	"WPFInstalllogseq": {
+	"logseq": {
 		"category": "Document",
 		"choco": "logseq",
 		"content": "Logseq",
@@ -1183,7 +1183,7 @@
 		"link": "https://logseq.com/",
 		"winget": "Logseq.Logseq"
 	},
-	"WPFInstallmalwarebytes": {
+	"malwarebytes": {
 		"category": "Utilities",
 		"choco": "malwarebytes",
 		"content": "Malwarebytes",
@@ -1191,7 +1191,7 @@
 		"link": "https://www.malwarebytes.com/",
 		"winget": "Malwarebytes.Malwarebytes"
 	},
-	"WPFInstallmasscode": {
+	"masscode": {
 		"category": "Document",
 		"choco": "na",
 		"content": "massCode (Snippet Manager)",
@@ -1199,7 +1199,7 @@
 		"link": "https://masscode.io/",
 		"winget": "antonreshetov.massCode"
 	},
-	"WPFInstallmatrix": {
+	"matrix": {
 		"category": "Communications",
 		"choco": "element-desktop",
 		"content": "Element",
@@ -1207,7 +1207,7 @@
 		"link": "https://element.io/",
 		"winget": "Element.Element"
 	},
-	"WPFInstallmeld": {
+	"meld": {
 		"category": "Utilities",
 		"choco": "meld",
 		"content": "Meld",
@@ -1215,7 +1215,7 @@
 		"link": "https://meldmerge.org/",
 		"winget": "Meld.Meld"
 	},
-	"WPFInstallmonitorian": {
+	"monitorian": {
 		"category": "Utilities",
 		"choco": "monitorian",
 		"content": "Monitorian",
@@ -1223,7 +1223,7 @@
 		"link": "https://github.com/emoacht/Monitorian",
 		"winget": "emoacht.Monitorian"
 	},
-	"WPFInstallmoonlight": {
+	"moonlight": {
 		"category": "Games",
 		"choco": "moonlight-qt",
 		"content": "Moonlight/GameStream Client",
@@ -1231,7 +1231,7 @@
 		"link": "https://moonlight-stream.org/",
 		"winget": "MoonlightGameStreamingProject.Moonlight"
 	},
-	"WPFInstallMotrix": {
+	"Motrix": {
 		"category": "Utilities",
 		"choco": "motrix",
 		"content": "Motrix Download Manager",
@@ -1239,7 +1239,7 @@
 		"link": "https://motrix.app/",
 		"winget": "agalwood.Motrix"
 	},
-	"WPFInstallmpc": {
+	"mpc": {
 		"category": "Multimedia Tools",
 		"choco": "mpc-hc",
 		"content": "Media Player Classic (Video Player)",
@@ -1247,7 +1247,7 @@
 		"link": "https://mpc-hc.org/",
 		"winget": "clsid2.mpc-hc"
 	},
-	"WPFInstallmremoteng": {
+	"mremoteng": {
 		"category": "Pro Tools",
 		"choco": "mremoteng",
 		"content": "mRemoteNG",
@@ -1255,7 +1255,7 @@
 		"link": "https://mremoteng.org/",
 		"winget": "mRemoteNG.mRemoteNG"
 	},
-	"WPFInstallmsedgeredirect": {
+	"msedgeredirect": {
 		"category": "Utilities",
 		"choco": "msedgeredirect",
 		"content": "MSEdgeRedirect",
@@ -1263,7 +1263,7 @@
 		"link": "https://github.com/rcmaehl/MSEdgeRedirect",
 		"winget": "rcmaehl.MSEdgeRedirect"
 	},
-	"WPFInstallmsiafterburner": {
+	"msiafterburner": {
 		"category": "Utilities",
 		"choco": "msiafterburner",
 		"content": "MSI Afterburner",
@@ -1271,7 +1271,7 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
-	"WPFInstallmullvadvpn": {
+	"mullvadvpn": {
 		"category": "Pro Tools",
 		"choco": "mullvad-app",
 		"content": "Mullvad VPN",
@@ -1279,7 +1279,7 @@
 		"link": "https://github.com/mullvad/mullvadvpn-app",
 		"winget": "MullvadVPN.MullvadVPN"
 	},
-	"WPFInstallBorderlessGaming": {
+	"BorderlessGaming": {
 		"category": "Utilities",
 		"choco": "borderlessgaming",
 		"content": "Borderless Gaming",
@@ -1287,7 +1287,7 @@
 		"link": "https://github.com/Codeusa/Borderless-Gaming",
 		"winget": "Codeusa.BorderlessGaming"
 	},
-	"WPFInstallEqualizerAPO": {
+	"EqualizerAPO": {
 		"category": "Multimedia Tools",
 		"choco": "equalizerapo",
 		"content": "Equalizer APO",
@@ -1295,7 +1295,7 @@
 		"link": "https://sourceforge.net/projects/equalizerapo",
 		"winget": "na"
 	},
-	"WPFInstallCompactGUI": {
+	"CompactGUI": {
 		"category": "Utilities",
 		"choco": "compactgui",
 		"content": "Compact GUI",
@@ -1303,7 +1303,7 @@
 		"link": "https://github.com/IridiumIO/CompactGUI",
 		"winget": "IridiumIO.CompactGUI"
 	},
-	"WPFInstallExifCleaner": {
+	"ExifCleaner": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "ExifCleaner",
@@ -1311,7 +1311,7 @@
 		"link": "https://github.com/szTheory/exifcleaner",
 		"winget": "szTheory.exifcleaner"
 	},
-	"WPFInstallmullvadbrowser": {
+	"mullvadbrowser": {
 		"category": "Browsers",
 		"choco": "na",
 		"content": "Mullvad Browser",
@@ -1319,7 +1319,7 @@
 		"link": "https://mullvad.net/browser",
 		"winget": "MullvadVPN.MullvadBrowser"
 	},
-	"WPFInstallmusescore": {
+	"musescore": {
 		"category": "Multimedia Tools",
 		"choco": "musescore",
 		"content": "MuseScore",
@@ -1327,7 +1327,7 @@
 		"link": "https://musescore.org/en",
 		"winget": "Musescore.Musescore"
 	},
-	"WPFInstallmusicbee": {
+	"musicbee": {
 		"category": "Multimedia Tools",
 		"choco": "musicbee",
 		"content": "MusicBee (Music Player)",
@@ -1335,7 +1335,7 @@
 		"link": "https://getmusicbee.com/",
 		"winget": "MusicBee.MusicBee"
 	},
-	"WPFInstallmp3tag": {
+	"mp3tag": {
 		"category": "Multimedia Tools",
 		"choco": "mp3tag",
 		"content": "Mp3tag (Metadata Audio Editor)",
@@ -1343,7 +1343,7 @@
 		"link": "https://www.mp3tag.de/en/",
 		"winget": "Mp3tag.Mp3tag"
 	},
-	"WPFInstalltagscanner": {
+	"tagscanner": {
 		"category": "Multimedia Tools",
 		"choco": "tagscanner",
 		"content": "TagScanner (Tag Scanner)",
@@ -1351,7 +1351,7 @@
 		"link": "https://www.xdlab.ru/en/",
 		"winget": "SergeySerkov.TagScanner"
 	},
-	"WPFInstallnanazip": {
+	"nanazip": {
 		"category": "Utilities",
 		"choco": "nanazip",
 		"content": "NanaZip",
@@ -1359,7 +1359,7 @@
 		"link": "https://github.com/M2Team/NanaZip",
 		"winget": "M2Team.NanaZip"
 	},
-	"WPFInstallnetbird": {
+	"netbird": {
 		"category": "Pro Tools",
 		"choco": "netbird",
 		"content": "NetBird",
@@ -1367,7 +1367,7 @@
 		"link": "https://netbird.io/",
 		"winget": "netbird"
 	},
-	"WPFInstallnaps2": {
+	"naps2": {
 		"category": "Document",
 		"choco": "naps2",
 		"content": "NAPS2 (Document Scanner)",
@@ -1375,7 +1375,7 @@
 		"link": "https://www.naps2.com/",
 		"winget": "Cyanfish.NAPS2"
 	},
-	"WPFInstallneofetchwin": {
+	"neofetchwin": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Neofetch",
@@ -1383,7 +1383,7 @@
 		"link": "https://github.com/nepnep39/neofetch-win",
 		"winget": "nepnep.neofetch-win"
 	},
-	"WPFInstallneovim": {
+	"neovim": {
 		"category": "Development",
 		"choco": "neovim",
 		"content": "Neovim",
@@ -1391,7 +1391,7 @@
 		"link": "https://neovim.io/",
 		"winget": "Neovim.Neovim"
 	},
-	"WPFInstallnextclouddesktop": {
+	"nextclouddesktop": {
 		"category": "Utilities",
 		"choco": "nextcloud-client",
 		"content": "Nextcloud Desktop",
@@ -1399,7 +1399,7 @@
 		"link": "https://nextcloud.com/install/#install-clients",
 		"winget": "Nextcloud.NextcloudDesktop"
 	},
-	"WPFInstallnglide": {
+	"nglide": {
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "nGlide (3dfx compatibility)",
@@ -1407,7 +1407,7 @@
 		"link": "http://www.zeus-software.com/downloads/nglide",
 		"winget": "ZeusSoftware.nGlide"
 	},
-	"WPFInstallnmap": {
+	"nmap": {
 		"category": "Pro Tools",
 		"choco": "nmap",
 		"content": "Nmap",
@@ -1415,7 +1415,7 @@
 		"link": "https://nmap.org/",
 		"winget": "Insecure.Nmap"
 	},
-	"WPFInstallnodejs": {
+	"nodejs": {
 		"category": "Development",
 		"choco": "nodejs",
 		"content": "NodeJS",
@@ -1423,7 +1423,7 @@
 		"link": "https://nodejs.org/",
 		"winget": "OpenJS.NodeJS"
 	},
-	"WPFInstallnodejslts": {
+	"nodejslts": {
 		"category": "Development",
 		"choco": "nodejs-lts",
 		"content": "NodeJS LTS",
@@ -1431,7 +1431,7 @@
 		"link": "https://nodejs.org/",
 		"winget": "OpenJS.NodeJS.LTS"
 	},
-	"WPFInstallnomacs": {
+	"nomacs": {
 		"category": "Multimedia Tools",
 		"choco": "nomacs",
 		"content": "Nomacs (Image viewer)",
@@ -1439,7 +1439,7 @@
 		"link": "https://nomacs.org/",
 		"winget": "nomacs.nomacs"
 	},
-	"WPFInstallnotepadplus": {
+	"notepadplus": {
 		"category": "Document",
 		"choco": "notepadplusplus",
 		"content": "Notepad++",
@@ -1447,7 +1447,7 @@
 		"link": "https://notepad-plus-plus.org/",
 		"winget": "Notepad++.Notepad++"
 	},
-	"WPFInstallnuget": {
+	"nuget": {
 		"category": "Microsoft Tools",
 		"choco": "nuget.commandline",
 		"content": "NuGet",
@@ -1455,7 +1455,7 @@
 		"link": "https://www.nuget.org/",
 		"winget": "Microsoft.NuGet"
 	},
-	"WPFInstallnushell": {
+	"nushell": {
 		"category": "Utilities",
 		"choco": "nushell",
 		"content": "Nushell",
@@ -1463,7 +1463,7 @@
 		"link": "https://www.nushell.sh/",
 		"winget": "Nushell.Nushell"
 	},
-	"WPFInstallnvclean": {
+	"nvclean": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "NVCleanstall",
@@ -1471,7 +1471,7 @@
 		"link": "https://www.techpowerup.com/nvcleanstall/",
 		"winget": "TechPowerUp.NVCleanstall"
 	},
-	"WPFInstallnvm": {
+	"nvm": {
 		"category": "Development",
 		"choco": "nvm",
 		"content": "Node Version Manager",
@@ -1479,7 +1479,7 @@
 		"link": "https://github.com/coreybutler/nvm-windows",
 		"winget": "CoreyButler.NVMforWindows"
 	},
-	"WPFInstallobs": {
+	"obs": {
 		"category": "Multimedia Tools",
 		"choco": "obs-studio",
 		"content": "OBS Studio",
@@ -1487,7 +1487,7 @@
 		"link": "https://obsproject.com/",
 		"winget": "OBSProject.OBSStudio"
 	},
-	"WPFInstallobsidian": {
+	"obsidian": {
 		"category": "Document",
 		"choco": "obsidian",
 		"content": "Obsidian",
@@ -1495,7 +1495,7 @@
 		"link": "https://obsidian.md/",
 		"winget": "Obsidian.Obsidian"
 	},
-	"WPFInstallokular": {
+	"okular": {
 		"category": "Document",
 		"choco": "okular",
 		"content": "Okular",
@@ -1503,7 +1503,7 @@
 		"link": "https://okular.kde.org/",
 		"winget": "KDE.Okular"
 	},
-	"WPFInstallonedrive": {
+	"onedrive": {
 		"category": "Microsoft Tools",
 		"choco": "onedrive",
 		"content": "OneDrive",
@@ -1511,7 +1511,7 @@
 		"link": "https://onedrive.live.com/",
 		"winget": "Microsoft.OneDrive"
 	},
-	"WPFInstallonlyoffice": {
+	"onlyoffice": {
 		"category": "Document",
 		"choco": "onlyoffice",
 		"content": "ONLYOffice Desktop",
@@ -1519,7 +1519,7 @@
 		"link": "https://www.onlyoffice.com/desktop.aspx",
 		"winget": "ONLYOFFICE.DesktopEditors"
 	},
-	"WPFInstallOPAutoClicker": {
+	"OPAutoClicker": {
 		"category": "Utilities",
 		"choco": "autoclicker",
 		"content": "OPAutoClicker",
@@ -1527,7 +1527,7 @@
 		"link": "https://www.opautoclicker.com",
 		"winget": "OPAutoClicker.OPAutoClicker"
 	},
-	"WPFInstallopenhashtab": {
+	"openhashtab": {
 		"category": "Utilities",
 		"choco": "openhashtab",
 		"content": "OpenHashTab",
@@ -1535,7 +1535,7 @@
 		"link": "https://github.com/namazso/OpenHashTab/",
 		"winget": "namazso.OpenHashTab"
 	},
-	"WPFInstallopenoffice": {
+	"openoffice": {
 		"category": "Document",
 		"choco": "openoffice",
 		"content": "Apache OpenOffice",
@@ -1543,7 +1543,7 @@
 		"link": "https://www.openoffice.org/",
 		"winget": "Apache.OpenOffice"
 	},
-	"WPFInstallopenrgb": {
+	"openrgb": {
 		"category": "Utilities",
 		"choco": "openrgb",
 		"content": "OpenRGB",
@@ -1551,7 +1551,7 @@
 		"link": "https://openrgb.org/",
 		"winget": "CalcProgrammer1.OpenRGB"
 	},
-	"WPFInstallopenscad": {
+	"openscad": {
 		"category": "Multimedia Tools",
 		"choco": "openscad",
 		"content": "OpenSCAD",
@@ -1559,7 +1559,7 @@
 		"link": "https://www.openscad.org/",
 		"winget": "OpenSCAD.OpenSCAD"
 	},
-	"WPFInstallopenshell": {
+	"openshell": {
 		"category": "Utilities",
 		"choco": "open-shell",
 		"content": "Open Shell (Start Menu)",
@@ -1567,7 +1567,7 @@
 		"link": "https://github.com/Open-Shell/Open-Shell-Menu",
 		"winget": "Open-Shell.Open-Shell-Menu"
 	},
-	"WPFInstallOpenVPN": {
+	"OpenVPN": {
 		"category": "Pro Tools",
 		"choco": "openvpn-connect",
 		"content": "OpenVPN Connect",
@@ -1575,7 +1575,7 @@
 		"link": "https://openvpn.net/",
 		"winget": "OpenVPNTechnologies.OpenVPNConnect"
 	},
-	"WPFInstallOVirtualBox": {
+	"OVirtualBox": {
 		"category": "Utilities",
 		"choco": "virtualbox",
 		"content": "Oracle VirtualBox",
@@ -1583,7 +1583,7 @@
 		"link": "https://www.virtualbox.org/",
 		"winget": "Oracle.VirtualBox"
 	},
-	"WPFInstallownclouddesktop": {
+	"ownclouddesktop": {
 		"category": "Utilities",
 		"choco": "owncloud-client",
 		"content": "ownCloud Desktop",
@@ -1591,7 +1591,7 @@
 		"link": "https://owncloud.com/desktop-app/",
 		"winget": "ownCloud.ownCloudDesktop"
 	},
-	"WPFInstallPaintdotnet": {
+	"Paintdotnet": {
 		"category": "Multimedia Tools",
 		"choco": "paint.net",
 		"content": "Paint.NET",
@@ -1599,7 +1599,7 @@
 		"link": "https://www.getpaint.net/",
 		"winget": "dotPDN.PaintDotNet"
 	},
-	"WPFInstallparsec": {
+	"parsec": {
 		"category": "Utilities",
 		"choco": "parsec",
 		"content": "Parsec",
@@ -1607,7 +1607,7 @@
 		"link": "https://parsec.app/",
 		"winget": "Parsec.Parsec"
 	},
-	"WPFInstallpdf24creator": {
+	"pdf24creator": {
 		"category": "Document",
 		"choco": "pdf24",
 		"content": "PDF24 creator",
@@ -1615,7 +1615,7 @@
 		"link": "https://tools.pdf24.org/en/",
 		"winget": "geeksoftwareGmbH.PDF24Creator"
 	},
-	"WPFInstallpdfsam": {
+	"pdfsam": {
 		"category": "Document",
 		"choco": "pdfsam",
 		"content": "PDFsam Basic",
@@ -1623,7 +1623,7 @@
 		"link": "https://pdfsam.org/",
 		"winget": "PDFsam.PDFsam"
 	},
-	"WPFInstallpeazip": {
+	"peazip": {
 		"category": "Utilities",
 		"choco": "peazip",
 		"content": "PeaZip",
@@ -1631,7 +1631,7 @@
 		"link": "https://peazip.github.io/",
 		"winget": "Giorgiotani.Peazip"
 	},
-	"WPFInstallpiimager": {
+	"piimager": {
 		"category": "Utilities",
 		"choco": "rpi-imager",
 		"content": "Raspberry Pi Imager",
@@ -1639,7 +1639,7 @@
 		"link": "https://www.raspberrypi.com/software/",
 		"winget": "RaspberryPiFoundation.RaspberryPiImager"
 	},
-	"WPFInstallplaynite": {
+	"playnite": {
 		"category": "Games",
 		"choco": "playnite",
 		"content": "Playnite",
@@ -1647,7 +1647,7 @@
 		"link": "https://playnite.link/",
 		"winget": "Playnite.Playnite"
 	},
-	"WPFInstallplex": {
+	"plex": {
 		"category": "Multimedia Tools",
 		"choco": "plexmediaserver",
 		"content": "Plex Media Server",
@@ -1655,7 +1655,7 @@
 		"link": "https://www.plex.tv/your-media/",
 		"winget": "Plex.PlexMediaServer"
 	},
-	"WPFInstallplexdesktop": {
+	"plexdesktop": {
 		"category": "Multimedia Tools",
 		"choco": "plex",
 		"content": "Plex Desktop",
@@ -1663,7 +1663,7 @@
 		"link": "https://www.plex.tv",
 		"winget": "Plex.Plex"
 	},
-	"WPFInstallPortmaster": {
+	"Portmaster": {
 		"category": "Pro Tools",
 		"choco": "portmaster",
 		"content": "Portmaster",
@@ -1671,7 +1671,7 @@
 		"link": "https://safing.io/",
 		"winget": "Safing.Portmaster"
 	},
-	"WPFInstallposh": {
+	"posh": {
 		"category": "Development",
 		"choco": "oh-my-posh",
 		"content": "Oh My Posh (Prompt)",
@@ -1679,7 +1679,7 @@
 		"link": "https://ohmyposh.dev/",
 		"winget": "JanDeDobbeleer.OhMyPosh"
 	},
-	"WPFInstallpostman": {
+	"postman": {
 		"category": "Development",
 		"choco": "postman",
 		"content": "Postman",
@@ -1687,7 +1687,7 @@
 		"link": "https://www.postman.com/",
 		"winget": "Postman.Postman"
 	},
-	"WPFInstallpowerautomate": {
+	"powerautomate": {
 		"category": "Microsoft Tools",
 		"choco": "powerautomatedesktop",
 		"content": "Power Automate",
@@ -1695,7 +1695,7 @@
 		"link": "https://www.microsoft.com/en-us/power-platform/products/power-automate",
 		"winget": "Microsoft.PowerAutomateDesktop"
 	},
-	"WPFInstallpowerbi": {
+	"powerbi": {
 		"category": "Microsoft Tools",
 		"choco": "powerbi",
 		"content": "Power BI",
@@ -1703,7 +1703,7 @@
 		"link": "https://www.microsoft.com/en-us/power-platform/products/power-bi/",
 		"winget": "Microsoft.PowerBI"
 	},
-	"WPFInstallpowershell": {
+	"powershell": {
 		"category": "Microsoft Tools",
 		"choco": "powershell-core",
 		"content": "PowerShell",
@@ -1711,7 +1711,7 @@
 		"link": "https://github.com/PowerShell/PowerShell",
 		"winget": "Microsoft.PowerShell"
 	},
-	"WPFInstallpowertoys": {
+	"powertoys": {
 		"category": "Microsoft Tools",
 		"choco": "powertoys",
 		"content": "PowerToys",
@@ -1719,7 +1719,7 @@
 		"link": "https://github.com/microsoft/PowerToys",
 		"winget": "Microsoft.PowerToys"
 	},
-	"WPFInstallprismlauncher": {
+	"prismlauncher": {
 		"category": "Games",
 		"choco": "prismlauncher",
 		"content": "Prism Launcher",
@@ -1727,7 +1727,7 @@
 		"link": "https://prismlauncher.org/",
 		"winget": "PrismLauncher.PrismLauncher"
 	},
-	"WPFInstallprocesslasso": {
+	"processlasso": {
 		"category": "Utilities",
 		"choco": "plasso",
 		"content": "Process Lasso",
@@ -1735,7 +1735,7 @@
 		"link": "https://bitsum.com/",
 		"winget": "BitSum.ProcessLasso"
 	},
-	"WPFInstallspotify": {
+	"spotify": {
 		"category": "Multimedia Tools",
 		"choco": "spotify",
 		"content": "Spotify",
@@ -1743,7 +1743,7 @@
 		"link": "https://www.spotify.com/",
 		"winget": "Spotify.Spotify"
 	},
-	"WPFInstallprocessmonitor": {
+	"processmonitor": {
 		"category": "Microsoft Tools",
 		"choco": "procexp",
 		"content": "SysInternals Process Monitor",
@@ -1751,7 +1751,7 @@
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
 	},
-	"WPFInstallorcaslicer": {
+	"orcaslicer": {
 		"category": "Utilities",
 		"choco": "orcaslicer",
 		"content": "OrcaSlicer",
@@ -1759,7 +1759,7 @@
 		"link": "https://github.com/SoftFever/OrcaSlicer",
 		"winget": "SoftFever.OrcaSlicer"
 	},
-	"WPFInstallprucaslicer": {
+	"prucaslicer": {
 		"category": "Utilities",
 		"choco": "prusaslicer",
 		"content": "PrusaSlicer",
@@ -1767,7 +1767,7 @@
 		"link": "https://www.prusa3d.com/prusaslicer/",
 		"winget": "Prusa3d.PrusaSlicer"
 	},
-	"WPFInstallpsremoteplay": {
+	"psremoteplay": {
 		"category": "Games",
 		"choco": "ps-remote-play",
 		"content": "PS Remote Play",
@@ -1775,7 +1775,7 @@
 		"link": "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/",
 		"winget": "PlayStation.PSRemotePlay"
 	},
-	"WPFInstallputty": {
+	"putty": {
 		"category": "Pro Tools",
 		"choco": "putty",
 		"content": "PuTTY",
@@ -1783,7 +1783,7 @@
 		"link": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
 		"winget": "PuTTY.PuTTY"
 	},
-	"WPFInstallpython3": {
+	"python3": {
 		"category": "Development",
 		"choco": "python",
 		"content": "Python3",
@@ -1791,7 +1791,7 @@
 		"link": "https://www.python.org/",
 		"winget": "Python.Python.3.12"
 	},
-	"WPFInstallqbittorrent": {
+	"qbittorrent": {
 		"category": "Utilities",
 		"choco": "qbittorrent",
 		"content": "qBittorrent",
@@ -1799,7 +1799,7 @@
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
 	},
-	"WPFInstalltransmission": {
+	"transmission": {
 		"category": "Utilities",
 		"choco": "transmission",
 		"content": "Transmission",
@@ -1807,7 +1807,7 @@
 		"link": "https://transmissionbt.com/",
 		"winget": "Transmission.Transmission"
 	},
-	"WPFInstalltixati": {
+	"tixati": {
 		"category": "Utilities",
 		"choco": "tixati.portable",
 		"content": "Tixati",
@@ -1815,7 +1815,7 @@
 		"link": "https://www.tixati.com/",
 		"winget": "Tixati.Tixati.Portable"
 	},
-	"WPFInstallqtox": {
+	"qtox": {
 		"category": "Communications",
 		"choco": "qtox",
 		"content": "QTox",
@@ -1823,7 +1823,7 @@
 		"link": "https://qtox.github.io/",
 		"winget": "Tox.qTox"
 	},
-	"WPFInstallquicklook": {
+	"quicklook": {
 		"category": "Utilities",
 		"choco": "quicklook",
 		"content": "Quicklook",
@@ -1831,7 +1831,7 @@
 		"link": "https://github.com/QL-Win/QuickLook",
 		"winget": "QL-Win.QuickLook"
 	},
-	"WPFInstallrainmeter": {
+	"rainmeter": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Rainmeter",
@@ -1839,7 +1839,7 @@
 		"link": "https://www.rainmeter.net/",
 		"winget": "Rainmeter.Rainmeter"
 	},
-	"WPFInstallrevo": {
+	"revo": {
 		"category": "Utilities",
 		"choco": "revo-uninstaller",
 		"content": "Revo Uninstaller",
@@ -1847,7 +1847,7 @@
 		"link": "https://www.revouninstaller.com/",
 		"winget": "RevoUninstaller.RevoUninstaller"
 	},
-	"WPFInstallWiseProgramUninstaller": {
+	"WiseProgramUninstaller": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Wise Program Uninstaller (WiseCleaner)",
@@ -1855,7 +1855,7 @@
 		"link": "https://www.wisecleaner.com/wise-program-uninstaller.html",
 		"winget": "WiseCleaner.WiseProgramUninstaller"
 	},
-	"WPFInstallrevolt": {
+	"revolt": {
 		"category": "Communications",
 		"choco": "na",
 		"content": "Revolt",
@@ -1863,7 +1863,7 @@
 		"link": "https://revolt.chat/",
 		"winget": "Revolt.RevoltDesktop"
 	},
-	"WPFInstallripgrep": {
+	"ripgrep": {
 		"category": "Utilities",
 		"choco": "ripgrep",
 		"content": "Ripgrep",
@@ -1871,7 +1871,7 @@
 		"link": "https://github.com/BurntSushi/ripgrep/",
 		"winget": "BurntSushi.ripgrep.MSVC"
 	},
-	"WPFInstallrufus": {
+	"rufus": {
 		"category": "Utilities",
 		"choco": "rufus",
 		"content": "Rufus Imager",
@@ -1879,7 +1879,7 @@
 		"link": "https://rufus.ie/",
 		"winget": "Rufus.Rufus"
 	},
-	"WPFInstallrustdesk": {
+	"rustdesk": {
 		"category": "Pro Tools",
 		"choco": "rustdesk.portable",
 		"content": "RustDesk",
@@ -1887,7 +1887,7 @@
 		"link": "https://rustdesk.com/",
 		"winget": "RustDesk.RustDesk"
 	},
-	"WPFInstallrustlang": {
+	"rustlang": {
 		"category": "Development",
 		"choco": "rust",
 		"content": "Rust",
@@ -1895,7 +1895,7 @@
 		"link": "https://www.rust-lang.org/",
 		"winget": "Rustlang.Rust.MSVC"
 	},
-	"WPFInstallsagethumbs": {
+	"sagethumbs": {
 		"category": "Utilities",
 		"choco": "sagethumbs",
 		"content": "SageThumbs",
@@ -1903,7 +1903,7 @@
 		"link": "https://sagethumbs.en.lo4d.com/windows",
 		"winget": "CherubicSoftware.SageThumbs"
 	},
-	"WPFInstallsamsungmagician": {
+	"samsungmagician": {
 		"category": "Utilities",
 		"choco": "samsung-magician",
 		"content": "Samsung Magician",
@@ -1911,7 +1911,7 @@
 		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
 		"winget": "Samsung.SamsungMagician"
 	},
-	"WPFInstallsandboxie": {
+	"sandboxie": {
 		"category": "Utilities",
 		"choco": "sandboxie",
 		"content": "Sandboxie Plus",
@@ -1919,7 +1919,7 @@
 		"link": "https://github.com/sandboxie-plus/Sandboxie",
 		"winget": "Sandboxie.Plus"
 	},
-	"WPFInstallsdio": {
+	"sdio": {
 		"category": "Utilities",
 		"choco": "sdio",
 		"content": "Snappy Driver Installer Origin",
@@ -1927,7 +1927,7 @@
 		"link": "https://sourceforge.net/projects/snappy-driver-installer-origin",
 		"winget": "GlennDelahoy.SnappyDriverInstallerOrigin"
 	},
-	"WPFInstallsession": {
+	"session": {
 		"category": "Communications",
 		"choco": "session",
 		"content": "Session",
@@ -1935,7 +1935,7 @@
 		"link": "https://getsession.org/",
 		"winget": "Oxen.Session"
 	},
-	"WPFInstallsharex": {
+	"sharex": {
 		"category": "Multimedia Tools",
 		"choco": "sharex",
 		"content": "ShareX (Screenshots)",
@@ -1943,7 +1943,7 @@
 		"link": "https://getsharex.com/",
 		"winget": "ShareX.ShareX"
 	},
-	"WPFInstallnilesoftShel": {
+	"nilesoftShel": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
 		"content": "Shell (Expanded Context Menu)",
@@ -1951,7 +1951,7 @@
 		"link": "https://nilesoft.org/",
 		"winget": "Nilesoft.Shell"
 	},
-	"WPFInstallsidequest": {
+	"sidequest": {
 		"category": "Games",
 		"choco": "sidequest",
 		"content": "SideQuestVR",
@@ -1959,7 +1959,7 @@
 		"link": "https://sidequestvr.com/",
 		"winget": "SideQuestVR.SideQuest"
 	},
-	"WPFInstallsignal": {
+	"signal": {
 		"category": "Communications",
 		"choco": "signal",
 		"content": "Signal",
@@ -1967,7 +1967,7 @@
 		"link": "https://signal.org/",
 		"winget": "OpenWhisperSystems.Signal"
 	},
-	"WPFInstallsignalrgb": {
+	"signalrgb": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "SignalRGB",
@@ -1975,7 +1975,7 @@
 		"link": "https://www.signalrgb.com/",
 		"winget": "WhirlwindFX.SignalRgb"
 	},
-	"WPFInstallsimplenote": {
+	"simplenote": {
 		"category": "Document",
 		"choco": "simplenote",
 		"content": "simplenote",
@@ -1983,7 +1983,7 @@
 		"link": "https://simplenote.com/",
 		"winget": "Automattic.Simplenote"
 	},
-	"WPFInstallsimplewall": {
+	"simplewall": {
 		"category": "Pro Tools",
 		"choco": "simplewall",
 		"content": "Simplewall",
@@ -1991,7 +1991,7 @@
 		"link": "https://github.com/henrypp/simplewall",
 		"winget": "Henry++.simplewall"
 	},
-	"WPFInstallskype": {
+	"skype": {
 		"category": "Communications",
 		"choco": "skype",
 		"content": "Skype",
@@ -1999,7 +1999,7 @@
 		"link": "https://www.skype.com/",
 		"winget": "Microsoft.Skype"
 	},
-	"WPFInstallslack": {
+	"slack": {
 		"category": "Communications",
 		"choco": "slack",
 		"content": "Slack",
@@ -2007,7 +2007,7 @@
 		"link": "https://slack.com/",
 		"winget": "SlackTechnologies.Slack"
 	},
-	"WPFInstallspacedrive": {
+	"spacedrive": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Spacedrive File Manager",
@@ -2015,7 +2015,7 @@
 		"link": "https://www.spacedrive.com/",
 		"winget": "spacedrive.Spacedrive"
 	},
-	"WPFInstallspacesniffer": {
+	"spacesniffer": {
 		"category": "Utilities",
 		"choco": "spacesniffer",
 		"content": "SpaceSniffer",
@@ -2023,7 +2023,7 @@
 		"link": "http://www.uderzo.it/main_products/space_sniffer/",
 		"winget": "UderzoSoftware.SpaceSniffer"
 	},
-	"WPFInstallspotube": {
+	"spotube": {
 		"category": "Multimedia Tools",
 		"choco": "spotube",
 		"content": "Spotube",
@@ -2031,7 +2031,7 @@
 		"link": "https://github.com/KRTirtho/spotube",
 		"winget": "KRTirtho.Spotube"
 	},
-	"WPFInstallstarship": {
+	"starship": {
 		"category": "Development",
 		"choco": "starship",
 		"content": "Starship (Shell Prompt)",
@@ -2039,7 +2039,7 @@
 		"link": "https://starship.rs/",
 		"winget": "starship"
 	},
-	"WPFInstallsteam": {
+	"steam": {
 		"category": "Games",
 		"choco": "steam-client",
 		"content": "Steam",
@@ -2047,7 +2047,7 @@
 		"link": "https://store.steampowered.com/about/",
 		"winget": "Valve.Steam"
 	},
-	"WPFInstallstrawberry": {
+	"strawberry": {
 		"category": "Multimedia Tools",
 		"choco": "strawberrymusicplayer",
 		"content": "Strawberry (Music Player)",
@@ -2055,7 +2055,7 @@
 		"link": "https://www.strawberrymusicplayer.org/",
 		"winget": "StrawberryMusicPlayer.Strawberry"
 	},
-	"WPFInstallstremio": {
+	"stremio": {
 		"winget": "Stremio.Stremio",
 		"choco": "stremio",
 		"category": "Multimedia Tools",
@@ -2063,7 +2063,7 @@
 		"link": "https://www.stremio.com/",
 		"description": "Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content."
 	},
-	"WPFInstallsublimemerge": {
+	"sublimemerge": {
 		"category": "Development",
 		"choco": "sublimemerge",
 		"content": "Sublime Merge",
@@ -2071,7 +2071,7 @@
 		"link": "https://www.sublimemerge.com/",
 		"winget": "SublimeHQ.SublimeMerge"
 	},
-	"WPFInstallsublimetext": {
+	"sublimetext": {
 		"category": "Development",
 		"choco": "sublimetext4",
 		"content": "Sublime Text",
@@ -2079,7 +2079,7 @@
 		"link": "https://www.sublimetext.com/",
 		"winget": "SublimeHQ.SublimeText.4"
 	},
-	"WPFInstallsumatra": {
+	"sumatra": {
 		"category": "Document",
 		"choco": "sumatrapdf",
 		"content": "Sumatra PDF",
@@ -2087,7 +2087,7 @@
 		"link": "https://www.sumatrapdfreader.org/free-pdf-reader.html",
 		"winget": "SumatraPDF.SumatraPDF"
 	},
-	"WPFInstallpdfgear": {
+	"pdfgear": {
 		"category": "Document",
 		"choco": "na",
 		"content": "PDFgear",
@@ -2095,7 +2095,7 @@
 		"link": "https://www.pdfgear.com/",
 		"winget": "PDFgear.PDFgear"
 	},
-	"WPFInstallsunshine": {
+	"sunshine": {
 		"category": "Games",
 		"choco": "sunshine",
 		"content": "Sunshine/GameStream Server",
@@ -2103,7 +2103,7 @@
 		"link": "https://github.com/LizardByte/Sunshine",
 		"winget": "LizardByte.Sunshine"
 	},
-	"WPFInstallsuperf4": {
+	"superf4": {
 		"category": "Utilities",
 		"choco": "superf4",
 		"content": "SuperF4",
@@ -2111,7 +2111,7 @@
 		"link": "https://stefansundin.github.io/superf4/",
 		"winget": "StefanSundin.Superf4"
 	},
-	"WPFInstallswift": {
+	"swift": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Swift toolchain",
@@ -2119,7 +2119,7 @@
 		"link": "https://www.swift.org/",
 		"winget": "Swift.Toolchain"
 	},
-	"WPFInstallsynctrayzor": {
+	"synctrayzor": {
 		"category": "Utilities",
 		"choco": "synctrayzor",
 		"content": "SyncTrayzor",
@@ -2127,7 +2127,7 @@
 		"link": "https://github.com/canton7/SyncTrayzor/",
 		"winget": "SyncTrayzor.SyncTrayzor"
 	},
-	"WPFInstallsqlmanagementstudio": {
+	"sqlmanagementstudio": {
 		"category": "Microsoft Tools",
 		"choco": "sql-server-management-studio",
 		"content": "Microsoft SQL Server Management Studio",
@@ -2135,7 +2135,7 @@
 		"link": "https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16",
 		"winget": "Microsoft.SQLServerManagementStudio"
 	},
-	"WPFInstalltabby": {
+	"tabby": {
 		"category": "Utilities",
 		"choco": "tabby",
 		"content": "Tabby.sh",
@@ -2143,7 +2143,7 @@
 		"link": "https://tabby.sh/",
 		"winget": "Eugeny.Tabby"
 	},
-	"WPFInstalltailscale": {
+	"tailscale": {
 		"category": "Utilities",
 		"choco": "tailscale",
 		"content": "Tailscale",
@@ -2151,7 +2151,7 @@
 		"link": "https://tailscale.com/",
 		"winget": "tailscale.tailscale"
 	},
-	"WPFInstallTcNoAccSwitcher": {
+	"TcNoAccSwitcher": {
 		"category": "Games",
 		"choco": "tcno-acc-switcher",
 		"content": "TCNO Account Switcher",
@@ -2159,7 +2159,7 @@
 		"link": "https://github.com/TCNOco/TcNo-Acc-Switcher",
 		"winget": "TechNobo.TcNoAccountSwitcher"
 	},
-	"WPFInstalltcpview": {
+	"tcpview": {
 		"category": "Microsoft Tools",
 		"choco": "tcpview",
 		"content": "SysInternals TCPView",
@@ -2167,7 +2167,7 @@
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/tcpview",
 		"winget": "Microsoft.Sysinternals.TCPView"
 	},
-	"WPFInstallteams": {
+	"teams": {
 		"category": "Communications",
 		"choco": "microsoft-teams",
 		"content": "Teams",
@@ -2175,7 +2175,7 @@
 		"link": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
 		"winget": "Microsoft.Teams"
 	},
-	"WPFInstallteamviewer": {
+	"teamviewer": {
 		"category": "Utilities",
 		"choco": "teamviewer9",
 		"content": "TeamViewer",
@@ -2183,7 +2183,7 @@
 		"link": "https://www.teamviewer.com/",
 		"winget": "TeamViewer.TeamViewer"
 	},
-	"WPFInstalltelegram": {
+	"telegram": {
 		"category": "Communications",
 		"choco": "telegram",
 		"content": "Telegram",
@@ -2191,7 +2191,7 @@
 		"link": "https://telegram.org/",
 		"winget": "Telegram.TelegramDesktop"
 	},
-	"WPFInstallunigram": {
+	"unigram": {
 		"category": "Communications",
 		"choco": "na",
 		"content": "Unigram",
@@ -2199,7 +2199,7 @@
 		"link": "https://unigramdev.github.io/",
 		"winget": "Telegram.Unigram"
 	},
-	"WPFInstallterminal": {
+	"terminal": {
 		"category": "Microsoft Tools",
 		"choco": "microsoft-windows-terminal",
 		"content": "Windows Terminal",
@@ -2207,7 +2207,7 @@
 		"link": "https://aka.ms/terminal",
 		"winget": "Microsoft.WindowsTerminal"
 	},
-	"WPFInstallThonny": {
+	"Thonny": {
 		"category": "Development",
 		"choco": "thonny",
 		"content": "Thonny Python IDE",
@@ -2215,7 +2215,7 @@
 		"link": "https://github.com/thonny/thonny",
 		"winget": "AivarAnnamaa.Thonny"
 	},
-	"WPFInstallMuEditor": {
+	"MuEditor": {
 		"category": "Development",
 		"choco": "na",
 		"content": "Code With Mu (Mu Editor)",
@@ -2223,7 +2223,7 @@
 		"link": "https://codewith.mu/",
 		"winget": "Mu.Mu"
 	},
-	"WPFInstallthorium": {
+	"thorium": {
 		"category": "Browsers",
 		"choco": "na",
 		"content": "Thorium Browser AVX2",
@@ -2231,7 +2231,7 @@
 		"link": "http://thorium.rocks/",
 		"winget": "Alex313031.Thorium.AVX2"
 	},
-	"WPFInstallthunderbird": {
+	"thunderbird": {
 		"category": "Communications",
 		"choco": "thunderbird",
 		"content": "Thunderbird",
@@ -2239,7 +2239,7 @@
 		"link": "https://www.thunderbird.net/",
 		"winget": "Mozilla.Thunderbird"
 	},
-	"WPFInstallbetterbird": {
+	"betterbird": {
 		"category": "Communications",
 		"choco": "betterbird",
 		"content": "Betterbird",
@@ -2247,7 +2247,7 @@
 		"link": "https://www.betterbird.eu/",
 		"winget": "Betterbird.Betterbird"
 	},
-	"WPFInstalltidal": {
+	"tidal": {
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Tidal",
@@ -2255,7 +2255,7 @@
 		"link": "https://tidal.com/",
 		"winget": "9NNCB5BS59PH"
 	},
-	"WPFInstalltor": {
+	"tor": {
 		"category": "Browsers",
 		"choco": "tor-browser",
 		"content": "Tor Browser",
@@ -2263,7 +2263,7 @@
 		"link": "https://www.torproject.org/",
 		"winget": "TorProject.TorBrowser"
 	},
-	"WPFInstalltotalcommander": {
+	"totalcommander": {
 		"category": "Utilities",
 		"choco": "TotalCommander",
 		"content": "Total Commander",
@@ -2271,7 +2271,7 @@
 		"link": "https://www.ghisler.com/",
 		"winget": "Ghisler.TotalCommander"
 	},
-	"WPFInstalltreesize": {
+	"treesize": {
 		"category": "Utilities",
 		"choco": "treesizefree",
 		"content": "TreeSize Free",
@@ -2279,7 +2279,7 @@
 		"link": "https://www.jam-software.com/treesize_free/",
 		"winget": "JAMSoftware.TreeSize.Free"
 	},
-	"WPFInstallttaskbar": {
+	"ttaskbar": {
 		"category": "Utilities",
 		"choco": "translucenttb",
 		"content": "Translucent Taskbar",
@@ -2287,7 +2287,7 @@
 		"link": "https://github.com/TranslucentTB/TranslucentTB",
 		"winget": "9PF4KZ2VN4W9"
 	},
-	"WPFInstalltwinkletray": {
+	"twinkletray": {
 		"category": "Utilities",
 		"choco": "twinkle-tray",
 		"content": "Twinkle Tray",
@@ -2295,7 +2295,7 @@
 		"link": "https://twinkletray.com/",
 		"winget": "xanderfrangos.twinkletray"
 	},
-	"WPFInstallubisoft": {
+	"ubisoft": {
 		"category": "Games",
 		"choco": "ubisoft-connect",
 		"content": "Ubisoft Connect",
@@ -2303,7 +2303,7 @@
 		"link": "https://ubisoftconnect.com/",
 		"winget": "Ubisoft.Connect"
 	},
-	"WPFInstallungoogled": {
+	"ungoogled": {
 		"category": "Browsers",
 		"choco": "ungoogled-chromium",
 		"content": "Ungoogled",
@@ -2311,7 +2311,7 @@
 		"link": "https://github.com/Eloston/ungoogled-chromium",
 		"winget": "eloston.ungoogled-chromium"
 	},
-	"WPFInstallunity": {
+	"unity": {
 		"category": "Development",
 		"choco": "unityhub",
 		"content": "Unity Game Engine",
@@ -2319,7 +2319,7 @@
 		"link": "https://unity.com/",
 		"winget": "Unity.UnityHub"
 	},
-	"WPFInstallvagrant": {
+	"vagrant": {
 		"category": "Development",
 		"choco": "vagrant",
 		"content": "Vagrant",
@@ -2327,7 +2327,7 @@
 		"link": "https://www.vagrantup.com/",
 		"winget": "Hashicorp.Vagrant"
 	},
-	"WPFInstallvc2015_32": {
+	"vc2015_32": {
 		"category": "Microsoft Tools",
 		"choco": "na",
 		"content": "Visual C++ 2015-2022 32-bit",
@@ -2335,7 +2335,7 @@
 		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
 		"winget": "Microsoft.VCRedist.2015+.x86"
 	},
-	"WPFInstallvc2015_64": {
+	"vc2015_64": {
 		"category": "Microsoft Tools",
 		"choco": "na",
 		"content": "Visual C++ 2015-2022 64-bit",
@@ -2343,7 +2343,7 @@
 		"link": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
 		"winget": "Microsoft.VCRedist.2015+.x64"
 	},
-	"WPFInstallventoy": {
+	"ventoy": {
 		"category": "Pro Tools",
 		"choco": "ventoy",
 		"content": "Ventoy",
@@ -2351,7 +2351,7 @@
 		"link": "https://www.ventoy.net/",
 		"winget": "Ventoy.Ventoy"
 	},
-	"WPFInstallvesktop": {
+	"vesktop": {
 		"category": "Communications",
 		"choco": "na",
 		"content": "Vesktop",
@@ -2359,7 +2359,7 @@
 		"link": "https://github.com/Vencord/Vesktop",
 		"winget": "Vencord.Vesktop"
 	},
-	"WPFInstallviber": {
+	"viber": {
 		"category": "Communications",
 		"choco": "viber",
 		"content": "Viber",
@@ -2367,7 +2367,7 @@
 		"link": "https://www.viber.com/",
 		"winget": "Viber.Viber"
 	},
-	"WPFInstallvideomass": {
+	"videomass": {
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Videomass",
@@ -2375,7 +2375,7 @@
 		"link": "https://jeanslack.github.io/Videomass/",
 		"winget": "GianlucaPernigotto.Videomass"
 	},
-	"WPFInstallvisualstudio": {
+	"visualstudio": {
 		"category": "Development",
 		"choco": "visualstudio2022community",
 		"content": "Visual Studio 2022",
@@ -2383,7 +2383,7 @@
 		"link": "https://visualstudio.microsoft.com/",
 		"winget": "Microsoft.VisualStudio.2022.Community"
 	},
-	"WPFInstallvivaldi": {
+	"vivaldi": {
 		"category": "Browsers",
 		"choco": "vivaldi",
 		"content": "Vivaldi",
@@ -2391,7 +2391,7 @@
 		"link": "https://vivaldi.com/",
 		"winget": "Vivaldi.Vivaldi"
 	},
-	"WPFInstallvlc": {
+	"vlc": {
 		"category": "Multimedia Tools",
 		"choco": "vlc",
 		"content": "VLC (Video Player)",
@@ -2399,7 +2399,7 @@
 		"link": "https://www.videolan.org/vlc/",
 		"winget": "VideoLAN.VLC"
 	},
-	"WPFInstallvoicemeeter": {
+	"voicemeeter": {
 		"category": "Multimedia Tools",
 		"choco": "voicemeeter",
 		"content": "Voicemeeter (Audio)",
@@ -2407,7 +2407,7 @@
 		"link": "https://voicemeeter.com/",
 		"winget": "VB-Audio.Voicemeeter"
 	},
-	"WPFInstallVoicemeeterPotato": {
+	"VoicemeeterPotato": {
 		"category": "Multimedia Tools",
 		"choco": "voicemeeter-potato",
 		"content": "Voicemeeter Potato",
@@ -2415,7 +2415,7 @@
 		"link": "https://voicemeeter.com/",
 		"winget": "VB-Audio.Voicemeeter.Potato"
 	},
-	"WPFInstallvrdesktopstreamer": {
+	"vrdesktopstreamer": {
 		"category": "Games",
 		"choco": "na",
 		"content": "Virtual Desktop Streamer",
@@ -2423,7 +2423,7 @@
 		"link": "https://www.vrdesktop.net/",
 		"winget": "VirtualDesktop.Streamer"
 	},
-	"WPFInstallvscode": {
+	"vscode": {
 		"category": "Development",
 		"choco": "vscode",
 		"content": "VS Code",
@@ -2431,7 +2431,7 @@
 		"link": "https://code.visualstudio.com/",
 		"winget": "Microsoft.VisualStudioCode"
 	},
-	"WPFInstallvscodium": {
+	"vscodium": {
 		"category": "Development",
 		"choco": "vscodium",
 		"content": "VS Codium",
@@ -2439,7 +2439,7 @@
 		"link": "https://vscodium.com/",
 		"winget": "VSCodium.VSCodium"
 	},
-	"WPFInstallwaterfox": {
+	"waterfox": {
 		"category": "Browsers",
 		"choco": "waterfox",
 		"content": "Waterfox",
@@ -2447,7 +2447,7 @@
 		"link": "https://www.waterfox.net/",
 		"winget": "Waterfox.Waterfox"
 	},
-	"WPFInstallwazuh": {
+	"wazuh": {
 		"category": "Utilities",
 		"choco": "wazuh-agent",
 		"content": "Wazuh.",
@@ -2455,7 +2455,7 @@
 		"link": "https://wazuh.com/",
 		"winget": "Wazuh.WazuhAgent"
 	},
-	"WPFInstallwezterm": {
+	"wezterm": {
 		"category": "Development",
 		"choco": "wezterm",
 		"content": "Wezterm",
@@ -2463,7 +2463,7 @@
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
 	},
-	"WPFInstallwindowspchealth": {
+	"windowspchealth": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Windows PC Health Check",
@@ -2471,7 +2471,7 @@
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
 		"winget": "Microsoft.WindowsPCHealthCheck"
 	},
-	"WPFInstallWindowGrid": {
+	"WindowGrid": {
 		"category": "Utilities",
 		"choco": "windowgrid",
 		"content": "WindowGrid",
@@ -2479,7 +2479,7 @@
 		"link": "http://windowgrid.net/",
 		"winget": "na"
 	},
-	"WPFInstallwingetui": {
+	"wingetui": {
 		"category": "Utilities",
 		"choco": "wingetui",
 		"content": "WingetUI",
@@ -2487,7 +2487,7 @@
 		"link": "https://www.marticliment.com/wingetui/",
 		"winget": "SomePythonThings.WingetUIStore"
 	},
-	"WPFInstallwinmerge": {
+	"winmerge": {
 		"category": "Document",
 		"choco": "winmerge",
 		"content": "WinMerge",
@@ -2495,7 +2495,7 @@
 		"link": "https://winmerge.org/",
 		"winget": "WinMerge.WinMerge"
 	},
-	"WPFInstallwinpaletter": {
+	"winpaletter": {
 		"category": "Utilities",
 		"choco": "WinPaletter",
 		"content": "WinPaletter",
@@ -2503,7 +2503,7 @@
 		"link": "https://github.com/Abdelrhman-AK/WinPaletter",
 		"winget": "Abdelrhman-AK.WinPaletter"
 	},
-	"WPFInstallwinrar": {
+	"winrar": {
 		"category": "Utilities",
 		"choco": "winrar",
 		"content": "WinRAR",
@@ -2511,7 +2511,7 @@
 		"link": "https://www.win-rar.com/",
 		"winget": "RARLab.WinRAR"
 	},
-	"WPFInstallwinscp": {
+	"winscp": {
 		"category": "Pro Tools",
 		"choco": "winscp",
 		"content": "WinSCP",
@@ -2519,7 +2519,7 @@
 		"link": "https://winscp.net/",
 		"winget": "WinSCP.WinSCP"
 	},
-	"WPFInstallwireguard": {
+	"wireguard": {
 		"category": "Pro Tools",
 		"choco": "wireguard",
 		"content": "WireGuard",
@@ -2527,7 +2527,7 @@
 		"link": "https://www.wireguard.com/",
 		"winget": "WireGuard.WireGuard"
 	},
-	"WPFInstallwireshark": {
+	"wireshark": {
 		"category": "Pro Tools",
 		"choco": "wireshark",
 		"content": "Wireshark",
@@ -2535,7 +2535,7 @@
 		"link": "https://www.wireshark.org/",
 		"winget": "WiresharkFoundation.Wireshark"
 	},
-	"WPFInstallwisetoys": {
+	"wisetoys": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "WiseToys",
@@ -2543,7 +2543,7 @@
 		"link": "https://toys.wisecleaner.com/",
 		"winget": "WiseCleaner.WiseToys"
 	},
-	"WPFInstallTeraCopy": {
+	"TeraCopy": {
 		"category": "Utilities",
 		"choco": "TeraCopy",
 		"content": "TeraCopy",
@@ -2551,7 +2551,7 @@
 		"link": "https://codesector.com/teracopy",
 		"winget": "CodeSector.TeraCopy"
 	},
-	"WPFInstallwizfile": {
+	"wizfile": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "WizFile",
@@ -2559,7 +2559,7 @@
 		"link": "https://antibody-software.com/wizfile/",
 		"winget": "AntibodySoftware.WizFile"
 	},
-	"WPFInstallwiztree": {
+	"wiztree": {
 		"category": "Utilities",
 		"choco": "wiztree",
 		"content": "WizTree",
@@ -2567,7 +2567,7 @@
 		"link": "https://wiztreefree.com/",
 		"winget": "AntibodySoftware.WizTree"
 	},
-	"WPFInstallxdm": {
+	"xdm": {
 		"category": "Utilities",
 		"choco": "xdm",
 		"content": "Xtreme Download Manager",
@@ -2575,7 +2575,7 @@
 		"link": "https://xtremedownloadmanager.com/",
 		"winget": "subhra74.XtremeDownloadManager"
 	},
-	"WPFInstallxeheditor": {
+	"xeheditor": {
 		"category": "Utilities",
 		"choco": "HxD",
 		"content": "HxD Hex Editor",
@@ -2583,7 +2583,7 @@
 		"link": "https://mh-nexus.de/en/hxd/",
 		"winget": "MHNexus.HxD"
 	},
-	"WPFInstallxemu": {
+	"xemu": {
 		"category": "Games",
 		"choco": "na",
 		"content": "XEMU",
@@ -2591,7 +2591,7 @@
 		"link": "https://xemu.app/",
 		"winget": "xemu-project.xemu"
 	},
-	"WPFInstallxnview": {
+	"xnview": {
 		"category": "Utilities",
 		"choco": "xnview",
 		"content": "XnView classic",
@@ -2599,7 +2599,7 @@
 		"link": "https://www.xnview.com/en/xnview/",
 		"winget": "XnSoft.XnView.Classic"
 	},
-	"WPFInstallxournal": {
+	"xournal": {
 		"category": "Document",
 		"choco": "xournalplusplus",
 		"content": "Xournal++",
@@ -2607,7 +2607,7 @@
 		"link": "https://xournalpp.github.io/",
 		"winget": "Xournal++.Xournal++"
 	},
-	"WPFInstallxpipe": {
+	"xpipe": {
 		"category": "Pro Tools",
 		"choco": "xpipe",
 		"content": "XPipe",
@@ -2615,7 +2615,7 @@
 		"link": "https://xpipe.io/",
 		"winget": "xpipe-io.xpipe"
 	},
-	"WPFInstallyarn": {
+	"yarn": {
 		"category": "Development",
 		"choco": "yarn",
 		"content": "Yarn",
@@ -2623,7 +2623,7 @@
 		"link": "https://yarnpkg.com/",
 		"winget": "Yarn.Yarn"
 	},
-	"WPFInstallytdlp": {
+	"ytdlp": {
 		"category": "Multimedia Tools",
 		"choco": "yt-dlp",
 		"content": "Yt-dlp",
@@ -2631,7 +2631,7 @@
 		"link": "https://github.com/yt-dlp/yt-dlp",
 		"winget": "yt-dlp.yt-dlp"
 	},
-	"WPFInstallzerotierone": {
+	"zerotierone": {
 		"category": "Utilities",
 		"choco": "zerotier-one",
 		"content": "ZeroTier One",
@@ -2639,7 +2639,7 @@
 		"link": "https://zerotier.com/",
 		"winget": "ZeroTier.ZeroTierOne"
 	},
-	"WPFInstallzim": {
+	"zim": {
 		"category": "Document",
 		"choco": "zim",
 		"content": "Zim Desktop Wiki",
@@ -2647,7 +2647,7 @@
 		"link": "https://zim-wiki.org/",
 		"winget": "Zimwiki.Zim"
 	},
-	"WPFInstallznote": {
+	"znote": {
 		"category": "Document",
 		"choco": "na",
 		"content": "Znote",
@@ -2655,7 +2655,7 @@
 		"link": "https://znote.io/",
 		"winget": "alagrede.znote"
 	},
-	"WPFInstallzoom": {
+	"zoom": {
 		"category": "Communications",
 		"choco": "zoom",
 		"content": "Zoom",
@@ -2663,7 +2663,7 @@
 		"link": "https://zoom.us/",
 		"winget": "Zoom.Zoom"
 	},
-	"WPFInstallzotero": {
+	"zotero": {
 		"category": "Document",
 		"choco": "zotero",
 		"content": "Zotero",
@@ -2671,7 +2671,7 @@
 		"link": "https://www.zotero.org/",
 		"winget": "DigitalScholar.Zotero"
 	},
-	"WPFInstallzoxide": {
+	"zoxide": {
 		"category": "Utilities",
 		"choco": "zoxide",
 		"content": "Zoxide",
@@ -2679,7 +2679,7 @@
 		"link": "https://github.com/ajeetdsouza/zoxide",
 		"winget": "ajeetdsouza.zoxide"
 	},
-	"WPFInstallzulip": {
+	"zulip": {
 		"category": "Communications",
 		"choco": "zulip",
 		"content": "Zulip",
@@ -2687,7 +2687,7 @@
 		"link": "https://zulipchat.com/",
 		"winget": "Zulip.Zulip"
 	},
-	"WPFInstallsyncthingtray": {
+	"syncthingtray": {
 		"category": "Utilities",
 		"choco": "syncthingtray",
 		"content": "Syncthingtray",
@@ -2695,7 +2695,7 @@
 		"link": "https://github.com/Martchus/syncthingtray",
 		"winget": "Martchus.syncthingtray"
 	},
-	"WPFInstallminiconda": {
+	"miniconda": {
 		"category": "Development",
 		"choco": "miniconda3",
 		"content": "Miniconda",
@@ -2703,7 +2703,7 @@
 		"link": "https://docs.conda.io/projects/miniconda",
 		"winget": "Anaconda.Miniconda3"
 	},
-	"WPFInstallpixi": {
+	"pixi": {
 		"category": "Development",
 		"choco": "pixi",
 		"content": "Pixi",
@@ -2711,7 +2711,7 @@
 		"link": "https://pixi.sh",
 		"winget": "prefix-dev.pixi"
 	},
-	"WPFInstalltemurin": {
+	"temurin": {
 		"category": "Development",
 		"choco": "temurin",
 		"content": "Eclipse Temurin",
@@ -2719,7 +2719,7 @@
 		"link": "https://adoptium.net/temurin/",
 		"winget": "EclipseAdoptium.Temurin.21.JDK"
 	},
-	"WPFInstallintelpresentmon": {
+	"intelpresentmon": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Intel-PresentMon",
@@ -2727,7 +2727,7 @@
 		"link": "https://game.intel.com/us/stories/intel-presentmon/",
 		"winget": "Intel.PresentMon.Beta"
 	},
-	"WPFInstallpyenvwin": {
+	"pyenvwin": {
 		"category": "Development",
 		"choco": "pyenv-win",
 		"content": "Python Version Manager (pyenv-win)",
@@ -2735,7 +2735,7 @@
 		"link": "https://pyenv-win.github.io/pyenv-win/",
 		"winget": "na"
 	},
-	"WPFInstalltightvnc": {
+	"tightvnc": {
 		"category": "Utilities",
 		"choco": "TightVNC",
 		"content": "TightVNC",
@@ -2743,7 +2743,7 @@
 		"link": "https://www.tightvnc.com/",
 		"winget": "GlavSoft.TightVNC"
 	},
-	"WPFInstallultravnc": {
+	"ultravnc": {
 		"category": "Utilities",
 		"choco": "ultravnc",
 		"content": "UltraVNC",
@@ -2751,7 +2751,7 @@
 		"link": "https://uvnc.com/",
 		"winget": "uvncbvba.UltraVnc"
 	},
-	"WPFInstallwindowsfirewallcontrol": {
+	"windowsfirewallcontrol": {
 		"category": "Utilities",
 		"choco": "windowsfirewallcontrol",
 		"content": "Windows Firewall Control",
@@ -2759,7 +2759,7 @@
 		"link": "https://www.binisoft.org/wfc",
 		"winget": "BiniSoft.WindowsFirewallControl"
 	},
-	"WPFInstallvistaswitcher": {
+	"vistaswitcher": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "VistaSwitcher",
@@ -2767,7 +2767,7 @@
 		"link": "https://www.ntwind.com/freeware/vistaswitcher.html",
 		"winget": "ntwind.VistaSwitcher"
 	},
-	"WPFInstallautodarkmode": {
+	"autodarkmode": {
 		"category": "Utilities",
 		"choco": "auto-dark-mode",
 		"content": "Windows Auto Dark Mode",
@@ -2775,7 +2775,7 @@
 		"link": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode",
 		"winget": "Armin2208.WindowsAutoNightMode"
 	},
-	"WPFInstallAmbieWhiteNoise": {
+	"AmbieWhiteNoise": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Ambie White Noise",
@@ -2783,7 +2783,7 @@
 		"link": "https://ambieapp.com/",
 		"winget": "9P07XNM5CHP0"
 	},
-	"WPFInstallmagicwormhole": {
+	"magicwormhole": {
 		"category": "Utilities",
 		"choco": "magic-wormhole",
 		"content": "Magic Wormhole",
@@ -2791,7 +2791,7 @@
 		"link": "https://github.com/magic-wormhole/magic-wormhole",
 		"winget": "magic-wormhole.magic-wormhole"
 	},
-	"WPFInstallcroc": {
+	"croc": {
 		"category": "Utilities",
 		"choco": "croc",
 		"content": "croc",
@@ -2799,7 +2799,7 @@
 		"link": "https://github.com/schollz/croc",
 		"winget": "schollz.croc"
 	},
-	"WPFInstallqgis": {
+	"qgis": {
 		"category": "Multimedia Tools",
 		"choco": "qgis",
 		"content": "QGIS",
@@ -2807,7 +2807,7 @@
 		"link": "https://qgis.org/en/site/",
 		"winget": "OSGeo.QGIS"
 	},
-	"WPFInstallsmplayer": {
+	"smplayer": {
 		"category": "Multimedia Tools",
 		"choco": "smplayer",
 		"content": "SMPlayer",
@@ -2815,7 +2815,7 @@
 		"link": "https://www.smplayer.info",
 		"winget": "SMPlayer.SMPlayer"
 	},
-	"WPFInstallglazewm": {
+	"glazewm": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "GlazeWM",
@@ -2823,7 +2823,7 @@
 		"link": "https://github.com/glzr-io/glazewm",
 		"winget": "glzr-io.glazewm"
 	},
-	"WPFInstallfancontrol": {
+	"fancontrol": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "FanControl",
@@ -2831,7 +2831,7 @@
 		"link": "https://getfancontrol.com/",
 		"winget": "Rem0o.FanControl"
 	},
-	"WPFInstallfnm": {
+	"fnm": {
 		"category": "Development",
 		"choco": "fnm",
 		"content": "Fast Node Manager",
@@ -2839,7 +2839,7 @@
 		"link": "https://github.com/Schniz/fnm",
 		"winget": "Schniz.fnm"
 	},
-	"WPFInstallWindhawk": {
+	"Windhawk": {
 		"category": "Utilities",
 		"choco": "windhawk",
 		"content": "Windhawk",
@@ -2847,7 +2847,7 @@
 		"link": "https://windhawk.net",
 		"winget": "RamenSoftware.Windhawk"
 	},
-	"WPFInstallForceAutoHDR": {
+	"ForceAutoHDR": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "ForceAutoHDR",
@@ -2855,7 +2855,7 @@
 		"link": "https://github.com/7gxycn08/ForceAutoHDR",
 		"winget": "ForceAutoHDR.7gxycn08"
 	},
-	"WPFInstallJoyToKey": {
+	"JoyToKey": {
 		"category": "Utilities",
 		"choco": "joytokey",
 		"content": "JoyToKey",
@@ -2863,8 +2863,7 @@
 		"link": "https://joytokey.net/en/",
 		"winget": "JTKsoftware.JoyToKey"
 	},
-
-	"WPFInstallnditools": {
+	"nditools": {
 		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "NDI Tools",
@@ -2872,7 +2871,7 @@
 		"link": "https://ndi.video/",
 		"winget": "NDI.NDITools"
 	},
-	"WPFInstallkicad": {
+	"kicad": {
 		"category": "Pro Tools",
 		"choco": "na",
 		"content": "Kicad",
@@ -2880,7 +2879,7 @@
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
 	},
-	"WPFInstallFormatFactory": {
+	"FormatFactory": {
 		"category": "Utilities",
 		"choco": "formatfactory",
 		"content": "Format Factory",
@@ -2888,7 +2887,7 @@
 		"link": "http://www.pcfreetime.com/formatfactory/",
 		"winget": "na"
   },
-	"WPFInstalldropox": {
+	"dropox": {
 		"category": "Utilities",
 		"choco": "na",
 		"content": "Dropbox",
