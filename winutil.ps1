@@ -1118,7 +1118,13 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 	    {
 		    $status = "Removing Provisioned $($appx.PackageName)"
 		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-			Remove-AppxProvisionedPackage -Path $scratchDir -PackageName $appx.PackageName -ErrorAction SilentlyContinue
+			try {
+				Remove-AppxProvisionedPackage -Path $scratchDir -PackageName $appx.PackageName -ErrorAction SilentlyContinue
+			}
+			catch {
+				Write-Host "Application $($appx.PackageName) could not be removed"
+				continue
+			}			
 	    }
 	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }
