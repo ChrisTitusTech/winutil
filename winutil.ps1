@@ -62,52 +62,52 @@ If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
 clear-host
-function ConvertTo-Icon { 
+function ConvertTo-Icon {
     <#
-    
+
         .DESCRIPTION
         This function will convert PNG to ICO file
 
         .EXAMPLE
         ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
     #>
-    param( [Parameter(Mandatory=$true)] 
-        $bitmapPath, 
+    param( [Parameter(Mandatory=$true)]
+        $bitmapPath,
         $iconPath = "$env:temp\newicon.ico"
-    ) 
-    
-    Add-Type -AssemblyName System.Drawing 
-    
-    if (Test-Path $bitmapPath) { 
-        $b = [System.Drawing.Bitmap]::FromFile($bitmapPath) 
-        $icon = [System.Drawing.Icon]::FromHandle($b.GetHicon()) 
-        $file = New-Object System.IO.FileStream($iconPath, 'OpenOrCreate') 
-        $icon.Save($file) 
-        $file.Close() 
-        $icon.Dispose() 
-        #explorer "/SELECT,$iconpath" 
-    } 
-    else { Write-Warning "$BitmapPath does not exist" } 
+    )
+
+    Add-Type -AssemblyName System.Drawing
+
+    if (Test-Path $bitmapPath) {
+        $b = [System.Drawing.Bitmap]::FromFile($bitmapPath)
+        $icon = [System.Drawing.Icon]::FromHandle($b.GetHicon())
+        $file = New-Object System.IO.FileStream($iconPath, 'OpenOrCreate')
+        $icon.Save($file)
+        $file.Close()
+        $icon.Dispose()
+        #explorer "/SELECT,$iconpath"
+    }
+    else { Write-Warning "$BitmapPath does not exist" }
 }
 function Copy-Files {
     <#
-    
+
         .DESCRIPTION
         This function will make all modifications to the registry
 
         .EXAMPLE
 
         Set-WinUtilRegistry -Name "PublishUserActivities" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Type "DWord" -Value "0"
-    
-    #>    
+
+    #>
     param (
-        [string] $Path, 
-        [string] $Destination, 
-        [switch] $Recurse = $false, 
+        [string] $Path,
+        [string] $Destination,
+        [switch] $Recurse = $false,
         [switch] $Force = $false
     )
 
-    try {   
+    try {
 
  	$files = Get-ChildItem -Path $path -Recurse:$recurse
 	Write-Host "Copy $($files.Count)(s) from $path to $destination"
@@ -126,9 +126,9 @@ function Copy-Files {
             else
             {
                 Write-Debug "Copy from $($file.FullName) to $($destination+$restpath)"
-                Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force 
+                Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force
                 Set-ItemProperty -Path ($destination+$restpath) -Name IsReadOnly -Value $false
-            }        
+            }
         }
         Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
     }
@@ -140,17 +140,17 @@ function Copy-Files {
 function Get-LocalizedYesNo {
     <#
     .SYNOPSIS
-    This function runs choice.exe and captures its output to extract yes no in a localized Windows 
-    
+    This function runs choice.exe and captures its output to extract yes no in a localized Windows
+
     .DESCRIPTION
     The function retrieves the output of the command 'cmd /c "choice <nul 2>nul"' and converts the default output for Yes and No
     in the localized format, such as "Yes=<first character>, No=<second character>".
-    
+
     .EXAMPLE
     $yesNoArray = Get-LocalizedYesNo
     Write-Host "Yes=$($yesNoArray[0]), No=$($yesNoArray[1])"
     #>
-  
+
     # Run choice and capture its options as output
     # The output shows the options for Yes and No as "[Y,N]?" in the (partitially) localized format.
     # eg. English: [Y,N]?
@@ -160,7 +160,7 @@ function Get-LocalizedYesNo {
     # Spanish: [S,N]?
     # Italian: [S,N]?
     # Russian: [Y,N]?
-    
+
     $line = cmd /c "choice <nul 2>nul"
     $charactersArray = @()
     $regexPattern = '([a-zA-Z])'
@@ -169,17 +169,18 @@ function Get-LocalizedYesNo {
     Write-Debug "According to takeown.exe local Yes is $charactersArray[0]"
     # Return the array of characters
     return $charactersArray
+
   }
-function Get-Oscdimg { 
+function Get-Oscdimg {
     <#
-    
+
         .DESCRIPTION
         This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
     #>
-    param( [Parameter(Mandatory=$true)] 
+    param( [Parameter(Mandatory=$true)]
         [string]$oscdimgPath
     )
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
@@ -196,7 +197,7 @@ function Get-Oscdimg {
     } else {
         Write-Host "Hashes do not match. File may be corrupted or tampered with."
     }
-} 
+}
 function Get-TabXaml {
     <#
     .SYNOPSIS
@@ -212,8 +213,8 @@ function Get-TabXaml {
     .EXAMPLE
         Get-TabXaml "applications" 3
     #>
-    
-    
+
+
     param( [Parameter(Mandatory=$true)]
         $tabname,
         $columncount = 0
@@ -279,7 +280,7 @@ function Get-TabXaml {
 
             # Dot-source the Get-WPFObjectName function
             . .\functions\private\Get-WPFObjectName
-            
+
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
             $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`r`n"
@@ -486,7 +487,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleShowExt"){
         $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
         if($hideextvalue -eq 0){
@@ -495,7 +496,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $false
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleSnapWindow"){
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Control Panel\Desktop').WindowArrangementActive
         if($hidesnap -eq 0){
@@ -513,7 +514,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $true
         }
-    }    
+    }
     if($ToggleSwitch -eq "WPFToggleSnapSuggestion"){
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').SnapAssist
         if($hidesnap -eq 0){
@@ -522,7 +523,7 @@ Function Get-WinUtilToggleStatus {
         else{
             return $true
         }
-    }        
+    }
     if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
@@ -609,8 +610,8 @@ function Get-WinUtilWingetLatest {
     .DESCRIPTION
         This function grabs the latest version of Winget and returns the download path to Install-WinUtilWinget for installation.
     #>
-    # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function  
-    $PreviousProgressPreference = $ProgressPreference 
+    # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function
+    $PreviousProgressPreference = $ProgressPreference
     $ProgressPreference = "silentlyContinue"
     Try{
         # Grabs the latest release of Winget from the Github API for the install process.
@@ -670,17 +671,17 @@ function Get-WPFObjectName {
     .OUTPUTS
         A string that can be used as a object/variable name in powershell.
         For example: WPFLabelMicrosoftTools
-        
+
     .EXAMPLE
         Get-WPFObjectName -type Label -name "Microsoft Tools"
     #>
 
-    param( [Parameter(Mandatory=$true)] 
-    $type, 
+    param( [Parameter(Mandatory=$true)]
+    $type,
     $name
 )
 
-$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', '' 
+$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', ''
 
 return $Output
 
@@ -717,17 +718,17 @@ function Install-WinUtilProgramChoco {
     <#
     .SYNOPSIS
     Manages the provided programs using Chocolatey
-    
+
     .PARAMETER ProgramsToInstall
     A list of programs to manage
-    
+
     .PARAMETER manage
     The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
-    
+
     .NOTES
     The triple quotes are required any time you need a " in a normal script block.
     #>
-    
+
     param(
         [Parameter(Mandatory, Position=0)]
         [PsCustomObject]$ProgramsToInstall,
@@ -735,7 +736,7 @@ function Install-WinUtilProgramChoco {
         [Parameter(Position=1)]
         [String]$manage = "Installing"
     )
-    
+
     $x = 0
     $count = $ProgramsToInstall.Count
 
@@ -805,32 +806,32 @@ function Install-WinUtilProgramChoco {
     return;
 }
 Function Install-WinUtilProgramWinget {
-    
+
     <#
     .SYNOPSIS
     Manages the provided programs using Winget
-    
+
     .PARAMETER ProgramsToInstall
     A list of programs to manage
-    
+
     .PARAMETER manage
     The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
-    
+
     .NOTES
     The triple quotes are required any time you need a " in a normal script block.
     The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-manager/winget/returnCodes.md
     #>
-    
+
     param(
         [Parameter(Mandatory, Position=0)]
         [PsCustomObject]$ProgramsToInstall,
-    
+
         [Parameter(Position=1)]
         [String]$manage = "Installing"
     )
     $x = 0
     $count = $ProgramsToInstall.Count
-    
+
     Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
@@ -839,7 +840,7 @@ Function Install-WinUtilProgramWinget {
         $failedPackages = @()
         Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($x + 1) of $count" -PercentComplete $($x/$count*100)
         if($manage -eq "Installing"){
-            # Install package via ID, if it fails try again with different scope and then with an unelevated prompt. 
+            # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
             # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
             # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
@@ -950,7 +951,7 @@ function Install-WinUtilWinget {
         Write-Host "Installing Winget w/ Prerequsites`r"
         Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
 		Write-Host "Manually adding Winget Sources, from Winget CDN."
-		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time. 
+		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time.
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Host "Enabling NuGet and Module..."
         Install-PackageProvider -Name NuGet -Force
@@ -1080,8 +1081,8 @@ function Remove-Packages
 			$_ -NotLike "*DesktopAppInstaller*" -AND
 			$_ -NotLike "*WebMediaExtensions*" -AND
 			$_ -NotLike "*WMIC*" -AND
-			$_ -NotLike "*UI.XaML*"	
-		} 
+			$_ -NotLike "*UI.XaML*"
+		}
 
 	foreach ($pkg in $pkglist)
 	{
@@ -1123,9 +1124,9 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 			$_.PackageName -NotLike "*Notepad*" -and
 			$_.PackageName -NotLike "*Printing*" -and
 			$_.PackageName -NotLike "*Wifi*" -and
-			$_.PackageName -NotLike "*Foundation*" 
-		} 
-    
+			$_.PackageName -NotLike "*Foundation*"
+		}
+
     if ($?)
     {
         if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
@@ -1140,7 +1141,7 @@ function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
 			catch {
 				Write-Host "Application $($appx.PackageName) could not be removed"
 				continue
-			}			
+			}
 	    }
 	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
     }
@@ -1192,13 +1193,13 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 	# Remove-Item -Path $directoryPath -Recurse -Force
 
 	# # Grant full control to BUILTIN\Administrators using icacls
-	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc" 
+	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc"
 	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
 	# icacls "$($directoryPath)" /q /c /t /reset > $null
 	# icacls $directoryPath /setowner "*S-1-5-32-544"
 	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
 	# Remove-Item -Path $directoryPath -Recurse -Force
-	
+
 	$itemsToDelete = [System.Collections.ArrayList]::new()
 
 	if ($mask -eq "")
@@ -1206,9 +1207,9 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		Write-Debug "Adding $($pathToDelete) to array."
 		[void]$itemsToDelete.Add($pathToDelete)
 	}
-	else 
+	else
 	{
-		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)" 
+		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)"
 		if ($Directory)	{ $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory }
 		else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
 	}
@@ -1218,7 +1219,7 @@ function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [sw
 		$status = "Deleting $($itemToDelete)"
 		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
 
-		if (Test-Path -Path "$($itemToDelete)" -PathType Container) 
+		if (Test-Path -Path "$($itemToDelete)" -PathType Container)
 		{
 			$status = "Deleting directory: $($itemToDelete)"
 
@@ -1438,16 +1439,16 @@ function New-FirstRun {
 		param (
 			[Parameter(Mandatory = $true)]
 			[string]$RegistryPath,
-	
+
 			[Parameter(Mandatory = $true)]
 			[string]$ValueName
 		)
-	
+
 		# Check if the registry path exists
 		if (Test-Path -Path $RegistryPath)
 		{
 			$registryValue = Get-ItemProperty -Path $RegistryPath -Name $ValueName -ErrorAction SilentlyContinue
-	
+
 			# Check if the registry value exists
 			if ($registryValue)
 			{
@@ -1465,7 +1466,7 @@ function New-FirstRun {
 			Write-Host "Registry path '$RegistryPath' not found."
 		}
 	}
-	
+
 	function Stop-UnnecessaryServices
 	{
 		$servicesToExclude = @(
@@ -1531,8 +1532,8 @@ function New-FirstRun {
 			"vm3dservice",
 			"webthreatdefusersvc_dc2a4",
 			"wscsvc"
-)	
-	
+)
+
 		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
 		foreach($service in $runningServices)
 		{
@@ -1541,28 +1542,28 @@ function New-FirstRun {
 			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
 		}
 	}
-	
+
 	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-	
+
 	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
 	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
 	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
 
 	# figure this out later how to set updates to security only
-	#Import-Module -Name PSWindowsUpdate; 
+	#Import-Module -Name PSWindowsUpdate;
 	#Stop-Service -Name wuauserv
 	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
 	#Start-Service -Name wuauserv
-	
+
 	Stop-UnnecessaryServices
-	
+
 	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files on the Taskbar 
+	# Delete all files on the Taskbar
 	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
 	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
-	
+
 	# Stop-Process -Name explorer -Force
 
 	$process = Get-Process -Name "explorer"
@@ -1574,9 +1575,9 @@ function New-FirstRun {
 	# Delete Edge Icon from the desktop
 	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
 	# Check if Edge shortcuts exist on the desktop
-	if ($edgeShortcutFiles) 
+	if ($edgeShortcutFiles)
 	{
-		foreach ($shortcutFile in $edgeShortcutFiles) 
+		foreach ($shortcutFile in $edgeShortcutFiles)
 		{
 			# Remove each Edge shortcut
 			Remove-Item -Path $shortcutFile.FullName -Force
@@ -1596,7 +1597,7 @@ function New-FirstRun {
 	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
 	# Create a shell object
 	$shell = New-Object -ComObject WScript.Shell
-	
+
 	# Create a shortcut object
 	$shortcut = $shell.CreateShortcut($shortcutPath)
 
@@ -1604,28 +1605,28 @@ function New-FirstRun {
 	{
 		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
 	}
-	
+
 	# Set properties of the shortcut
 	$shortcut.TargetPath = "powershell.exe"
 	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 	# Save the shortcut
 	$shortcut.Save()
-	
+
         # Make the shortcut have 'Run as administrator' property on
         $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
         # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
         $bytes[0x15] = $bytes[0x15] -bor 0x20
         [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
-        
+
 	Write-Host "Shortcut created at: $shortcutPath"
-	# 
+	#
 	# Done create WinUtil shortcut on the desktop
 	# ************************************************
 
 	Start-Process explorer
-	
+
 '@
-	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force 
+	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }
 function Invoke-WinUtilBingSearch {
     <#
@@ -1887,13 +1888,13 @@ Function Invoke-WinUtilMouseAcceleration {
             $MouseSpeed = 1
             $MouseThreshold1 = 6
             $MouseThreshold2 = 10
-        } 
+        }
         else {
             Write-Host "Disabling Mouse Acceleration"
             $MouseSpeed = 0
             $MouseThreshold1 = 0
-            $MouseThreshold2 = 0 
-            
+            $MouseThreshold2 = 0
+
         }
 
         $Path = "HKCU:\Control Panel\Mouse"
@@ -2131,7 +2132,7 @@ Function Invoke-WinUtilStickyKeys {
         Indicates whether to enable or disable Sticky Keys on startup
     #>
     Param($Enabled)
-    Try { 
+    Try {
         if ($Enabled -eq $false){
             Write-Host "Enabling Sticky Keys On startup"
             $value = 510
@@ -2308,7 +2309,7 @@ function Invoke-WinUtilTweaks {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
             $changeservice = $true
-            
+
 	    # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
             if($KeepServiceStartup -AND !($undo)) {
                 try {
@@ -2646,10 +2647,10 @@ function Show-CustomDialog {
     <#
     .SYNOPSIS
     Displays a custom dialog box with an image, heading, message, and an OK button.
-    
+
     .DESCRIPTION
     This function creates a custom dialog box with the specified message and additional elements such as an image, heading, and an OK button. The dialog box is designed with a green border, rounded corners, and a black background.
-    
+
     .PARAMETER Message
     The message to be displayed in the dialog box.
 
@@ -2658,10 +2659,10 @@ function Show-CustomDialog {
 
     .PARAMETER Height
     The height of the custom dialog window.
-    
+
     .EXAMPLE
     Show-CustomDialog -Message "This is a custom dialog with a message and an image above." -Width 300 -Height 200
-    
+
     #>
     param(
         [string]$Message,
@@ -2743,7 +2744,7 @@ function Show-CustomDialog {
     $grid.RowDefinitions.Add($row0)
     $grid.RowDefinitions.Add($row1)
     $grid.RowDefinitions.Add($row2)
-        
+
     # Add StackPanel for horizontal layout with margins
     $stackPanel = New-Object Windows.Controls.StackPanel
     $stackPanel.Margin = New-Object Windows.Thickness(10)  # Add margins around the stack panel
@@ -2757,7 +2758,7 @@ function Show-CustomDialog {
     $viewbox = New-Object Windows.Controls.Viewbox
     $viewbox.Width = 25
     $viewbox.Height = 25
-    
+
     # Combine the paths into a single string
 #     $cttLogoPath = @"
 #     M174 1094 c-4 -14 -4 -55 -2 -92 3 -57 9 -75 41 -122 41 -60 45 -75 22 -84 -25 -9 -17 -21 30 -44 l45 -22 0 -103 c0 -91 3 -109 26 -155 30 -60 65 -87 204 -157 l95 -48 110 58 c184 96 205 127 205 293 l0 108 45 22 c47 23 55 36 30 46 -22 8 -18 30 9 63 13 16 34 48 46 71 20 37 21 52 15 116 l-6 73 -69 -23 c-38 -12 -137 -59 -220 -103 -82 -45 -160 -81 -171 -81 -12 0 -47 15 -78 34 -85 51 -239 127 -309 151 l-62 22 -6 -23z m500 -689 c20 -8 36 -19 36 -24 0 -18 -53 -51 -80 -51 -28 0 -80 33 -80 51 0 10 55 38 76 39 6 0 28 -7 48 -15z
@@ -2803,7 +2804,7 @@ $cttLogoPath = @"
              46.21,102.83 36.63,98.57 31.04,93.68
              16.88,81.28 19.00,62.88 19.00,46.00 Z
 "@
-    
+
     # Add SVG path
     $svgPath = New-Object Windows.Shapes.Path
     $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
@@ -2811,7 +2812,7 @@ $cttLogoPath = @"
 
     # Add SVG path to Viewbox
     $viewbox.Child = $svgPath
-    
+
     # Add SVG path to the stack panel
     $stackPanel.Children.Add($viewbox)
 
@@ -2859,7 +2860,7 @@ $cttLogoPath = @"
             param($sender, $args)
             $sender.Foreground = $foregroundColor
         })
-        
+
         $messageTextBlock.Inlines.Add($hyperlink)
 
         # Update the last position
@@ -2985,7 +2986,7 @@ function Test-WinUtilPackageManager {
                 Write-Host "    - Winget is Out of Date" -ForegroundColor Red
                 $status = "outdated"
             }
-        } else {        
+        } else {
             Write-Host "===========================================" -ForegroundColor Red
             Write-Host "---      Winget is not installed        ---" -ForegroundColor Red
             Write-Host "===========================================" -ForegroundColor Red
@@ -3041,13 +3042,13 @@ function Invoke-ScratchDialog {
 
     .PARAMETER Button
     #>
-    $sync.WPFMicrowinISOScratchDir.IsChecked 
- 
+    $sync.WPFMicrowinISOScratchDir.IsChecked
+
 
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
     $Dialog = New-Object System.Windows.Forms.FolderBrowserDialog
     $Dialog.SelectedPath =          $sync.MicrowinScratchDirBox.Text
-    $Dialog.ShowDialog() 
+    $Dialog.ShowDialog()
     $filePath = $Dialog.SelectedPath
         Write-Host "No ISO is chosen+  $filePath"
 
@@ -3056,7 +3057,7 @@ function Invoke-ScratchDialog {
         Write-Host "No Folder had chosen"
         return
     }
-    
+
        $sync.MicrowinScratchDirBox.Text =  Join-Path $filePath "\"
 
 }
@@ -3508,7 +3509,7 @@ function Invoke-WPFFixesWinget {
     <#
 
     .SYNOPSIS
-        Fixes Winget by running choco install winget 
+        Fixes Winget by running choco install winget
     .DESCRIPTION
         BravoNorris for the fantastic idea of a button to reinstall winget
     #>
@@ -3623,18 +3624,18 @@ function Invoke-WPFGetIso {
 	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
 	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
-    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'   
+    $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
-    
-    if (!$oscdImgFound) 
+
+    if (!$oscdImgFound)
     {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
         $sync.BusyMessage.Visibility="Hidden"
 
-        if (!$downloadFromGitHub) 
+        if (!$downloadFromGitHub)
         {
-            # only show the message to people who did check the box to download from github, if you check the box 
+            # only show the message to people who did check the box to download from github, if you check the box
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
             # the step below needs choco to download oscdimg
@@ -3642,7 +3643,7 @@ function Invoke-WPFGetIso {
             Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound) 
+            if (!$chocoFound)
             {
                 [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
                 return
@@ -3707,7 +3708,7 @@ function Invoke-WPFGetIso {
         Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
         return
     }
-    else 
+    else
     {
         Write-Host "You have enough space for this operation."
     }
@@ -3745,7 +3746,7 @@ function Invoke-WPFGetIso {
          $sync.MicrowinScratchDirBox.Text = Join-Path   $sync.MicrowinScratchDirBox.Text.Trim() '\'
 
     }
-    
+
     # Detect if the folders already exist and remove them
     if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text))
     {
@@ -3765,7 +3766,7 @@ function Invoke-WPFGetIso {
     $randomMicrowin = "Microwin_${timestamp}_${randomNumber}"
     $randomMicrowinScratch = "MicrowinScratch_${timestamp}_${randomNumber}"
     $sync.BusyText.Text=" - Mounting"
-    Write-Host "Mounting Iso. Please wait."  
+    Write-Host "Mounting Iso. Please wait."
     if ($sync.MicrowinScratchDirBox.Text -eq "") {
     $mountDir = Join-Path $env:TEMP $randomMicrowin
     $scratchDir = Join-Path $env:TEMP $randomMicrowinScratch
@@ -3781,12 +3782,12 @@ function Invoke-WPFGetIso {
     Write-Host "Image dir is $mountDir"
 
     try {
-        
+
         #$data = @($driveLetter, $filePath)
         New-Item -ItemType Directory -Force -Path "$($mountDir)" | Out-Null
         New-Item -ItemType Directory -Force -Path "$($scratchDir)" | Out-Null
         Write-Host "Copying Windows image. This will take awhile, please don't use UI or cancel this step!"
-        
+
         # xcopy we can verify files and also not copy files that already exist, but hard to measure
         # xcopy.exe /E /I /H /R /Y /J $DriveLetter":" $mountDir >$null
         $totalTime = Measure-Command { Copy-Files "$($driveLetter):" $mountDir -Recurse -Force }
@@ -3878,12 +3879,12 @@ function Invoke-WPFImpex {
 
         if($FileBrowser.FileName -eq ""){
             return
-        } 
+        }
         else{
             $Config = $FileBrowser.FileName
         }
     }
-    
+
     if ($type -eq "export"){
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
@@ -4086,7 +4087,7 @@ public class PowerManagement {
 
 	$mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists) 
+	if (-not $mountDirExists -or -not $scratchDirExists)
 	{
         Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
         return
@@ -4143,7 +4144,7 @@ public class PowerManagement {
 				if (Test-Path "$env:TEMP\DRV_EXPORT")
 				{
 					Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
-				}				
+				}
 			}
 		}
 
@@ -4155,7 +4156,7 @@ public class PowerManagement {
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
 				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
-			else 
+			else
 			{
 				Write-Host "Path to drivers is invalid continuing without driver injection"
 			}
@@ -4176,12 +4177,12 @@ public class PowerManagement {
 		}
 
 		# special code, for some reason when you try to delete some inbox apps
-		# we have to get and delete log files directory. 
+		# we have to get and delete log files directory.
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
 
 		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
-		if (!$keepDefender) 
+		if (!$keepDefender)
 		{
 			Write-Host "Removing Defender"
 			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
@@ -4198,7 +4199,7 @@ public class PowerManagement {
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe" 
+		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
 		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
@@ -4279,7 +4280,7 @@ public class PowerManagement {
 		Write-Host "Disabling Teams"
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
 		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1  
+		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
 		reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
 		# Write-Host Error code $LASTEXITCODE
 		Write-Host "Done disabling Teams"
@@ -4321,7 +4322,7 @@ public class PowerManagement {
 		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f
 		reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
 		Write-Host "Done removing Sponsored Apps"
-		
+
 		Write-Host "Disabling Reserved Storage"
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
 
@@ -4345,8 +4346,8 @@ public class PowerManagement {
 
 		Write-Host "Unmounting image..."
         Dismount-WindowsImage -Path $scratchDir -Save
-	} 
-	
+	}
+
 	try {
 
 		Write-Host "Exporting image into $mountDir\sources\install2.wim"
@@ -4362,7 +4363,7 @@ public class PowerManagement {
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
 
-		# Next step boot image		
+		# Next step boot image
 		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
 
@@ -4374,12 +4375,12 @@ public class PowerManagement {
 				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
 				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
 			}
-			else 
+			else
 			{
 				Write-Host "Path to drivers is invalid continuing without driver injection"
 			}
 		}
-	
+
 		Write-Host "Loading registry..."
 		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
 		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
@@ -4443,7 +4444,7 @@ public class PowerManagement {
 			Copy-ToUSB("$($SaveDialog.FileName)")
 			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
 		}
-		
+
 		Write-Host " _____                       "
 		Write-Host "(____ \                      "
 		Write-Host " _   \ \ ___  ____   ____    "
@@ -4463,9 +4464,9 @@ public class PowerManagement {
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
 		}
-		
+
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
-		
+
 		#$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
 		# Allow the machine to sleep again (optional)
@@ -4484,14 +4485,14 @@ function Invoke-WPFOOSU {
         $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
         Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
         Write-Host "Starting OO Shutup 10 ..."
-        Start-Process $OOSU_filepath    
+        Start-Process $OOSU_filepath
     }
     catch {
         Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
     }
     finally {
         $ProgressPreference = $Initial_ProgressPreference
-    }   
+    }
 }
 function Invoke-WPFPanelAutologin {
     <#
@@ -4572,7 +4573,7 @@ function Invoke-WPFPresets {
             Write-Debug $_
         }
     }
-    
+
     foreach ($CheckBox in $CheckBoxes) {
         $checkboxName = $CheckBox.Key
 
@@ -4821,7 +4822,7 @@ function Invoke-WPFTweakPS7{
     )
 
     switch ($action) {
-        "PS7"{ 
+        "PS7"{
             if (Test-Path -Path "$env:ProgramFiles\PowerShell\7") {
                 Write-Host "Powershell 7 is already installed."
             } else {
@@ -4850,7 +4851,7 @@ function Invoke-WPFTweakPS7{
         }
     } else {
         Write-Host "Settings file not found at $settingsPath"
-    } 
+    }
 }
 
 function Invoke-WPFtweaksbutton {
@@ -4868,7 +4869,7 @@ function Invoke-WPFtweaksbutton {
   }
 
   $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
-  
+
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
   if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
@@ -8787,7 +8788,7 @@ $sync.configs.tweaks = '{
       "
       Write-Host \"Turn on Hibernation\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate on\" -NoNewWindow -Wait
-  
+
       # Set hibernation as the default action
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 60\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 60\" -NoNewWindow -Wait
@@ -8799,7 +8800,7 @@ $sync.configs.tweaks = '{
       "
       Write-Host \"Turn off Hibernation\"
       Start-Process -FilePath powercfg -ArgumentList \"/hibernate off\" -NoNewWindow -Wait
-  
+
       # Set standby to detault values
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change standby-timeout-dc 15\" -NoNewWindow -Wait
@@ -10948,7 +10949,7 @@ $sync.configs.tweaks = '{
             Write-Host \"Please run this script as an administrator.\"
             return
         }
-    
+
         # Check if System Restore is enabled for the main drive
         try {
             # Try getting restore points to check if System Restore is enabled
@@ -10956,14 +10957,14 @@ $sync.configs.tweaks = '{
         } catch {
             Write-Host \"An error occurred while enabling System Restore: $_\"
         }
-    
+
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
         if($null -eq $exists){
             write-host ''Changing system to allow multiple restore points per day''
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
-    
+
         # Attempt to load the required module for Get-ComputerRestorePoint
         try {
             Import-Module Microsoft.PowerShell.Management -ErrorAction Stop
@@ -10971,7 +10972,7 @@ $sync.configs.tweaks = '{
             Write-Host \"Failed to load the Microsoft.PowerShell.Management module: $_\"
             return
         }
-    
+
         # Get all the restore points for the current day
         try {
             $existingRestorePoints = Get-ComputerRestorePoint | Where-Object { $_.CreationTime.Date -eq (Get-Date).Date }
@@ -10979,11 +10980,11 @@ $sync.configs.tweaks = '{
             Write-Host \"Failed to retrieve restore points: $_\"
             return
         }
-    
+
         # Check if there is already a restore point created today
         if ($existingRestorePoints.Count -eq 0) {
             $description = \"System Restore Point created by WinUtil\"
-    
+
             Checkpoint-Computer -Description $description -RestorePointType \"MODIFY_SETTINGS\"
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
@@ -11085,7 +11086,7 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "
       Write-Host \"Remove Copilot\"
-      dism /online /remove-package /package-name:Microsoft.Windows.Copilot  
+      dism /online /remove-package /package-name:Microsoft.Windows.Copilot
       "
     ],
     "UndoScript": [
@@ -11104,11 +11105,11 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "
         Write-Host \"Kill LMS\"
-        $serviceName = \"LMS\"   
+        $serviceName = \"LMS\"
         Write-Host \"Stopping and disabling service: $serviceName\"
         Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue;
         Set-Service -Name $serviceName -StartupType Disabled -ErrorAction SilentlyContinue;
-        
+
         Write-Host \"Removing service: $serviceName\";
         sc.exe delete $serviceName;
 
@@ -11123,7 +11124,7 @@ $sync.configs.tweaks = '{
         } else {
             Write-Host \"All found LMS driver packages have been removed.\";
         }
-        
+
         Write-Host \"Searching and deleting LMS executable files\";
         $programFilesDirs = @(\"C:\\Program Files\", \"C:\\Program Files (x86)\");
         $lmsFiles = @();
@@ -11141,7 +11142,7 @@ $sync.configs.tweaks = '{
             Write-Host \"No LMS.exe files found in Program Files directories.\";
         } else {
             Write-Host \"All found LMS.exe files have been deleted.\";
-        }        
+        }
         Write-Host ''Intel LMS vPro service has been disabled, removed, and blocked.'';
        "
     ],
@@ -11159,7 +11160,7 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a030_",
     "InvokeScript": [
-      "       
+      "
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
@@ -11175,7 +11176,7 @@ $sync.configs.tweaks = '{
       # Check if OneDrive got Uninstalled
       if (-not (Test-Path $regPath)){
       Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
-      Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($OneDrivePath)'' ''$($env:USERPROFILE.TrimEnd())\\'' /mov /e /xj\" -NoNewWindow -Wait     
+      Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($OneDrivePath)'' ''$($env:USERPROFILE.TrimEnd())\\'' /mov /e /xj\" -NoNewWindow -Wait
 
       Write-Host \"Removing OneDrive leftovers\"
       Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
@@ -11281,20 +11282,20 @@ $sync.configs.tweaks = '{
       "
       function CCStopper {
         $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-        
+
         # Test if the path exists before proceeding
         if (Test-Path $path) {
             Takeown /f $path
             $acl = Get-Acl $path
             $acl.SetOwner([System.Security.Principal.NTAccount]\"Administrators\")
             $acl | Set-Acl $path
-    
+
             Rename-Item -Path $path -NewName \"Adobe Desktop Service.exe.old\" -Force
         } else {
             Write-Host \"Adobe Desktop Service is not in the default location.\"
         }
       }
-    
+
 
       function AcrobatUpdates {
         # Editing Acrobat Updates. The last folder before the key is dynamic, therefore using a script.
@@ -11304,12 +11305,12 @@ $sync.configs.tweaks = '{
         # 3 = Automatically download and install updates (default value)
         # 4 = Notify the user when an update is available but don''t download or install it automatically
         #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
-    
+
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-    
+
         # Get all subkeys under the specified root path
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-    
+
         # Loop through each subkey
         foreach ($subKey in $subKeys) {
             # Get the full registry path
@@ -11332,7 +11333,7 @@ $sync.configs.tweaks = '{
       function RestoreCCService {
         $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
         $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
-    
+
         if (Test-Path -Path $originalPath) {
             Rename-Item -Path $originalPath -NewName \"Adobe Desktop Service.exe\" -Force
             Write-Host \"Adobe Desktop Service has been restored.\"
@@ -11344,12 +11345,12 @@ $sync.configs.tweaks = '{
       function AcrobatUpdates {
         # Default Value:
         # 3 = Automatically download and install updates
-    
+
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
-    
+
         # Get all subkeys under the specified root path
         $subKeys = Get-ChildItem -Path $rootPath | Where-Object { $_.PSChildName -like \"{*}\" }
-    
+
         # Loop through each subkey
         foreach ($subKey in $subKeys) {
             # Get the full registry path
@@ -11431,7 +11432,7 @@ $sync.configs.tweaks = '{
       $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
       $tempHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\temp_hosts\"
-      
+
       # Download the remote HOSTS file to a temporary location
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
@@ -11440,11 +11441,11 @@ $sync.configs.tweaks = '{
       catch {
           Write-Error \"Failed to download the HOSTS file. Error: $_\"
       }
-      
+
       # Check if the AdobeNetBlock has already been started
       try {
           $localHostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      
+
           # Check if AdobeNetBlock markers exist
           $blockStartExists = $localHostsContent -like \"*#AdobeNetBlock-start*\"
           if ($blockStartExists) {
@@ -11455,10 +11456,10 @@ $sync.configs.tweaks = '{
               $newBlockContent = $newBlockContent | Where-Object { $_ -notmatch \"^\\s*#\" -and $_ -ne \"\" } # Exclude empty lines and comments
               $newBlockHeader = \"#AdobeNetBlock-start\"
               $newBlockFooter = \"#AdobeNetBlock-end\"
-      
+
               # Combine the contents, ensuring new block is properly formatted
               $combinedContent = $localHostsContent + $newBlockHeader, $newBlockContent, $newBlockFooter | Out-String
-      
+
               # Write the combined content back to the original HOSTS file
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output \"Successfully added the AdobeNetBlock.\"
@@ -11467,10 +11468,10 @@ $sync.configs.tweaks = '{
       catch {
           Write-Error \"Error during processing: $_\"
       }
-      
+
       # Clean up temporary file
       Remove-Item $tempHostsPath -ErrorAction Ignore
-      
+
       # Flush the DNS resolver cache
       try {
           Invoke-Expression \"ipconfig /flushdns\"
@@ -11485,7 +11486,7 @@ $sync.configs.tweaks = '{
       "
       # Define the local path of the HOSTS file
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
-      
+
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
@@ -11494,11 +11495,11 @@ $sync.configs.tweaks = '{
           Write-Error \"Failed to load the HOSTS file. Error: $_\"
           return
       }
-      
+
       # Initialize flags and buffer for new content
       $recording = $true
       $newContent = @()
-      
+
       # Iterate over each line of the HOSTS file
       foreach ($line in $hostsContent) {
           if ($line -match \"#AdobeNetBlock-start\") {
@@ -11511,7 +11512,7 @@ $sync.configs.tweaks = '{
               $recording = $true
           }
       }
-      
+
       # Write the filtered content back to the HOSTS file
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
@@ -11520,7 +11521,7 @@ $sync.configs.tweaks = '{
       catch {
           Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
       }
-      
+
       # Flush the DNS resolver cache
       try {
           Invoke-Expression \"ipconfig /flushdns\"
@@ -12027,7 +12028,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Grid>
-                            <Border x:Name="ButtonGlow" 
+                            <Border x:Name="ButtonGlow"
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{ButtonForegroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
@@ -12038,7 +12039,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                         BorderBrush="{ButtonBackgroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                             Margin="10,2,10,2"/>
                                     </Border>
                                 </Grid>
@@ -12244,13 +12245,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style x:Key="ColorfulToggleSwitchStyle" TargetType="{x:Type CheckBox}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                         <Grid x:Name="toggleSwitch">
-                    
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -12292,7 +12293,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
 
                             </Trigger>
-                            
+
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
                                 <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
                                 <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
@@ -12306,11 +12307,11 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                                     To="{ToggleButtonOnColor}" Duration="0:0:0.1" />
                                             <ColorAnimation Storyboard.TargetName="Border"
                                                     Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />                                                    
+                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />
 
                                             <ColorAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"
-                                                    To="White" Duration="0:0:0.1" />                                                    
+                                                    To="White" Duration="0:0:0.1" />
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
                                                     To="18,2,2,2" Duration="0:0:0.1" />
@@ -12395,9 +12396,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
-                                BorderThickness="{TemplateBinding BorderThickness}" 
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="5">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" />
@@ -12434,7 +12435,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon" 
+            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon"
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
@@ -12482,42 +12483,42 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBox
                     Grid.Column="0"
-                    Width="200" 
+                    Width="200"
                     FontSize="14"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
                     Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
                     Name="CheckboxFilter"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
-                <TextBlock 
+                <TextBlock
                     Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    FontFamily="Segoe MDL2 Assets" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    FontFamily="Segoe MDL2 Assets"
                     FontSize="14" Margin="16,0,0,0">&#xE721;</TextBlock>
-                <Button Grid.Column="0" 
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    Name="CheckboxFilterClear" 
-                    Style="{StaticResource ClearButtonStyle}" 
+                <Button Grid.Column="0"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Name="CheckboxFilterClear"
+                    Style="{StaticResource ClearButtonStyle}"
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent" 
+                    Grid.Column="1" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="18"
-                    Width="35" Height="35" 
-                    HorizontalAlignment="Right" VerticalAlignment="Top" 
-                    Margin="0,5,5,0" 
-                    FontFamily="Segoe MDL2 Assets" 
+                    Width="35" Height="35"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,5,5,0"
+                    FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup" 
+                <Popup Grid.Column="1" Name="SettingsPopup"
                     IsOpen="False"
-                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"  
+                    PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -12528,25 +12529,25 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         </StackPanel>
                     </Border>
                 </Popup>
- 
-            <Button 
+
+            <Button
                 Grid.Column="2"
-                Content="&#xD7;" BorderThickness="0" 
+                Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                Width="35" Height="35" 
-                HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="0,5,5,0" 
+                Width="35" Height="35"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,5,5,0"
                 FontFamily="Arial"
                 Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
             </Grid>
-           
+
         </DockPanel>
-       
+
         <TabControl Name="WPFTabNav" Background="Transparent" Width="Auto" Height="Auto" BorderBrush="Transparent" BorderThickness="0" Grid.Row="1" Grid.Column="0" Padding="-1">
             <TabItem Header="Install" Visibility="Collapsed" Name="WPFTab1">
                 <Grid Background="Transparent" >
-                   
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="45px"/>
                         <RowDefinition Height="0.95*"/>
@@ -12559,7 +12560,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                 BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
@@ -13956,13 +13957,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                         Margin="2"
                                         IsReadOnly="False"
                                         ToolTip="Alt Path For Scratch Directory"
-                                        Grid.Column="0" 
+                                        Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{LabelboxForegroundColor}">
                                 </TextBox>
-                                <Button Name="MicrowinScratchDirBT" 
-                                    Grid.Column="1" 
-                                    Margin="2" 
+                                <Button Name="MicrowinScratchDirBT"
+                                    Grid.Column="1"
+                                    Margin="2"
                                     Padding="1"  VerticalAlignment="Center">
                                     <Button.Content>
                                     ...
@@ -14025,10 +14026,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                             <Grid Name = "BusyMessage" Visibility="Collapsed">
                               <TextBlock Name = "BusyText" Text="NBusy" Padding="22,2,1,1" />
-                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" 
+                              <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets"
                                   FontSize="14" Margin="16,0,0,0">&#xE701;</TextBlock>
-                            </Grid>                         
- 
+                            </Grid>
+
                             <TextBlock x:Name = "asciiTextBlock"
                                 xml:space ="preserve"
                                 HorizontalAlignment = "Center"
@@ -14039,16 +14040,16 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 FontSize = "10"
                                 FontFamily = "Courier New"
                             >
-  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __    
- /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \  
-/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | 
-\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| 
+  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __
+ /    \ | | / __|| ''__| / _ \ \ \/  \/ /| || ''_ \
+/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | |
+\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_|
                             </TextBlock>
-                        
-                            <TextBlock Margin="15,15,15,0" 
-                                Padding="8,8,8,0" 
-                                VerticalAlignment="Center" 
-                                TextWrapping="WrapWithOverflow" 
+
+                            <TextBlock Margin="15,15,15,0"
+                                Padding="8,8,8,0"
+                                VerticalAlignment="Center"
+                                TextWrapping="WrapWithOverflow"
                                 Height = "Auto"
                                 Width = "Auto"
                                 Foreground="{ComboBoxForegroundColor}">
@@ -14080,9 +14081,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <LineBreak/>
                                 If you are injecting drivers ensure you put all your inf, sys, and dll files for each driver into a separate directory
                             </TextBlock>
-                            <TextBlock Margin="15,0,15,15" 
-                                Padding = "1" 
-                                TextWrapping="WrapWithOverflow" 
+                            <TextBlock Margin="15,0,15,15"
+                                Padding = "1"
+                                TextWrapping="WrapWithOverflow"
                                 Height = "Auto"
                                 Width = "Auto"
                                 VerticalAlignment = "Top"
@@ -14252,7 +14253,7 @@ Invoke-WPFRunspace -ScriptBlock {
     finally{
         $ProgressPreference = "Continue"
     }
-    
+
 } | Out-Null
 
 #===========================================================================
@@ -14392,7 +14393,7 @@ Add-Type @"
             $windowHandle = $proc.MainWindowHandle
 	    } else {
         	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
-    
+
         }
     }
 
@@ -14507,7 +14508,7 @@ $filter = Get-WinUtilVariables -Type Label
 $labels = @{}
 ($sync.GetEnumerator()).where{$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
 
-$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
+$allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
 $sync["CheckboxFilter"].Add_TextChanged({
 
