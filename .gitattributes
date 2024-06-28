@@ -1,3 +1,12 @@
+* text=auto
+
+*.ps1 text eol=crlf
+*.json text eol=crlf
+*.cfg text eol=crlf
+
+*.png binary
+*.jpg binary
+
 config/* diff
 config/applications.json diff
 *.json diff

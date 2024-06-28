@@ -391,7 +391,6 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
-<<<<<<< purging-applications
 	"WPFInstallditto": {
 		"category": "Utilities",
 		"choco": "ditto",
@@ -400,8 +399,6 @@
 		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
-=======
->>>>>>> main
 	"WPFInstalldockerdesktop": {
 		"category": "Development",
 		"choco": "docker-desktop",
@@ -560,7 +557,7 @@
 		"content": "Fastfetch",
 		"description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
 		"link": "https://github.com/fastfetch-cli/fastfetch/",
-		"winget": "fastfetch"
+		"winget": "Fastfetch-cli.Fastfetch"
 	},
 	"WPFInstallferdium": {
 		"category": "Communications",
@@ -2410,6 +2407,14 @@
 		"link": "https://voicemeeter.com/",
 		"winget": "VB-Audio.Voicemeeter"
 	},
+	"WPFInstallVoicemeeterPotato": {
+		"category": "Multimedia Tools",
+		"choco": "voicemeeter-potato",
+		"content": "Voicemeeter Potato",
+		"description": "Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications.",
+		"link": "https://voicemeeter.com/",
+		"winget": "VB-Audio.Voicemeeter.Potato"
+	},
 	"WPFInstallvrdesktopstreamer": {
 		"category": "Games",
 		"choco": "na",
@@ -2465,6 +2470,14 @@
 		"description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
 		"link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
 		"winget": "Microsoft.WindowsPCHealthCheck"
+	},
+	"WPFInstallWindowGrid": {
+		"category": "Utilities",
+		"choco": "windowgrid",
+		"content": "WindowGrid",
+		"description": "WindowGrid is a modern window management program for Windows that allows the user to quickly and easily layout their windows on a dynamic grid using just the mouse.",
+		"link": "http://windowgrid.net/",
+		"winget": "na"
 	},
 	"WPFInstallwingetui": {
 		"category": "Utilities",

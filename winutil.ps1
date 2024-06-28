@@ -260,19 +260,19 @@ function Get-TabXaml {
         $paneltotal = $columncount
     }
     # add ColumnDefinitions to evenly draw colums
-    $blockXml="<Grid.ColumnDefinitions>`n"+("<ColumnDefinition Width=""*""/>`n"*($paneltotal))+"</Grid.ColumnDefinitions>`n"
+    $blockXml="<Grid.ColumnDefinitions>`r`n"+("<ColumnDefinition Width=""*""/>`r`n"*($paneltotal))+"</Grid.ColumnDefinitions>`r`n"
     # Iterate through organizedData by panel, category, and application
     $count = 0
     foreach ($panel in ($organizedData.Keys | Sort-Object)) {
-        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
         $panelcount++
         foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
             $count++
             if ($columncount -gt 0) {
                 $panelcount2 = [Int](($count)/$maxcount-0.5)
                 if ($panelcount -eq $panelcount2 ) {
-                    $blockXml +="`n</StackPanel>`n</Border>`n"
-                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                    $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
+                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
                     $panelcount++
                 }
             }
@@ -282,49 +282,49 @@ function Get-TabXaml {
             
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
-            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`n"
+            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`r`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
                 if ($columncount -gt 0) {
                     $panelcount2 = [Int](($count)/$maxcount-0.5)
                     if ($panelcount -eq $panelcount2 ) {
-                        $blockXml +="`n</StackPanel>`n</Border>`n"
-                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`n"
+                        $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
+                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
                         $panelcount++
                     }
                 }
                 $appInfo = $organizedData[$panel][$category][$appName]
                 if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<DockPanel LastChildFill=`"True`">`n<Label Content=`"$($appInfo.Content)`" ToolTip=`"$($appInfo.Description)`" HorizontalAlignment=`"Left`"/>`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`" HorizontalAlignment=`"Right`"/>`n</DockPanel>`n"
+                    $blockXml += "<DockPanel LastChildFill=`"True`">`r`n<Label Content=`"$($appInfo.Content)`" ToolTip=`"$($appInfo.Description)`" HorizontalAlignment=`"Left`"/>`r`n"
+                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`" HorizontalAlignment=`"Right`"/>`r`n</DockPanel>`r`n"
                 } elseif ("Combobox" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`n"
-                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`n"
+                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`r`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`r`n"
+                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`r`n"
                     $addfirst="IsSelected=`"True`""
                     foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
-                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`n"
+                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`r`n"
                         $addfirst=""
                     }
-                    $blockXml += "</ComboBox>`n</StackPanel>"
+                    $blockXml += "</ComboBox>`r`n</StackPanel>"
                 # If it is a digit, type is button and button length is digits
                 } elseif ($appInfo.Type -match "^[\d\.]+$") {
-                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`n"
+                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`r`n"
                 # else it is a checkbox
                 } else {
                     $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
                     if ($null -eq $appInfo.Link)
                     {
-                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`n"
+                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`r`n"
                     }
                     else
                     {
-                        $blockXml += "<StackPanel Orientation=""Horizontal"">`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`n</StackPanel>`n"
+                        $blockXml += "<StackPanel Orientation=""Horizontal"">`r`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`r`n</StackPanel>`r`n"
                     }
                 }
             }
         }
-        $blockXml +="`n</StackPanel>`n</Border>`n"
+        $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
     }
     return ($blockXml)
 }
@@ -535,9 +535,27 @@ Function Get-WinUtilToggleStatus {
             return $false
         }
     }
+    if($ToggleSwitch -eq "WPFToggleTaskbarSearch"){
+        $SearchButton = (Get-ItemProperty -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search").SearchboxTaskbarMode
+        if($SearchButton -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
     if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
         $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
         if($StickyKeys -eq 58){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleTaskView") {
+        $TaskView = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').ShowTaskViewButton
+        if($TaskView -eq 0){
             return $false
         }
         else{
@@ -2138,6 +2156,40 @@ Function Invoke-WinUtilStickyKeys {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+function Invoke-WinUtilTaskbarSearch {
+    <#
+
+    .SYNOPSIS
+        Enable/Disable Taskbar Widgets
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Taskbar Widgets
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Search Button"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Search Button"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\"
+        Set-ItemProperty -Path $Path -Name SearchboxTaskbarMode -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Invoke-WinUtilTaskbarWidgets {
     <#
 
@@ -2160,6 +2212,40 @@ function Invoke-WinUtilTaskbarWidgets {
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name TaskbarDa -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilTaskView {
+    <#
+
+    .SYNOPSIS
+        Enable/Disable Task View
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Task View
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Task View"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Task View"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name ShowTaskViewButton -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -4719,6 +4805,8 @@ function Invoke-WPFToggle {
         "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
         "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
+        "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
+        "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -5456,14 +5544,6 @@ $sync.configs.applications = '{
     "link": "https://github.com/sharkdp/bat",
     "winget": "sharkdp.bat"
   },
-  "WPFInstallbitcomet": {
-    "category": "Utilities",
-    "choco": "bitcomet",
-    "content": "BitComet",
-    "description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
-    "link": "https://www.bitcomet.com/",
-    "winget": "CometNetwork.BitComet"
-  },
   "WPFInstallbitwarden": {
     "category": "Utilities",
     "choco": "bitwarden",
@@ -5488,14 +5568,6 @@ $sync.configs.applications = '{
     "link": "https://www.blender.org/",
     "winget": "BlenderFoundation.Blender"
   },
-  "WPFInstallbluestacks": {
-    "category": "Games",
-    "choco": "bluestacks",
-    "content": "Bluestacks",
-    "description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
-    "link": "https://www.bluestacks.com/",
-    "winget": "BlueStack.BlueStacks"
-  },
   "WPFInstallbrave": {
     "category": "Browsers",
     "choco": "brave",
@@ -5519,6 +5591,14 @@ $sync.configs.applications = '{
     "description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
     "link": "https://www.bulkrenameutility.co.uk",
     "winget": "TGRMNSoftware.BulkRenameUtility"
+  },
+  "WPFInstallAdvancedRenamer": {
+    "category": "Utilities",
+    "choco": "advanced-renamer",
+    "content": "Advanced Renamer",
+    "description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
+    "link": "https://www.advancedrenamer.com/",
+    "winget": "XP9MD3S1KFCPH1"
   },
   "WPFInstallcalibre": {
     "category": "Document",
@@ -5616,14 +5696,6 @@ $sync.configs.applications = '{
     "link": "https://copyq.readthedocs.io/",
     "winget": "hluk.CopyQ"
   },
-  "WPFInstallditto": {
-    "category": "Utilities",
-    "choco": "ditto",
-    "content": "Ditto (Clipboard Manager)",
-    "description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
-    "link": "https://github.com/sabrogden/Ditto",
-    "winget": "Ditto.Ditto"
-  },
   "WPFInstallcpuz": {
     "category": "Utilities",
     "choco": "cpu-z",
@@ -5711,6 +5783,14 @@ $sync.configs.applications = '{
     "description": "Discord is a popular communication platform with voice, video, and text chat, designed for gamers but used by a wide range of communities.",
     "link": "https://discord.com/",
     "winget": "Discord.Discord"
+  },
+  "WPFInstallditto": {
+    "category": "Utilities",
+    "choco": "ditto",
+    "content": "Ditto",
+    "description": "Ditto is an extension to the standard windows clipboard.",
+    "link": "https://github.com/sabrogden/Ditto",
+    "winget": "Ditto.Ditto"
   },
   "WPFInstalldockerdesktop": {
     "category": "Development",
@@ -5863,6 +5943,14 @@ $sync.configs.applications = '{
     "description": "Falkon is a lightweight and fast web browser with a focus on user privacy and efficiency.",
     "link": "https://www.falkon.org/",
     "winget": "KDE.Falkon"
+  },
+  "WPFInstallfastfetch": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Fastfetch",
+    "description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
+    "link": "https://github.com/fastfetch-cli/fastfetch/",
+    "winget": "Fastfetch-cli.Fastfetch"
   },
   "WPFInstallferdium": {
     "category": "Communications",
@@ -6508,7 +6596,7 @@ $sync.configs.applications = '{
     "category": "Communications",
     "choco": "element-desktop",
     "content": "Element",
-    "description": "Element is a client for Matrix?an open network for secure, decentralized communication.",
+    "description": "Element is a client for Matrix&#8212;an open network for secure, decentralized communication.",
     "link": "https://element.io/",
     "winget": "Element.Element"
   },
@@ -6647,6 +6735,14 @@ $sync.configs.applications = '{
     "description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
     "link": "https://www.mp3tag.de/en/",
     "winget": "Mp3tag.Mp3tag"
+  },
+  "WPFInstalltagscanner": {
+    "category": "Multimedia Tools",
+    "choco": "tagscanner",
+    "content": "TagScanner (Tag Scanner)",
+    "description": "TagScanner is a powerful tool for organizing and managing your music collection",
+    "link": "https://www.xdlab.ru/en/",
+    "winget": "SergeySerkov.TagScanner"
   },
   "WPFInstallnanazip": {
     "category": "Utilities",
@@ -7096,6 +7192,14 @@ $sync.configs.applications = '{
     "link": "https://www.qbittorrent.org/",
     "winget": "qBittorrent.qBittorrent"
   },
+  "WPFInstalltransmission": {
+    "category": "Utilities",
+    "choco": "transmission",
+    "content": "Transmission",
+    "description": "Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean.",
+    "link": "https://transmissionbt.com/",
+    "winget": "Transmission.Transmission"
+  },
   "WPFInstalltixati": {
     "category": "Utilities",
     "choco": "tixati.portable",
@@ -7504,6 +7608,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/thonny/thonny",
     "winget": "AivarAnnamaa.Thonny"
   },
+  "WPFInstallMuEditor": {
+    "category": "Development",
+    "choco": "na",
+    "content": "Code With Mu (Mu Editor)",
+    "description": "Mu is a Python code editor for beginner programmers",
+    "link": "https://codewith.mu/",
+    "winget": "Mu.Mu"
+  },
   "WPFInstallthorium": {
     "category": "Browsers",
     "choco": "na",
@@ -7688,6 +7800,14 @@ $sync.configs.applications = '{
     "link": "https://voicemeeter.com/",
     "winget": "VB-Audio.Voicemeeter"
   },
+  "WPFInstallVoicemeeterPotato": {
+    "category": "Multimedia Tools",
+    "choco": "voicemeeter-potato",
+    "content": "Voicemeeter Potato",
+    "description": "Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications.",
+    "link": "https://voicemeeter.com/",
+    "winget": "VB-Audio.Voicemeeter.Potato"
+  },
   "WPFInstallvrdesktopstreamer": {
     "category": "Games",
     "choco": "na",
@@ -7736,14 +7856,6 @@ $sync.configs.applications = '{
     "link": "https://wezfurlong.org/wezterm/index.html",
     "winget": "wez.wezterm"
   },
-  "WPFInstallwindirstat": {
-    "category": "Utilities",
-    "choco": "windirstat",
-    "content": "WinDirStat",
-    "description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
-    "link": "https://windirstat.net/",
-    "winget": "WinDirStat.WinDirStat"
-  },
   "WPFInstallwindowspchealth": {
     "category": "Utilities",
     "choco": "na",
@@ -7751,6 +7863,14 @@ $sync.configs.applications = '{
     "description": "Windows PC Health Check is a tool that helps you check if your PC meets the system requirements for Windows 11.",
     "link": "https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844",
     "winget": "Microsoft.WindowsPCHealthCheck"
+  },
+  "WPFInstallWindowGrid": {
+    "category": "Utilities",
+    "choco": "windowgrid",
+    "content": "WindowGrid",
+    "description": "WindowGrid is a modern window management program for Windows that allows the user to quickly and easily layout their windows on a dynamic grid using just the mouse.",
+    "link": "http://windowgrid.net/",
+    "winget": "na"
   },
   "WPFInstallwingetui": {
     "category": "Utilities",
@@ -8643,7 +8763,7 @@ $sync.configs.tweaks = '{
       "powercfg.exe /hibernate on"
     ]
   },
-  "WPFToggleTweaksLaptopHybernation": {
+  "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
     "category": "Essential Tweaks",
@@ -11036,79 +11156,92 @@ $sync.configs.tweaks = '{
   },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
-    "Description": "Copies OneDrive files to Default Home Folders and Uninstalls it.",
+    "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
     "InvokeScript": [
+      "       
+      $OneDrivePath = $($env:OneDrive)
+      Write-Host \"Removing OneDrive\"
+      $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
+      if (Test-Path $regPath){
+          $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
+          $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
+          Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
+      }
+      else{
+          Write-Host \"Onedrive dosn''t seem to be installed anymore\" -ForegroundColor Red
+          return
+      }
+      # Check if OneDrive got Uninstalled
+      if (-not (Test-Path $regPath)){
+      Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
+      Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($OneDrivePath)'' ''$($env:USERPROFILE.TrimEnd())\\'' /mov /e /xj\" -NoNewWindow -Wait     
+
+      Write-Host \"Removing OneDrive leftovers\"
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\OneDrive\"
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
+      Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
+      reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\OneDrive\" -f
+      # check if directory is empty before removing:
+      If ((Get-ChildItem \"$OneDrivePath\" -Recurse | Measure-Object).Count -eq 0) {
+          Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$OneDrivePath\"
+      }
+
+      Write-Host \"Remove Onedrive from explorer sidebar\"
+      Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
+      Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
+
+      Write-Host \"Removing run hook for new users\"
+      reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
+      reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
+      reg unload \"hku\\Default\"
+
+      Write-Host \"Removing startmenu entry\"
+      Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
+
+      Write-Host \"Removing scheduled task\"
+      Get-ScheduledTask -TaskPath ''\\'' -TaskName ''OneDrive*'' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+      # Add Shell folders restoring default locations
+      Write-Host \"Shell Fixing\"
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"AppData\" -Value \"$env:userprofile\\AppData\\Roaming\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cache\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCache\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cookies\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCookies\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Favorites\" -Value \"$env:userprofile\\Favorites\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"History\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\History\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Local AppData\" -Value \"$env:userprofile\\AppData\\Local\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Music\" -Value \"$env:userprofile\\Music\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Video\" -Value \"$env:userprofile\\Videos\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"NetHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Network Shortcuts\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"PrintHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Printer Shortcuts\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Programs\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Recent\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Recent\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"SendTo\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\SendTo\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Start Menu\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Startup\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Templates\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Templates\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{374DE290-123F-4565-9164-39C4925E467B}\" -Value \"$env:userprofile\\Downloads\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Desktop\" -Value \"$env:userprofile\\Desktop\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Pictures\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Personal\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
+      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
+      Write-Host \"Restarting explorer\"
+      taskkill.exe /F /IM \"explorer.exe\"
+      Start-Process \"explorer.exe\"
+
+      Write-Host \"Waiting for explorer to complete loading\"
+      Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
+      Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
+      Start-Sleep 5
+      }
+      else{
+      Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
+      }
       "
-
-        Write-Host \"Kill OneDrive process\"
-        taskkill.exe /F /IM \"OneDrive.exe\"
-        taskkill.exe /F /IM \"explorer.exe\"
-
-        Write-Host \"Copy all OneDrive to Root UserProfile\"
-        Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($env:USERPROFILE.TrimEnd())\\OneDrive'' ''$($env:USERPROFILE.TrimEnd())\\'' /e /xj\" -NoNewWindow -Wait
-
-        Write-Host \"Remove OneDrive\"
-        Start-Process -FilePath winget -ArgumentList \"uninstall -e --purge --force --silent Microsoft.OneDrive \" -NoNewWindow -Wait
-
-        Write-Host \"Removing OneDrive leftovers\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\OneDrive\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:programdata\\Microsoft OneDrive\"
-        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:systemdrive\\OneDriveTemp\"
-        # check if directory is empty before removing:
-        If ((Get-ChildItem \"$env:userprofile\\OneDrive\" -Recurse | Measure-Object).Count -eq 0) {
-            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:userprofile\\OneDrive\"
-        }
-
-        Write-Host \"Remove Onedrive from explorer sidebar\"
-        Set-ItemProperty -Path \"HKCR:\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
-        Set-ItemProperty -Path \"HKCR:\\Wow6432Node\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" -Name \"System.IsPinnedToNameSpaceTree\" -Value 0
-
-        Write-Host \"Removing run hook for new users\"
-        reg load \"hku\\Default\" \"C:\\Users\\Default\\NTUSER.DAT\"
-        reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
-        reg unload \"hku\\Default\"
-
-        Write-Host \"Removing startmenu entry\"
-        Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
-
-        Write-Host \"Removing scheduled task\"
-        Get-ScheduledTask -TaskPath ''\\'' -TaskName ''OneDrive*'' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
-
-        # Add Shell folders restoring default locations
-        Write-Host \"Shell Fixing\"
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"AppData\" -Value \"$env:userprofile\\AppData\\Roaming\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cache\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCache\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Cookies\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\INetCookies\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Favorites\" -Value \"$env:userprofile\\Favorites\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"History\" -Value \"$env:userprofile\\AppData\\Local\\Microsoft\\Windows\\History\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Local AppData\" -Value \"$env:userprofile\\AppData\\Local\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Music\" -Value \"$env:userprofile\\Music\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Video\" -Value \"$env:userprofile\\Videos\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"NetHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Network Shortcuts\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"PrintHood\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Printer Shortcuts\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Programs\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Recent\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Recent\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"SendTo\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\SendTo\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Start Menu\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Startup\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Templates\" -Value \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Templates\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{374DE290-123F-4565-9164-39C4925E467B}\" -Value \"$env:userprofile\\Downloads\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Desktop\" -Value \"$env:userprofile\\Desktop\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"My Pictures\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"Personal\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{F42EE2D3-909F-4907-8871-4C22FC0BF756}\" -Value \"$env:userprofile\\Documents\" -Type ExpandString
-        Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name \"{0DDD015D-B06C-45D5-8C4C-F59713854639}\" -Value \"$env:userprofile\\Pictures\" -Type ExpandString
-        Write-Host \"Restarting explorer\"
-        Start-Process \"explorer.exe\"
-
-        Write-Host \"Waiting for explorer to complete loading\"
-        Write-Host \"Please Note - OneDrive folder may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
-        Start-Sleep 5
-        "
     ],
     "UndoScript": [
       "
@@ -11553,28 +11686,6 @@ $sync.configs.tweaks = '{
       }
     ]
   },
-  "WPFTweaksEnableipsix": {
-    "Content": "Enable IPv6",
-    "Description": "Enables IPv6.",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a023_",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "0",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ],
-    "InvokeScript": [
-      "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ],
-    "UndoScript": [
-      "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
-  },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme",
     "Description": "Enable/Disable Dark Mode.",
@@ -11652,7 +11763,15 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a069_",
+    "Order": "a070_",
+    "Type": "Toggle"
+  },
+  "WPFToggleTaskbarSearch": {
+    "Content": "Taskbar Search",
+    "Description": "If Enabled Search Button will be on the taskbar.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a068_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -11667,7 +11786,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Widgets Icon in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a068_",
+    "Order": "a069_",
     "Type": "Toggle"
   },
   "WPFchangedns": {
@@ -11712,6 +11831,14 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a082_",
     "Type": "300"
+  },
+  "WPFToggleTaskView": {
+    "Content": "Task View",
+    "Description": "If Enabled then Task View Icon in Taskbar will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a069_",
+    "Type": "Toggle"
   }
 }' | convertfrom-json
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
@@ -12521,7 +12648,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalllinphone" Content="Linphone" ToolTip="Linphone is an open-source voice over IP (VoIPservice that allows for audio and video calls, messaging, and more." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllinphoneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.linphone.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallmatrix" Content="Element" ToolTip="Element is a client for Matrix?an open network for secure, decentralized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
+<CheckBox Name="WPFInstallmatrix" Content="Element" ToolTip="Element is a client for Matrix&#8212;an open network for secure, decentralized communication." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmatrixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://element.io/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallqtox" Content="QTox" ToolTip="QTox is a free and open-source messaging app that prioritizes user privacy and security in its design." Margin="0,0,2,0"/><TextBlock Name="WPFInstallqtoxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://qtox.github.io/" />
@@ -12643,6 +12770,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallminiconda" Content="Miniconda" ToolTip="Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others)." Margin="0,0,2,0"/><TextBlock Name="WPFInstallminicondaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://docs.conda.io/projects/miniconda" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallMuEditor" Content="Code With Mu (Mu Editor)" ToolTip="Mu is a Python code editor for beginner programmers" Margin="0,0,2,0"/><TextBlock Name="WPFInstallMuEditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://codewith.mu/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallneovim" Content="Neovim" ToolTip="Neovim is a highly extensible text editor and an improvement over the original Vim editor." Margin="0,0,2,0"/><TextBlock Name="WPFInstallneovimLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://neovim.io/" />
@@ -12802,9 +12932,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallATLauncher" Content="ATLauncher" ToolTip="ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly." Margin="0,0,2,0"/><TextBlock Name="WPFInstallATLauncherLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ATLauncher/ATLauncher" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallbluestacks" Content="Bluestacks" ToolTip="Bluestacks is an Android emulator for running mobile apps and games on a PC." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbluestacksLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bluestacks.com/" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallcemu" Content="Cemu" ToolTip="Cemu is a highly experimental software to emulate Wii U applications on PC." Margin="0,0,2,0"/><TextBlock Name="WPFInstallcemuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://cemu.info/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -12880,17 +13007,17 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet6" Content=".NET Desktop Runtime 6" ToolTip=".NET Desktop Runtime 6 is a runtime environment required for running applications developed with .NET 6." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet6Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/6.0" />
 </StackPanel>
-
-</StackPanel>
-</Border>
-<Border Grid.Row="1" Grid.Column="2">
-<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet7" Content=".NET Desktop Runtime 7" ToolTip=".NET Desktop Runtime 7 is a runtime environment required for running applications developed with .NET 7." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet7Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/7.0" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldotnet8" Content=".NET Desktop Runtime 8" ToolTip=".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldotnet8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/8.0" />
 </StackPanel>
+
+</StackPanel>
+</Border>
+<Border Grid.Row="1" Grid.Column="2">
+<StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnuget" Content="NuGet" ToolTip="NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnugetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nuget.org/" />
 </StackPanel>
@@ -13076,6 +13203,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallstremio" Content="Stremio" ToolTip="Stremio is a media center application that allows users to organize and stream their favorite movies, TV shows, and video content." Margin="0,0,2,0"/><TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltagscanner" Content="TagScanner (Tag Scanner)" ToolTip="TagScanner is a powerful tool for organizing and managing your music collection" Margin="0,0,2,0"/><TextBlock Name="WPFInstalltagscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.xdlab.ru/en/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltidal" Content="Tidal" ToolTip="Tidal is a music streaming service known for its high-fidelity audio quality and exclusive content. It offers a vast library of songs and curated playlists." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltidalLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://tidal.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13086,6 +13216,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallvoicemeeter" Content="Voicemeeter (Audio)" ToolTip="Voicemeeter is a virtual audio mixer that allows you to manage and enhance audio streams on your computer. It is commonly used for audio recording and streaming purposes." Margin="0,0,2,0"/><TextBlock Name="WPFInstallvoicemeeterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://voicemeeter.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallVoicemeeterPotato" Content="Voicemeeter Potato" ToolTip="Voicemeeter Potato is the ultimate version of the Voicemeeter Audio Mixer Application endowed with Virtual Audio Device to mix and manage any audio sources from or to any audio devices or applications." Margin="0,0,2,0"/><TextBlock Name="WPFInstallVoicemeeterPotatoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://voicemeeter.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallytdlp" Content="Yt-dlp" ToolTip="Command-line tool that allows you to download videos from YouTube and other supported sites. It is an improved version of the popular youtube-dl." Margin="0,0,2,0"/><TextBlock Name="WPFInstallytdlpLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/yt-dlp/yt-dlp" />
@@ -13106,14 +13239,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallkicad" Content="Kicad" ToolTip="Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry." Margin="0,0,2,0"/><TextBlock Name="WPFInstallkicadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.kicad.org/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="3">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/><TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app" />
 </StackPanel>
@@ -13161,6 +13294,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstall7zip" Content="7-Zip" ToolTip="7-Zip is a free and open-source file archiver utility. It supports several compression formats and provides a high compression ratio, making it a popular choice for file compression." Margin="0,0,2,0"/><TextBlock Name="WPFInstall7zipLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.7-zip.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallAdvancedRenamer" Content="Advanced Renamer" ToolTip="Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways." Margin="0,0,2,0"/><TextBlock Name="WPFInstallAdvancedRenamerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.advancedrenamer.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallalacritty" Content="Alacritty Terminal" ToolTip="Alacritty is a fast, cross-platform, and GPU-accelerated terminal emulator. It is designed for performance and aims to be the fastest terminal emulator available." Margin="0,0,2,0"/><TextBlock Name="WPFInstallalacrittyLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://alacritty.org/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13180,9 +13316,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbat" Content="Bat (Cat)" ToolTip="Bat is a cat command clone with syntax highlighting. It provides a user-friendly and feature-rich alternative to the traditional cat command for viewing and concatenating files." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sharkdp/bat" />
-</StackPanel>
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallbitcomet" Content="BitComet" ToolTip="BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbitcometLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.bitcomet.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallbitwarden" Content="Bitwarden" ToolTip="Bitwarden is an open-source password management solution. It allows users to store and manage their passwords in a secure and encrypted vault, accessible across multiple devices." Margin="0,0,2,0"/><TextBlock Name="WPFInstallbitwardenLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://bitwarden.com/" />
@@ -13233,7 +13366,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalldevtoys" Content="DevToys" ToolTip="DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldevtoysLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://devtoys.app/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallditto" Content="Ditto (Clipboard Manager)" ToolTip="Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldittoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sabrogden/Ditto" />
+<CheckBox Name="WPFInstallditto" Content="Ditto" ToolTip="Ditto is an extension to the standard windows clipboard." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldittoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/sabrogden/Ditto" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalldmt" Content="Dual Monitor Tools" ToolTip="Dual Monitor Tools (DMT) is a FOSS app that customize handling multiple monitors and even lock the mouse on specific monitor. Useful for full screen games and apps that does not handle well a second monitor or helps the workflow." Margin="0,0,2,0"/><TextBlock Name="WPFInstalldmtLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dualmonitortool.sourceforge.net/" />
@@ -13261,6 +13394,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfancontrol" Content="FanControl" ToolTip="Fan Control is a free and open-source software that allows the user to control his CPU, GPU and case fans using temperatures." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfancontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://getfancontrol.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallfastfetch" Content="Fastfetch" ToolTip="Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way" Margin="0,0,2,0"/><TextBlock Name="WPFInstallfastfetchLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/fastfetch-cli/fastfetch/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallfileconverter" Content="File-Converter" ToolTip="File Converter is a very simple tool which allows you to convert and compress one or several file(s) using the context menu in windows explorer." Margin="0,0,2,0"/><TextBlock Name="WPFInstallfileconverterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://file-converter.io/" />
@@ -13328,14 +13464,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/" />
 </StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
+</StackPanel>
 
 </StackPanel>
 </Border>
 <Border Grid.Row="1" Grid.Column="4">
 <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-<StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/" />
-</StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/><TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/" />
 </StackPanel>
@@ -13484,6 +13620,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstalltotalcommander" Content="Total Commander" ToolTip="Total Commander is a file manager for Windows that provides a powerful and intuitive interface for file management." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltotalcommanderLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.ghisler.com/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstalltransmission" Content="Transmission" ToolTip="Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltransmissionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://transmissionbt.com/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstalltreesize" Content="TreeSize Free" ToolTip="TreeSize Free is a disk space manager that helps you analyze and visualize the space usage on your drives." Margin="0,0,2,0"/><TextBlock Name="WPFInstalltreesizeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.jam-software.com/treesize_free/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
@@ -13505,7 +13644,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFInstallWindhawk" Content="Windhawk" ToolTip="The customization marketplace for Windows programs" Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindhawkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windhawk.net" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
-<CheckBox Name="WPFInstallwindirstat" Content="WinDirStat" ToolTip="WinDirStat is a disk usage statistics viewer and cleanup tool for Windows." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindirstatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://windirstat.net/" />
+<CheckBox Name="WPFInstallWindowGrid" Content="WindowGrid" ToolTip="WindowGrid is a modern window management program for Windows that allows the user to quickly and easily layout their windows on a dynamic grid using just the mouse." Margin="0,0,2,0"/><TextBlock Name="WPFInstallWindowGridLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://windowgrid.net/" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallwindowsfirewallcontrol" Content="Windows Firewall Control" ToolTip="Windows Firewall Control is a powerful tool which extends the functionality of Windows Firewall and provides new extra features which makes Windows Firewall better." Margin="0,0,2,0"/><TextBlock Name="WPFInstallwindowsfirewallcontrolLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.binisoft.org/wfc" />
@@ -13590,13 +13729,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0"  ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
 <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0"  ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
 <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0"  ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
-<CheckBox Name="WPFToggleTweaksLaptopHybernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0"  ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
+<CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0"  ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
 <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0"  ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="16"/>
 <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" Margin="5,0"  ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs"/>
 <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" Margin="5,0"  ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
 <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0"  ToolTip="Disables IPv6."/>
-<CheckBox Name="WPFTweaksEnableipsix" Content="Enable IPv6" Margin="5,0"  ToolTip="Enables IPv6."/>
 <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0"  ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
 <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" Margin="5,0"  ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
 <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0"  ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
@@ -13606,7 +13744,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0"  ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
 <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0"  ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
 <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0"  ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: AveYo"/>
-<CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0"  ToolTip="Copies OneDrive files to Default Home Folders and Uninstalls it."/>
+<CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0"  ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it."/>
 <Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment = "Left" Width="220" Margin="5" Padding="20,5" />
 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -13666,8 +13804,16 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
 </DockPanel>
 <DockPanel LastChildFill="True">
+<Label Content="Taskbar Search" ToolTip="If Enabled Search Button will be on the taskbar." HorizontalAlignment="Left"/>
+<CheckBox Name="WPFToggleTaskbarSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
+</DockPanel>
+<DockPanel LastChildFill="True">
 <Label Content="Taskbar Widgets" ToolTip="If Enabled then Widgets Icon in Taskbar will be shown." HorizontalAlignment="Left"/>
 <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
+</DockPanel>
+<DockPanel LastChildFill="True">
+<Label Content="Task View" ToolTip="If Enabled then Task View Icon in Taskbar will be shown." HorizontalAlignment="Left"/>
+<CheckBox Name="WPFToggleTaskView" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="2.5,0" HorizontalAlignment="Right"/>
 </DockPanel>
 <DockPanel LastChildFill="True">
 <Label Content="Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left"/>
