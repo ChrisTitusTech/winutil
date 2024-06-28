@@ -1279,6 +1279,14 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"WPFInstallmullvadvpn": {
+		"category": "Pro Tools",
+		"choco": "mullvad-app",
+		"content": "Mullvad VPN",
+		"description": "This is the VPN client software for the Mullvad VPN service.",
+		"link": "https://github.com/mullvad/mullvadvpn-app",
+		"winget": "MullvadVPN.MullvadVPN"
+	},
 	"WPFInstallBorderlessGaming": {
 		"category": "Utilities",
 		"choco": "na",
