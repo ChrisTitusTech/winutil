@@ -10,7 +10,7 @@ $InitialSessionState = [System.Management.Automation.Runspaces.InitialSessionSta
 $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
-$functions = Get-ChildItem function:\ | Where-Object {$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
+$functions = (Get-ChildItem function:\).where{$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
 foreach ($function in $functions){
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
@@ -276,7 +276,7 @@ Add-Type @"
 "@
     }
 
-   foreach ($proc in (Get-Process | Where-Object { $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" })) {
+   foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
         # Check if the process's MainWindowHandle is valid
     	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
@@ -392,11 +392,11 @@ Add-Type @"
 
 # Load Checkboxes and Labels outside of the Filter fuction only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
-$CheckBoxes = $sync.GetEnumerator() | Where-Object { $psitem.Key -in $filter }
+$CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
 
 $filter = Get-WinUtilVariables -Type Label
 $labels = @{}
-$sync.GetEnumerator() | Where-Object {$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
+($sync.GetEnumerator()).where{$PSItem.Key -in $filter} | ForEach-Object {$labels[$_.Key] = $_.Value}
 
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category    
 
@@ -499,6 +499,5 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })
-
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
