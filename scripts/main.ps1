@@ -133,9 +133,17 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    $sync.ConfigLoaded = $False
-    $sync.ComputerInfo = Get-ComputerInfo
-    $sync.ConfigLoaded = $True
+    try{
+        $oldProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue"
+        $sync.ConfigLoaded = $False
+        $sync.ComputerInfo = Get-ComputerInfo
+        $sync.ConfigLoaded = $True
+    }
+    finally{
+        $ProgressPreference = "Continue"
+    }
+    
 } | Out-Null
 
 #===========================================================================
@@ -144,9 +152,6 @@ Invoke-WPFRunspace -ScriptBlock {
 
 # Print the logo
 Invoke-WPFFormVariables
-
-# Install Winget if not already present
-Install-WinUtilWinget
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -282,19 +287,37 @@ Add-Type @"
         }
     }
 
-    # need to experiemnt more
-    # setting icon for the windows is still not working
-    # $pngUrl = "https://christitus.com/images/logo-full.png"
-    # $pngPath = "$env:TEMP\cttlogo.png"
-    # $iconPath = "$env:TEMP\cttlogo.ico"
-    # # Download the PNG file
-    # Invoke-WebRequest -Uri $pngUrl -OutFile $pngPath
-    # if (Test-Path -Path $pngPath) {
-    #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $iconPath
-    # }
-    # $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
-    # Write-Host $icon.Handle
-    # [Window]::SendMessage($windowHandle, 0x80, [IntPtr]::Zero, $icon.Handle)
+
+    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
+
+    # URL of the image
+    $imageUrl = "https://christitus.com/images/logo-full.png"
+
+    # Download the image
+    $imagePath = "$env:TEMP\logo-full.png"
+    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
+
+    # Read the image file as a byte array
+    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
+
+    # Convert the byte array to a Base64 string
+    $base64String = [System.Convert]::ToBase64String($imageBytes)
+
+    # Create a streaming image by streaming the base64 string to a bitmap streamsource
+    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+    $bitmap.BeginInit()
+    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
+    $bitmap.EndInit()
+    $bitmap.Freeze()
+
+    # Ensure TaskbarItemInfo is created if not already
+    if (-not $sync["Form"].TaskbarItemInfo) {
+        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+    }
+
+    # Set the overlay icon for the taskbar
+    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
+
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
@@ -467,14 +490,12 @@ $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
     $sync["SettingsPopup"].IsOpen = $false
-    # Example usage
     $authorInfo = @"
-Author   : @christitustech
-Runspace : @DeveloperDurp
-GUI      : @KonTy
-MicroWin : @KonTy
-GitHub   : https://github.com/ChrisTitusTech/winutil
-Version  : $($sync.version)
+Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
+Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
+MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
+GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
+Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
     Show-CustomDialog -Message $authorInfo -Width 400
 })

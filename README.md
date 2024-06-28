@@ -32,9 +32,9 @@ or by executing:
 iwr -useb https://christitus.com/win | iex
 ```
 
-if for some reason this site is not reachable from your country please try running it directly from github (replace `RELEASE_TAG` with current release that you are interested in, for example `v2024.06.05`)
+if for some reason this site is not reachable from your country please try running it directly from github.
 ```
-irm "https://github.com/ChrisTitusTech/winutil/releases/download/RELEASE_TAG/winutil.ps1" | iex
+irm "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1" | iex
 ```
 
 #### Automation

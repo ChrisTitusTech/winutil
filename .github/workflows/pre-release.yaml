@@ -1,6 +1,10 @@
-name: Release WinUtil
+name: Pre-Release WinUtil
 
 on:
+  workflow_run:
+    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
+    types:
+      - completed
   workflow_dispatch: # Manual trigger added
 
 jobs:
@@ -11,7 +15,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+        
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
@@ -35,8 +39,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
-          name: Release ${{ steps.extract_version.outputs.version }}
+          name: Pre-Release ${{ steps.extract_version.outputs.version }}
           files: ./winutil.ps1
-          prerelease: false
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
