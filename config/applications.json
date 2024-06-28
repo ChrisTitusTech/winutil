@@ -151,14 +151,6 @@
 		"link": "https://github.com/sharkdp/bat",
 		"winget": "sharkdp.bat"
 	},
-	"bitcomet": {
-		"category": "Utilities",
-		"choco": "bitcomet",
-		"content": "BitComet",
-		"description": "BitComet is a free and open-source BitTorrent client that supports HTTP/FTP downloads and provides download management features.",
-		"link": "https://www.bitcomet.com/",
-		"winget": "CometNetwork.BitComet"
-	},
 	"bitwarden": {
 		"category": "Utilities",
 		"choco": "bitwarden",
@@ -183,14 +175,6 @@
 		"link": "https://www.blender.org/",
 		"winget": "BlenderFoundation.Blender"
 	},
-	"bluestacks": {
-		"category": "Games",
-		"choco": "bluestacks",
-		"content": "Bluestacks",
-		"description": "Bluestacks is an Android emulator for running mobile apps and games on a PC.",
-		"link": "https://www.bluestacks.com/",
-		"winget": "BlueStack.BlueStacks"
-	},
 	"brave": {
 		"category": "Browsers",
 		"choco": "brave",
@@ -214,6 +198,14 @@
 		"description": "Bulk Rename Utility allows you to easily rename files and folders recursively based upon find-replace, character place, fields, sequences, regular expressions, EXIF data, and more.",
 		"link": "https://www.bulkrenameutility.co.uk",
 		"winget": "TGRMNSoftware.BulkRenameUtility"
+	},
+	"AdvancedRenamer": {
+		"category": "Utilities",
+		"choco": "advanced-renamer",
+		"content": "Advanced Renamer",
+		"description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
+		"link": "https://www.advancedrenamer.com/",
+		"winget": "XP9MD3S1KFCPH1"
 	},
 	"calibre": {
 		"category": "Document",
@@ -311,14 +303,6 @@
 		"link": "https://copyq.readthedocs.io/",
 		"winget": "hluk.CopyQ"
 	},
-	"ditto": {
-		"category": "Utilities",
-		"choco": "ditto",
-		"content": "Ditto (Clipboard Manager)",
-		"description": "Ditto is an extension to the Windows Clipboard. You copy something to the Clipboard and Ditto takes what you copied and stores it in a database to retrieve at a later time.",
-		"link": "https://github.com/sabrogden/Ditto",
-		"winget": "Ditto.Ditto"
-	},
 	"cpuz": {
 		"category": "Utilities",
 		"choco": "cpu-z",
@@ -389,7 +373,7 @@
 		"content": "DevToys",
 		"description": "DevToys is a collection of development-related utilities and tools for Windows. It includes tools for file management, code formatting, and productivity enhancements for developers.",
 		"link": "https://devtoys.app/",
-		"winget": "9PGCV4V3BK4W"
+		"winget": "DevToys-app.DevToys"
 	},
 	"digikam": {
 		"category": "Multimedia Tools",
@@ -412,7 +396,7 @@
 		"choco": "ditto",
 		"content": "Ditto",
 		"description": "Ditto is an extension to the standard windows clipboard.",
-		"link": "https://ditto-cp.sourceforge.io/",
+		"link": "https://github.com/sabrogden/Ditto",
 		"winget": "Ditto.Ditto"
 	},
 	"dockerdesktop": {
@@ -567,6 +551,14 @@
 		"link": "https://www.falkon.org/",
 		"winget": "KDE.Falkon"
 	},
+	"fastfetch": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Fastfetch",
+		"description": "Fastfetch is a neofetch-like tool for fetching system information and displaying them in a pretty way",
+		"link": "https://github.com/fastfetch-cli/fastfetch/",
+		"winget": "fastfetch"
+	},
 	"ferdium": {
 		"category": "Communications",
 		"choco": "ferdium",
@@ -695,14 +687,6 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
-	"orcaslicer": {
-		"category": "Multimedia Tools",
-		"choco": "orcaslicer",
-		"content": "OrcaSlicer",
-		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
-		"link": "https://github.com/SoftFever/OrcaSlicer",
-		"winget": "SoftFever.OrcaSlicer"
-	},
 	"fxsound": {
 		"category": "Multimedia Tools",
 		"choco": "fxsound",
@@ -749,7 +733,7 @@
 		"content": "Git Extensions",
 		"description": "Git Extensions is a graphical user interface for Git, providing additional features for easier source code management.",
 		"link": "https://gitextensions.github.io/",
-		"winget": "Git.Git;GitExtensionsTeam.GitExtensions"
+		"winget": "GitExtensionsTeam.GitExtensions"
 	},
 	"githubcli": {
 		"category": "Development",
@@ -757,7 +741,7 @@
 		"content": "GitHub CLI",
 		"description": "GitHub CLI is a command-line tool that simplifies working with GitHub directly from the terminal.",
 		"link": "https://cli.github.com/",
-		"winget": "Git.Git;GitHub.cli"
+		"winget": "GitHub.cli"
 	},
 	"githubdesktop": {
 		"category": "Development",
@@ -765,7 +749,7 @@
 		"content": "GitHub Desktop",
 		"description": "GitHub Desktop is a visual Git client that simplifies collaboration on GitHub repositories with an easy-to-use interface.",
 		"link": "https://desktop.github.com/",
-		"winget": "Git.Git;GitHub.GitHubDesktop"
+		"winget": "GitHub.GitHubDesktop"
 	},
 	"gitkrakenclient": {
 		"category": "Development",
@@ -799,12 +783,20 @@
 		"link": "https://www.gog.com/galaxy",
 		"winget": "GOG.Galaxy"
 	},
+	"gitify": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Gitify",
+		"description": "GitHub notifications on your menu bar.",
+		"link": "https://www.gitify.io/",
+		"winget": "Gitify.Gitify"
+	},
 	"golang": {
 		"category": "Development",
 		"choco": "golang",
-		"content": "GoLang",
-		"description": "GoLang (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
-		"link": "https://golang.org/",
+		"content": "Go",
+		"description": "Go (or Golang) is a statically typed, compiled programming language designed for simplicity, reliability, and efficiency.",
+		"link": "https://go.dev/",
 		"winget": "GoLang.Go"
 	},
 	"googledrive": {
@@ -1279,9 +1271,17 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"mullvadvpn": {
+		"category": "Pro Tools",
+		"choco": "mullvad-app",
+		"content": "Mullvad VPN",
+		"description": "This is the VPN client software for the Mullvad VPN service.",
+		"link": "https://github.com/mullvad/mullvadvpn-app",
+		"winget": "MullvadVPN.MullvadVPN"
+	},
 	"BorderlessGaming": {
 		"category": "Utilities",
-		"choco": "na",
+		"choco": "borderlessgaming",
 		"content": "Borderless Gaming",
 		"description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
 		"link": "https://github.com/Codeusa/Borderless-Gaming",
@@ -1342,6 +1342,14 @@
 		"description": "Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats.",
 		"link": "https://www.mp3tag.de/en/",
 		"winget": "Mp3tag.Mp3tag"
+	},
+	"tagscanner": {
+		"category": "Multimedia Tools",
+		"choco": "tagscanner",
+		"content": "TagScanner (Tag Scanner)",
+		"description": "TagScanner is a powerful tool for organizing and managing your music collection",
+		"link": "https://www.xdlab.ru/en/",
+		"winget": "SergeySerkov.TagScanner"
 	},
 	"nanazip": {
 		"category": "Utilities",
@@ -1743,6 +1751,14 @@
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
 	},
+	"orcaslicer": {
+		"category": "Utilities",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
+	},
 	"prucaslicer": {
 		"category": "Utilities",
 		"choco": "prusaslicer",
@@ -1782,6 +1798,14 @@
 		"description": "qBittorrent is a free and open-source BitTorrent client that aims to provide a feature-rich and lightweight alternative to other torrent clients.",
 		"link": "https://www.qbittorrent.org/",
 		"winget": "qBittorrent.qBittorrent"
+	},
+	"transmission": {
+		"category": "Utilities",
+		"choco": "transmission",
+		"content": "Transmission",
+		"description": "Transmission is a cross-platform BitTorrent client that is open source, easy, powerful, and lean.",
+		"link": "https://transmissionbt.com/",
+		"winget": "Transmission.Transmission"
 	},
 	"tixati": {
 		"category": "Utilities",
@@ -2191,6 +2215,14 @@
 		"link": "https://github.com/thonny/thonny",
 		"winget": "AivarAnnamaa.Thonny"
 	},
+	"MuEditor": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Code With Mu (Mu Editor)",
+		"description": "Mu is a Python code editor for beginner programmers",
+		"link": "https://codewith.mu/",
+		"winget": "Mu.Mu"
+	},
 	"thorium": {
 		"category": "Browsers",
 		"choco": "na",
@@ -2389,7 +2421,7 @@
 		"content": "VS Code",
 		"description": "Visual Studio Code is a free, open-source code editor with support for multiple programming languages.",
 		"link": "https://code.visualstudio.com/",
-		"winget": "Git.Git;Microsoft.VisualStudioCode"
+		"winget": "Microsoft.VisualStudioCode"
 	},
 	"vscodium": {
 		"category": "Development",
@@ -2397,7 +2429,7 @@
 		"content": "VS Codium",
 		"description": "VSCodium is a community-driven, freely-licensed binary distribution of Microsoft's VS Code.",
 		"link": "https://vscodium.com/",
-		"winget": "Git.Git;VSCodium.VSCodium"
+		"winget": "VSCodium.VSCodium"
 	},
 	"waterfox": {
 		"category": "Browsers",
@@ -2422,14 +2454,6 @@
 		"description": "WezTerm is a powerful cross-platform terminal emulator and multiplexer",
 		"link": "https://wezfurlong.org/wezterm/index.html",
 		"winget": "wez.wezterm"
-	},
-	"windirstat": {
-		"category": "Utilities",
-		"choco": "windirstat",
-		"content": "WinDirStat",
-		"description": "WinDirStat is a disk usage statistics viewer and cleanup tool for Windows.",
-		"link": "https://windirstat.net/",
-		"winget": "WinDirStat.WinDirStat"
 	},
 	"windowspchealth": {
 		"category": "Utilities",
@@ -2838,5 +2862,21 @@
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
+	},
+	"FormatFactory": {
+		"category": "Utilities",
+		"choco": "formatfactory",
+		"content": "Format Factory",
+		"description":"FormatFactory is an ad-supported freeware multimedia converter that can convert video, audio, and picture files. It is also capable of ripping DVDs and CDs to other file formats, as well as creating .iso images. It can also join multiple video files together into one.",
+		"link": "http://www.pcfreetime.com/formatfactory/",
+		"winget": "na"
+  },
+	"dropox": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Dropbox",
+		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+		"link": "https://www.dropbox.com/en_GB/desktop",
+		"winget": "Dropbox.Dropbox"
 	}
 }

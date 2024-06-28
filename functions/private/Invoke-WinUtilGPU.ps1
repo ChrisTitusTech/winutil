@@ -1,29 +1,21 @@
 function Invoke-WinUtilGPU {
     $gpuInfo = Get-CimInstance Win32_VideoController
-    
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*NVIDIA*") {
-            return $true  # NVIDIA GPU found
-        }
-    }
+
+    # GPUs to blacklist from using Demanding Theming
+    $lowPowerGPUs = (
+        "*NVIDIA GeForce*M*",
+        "*NVIDIA GeForce*Laptop*",
+        "*NVIDIA GeForce*GT*",
+        "*AMD Radeon(TM)*",
+        "*UHD*"
+    )
 
     foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*AMD Radeon RX*") {
-            return $true # AMD GPU Found 
+        foreach ($gpuPattern in $lowPowerGPUs){
+            if ($gpu.Name -like $gpuPattern) {
+                return $false
+            }
         }
     }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*UHD*") {
-            return $false # Intel Intergrated GPU Found 
-        }
-    }
-    foreach ($gpu in $gpuInfo) {
-        $gpuName = $gpu.Name
-        if ($gpuName -like "*AMD Radeon(TM)*") {
-            return $false # AMD Intergrated GPU Found 
-        }
-    }
+    return $true
 }

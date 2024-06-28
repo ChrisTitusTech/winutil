@@ -1,6 +1,7 @@
 {
   "Standard": [
     "WPFTweaksAH",
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksDVR",
     "WPFTweaksHiber",
     "WPFTweaksHome",
@@ -16,6 +17,7 @@
     "WPFTweaksTeredo"
   ],
   "Minimal": [
+    "WPFTweaksConsumerFeatures",
     "WPFTweaksHome",
     "WPFTweaksServices",
     "WPFTweaksTele"
