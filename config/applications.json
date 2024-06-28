@@ -687,14 +687,6 @@
 		"link": "https://www.freecadweb.org/",
 		"winget": "FreeCAD.FreeCAD"
 	},
-	"WPFInstallorcaslicer": {
-		"category": "Multimedia Tools",
-		"choco": "orcaslicer",
-		"content": "OrcaSlicer",
-		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
-		"link": "https://github.com/SoftFever/OrcaSlicer",
-		"winget": "SoftFever.OrcaSlicer"
-	},
 	"WPFInstallfxsound": {
 		"category": "Multimedia Tools",
 		"choco": "fxsound",
@@ -1750,6 +1742,14 @@
 		"description": "SysInternals Process Monitor is an advanced monitoring tool that shows real-time file system, registry, and process/thread activity.",
 		"link": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
 		"winget": "Microsoft.Sysinternals.ProcessMonitor"
+	},
+	"WPFInstallorcaslicer": {
+		"category": "Utilities",
+		"choco": "orcaslicer",
+		"content": "OrcaSlicer",
+		"description": "G-code generator for 3D printers (Bambu, Prusa, Voron, VzBot, RatRig, Creality, etc.)",
+		"link": "https://github.com/SoftFever/OrcaSlicer",
+		"winget": "SoftFever.OrcaSlicer"
 	},
 	"WPFInstallprucaslicer": {
 		"category": "Utilities",
