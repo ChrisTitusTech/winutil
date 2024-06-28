@@ -5110,7 +5110,7 @@ function Invoke-WPFUnInstall {
     $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
 
     if ($PackagesToInstall.Count -eq 0) {
-        $WarningMsg = "Please select the program(s) to install"
+        $WarningMsg = "Please select the program(s) to uninstall"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
@@ -6586,7 +6586,7 @@ $sync.configs.applications = '{
   },
   "WPFInstallBorderlessGaming": {
     "category": "Utilities",
-    "choco": "na",
+    "choco": "borderlessgaming",
     "content": "Borderless Gaming",
     "description": "Play your favorite games in a borderless window; no more time consuming alt-tabs.",
     "link": "https://github.com/Codeusa/Borderless-Gaming",
