@@ -2839,5 +2839,13 @@
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
 		"link": "https://www.kicad.org/",
 		"winget": "KiCad.KiCad"
+	},
+	"WPFInstalldropox": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Dropbox",
+		"description":"The Dropbox desktop app! Save hard drive space, share and edit files and send for signature – all without the distraction of countless browser tabs.",
+		"link": "https://www.dropbox.com/en_GB/desktop",
+		"winget": "Dropbox.Dropbox"
 	}
 }
