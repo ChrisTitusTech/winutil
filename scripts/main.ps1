@@ -287,19 +287,6 @@ Add-Type @"
         }
     }
 
-    # need to experiemnt more
-    # setting icon for the windows is still not working
-    # $pngUrl = "https://christitus.com/images/logo-full.png"
-    # $pngPath = "$env:TEMP\cttlogo.png"
-    # $iconPath = "$env:TEMP\cttlogo.ico"
-    # # Download the PNG file
-    # Invoke-WebRequest -Uri $pngUrl -OutFile $pngPath
-    # if (Test-Path -Path $pngPath) {
-    #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $iconPath
-    # }
-    # $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
-    # Write-Host $icon.Handle
-    # [Window]::SendMessage($windowHandle, 0x80, [IntPtr]::Zero, $icon.Handle)
 
     # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
 
