@@ -49,11 +49,11 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
             # Note: Avoid using HTML Entity Codes (for example '&rdquo;' (stands for "Right Double Quotation Mark")), and use HTML decimal/hex codes instead.
 	        # as using HTML Entity Codes will result in XML parse Error when running the compiled script.
 	    if ($jsonAsObject.$firstLevelName.content -ne $null) {
-                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;')
+                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
             }
             if ($jsonAsObject.$firstLevelName.description -ne $null) {
-                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;')
+                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
 	    }
 	}

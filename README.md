@@ -1,5 +1,7 @@
 # Chris Titus Tech's Windows Utility
 
+[![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=7a39fb)](https://github.com/ChrisTitusTech/winutil/releases/latest)
+
 This utility is a compilation of Windows tasks I perform on each Windows system I use. It is meant to streamline *installs*, debloat with *tweaks*, troubleshoot with *config*, and fix Windows *updates*. I am extremely picky about any contributions to keep this project clean and efficient. 
 
 ![screen-install](screen-install.png)
@@ -39,7 +41,7 @@ irm "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.
 
 #### Automation
 
-Some features are avaliable through automation. This allows you to save your config file pass it to Winutil walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
+Some features are available through automation. This allows you to save your config file pass it to Winutil walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
 
 1. On the Install Tab, click "Get Installed", this will get all installed apps **supported by Winutil** on the system
   ![GetInstalled](/wiki/Get-Installed.png)
