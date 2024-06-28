@@ -8286,6 +8286,14 @@ $sync.configs.applications = '{
     "description": "The Dropbox desktop app! Save hard drive space, share and edit files and send for signature ? all without the distraction of countless browser tabs.",
     "link": "https://www.dropbox.com/en_GB/desktop",
     "winget": "Dropbox.Dropbox"
+  },
+  "WPFInstallOFGB": {
+    "category": "Utilities",
+    "choco": "ofgb",
+    "content": "OFGB (Oh Frick Go Back)",
+    "description": "GUI Tool To Removes Ads From Various Places Around Windows 11",
+    "link": "https://github.com/xM4ddy/OFGB",
+    "winget": "xM4ddy.OFGB"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -13512,6 +13520,9 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallnvclean" Content="NVCleanstall" ToolTip="NVCleanstall is a tool designed to customize NVIDIA driver installations, allowing advanced users to control more aspects of the installation process." Margin="0,0,2,0"/><TextBlock Name="WPFInstallnvcleanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/nvcleanstall/" />
+</StackPanel>
+<StackPanel Orientation="Horizontal">
+<CheckBox Name="WPFInstallOFGB" Content="OFGB (Oh Frick Go Back)" ToolTip="GUI Tool To Removes Ads From Various Places Around Windows 11" Margin="0,0,2,0"/><TextBlock Name="WPFInstallOFGBLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/xM4ddy/OFGB" />
 </StackPanel>
 <StackPanel Orientation="Horizontal">
 <CheckBox Name="WPFInstallOPAutoClicker" Content="OPAutoClicker" ToolTip="A full-fledged autoclicker with two modes of autoclicking, at your dynamic cursor location or at a prespecified location." Margin="0,0,2,0"/><TextBlock Name="WPFInstallOPAutoClickerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.opautoclicker.com" />
