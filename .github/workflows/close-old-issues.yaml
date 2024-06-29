@@ -30,6 +30,10 @@ jobs:
         # Sends a message for both the Stale and Close events of an issue.
         stale-issue-message: "This issue was marked as stale because it has been inactive for 7 days"
         close-issue-message: "This issue was closed because it has been inactive for 7 days since it was marked as stale"
+        # Increase this value if the project receives a lot of
+        # PRs (yes.. apparently they're processed no matter what) & Issues.
+        # Default value for it (according to the docs) is 30
+        operations-per-run: 100
         # Make this field equal true if you want to test your configuration if it works correctly or not
         debug-only: false
         repo-token: ${{ secrets.GITHUB_TOKEN }}
