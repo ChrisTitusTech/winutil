@@ -38,5 +38,6 @@ jobs:
           name: Release ${{ steps.extract_version.outputs.version }}
           files: ./winutil.ps1
           prerelease: false
+          make_latest: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

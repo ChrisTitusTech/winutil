@@ -22,7 +22,7 @@ jobs:
           $version = ''
           Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
-              $version = $matches[1]
+              $version = "pre"+$matches[1]
               echo "version=$version" >> $GITHUB_ENV
               echo "::set-output name=version::$version"
               break
