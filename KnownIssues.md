@@ -1,4 +1,26 @@
 ## Known Issues and Fixes
+
+### Launch Issues:
+
+- If you are unable to resolve `christitus.com/win` and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads.
+
+Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
+
+- Windows Security (formerly Defender) and other anti-virus software are known to block the script. The script gets flagged due to the fact that it requires administrator privileges & makes drastic system changes.
+
+- If you are having TLS 1.2 issues, or are having trouble resolving `christitus.com/win` then run with the following command:
+
+```
+[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1')
+```
+
+If you are still having issues try using a **VPN**, or changing your **DNS provider** to:
+
+| `1.1.1.1` | `1.0.0.1` | or  | `8.8.8.8` | `8.8.4.4` |
+|---------|---------|-----|---------|---------|
+
+### Other Issues:
+
 - Windows taking longer to shut down:
   - [#69](https://github.com/ChrisTitusTech/winutil/issues/69) Turn on fast startup: Press Windows key + R, then type:
   ```
