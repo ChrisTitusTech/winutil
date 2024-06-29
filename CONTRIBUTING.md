@@ -8,7 +8,7 @@ Pull Requests are now handled directly on the **MAIN branch**. This was done sin
 
 If you're doing code changes, then you can submit a PR to `main` branch, but I am very selective about these.
 
-> [!IMPROTANT]
+> [!WARNING]
 > Do not use a code formatter, massive amounts of line changes, and make multiple feature changes.
 > EACH FEATURE CHANGE SHOULD BE IT'S OWN Pull Request!
 
@@ -17,4 +17,4 @@ When creating pull requests, it is essential to thoroughly document all changes 
 By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
 
 > [!NOTE]
-> When creating a function please include "WPF" or "WinUtil" in the name so that it can be loaded into the runspace.
+> When creating a function, please include "WPF" or "WinUtil" in the file name so it can be loaded into the runspace.
