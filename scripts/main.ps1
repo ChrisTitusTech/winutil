@@ -390,7 +390,7 @@ Add-Type @"
 
 })
 
-# Load Checkboxes and Labels outside of the Filter fuction only once on startup for performance reasons
+# Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
 $CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
 
