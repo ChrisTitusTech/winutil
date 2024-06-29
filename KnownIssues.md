@@ -19,6 +19,16 @@ If you are still having issues try using a **VPN**, or changing your **DNS provi
 | `1.1.1.1` | `1.0.0.1` | or  | `8.8.8.8` | `8.8.4.4` |
 |---------|---------|-----|---------|---------|
 
+- Script doesn't run/PowerShell crashes:	
+  1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)	
+  2. Run:	
+  ```	
+  Set-ExecutionPolicy Unrestricted -Scope Process -Force	
+  ```	
+  3. Run:	
+  ```	
+  irm christitus.com/win | iex	
+  ```
   
 ### Other Issues:
 
