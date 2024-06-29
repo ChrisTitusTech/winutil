@@ -34,6 +34,9 @@ If this site is not reachable from your country, please try running it directly 
 irm "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1" | iex
 ```
 
+If you still have Issues, refer to [Known Issues](https://github.com/ChrisTitusTech/winutil/blob/main/KnownIssues.md).
+
+
 #### Automation
 
 Some features are available through automation. This allows you to save your config file pass it to Winutil walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
@@ -52,21 +55,6 @@ iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run"
 7. Have a cup of coffee! Come back when it's done.
 
 
-## Issues:
-
-- If you are unable to resolve christitus.com/win and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads. You may use a VPN or change your DNS provider to Google/Cloudflare/etc.
-
-Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
-
-- Windows Security (formerly Defender) and other anti-virus software are known to block the script. The script gets flagged due to the fact that it requires administrator privileges & makes drastic system changes.
-
-- If you are having TLS 1.2 issues, or are having trouble resolving `christitus.com/win` then run with the following command:
-
-```
-[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1')
-```
-
-If you are still having issues try changing your DNS provider to 1.1.1.1 || 1.0.0.1 or 8.8.8.8 || 8.8.4.4
 
 ## Support
 - To morally and mentally support the project, make sure to leave a ⭐️!
