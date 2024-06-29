@@ -20,7 +20,9 @@ function Get-LatestRelease {
         return $latestRelease.tag_name
     } catch {
         Write-Host "Error fetching release data: $_" -ForegroundColor Red
-        return $null
+        Write-Host "Redirecting to latest Full Release"
+        $latestRelease = "releases/latest/download"
+        return $latestRelease.tag_name
     }
 }
 
