@@ -16,7 +16,7 @@
 function Get-LatestRelease {
     try {
         $releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
-        $latestRelease = $releases | Select-Object -First 1
+        $latestRelease = $releases | Where-Object {$_.prerelease -eq $true} | Select-Object -First 1
         return $latestRelease.tag_name
     } catch {
         Write-Host "Error fetching release data: $_" -ForegroundColor Red
