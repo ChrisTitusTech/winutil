@@ -22,7 +22,7 @@ If you are still having issues try using a **VPN**, or changing your **DNS provi
 - Script doesn't run/PowerShell crashes:
   1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
   2. Run:
-  ```
+  ```ps1
   Set-ExecutionPolicy Unrestricted -Scope Process -Force
   ```
   3. Run:
