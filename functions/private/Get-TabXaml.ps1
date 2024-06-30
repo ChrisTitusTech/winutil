@@ -72,11 +72,12 @@ function Get-TabXaml {
     #       .. may be solve this even before calling this function, and pass the result as a parameter?
     $tab_repeat = 7
     $spaces_per_tab = 4 # The convenction used across the code base
-    $precal_indent = $(" " * ($spaces_per_tab * $tab_repeat))
-    $precal_indent_p1 = $(" " * ($spaces_per_tab * ($tab_repeat + 1)))
-    $precal_indent_p2 = $(" " * ($spaces_per_tab * ($tab_repeat + 2)))
-    $precal_indent_m1 = $(" " * ($spaces_per_tab * ($tab_repeat - 1)))
-    $precal_indent_m2 = $(" " * ($spaces_per_tab * ($tab_repeat - 2)))
+    $tab_as_spaces = $(" " * $spaces_per_tab)
+    $precal_indent = $($tab_as_spaces * $tab_repeat)
+    $precal_indent_p1 = $($tab_as_spaces * ($tab_repeat + 1))
+    $precal_indent_p2 = $($tab_as_spaces * ($tab_repeat + 2))
+    $precal_indent_m1 = $($tab_as_spaces * ($tab_repeat - 1))
+    $precal_indent_m2 = $($tab_as_spaces * ($tab_repeat - 2))
 
     # Calculate the needed number of panels
     $panelcount = 0
