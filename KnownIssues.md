@@ -7,7 +7,7 @@
 
 - If you are having TLS 1.2 issues, or are having trouble resolving `christitus.com/win` then run with the following command:
 
-```
+```ps1
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;iex(New-Object Net.WebClient).DownloadString('https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1')
 ```
 
@@ -22,11 +22,11 @@ If you are still having issues try using a **VPN**, or changing your **DNS provi
 - Script doesn't run/PowerShell crashes:
   1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
   2. Run:
-  ```
+  ```ps1
   Set-ExecutionPolicy Unrestricted -Scope Process -Force
   ```
   3. Run:
-  ```
+  ```ps1
   irm christitus.com/win | iex
   ```
   
@@ -38,12 +38,12 @@ If you are still having issues try using a **VPN**, or changing your **DNS provi
   control /name Microsoft.PowerOptions /page pageGlobalSettings
   ```
   - If that doesn't work, Disable Hibernation: Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11) and enter:
-  ```
+  ```ps1
   powercfg /H off
   ```
 - [#69](https://github.com/ChrisTitusTech/winutil/issues/69) [95](https://github.com/ChrisTitusTech/winutil/issues/95) [#232](https://github.com/ChrisTitusTech/winutil/issues/232) Windows Search does not work: Enable Background Apps
 - [#198](https://github.com/ChrisTitusTech/winutil/issues/198) Xbox Game Bar Activation Broken: Set the Xbox Accessory Management Service to Automatic
-```
+```ps1
 Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
 ```
 
