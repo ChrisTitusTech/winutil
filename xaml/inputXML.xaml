@@ -49,6 +49,8 @@
     <Style TargetType="Button" x:Key="HoverButtonStyle">
         <Setter Property="Foreground" Value="{MainForegroundColor}" />
         <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontSize" Value="{FontSize}" />
+        <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
         <Setter Property="Background" Value="{MainBackgroundColor}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -237,7 +239,8 @@
             <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
             <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
-            <Setter Property="Height" Value="{ToggleButtonHeight}"/>
+            <Setter Property="Height" Value="auto"/>
+            <Setter Property="Width" Value="auto"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -290,21 +293,21 @@
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
-            <!-- <Setter Property="FontSize" Value="15" /> -->
-            <!-- <Setter Property="TextElement.FontFamily" Value="Consolas, sans-serif"/> -->
-             <Setter Property="Template">
+            <Setter Property="FontSize" Value="{FontSize}" />
+            <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
+            <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <Grid Background="{TemplateBinding Background}" Margin="6,0,0,0">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Grid Width="16" Height="16">
+                                    <Grid Width="{FontSize}" Height="{FontSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{ButtonBackgroundColor}"
                                                 BorderThickness="1"
-                                                Width="14"
-                                                Height="14"
+                                                Width="{Binding Path={FontSize}-2}"
+                                                Height="{Binding Path={FontSize}-2}"
                                                 Margin="1"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
@@ -414,7 +417,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" x:Name="txtToggle" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{MainForegroundColor}" FontSize="12">
+                        <TextBlock Grid.Column="0" x:Name="txtToggle" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{MainForegroundColor}" FontSize="{FontSize}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Text" Value="Off"/>
@@ -668,8 +671,8 @@
                     Grid.Column="1" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
-                    FontSize="18"
-                    Width="35" Height="35"
+                    FontSize="{IconFontSize}"
+                    Width="{IconButtonWidth}" Height="{IconButtonHeight}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
@@ -693,11 +696,11 @@
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                Width="35" Height="35"
+                Width="{IconButtonWidth}" Height="{IconButtonHeight}"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="18" Name="WPFCloseButton" />
+                Foreground="{MainForegroundColor}" FontSize="{IconFontSize}" Name="WPFCloseButton" />
             </Grid>
 
         </DockPanel>
@@ -747,7 +750,7 @@
                     </StackPanel>
                     <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBlock Padding="10">
+                            <TextBlock Padding="10" FontSize="{FontSize}">
                                 Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                 <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
                             </TextBlock>

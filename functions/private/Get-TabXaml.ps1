@@ -65,7 +65,21 @@ function Get-TabXaml {
         # Add Order property to keep the original order of tweaks and features
         $organizedData[$appObject.panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
     }
-    $panelcount=0
+
+    # Same tab amount in last line of 'inputXML.xaml' file
+    # TODO: Get the base repeat (amount) of tabs from last line (or even lines)
+    #       so it can dynamicly react to whatever is before this generated XML string.
+    #       .. may be solve this even before calling this function, and pass the result as a parameter?
+    $tab_repeat = 7
+    $spaces_per_tab = 4 # The convenction used across the code base
+    $precal_indent = $(" " * ($spaces_per_tab * $tab_repeat))
+    $precal_indent_p1 = $(" " * ($spaces_per_tab * ($tab_repeat + 1)))
+    $precal_indent_p2 = $(" " * ($spaces_per_tab * ($tab_repeat + 2)))
+    $precal_indent_m1 = $(" " * ($spaces_per_tab * ($tab_repeat - 1)))
+    $precal_indent_m2 = $(" " * ($spaces_per_tab * ($tab_repeat - 2)))
+
+    # Calculate the needed number of panels
+    $panelcount = 0
     $paneltotal = $organizedData.Keys.Count
     if ($columncount -gt 0) {
         $appcount = $sync.configs.$tabname.PSObject.Properties.Name.count + $organizedData["0"].Keys.count
@@ -73,19 +87,27 @@ function Get-TabXaml {
         $paneltotal = $columncount
     }
     # add ColumnDefinitions to evenly draw colums
-    $blockXml="<Grid.ColumnDefinitions>`r`n"+("<ColumnDefinition Width=""*""/>`r`n"*($paneltotal))+"</Grid.ColumnDefinitions>`r`n"
-    # Iterate through organizedData by panel, category, and application
+    $blockXml = "<Grid.ColumnDefinitions>"
+    $blockXml += $("`r`n" + " " * ($spaces_per_tab * $tab_repeat) +
+                 "<ColumnDefinition Width=""*""/>") * $paneltotal
+    $blockXml += $("`r`n" + " " * ($spaces_per_tab * ($tab_repeat - 1))) +
+                 "</Grid.ColumnDefinitions>" + "`r`n"
+
+    # Iterate through 'organizedData' by panel, category, and application
     $count = 0
     foreach ($panel in ($organizedData.Keys | Sort-Object)) {
-        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
+        $blockXml += $precal_indent_m1 + "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">" + "`r`n"
+        $blockXml += $precal_indent + "<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">" + "`r`n"
         $panelcount++
         foreach ($category in ($organizedData[$panel].Keys | Sort-Object)) {
             $count++
             if ($columncount -gt 0) {
                 $panelcount2 = [Int](($count)/$maxcount-0.5)
                 if ($panelcount -eq $panelcount2 ) {
-                    $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
-                    $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
+                    $blockXml += $precal_indent_p2 + "</StackPanel>" + "`r`n"
+                    $blockXml += $precal_indent_p1 + "</Border>" + "`r`n"
+                    $blockXml += $precal_indent_p1 + "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">" + "`r`n"
+                    $blockXml += $precal_indent_p2 + "<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">" + "`r`n"
                     $panelcount++
                 }
             }
@@ -95,49 +117,96 @@ function Get-TabXaml {
 
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
-            $blockXml += "<Label Name=""$categoryname"" Content=""$categorycontent"" FontSize=""16""/>`r`n"
+            $blockXml += $("`r`n" + " " * ($spaces_per_tab * $tab_repeat)) +
+                            "<Label Name=""$categoryname"" Content=""$categorycontent""" + " " +
+                            "FontSize=""{FontSizeHeading}"" FontFamily=""{FontFamilyHeading}""/>" + "`r`n" + "`r`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
+
                 if ($columncount -gt 0) {
                     $panelcount2 = [Int](($count)/$maxcount-0.5)
+                    # Verify the indentation actually works...
                     if ($panelcount -eq $panelcount2 ) {
-                        $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
-                        $blockXml += "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">`r`n<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">`r`n"
+                        $blockXml += $precal_indent_m1 +
+                                        "</StackPanel>" + "`r`n"
+                        $blockXml += $precal_indent_m2 +
+                                        "</Border>" + "`r`n"
+                        $blockXml += $precal_indent_m2 +
+                                        "<Border Grid.Row=""1"" Grid.Column=""$panelcount"">" + "`r`n"
+                        $blockXml += $precal_indent_m1 +
+                                        "<StackPanel Background=""{MainBackgroundColor}"" SnapsToDevicePixels=""True"">" + "`r`n"
                         $panelcount++
                     }
                 }
+
                 $appInfo = $organizedData[$panel][$category][$appName]
-                if ("Toggle" -eq $appInfo.Type) {
-                    $blockXml += "<DockPanel LastChildFill=`"True`">`r`n<Label Content=`"$($appInfo.Content)`" ToolTip=`"$($appInfo.Description)`" HorizontalAlignment=`"Left`"/>`r`n"
-                    $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Style=`"{StaticResource ColorfulToggleSwitchStyle}`" Margin=`"2.5,0`" HorizontalAlignment=`"Right`"/>`r`n</DockPanel>`r`n"
-                } elseif ("Combobox" -eq $appInfo.Type) {
-                    $blockXml += "<StackPanel Orientation=`"Horizontal`" Margin=`"0,5,0,0`">`r`n<Label Content=`"$($appInfo.Content)`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`"/>`r`n"
-                    $blockXml += "<ComboBox Name=`"$($appInfo.Name)`"  Height=`"32`" Width=`"186`" HorizontalAlignment=`"Left`" VerticalAlignment=`"Center`" Margin=`"5,5`">`r`n"
-                    $addfirst="IsSelected=`"True`""
-                    foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
-                        $blockXml += "<ComboBoxItem $addfirst Content=`"$comboitem`"/>`r`n"
-                        $addfirst=""
+                switch ($appInfo.Type) {
+                    "Toggle" {
+                        $blockXml += $precal_indent_m1 +
+                                        "<DockPanel LastChildFill=""True"">" + "`r`n"
+                        $blockXml += $precal_indent +
+                                        "<Label Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""" + " " +
+                                        "HorizontalAlignment=""Left"" FontSize=""{FontSize}""/>" + "`r`n"
+                        $blockXml += $precal_indent +
+                                        "<CheckBox Name=""$($appInfo.Name)"" Style=""{StaticResource ColorfulToggleSwitchStyle}"" Margin=""2.5,0""" + " " +
+                                        "HorizontalAlignment=""Right"" FontSize=""{FontSize}""/>" + "`r`n"
+                        $blockXml += $precal_indent_m1 +
+                                        "</DockPanel>" + "`r`n"
                     }
-                    $blockXml += "</ComboBox>`r`n</StackPanel>"
-                # If it is a digit, type is button and button length is digits
-                } elseif ($appInfo.Type -match "^[\d\.]+$") {
-                    $blockXml += "<Button Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" HorizontalAlignment = `"Left`" Width=`"$($appInfo.Type)`" Margin=`"5`" Padding=`"20,5`" />`r`n"
-                # else it is a checkbox
-                } else {
-                    $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=`"$($appInfo.Checked)`" "}
-                    if ($null -eq $appInfo.Link)
-                    {
-                        $blockXml += "<CheckBox Name=`"$($appInfo.Name)`" Content=`"$($appInfo.Content)`" $($checkedStatus)Margin=`"5,0`"  ToolTip=`"$($appInfo.Description)`"/>`r`n"
+
+                    "Combobox" {
+                        $blockXml += $precal_indent_m1 +
+                                        "<StackPanel Orientation=""Horizontal"" Margin=""0,5,0,0"">" + "`r`n"
+                        $blockXml += $precal_indent + "<Label Content=""$($appInfo.Content)"" HorizontalAlignment=""Left""" + " " +
+                                        "VerticalAlignment=""Center"" FontSize=""{FontSize}""/>" + "`r`n"
+                        $blockXml += $precal_indent +
+                                        "<ComboBox Name=""$($appInfo.Name)""  Height=""32"" Width=""186"" HorizontalAlignment=""Left""" + " " +
+                                        "VerticalAlignment=""Center"" Margin=""5,5"" FontSize=""{FontSize}"">" + "`r`n"
+
+                        $addfirst="IsSelected=""True"""
+                        foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                            $blockXml += $precal_indent_p1 +
+                                            "<ComboBoxItem $addfirst Content=""$comboitem"" FontSize=""{FontSize}""/>" + "`r`n"
+                            $addfirst=""
+                        }
+
+                        $blockXml += $precal_indent_p1 + "</ComboBox>" + "`r`n"
+                        $blockXml += $precal_indent + "</StackPanel>" + "`r`n"
                     }
-                    else
-                    {
-                        $blockXml += "<StackPanel Orientation=""Horizontal"">`r`n<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/><TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)"" ToolTip=""$($appInfo.Link)"" />`r`n</StackPanel>`r`n"
+
+                    "Button" {
+                        $blockXml += $precal_indent +
+                                        "<Button Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""" + " " +
+                                        "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" FontSize=""{FontSize}""/>" + "`r`n"
+                    }
+
+                    # else it is a checkbox
+                    default {
+                        $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=""$($appInfo.Checked)"""}
+                        if ($null -eq $appInfo.Link) {
+                            $blockXml += $precal_indent +
+                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus) Margin=""5,0""" + " " +
+                                            "ToolTip=""$($appInfo.Description)"" FontSize=""{FontSize}""/>" + "`r`n"
+                        } else {
+                            $blockXml += $precal_indent +
+                                            "<StackPanel Orientation=""Horizontal"">" + "`r`n"
+                            $blockXml += $precal_indent_p1 +
+                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)" + " " +
+                                            "ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/>" + "`r`n"
+                            $blockXml += $precal_indent_p1 +
+                                            "<TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)""" + " " +
+                                            "ToolTip=""$($appInfo.Link)"" FontSize=""{FontSize}""/>" + "`r`n"
+                            $blockXml += $precal_indent +
+                                            "</StackPanel>" + "`r`n"
+                        }
                     }
                 }
             }
         }
-        $blockXml +="`r`n</StackPanel>`r`n</Border>`r`n"
+
+        $blockXml += $precal_indent_p1 + "</StackPanel>" + "`r`n"
+        $blockXml += $precal_indent + "</Border>" + "`r`n"
     }
     return ($blockXml)
 }
