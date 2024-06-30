@@ -3112,21 +3112,24 @@
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a080_",
-    "Type": "Button"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
     "category": "Performance Plans",
     "panel": "2",
     "Order": "a081_",
-    "Type": "Button"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
     "category": "Shortcuts",
     "panel": "2",
     "Order": "a082_",
-    "Type": "Button"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFToggleTaskView": {
     "Content": "Task View",

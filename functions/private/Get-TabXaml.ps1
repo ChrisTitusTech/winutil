@@ -28,7 +28,7 @@ function Get-TabXaml {
 
     # Validate tabname
     if ($sync.configs.$tabname -eq $null) {
-        throw "Invalid parameter passed, can't find '$tabname' in '$sync.configs',`nplease double check any calls to 'Get-TabXaml' function."
+        throw "Invalid parameter passed, can't find '$tabname' in '`$sync.configs' variable, please double check any calls to 'Get-TabXaml' function."
     }
 
     $organizedData = @{}
@@ -51,6 +51,7 @@ function Get-TabXaml {
             ComboItems = $appInfo.ComboItems
             # Checked is the property to set startup checked status of checkbox (Default is false)
             Checked = $appInfo.Checked
+            ButtonWidth = $appInfo.ButtonWidth
         }
 
         if (-not $organizedData.ContainsKey($appObject.panel)) {
@@ -177,9 +178,12 @@ function Get-TabXaml {
                     }
 
                     "Button" {
+                        if ($appInfo.ButtonWidth -ne $null) {
+                            $ButtonWidthStr = "Width=""$($appInfo.ButtonWidth)"""
+                        }
                         $blockXml += $precal_indent +
                                         "<Button Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""" + " " +
-                                        "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" FontSize=""{FontSize}""/>" + "`r`n"
+                                        "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" FontSize=""{FontSize}"" $($ButtonWidthStr)/>" + "`r`n"
                     }
 
                     # else it is a checkbox
