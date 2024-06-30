@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.29
+    Version        : 24.06.30
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.29"
+$sync.version = "24.06.30"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -1721,6 +1721,9 @@ Function Invoke-WinUtilCurrentSystem {
                             if ($expectedValue -notlike $actualValue){
                                 $values += $False
                             }
+                        }
+                        else {
+                            $values += $False
                         }
                     }
                 }
@@ -11563,6 +11566,15 @@ $sync.configs.tweaks = '{
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
+    ],
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
+        "Name": "(default)",
+        "Value": "",
+        "OriginalValue": "",
+        "Type": "String"
+      }
     ]
   },
   "WPFTweaksDiskCleanup": {
