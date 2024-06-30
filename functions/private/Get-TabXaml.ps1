@@ -17,10 +17,20 @@ function Get-TabXaml {
     #>
 
 
-    param( [Parameter(Mandatory=$true)]
-        $tabname,
-        $columncount = 0
+    param(
+        [Parameter(Mandatory, position=0)]
+        [string]$tabname,
+
+        [Parameter(position=1)]
+        [ValidateRange(0,10)] # 10 panels as max number is more then enough
+        [int]$columncount = 0
     )
+
+    # Validate tabname
+    if ($sync.configs.$tabname -eq $null) {
+        throw "Invalid parameter passed, can't find '$tabname' in '$sync.configs',`nplease double check any calls to 'Get-TabXaml' function."
+    }
+
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
     foreach ($appName in $sync.configs.$tabname.PSObject.Properties.Name) {
@@ -33,7 +43,7 @@ function Get-TabXaml {
             Content = $appInfo.Content
             Choco = $appInfo.choco
             Winget = $appInfo.winget
-            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel}
+            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel.ToString()}
             Link = $appInfo.link
             Description = $appInfo.description
             # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
