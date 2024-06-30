@@ -184,90 +184,90 @@
     "category": "Features",
     "panel": "1",
     "Order": "a060_",
-    "Type": "150"
+    "Type": "Button"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
     "category": "Fixes",
     "Order": "a040_",
     "panel": "1",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
     "category": "Fixes",
     "panel": "1",
     "Order": "a041_",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
     "category": "Fixes",
     "Order": "a042_",
     "panel": "1",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
     "category": "Fixes",
     "panel": "1",
     "Order": "a043_",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
     "category": "Fixes",
     "panel": "1",
     "Order": "a044_",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
     "category": "Fixes",
     "panel": "1",
     "Order": "a045_",
-    "Type": "300"
+    "Type": "Button"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button"
   }
 }
