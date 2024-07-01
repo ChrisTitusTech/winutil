@@ -164,9 +164,9 @@ $sync["Form"].Add_Closing({
 })
 
 # Attach the event handler to the Click event
-$sync.CheckboxFilterClear.Add_Click({
+$sync.SearchBarClearButton.Add_Click({
     $sync.CheckboxFilter.Text = ""
-    $sync.CheckboxFilterClear.Visibility = "Collapsed"
+    $sync.SearchBarClearButton.Visibility = "Collapsed"
 })
 
 # add some shortcuts for people that don't like clicking
@@ -179,7 +179,7 @@ $commonKeyEvents = {
     {
         $sync.CheckboxFilter.SelectAll()
         $sync.CheckboxFilter.Text = ""
-        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+        $sync.SearchBarClearButton.Visibility = "Collapsed"
         return
     }
 
@@ -404,10 +404,10 @@ $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$
 $sync["CheckboxFilter"].Add_TextChanged({
 
     if ($sync.CheckboxFilter.Text -ne "") {
-        $sync.CheckboxFilterClear.Visibility = "Visible"
+        $sync.SearchBarClearButton.Visibility = "Visible"
     }
     else {
-        $sync.CheckboxFilterClear.Visibility = "Collapsed"
+        $sync.SearchBarClearButton.Visibility = "Collapsed"
     }
 
     $activeApplications = @()

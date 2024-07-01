@@ -273,7 +273,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="ClearButtonStyle" TargetType="Button">
+        <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="Arial"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Content" Value="X"/>
@@ -667,8 +667,8 @@
                     Margin="16,0,0,0">&#xE721;</TextBlock>
                 <Button Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Name="CheckboxFilterClear"
-                    Style="{StaticResource ClearButtonStyle}"
+                    Name="SearchBarClearButton"
+                    Style="{StaticResource SearchBarClearButtonStyle}"
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
                 <Button Name="SettingsButton"
