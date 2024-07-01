@@ -20,7 +20,7 @@ function Get-LatestRelease {
         return $latestRelease.tag_name
     } catch {
         Write-Host "Error fetching release data: $_" -ForegroundColor Red
-        return $null
+        return $latestRelease.tag_name
     }
 }
 
@@ -29,10 +29,12 @@ function RedirectToLatestPreRelease {
     $latestRelease = Get-LatestRelease
     if ($latestRelease) {
         $url = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$latestRelease/winutil.ps1"
-        Invoke-RestMethod $url | Invoke-Expression
     } else {
         Write-Host 'Unable to determine latest pre-release version.' -ForegroundColor Red
+        Write-Host "Using latest Full Release"
+        $url = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
     }
+    Invoke-RestMethod $url | Invoke-Expression
 }
 
 # Call the redirect function
