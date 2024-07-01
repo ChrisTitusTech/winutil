@@ -12,6 +12,9 @@
     Run in Admin Powershell >  ./windev.ps1
 #>
 
+# Set PowerShell window title
+$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition
+
 # Function to fetch the latest release tag from the GitHub API
 function Get-LatestRelease {
     try {
