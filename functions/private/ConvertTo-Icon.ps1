@@ -7,9 +7,11 @@ function ConvertTo-Icon {
         .EXAMPLE
         ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
     #>
-    param( [Parameter(Mandatory=$true)]
+    param(
+        [Parameter(Mandatory=$true)]
         $bitmapPath,
-        $iconPath = "$env:temp\newicon.ico"
+        [Parameter(Mandatory=$true)]
+	$iconPath
     )
 
     Add-Type -AssemblyName System.Drawing
@@ -23,5 +25,7 @@ function ConvertTo-Icon {
         $icon.Dispose()
         #explorer "/SELECT,$iconpath"
     }
-    else { Write-Warning "$BitmapPath does not exist" }
+    else {
+        Write-Warning "$BitmapPath does not exist"
+    }
 }
