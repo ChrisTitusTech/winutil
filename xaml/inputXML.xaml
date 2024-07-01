@@ -275,10 +275,10 @@
         </Style>
         <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
             <Setter Property="FontFamily" Value="Arial"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="{SearchBarClearButtonFontSize}"/>
             <Setter Property="Content" Value="X"/>
-            <Setter Property="Height" Value="14"/>
-            <Setter Property="Width" Value="14"/>
+            <Setter Property="Height" Value="{SearchBarClearButtonFontSize}"/>
+            <Setter Property="Width" Value="{SearchBarClearButtonFontSize}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
             <Setter Property="Padding" Value="0"/>

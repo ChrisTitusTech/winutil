@@ -121,7 +121,7 @@ function Get-TabXaml {
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
             $blockXml += $("`r`n" + " " * ($spaces_per_tab * $tab_repeat)) +
                             "<Label Name=""$categoryname"" Content=""$categorycontent""" + " " +
-                            "FontSize=""{FontSizeHeading}"" FontFamily=""{FontFamilyHeading}""/>" + "`r`n" + "`r`n"
+                            "FontSize=""{FontSizeHeading}"" FontFamily=""{HeaderFontFamily}""/>" + "`r`n" + "`r`n"
             $sortedApps = $organizedData[$panel][$category].Keys | Sort-Object
             foreach ($appName in $sortedApps) {
                 $count++
