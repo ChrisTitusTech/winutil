@@ -11,7 +11,7 @@ function ConvertTo-Icon {
         [Parameter(Mandatory=$true)]
         $bitmapPath,
         [Parameter(Mandatory=$true)]
-	$iconPath
+        $iconPath
     )
 
     Add-Type -AssemblyName System.Drawing

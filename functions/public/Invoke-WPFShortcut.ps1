@@ -29,7 +29,7 @@ function Invoke-WPFShortcut {
 
             Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
 
-	    if (Test-Path -Path "$env:TEMP\cttlogo.png") {
+            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
                 $iconPath = "$env:TEMP\cttlogo.ico"
                 ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
             }
