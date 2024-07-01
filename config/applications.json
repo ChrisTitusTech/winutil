@@ -2902,5 +2902,13 @@
 		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
+	},
+	"UnitedSets": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "United Sets",
+		"description":"An open-sourced program that groups window into tabs, inspired by the unreleased Sets feature",
+		"link": "https://github.com/Windows-Apps-Hub/UnitedSets",
+		"winget": "9N7CWZ3L5RWL"
 	}
 }
