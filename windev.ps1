@@ -40,6 +40,3 @@ function RedirectToLatestPreRelease {
 # Call the redirect function
 
 RedirectToLatestPreRelease
-
-# Set PowerShell window title
-$Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition
