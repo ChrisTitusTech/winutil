@@ -43,7 +43,7 @@ function Get-TabXaml {
             Content = $appInfo.Content
             Choco = $appInfo.choco
             Winget = $appInfo.winget
-            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel.ToString()}
+            Panel = if ($columncount -gt 0 ) { "0" } else {$appInfo.panel}
             Link = $appInfo.link
             Description = $appInfo.description
             # Type is (Checkbox,Toggle,Button,Combobox ) (Default is Checkbox)
