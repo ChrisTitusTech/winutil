@@ -171,13 +171,14 @@ public class PowerManagement {
 		Remove-Features -keepDefender:$keepDefender
 		Write-Host "Removing features complete!"
 
-		Write-Host "Removing Appx Bloat"
 		if (!$keepPackages)
 		{
+			Write-Host "Removing OS packages"
 			Remove-Packages
 		}
 		if (!$keepProvisionedPackages)
 		{
+			Write-Host "Removing Appx Bloat"
 			Remove-ProvisionedPackages -keepSecurity:$keepDefender
 		}
 
