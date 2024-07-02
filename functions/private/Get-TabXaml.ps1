@@ -183,25 +183,25 @@ function Get-TabXaml {
                         }
                         $blockXml += $precal_indent +
                                         "<Button Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""" + " " +
-                                        "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" FontSize=""{FontSize}"" $($ButtonWidthStr)/>" + "`r`n"
+                                        "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" $($ButtonWidthStr)/>" + "`r`n"
                     }
 
                     # else it is a checkbox
                     default {
-                        $checkedStatus = If ($null -eq $appInfo.Checked) {""} Else {"IsChecked=""$($appInfo.Checked)"""}
-                        if ($null -eq $appInfo.Link) {
+                        $checkedStatus = If ($appInfo.Checked -eq $null) {""} Else {" IsChecked=""$($appInfo.Checked)"""}
+                        if ($appInfo.Link -eq $null) {
                             $blockXml += $precal_indent +
-                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus) Margin=""5,0""" + " " +
-                                            "ToolTip=""$($appInfo.Description)"" FontSize=""{FontSize}""/>" + "`r`n"
+                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""$($checkedStatus) Margin=""5,0""" + " " +
+                                            "ToolTip=""$($appInfo.Description)""/>" + "`r`n"
                         } else {
                             $blockXml += $precal_indent +
                                             "<StackPanel Orientation=""Horizontal"">" + "`r`n"
                             $blockXml += $precal_indent_p1 +
-                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)"" $($checkedStatus)" + " " +
+                                            "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""$($checkedStatus)" + " " +
                                             "ToolTip=""$($appInfo.Description)"" Margin=""0,0,2,0""/>" + "`r`n"
                             $blockXml += $precal_indent_p1 +
                                             "<TextBlock Name=""$($appInfo.Name)Link"" Style=""{StaticResource HoverTextBlockStyle}"" Text=""(?)""" + " " +
-                                            "ToolTip=""$($appInfo.Link)"" FontSize=""{FontSize}""/>" + "`r`n"
+                                            "ToolTip=""$($appInfo.Link)""/>" + "`r`n"
                             $blockXml += $precal_indent +
                                             "</StackPanel>" + "`r`n"
                         }
