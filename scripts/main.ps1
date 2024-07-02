@@ -165,7 +165,7 @@ $sync["Form"].Add_Closing({
 
 # Attach the event handler to the Click event
 $sync.SearchBarClearButton.Add_Click({
-    $sync.CheckboxFilter.Text = ""
+    $sync.SearchBar.Text = ""
     $sync.SearchBarClearButton.Visibility = "Collapsed"
 })
 
@@ -177,8 +177,8 @@ $commonKeyEvents = {
 
     if ($_.Key -eq "Escape")
     {
-        $sync.CheckboxFilter.SelectAll()
-        $sync.CheckboxFilter.Text = ""
+        $sync.SearchBar.SelectAll()
+        $sync.SearchBar.Text = ""
         $sync.SearchBarClearButton.Visibility = "Collapsed"
         return
     }
@@ -210,11 +210,11 @@ $commonKeyEvents = {
     }
     # shortcut for the filter box
     if ($_.Key -eq "F" -and $_.KeyboardDevice.Modifiers -eq "Ctrl") {
-        if ($sync.CheckboxFilter.Text -eq "Ctrl-F to filter") {
-            $sync.CheckboxFilter.SelectAll()
-            $sync.CheckboxFilter.Text = ""
+        if ($sync.SearchBar.Text -eq "Ctrl-F to filter") {
+            $sync.SearchBar.SelectAll()
+            $sync.SearchBar.Text = ""
         }
-        $sync.CheckboxFilter.Focus()
+        $sync.SearchBar.Focus()
     }
 }
 
@@ -401,9 +401,9 @@ $labels = @{}
 
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
-$sync["CheckboxFilter"].Add_TextChanged({
+$sync["SearchBar"].Add_TextChanged({
 
-    if ($sync.CheckboxFilter.Text -ne "") {
+    if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     }
     else {
@@ -418,7 +418,7 @@ $sync["CheckboxFilter"].Add_TextChanged({
             continue
         }
 
-        $textToSearch = $sync.CheckboxFilter.Text.ToLower()
+        $textToSearch = $sync.SearchBar.Text.ToLower()
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
 
