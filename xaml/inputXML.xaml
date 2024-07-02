@@ -49,8 +49,8 @@
     <Style TargetType="Button" x:Key="HoverButtonStyle">
         <Setter Property="Foreground" Value="{MainForegroundColor}" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontSize" Value="{FontSize}" />
-        <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
+        <Setter Property="FontSize" Value="{ButtonFontSize}" />
+        <Setter Property="TextElement.FontFamily" Value="{ButtonFontFamily}"/>
         <Setter Property="Background" Value="{MainBackgroundColor}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -146,7 +146,7 @@
                                 <TextBlock Text="{TemplateBinding SelectionBoxItem}"
                                            Foreground="{TemplateBinding Foreground}"
                                            Background="Transparent"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"
                                            />
                             </ToggleButton>
                             <Popup x:Name="Popup"
@@ -302,17 +302,17 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <Grid Background="{TemplateBinding Background}" Margin="6,0,0,0">
+                        <Grid Background="{TemplateBinding Background}" Margin="{CheckBoxMargin}">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Grid Width="{FontSize}" Height="{FontSize}">
+                                    <Grid Width="{CheckBoxBulletDecoratorFontSize}" Height="{CheckBoxBulletDecoratorFontSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{ButtonBackgroundColor}"
                                                 BorderThickness="1"
-                                                Width="{Binding Path={FontSize}-2}"
-                                                Height="{Binding Path={FontSize}-2}"
-                                                Margin="1"
+                                                Width="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
+                                                Height="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
+                                                Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
                                               Stroke="{TemplateBinding Foreground}"
@@ -676,7 +676,7 @@
                     Grid.Column="1" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
-                    FontSize="{IconFontSize}"
+                    FontSize="{SettingsIconFontSize}"
                     Width="{IconButtonWidth}" Height="{IconButtonHeight}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
@@ -688,10 +688,10 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{MainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <MenuItem FontSize="{ButtonFontSize}" Width="{ButtonWidth}" Height="{ButtonHeight}" Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
-                            <MenuItem FontSize="{ButtonFontSize}" Width="{ButtonWidth}" Height="{ButtonHeight}" Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
                             <Separator/>
-                            <MenuItem FontSize="{ButtonFontSize}" Width="{ButtonWidth}" Height="{ButtonHeight}" Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -741,17 +741,17 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="45px"/>
                         <RowDefinition Height=".70*"/>
                         <RowDefinition Height=".10*"/>
                     </Grid.RowDefinitions>
                     {{InstallPanel_tweaks}}
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
-                        <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center"/>
-                        <Button Name="WPFstandard" Content=" Standard " Margin="1"/>
-                        <Button Name="WPFminimal" Content=" Minimal " Margin="1"/>
-                        <Button Name="WPFclear" Content=" Clear " Margin="1"/>
-                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="1"/>
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                        <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
+                        <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
+                        <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
+                        <Button Name="WPFclear" Content=" Clear " Margin="2"/>
+                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
                     </StackPanel>
                     <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
@@ -782,19 +782,19 @@
                     </Grid.ColumnDefinitions>
                     <Border Grid.Row="0" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdefault" Width="Auto" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
+                            <Button Name="WPFUpdatesdefault" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="0" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatessecurity" Width="Auto" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
+                            <Button Name="WPFUpdatessecurity" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.</TextBlock>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="0" Grid.Column="2">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
-                            <Button Name="WPFUpdatesdisable" Width="Auto" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
+                            <Button Name="WPFUpdatesdisable" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
                             <TextBlock Text=" " Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300"/>
                         </StackPanel>
@@ -817,12 +817,12 @@
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="1" />
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="-10,1,1,1" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="1"
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="-10,1,1,1"
                                 ToolTip="Use ISO directory for ScratchDir " />
                             <Grid>
                             <Grid.ColumnDefinitions>
@@ -869,12 +869,12 @@
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
-                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="5,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="5,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="5,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
+                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="5,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="-10,5,0,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
                             <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
                                 Margin="6"
                                 Text=""
@@ -883,9 +883,9 @@
                                 Foreground="{LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
-                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="5,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="-10,5,0,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="5,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="-10,5,0,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                         </StackPanel>
