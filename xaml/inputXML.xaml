@@ -594,51 +594,51 @@
     </Window.Resources>
     <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Name="WPFMainGrid" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50px"/>
+            <RowDefinition Height="{TabRowHeightInPixels}px"/>
             <RowDefinition Height=".9*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Height="{ToggleButtonHeight}" Width="{ToggleButtonHeight}" Name="WPFIcon"
+            <Image Height="{WinUtilIconSize}" Width="{WinUtilIconSize}" Name="WPFIcon"
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
                         <Underline>I</Underline>nstall
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                 <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
                         <Underline>T</Underline>weaks
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                 <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
                         <Underline>C</Underline>onfig
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                 <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
                         <Underline>U</Underline>pdates
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{ToggleButtonHeight}" Width="100"
+            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                 <ToggleButton.Content>
-                    <TextBlock Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
                         <Underline>M</Underline>icroWin
                     </TextBlock>
                 </ToggleButton.Content>
@@ -650,11 +650,22 @@
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
 
+                <!--
+                  TODO:
+                    Make this SearchBar TextBox Position itself and still
+                    house the Magnifying Glass Character in place,
+                    even if that Magnifying Icon changed its Size,
+                    it should be positioned relative to the SearchBar.
+                    Consider using a Math Solver, will help in making
+                    development of these things much easier
+                -->
                 <TextBox
                     Grid.Column="0"
-                    Width="200"
+                    Width="{SearchBarWidth}"
+                    Height="{SearchBarHeight}"
+                    FontSize="{SearchBarTextBoxFontSize}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Height="25" Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
+                    Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
@@ -665,6 +676,13 @@
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="{IconFontSize}"
                     Margin="16,0,0,0">&#xE721;</TextBlock>
+                <!--
+                  TODO:
+                    Make this ClearButton Positioning react to
+                    SearchBar Width Value changing, so it'll look correct.
+                    Consider using a Math Solver, will help in making
+                    development of these things much easier
+                -->
                 <Button Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
@@ -677,7 +695,7 @@
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="{SettingsIconFontSize}"
-                    Width="{IconButtonWidth}" Height="{IconButtonHeight}"
+                    Width="{IconButtonSize}" Height="{IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
@@ -701,7 +719,7 @@
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
-                Width="{IconButtonWidth}" Height="{IconButtonHeight}"
+                Width="{IconButtonSize}" Height="{IconButtonSize}"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
@@ -737,7 +755,7 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Tweaks" FontSize="{TabFontSize}" Visibility="Collapsed" Name="WPFTab2">
+            <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.RowDefinitions>
@@ -765,14 +783,14 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Config" FontSize="{TabFontSize}" Visibility="Collapsed" Name="WPFTab3">
+            <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     {{InstallPanel_features}}
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Updates" FontSize="{TabFontSize}" Visibility="Collapsed" Name="WPFTab4">
+            <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
@@ -802,7 +820,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="MicroWin" FontSize="{TabFontSize}" Visibility="Collapsed" Name="WPFTab5">
+            <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>

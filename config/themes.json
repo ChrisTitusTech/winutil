@@ -14,12 +14,14 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
-                    "TabFontSize":      "14",
-
+                    "TabButtonFontSize":      "14",
+                    "TabButtonWidth":         "100",
+                    "TabButtonHeight":        "25",
+                    "TabRowHeightInPixels":   "50",
                     "IconFontSize":     "14",
-                    "IconButtonWidth":  "35",
-                    "IconButtonHeight": "35",
-                    "SettingsIconFontSize": "18",
+                    "IconButtonSize":   "35",
+                    "WinUtilIconSize":        "Auto",
+                    "SettingsIconFontSize":   "18",
 
                     "MicroWinLogoSize": "10",
 
@@ -38,6 +40,10 @@
                     "ButtonWidth":      "200",
                     "ButtonHeight":     "25",
                     "ConfigTabButtonFontSize":      "16",
+
+                    "SearchBarWidth":               "200",
+                    "SearchBarHeight":              "25",
+                    "SearchBarTextBoxFontSize":     "16",
                     "SearchBarClearButtonFontSize": "14",
 
                     "ButtonInstallBackgroundColor":  "#FFFFFF",
@@ -59,7 +65,6 @@
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
                     "ButtonCornerRadius": "2",
-                    "ToggleButtonHeight": "25",
                     "BorderColor": "#000000",
                     "BorderOpacity": "0.2",
                     "ShadowPulse": "Forever"
@@ -79,14 +84,17 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
-                    "TabFontSize":      "14",
-
+                    "TabButtonFontSize":      "14",
+                    "TabButtonWidth":         "100",
+                    "TabButtonHeight":        "25",
+                    "TabRowHeightInPixels":   "50",
                     "IconFontSize":     "14",
-                    "IconButtonWidth":  "35",
-                    "IconButtonHeight": "35",
-                    "SettingsIconFontSize": "18",
+                    "IconButtonSize":   "35",
+                    "WinUtilIconSize":        "Auto",
+                    "SettingsIconFontSize":   "18",
 
                     "MicroWinLogoSize": "10",
+
                     "ComboBoxBackgroundColor":  "#000000",
                     "LabelboxForegroundColor":  "#FFEE58",
                     "MainForegroundColor":  "#9CCC65",
@@ -101,6 +109,10 @@
                     "ButtonWidth":      "200",
                     "ButtonHeight":     "25",
                     "ConfigTabButtonFontSize":      "16",
+
+                    "SearchBarWidth":               "200",
+                    "SearchBarHeight":              "25",
+                    "SearchBarTextBoxFontSize":     "16",
                     "SearchBarClearButtonFontSize": "14",
 
                     "ButtonInstallBackgroundColor":  "#222222",
@@ -121,7 +133,6 @@
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
                     "ButtonCornerRadius": "2",
-                    "ToggleButtonHeight": "25",
                     "BorderColor": "#FFAC1C",
                     "BorderOpacity": "0.8",
                     "ShadowPulse": "0:0:3"
@@ -141,12 +152,14 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
-                    "TabFontSize":      "14",
-
+                    "TabButtonFontSize":      "14",
+                    "TabButtonWidth":         "100",
+                    "TabButtonHeight":        "25",
+                    "TabRowHeightInPixels":   "50",
                     "IconFontSize":     "14",
-                    "IconButtonWidth":  "35",
-                    "IconButtonHeight": "35",
-                    "SettingsIconFontSize": "18",
+                    "IconButtonSize":   "35",
+                    "WinUtilIconSize":        "Auto",
+                    "SettingsIconFontSize":   "18",
 
                     "MicroWinLogoSize": "10",
 
@@ -164,6 +177,10 @@
                     "ButtonWidth":      "200",
                     "ButtonHeight":     "25",
                     "ConfigTabButtonFontSize":      "16",
+
+                    "SearchBarWidth":               "200",
+                    "SearchBarHeight":              "25",
+                    "SearchBarTextBoxFontSize":     "16",
                     "SearchBarClearButtonFontSize": "14",
 
                     "ButtonInstallBackgroundColor": "#222222",
@@ -184,7 +201,6 @@
                     "ButtonBorderThickness":  "1",
                     "ButtonMargin":  "1",
                     "ButtonCornerRadius": "2",
-                    "ToggleButtonHeight": "25",
                     "BorderColor": "#FFAC1C",
                     "BorderOpacity": "0.2",
                     "ShadowPulse": "Forever"
