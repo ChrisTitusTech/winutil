@@ -31,7 +31,15 @@ function Invoke-WPFShortcut {
 
             if (Test-Path -Path "$env:TEMP\cttlogo.png") {
                 $iconPath = "$env:TEMP\cttlogo.ico"
-                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
+                # 'ConverTo-Icon' function does throw exceptions.. but only at certain events
+                # which are already handled before calling.. but wrapping the function call
+                # in a try-catch is good coding practice in general.
+                try {
+                    ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
+                } catch {
+                    Write-Host "Could not finish 'ConvertTo-Icon' due to unhandled exception.`nFailed to convert ctt bitmap logo to icon type, will not use an icon."
+                    Write-Host "Error: $_"
+                }
             }
         }
     }
