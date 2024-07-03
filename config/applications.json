@@ -2872,7 +2872,7 @@
 		"winget": "NDI.NDITools"
 	},
 	"kicad": {
-		"category": "Pro Tools",
+		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Kicad",
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
