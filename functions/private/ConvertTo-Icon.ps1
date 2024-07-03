@@ -2,7 +2,7 @@ function ConvertTo-Icon {
     <#
 
         .DESCRIPTION
-        This function will convert PNG to ICO file
+        This function will convert BMP, GIF, EXIF, JPG, PNG and TIFF to ICO file
 
         .PARAMETER bitmapPath
         The file path to bitmap image to make '.ico' file out of.
