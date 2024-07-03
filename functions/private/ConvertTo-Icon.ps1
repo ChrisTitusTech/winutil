@@ -69,7 +69,8 @@ function ConvertTo-Icon {
 
     if (Test-Path $bitmapPath) {
         if ((Test-Path $iconPath) -AND ($overrideIconFile -eq $false)) {
-            throw "[ConvertTo-Icon] Icon File is found at '$iconPath', and the 'overrideIconFile' Parameter is set to '$overrideIconFile'. Can not continue, quitting the bitmap to icon convertion..."
+            Write-Host "[ConvertTo-Icon] Icon File is found at '$iconPath', and the 'overrideIconFile' Parameter is set to '$overrideIconFile'. Skipping the bitmap to icon convertion..." -ForegroundColor Yellow
+            return
         }
         $b = [System.Drawing.Bitmap]::FromFile($bitmapPath)
         $icon = [System.Drawing.Icon]::FromHandle($b.GetHicon())
