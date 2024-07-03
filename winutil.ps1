@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.29
+    Version        : 24.07.03
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.29"
+$sync.version = "24.07.03"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2448,6 +2448,7 @@ function Set-WinUtilDNS {
             }
             Else{
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
+                Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary6)", "$($sync.configs.dns.$DNSProvider.Secondary6)")
             }
         }
     }
@@ -8299,31 +8300,39 @@ $sync.configs.applications = '{
 $sync.configs.dns = '{
   "Google": {
     "Primary": "8.8.8.8",
-    "Secondary": "8.8.4.4"
+    "Secondary": "8.8.4.4",
+    "Primary6": "2001:4860:4860::8888",
+    "Secondary6": "2001:4860:4860::8844"
   },
   "Cloudflare": {
     "Primary": "1.1.1.1",
-    "Secondary": "1.0.0.1"
+    "Secondary": "1.0.0.1",
+    "Primary6": "2606:4700:4700::1111",
+    "Secondary6": "2606:4700:4700::1001"
   },
   "Cloudflare_Malware": {
     "Primary": "1.1.1.2",
-    "Secondary": "1.0.0.2"
+    "Secondary": "1.0.0.2",
+    "Primary6": "2606:4700:4700::1112",
+    "Secondary6": "2606:4700:4700::1002"
   },
   "Cloudflare_Malware_Adult": {
     "Primary": "1.1.1.3",
-    "Secondary": "1.0.0.3"
-  },
-  "Level3": {
-    "Primary": "4.2.2.2",
-    "Secondary": "4.2.2.1"
+    "Secondary": "1.0.0.3",
+    "Primary6": "2606:4700:4700::1113",
+    "Secondary6": "2606:4700:4700::1003"
   },
   "Open_DNS": {
     "Primary": "208.67.222.222",
-    "Secondary": "208.67.220.220"
+    "Secondary": "208.67.220.220",
+    "Primary6": "2620:119:35::35",
+    "Secondary6": "2620:119:53::53"
   },
   "Quad9": {
     "Primary": "9.9.9.9",
-    "Secondary": "149.112.112.112"
+    "Secondary": "149.112.112.112",
+    "Primary6": "2620:fe::fe",
+    "Secondary6": "2620:fe::9"
   }
 }' | convertfrom-json
 $sync.configs.feature = '{
