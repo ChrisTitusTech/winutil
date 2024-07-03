@@ -1,4 +1,62 @@
 {
+    "yandex": {
+        "category": "Browsers",
+        "choco": "yandex-browser",
+        "content": "Yandex Browser",
+        "description": "Yandex Browser is a fast and secure web browser developed by Yandex.",
+        "link": "https://yandex-browser.en.uptodown.com/windows/post-download/1017091185",
+        "winget": "YandexLLC.YandexBrowser"
+    },
+    "opera": {
+        "category": "Browsers",
+        "choco": "opera",
+        "content": "Opera Browser",
+        "description": "Opera Browser is a fast and secure web browser.",
+        "link": "https://www.opera.com/computer/thanks?ni=stable&os=windows&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8dyxYJcesqGHTjYT10NxzeoSEO1GlfQ1D5IIQCtXWWfcE4dwhoYLXUaAr7LEALw_wcB",
+        "winget": "Opera.Opera"
+    },
+    "operagx": {
+        "category": "Browsers",
+        "choco": "opera-gx",
+        "content": "Opera GX Browser",
+        "description": "Opera GX is a browser specifically designed for gamers, with features like CPU, RAM, and Network Bandwidth limiters.",
+        "link": "https://www.opera.com/computer/download/thanks?ni=eapgx&os=windows",
+        "winget": "Opera.OperaGX"
+    },
+    "operaneon": {
+        "category": "Browsers",
+        "choco": "opera-neon",
+        "content": "Opera Neon Browser",
+        "description": "Opera Neon is a concept browser that showcases a new way to use the web, with fun and innovative features.",
+        "link": "https://www.opera.com/computer/download/thanks?ni=neon&os=windows",
+        "winget": "Opera.OperaNeon"
+    },
+    "operacrypto": {
+        "category": "Browsers",
+        "choco": "opera-crypto",
+        "content": "Opera Crypto Wallet",
+        "description": "Opera Crypto Wallet is a built-in wallet for managing cryptocurrencies securely within Opera Browser.",
+        "link": "https://www.opera.com/computer/download/thanks?ni=crypto&os=windows",
+        "winget": "Opera.OperaCryptoWallet"
+    },
+    "operabeta": {
+        "category": "Browsers",
+        "choco": "opera-beta",
+        "content": "Opera Beta Browser",
+        "description": "Opera Beta is the preview version of Opera Browser, offering early access to new features and improvements.",
+        "link": "https://www.opera.com/computer/download/thanks?ni=beta&os=windows",
+        "winget": "Opera.OperaBeta"
+    },
+    "operadev": {
+        "category": "Browsers",
+        "choco": "opera-developer",
+        "content": "Opera Developer Browser",
+        "description": "Opera Developer is the bleeding-edge version of Opera Browser, for developers and early adopters.",
+        "link": "https://www.opera.com/computer/download/thanks?ni=developer&os=windows",
+        "winget": "Opera.OperaDeveloper"
+},
+
+{
 	"1password": {
 		"category": "Utilities",
 		"choco": "1password",
