@@ -21,11 +21,8 @@ function ConvertTo-Icon {
             ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath "$env:TEMP\cttlogo.ico"
         } catch [System.IO.FileNotFoundException] {
             # Handle the thrown exception here...
-        } catch {
-            # Print out the exception to console, and see what went wrong
-            Write-Host "Could not finish 'ConvertTo-Icon' due to unhandled exception"
-            Write-Host "Error: $_"
         }
+
         This Example makes a '.ico' file at "$env:TEMP\cttlogo.ico" File Path using the bitmap file
         found in "$env:TEMP\cttlogo.png", the function overrides the '.ico' File if it's found.
         this function will throw a FileNotFound Exception at the event of not finding the provided bitmap File Path.
@@ -35,25 +32,28 @@ function ConvertTo-Icon {
             ConvertTo-Icon "$env:TEMP\cttlogo.png" "$env:TEMP\cttlogo.ico"
         } catch [System.IO.FileNotFoundException] {
             # Handle the thrown exception here...
-        } catch {
-            # Print out the exception to console, and see what went wrong
-            Write-Host "Could not finish 'ConvertTo-Icon' due to unhandled exception"
-            Write-Host "Error: $_"
         }
-        This Example does the same as the previous one, but uses Positional Parameters instead
+
+        This Example is the same as Example 1, but uses Positional Parameters instead.
+
+        .EXAMPLE
+        if (Test-Path "$env:TEMP\cttlogo.png") {
+            ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath "$env:TEMP\cttlogo.ico"
+        }
+
+        This Example is same as Example 1, but checks if the bitmap File exists before calling 'ConvertTo-Icon' Function.
+        This's the recommended way of using this function, as it doesn't require any try-catch blocks.
 
         .EXAMPLE
         try {
             ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath "$env:TEMP\cttlogo.ico" -overrideIconFile $false
         } catch [System.IO.FileNotFoundException] {
             # Handle the thrown exception here...
-        } catch {
-            # Print out the exception to console, and see what went wrong
-            Write-Host "Could not finish 'ConvertTo-Icon' due to unhandled exception"
-            Write-Host "Error: $_"
         }
+
         This Example make use of '-overrideIconFile' Optional Parameter, the default for this paramter is $true.
-        By doing '-overrideIconFile $false', the 'ConvertTo-Icon' function will raise an exception that needs to be catched throw a 'catch' Code Block, otherwise it'll crash the running PowerShell instance/process.
+        By doing '-overrideIconFile $false', the 'ConvertTo-Icon' function will raise an exception that needs to be catched throw a 'catch' Code Block,
+        otherwise it'll crash the running PowerShell instance/process.
 
     #>
     param(
@@ -72,13 +72,20 @@ function ConvertTo-Icon {
             Write-Host "[ConvertTo-Icon] Icon File is found at '$iconPath', and the 'overrideIconFile' Parameter is set to '$overrideIconFile'. Skipping the bitmap to icon convertion..." -ForegroundColor Yellow
             return
         }
+
+        # Load bitmap file into memory, and make an Icon version out of it
         $b = [System.Drawing.Bitmap]::FromFile($bitmapPath)
         $icon = [System.Drawing.Icon]::FromHandle($b.GetHicon())
+
+        # Create the folder for the new icon file if it doesn't exists
+        $iconFolder = (New-Object System.IO.FileInfo($iconPath)).Directory.FullName
+        [System.IO.Directory]::CreateDirectory($iconFolder) | Out-Null
+
+        # Write the Icon File and do some cleaning-up
         $file = New-Object System.IO.FileStream($iconPath, 'OpenOrCreate')
         $icon.Save($file)
         $file.Close()
         $icon.Dispose()
-        #explorer "/SELECT,$iconpath"
     }
     else {
         throw [System.IO.FileNotFoundException] "[ConvertTo-Icon] The provided bitmap File Path is not found at '$bitmapPath'."
