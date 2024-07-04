@@ -14,7 +14,8 @@
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
     "WPFTweaksRestorePoint",
-    "WPFTweaksTeredo"
+    "WPFTweaksTeredo",
+    "WPFTweaksPowershell7Tele"
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
