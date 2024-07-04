@@ -10,69 +10,44 @@ Function Invoke-WPFUltimatePerformance {
     #>
     param($State)
     Try{
-
-        if($state -eq "Enabled"){
-            # Define the name and GUID of the power scheme
-            $powerSchemeName = "Ultimate Performance"
-            $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
-
-            # Get all power schemes
-            $schemes = powercfg /list | Out-String -Stream
-
-            # Check if the power scheme already exists
-            $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
-
-            if ($null -eq $ultimateScheme) {
-                Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
-
-                # Add the power scheme
-                powercfg /duplicatescheme $powerSchemeGuid
-                powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
-                powercfg -setactive $powerSchemeGuid
-                powercfg -change -monitor-timeout-ac 0
-
-
-                Write-Host "Power scheme added successfully."
+        # Check if Ultimate Performance plan is installed
+        $ultimatePlan = powercfg -list | Select-String -Pattern "Ultimate Performance"
+        if($state -eq "Enable"){
+            if ($ultimatePlan) {
+                Write-Host "Ultimate Performance plan is already installed."
+            } else {
+                Write-Host "Installing Ultimate Performance plan..."
+                powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+                Write-Host "> Ultimate Performance plan installed."
             }
-            else {
-                Write-Host "Power scheme '$powerSchemeName' already exists."
+
+            # Set the Ultimate Performance plan as active
+            $ultimatePlanGUID = (powercfg -list | Select-String -Pattern "Ultimate Performance").Line.Split()[3]
+            powercfg -setactive $ultimatePlanGUID
+
+            Write-Host "Ultimate Performance plan is now active."
+
+
+        }
+        elseif($state -eq "Disable"){
+            if ($ultimatePlan) {
+                # Extract the GUID of the Ultimate Performance plan
+                $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
+                
+                # Set a different power plan as active before deleting the Ultimate Performance plan
+                $balancedPlanGUID = (powercfg -list | Select-String -Pattern "Balanced").Line.Split()[3]
+                powercfg -setactive $balancedPlanGUID
+
+                # Delete the Ultimate Performance plan
+                powercfg -delete $ultimatePlanGUID
+
+                Write-Host "Ultimate Performance plan has been uninstalled."
+                Write-Host "> Balanced plan is now active."
+            } else {
+                Write-Host "Ultimate Performance plan is not installed."
             }
         }
-        elseif($state -eq "Disabled"){
-                # Define the name of the power scheme
-                $powerSchemeName = "Ultimate Performance"
-
-                # Get all power schemes
-                $schemes = powercfg /list | Out-String -Stream
-
-                # Find the scheme to be removed
-                $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
-
-                # If the scheme exists, remove it
-                if ($null -ne $ultimateScheme) {
-                    # Extract the GUID of the power scheme
-                    $guid = ($ultimateScheme -split '\s+')[3]
-
-                    if($null -ne $guid){
-                        Write-Host "Found power scheme '$powerSchemeName' with GUID $guid. Removing..."
-
-                        # Remove the power scheme
-                        powercfg /delete $guid
-
-                        Write-Host "Power scheme removed successfully."
-                    }
-                    else {
-                        Write-Host "Could not find GUID for power scheme '$powerSchemeName'."
-                    }
-                }
-                else {
-                    Write-Host "Power scheme '$powerSchemeName' not found."
-                }
-
-            }
-
-    }
-    Catch{
+    } Catch{
         Write-Warning $psitem.Exception.Message
     }
 }
