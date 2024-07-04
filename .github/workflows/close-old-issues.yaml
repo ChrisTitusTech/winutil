@@ -33,7 +33,7 @@ jobs:
         # Increase this value if the project receives a lot of
         # PRs (yes.. apparently they're processed no matter what) & Issues.
         # Default value for it (according to the docs) is 30
-        operations-per-run: 100
+        operations-per-run: 200
         # Make this field equal true if you want to test your configuration if it works correctly or not
         debug-only: false
         repo-token: ${{ secrets.GITHUB_TOKEN }}
