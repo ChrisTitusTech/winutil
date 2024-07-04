@@ -34,5 +34,17 @@
         "Secondary": "149.112.112.112",
         "Primary6": "2620:fe::fe",
         "Secondary6": "2620:fe::9"
+    },
+    "AdGuard_Ads_Trackers":{
+        "Primary": "94.140.14.14",
+        "Secondary": "94.140.15.15",
+        "Primary6": "2a10:50c0::ad1:ff",
+        "Secondary6": "2a10:50c0::ad2:ff"
+    },
+    "AdGuard_Ads_Trackers_Malware_Adult":{
+        "Primary": "94.140.14.15",
+        "Secondary": "94.140.15.16",
+        "Primary6": "2a10:50c0::bad1:ff",
+        "Secondary6": "2a10:50c0::bad2:ff"
     }
 }
