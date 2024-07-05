@@ -148,11 +148,11 @@ function Get-TabXaml {
                         $blockXml += $precal_indent_m1 +
                                         "<DockPanel LastChildFill=""True"">" + "`r`n"
                         $blockXml += $precal_indent +
+                                        "<CheckBox Name=""$($appInfo.Name)"" Style=""{StaticResource ColorfulToggleSwitchStyle}"" Margin=""4,0""" + " " +
+                                        "HorizontalAlignment=""Right"" FontSize=""{FontSize}""/>" + "`r`n"
+                        $blockXml += $precal_indent +
                                         "<Label Content=""$($appInfo.Content)"" ToolTip=""$($appInfo.Description)""" + " " +
                                         "HorizontalAlignment=""Left"" FontSize=""{FontSize}""/>" + "`r`n"
-                        $blockXml += $precal_indent +
-                                        "<CheckBox Name=""$($appInfo.Name)"" Style=""{StaticResource ColorfulToggleSwitchStyle}"" Margin=""2.5,0""" + " " +
-                                        "HorizontalAlignment=""Right"" FontSize=""{FontSize}""/>" + "`r`n"
                         $blockXml += $precal_indent_m1 +
                                         "</DockPanel>" + "`r`n"
                     }
