@@ -421,19 +421,6 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" x:Name="txtToggle" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="{MainForegroundColor}" FontSize="{FontSize}">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Text" Value="Off"/>
-                                <Setter Property="Margin" Value="4,0,4,0"/>
-                                    <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsChecked}" Value="True">
-                                        <Setter Property="Text" Value="On"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                        </TextBlock>
 
                         <Border Grid.Column="1" x:Name="Border" CornerRadius="8"
                                 BorderThickness="1"
