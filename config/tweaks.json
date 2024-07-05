@@ -2983,35 +2983,75 @@
     ]
   },
   "WPFToggleDarkMode": {
-    "Content": "Dark Theme",
+    "Content": "Enable Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a060_",
+    "Order": "a100_",
     "Type": "Toggle"
   },
   "WPFToggleBingSearch": {
-    "Content": "Bing Search in Start Menu",
+    "Content": "Enable Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a061_",
+    "Order": "a101_",
     "Type": "Toggle"
   },
   "WPFToggleNumLock": {
-    "Content": "NumLock on Startup",
+    "Content": "Enable NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a062_",
+    "Order": "a102_",
     "Type": "Toggle"
   },
   "WPFToggleVerboseLogon": {
-    "Content": "Verbose Logon Messages",
+    "Content": "Enable Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a063_",
+    "Order": "a103_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapWindow": {
+    "Content": "Enable Snap Window",
+    "Description": "If enabled you can align windows by dragging them. | Relogin Required",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a104_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapFlyout": {
+    "Content": "Enable Snap Assist Flyout",
+    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a105_",
+    "Type": "Toggle"
+  },
+  "WPFToggleSnapSuggestion": {
+    "Content": "Enable Snap Assist Suggestion",
+    "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a106_",
+    "Type": "Toggle"
+  },
+  "WPFToggleMouseAcceleration": {
+    "Content": "Enable Mouse Acceleration",
+    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a107_",
+    "Type": "Toggle"
+  },
+  "WPFToggleStickyKeys": {
+    "Content": "Enable Sticky Keys",
+    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a108_",
     "Type": "Toggle"
   },
   "WPFToggleShowExt": {
@@ -3019,55 +3059,31 @@
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a064_",
-    "Type": "Toggle"
-  },
-  "WPFToggleSnapWindow": {
-    "Content": "Snap Window",
-    "Description": "If enabled you can align windows by dragging them. | Relogin Required",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a065_",
-    "Type": "Toggle"
-  },
-  "WPFToggleSnapFlyout": {
-    "Content": "Snap Assist Flyout",
-    "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a066_",
-    "Type": "Toggle"
-  },
-  "WPFToggleSnapSuggestion": {
-    "Content": "Snap Assist Suggestion",
-    "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a067_",
-    "Type": "Toggle"
-  },
-  "WPFToggleMouseAcceleration": {
-    "Content": "Mouse Acceleration",
-    "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a068_",
-    "Type": "Toggle"
-  },
-  "WPFToggleStickyKeys": {
-    "Content": "Sticky Keys",
-    "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a070_",
+    "Order": "a200_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
-    "Content": "Taskbar Search",
+    "Content": "Show Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a068_",
+    "Order": "a201_",
+    "Type": "Toggle"
+  },
+  "WPFToggleTaskView": {
+    "Content": "Show Task View Button in Taskbar",
+    "Description": "If Enabled then Task View Button in Taskbar will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a202_",
+    "Type": "Toggle"
+  },
+  "WPFToggleTaskbarWidgets": {
+    "Content": "Show Widgets Button in Taskbar",
+    "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a203_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -3076,14 +3092,6 @@
     "panel": "1",
     "Order": "a039_",
     "Type": "Button"
-  },
-  "WPFToggleTaskbarWidgets": {
-    "Content": "Taskbar Widgets",
-    "Description": "If Enabled then Widgets Icon in Taskbar will be shown.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a069_",
-    "Type": "Toggle"
   },
   "WPFchangedns": {
     "Content": "DNS",
@@ -3130,13 +3138,5 @@
     "Order": "a082_",
     "Type": "Button",
     "ButtonWidth": "300"
-  },
-  "WPFToggleTaskView": {
-    "Content": "Task View",
-    "Description": "If Enabled then Task View Icon in Taskbar will be shown.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Order": "a069_",
-    "Type": "Toggle"
   }
 }
