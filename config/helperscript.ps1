@@ -365,7 +365,9 @@ Add-Member -InputObject $jsonfile -MemberType NoteProperty -Name $NameofButton -
 {
     "DNS Provider": [
         "Primary": "IP address",
-        "Secondary": "IP address"
+        "Secondary": "IP address",
+        "Primary6": "IPv6 address",
+        "Secondary6": "IPv6 address"
     ]
 }
 
@@ -373,7 +375,9 @@ Example:
 {
     "Cloudflare":{
         "Primary": "1.1.1.1",
-        "Secondary": "1.0.0.1"
+        "Secondary": "1.0.0.1",
+        "Primary6": "2606:4700:4700::1111",
+        "Secondary6": "2606:4700:4700::1001"
     }
 }
 #>
@@ -384,6 +388,8 @@ $NameofProvider = "" -replace " ","_"
 $IPAddress = @{
     "Primary" = "0.0.0.0"
     "Secondary" = "0.0.0.0"
+    "Primary6" = "0000:0000:0000::0000"
+    "Secondary6" = "0000:0000:0000::0000"
 }
 
 $ButtonToAdd = New-Object psobject
