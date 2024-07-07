@@ -1215,6 +1215,14 @@
 		"link": "https://meldmerge.org/",
 		"winget": "Meld.Meld"
 	},
+	"ModernFlyouts": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Modern Flyouts",
+		"description": "An open source, modern, Fluent Design-based set of flyouts for Windows.",
+		"link": "https://github.com/ModernFlyouts-Community/ModernFlyouts/",
+		"winget": "ModernFlyouts.ModernFlyouts"
+	},
 	"monitorian": {
 		"category": "Utilities",
 		"choco": "monitorian",
