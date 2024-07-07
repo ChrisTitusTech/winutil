@@ -1,4 +1,15 @@
 {
+  "WPFCopliotremovepermanent": {
+    "Content": "Disable Windows Copilot",
+    "Description": "This disables Windows Copilot permanently even if windows updates.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a005_",
+    "url": "https://github.com/Nikoskampourakis/Copliot-removal-/blob/main/Copliotdisable.ps1"
+  }
+}
+
+{
   "WPFTweaksAH": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
