@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.21"
+$sync.version = "24.06.29"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
