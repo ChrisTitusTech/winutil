@@ -23,6 +23,7 @@
 
 ## Issue related to PR
 [What issue is related to this PR (if any)]
+- Close's Issue #
 
 ## Additional Information
 [Any additional information that reviewers should be aware of.]
@@ -32,4 +33,4 @@
 - [ ] I have performed a self-review of my own code.
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation.
-- [ ] My changes generate no new warnings 
+- [ ] My changes generate no errors/warnings/merge conflicts. 
