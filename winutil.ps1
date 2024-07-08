@@ -7510,10 +7510,10 @@ $sync.configs.applications = '{
     "link": "https://getsharex.com/",
     "winget": "ShareX.ShareX"
   },
-  "WPFInstallnilesoftShel": {
+  "WPFInstallnilesoftShell": {
     "category": "Utilities",
     "choco": "nilesoft-shell",
-    "content": "Shell (Expanded Context Menu)",
+    "content": "Nilesoft Shell",
     "description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
     "link": "https://nilesoft.org/",
     "winget": "Nilesoft.Shell"
@@ -14138,8 +14138,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallnextclouddesktopLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nextcloud.com/install/#install-clients"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallnilesoftShel" Content="Shell (Expanded Context Menu)" ToolTip="Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallnilesoftShelLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nilesoft.org/"/>
+                                <CheckBox Name="WPFInstallnilesoftShell" Content="Nilesoft Shell" ToolTip="Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallnilesoftShellLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://nilesoft.org/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallnushell" Content="Nushell" ToolTip="Nushell is a new shell that takes advantage of modern hardware and systems to provide a powerful, expressive, and fast experience." Margin="0,0,2,0"/>
