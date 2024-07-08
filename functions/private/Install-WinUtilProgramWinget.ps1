@@ -22,17 +22,18 @@ Function Install-WinUtilProgramWinget {
         [Parameter(Position=1)]
         [String]$manage = "Installing"
     )
-    $x = 0
+
     $count = $ProgramsToInstall.Count
 
     Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
-    Foreach ($Program in $ProgramsToInstall){
+    for ($i = 0; $i -le $ProgramsToInstall.Count; $i++) {
+        $Program = $ProgramsToInstall[$i]
         $failedPackages = @()
-        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        if($manage -eq "Installing"){
+        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $(($i/$count) * 100)
+        if($manage -eq "Installing") {
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
             # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
@@ -40,21 +41,21 @@ Function Install-WinUtilProgramWinget {
             Write-Host "Starting install of $($Program.winget) with winget."
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -eq 0){
+                if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully."
                     continue
                 }
-                if ($status -eq  -1978335189){
+                if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
                     continue
                 }
                 Write-Host "Attempt with User scope"
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -eq 0){
+                if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User scope."
                     continue
                 }
-                if ($status -eq  -1978335189){
+                if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
                     continue
                 }
@@ -68,11 +69,11 @@ Function Install-WinUtilProgramWinget {
                 } else {
                     Write-Host "Skipping installation with specific user credentials."
                 }
-                if($status -eq 0){
+                if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User prompt."
                     continue
                 }
-                if ($status -eq  -1978335189){
+                if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
                     continue
                 }
@@ -81,11 +82,11 @@ Function Install-WinUtilProgramWinget {
                 $failedPackages += $Program
             }
         }
-        if($manage -eq "Uninstalling"){
+        elseif($manage -eq "Uninstalling") {
             # Uninstall package via ID using winget directly.
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program.winget) --silent" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -ne 0){
+                if($status -ne 0) {
                     Write-Host "Failed to uninstall $($Program.winget)."
                 } else {
                     Write-Host "$($Program.winget) uninstalled successfully."
@@ -96,7 +97,9 @@ Function Install-WinUtilProgramWinget {
                 $failedPackages += $Program
             }
         }
-        $X++
+        else {
+            throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
+        }
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
     return $failedPackages;
