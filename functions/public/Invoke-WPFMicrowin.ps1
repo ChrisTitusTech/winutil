@@ -4,6 +4,8 @@ function Invoke-WPFMicrowin {
         Invoke MicroWin routines...
     #>
 
+	$sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
+
 	if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
@@ -477,5 +479,6 @@ public class PowerManagement {
 		# Allow the machine to sleep again (optional)
 		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
+		$sync["Form"].taskbarItemInfo.ProgressState = "None"
 	}
 }

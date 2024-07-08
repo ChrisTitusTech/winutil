@@ -80,6 +80,7 @@ function Install-WinUtilProgramChoco {
             }
 	}
         $x++
+        # $sync["Form"].TaskbarItemInfo.ProgressValue = $x/$count
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 

@@ -24,6 +24,7 @@ function Invoke-WPFGetInstalled {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        # $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
 
         if($checkbox -eq "winget"){
             Write-Host "Getting Installed Programs..."
@@ -42,5 +43,6 @@ function Invoke-WPFGetInstalled {
 
         Write-Host "Done..."
         $sync.ProcessRunning = $false
+        # $sync["Form"].taskbarItemInfo.ProgressState = "None"
     }
 }

@@ -14,15 +14,19 @@ function Install-WinUtilChoco {
             return
         }
 
+        $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
+
         Write-Host "Seems Chocolatey is not installed, installing now."
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
+        $sync["Form"].taskbarItemInfo.ProgressState = "None"
 
     }
     Catch {
         Write-Host "===========================================" -Foregroundcolor Red
         Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
         Write-Host "===========================================" -Foregroundcolor Red
+        $sync["Form"].taskbarItemInfo.ProgressState = "Error"
     }
 
 }

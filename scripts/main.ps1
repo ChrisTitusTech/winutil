@@ -153,6 +153,10 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
+# https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.taskbariteminfo?view=windowsdesktop-8.0
+$sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+$sync["Form"].taskbarItemInfo.ProgressState = "None"
+
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed

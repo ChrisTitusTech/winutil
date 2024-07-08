@@ -20,6 +20,8 @@ function Invoke-WPFInstall {
         return
     }
 
+    $sync["Form"].taskbarItemInfo.ProgressState = "Normal"
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
         $packagesWinget, $packagesChoco = {
@@ -52,11 +54,13 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
+            # $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            # $sync["Form"].taskbarItemInfo.ProgressState = "Error"
         }
         Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False

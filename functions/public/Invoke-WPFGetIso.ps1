@@ -15,6 +15,8 @@ function Invoke-WPFGetIso {
     $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
 
+    $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
+
 
     Write-Host "         _                     __    __  _         "
 	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
@@ -239,6 +241,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
+    $sync["Form"].taskbarItemInfo.ProgressState = "None"
 }
 
 
