@@ -22,14 +22,14 @@ If you are still having issues try using a **VPN**, or changing your **DNS provi
 - Script doesn't run/PowerShell crashes:
   1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
   2. Run:
-  ```
+  ```ps1
   Set-ExecutionPolicy Unrestricted -Scope Process -Force
   ```
   3. Run:
   ```
   irm christitus.com/win | iex
   ```
-  
+
 ### Other Issues:
 
 - Windows taking longer to shut down:
@@ -51,14 +51,3 @@ Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
 - (Windows 11) Quick Settings no longer works: Launch the Script and click 'Enable Action Center'
 
 - Explorer no longer launches: Go to Control Panel, File Explorer Options, Change the 'Open File Explorer to' option to 'This PC'.
-
-- Script doesn't run/PowerShell crashes:
-  1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
-  2. Run:
-  ```
-  Set-ExecutionPolicy Unrestricted -Scope Process -Force
-  ```
-  3. Run:
-  ```
-  irm christitus.com/win | iex
-  ```

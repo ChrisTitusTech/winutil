@@ -184,90 +184,104 @@
     "category": "Features",
     "panel": "1",
     "Order": "a060_",
-    "Type": "150"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
     "category": "Fixes",
     "Order": "a040_",
     "panel": "1",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
     "category": "Fixes",
     "panel": "1",
     "Order": "a041_",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
     "category": "Fixes",
     "Order": "a042_",
     "panel": "1",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
     "category": "Fixes",
     "panel": "1",
     "Order": "a043_",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
     "category": "Fixes",
     "panel": "1",
     "Order": "a044_",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
     "category": "Fixes",
     "panel": "1",
     "Order": "a045_",
-    "Type": "300"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
     "panel": "2",
-    "Type": "200"
+    "Type": "Button",
+    "ButtonWidth": "300"
   }
 }

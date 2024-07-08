@@ -15,6 +15,15 @@ function Show-CustomDialog {
     .PARAMETER Height
     The height of the custom dialog window.
 
+    .PARAMETER FontSize
+    The Font Size for text shown inside the custom dialog window.
+
+    .PARAMETER HeaderFontSize
+    The Font Size for the Header of the custom dialog window.
+
+    .PARAMETER IconSize
+    The Size to use for Icon inside the custom dialog window.
+
     .EXAMPLE
     Show-CustomDialog -Message "This is a custom dialog with a message and an image above." -Width 300 -Height 200
 
@@ -22,7 +31,10 @@ function Show-CustomDialog {
     param(
         [string]$Message,
         [int]$Width = 300,
-        [int]$Height = 200
+        [int]$Height = 200,
+        [int]$FontSize = 10,
+        [int]$HeaderFontSize = 14,
+        [int]$IconSize = 25
     )
 
     Add-Type -AssemblyName PresentationFramework
@@ -48,6 +60,7 @@ function Show-CustomDialog {
     $dialog.Foreground = $foregroundColor
     $dialog.Background = $backgroundColor
     $dialog.FontFamily = $font
+    $dialog.FontSize = $FontSize
 
     # Create a Border for the green edge with rounded corners
     $border = New-Object Windows.Controls.Border
@@ -111,8 +124,8 @@ function Show-CustomDialog {
     [Windows.Controls.Grid]::SetRow($stackPanel, 0)  # Set the row to the second row (0-based index)
 
     $viewbox = New-Object Windows.Controls.Viewbox
-    $viewbox.Width = 25
-    $viewbox.Height = 25
+    $viewbox.Width = $IconSize
+    $viewbox.Height = $IconSize
 
     # Combine the paths into a single string
 #     $cttLogoPath = @"
@@ -174,7 +187,7 @@ $cttLogoPath = @"
     # Add "Winutil" text
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
-    $winutilTextBlock.FontSize = 18  # Adjust font size as needed
+    $winutilTextBlock.FontSize = $HeaderFontSize
     $winutilTextBlock.Foreground = $foregroundColor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
@@ -242,6 +255,7 @@ $cttLogoPath = @"
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
     $okButton.Content = "OK"
+    $okButton.FontSize = $FontSize
     $okButton.Width = 80
     $okButton.Height = 30
     $okButton.HorizontalAlignment = [Windows.HorizontalAlignment]::Center
