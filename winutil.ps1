@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.08
+    Version        : 24.06.21
 #>
 param (
     [switch]$Debug,
