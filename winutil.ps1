@@ -11844,15 +11844,6 @@ $sync.configs.tweaks = '{
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-    ],
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32",
-        "Name": "(default)",
-        "Value": "",
-        "OriginalValue": null,
-        "Type": "String"
-      }
     ]
   },
   "WPFTweaksDiskCleanup": {
