@@ -1943,10 +1943,10 @@
 		"link": "https://getsharex.com/",
 		"winget": "ShareX.ShareX"
 	},
-	"nilesoftShel": {
+	"nilesoftShell": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
-		"content": "Shell (Expanded Context Menu)",
+		"content": "Nilesoft Shell",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
 		"link": "https://nilesoft.org/",
 		"winget": "Nilesoft.Shell"
