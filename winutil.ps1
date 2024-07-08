@@ -2317,10 +2317,10 @@ function Invoke-WinUtilTaskbarSearch {
     <#
 
     .SYNOPSIS
-        Enable/Disable Taskbar Widgets
+        Enable/Disable Taskbar Search Button.
 
     .PARAMETER Enabled
-        Indicates whether to enable or disable Taskbar Widgets
+        Indicates whether to enable or disable Taskbar Search Button.
 
     #>
     Param($Enabled)
@@ -6760,6 +6760,14 @@ $sync.configs.applications = '{
     "link": "https://meldmerge.org/",
     "winget": "Meld.Meld"
   },
+  "WPFInstallModernFlyouts": {
+    "category": "Multimedia Tools",
+    "choco": "na",
+    "content": "Modern Flyouts",
+    "description": "An open source, modern, Fluent Design-based set of flyouts for Windows.",
+    "link": "https://github.com/ModernFlyouts-Community/ModernFlyouts/",
+    "winget": "ModernFlyouts.ModernFlyouts"
+  },
   "WPFInstallmonitorian": {
     "category": "Utilities",
     "choco": "monitorian",
@@ -8027,7 +8035,7 @@ $sync.configs.applications = '{
   "WPFInstallwingetui": {
     "category": "Utilities",
     "choco": "wingetui",
-    "content": "WingetUI",
+    "content": "UnigetUI",
     "description": "WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget).",
     "link": "https://www.marticliment.com/wingetui/",
     "winget": "SomePythonThings.WingetUIStore"
@@ -8779,7 +8787,8 @@ $sync.configs.preset = '{
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
     "WPFTweaksRestorePoint",
-    "WPFTweaksTeredo"
+    "WPFTweaksTeredo",
+    "WPFTweaksPowershell7Tele"
   ],
   "Minimal": [
     "WPFTweaksConsumerFeatures",
@@ -11288,6 +11297,19 @@ $sync.configs.tweaks = '{
       "Invoke-WPFTweakPS7 -action \"PS5\""
     ]
   },
+  "WPFTweaksPowershell7Tele": {
+    "Content": "Disable Powershell 7 Telemetry",
+    "Description": "This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a009_",
+    "InvokeScript": [
+      "[Environment]::SetEnvironmentVariable(''POWERSHELL_TELEMETRY_OPTOUT'', ''1'', ''Machine'')"
+    ],
+    "UndoScript": [
+      "[Environment]::SetEnvironmentVariable(''POWERSHELL_TELEMETRY_OPTOUT'', '''', ''Machine'')"
+    ]
+  },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
@@ -13634,6 +13656,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstalllightshotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://app.prntscr.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallModernFlyouts" Content="Modern Flyouts" ToolTip="An open source, modern, Fluent Design-based set of flyouts for Windows." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallModernFlyoutsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ModernFlyouts-Community/ModernFlyouts/"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmp3tag" Content="Mp3tag (Metadata Audio Editor)" ToolTip="Mp3tag is a powerful and yet easy-to-use tool to edit metadata of common audio formats." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmp3tagLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mp3tag.de/en/"/>
                             </StackPanel>
@@ -13760,14 +13786,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallkicad" Content="Kicad" ToolTip="Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallkicadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.kicad.org/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="3">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallkicad" Content="Kicad" ToolTip="Kicad is an open-source EDA tool. It&#39;s a good starting point for those who want to do electrical design and is even used by professionals in the industry." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallkicadLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.kicad.org/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
@@ -14059,14 +14085,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="4">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/"/>
@@ -14316,7 +14342,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallwingetui" Content="WingetUI" ToolTip="WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget)." Margin="0,0,2,0"/>
+                                <CheckBox Name="WPFInstallwingetui" Content="UnigetUI" ToolTip="WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget)." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.marticliment.com/wingetui/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -14405,6 +14431,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0" ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
                             <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
                             <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
+                            <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
                             <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 
