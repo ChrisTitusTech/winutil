@@ -2,10 +2,10 @@ function Invoke-WinUtilTaskbarSearch {
     <#
 
     .SYNOPSIS
-        Enable/Disable Taskbar Widgets
+        Enable/Disable Taskbar Search Button.
 
     .PARAMETER Enabled
-        Indicates whether to enable or disable Taskbar Widgets
+        Indicates whether to enable or disable Taskbar Search Button.
 
     #>
     Param($Enabled)
