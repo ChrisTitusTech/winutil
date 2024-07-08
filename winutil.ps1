@@ -6496,69 +6496,37 @@ $sync.configs.applications = '{
     "link": "https://jami.net/",
     "winget": "SFLinux.Jami"
   },
-  "WPFInstalljava16": {
+  "WPFInstalljava8": {
     "category": "Development",
-    "choco": "temurin16jre",
-    "content": "OpenJDK Java 16",
-    "description": "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
-    "link": "https://adoptopenjdk.net/",
-    "winget": "AdoptOpenJDK.OpenJDK.16"
+    "choco": "corretto8jdk",
+    "content": "Amazon Corretto 8 (LTS)",
+    "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+    "link": "https://aws.amazon.com/corretto",
+    "winget": "Amazon.Corretto.8.JDK"
   },
-  "WPFInstalljava18": {
+  "WPFInstalljava11": {
     "category": "Development",
-    "choco": "temurin18jre",
-    "content": "Oracle Java 18",
-    "description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
-    "link": "https://www.oracle.com/java/",
-    "winget": "EclipseAdoptium.Temurin.18.JRE"
+    "choco": "corretto11jdk",
+    "content": "Amazon Corretto 11 (LTS)",
+    "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+    "link": "https://aws.amazon.com/corretto",
+    "winget": "Amazon.Corretto.11.JDK"
+  },
+  "WPFInstalljava17": {
+    "category": "Development",
+    "choco": "corretto17jdk",
+    "content": "Amazon Corretto 17 (LTS)",
+    "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+    "link": "https://aws.amazon.com/corretto",
+    "winget": "Amazon.Corretto.17.JDK"
   },
   "WPFInstalljava21": {
     "category": "Development",
-    "choco": "na",
-    "content": "Azul Zulu JDK 21",
-    "description": "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-    "link": "https://www.azul.com/downloads/zulu-community/",
-    "winget": "Azul.Zulu.21.JDK"
-  },
-  "WPFInstalljava8": {
-    "category": "Development",
-    "choco": "temurin8jre",
-    "content": "OpenJDK Java 8",
-    "description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
-    "link": "https://adoptopenjdk.net/",
-    "winget": "EclipseAdoptium.Temurin.8.JRE"
-  },
-  "WPFInstalljava11runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 11",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.11.JRE"
-  },
-  "WPFInstalljava17runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 17",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.17.JRE"
-  },
-  "WPFInstalljava18runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 18",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.18.JRE"
-  },
-  "WPFInstalljava19runtime": {
-    "category": "Development",
-    "choco": "na",
-    "content": "Eclipse Temurin JRE 19",
-    "description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-    "link": "https://adoptium.net/",
-    "winget": "EclipseAdoptium.Temurin.19.JRE"
+    "choco": "corretto21jdk",
+    "content": "Amazon Corretto 21 (LTS)",
+    "description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+    "link": "https://aws.amazon.com/corretto",
+    "winget": "Amazon.Corretto.21.JDK"
   },
   "WPFInstalljdownloader": {
     "category": "Utilities",
@@ -13103,36 +13071,20 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallhelixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://helix-editor.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava11runtime" Content="Eclipse Temurin JRE 11" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava11runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/"/>
+                                <CheckBox Name="WPFInstalljava11" Content="Amazon Corretto 11 (LTS)" ToolTip="Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK)." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalljava11Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://aws.amazon.com/corretto"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava16" Content="OpenJDK Java 16" ToolTip="OpenJDK Java 16 is the latest version of the open-source Java development kit." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava16Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/"/>
+                                <CheckBox Name="WPFInstalljava17" Content="Amazon Corretto 17 (LTS)" ToolTip="Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK)." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalljava17Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://aws.amazon.com/corretto"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava17runtime" Content="Eclipse Temurin JRE 17" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava17runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/"/>
+                                <CheckBox Name="WPFInstalljava21" Content="Amazon Corretto 21 (LTS)" ToolTip="Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK)." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalljava21Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://aws.amazon.com/corretto"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava18" Content="Oracle Java 18" ToolTip="Oracle Java 18 is the latest version of the official Java development kit from Oracle." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava18Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.oracle.com/java/"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava18runtime" Content="Eclipse Temurin JRE 18" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava18runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava19runtime" Content="Eclipse Temurin JRE 19" ToolTip="Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava19runtimeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptium.net/"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava21" Content="Azul Zulu JDK 21" ToolTip="Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava21Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.azul.com/downloads/zulu-community/"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalljava8" Content="OpenJDK Java 8" ToolTip="OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalljava8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://adoptopenjdk.net/"/>
+                                <CheckBox Name="WPFInstalljava8" Content="Amazon Corretto 8 (LTS)" ToolTip="Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK)." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalljava8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://aws.amazon.com/corretto"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalljetbrains" Content="Jetbrains Toolbox" ToolTip="Jetbrains Toolbox is a platform for easy installation and management of JetBrains developer tools." Margin="0,0,2,0"/>
@@ -13174,10 +13126,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallposh" Content="Oh My Posh (Prompt)" ToolTip="Oh My Posh is a cross-platform prompt theme engine for any shell." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallposhLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://ohmyposh.dev/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/"/>
@@ -13190,6 +13138,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" ToolTip="Rust is a programming language designed for safety and performance, particularly focused on systems programming." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallrustlangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rust-lang.org/"/>
@@ -13471,10 +13423,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalldotnet8" Content=".NET Desktop Runtime 8" ToolTip=".NET Desktop Runtime 8 is a runtime environment required for running applications developed with .NET 8." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalldotnet8Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://dotnet.microsoft.com/download/dotnet/8.0"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallnuget" Content="NuGet" ToolTip="NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallnugetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nuget.org/"/>
@@ -13483,6 +13431,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="2">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpowerautomate" Content="Power Automate" ToolTip="Using Power Automate Desktop you can automate tasks on the desktop as well as the Web." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpowerautomateLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-automate"/>
@@ -13777,14 +13729,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallefibooteditor" Content="EFI Boot Editor" ToolTip="EFI Boot Editor is a tool for managing the EFI/UEFI boot entries on your system. It allows you to customize the boot configuration of your computer." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallefibooteditorLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.easyuefi.com/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
