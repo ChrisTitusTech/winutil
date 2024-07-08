@@ -58,6 +58,9 @@ Function Invoke-WinUtilCurrentSystem {
                                 $values += $False
                             }
                         }
+                        else {
+                            $values += $False
+                        }
                     }
                 }
 

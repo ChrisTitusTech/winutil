@@ -1943,10 +1943,10 @@
 		"link": "https://getsharex.com/",
 		"winget": "ShareX.ShareX"
 	},
-	"nilesoftShel": {
+	"nilesoftShell": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
-		"content": "Shell (Expanded Context Menu)",
+		"content": "Nilesoft Shell",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
 		"link": "https://nilesoft.org/",
 		"winget": "Nilesoft.Shell"
@@ -2902,5 +2902,13 @@
 		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
+	},
+	"Shotcut": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Shotcut",
+		"description": "Shotcut is a free, open source, cross-platform video editor.",
+		"link": "https://shotcut.org/",
+		"winget": "Meltytech.Shotcut"
 	}
 }
