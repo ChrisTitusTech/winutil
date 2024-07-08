@@ -106,21 +106,9 @@ iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run"
 
 Video and Written Article walkthrough @ <https://christitus.com/windows-tool/>
 
-## Issues
+## Contributing Guidelines
 
-If you encounter any challenges or problems with the script, I kindly request that you submit them via the "Issues" tab on the GitHub repository. By filling out the provided template, you can provide specific details about the issue, allowing me to promptly address any bugs or consider feature requests.
-
-## Contribute Code
-
-Pull Requests are now handled directly on the MAIN branch. This was done since we can now select specific releases to launch via releases in GitHub.
-
-If doing a code change and you can submit a PR to main branch, but I am very selective about these. Do not use a code formatter, massive amounts of line changes, and make multiple feature changes. EACH FEATURE CHANGE SHOULD BE IT'S OWN Pull Request!
-
-When creating pull requests, it is essential to thoroughly document all changes made. This includes documenting any additions made to the tweaks section and ensuring that corresponding undo measures are in place to remove the newly added tweaks if necessary. Failure to adhere to this format may result in denial of the pull request. Additionally, comprehensive documentation is required for all code changes. Any code lacking sufficient documentation may also be denied.
-
-By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
-
-NOTE: When creating a function please include "WPF" or "WinUtil" in the name so that it can be loaded into the runspace.
+If you encounter any challenges or problems with the script, or want to contribute code to the project, please consider reading through our [Contributing Guidelines](./CONTRIBUTING.md)
 
 ## Thanks to all Contributors
 Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
