@@ -1,15 +1,4 @@
-<table style="border-collapse: collapse; padding: 0; margin: 0; border: none;">
-  <tr style="padding: 0; margin: 0; border: none;">
-    <td style="padding: 0; margin: 0; vertical-align: middle; border: none;">
-      <img src="https://christitus.com/images/logo-full.png" alt="Your Image" style="width: 40px; height: auto; margin-top: 7px;"/>
-    </td>
-    <td style="padding: 0 0 0 10px; margin: 0; vertical-align: middle; border: none;">
-      <span style="font-size: 24px; font-weight: bold;">Chris Titus Tech's Windows Utility</span>
-    </td>
-  </tr>
-</table>
-
----
+# Chris Titus Tech's Windows Utility
 
 [![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=7a39fb)](https://github.com/ChrisTitusTech/winutil/releases/latest)
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/latest/total)
