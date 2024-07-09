@@ -2886,5 +2886,29 @@
 		"description": "Shotcut is a free, open source, cross-platform video editor.",
 		"link": "https://shotcut.org/",
 		"winget": "Meltytech.Shotcut"
+	},
+	"Pulsar-Edit": {
+		"category": "Development",
+		"choco": "pulsar",
+		"content": "Pulsar",
+		"description": "A Community-led Hyper-Hackable Text Editor",
+		"link": "https://pulsar-edit.dev/",
+		"winget": "Pulsar-Edit.Pulsar"
+	},
+	"Aegisub": {
+		"category": "Development",
+		"choco": "aegisub",
+		"content": "Aegisub",
+		"description": "Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview.",
+		"link": "https://github.com/Aegisub/Aegisub",
+		"winget": "Aegisub.Aegisub"
+	},
+	"SubtitleEdit": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Subtitle Edit",
+		"description": "Subtitle Edit is a free and open source editor for video subtitles.",
+		"link": "https://github.com/SubtitleEdit/subtitleedit",
+		"winget": "Nikse.SubtitleEdit"
 	}
 }
