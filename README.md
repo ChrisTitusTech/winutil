@@ -1,7 +1,13 @@
-<div style="display: flex; align-items: center;">
-  <img src="https://christitus.com/images/logo-full.png" alt="CTT Logo" style="margin-right: 10px; width: 50px; height: auto;"/>
-  <p style="font-size: 28px; font-weight: bold; margin: 0;">Chris Titus Tech's Windows Utility</p>
-</div>
+<table style="border-collapse: collapse; padding: 0; margin: 0;">
+  <tr style="padding: 0; margin: 0;">
+    <td style="padding: 0; margin: 0; vertical-align: middle;">
+      <img src="https://christitus.com/images/logo-full.png" alt="Your Image" style="width: 40px; height: auto; margin-top: 9px;"/>
+    </td>
+    <td style="padding: 0 0 0 10px; margin: 0; font-size: 24px; font-weight: bold; vertical-align: middle;">
+      Chris Titus Tech's Windows Utility
+    </td>
+  </tr>
+</table>
 
 ---
 
