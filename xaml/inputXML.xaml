@@ -710,7 +710,7 @@
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="{IconFontSize}" Name="WPFCloseButton" />
+                Foreground="{MainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 
         </DockPanel>

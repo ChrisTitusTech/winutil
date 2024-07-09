@@ -22,6 +22,7 @@
                     "IconButtonSize":   "35",
                     "WinUtilIconSize":        "Auto",
                     "SettingsIconFontSize":   "18",
+                    "CloseIconFontSize":      "18",
 
                     "MicroWinLogoSize": "10",
 
@@ -92,6 +93,7 @@
                     "IconButtonSize":   "35",
                     "WinUtilIconSize":        "Auto",
                     "SettingsIconFontSize":   "18",
+                    "CloseIconFontSize":      "18",
 
                     "MicroWinLogoSize": "10",
 
@@ -160,6 +162,7 @@
                     "IconButtonSize":   "35",
                     "WinUtilIconSize":        "Auto",
                     "SettingsIconFontSize":   "18",
+                    "CloseIconFontSize":      "18",
 
                     "MicroWinLogoSize": "10",
 
