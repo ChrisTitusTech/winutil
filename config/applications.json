@@ -1703,6 +1703,46 @@
 		"link": "https://prismlauncher.org/",
 		"winget": "PrismLauncher.PrismLauncher"
 	},
+	"protondrive": {
+		"category": "Utilities",
+		"choco": "protondrive",
+		"content": "Proton Drive",
+		"description": "Free, encrypted, and secure cloud storage from Proton",
+		"link": "https://proton.me/drive",
+		"winget": "Proton.ProtonDrive"
+	},
+	"protonmail": {
+		"category": "Utilities",
+		"choco": "protonmail",
+		"content": "Proton Mail",
+		"description": "Secure email from Proton",
+		"link": "https://proton.me/mail",
+		"winget": "Proton.ProtonMail"
+	},
+	"protonmailbridge": {
+		"category": "Utilities",
+		"choco": "protonmailbridge",
+		"content": "Proton Mail Bridge",
+		"description": "Use Proton Mail with your desktop email client",
+		"link": "https://proton.me/mail/bridge",
+		"winget": "Proton.ProtonMailBridge"
+	},
+	"protonpass": {
+		"category": "Utilities",
+		"choco": "protonpass",
+		"content": "Proton Pass",
+		"description": "Password manager from Proton",
+		"link": "https://proton.me/pass",
+		"winget": "Proton.ProtonPass"
+	},
+	"protonvpn": {
+		"category": "Utilities",
+		"choco": "protonvpn",
+		"content": "Proton VPN",
+		"description": "VPN from Proton",
+		"link": "https://protonvpn.com/",
+		"winget": "Proton.ProtonVPN"
+	},
 	"processlasso": {
 		"category": "Utilities",
 		"choco": "plasso",
