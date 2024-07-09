@@ -1,4 +1,9 @@
-# Chris Titus Tech's Windows Utility
+<div style="display: flex; align-items: center;">
+  <img src="https://christitus.com/images/logo-full.png" alt="CTT Logo" style="margin-right: 10px; width: 50px; height: auto;"/>
+  <p style="font-size: 28px; font-weight: bold; margin: 0;">Chris Titus Tech's Windows Utility</p>
+</div>
+
+---
 
 [![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=7a39fb)](https://github.com/ChrisTitusTech/winutil/releases/latest)
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/latest/total)
