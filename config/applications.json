@@ -245,7 +245,7 @@
 		"content": "Chrome",
 		"description": "Google Chrome is a widely used web browser known for its speed, simplicity, and seamless integration with Google services.",
 		"link": "https://www.google.com/chrome/",
-		"winget": "Google.Chrome"
+		"winget": "Google.Chrome.EXE"
 	},
 	"chromium": {
 		"category": "Browsers",
