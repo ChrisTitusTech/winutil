@@ -2639,6 +2639,14 @@
 		"link": "https://zoom.us/",
 		"winget": "Zoom.Zoom"
 	},
+	"zoomit": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "ZoomIt",
+		"description": "A screen zoom, annotation, and recording tool for technical presentations and demos",
+		"link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
+		"winget": "Microsoft.Sysinternals.ZoomIt"
+	},
 	"zotero": {
 		"category": "Document",
 		"choco": "zotero",
