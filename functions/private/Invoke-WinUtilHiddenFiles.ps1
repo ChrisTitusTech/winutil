@@ -16,7 +16,7 @@ function Invoke-WinUtilHiddenFiles {
         }
         else {
             Write-Host "Disabling Hidden Files"
-            $value = 2
+            $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name Hidden -Value $value

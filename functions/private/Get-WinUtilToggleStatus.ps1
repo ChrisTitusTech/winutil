@@ -128,7 +128,7 @@ Function Get-WinUtilToggleStatus {
 
     if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
         $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
-        if($HiddenFiles -eq 1){
+        if($HiddenFiles -eq 0){
             return $false
         }
         else{
