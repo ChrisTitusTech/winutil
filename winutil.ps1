@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.06.27
+    Version        : 24.07.11
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.06.27"
+$sync.version = "24.07.11"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -10836,14 +10836,30 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "UndoScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ]
   },
   "WPFTweaksPowershell7": {
