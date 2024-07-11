@@ -24,6 +24,8 @@
 ## Issue related to PR
 [What issue is related to this PR (if any)]
 - Resolves #
+[What discussion is related to this PR (if any)]
+- Discussion: #
 
 ## Additional Information
 [Any additional information that reviewers should be aware of.]
