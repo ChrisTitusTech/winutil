@@ -13,9 +13,9 @@
     .EXAMPLE
         Set-WinUtilTaskbaritem -value 0.5 -state "Normal"
         Set-WinUtilTaskbaritem -state "Error"
-        Set-WinUtilTaskbaritem -state "None"
         Set-WinUtilTaskbaritem -state "Indeterminate"
-        Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.ico"
+        Set-WinUtilTaskbaritem -description "This is a description"
+        Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
 
     #>
 
@@ -24,8 +24,8 @@ function Set-WinUtilTaskbaritem {
     param (
         [double]$value,
         $state,
-        $overlay
-        #[string]$description
+        $overlay,
+        $description
     )
 
     if ($value) {
@@ -59,5 +59,9 @@ function Set-WinUtilTaskbaritem {
         $bitmapImage.Freeze()
 
         $sync["Form"].taskbarItemInfo.Overlay = $bitmapImage
+    }
+
+    if ($description) {
+        $sync["Form"].taskbarItemInfo.Description = $description
     }
 }
