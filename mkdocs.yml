@@ -1,0 +1,38 @@
+site_name: Chris Titus WinUtil Docs
+repo_url: https://github.com/ChrisTitusTech/winutil
+
+nav:
+  - Introduction: 'index.md'
+  - User Guide: 'userguide.md'
+  - Contribute: 'contribute.md'
+  - Updates: 'updates.md'
+  - FAQ: 'faq.md'
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  logo: img/favicon.png
+  favicon: img/favicon.png
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline 
+        name: Switch to dark mode
+      primary: black
+      accent: purple 
+    - scheme: slate 
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode    
+      primary: teal
+      accent: lime
