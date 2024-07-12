@@ -29,7 +29,7 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
-    $sync["Form"].taskbarItemInfo.ProgressState = "Normal"
+    Set-WinUtilTaskbaritem -state "Normal" -value 1/$PackagesToInstall.Count
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
@@ -68,13 +68,13 @@ function Invoke-WPFUnInstall {
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
-            # $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
+            # Set-WinUtilTaskbaritem -state "None"
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
-            # $sync["Form"].taskbarItemInfo.ProgressState = "Error"
+            # Set-WinUtilTaskbaritem -state "Error"
         }
         $sync.ProcessRunning = $False
     }

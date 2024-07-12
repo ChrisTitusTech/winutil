@@ -10,8 +10,7 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
-    $sync["Form"].taskbarItemInfo.ProgressState = "Normal"
-    $sync["Form"].taskbarItemInfo.ProgressValue = 1 # Get amount of affected features & scripts
+    Set-WinUtilTaskbaritem -state "Normal" -value 1
 
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
@@ -26,7 +25,7 @@ function Invoke-WinUtilFeatureInstall {
                     }
 
                     else{
-                        $sync["Form"].taskbarItemInfo.ProgressState = "Error"
+                        Set-WinUtilTaskbaritem -state "Error"
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
@@ -47,7 +46,7 @@ function Invoke-WinUtilFeatureInstall {
                     }
 
                     else{
-                        $sync["Form"].taskbarItemInfo.ProgressState = "Error"
+                        Set-WinUtilTaskbaritem -state "Error"
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
@@ -56,6 +55,6 @@ function Invoke-WinUtilFeatureInstall {
         }
     }
     if ($sync["Form"].taskbarItemInfo.ProgressState -ne "Error"){
-        $sync["Form"].taskbarItemInfo.ProgressState = "None"
+        Set-WinUtilTaskbaritem -state "None"
     }
 }

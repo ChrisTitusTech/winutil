@@ -4,7 +4,6 @@ function Invoke-WPFMicrowin {
         Invoke MicroWin routines...
     #>
 
-	$sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
 
 	if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
@@ -43,6 +42,8 @@ public class PowerManagement {
         Write-Host "No file name for the target image was specified"
         return
     }
+
+	Set-WinUtilTaskbaritem -state "Indeterminate"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -479,6 +480,6 @@ public class PowerManagement {
 		# Allow the machine to sleep again (optional)
 		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
-		$sync["Form"].taskbarItemInfo.ProgressState = "None"
+		Set-WinUtilTaskbaritem -state "None"
 	}
 }

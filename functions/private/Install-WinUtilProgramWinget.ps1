@@ -97,7 +97,7 @@ Function Install-WinUtilProgramWinget {
             }
         }
         $X++
-        # $sync["Form"].TaskbarItemInfo.ProgressValue = $x/$count
+        # Set-WinUtilTaskbaritem -state "Normal" -value $x/$count
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
     return $failedPackages;

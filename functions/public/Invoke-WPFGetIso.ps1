@@ -15,7 +15,6 @@ function Invoke-WPFGetIso {
     $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
 
-    $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate"
 
 
     Write-Host "         _                     __    __  _         "
@@ -89,6 +88,8 @@ function Invoke-WPFGetIso {
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
     }
+
+    Set-WinUtilTaskbaritem -state "Indeterminate"
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path $filePath).Length
@@ -241,7 +242,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
-    $sync["Form"].taskbarItemInfo.ProgressState = "None"
+    Set-WinUtilTaskbaritem -state "None"
 }
 
 

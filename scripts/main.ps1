@@ -153,9 +153,15 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
-# https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.taskbariteminfo?view=windowsdesktop-8.0
+# download the logo
+$logoUrl = "https://christitus.com/images/logo-full.png"
+# Download the image
+$logoPath = "$env:TEMP\cttlogo.png"
+Invoke-WebRequest -Uri $logoUrl -OutFile $logoPath
+
+# Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
-$sync["Form"].taskbarItemInfo.ProgressState = "None"
+Set-WinUtilTaskbaritem -state "None"
 
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
@@ -291,37 +297,8 @@ Add-Type @"
         }
     }
 
-
-    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
-
-    # URL of the image
-    $imageUrl = "https://christitus.com/images/logo-full.png"
-
-    # Download the image
-    $imagePath = "$env:TEMP\logo-full.png"
-    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
-
-    # Read the image file as a byte array
-    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
-
-    # Convert the byte array to a Base64 string
-    $base64String = [System.Convert]::ToBase64String($imageBytes)
-
-    # Create a streaming image by streaming the base64 string to a bitmap streamsource
-    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-    $bitmap.BeginInit()
-    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
-    $bitmap.EndInit()
-    $bitmap.Freeze()
-
-    # Ensure TaskbarItemInfo is created if not already
-    if (-not $sync["Form"].TaskbarItemInfo) {
-        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
-    }
-
     # Set the overlay icon for the taskbar
-    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
-
+    Set-WinUtilTaskbaritem -overlay $logoPath
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
