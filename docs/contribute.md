@@ -27,23 +27,16 @@
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your Repository-list.
 ![Fork](assets/ForkButton.png)
 
-### Modify the Fork
+### Clone the Fork 
 * While you can make your changes directly through the Web, we recommend cloning the repo to your device to test your fork easily. 
-#### GitHub Desktop
-* Using the application GitHub Desktop (available in WinUtil) you can easily manage your repos locally.
-1. Install GitHub Desktop if not already installed
-2. Log in using the same GitHub account u used to fork WinUtil
-3. Choose the fork under "Your Repositories" and press "clone {repo name}"
+* Using the application GitHub Desktop (available in WinUtil) you can easily manage your repos locally. You can do it using other tools like git-cli (available in WinUtil), we recommend GitHub Desktop for ease of use.
+* Install GitHub Desktop if not already installed
+* Log in using the same GitHub account u used to fork WinUtil
+* Choose the fork under "Your Repositories" and press "clone {repo name}"
+* Create a new Branch and name it something relatable to your changes,
 
 * Now you can modify WinUtil to your liking using your prefered text editor.
 
-#### git
-1. Install Git (available in WinUtil) if not already installed.
-2. Open a terminal or command prompt.
-3. change the directory to where the fork should be cloned:
-4. Clone your forked repository using the following command:
-* git clone https://github.com/{your-username}/winutil.git
-5. you can now find
 
 ### Testing your changes
 * To test to see if your changes work as intended run following commands in a powershell teminal:
@@ -55,8 +48,8 @@
 * After seeing that your changes work properly feel free to commit the changes to the repository and make a PR, for help on that follow the documentation below.
 
 ### Commiting the changes
-#### Github Desktop
-* 
+* Commit your changes once you are fine with the result
+* Push the changes to "upload" them to your fork on github.com.
 
 ### Making a PR
 * To make a PR on your repo under a new branch linking to the main branch a button will show and say Preview and Create pull request. Click that button and fill in all information that is provided on the template. Once all the information is filled in correctly check your PR to make sure there is not a WinUtil.ps1 file attached to the PR. Once everything is good make the PR and wait for Chris (The Maintainer) to accept or deny your PR. Once it is accepted in by Chris you will be able to see your changes in the /windev build.
