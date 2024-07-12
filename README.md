@@ -46,15 +46,6 @@ If you still have Issues, refer to [Known Issues](./.docs/KnownIssues.md).
 Written Article walkthrough @ <https://christitus.com/windows-tool/>
 
 
-## 📄 Documentation
-
-Welcome to the project documentation! Here you will find all the necessary information to understand and contribute to this project. 
-
-1. [🔍 Overview](./.docs/Overview.md)
-2. [🐛 Known Issues](./.docs/KnownIssues.md)
-3. [🤖 Automation](./.docs/Automation.md)
-4. [👥 Contributing Guidelines](./.docs/CONTRIBUTING.md)
-
 ## 💖 Support
 - To morally and mentally support the project, make sure to leave a ⭐️!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
