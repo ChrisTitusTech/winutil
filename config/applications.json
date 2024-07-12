@@ -2023,13 +2023,21 @@
 		"link": "https://store.steampowered.com/about/",
 		"winget": "Valve.Steam"
 	},
-	"strawberry": {
+	"steam": {
+		"category": "Games",
+		"choco": "steam-client",
+		"content": "Steam",
+		"description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
+		"link": "https://store.steampowered.com/about/",
+		"winget": "Valve.Steam"
+	},
+	"SoundSwitch": {
 		"category": "Multimedia Tools",
-		"choco": "strawberrymusicplayer",
-		"content": "Strawberry (Music Player)",
-		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
-		"link": "https://www.strawberrymusicplayer.org/",
-		"winget": "StrawberryMusicPlayer.Strawberry"
+		"choco": "soundswitch",
+		"content": "SoundSwitch",
+		"description": "Switch your default playback devices and/or recording devices using simple hotkeys.",
+		"link": "https://soundswitch.aaflalo.me/",
+		"winget": "AntoineAflalo.SoundSwitch"
 	},
 	"stremio": {
 		"winget": "Stremio.Stremio",
