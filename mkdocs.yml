@@ -1,4 +1,4 @@
-site_name: Chris Titus WinUtil Docs
+site_name: Chris Titus WinUtil Official Documentation
 repo_url: https://github.com/ChrisTitusTech/winutil
 
 nav:
@@ -10,6 +10,7 @@ nav:
 
 theme:
   name: material
+  custom_dir: 'overrides'
   features:
     - navigation.tabs
     - navigation.sections
@@ -21,8 +22,8 @@ theme:
     - content.code.annotation
     - content.code.copy
   language: en
-  logo: img/favicon.png
-  favicon: img/favicon.png
+  logo: assets/favicon.png
+  favicon: assets/favicon.png
   palette:
     - scheme: default
       toggle:
@@ -36,3 +37,5 @@ theme:
         name: Switch to light mode    
       primary: teal
       accent: lime
+  markdown_extensions:
+    - admonition
