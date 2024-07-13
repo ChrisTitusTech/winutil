@@ -24,12 +24,14 @@ function Invoke-WPFundoall {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value $using:Tweaks.Count })
 
         Foreach ($tweak in $tweaks){
             Invoke-WinUtilTweaks $tweak -undo $true
         }
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="

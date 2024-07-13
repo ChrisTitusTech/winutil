@@ -10,7 +10,7 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
-    Set-WinUtilTaskbaritem -state "Normal" -value 1
+    # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 1/$using:CheckBox.Count })
 
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
@@ -39,6 +39,7 @@ function Invoke-WinUtilFeatureInstall {
 
                     Write-Host "Running Script for $psitem"
                     Invoke-Command $scriptblock -ErrorAction stop
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
                 }
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
@@ -46,15 +47,12 @@ function Invoke-WinUtilFeatureInstall {
                     }
 
                     else{
-                        Set-WinUtilTaskbaritem -state "Error"
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
                 }
             }
         }
-    }
-    if ($sync["Form"].taskbarItemInfo.ProgressState -ne "Error"){
-        Set-WinUtilTaskbaritem -state "None"
     }
 }

@@ -24,7 +24,7 @@ function Invoke-WPFGetInstalled {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        Set-WinUtilTaskbaritem -state "Indeterminate"
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
         if($checkbox -eq "winget"){
             Write-Host "Getting Installed Programs..."
@@ -43,6 +43,6 @@ function Invoke-WPFGetInstalled {
 
         Write-Host "Done..."
         $sync.ProcessRunning = $false
-        Set-WinUtilTaskbaritem -state "None"
+        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "None" })
     }
 }

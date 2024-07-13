@@ -14,19 +14,19 @@ function Install-WinUtilChoco {
             return
         }
         
-        Set-WinUtilTaskbaritem -state "Indeterminate"
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
         Write-Host "Seems Chocolatey is not installed, installing now."
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
-        Set-WinUtilTaskbaritem -state "None"
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
 
     }
     Catch {
         Write-Host "===========================================" -Foregroundcolor Red
         Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
         Write-Host "===========================================" -Foregroundcolor Red
-        Set-WinUtilTaskbaritem -state "Error"
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
     }
 
 }

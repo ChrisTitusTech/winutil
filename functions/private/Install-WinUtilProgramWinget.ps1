@@ -97,7 +97,7 @@ Function Install-WinUtilProgramWinget {
             }
         }
         $X++
-        # Set-WinUtilTaskbaritem -state "Normal" -value $x/$count
+        # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value $using:x/$using:count })
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
     return $failedPackages;
