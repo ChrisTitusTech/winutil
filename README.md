@@ -39,13 +39,13 @@ If you have Issues, refer to [Known Issues](./docs/KnownIssues.md). <!-- TODO: C
 
 ## 🎓 Documenation
 
-[WinUtil Official Documentation](https://christitustech.github.io/winutil/)
+### [WinUtil Official Documentation](https://christitustech.github.io/winutil/)
 
 ### YouTube Tutorial
 
 [![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
-ChrisTitus.com Article @ <https://christitus.com/windows-tool/>
+### [ChrisTitus.com Article](https://christitus.com/windows-tool/)
 
 
 ## 💖 Support
