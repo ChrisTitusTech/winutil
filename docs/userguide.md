@@ -109,7 +109,7 @@
 	By default, MicroWin will debloat the Pro edition, but you can choose any edition you want
 
 
-Customization options:
+##### Customization options
 
 * **Keep Provisioned Packages**: leaving this option unticked (default) will try to remove every operating system package
 
@@ -128,7 +128,7 @@ Customization options:
 	Leaving this option unticked is option is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
 
 
-Driver integration options:
+##### Driver integration options
 
 * **Inject drivers** will add the drivers in the folder that you specify to the target Windows image
 * **Import drivers from current system** will add every third-party driver that is present in your active installation
@@ -136,7 +136,7 @@ Driver integration options:
 	This makes the target image have the same hardware compatibility of the active installation. However, this means that you will only be able to install the target Windows image and take full advantage of it on computers with **the same hardware**. To avoid this, you'll need to customize the `install.wim` file of the target ISO in the `sources` folder
 
 
-Ventoy options:
+##### Ventoy options
 
 * **Copy to Ventoy** will copy the target ISO file to any USB drive with [Ventoy](https://ventoy.net/en/index.html) installed
 
