@@ -1,4 +1,4 @@
-# Welcome to Chris Titus WinUtil Offical Documentation!
+# Welcome to Chris Titus WinUtil Official Documentation!
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ)](https://discord.gg/RUbZUZyByQ)
 
