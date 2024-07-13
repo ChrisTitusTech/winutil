@@ -41,9 +41,11 @@ If you have Issues, refer to [Known Issues](./docs/KnownIssues.md). <!-- TODO: C
 
 [WinUtil Official Documentation](https://christitustech.github.io/winutil/)
 
+### YouTube Tutorial
+
 [![Watch the video](https://img.youtube.com/vi/6UQZ5oQg8XA/hqdefault.jpg)](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
-Written Article walkthrough @ <https://christitus.com/windows-tool/>
+ChrisTitus.com Article @ <https://christitus.com/windows-tool/>
 
 
 ## 💖 Support
