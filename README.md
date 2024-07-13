@@ -36,7 +36,7 @@ If this site is not reachable from your country, please try running it directly 
 irm "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1" | iex
 ```
 
-If you still have Issues, refer to [Known Issues](./.docs/KnownIssues.md).
+If you still have Issues, refer to [Known Issues](./docs/KnownIssues.md). <!-- TODO: Change when new docs are available (works rn) -->
 
 
 ## 🎓 Tutorial
