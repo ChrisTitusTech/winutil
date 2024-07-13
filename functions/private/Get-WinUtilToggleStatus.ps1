@@ -127,11 +127,20 @@ Function Get-WinUtilToggleStatus {
     }
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
-	if($TaskbarWidgets -eq 0) {
+        if($TaskbarWidgets -eq 0) {
             return $false
-	}
-	else{
+        }
+        else{
             return $true
-	}
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleTaskbarAlignment") {
+        $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
+        if($TaskbarAlignment -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
     }
 }
