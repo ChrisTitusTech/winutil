@@ -1,0 +1,17 @@
+name: On release published
+on:
+  release:
+    types: [published]
+
+jobs:
+  changelog:
+    name: Update changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - uses: rhysd/changelog-from-release/action@v3
+        with:
+          file: /docs/updates.md
+          github_token: ${{ secrets.GITHUB_TOKEN }}
