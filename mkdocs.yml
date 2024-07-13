@@ -6,6 +6,7 @@ nav:
   - User Guide: 'userguide.md'
   - Contribute: 'contribute.md'
   - Updates: 'updates.md'
+  - Known Issues: 'KnownIssues.md'
   - FAQ: 'faq.md'
 
 theme:
