@@ -125,7 +125,7 @@
 	
 * **Keep Edge**: leaving this option unticked will try to remove every part of the Microsoft Edge browser using the best methods available
 
-	Leaving this option unticked is option is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
+	Leaving this option unticked is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
 
 
 ##### Driver integration options
