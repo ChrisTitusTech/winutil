@@ -35,7 +35,7 @@ irm "https://christitus.com/win" | iex
 irm "https://christitus.com/windev" | iex
 ```
 
-If you have Issues, refer to [Known Issues](./docs/KnownIssues.md). <!-- TODO: Change when new docs are available (works rn) -->
+If you have Issues, refer to [Known Issues](https://christitustech.github.io/winutil/KnownIssues/)
 
 ## 🎓 Documenation
 
