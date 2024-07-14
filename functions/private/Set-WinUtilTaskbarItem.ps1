@@ -50,7 +50,7 @@ function Set-WinUtilTaskbaritem {
             'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
             'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
             'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
-            default { write-host "Invalid state" }
+            default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
         }
     }
 
