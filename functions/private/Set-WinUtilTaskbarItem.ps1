@@ -1,3 +1,4 @@
+function Set-WinUtilTaskbaritem {
     <#
 
     .SYNOPSIS
@@ -18,9 +19,6 @@
         Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
 
     #>
-
-
-function Set-WinUtilTaskbaritem {
     param (
         [double]$value,
         $state,
