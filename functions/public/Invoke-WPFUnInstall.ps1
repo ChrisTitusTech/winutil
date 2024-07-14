@@ -32,7 +32,11 @@ function Invoke-WPFUnInstall {
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
-        # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 1/$using:PackagesToInstall.Count })
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -58,11 +62,6 @@ function Invoke-WPFUnInstall {
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Uninstalls are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
@@ -77,5 +76,10 @@ function Invoke-WPFUnInstall {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
         }
         $sync.ProcessRunning = $False
+
+        $ButtonType = [System.Windows.MessageBoxButton]::OK
+        $MessageboxTitle = "Uninstalls are Finished "
+        $Messageboxbody = ("Done")
+        $MessageIcon = [System.Windows.MessageBoxImage]::Information
     }
 }

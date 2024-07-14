@@ -159,6 +159,12 @@ $logoUrl = "https://christitus.com/images/logo-full.png"
 $logoPath = "$env:TEMP\cttlogo.png"
 Invoke-WebRequest -Uri $logoUrl -OutFile $logoPath
 
+# download the check
+$CheckUrl = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/docs/assets/Check.png"
+# Download the image
+$CheckPath = "$env:TEMP\cttcheck.png"
+Invoke-WebRequest -Uri $CheckUrl -OutFile $CheckPath
+
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
 Set-WinUtilTaskbaritem -state "None"
@@ -436,6 +442,10 @@ $sync["CheckboxFilter"].Add_TextChanged({
     foreach ($category in $inactiveCategories){
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
+})
+
+$sync["Form"].Add_Activated({ 
+    Set-WinUtilTaskbaritem -overlay $logoPath 
 })
 
 # Define event handler for button click

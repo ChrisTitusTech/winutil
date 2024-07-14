@@ -24,10 +24,17 @@ function Invoke-WPFundoall {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value $using:Tweaks.Count })
+        if ($Tweaks.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 })
+        }
+        $cnt = 0
 
         Foreach ($tweak in $tweaks){
             Invoke-WinUtilTweaks $tweak -undo $true
+            $cnt += 1
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
         }
 
         $sync.ProcessRunning = $false

@@ -33,7 +33,13 @@ function Set-WinUtilTaskbaritem {
     }
 
     if ($state) {
-        $sync["Form"].taskbarItemInfo.ProgressState = $state
+        switch ($state) {
+            'Indeterminate' { $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate" }
+            'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
+            'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
+            'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
+            default { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
+        }
     }
 
     if ($overlay -and (Test-Path $overlay)) {

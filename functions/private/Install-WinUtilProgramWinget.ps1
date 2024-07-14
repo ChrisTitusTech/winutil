@@ -42,20 +42,28 @@ Function Install-WinUtilProgramWinget {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0){
                     Write-Host "$($Program.winget) installed successfully."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq  -1978335189){
                     Write-Host "$($Program.winget) No applicable update found"
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User scope"
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0){
                     Write-Host "$($Program.winget) installed successfully with User scope."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq  -1978335189){
                     Write-Host "$($Program.winget) No applicable update found"
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User prompt"
@@ -70,15 +78,21 @@ Function Install-WinUtilProgramWinget {
                 }
                 if($status -eq 0){
                     Write-Host "$($Program.winget) installed successfully with User prompt."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq  -1978335189){
                     Write-Host "$($Program.winget) No applicable update found"
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
             } catch {
                 Write-Host "Failed to install $($Program.winget). With winget"
                 $failedPackages += $Program
+                $X++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
         if($manage -eq "Uninstalling"){
@@ -94,10 +108,11 @@ Function Install-WinUtilProgramWinget {
             } catch {
                 Write-Host "Failed to uninstall $($Program.winget) due to an error: $_"
                 $failedPackages += $Program
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
             }
         }
         $X++
-        # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value $using:x/$using:count })
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
     return $failedPackages;

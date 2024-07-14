@@ -15,6 +15,8 @@ function Invoke-WPFInstallUpgrade {
         return
     }
 
+    # Set-WinUtilTaskbaritem -state "Indeterminate"
+
     Update-WinUtilProgramWinget
 
     Write-Host "==========================================="

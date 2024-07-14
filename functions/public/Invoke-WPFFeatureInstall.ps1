@@ -16,12 +16,18 @@ function Invoke-WPFFeatureInstall {
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
-
         $sync.ProcessRunning = $true
+        if ($Features.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 })
+        }
 
         Invoke-WinUtilFeatureInstall $Features
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
+        
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
