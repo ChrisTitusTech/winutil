@@ -161,7 +161,8 @@ $logoPath = "$env:TEMP\cttlogo.png"
 Invoke-WebRequest -Uri $logoUrl -OutFile $logoPath
 
 # download the check
-$CheckUrl = "https://raw.githubusercontent.com/MyDrift-user/winutil/Progress-bar/docs/assets/check.png"
+$CheckUrl = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/docs/assets/check.png"
+
 # Download the image
 $CheckPath = "$env:TEMP\cttcheck.png"
 Invoke-WebRequest -Uri $CheckUrl -OutFile $CheckPath
