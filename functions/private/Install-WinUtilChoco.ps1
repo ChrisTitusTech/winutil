@@ -13,7 +13,6 @@ function Install-WinUtilChoco {
         if((Test-WinUtilPackageManager -choco) -eq "installed") {
             return
         }
-        
 
         Write-Host "Seems Chocolatey is not installed, installing now."
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
