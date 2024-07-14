@@ -67,7 +67,7 @@ function Invoke-WPFUnInstall {
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "$env:TEMP\cttcheck.png" })
         }
         Catch {
             Write-Host "==========================================="

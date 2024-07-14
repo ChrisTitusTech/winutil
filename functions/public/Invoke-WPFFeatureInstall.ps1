@@ -26,7 +26,7 @@ function Invoke-WPFFeatureInstall {
         Invoke-WinUtilFeatureInstall $Features
 
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "$env:TEMP\cttcheck.png" })
         
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
