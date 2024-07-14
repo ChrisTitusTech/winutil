@@ -8,6 +8,7 @@ function Set-WinUtilTaskbaritem {
         Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
         Value does not affect item without setting the state to 'Normal', 'Error' or 'Paused'
         Set-WinUtilTaskbaritem -value 0.5
+
     .PARAMETER state
         State can be 'None' > No progress, 'Indeterminate' > inf. loading gray, 'Normal' > Gray, 'Error' > Red, 'Paused' > Yellow
         no value needed:
@@ -17,10 +18,6 @@ function Set-WinUtilTaskbaritem {
         - Set-WinUtilTaskbaritem -state "Error"
         - Set-WinUtilTaskbaritem -state "Normal"
         - Set-WinUtilTaskbaritem -state "Paused"
-    .PARAMETER state
-        State can be 'None' > No progress, 'Indeterminate' > Without value, 'Normal' > when using value, 'Error' > Red (when using value), 'Paused' > Yellow (when using value)
-    .PARAMETER value
-        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
 
     .PARAMETER overlay
         Overlay icon to display on the taskbar item, there are the presets 'logo' and 'checkmark' or you can specify a path/link to an image file.
