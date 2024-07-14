@@ -10,7 +10,7 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
-    x = 0
+    $x = 0
 
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
