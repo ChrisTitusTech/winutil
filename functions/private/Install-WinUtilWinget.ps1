@@ -19,7 +19,6 @@ function Install-WinUtilWinget {
             Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
 
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
         # Gets the computer's information
         if ($null -eq $sync.ComputerInfo){
@@ -65,6 +64,5 @@ function Install-WinUtilWinget {
             throw [WingetFailedInstall]::new('Failed to install!')
         }
     }
-    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" })
     
 }
