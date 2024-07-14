@@ -4,9 +4,10 @@ function Set-WinUtilTaskbaritem {
     .SYNOPSIS
         Modifies the Taskbaritem of the WPF Form
 
-    .PARAMETER state & value
-        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
+    .PARAMETER state
         State can be 'None' > No progress, 'Indeterminate' > Without value, 'Normal' > when using value, 'Error' > Red (when using value), 'Paused' > Yellow (when using value)
+    .PARAMETER value
+        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
 
     .PARAMETER overlay
         Overlay icon to display on the taskbar item
