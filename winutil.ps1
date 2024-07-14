@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.13
+    Version        : 24.07.14
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.13"
+$sync.version = "24.07.14"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -2282,6 +2282,51 @@ function Invoke-WinUtilSnapWindow {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+Function Invoke-WinUtilSponsors {
+    <#
+    .SYNOPSIS
+        Lists Sponsors from ChrisTitusTech
+    .DESCRIPTION
+        Lists Sponsors from ChrisTitusTech
+    .EXAMPLE
+        Invoke-WinUtilSponsors
+    .NOTES
+        This function is used to list sponsors from ChrisTitusTech
+    #>
+    try {
+        # Define the URL and headers
+        $url = "https://github.com/sponsors/ChrisTitusTech"
+        $headers = @{
+            "User-Agent" = "Chrome/58.0.3029.110"
+        }
+
+        # Fetch the webpage content
+        try {
+            $html = Invoke-RestMethod -Uri $url -Headers $headers
+        } catch {
+            Write-Output $_.Exception.Message
+            exit
+        }
+
+        # Use regex to extract the content between "Current sponsors" and "Past sponsors"
+        $currentSponsorsPattern = '(?s)(?<=Current sponsors).*?(?=Past sponsors)'
+        $currentSponsorsHtml = [regex]::Match($html, $currentSponsorsPattern).Value
+
+        # Use regex to extract the sponsor usernames from the alt attributes in the "Current Sponsors" section
+        $sponsorPattern = '(?<=alt="@)[^"]+'
+        $sponsors = [regex]::Matches($currentSponsorsHtml, $sponsorPattern) | ForEach-Object { $_.Value }
+
+        # Exclude "ChrisTitusTech" from the sponsors
+        $sponsors = $sponsors | Where-Object { $_ -ne "ChrisTitusTech" }
+
+        # Return the sponsors
+        return $sponsors
+    }
+    catch {
+        Write-Error "An error occurred while fetching or processing the sponsors: $_"
+        return $null
+    }
+}
 Function Invoke-WinUtilStickyKeys {
     <#
     .SYNOPSIS
@@ -2828,6 +2873,9 @@ function Show-CustomDialog {
     .PARAMETER IconSize
     The Size to use for Icon inside the custom dialog window.
 
+    .PARAMETER EnableScroll
+    A flag indicating whether to enable scrolling if the content exceeds the window size.
+
     .EXAMPLE
     Show-CustomDialog -Message "This is a custom dialog with a message and an image above." -Width 300 -Height 200
 
@@ -2838,7 +2886,8 @@ function Show-CustomDialog {
         [int]$Height = 200,
         [int]$FontSize = 10,
         [int]$HeaderFontSize = 14,
-        [int]$IconSize = 25
+        [int]$IconSize = 25,
+        [bool]$EnableScroll = $false
     )
 
     Add-Type -AssemblyName PresentationFramework
@@ -3050,11 +3099,18 @@ $cttLogoPath = @"
         $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
     }
 
-
-    # Add the TextBlock to the Grid
-    $grid.Children.Add($messageTextBlock)
-    [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
-
+    # Create a ScrollViewer if EnableScroll is true
+    if ($EnableScroll) {
+        $scrollViewer = New-Object System.Windows.Controls.ScrollViewer
+        $scrollViewer.VerticalScrollBarVisibility = 'Auto'
+        $scrollViewer.HorizontalScrollBarVisibility = 'Disabled'
+        $scrollViewer.Content = $messageTextBlock
+        $grid.Children.Add($scrollViewer)
+        [Windows.Controls.Grid]::SetRow($scrollViewer, 1)  # Set the row to the second row (0-based index)
+    } else {
+        $grid.Children.Add($messageTextBlock)
+        [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+    }
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
@@ -12820,6 +12876,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <MenuItem FontSize="{ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
                             <Separator/>
                             <MenuItem FontSize="{ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -15295,6 +15352,33 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize
+})
+
+$sync["SponsorMenuItem"].Add_Click({
+    # Handle Export menu item click
+    Write-Debug "Sponsors clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    $authorInfo = @"
+<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
+"@
+    $authorInfo += "`n"
+    try {
+        # Call the function to get the sponsors
+        $sponsors = Invoke-WinUtilSponsors
+
+        # Append the sponsors to the authorInfo
+        $sponsors | ForEach-Object { $authorInfo += "$_`n" }
+    }
+    catch {
+        $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
+    }
+
+    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
+    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
+    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
+    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
 })
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
