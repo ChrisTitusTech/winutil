@@ -154,19 +154,6 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
-# download the logo
-$logoUrl = "https://christitus.com/images/logo-full.png"
-# Download the image
-$logoPath = "$env:TEMP\cttlogo.png"
-Invoke-WebRequest -Uri $logoUrl -OutFile $logoPath
-
-# download the check
-$CheckUrl = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/docs/assets/check.png"
-
-# Download the image
-$CheckPath = "$env:TEMP\cttcheck.png"
-Invoke-WebRequest -Uri $CheckUrl -OutFile $CheckPath
-
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
 Set-WinUtilTaskbaritem -state "None"
@@ -304,9 +291,6 @@ Add-Type @"
 
         }
     }
-
-    # Set the overlay icon for the taskbar
-    Set-WinUtilTaskbaritem -overlay $logoPath
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
@@ -446,8 +430,25 @@ $sync["SearchBar"].Add_TextChanged({
         $label.Visibility = "Collapsed"}
 })
 
-$sync["Form"].Add_Activated({ 
-    Set-WinUtilTaskbaritem -overlay $logoPath -state "None"
+$cttpnglogo = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+$ctticologo = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
+if (-NOT (Test-Path -Path $cttpnglogo) -or -NOT (Test-Path -Path $ctticologo)) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $cttpnglogo
+} 
+
+$cttpngcheckmark = "$env:LOCALAPPDATA\winutil\cttcheckmark.png"
+$ctticocheckmark = "$env:LOCALAPPDATA\winutil\cttcheckmark.ico"
+if (-NOT (Test-Path -Path $cttpngcheckmark) -or -NOT (Test-Path -Path $ctticocheckmark)) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $cttpngcheckmark
+}
+
+ConvertTo-Icon -bitmapPath $cttpnglogo -iconPath $ctticologo
+
+Set-WinUtilTaskbaritem -overlay "logo" | Out-Null
+$sync["Form"].icon = $cttpnglogo
+
+$sync["Form"].Add_Activated({
+    Set-WinUtilTaskbaritem -overlay "logo"
 })
 
 # Define event handler for button click

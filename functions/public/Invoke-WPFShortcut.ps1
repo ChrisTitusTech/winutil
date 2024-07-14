@@ -27,12 +27,6 @@ function Invoke-WPFShortcut {
             $ArgumentsToSourceExe = "$powershell '$IRM'"
             $DestinationName = "WinUtil.lnk"
 
-            Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
-
-            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                $iconPath = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
-                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-            }
         }
     }
 
@@ -54,8 +48,8 @@ function Invoke-WPFShortcut {
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
     $Shortcut.TargetPath = $SourceExe
     $Shortcut.Arguments = $ArgumentsToSourceExe
-    if ($iconPath -ne $null) {
-        $shortcut.IconLocation = $iconPath
+    if (Test-Path -Path $ctticologo) {
+        $shortcut.IconLocation = $ctticologo
     }
 
     # Save the Shortcut to disk

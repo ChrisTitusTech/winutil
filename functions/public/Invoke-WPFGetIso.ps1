@@ -89,7 +89,7 @@ function Invoke-WPFGetIso {
         return
     }
 
-    Set-WinUtilTaskbaritem -state "Indeterminate"
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path $filePath).Length
@@ -245,7 +245,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
-    Set-WinUtilTaskbaritem -state "None"
+    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
 
 

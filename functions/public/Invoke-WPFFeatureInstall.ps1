@@ -18,15 +18,15 @@ function Invoke-WPFFeatureInstall {
         param($Features, $DebugPreference)
         $sync.ProcessRunning = $true
         if ($Features.count -eq 1){
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 })
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 })
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
 
         Invoke-WinUtilFeatureInstall $Features
 
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "$env:TEMP\cttcheck.png" })
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"

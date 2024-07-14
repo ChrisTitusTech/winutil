@@ -40,10 +40,11 @@ public class PowerManagement {
 
     if ($SaveDialog.FileName -eq "") {
         Write-Host "No file name for the target image was specified"
+		Set-WinUtilTaskbaritem -state "Error" -value 1
         return
     }
 
-	Set-WinUtilTaskbaritem -state "Indeterminate"
+	Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -474,7 +475,7 @@ public class PowerManagement {
 			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
-			Set-WinUtilTaskbaritem -state "None"
+			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
@@ -487,6 +488,5 @@ public class PowerManagement {
 		# Allow the machine to sleep again (optional)
 		[PowerManagement]::SetThreadExecutionState(0)
 		$sync.ProcessRunning = $false
-		Set-WinUtilTaskbaritem -state "None"
 	}
 }
