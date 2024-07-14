@@ -951,69 +951,37 @@
 		"link": "https://jami.net/",
 		"winget": "SFLinux.Jami"
 	},
-	"java16": {
+	"java8": {
 		"category": "Development",
-		"choco": "temurin16jre",
-		"content": "OpenJDK Java 16",
-		"description": "OpenJDK Java 16 is the latest version of the open-source Java development kit.",
-		"link": "https://adoptopenjdk.net/",
-		"winget": "AdoptOpenJDK.OpenJDK.16"
+		"choco": "corretto8jdk",
+		"content": "Amazon Corretto 8 (LTS)",
+		"description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+		"link": "https://aws.amazon.com/corretto",
+		"winget": "Amazon.Corretto.8.JDK"
 	},
-	"java18": {
+	"java11": {
 		"category": "Development",
-		"choco": "temurin18jre",
-		"content": "Oracle Java 18",
-		"description": "Oracle Java 18 is the latest version of the official Java development kit from Oracle.",
-		"link": "https://www.oracle.com/java/",
-		"winget": "EclipseAdoptium.Temurin.18.JRE"
+		"choco": "corretto11jdk",
+		"content": "Amazon Corretto 11 (LTS)",
+		"description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+		"link": "https://aws.amazon.com/corretto",
+		"winget": "Amazon.Corretto.11.JDK"
+	},
+	"java17": {
+		"category": "Development",
+		"choco": "corretto17jdk",
+		"content": "Amazon Corretto 17 (LTS)",
+		"description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+		"link": "https://aws.amazon.com/corretto",
+		"winget": "Amazon.Corretto.17.JDK"
 	},
 	"java21": {
 		"category": "Development",
-		"choco": "na",
-		"content": "Azul Zulu JDK 21",
-		"description": "Azul Zulu JDK 21 is a distribution of the OpenJDK with long-term support, performance enhancements, and security updates.",
-		"link": "https://www.azul.com/downloads/zulu-community/",
-		"winget": "Azul.Zulu.21.JDK"
-	},
-	"java8": {
-		"category": "Development",
-		"choco": "temurin8jre",
-		"content": "OpenJDK Java 8",
-		"description": "OpenJDK Java 8 is an open-source implementation of the Java Platform, Standard Edition.",
-		"link": "https://adoptopenjdk.net/",
-		"winget": "EclipseAdoptium.Temurin.8.JRE"
-	},
-	"java11runtime": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Eclipse Temurin JRE 11",
-		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-		"link": "https://adoptium.net/",
-		"winget": "EclipseAdoptium.Temurin.11.JRE"
-	},
-	"java17runtime": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Eclipse Temurin JRE 17",
-		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-		"link": "https://adoptium.net/",
-		"winget": "EclipseAdoptium.Temurin.17.JRE"
-	},
-	"java18runtime": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Eclipse Temurin JRE 18",
-		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-		"link": "https://adoptium.net/",
-		"winget": "EclipseAdoptium.Temurin.18.JRE"
-	},
-	"java19runtime": {
-		"category": "Development",
-		"choco": "na",
-		"content": "Eclipse Temurin JRE 19",
-		"description": "Eclipse Temurin JRE is the open source Java SE build based upon OpenJRE.",
-		"link": "https://adoptium.net/",
-		"winget": "EclipseAdoptium.Temurin.19.JRE"
+		"choco": "corretto21jdk",
+		"content": "Amazon Corretto 21 (LTS)",
+		"description": "Amazon Corretto is a no-cost, multiplatform, production-ready distribution of the Open Java Development Kit (OpenJDK).",
+		"link": "https://aws.amazon.com/corretto",
+		"winget": "Amazon.Corretto.21.JDK"
 	},
 	"jdownloader": {
 		"category": "Utilities",
@@ -1214,6 +1182,14 @@
 		"description": "Meld is a visual diff and merge tool for files and directories.",
 		"link": "https://meldmerge.org/",
 		"winget": "Meld.Meld"
+	},
+	"ModernFlyouts": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Modern Flyouts",
+		"description": "An open source, modern, Fluent Design-based set of flyouts for Windows.",
+		"link": "https://github.com/ModernFlyouts-Community/ModernFlyouts/",
+		"winget": "ModernFlyouts.ModernFlyouts"
 	},
 	"monitorian": {
 		"category": "Utilities",
@@ -1943,10 +1919,10 @@
 		"link": "https://getsharex.com/",
 		"winget": "ShareX.ShareX"
 	},
-	"nilesoftShel": {
+	"nilesoftShell": {
 		"category": "Utilities",
 		"choco": "nilesoft-shell",
-		"content": "Shell (Expanded Context Menu)",
+		"content": "Nilesoft Shell",
 		"description": "Shell is an expanded context menu tool that adds extra functionality and customization options to the Windows context menu.",
 		"link": "https://nilesoft.org/",
 		"winget": "Nilesoft.Shell"
@@ -2482,7 +2458,7 @@
 	"wingetui": {
 		"category": "Utilities",
 		"choco": "wingetui",
-		"content": "WingetUI",
+		"content": "UnigetUI",
 		"description": "WingetUI is a graphical user interface for Microsoft's Windows Package Manager (winget).",
 		"link": "https://www.marticliment.com/wingetui/",
 		"winget": "SomePythonThings.WingetUIStore"
@@ -2872,7 +2848,7 @@
 		"winget": "NDI.NDITools"
 	},
 	"kicad": {
-		"category": "Pro Tools",
+		"category": "Multimedia Tools",
 		"choco": "na",
 		"content": "Kicad",
 		"description":"Kicad is an open-source EDA tool. It's a good starting point for those who want to do electrical design and is even used by professionals in the industry.",
@@ -2902,5 +2878,13 @@
 		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
+	},
+	"Shotcut": {
+		"category": "Multimedia Tools",
+		"choco": "na",
+		"content": "Shotcut",
+		"description": "Shotcut is a free, open source, cross-platform video editor.",
+		"link": "https://shotcut.org/",
+		"winget": "Meltytech.Shotcut"
 	}
 }
