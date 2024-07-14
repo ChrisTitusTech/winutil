@@ -33,10 +33,10 @@ function Set-WinUtilTaskbaritem {
         Set-WinUtilTaskbaritem -description "This is a description"
     #>
     param (
+        [string]$state,
         [double]$value,
-        $state,
-        $overlay,
-        $description
+        [string]$overlay,
+        [string]$description
     )
 
     if ($value) {
