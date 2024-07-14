@@ -161,7 +161,7 @@ $logoPath = "$env:TEMP\cttlogo.png"
 Invoke-WebRequest -Uri $logoUrl -OutFile $logoPath
 
 # download the check
-$CheckUrl = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/docs/assets/Check.png"
+$CheckUrl = "https://raw.githubusercontent.com/MyDrift-user/winutil/Progress-bar/docs/assets/check.png"
 # Download the image
 $CheckPath = "$env:TEMP\cttcheck.png"
 Invoke-WebRequest -Uri $CheckUrl -OutFile $CheckPath
@@ -446,7 +446,7 @@ $sync["SearchBar"].Add_TextChanged({
 })
 
 $sync["Form"].Add_Activated({ 
-    Set-WinUtilTaskbaritem -overlay $logoPath 
+    Set-WinUtilTaskbaritem -overlay $logoPath -state "None"
 })
 
 # Define event handler for button click

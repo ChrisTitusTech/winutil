@@ -10,8 +10,6 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
-    # $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 1/$using:CheckBox.Count })
-
     x = 0
 
     $CheckBox | ForEach-Object {
