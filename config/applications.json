@@ -2911,7 +2911,7 @@
 		"link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
 		"winget": "BartoszCichecki.LenovoLegionToolkit"
   },
-	"Pulsar-Edit": {
+	"PulsarEdit": {
 		"category": "Development",
 		"choco": "pulsar",
 		"content": "Pulsar",
