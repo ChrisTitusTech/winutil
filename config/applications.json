@@ -2887,6 +2887,14 @@
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
 	},
+	"PaleMoon": {
+		"category": "Browsers",
+		"choco": "paleMoon",
+		"content": "PaleMoon",
+		"description":"Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
+		"link": "https://www.palemoon.org/download.shtml",
+		"winget": "MoonchildProductions.PaleMoon"
+	},
 	"Shotcut": {
 		"category": "Multimedia Tools",
 		"choco": "na",
