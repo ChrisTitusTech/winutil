@@ -26,7 +26,7 @@ function Invoke-WinUtilFeatureInstall {
                     }
 
                     else{
-                        
+
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }

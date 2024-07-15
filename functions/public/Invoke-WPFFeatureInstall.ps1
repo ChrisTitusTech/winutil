@@ -27,7 +27,7 @@ function Invoke-WPFFeatureInstall {
 
         $sync.ProcessRunning = $false
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
-        
+
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"

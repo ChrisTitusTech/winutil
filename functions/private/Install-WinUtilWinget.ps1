@@ -64,5 +64,5 @@ function Install-WinUtilWinget {
             throw [WingetFailedInstall]::new('Failed to install!')
         }
     }
-    
+
 }
