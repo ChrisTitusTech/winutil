@@ -28,9 +28,9 @@ function Invoke-WPFShortcut {
             else{
                 $shell = "powershell.exe"
             }
-            
+
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
-            
+
             $DestinationName = "WinUtil.lnk"
 
             Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
