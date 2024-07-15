@@ -1,5 +1,14 @@
-# Change into winutil root folder
-Set-Location ..\
+$scriptName = "remove-trailing-whitespace.ps1"
+
+if (-NOT ((Get-Location).ToString().Split("\")[-1] -eq "winutil")) {
+    $border = $("=" * ($scriptName.length + 4))
+    $padding = $(" " * ($scriptName.length + 0))
+    Write-Host "====================================$border" -Foregroundcolor Red
+    Write-Host "-- Tool must be run inside 'winutil'$padding ---" -Foregroundcolor Red
+    Write-Host "-- cd 'Path\To\winutil\' -> .\tools\$scriptName ---" -Foregroundcolor Red
+    Write-Host "====================================$border" -Foregroundcolor Red
+    break
+}
 
 # Get all files that we remove trailing whitespace (if any are found) from them
 $files = Get-ChildItem -Recurse -Exclude ".\.git\", "LICENSE", "*.png", "*.jpg", "*.jpeg", "*.exe" -Attributes !Directory
