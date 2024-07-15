@@ -18,12 +18,19 @@ function Invoke-WPFShortcut {
     )
 
     # Preper the Shortcut Fields and add an a Custom Icon if it's available, else don't add a Custom Icon.
+
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-            $IRM = 'irm https://christitus.com/win | iex'
-            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            # Use Powershell 7 if installed and fallback to PS5 if not
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+                $shell = "pwsh.exe"
+            }
+            else{
+                $shell = "powershell.exe"
+            }
+            
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            
             $DestinationName = "WinUtil.lnk"
 
         }

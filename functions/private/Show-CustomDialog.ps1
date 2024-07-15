@@ -24,6 +24,9 @@ function Show-CustomDialog {
     .PARAMETER IconSize
     The Size to use for Icon inside the custom dialog window.
 
+    .PARAMETER EnableScroll
+    A flag indicating whether to enable scrolling if the content exceeds the window size.
+
     .EXAMPLE
     Show-CustomDialog -Message "This is a custom dialog with a message and an image above." -Width 300 -Height 200
 
@@ -34,7 +37,8 @@ function Show-CustomDialog {
         [int]$Height = 200,
         [int]$FontSize = 10,
         [int]$HeaderFontSize = 14,
-        [int]$IconSize = 25
+        [int]$IconSize = 25,
+        [bool]$EnableScroll = $false
     )
 
     Add-Type -AssemblyName PresentationFramework
@@ -246,11 +250,18 @@ $cttLogoPath = @"
         $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
     }
 
-
-    # Add the TextBlock to the Grid
-    $grid.Children.Add($messageTextBlock)
-    [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
-
+    # Create a ScrollViewer if EnableScroll is true
+    if ($EnableScroll) {
+        $scrollViewer = New-Object System.Windows.Controls.ScrollViewer
+        $scrollViewer.VerticalScrollBarVisibility = 'Auto'
+        $scrollViewer.HorizontalScrollBarVisibility = 'Disabled'
+        $scrollViewer.Content = $messageTextBlock
+        $grid.Children.Add($scrollViewer)
+        [Windows.Controls.Grid]::SetRow($scrollViewer, 1)  # Set the row to the second row (0-based index)
+    } else {
+        $grid.Children.Add($messageTextBlock)
+        [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+    }
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
