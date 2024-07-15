@@ -30,5 +30,6 @@ function Invoke-WPFToggle {
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
         "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
+        "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
     }
 }
