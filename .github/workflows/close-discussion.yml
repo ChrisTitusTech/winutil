@@ -16,7 +16,7 @@ jobs:
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
-          echo "::set-output name=discussion::$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Discussion: #)\d+')"
+          echo "::set-output name=discussion::$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Resloves #)\d+')"
         shell: bash
 
       - name: Close the discussion
