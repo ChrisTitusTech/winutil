@@ -2294,19 +2294,35 @@
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "UndoScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ]
   },
   "WPFTweaksPowershell7": {
-    "Content": "Replace Default Powershell 5 to Powershell 7",
-    "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary",
+    "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
+    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -3067,12 +3083,20 @@
     "Order": "a108_",
     "Type": "Toggle"
   },
+  "WPFToggleHiddenFiles": {
+    "Content": "Show Hidden Files",
+    "Description": "If Enabled then Hidden Files will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a200_",
+    "Type": "Toggle"
+  },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
+    "Order": "a201_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
@@ -3080,7 +3104,7 @@
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
+    "Order": "a202_",
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
@@ -3088,7 +3112,7 @@
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a202_",
+    "Order": "a203_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
@@ -3096,7 +3120,7 @@
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
+    "Order": "a204_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarAlignment": {
