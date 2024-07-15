@@ -22,10 +22,8 @@
 [Discuss the impact of your changes on the project. This might include effects on performance, new dependencies, or changes in behaviour.]
 
 ## Issue related to PR
-[What issue is related to this PR (if any)]
+[What issue/discussion is related to this PR (if any)]
 - Resolves #
-[What discussion is related to this PR (if any)]
-- Discussion: #
 
 ## Additional Information
 [Any additional information that reviewers should be aware of.]
