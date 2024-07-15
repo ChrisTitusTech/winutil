@@ -2886,5 +2886,13 @@
 		"description": "Shotcut is a free, open source, cross-platform video editor.",
 		"link": "https://shotcut.org/",
 		"winget": "Meltytech.Shotcut"
+	},
+	"Fork": {
+		"category": "Development",
+		"choco": "git-fork",
+		"content": "Fork",
+		"description": "Fork - a fast and friendly git client.",
+		"link": "https://git-fork.com/",
+		"winget": "Fork.Fork"
 	}
 }
