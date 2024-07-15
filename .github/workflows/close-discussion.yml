@@ -1,0 +1,30 @@
+name: Close Discussion on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  closeDiscussion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR was merged
+        if: github.event.pull_request.merged == true
+        run: echo "PR was merged"
+
+      - name: Extract Discussion Number
+        if: github.event.pull_request.merged == true
+        id: extract-discussion
+        run: |
+          echo "::set-output name=discussion::$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Discussion: #)\d+')"
+        shell: bash
+
+      - name: Close the discussion
+        if: github.event.pull_request.merged == true && steps.extract-discussion.outputs.discussion
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCUSSION_ID: ${{ steps.extract-discussion.outputs.discussion }}
+        run: |
+          curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+               -d '{"state": "closed"}' \
+               "https://api.github.com/repos/${{ github.repository }}/discussions/${DISCUSSION_ID}"

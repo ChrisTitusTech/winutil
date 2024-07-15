@@ -2910,5 +2910,13 @@
 		"description": "Subtitle Edit is a free and open source editor for video subtitles.",
 		"link": "https://github.com/SubtitleEdit/subtitleedit",
 		"winget": "Nikse.SubtitleEdit"
+  },
+	"Fork": {
+		"category": "Development",
+		"choco": "git-fork",
+		"content": "Fork",
+		"description": "Fork - a fast and friendly git client.",
+		"link": "https://git-fork.com/",
+		"winget": "Fork.Fork"
 	}
 }
