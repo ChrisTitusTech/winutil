@@ -8629,7 +8629,7 @@ $sync.configs.applications = '{
     "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
     "winget": "BartoszCichecki.LenovoLegionToolkit"
   },
-  "WPFInstallPulsar-Edit": {
+  "WPFInstallPulsarEdit": {
     "category": "Development",
     "choco": "pulsar",
     "content": "Pulsar",
@@ -13425,8 +13425,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallPulsar-Edit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallPulsar-EditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
+                                <CheckBox Name="WPFInstallPulsarEdit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPulsarEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
