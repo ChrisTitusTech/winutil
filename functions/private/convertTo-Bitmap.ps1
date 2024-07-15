@@ -7,14 +7,14 @@ function ConvertTo-Bitmap {
         The path to the image file to convert
     
     .EXAMPLE
-        ConvertTo-Bitmap -image "C:\path\to\image.png"
+        ConvertTo-Bitmap -imageFilePath "C:\path\to\image.png"
     #>
     param (
-        $image
+        $imageFilePath
     )
 
     # Read the image file as a byte array
-    $imageBytes = [System.IO.File]::ReadAllBytes($image)
+    $imageBytes = [System.IO.File]::ReadAllBytes($imageFilePath)
 
     # Convert the byte array to a Base64 string
     $base64String = [System.Convert]::ToBase64String($imageBytes)

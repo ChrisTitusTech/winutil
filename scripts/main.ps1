@@ -457,8 +457,6 @@ if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
 
 Set-WinUtilTaskbaritem -overlay "logo" | Out-Null
 
-$sync["Form"].icon = $winutildir["logo.png"]
-
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
