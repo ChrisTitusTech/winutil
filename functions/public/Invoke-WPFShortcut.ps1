@@ -17,8 +17,7 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # Preper the Shortcut Fields and add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
-    $iconPath = $null
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available, else don't add a Custom Icon.
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
@@ -48,8 +47,8 @@ function Invoke-WPFShortcut {
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
     $Shortcut.TargetPath = $SourceExe
     $Shortcut.Arguments = $ArgumentsToSourceExe
-    if (Test-Path -Path $ctticologo) {
-        $shortcut.IconLocation = $ctticologo
+    if (Test-Path -Path $winutildir["logo.ico"]) {
+        $shortcut.IconLocation = $winutildir["logo.ico"]
     }
 
     # Save the Shortcut to disk

@@ -57,10 +57,10 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
-                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -image "$env:LOCALAPPDATA\winutil\cttlogo.png")
+                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -image $winutildir["logo.png"])
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -image "$env:LOCALAPPDATA\winutil\cttcheckmark.png")
+                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -image $winutildir["checkmark.png"])
             }
             default {
                 if (Test-Path $overlay) {
