@@ -450,7 +450,7 @@ if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
     ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
 }
 
-$winutildir["checkmark.png"] = "$env:LOCALAPPDATA\winutil\cttcheckmark.png"
+$winutildir["checkmark.png"] = $winutildir["path"] + "cttcheckmark.png"
 if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
     Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
 }
