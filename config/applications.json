@@ -2031,6 +2031,14 @@
 		"link": "https://store.steampowered.com/about/",
 		"winget": "Valve.Steam"
 	},
+	"strawberry": {
+		"category": "Multimedia Tools",
+		"choco": "strawberrymusicplayer",
+		"content": "Strawberry (Music Player)",
+		"description": "Strawberry is an open-source music player that focuses on music collection management and audio quality. It supports various audio formats and features a clean user interface.",
+		"link": "https://www.strawberrymusicplayer.org/",
+		"winget": "StrawberryMusicPlayer.Strawberry"
+	},
 	"SoundSwitch": {
 		"category": "Multimedia Tools",
 		"choco": "soundswitch",
