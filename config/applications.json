@@ -2895,6 +2895,14 @@
 		"link": "https://shotcut.org/",
 		"winget": "Meltytech.Shotcut"
 	},
+	"LenovoLegionToolkit": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "Lenovo Legion Toolkit",
+		"description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
+		"link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
+		"winget": "BartoszCichecki.LenovoLegionToolkit"
+  },
 	"Pulsar-Edit": {
 		"category": "Development",
 		"choco": "pulsar",
