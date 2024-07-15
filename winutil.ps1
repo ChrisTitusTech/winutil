@@ -4970,14 +4970,20 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # Preper the Shortcut Fields and add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
+    # add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
     $iconPath = $null
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-            $IRM = 'irm https://christitus.com/win | iex'
-            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            # Use Powershell 7 if installed and fallback to PS5 if not
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+                $shell = "pwsh.exe"
+            }
+            else{
+                $shell = "powershell.exe"
+            }
+            
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            
             $DestinationName = "WinUtil.lnk"
 
             Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
@@ -5005,9 +5011,9 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
-    if ($iconPath -ne $null) {
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
+    if ($null -ne $iconPath) {
         $shortcut.IconLocation = $iconPath
     }
 
@@ -5116,25 +5122,32 @@ function Invoke-WPFTweakPS7{
             $targetTerminalName = "Windows PowerShell"
         }
     }
-
-    $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    if (Test-Path -Path $settingsPath) {
-        Write-Host "Settings file found."
-        $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
-        $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
-        if ($ps7Profile) {
-            $settingsContent.defaultProfile = $ps7Profile.guid
-            $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
-            Set-Content -Path $settingsPath -Value $updatedSettings
-            Write-Host "Default profile updated to $targetTerminalName using the name attribute."
-        } else {
-            Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
-        }
-    } else {
-        Write-Host "Settings file not found at $settingsPath"
+    # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
+    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)){
+        Write-Host "Windows Terminal not installed. Skipping Terminal preference"
+        return
     }
-}
+    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code) 
+    $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    if (-not (Test-Path -Path $settingsPath)){
+        Write-Host "Windows Terminal Settings file not found at $settingsPath"
+        return 
+    }
 
+    Write-Host "Settings file found."
+    $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
+    $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
+    if ($ps7Profile) {
+        $settingsContent.defaultProfile = $ps7Profile.guid
+        $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
+        Set-Content -Path $settingsPath -Value $updatedSettings
+        Write-Host "Default profile updated to " -NoNewline
+        Write-Host "$targetTerminalName " -ForegroundColor White -NoNewline
+        Write-Host "using the name attribute."
+    } else {
+        Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
+    }   
+}
 function Invoke-WPFtweaksbutton {
   <#
 
@@ -11384,8 +11397,8 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFTweaksPowershell7": {
-    "Content": "Replace Default Powershell 5 to Powershell 7",
-    "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary",
+    "Content": "Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7",
+    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -14517,7 +14530,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
                             <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0" ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
                             <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
+                            <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary"/>
                             <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
                             <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
