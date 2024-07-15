@@ -96,7 +96,7 @@ function Install-WinUtilProgramChoco {
 
     # Cleanup leftovers files
     if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $installOutputFilePath }
-    if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
+    if(Test-Path -Path $uninstallOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
 
     return;
 }
