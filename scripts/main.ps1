@@ -434,14 +434,14 @@ $sync["SearchBar"].Add_TextChanged({
 $winutildir = @{}
 
 # Set the path for the winutil directory
-$winutildir["path"] = "$env:LOCALAPPDATA\winutil"
+$winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
 if (-NOT (Test-Path -Path $winutildir["path"])) {
     New-Item -Path $winutildir["path"] -ItemType Directory
 }
 
 # Set the path for the logo and checkmark images
-$winutildir["logo.png"] = "$env:LOCALAPPDATA\winutil\cttlogo.png"
-$winutildir["logo.ico"] = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
+$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
+$winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
 if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
     Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
 }
@@ -449,6 +449,7 @@ if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
 if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
     ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
 }
+
 $winutildir["checkmark.png"] = "$env:LOCALAPPDATA\winutil\cttcheckmark.png"
 if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
     Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]

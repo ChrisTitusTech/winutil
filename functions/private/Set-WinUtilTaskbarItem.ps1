@@ -20,11 +20,13 @@ function Set-WinUtilTaskbaritem {
         - Set-WinUtilTaskbaritem -state "Paused"
 
     .PARAMETER overlay
-        Overlay icon to display on the taskbar item, there are the presets 'logo' and 'checkmark' or you can specify a path/link to an image file.
+        Overlay icon to display on the taskbar item, there are the presets 'None', 'logo' and 'checkmark' or you can specify a path/link to an image file.
         CTT logo preset:
         - Set-WinUtilTaskbaritem -overlay "logo"
         Checkmark preset:
         - Set-WinUtilTaskbaritem -overlay "checkmark"
+        No overlay:
+        - Set-WinUtilTaskbaritem -overlay "None"
         Custom icon:
         - Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
     
@@ -61,6 +63,9 @@ function Set-WinUtilTaskbaritem {
             }
             'checkmark' {
                 $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -image $winutildir["checkmark.png"])
+            }
+            'None' {
+                $sync["Form"].taskbarItemInfo.Overlay = $null
             }
             default {
                 if (Test-Path $overlay) {
