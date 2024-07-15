@@ -41,6 +41,7 @@ function Set-WinUtilTaskbaritem {
         [string]$description
     )
 
+    # TODO: Make a better solution for this function, accessing problem when calling Set-WinUtilTaskbaritem inside a runspace. Future me or other contributors, please fix this.
     function ConvertTo-Bitmap {
         <#
         .SYNOPSIS
