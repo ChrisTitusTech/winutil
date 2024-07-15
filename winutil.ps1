@@ -4580,6 +4580,19 @@ public class PowerManagement {
 			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
 			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
 			Write-Host "Edge icon removed from taskbar"
+			if (Test-Path "HKLM:\zSOFTWARE\WOW6432Node")
+			{
+				# Remove leftovers of 64-bit installations
+				# ---
+				# Remove registry values first...
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /va /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /va /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /va /f > $null 2>&1
+				# ...then the registry keys
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f > $null 2>&1
+			}
 		}
 
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
@@ -8556,6 +8569,14 @@ $sync.configs.applications = '{
     "link": "https://shotcut.org/",
     "winget": "Meltytech.Shotcut"
   },
+  "WPFInstallLenovoLegionToolkit": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Lenovo Legion Toolkit",
+    "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
+    "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
+    "winget": "BartoszCichecki.LenovoLegionToolkit"
+  },
   "WPFInstallPulsar-Edit": {
     "category": "Development",
     "choco": "pulsar",
@@ -11418,14 +11439,30 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "UndoScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ]
   },
   "WPFTweaksPowershell7": {
@@ -14226,6 +14263,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallLenovoLegionToolkit" Content="Lenovo Legion Toolkit" ToolTip="Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallLenovoLegionToolkitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/BartoszCichecki/LenovoLegionToolkit"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html"/>
                             </StackPanel>
@@ -14241,14 +14282,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="4">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="Malwarebytes" ToolTip="Malwarebytes is an anti-malware software that provides real-time protection against threats." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmalwarebytesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.malwarebytes.com/"/>
