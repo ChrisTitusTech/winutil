@@ -8561,6 +8561,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/xM4ddy/OFGB",
     "winget": "xM4ddy.OFGB"
   },
+  "WPFInstallPaleMoon": {
+    "category": "Browsers",
+    "choco": "paleMoon",
+    "content": "PaleMoon",
+    "description": "Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
+    "link": "https://www.palemoon.org/download.shtml",
+    "winget": "MoonchildProductions.PaleMoon"
+  },
   "WPFInstallShotcut": {
     "category": "Multimedia Tools",
     "choco": "na",
@@ -13115,6 +13123,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallmullvadbrowserLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mullvad.net/browser"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallPaleMoon" Content="PaleMoon" ToolTip="Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPaleMoonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.palemoon.org/download.shtml"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser AVX2" ToolTip="Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallthoriumLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="http://thorium.rocks/"/>
                             </StackPanel>
@@ -13364,14 +13376,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallPulsar-Edit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallPulsar-EditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/"/>
@@ -13665,14 +13677,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallpowerautomate" Content="Power Automate" ToolTip="Using Power Automate Desktop you can automate tasks on the desktop as well as the Web." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallpowerautomateLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-automate"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="2">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallpowerautomate" Content="Power Automate" ToolTip="Using Power Automate Desktop you can automate tasks on the desktop as well as the Web." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallpowerautomateLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-automate"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpowerbi" Content="Power BI" ToolTip="Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpowerbiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-bi/"/>
@@ -13975,14 +13987,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="3">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallnetbird" Content="NetBird" ToolTip="NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallnetbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://netbird.io/"/>
@@ -14278,14 +14290,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="4">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole"/>
