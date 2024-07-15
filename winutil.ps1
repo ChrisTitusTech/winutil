@@ -715,6 +715,17 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+
+    if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
+        $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
+        if($HiddenFiles -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
 	if($TaskbarWidgets -eq 0) {
@@ -2028,6 +2039,40 @@ function Invoke-WinUtilGPU {
         }
     }
     return $true
+}
+function Invoke-WinUtilHiddenFiles {
+    <#
+
+    .SYNOPSIS
+        Enable/Disable Hidden Files
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Hidden Files
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Hidden Files"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Hidden Files"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name Hidden -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
 }
 Function Invoke-WinUtilMouseAcceleration {
     <#
@@ -5041,6 +5086,7 @@ function Invoke-WPFToggle {
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
         "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
+        "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -8488,6 +8534,14 @@ $sync.configs.applications = '{
     "description": "Shotcut is a free, open source, cross-platform video editor.",
     "link": "https://shotcut.org/",
     "winget": "Meltytech.Shotcut"
+  },
+  "WPFInstallFork": {
+    "category": "Development",
+    "choco": "git-fork",
+    "content": "Fork",
+    "description": "Fork - a fast and friendly git client.",
+    "link": "https://git-fork.com/",
+    "winget": "Fork.Fork"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -12091,12 +12145,20 @@ $sync.configs.tweaks = '{
     "Order": "a108_",
     "Type": "Toggle"
   },
+  "WPFToggleHiddenFiles": {
+    "Content": "Show Hidden Files",
+    "Description": "If Enabled then Hidden Files will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a200_",
+    "Type": "Toggle"
+  },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
+    "Order": "a201_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
@@ -12104,7 +12166,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
+    "Order": "a202_",
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
@@ -12112,7 +12174,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a202_",
+    "Order": "a203_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
@@ -12120,7 +12182,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
+    "Order": "a204_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -13113,6 +13175,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallfnmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Schniz/fnm"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallFork" Content="Fork" ToolTip="Fork - a fast and friendly git client." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallForkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-fork.com/"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallgit" Content="Git" ToolTip="Git is a distributed version control system widely used for tracking changes in source code during software development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallgitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-scm.com/"/>
                             </StackPanel>
@@ -13509,14 +13575,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpowerautomate" Content="Power Automate" ToolTip="Using Power Automate Desktop you can automate tasks on the desktop as well as the Web." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpowerautomateLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-automate"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="2">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpowerbi" Content="Power BI" ToolTip="Create stunning reports and visualizations with Power BI Desktop. It puts visual analytics at your fingertips with intuitive report authoring. Drag-and-drop to place content exactly where you want it on the flexible and fluid canvas. Quickly discover patterns as you explore a single unified view of linked, interactive visualizations." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpowerbiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-bi/"/>
@@ -13811,10 +13877,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
@@ -13823,6 +13885,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallnetbird" Content="NetBird" ToolTip="NetBird is a Open Source alternative comparable to TailScale that can be connected to a selfhosted Server." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallnetbirdLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://netbird.io/"/>
@@ -14106,10 +14172,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/"/>
@@ -14122,6 +14184,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="4">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole"/>
@@ -14530,6 +14596,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Enable Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleHiddenFiles" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Show Hidden Files" ToolTip="If Enabled then Hidden Files will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
