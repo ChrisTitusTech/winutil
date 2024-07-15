@@ -8300,6 +8300,14 @@ $sync.configs.applications = '{
     "link": "https://zoom.us/",
     "winget": "Zoom.Zoom"
   },
+  "WPFInstallzoomit": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "ZoomIt",
+    "description": "A screen zoom, annotation, and recording tool for technical presentations and demos",
+    "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
+    "winget": "Microsoft.Sysinternals.ZoomIt"
+  },
   "WPFInstallzotero": {
     "category": "Document",
     "choco": "zotero",
@@ -8547,6 +8555,30 @@ $sync.configs.applications = '{
     "description": "Shotcut is a free, open source, cross-platform video editor.",
     "link": "https://shotcut.org/",
     "winget": "Meltytech.Shotcut"
+  },
+  "WPFInstallPulsar-Edit": {
+    "category": "Development",
+    "choco": "pulsar",
+    "content": "Pulsar",
+    "description": "A Community-led Hyper-Hackable Text Editor",
+    "link": "https://pulsar-edit.dev/",
+    "winget": "Pulsar-Edit.Pulsar"
+  },
+  "WPFInstallAegisub": {
+    "category": "Development",
+    "choco": "aegisub",
+    "content": "Aegisub",
+    "description": "Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview.",
+    "link": "https://github.com/Aegisub/Aegisub",
+    "winget": "Aegisub.Aegisub"
+  },
+  "WPFInstallSubtitleEdit": {
+    "category": "Multimedia Tools",
+    "choco": "na",
+    "content": "Subtitle Edit",
+    "description": "Subtitle Edit is a free and open source editor for video subtitles.",
+    "link": "https://github.com/SubtitleEdit/subtitleedit",
+    "winget": "Nikse.SubtitleEdit"
   },
   "WPFInstallFork": {
     "category": "Development",
@@ -13164,6 +13196,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <Label Name="WPFLabelDevelopment" Content="Development" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallAegisub" Content="Aegisub" ToolTip="Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallAegisubLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Aegisub/Aegisub"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallanaconda3" Content="Anaconda" ToolTip="Anaconda is a distribution of the Python and R programming languages for scientific computing." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallanaconda3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.anaconda.com/products/distribution"/>
                             </StackPanel>
@@ -13288,17 +13324,21 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
+                                <CheckBox Name="WPFInstallPulsar-Edit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPulsar-EditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/"/>
+                                <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" ToolTip="Rust is a programming language designed for safety and performance, particularly focused on systems programming." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallrustlangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rust-lang.org/"/>
@@ -13844,6 +13884,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallSubtitleEdit" Content="Subtitle Edit" ToolTip="Subtitle Edit is a free and open source editor for video subtitles." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallSubtitleEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/SubtitleEdit/subtitleedit"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalltagscanner" Content="TagScanner (Tag Scanner)" ToolTip="TagScanner is a powerful tool for organizing and managing your music collection" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalltagscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.xdlab.ru/en/"/>
                             </StackPanel>
@@ -14197,14 +14241,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmagicwormhole" Content="Magic Wormhole" ToolTip="get things from one computer to another, safely" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmagicwormholeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/magic-wormhole/magic-wormhole"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="4">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmalwarebytes" Content="Malwarebytes" ToolTip="Malwarebytes is an anti-malware software that provides real-time protection against threats." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmalwarebytesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.malwarebytes.com/"/>
@@ -14484,6 +14528,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallzerotierone" Content="ZeroTier One" ToolTip="ZeroTier One is a software-defined networking tool that allows you to create secure and scalable networks." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallzerotieroneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zerotier.com/"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallzoomit" Content="ZoomIt" ToolTip="A screen zoom, annotation, and recording tool for technical presentations and demos" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallzoomitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallzoxide" Content="Zoxide" ToolTip="Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease." Margin="0,0,2,0"/>
