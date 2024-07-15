@@ -10,8 +10,9 @@ if (-NOT ((Get-Location).ToString().Split("\")[-1] -eq "winutil")) {
     break
 }
 
-# Get all files that we remove trailing whitespace (if any are found) from them
-$files = Get-ChildItem -Recurse -Exclude ".\.git\", "LICENSE", "*.png", "*.jpg", "*.jpeg", "*.exe" -Attributes !Directory
+# Get all files that we can remove trailing whitespace (if any are found) from them,
+# excluding any files that we're not interested in (binary files, auto-generated files)
+$files = Get-ChildItem -Recurse -Exclude ".\.git\", "LICENSE", "*.png", "*.jpg", "*.jpeg", "*.exe", "winutil.ps1" -Attributes !Directory
 
 # Loop over every file, and do a 'Trim' on it to Trim/Remove Trailing Whitespace
 # The general idea was Taken from a StackOverFlow Answer, link to it: https://stackoverflow.com/a/61443973
