@@ -728,12 +728,21 @@ Function Get-WinUtilToggleStatus {
 
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
-	if($TaskbarWidgets -eq 0) {
+        if($TaskbarWidgets -eq 0) {
             return $false
-	}
-	else{
+        }
+        else{
             return $true
-	}
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleTaskbarAlignment") {
+        $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
+        if($TaskbarAlignment -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
     }
 }
 function Get-WinUtilVariables {
@@ -2394,6 +2403,40 @@ Function Invoke-WinUtilStickyKeys {
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilTaskbarAlignment {
+    <#
+
+    .SYNOPSIS
+        Switches between Center & Left Taskbar Alignment
+
+    .PARAMETER Enabled
+        Indicates whether to make Taskbar Alignment Center or Left
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Making Taskbar Alignment to the Center"
+            $value = 1
+        }
+        else {
+            Write-Host "Making Taskbar Alignment to the Left"
+            $value = 0
+        }
+        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name "TaskbarAl" -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $value due to a Security Exception"
     }
     Catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
@@ -5106,6 +5149,7 @@ function Invoke-WPFToggle {
         "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
         "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
+        "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $(Get-WinUtilToggleStatus WPFToggleTaskbarAlignment)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -12275,6 +12319,14 @@ $sync.configs.tweaks = '{
     "Order": "a204_",
     "Type": "Toggle"
   },
+  "WPFToggleTaskbarAlignment": {
+    "Content": "Switch Taskbar Items between Center &#38; Left",
+    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a204_",
+    "Type": "Toggle"
+  },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -14726,6 +14778,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskView" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Show Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleTaskbarAlignment" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Switch Taskbar Items between Center &#38; Left" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
