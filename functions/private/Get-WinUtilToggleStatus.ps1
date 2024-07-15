@@ -125,6 +125,17 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+
+    if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
+        $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
+        if($HiddenFiles -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
 	if($TaskbarWidgets -eq 0) {
