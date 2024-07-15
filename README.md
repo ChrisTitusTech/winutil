@@ -52,6 +52,12 @@ If you have Issues, refer to [Known Issues](https://christitustech.github.io/win
 - To morally and mentally support the project, make sure to leave a ⭐️!
 - EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
 
+## 💖 Sponsors
+
+These are the sponsors that help keep this project alive with monthly contributions.
+
+<!-- sponsors --><!-- sponsors -->
+
 ## 🏅 Thanks to all Contributors
 Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
 
