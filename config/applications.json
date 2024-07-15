@@ -2023,14 +2023,6 @@
 		"link": "https://store.steampowered.com/about/",
 		"winget": "Valve.Steam"
 	},
-	"steam": {
-		"category": "Games",
-		"choco": "steam-client",
-		"content": "Steam",
-		"description": "Steam is a digital distribution platform for purchasing and playing video games, offering multiplayer gaming, video streaming, and more.",
-		"link": "https://store.steampowered.com/about/",
-		"winget": "Valve.Steam"
-	},
 	"strawberry": {
 		"category": "Multimedia Tools",
 		"choco": "strawberrymusicplayer",
