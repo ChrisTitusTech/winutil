@@ -37,7 +37,7 @@ irm "https://christitus.com/windev" | iex
 
 If you have Issues, refer to [Known Issues](https://christitustech.github.io/winutil/KnownIssues/)
 
-## 🎓 Documenation
+## 🎓 Documentation
 
 ### [WinUtil Official Documentation](https://christitustech.github.io/winutil/)
 
