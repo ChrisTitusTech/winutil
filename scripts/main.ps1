@@ -450,10 +450,15 @@ if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
     ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
 }
 
-$winutildir["checkmark.png"] = $winutildir["path"] + "cttcheckmark.png"
+$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
+$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
 if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
     Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
 }
+if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
+}
+
 
 Set-WinUtilTaskbaritem -overlay "logo" | Out-Null
 

@@ -25,6 +25,8 @@ function Set-WinUtilTaskbaritem {
         - Set-WinUtilTaskbaritem -overlay "logo"
         Checkmark preset:
         - Set-WinUtilTaskbaritem -overlay "checkmark"
+        Warning preset:
+        - Set-WinUtilTaskbaritem -overlay "warning"
         No overlay:
         - Set-WinUtilTaskbaritem -overlay "None"
         Custom icon:
@@ -95,7 +97,10 @@ function Set-WinUtilTaskbaritem {
                 $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -imageFilePath "$env:LOCALAPPDATA\winutil\cttlogo.png")
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -imageFilePath "$env:LOCALAPPDATA\winutil\cttcheckmark.png"])
+                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -imageFilePath "$env:LOCALAPPDATA\winutil\checkmark.png"])
+            }
+            'warning' {
+                $sync["Form"].taskbarItemInfo.Overlay = (ConvertTo-Bitmap -imageFilePath "$env:LOCALAPPDATA\winutil\warning.png"])
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null

@@ -64,7 +64,7 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
         $sync.ProcessRunning = $False
     }
