@@ -33,7 +33,7 @@ Function Invoke-WPFUltimatePerformance {
             if ($ultimatePlan) {
                 # Extract the GUID of the Ultimate Performance plan
                 $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
-                
+
                 # Set a different power plan as active before deleting the Ultimate Performance plan
                 $balancedPlanGUID = (powercfg -list | Select-String -Pattern "Balanced").Line.Split()[3]
                 powercfg -setactive $balancedPlanGUID

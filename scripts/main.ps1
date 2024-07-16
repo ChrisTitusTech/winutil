@@ -505,5 +505,32 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize
 })
+
+$sync["SponsorMenuItem"].Add_Click({
+    # Handle Export menu item click
+    Write-Debug "Sponsors clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    $authorInfo = @"
+<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
+"@
+    $authorInfo += "`n"
+    try {
+        # Call the function to get the sponsors
+        $sponsors = Invoke-WinUtilSponsors
+
+        # Append the sponsors to the authorInfo
+        $sponsors | ForEach-Object { $authorInfo += "$_`n" }
+    }
+    catch {
+        $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
+    }
+
+    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
+    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
+    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
+    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
+})
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
