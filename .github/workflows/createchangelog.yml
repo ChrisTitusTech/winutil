@@ -1,17 +1,40 @@
-name: On release published
+name: Update update.mb on Release
+
 on:
   release:
     types: [published]
 
 jobs:
-  changelog:
-    name: Update changelog
+  update-file:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: main
-      - uses: rhysd/changelog-from-release/action@v3
-        with:
-          file: /docs/updates.md
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Get latest release and update update.mb file
+      run: |
+        # Fetch the latest release using GitHub CLI
+        latest_release=$(gh release view --json tagName,name,body --jq '{tag: .tagName, name: .name, body: .body}')
+        
+        # Extract details
+        tag=$(echo "$latest_release" | jq -r '.tag')
+        name=$(echo "$latest_release" | jq -r '.name')
+        body=$(echo "$latest_release" | jq -r '.body')
+        version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
+        
+        # Append to update.mb
+        echo "## $version_numeric" >> docs/update.mb
+        echo "Release name: $name" >> docs/update.mb
+        echo "Release body: $body" >> docs/update.mb
+        echo "" >> docs/update.mb
+
+    - name: Commit and Push Changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add docs/update.mb
+        git commit -m "Update update.mb with latest release"
+        git push
