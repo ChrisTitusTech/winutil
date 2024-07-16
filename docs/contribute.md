@@ -27,8 +27,8 @@
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your Repository-list.
 ![Fork](assets/ForkButton.png)
 
-### Clone the Fork 
-* While you can make your changes directly through the Web, we recommend cloning the repo to your device to test your fork easily. 
+### Clone the Fork
+* While you can make your changes directly through the Web, we recommend cloning the repo to your device to test your fork easily.
 * Using the application GitHub Desktop (available in WinUtil) you can easily manage your repos locally. You can do it using other tools like git-cli (available in WinUtil), we recommend GitHub Desktop for ease of use.
 * Install GitHub Desktop if not already installed
 * Log in using the same GitHub account u used to fork WinUtil

@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.15
+    Version        : 24.07.16
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.15"
+$sync.version = "24.07.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -5037,9 +5037,9 @@ function Invoke-WPFShortcut {
             else{
                 $shell = "powershell.exe"
             }
-            
+
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
-            
+
             $DestinationName = "WinUtil.lnk"
 
             Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
@@ -5184,11 +5184,11 @@ function Invoke-WPFTweakPS7{
         Write-Host "Windows Terminal not installed. Skipping Terminal preference"
         return
     }
-    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code) 
+    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code)
     $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     if (-not (Test-Path -Path $settingsPath)){
         Write-Host "Windows Terminal Settings file not found at $settingsPath"
-        return 
+        return
     }
 
     Write-Host "Settings file found."
@@ -5203,7 +5203,7 @@ function Invoke-WPFTweakPS7{
         Write-Host "using the name attribute."
     } else {
         Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
-    }   
+    }
 }
 function Invoke-WPFtweaksbutton {
   <#
@@ -5292,7 +5292,7 @@ Function Invoke-WPFUltimatePerformance {
             if ($ultimatePlan) {
                 # Extract the GUID of the Ultimate Performance plan
                 $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
-                
+
                 # Set a different power plan as active before deleting the Ultimate Performance plan
                 $balancedPlanGUID = (powercfg -list | Select-String -Pattern "Balanced").Line.Split()[3]
                 powercfg -setactive $balancedPlanGUID
