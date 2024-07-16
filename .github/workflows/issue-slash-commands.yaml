@@ -40,4 +40,4 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           echo Closing the issue...
-          gh issue close $ISSUE_NUMBER --repo ${{ github.repositor
+          gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
