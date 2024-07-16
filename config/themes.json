@@ -11,7 +11,7 @@
                     "FontSizeHeading":  "14",
                     "HeaderFontFamily": "Consolas, Monaco",
 
-                    "CheckBoxBulletDecoratorFontSize": "14",
+                    "CheckBoxBulletDecoratorSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
                     "TabButtonFontSize":      "14",
@@ -82,7 +82,7 @@
                     "FontSizeHeading":  "14",
                     "HeaderFontFamily": "Consolas, Monaco",
 
-                    "CheckBoxBulletDecoratorFontSize": "14",
+                    "CheckBoxBulletDecoratorSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
                     "TabButtonFontSize":      "14",
@@ -151,7 +151,7 @@
                     "FontSizeHeading":  "14",
                     "HeaderFontFamily": "Consolas, Monaco",
 
-                    "CheckBoxBulletDecoratorFontSize": "14",
+                    "CheckBoxBulletDecoratorSize": "14",
                     "CheckBoxMargin": "15,0,0,2",
 
                     "TabButtonFontSize":      "14",
