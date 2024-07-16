@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.13
+    Version        : 24.07.16
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.13"
+$sync.version = "24.07.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -715,14 +715,34 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+
+    if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
+        $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
+        if($HiddenFiles -eq 0){
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+
     if ($ToggleSwitch -eq "WPFToggleTaskbarWidgets") {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
-	if($TaskbarWidgets -eq 0) {
+        if($TaskbarWidgets -eq 0) {
             return $false
-	}
-	else{
+        }
+        else{
             return $true
-	}
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleTaskbarAlignment") {
+        $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
+        if($TaskbarAlignment -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
     }
 }
 function Get-WinUtilVariables {
@@ -953,7 +973,7 @@ function Install-WinUtilProgramChoco {
 
     # Cleanup leftovers files
     if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $installOutputFilePath }
-    if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
+    if(Test-Path -Path $uninstallOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
 
     return;
 }
@@ -2029,6 +2049,40 @@ function Invoke-WinUtilGPU {
     }
     return $true
 }
+function Invoke-WinUtilHiddenFiles {
+    <#
+
+    .SYNOPSIS
+        Enable/Disable Hidden Files
+
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Hidden Files
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Hidden Files"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Hidden Files"
+            $value = 0
+        }
+        $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name Hidden -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 Function Invoke-WinUtilMouseAcceleration {
     <#
 
@@ -2282,6 +2336,51 @@ function Invoke-WinUtilSnapWindow {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+Function Invoke-WinUtilSponsors {
+    <#
+    .SYNOPSIS
+        Lists Sponsors from ChrisTitusTech
+    .DESCRIPTION
+        Lists Sponsors from ChrisTitusTech
+    .EXAMPLE
+        Invoke-WinUtilSponsors
+    .NOTES
+        This function is used to list sponsors from ChrisTitusTech
+    #>
+    try {
+        # Define the URL and headers
+        $url = "https://github.com/sponsors/ChrisTitusTech"
+        $headers = @{
+            "User-Agent" = "Chrome/58.0.3029.110"
+        }
+
+        # Fetch the webpage content
+        try {
+            $html = Invoke-RestMethod -Uri $url -Headers $headers
+        } catch {
+            Write-Output $_.Exception.Message
+            exit
+        }
+
+        # Use regex to extract the content between "Current sponsors" and "Past sponsors"
+        $currentSponsorsPattern = '(?s)(?<=Current sponsors).*?(?=Past sponsors)'
+        $currentSponsorsHtml = [regex]::Match($html, $currentSponsorsPattern).Value
+
+        # Use regex to extract the sponsor usernames from the alt attributes in the "Current Sponsors" section
+        $sponsorPattern = '(?<=alt="@)[^"]+'
+        $sponsors = [regex]::Matches($currentSponsorsHtml, $sponsorPattern) | ForEach-Object { $_.Value }
+
+        # Exclude "ChrisTitusTech" from the sponsors
+        $sponsors = $sponsors | Where-Object { $_ -ne "ChrisTitusTech" }
+
+        # Return the sponsors
+        return $sponsors
+    }
+    catch {
+        Write-Error "An error occurred while fetching or processing the sponsors: $_"
+        return $null
+    }
+}
 Function Invoke-WinUtilStickyKeys {
     <#
     .SYNOPSIS
@@ -2304,6 +2403,40 @@ Function Invoke-WinUtilStickyKeys {
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+function Invoke-WinUtilTaskbarAlignment {
+    <#
+
+    .SYNOPSIS
+        Switches between Center & Left Taskbar Alignment
+
+    .PARAMETER Enabled
+        Indicates whether to make Taskbar Alignment Center or Left
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Making Taskbar Alignment to the Center"
+            $value = 1
+        }
+        else {
+            Write-Host "Making Taskbar Alignment to the Left"
+            $value = 0
+        }
+        $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+        Set-ItemProperty -Path $Path -Name "TaskbarAl" -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $value due to a Security Exception"
     }
     Catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
@@ -2828,6 +2961,9 @@ function Show-CustomDialog {
     .PARAMETER IconSize
     The Size to use for Icon inside the custom dialog window.
 
+    .PARAMETER EnableScroll
+    A flag indicating whether to enable scrolling if the content exceeds the window size.
+
     .EXAMPLE
     Show-CustomDialog -Message "This is a custom dialog with a message and an image above." -Width 300 -Height 200
 
@@ -2838,7 +2974,8 @@ function Show-CustomDialog {
         [int]$Height = 200,
         [int]$FontSize = 10,
         [int]$HeaderFontSize = 14,
-        [int]$IconSize = 25
+        [int]$IconSize = 25,
+        [bool]$EnableScroll = $false
     )
 
     Add-Type -AssemblyName PresentationFramework
@@ -3050,11 +3187,18 @@ $cttLogoPath = @"
         $messageTextBlock.Inlines.Add((New-Object Windows.Documents.Run($Message)))
     }
 
-
-    # Add the TextBlock to the Grid
-    $grid.Children.Add($messageTextBlock)
-    [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
-
+    # Create a ScrollViewer if EnableScroll is true
+    if ($EnableScroll) {
+        $scrollViewer = New-Object System.Windows.Controls.ScrollViewer
+        $scrollViewer.VerticalScrollBarVisibility = 'Auto'
+        $scrollViewer.HorizontalScrollBarVisibility = 'Disabled'
+        $scrollViewer.Content = $messageTextBlock
+        $grid.Children.Add($scrollViewer)
+        [Windows.Controls.Grid]::SetRow($scrollViewer, 1)  # Set the row to the second row (0-based index)
+    } else {
+        $grid.Children.Add($messageTextBlock)
+        [Windows.Controls.Grid]::SetRow($messageTextBlock, 1)  # Set the row to the second row (0-based index)
+    }
 
     # Add OK button
     $okButton = New-Object Windows.Controls.Button
@@ -4479,6 +4623,19 @@ public class PowerManagement {
 			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
 			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
 			Write-Host "Edge icon removed from taskbar"
+			if (Test-Path "HKLM:\zSOFTWARE\WOW6432Node")
+			{
+				# Remove leftovers of 64-bit installations
+				# ---
+				# Remove registry values first...
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /va /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /va /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /va /f > $null 2>&1
+				# ...then the registry keys
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f > $null 2>&1
+				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f > $null 2>&1
+			}
 		}
 
 		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
@@ -4869,14 +5026,20 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # Preper the Shortcut Fields and add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
+    # add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
     $iconPath = $null
     Switch ($ShortcutToAdd) {
         "WinUtil" {
-            $SourceExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-            $IRM = 'irm https://christitus.com/win | iex'
-            $Powershell = '-ExecutionPolicy Bypass -Command "Start-Process powershell.exe -verb runas -ArgumentList'
-            $ArgumentsToSourceExe = "$powershell '$IRM'"
+            # Use Powershell 7 if installed and fallback to PS5 if not
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+                $shell = "pwsh.exe"
+            }
+            else{
+                $shell = "powershell.exe"
+            }
+            
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            
             $DestinationName = "WinUtil.lnk"
 
             Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
@@ -4904,9 +5067,9 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
-    if ($iconPath -ne $null) {
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
+    if ($null -ne $iconPath) {
         $shortcut.IconLocation = $iconPath
     }
 
@@ -4985,6 +5148,8 @@ function Invoke-WPFToggle {
         "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
         "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
+        "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
+        "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $(Get-WinUtilToggleStatus WPFToggleTaskbarAlignment)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -5014,25 +5179,32 @@ function Invoke-WPFTweakPS7{
             $targetTerminalName = "Windows PowerShell"
         }
     }
-
-    $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    if (Test-Path -Path $settingsPath) {
-        Write-Host "Settings file found."
-        $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
-        $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
-        if ($ps7Profile) {
-            $settingsContent.defaultProfile = $ps7Profile.guid
-            $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
-            Set-Content -Path $settingsPath -Value $updatedSettings
-            Write-Host "Default profile updated to $targetTerminalName using the name attribute."
-        } else {
-            Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
-        }
-    } else {
-        Write-Host "Settings file not found at $settingsPath"
+    # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
+    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)){
+        Write-Host "Windows Terminal not installed. Skipping Terminal preference"
+        return
     }
-}
+    # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code) 
+    $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    if (-not (Test-Path -Path $settingsPath)){
+        Write-Host "Windows Terminal Settings file not found at $settingsPath"
+        return 
+    }
 
+    Write-Host "Settings file found."
+    $settingsContent = Get-Content -Path $settingsPath | ConvertFrom-Json
+    $ps7Profile = $settingsContent.profiles.list | Where-Object { $_.name -eq $targetTerminalName }
+    if ($ps7Profile) {
+        $settingsContent.defaultProfile = $ps7Profile.guid
+        $updatedSettings = $settingsContent | ConvertTo-Json -Depth 100
+        Set-Content -Path $settingsPath -Value $updatedSettings
+        Write-Host "Default profile updated to " -NoNewline
+        Write-Host "$targetTerminalName " -ForegroundColor White -NoNewline
+        Write-Host "using the name attribute."
+    } else {
+        Write-Host "No PowerShell 7 profile found in Windows Terminal settings using the name attribute."
+    }   
+}
 function Invoke-WPFtweaksbutton {
   <#
 
@@ -8185,6 +8357,14 @@ $sync.configs.applications = '{
     "link": "https://zoom.us/",
     "winget": "Zoom.Zoom"
   },
+  "WPFInstallzoomit": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "ZoomIt",
+    "description": "A screen zoom, annotation, and recording tool for technical presentations and demos",
+    "link": "https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit",
+    "winget": "Microsoft.Sysinternals.ZoomIt"
+  },
   "WPFInstallzotero": {
     "category": "Document",
     "choco": "zotero",
@@ -8425,6 +8605,14 @@ $sync.configs.applications = '{
     "link": "https://github.com/xM4ddy/OFGB",
     "winget": "xM4ddy.OFGB"
   },
+  "WPFInstallPaleMoon": {
+    "category": "Browsers",
+    "choco": "paleMoon",
+    "content": "PaleMoon",
+    "description": "Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use.",
+    "link": "https://www.palemoon.org/download.shtml",
+    "winget": "MoonchildProductions.PaleMoon"
+  },
   "WPFInstallShotcut": {
     "category": "Multimedia Tools",
     "choco": "na",
@@ -8432,6 +8620,46 @@ $sync.configs.applications = '{
     "description": "Shotcut is a free, open source, cross-platform video editor.",
     "link": "https://shotcut.org/",
     "winget": "Meltytech.Shotcut"
+  },
+  "WPFInstallLenovoLegionToolkit": {
+    "category": "Utilities",
+    "choco": "na",
+    "content": "Lenovo Legion Toolkit",
+    "description": "Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only.",
+    "link": "https://github.com/BartoszCichecki/LenovoLegionToolkit",
+    "winget": "BartoszCichecki.LenovoLegionToolkit"
+  },
+  "WPFInstallPulsarEdit": {
+    "category": "Development",
+    "choco": "pulsar",
+    "content": "Pulsar",
+    "description": "A Community-led Hyper-Hackable Text Editor",
+    "link": "https://pulsar-edit.dev/",
+    "winget": "Pulsar-Edit.Pulsar"
+  },
+  "WPFInstallAegisub": {
+    "category": "Development",
+    "choco": "aegisub",
+    "content": "Aegisub",
+    "description": "Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview.",
+    "link": "https://github.com/Aegisub/Aegisub",
+    "winget": "Aegisub.Aegisub"
+  },
+  "WPFInstallSubtitleEdit": {
+    "category": "Multimedia Tools",
+    "choco": "na",
+    "content": "Subtitle Edit",
+    "description": "Subtitle Edit is a free and open source editor for video subtitles.",
+    "link": "https://github.com/SubtitleEdit/subtitleedit",
+    "winget": "Nikse.SubtitleEdit"
+  },
+  "WPFInstallFork": {
+    "category": "Development",
+    "choco": "git-fork",
+    "content": "Fork",
+    "description": "Fork - a fast and friendly git client.",
+    "link": "https://git-fork.com/",
+    "winget": "Fork.Fork"
   }
 }' | convertfrom-json
 $sync.configs.dns = '{
@@ -11263,19 +11491,35 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"1\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ],
     "UndoScript": [
-      "
-      Set-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\" -Name \"TaskbarEndTask\" -Type \"DWord\" -Value \"0\"
-      "
+      "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn''t exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
     ]
   },
   "WPFTweaksPowershell7": {
-    "Content": "Replace Default Powershell 5 to Powershell 7",
-    "Description": "This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary",
+    "Content": "Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7",
+    "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -12035,12 +12279,20 @@ $sync.configs.tweaks = '{
     "Order": "a108_",
     "Type": "Toggle"
   },
+  "WPFToggleHiddenFiles": {
+    "Content": "Show Hidden Files",
+    "Description": "If Enabled then Hidden Files will be shown.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a200_",
+    "Type": "Toggle"
+  },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a200_",
+    "Order": "a201_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
@@ -12048,7 +12300,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a201_",
+    "Order": "a202_",
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
@@ -12056,7 +12308,7 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a202_",
+    "Order": "a203_",
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
@@ -12064,7 +12316,15 @@ $sync.configs.tweaks = '{
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
-    "Order": "a203_",
+    "Order": "a204_",
+    "Type": "Toggle"
+  },
+  "WPFToggleTaskbarAlignment": {
+    "Content": "Switch Taskbar Items between Center &#38; Left",
+    "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a204_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -12820,6 +13080,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <MenuItem FontSize="{ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}"/>
                             <Separator/>
                             <MenuItem FontSize="{ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{MainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -12912,6 +13173,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmullvadbrowser" Content="Mullvad Browser" ToolTip="Mullvad Browser is a privacy-focused web browser, developed in partnership with the Tor Project." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmullvadbrowserLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mullvad.net/browser"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallPaleMoon" Content="PaleMoon" ToolTip="Pale Moon is an Open Source, Goanna-based web browser available for Microsoft Windows and Linux (with other operating systems in development), focusing on efficiency and ease of use." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPaleMoonLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.palemoon.org/download.shtml"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallthorium" Content="Thorium Browser AVX2" ToolTip="Browser built for speed over vanilla chromium. It is built with AVX2 optimizations and is the fastest browser on the market." Margin="0,0,2,0"/>
@@ -13032,6 +13297,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <Label Name="WPFLabelDevelopment" Content="Development" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallAegisub" Content="Aegisub" ToolTip="Aegisub is a free, cross-platform open source tool for creating and modifying subtitles. Aegisub makes it quick and easy to time subtitles to audio, and features many powerful tools for styling them, including a built-in real-time video preview." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallAegisubLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Aegisub/Aegisub"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallanaconda3" Content="Anaconda" ToolTip="Anaconda is a distribution of the Python and R programming languages for scientific computing." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallanaconda3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.anaconda.com/products/distribution"/>
                             </StackPanel>
@@ -13054,6 +13323,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallfnm" Content="Fast Node Manager" ToolTip="Fast Node Manager (fnm) allows you to switch your Node version by using the Terminal" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallfnmLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/Schniz/fnm"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallFork" Content="Fork" ToolTip="Fork - a fast and friendly git client." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallForkLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-fork.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallgit" Content="Git" ToolTip="Git is a distributed version control system widely used for tracking changes in source code during software development." Margin="0,0,2,0"/>
@@ -13152,6 +13425,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallPulsarEdit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPulsarEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
                             </StackPanel>
@@ -13159,10 +13440,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpython3" Content="Python3" ToolTip="Python is a versatile programming language used for web development, data analysis, artificial intelligence, and more." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpython3Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.python.org/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallrustlang" Content="Rust" ToolTip="Rust is a programming language designed for safety and performance, particularly focused on systems programming." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallrustlangLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rust-lang.org/"/>
@@ -13708,6 +13985,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallstremioLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.stremio.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallSubtitleEdit" Content="Subtitle Edit" ToolTip="Subtitle Edit is a free and open source editor for video subtitles." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallSubtitleEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/SubtitleEdit/subtitleedit"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalltagscanner" Content="TagScanner (Tag Scanner)" ToolTip="TagScanner is a powerful tool for organizing and managing your music collection" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalltagscannerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.xdlab.ru/en/"/>
                             </StackPanel>
@@ -13754,14 +14035,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app"/>
@@ -14046,13 +14327,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallkeepassLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://keepassxc.org/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallLenovoLegionToolkit" Content="Lenovo Legion Toolkit" ToolTip="Lenovo Legion Toolkit (LLT) is a open-source utility created for Lenovo Legion (and similar) series laptops, that allows changing a couple of features that are only available in Lenovo Vantage or Legion Zone. It runs no background services, uses less memory, uses virtually no CPU, and contains no telemetry. Just like Lenovo Vantage, this application is Windows only." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallLenovoLegionToolkitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/BartoszCichecki/LenovoLegionToolkit"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllinkshellextension" Content="Link Shell extension" ToolTip="Link Shell Extension (LSE) provides for the creation of Hardlinks, Junctions, Volume Mountpoints, Symbolic Links, a folder cloning process that utilises Hardlinks or Symbolic Links and a copy process taking care of Junctions, Symbolic Links, and Hardlinks. LSE, as its name implies is implemented as a Shell extension and is accessed from Windows Explorer, or similar file/folder managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllinkshellextensionLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="4">
-                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/"/>
@@ -14061,6 +14342,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/"/>
                             </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="4">
+                        <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
@@ -14350,6 +14635,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallzerotieroneLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://zerotier.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallzoomit" Content="ZoomIt" ToolTip="A screen zoom, annotation, and recording tool for technical presentations and demos" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallzoomitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://learn.microsoft.com/en-us/sysinternals/downloads/zoomit"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallzoxide" Content="Zoxide" ToolTip="Zoxide is a fast and efficient directory changer (cd) that helps you navigate your file system with ease." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallzoxideLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/ajeetdsouza/zoxide"/>
                             </StackPanel>
@@ -14394,7 +14683,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
                             <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0" ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
                             <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksPowershell7" Content="Replace Default Powershell 5 to Powershell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal Replacing the Powershell 5 to Powershell 7 and install Powershell 7 if necessary"/>
+                            <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary"/>
                             <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
                             <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
@@ -14475,6 +14764,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <Label Content="Enable Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleHiddenFiles" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Show Hidden Files" ToolTip="If Enabled then Hidden Files will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleShowExt" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Show File Extensions" ToolTip="If enabled then File extensions (e.g., .txt, .jpg) are visible." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
@@ -14485,6 +14778,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskView" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Show Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleTaskbarAlignment" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Switch Taskbar Items between Center &#38; Left" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
@@ -15295,6 +15592,33 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize
+})
+
+$sync["SponsorMenuItem"].Add_Click({
+    # Handle Export menu item click
+    Write-Debug "Sponsors clicked"
+    $sync["SettingsPopup"].IsOpen = $false
+    $authorInfo = @"
+<a href="https://github.com/sponsors/ChrisTitusTech">Current sponsors for ChrisTitusTech:</a>
+"@
+    $authorInfo += "`n"
+    try {
+        # Call the function to get the sponsors
+        $sponsors = Invoke-WinUtilSponsors
+
+        # Append the sponsors to the authorInfo
+        $sponsors | ForEach-Object { $authorInfo += "$_`n" }
+    }
+    catch {
+        $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
+    }
+
+    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
+    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
+    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
+    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
 })
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

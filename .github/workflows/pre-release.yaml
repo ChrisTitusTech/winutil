@@ -40,6 +40,8 @@ jobs:
         with:
           tag_name: ${{ steps.extract_version.outputs.version }}
           name: Pre-Release ${{ steps.extract_version.outputs.version }}
+          body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ steps.extract_version.outputs.version }}/winutil.ps1)"
+          append_body: true
           files: ./winutil.ps1
           prerelease: true
         env:
