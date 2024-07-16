@@ -1767,6 +1767,14 @@
 		"link": "https://www.python.org/",
 		"winget": "Python.Python.3.12"
 	},
+	"qalculate": {
+		"category": "Utilities",
+		"choco": "qalculate",
+		"content": "Qalculate",
+		"description": "A multi-purpose cross-platform desktop calculator.",
+		"link": "https://qalculate.github.io/index.html",
+		"winget": "Qalculate.Qalculate"
+	},
 	"qbittorrent": {
 		"category": "Utilities",
 		"choco": "qbittorrent",
