@@ -16,7 +16,7 @@ jobs:
     - name: Get all releases and update update.mb file
       run: |
         # Fetch all releases including pre-releases using GitHub CLI
-        gh release list --limit 1000 > releases.txt
+        gh release list --limit 5 > releases.txt
         
         # Extract numeric versions and create update.mb content
         echo "" > docs/update.mb
