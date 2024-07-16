@@ -2,7 +2,8 @@ name: Update update.mb on Release
 
 on:
   release:
-    types: [published]
+    types: [published, prereleased]
+  workflow_dispatch:  # Add this line to enable manual triggering
 
 jobs:
   update-file:
@@ -12,22 +13,23 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Get latest release and update update.mb file
+    - name: Get all releases and update update.mb file
       run: |
-        # Fetch the latest release using GitHub CLI
-        latest_release=$(gh release view --json tagName,name,body --jq '{tag: .tagName, name: .name, body: .body}')
+        # Fetch all releases including pre-releases using GitHub CLI
+        gh release list --limit 5 > releases.txt
         
-        # Extract details
-        tag=$(echo "$latest_release" | jq -r '.tag')
-        name=$(echo "$latest_release" | jq -r '.name')
-        body=$(echo "$latest_release" | jq -r '.body')
-        version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
-        
-        # Append to update.mb
-        echo "## $version_numeric" >> docs/update.mb
-        echo "Release name: $name" >> docs/update.mb
-        echo "Release body: $body" >> docs/update.mb
-        echo "" >> docs/update.mb
+        # Extract numeric versions and create update.mb content
+        echo "" > docs/update.mb
+        while read -r line; do
+          tag=$(echo "$line" | awk '{print $1}')
+          name=$(echo "$line" | awk -F'\t' '{print $2}')
+          version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
+          body=$(gh release view "$tag" --json body --jq .body)
+          echo "## $version_numeric" >> docs/update.mb
+          echo "Release name: $name" >> docs/update.mb
+          echo "Release body: $body" >> docs/update.mb
+          echo "" >> docs/update.mb
+        done < releases.txt
 
     - name: Commit and Push Changes
       env:
@@ -36,5 +38,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add docs/update.mb
-        git commit -m "Update update.mb with latest release"
+        git commit -m "Update update.mb with all releases"
         git push
