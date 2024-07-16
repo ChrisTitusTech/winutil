@@ -12,18 +12,23 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Extract numeric version and update update.mb file
+    - name: Get all releases and update update.mb file
       run: |
-        version="${{ github.event.release.tag_name }}"
-        version_numeric=$(echo $version | grep -o -E '[0-9.]+')
-        {
-          echo "## $version_numeric"
-          echo "Release name: ${{ github.event.release.name }}"
-          echo "Release body: ${{ github.event.release.body }}"
-          echo ""
-          cat docs/update.mb
-        } > temp_update.mb
-        mv temp_update.mb docs/update.mb
+        # Fetch all releases using GitHub CLI
+        gh release list --limit 1000 > releases.txt
+        
+        # Extract numeric versions and create update.mb content
+        echo "" > docs/update.mb
+        while read -r line; do
+          tag=$(echo "$line" | awk '{print $1}')
+          name=$(echo "$line" | awk -F'\t' '{print $2}')
+          version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
+          body=$(gh release view "$tag" --json body --jq .body)
+          echo "## $version_numeric" >> docs/update.mb
+          echo "Release name: $name" >> docs/update.mb
+          echo "Release body: $body" >> docs/update.mb
+          echo "" >> docs/update.mb
+        done < releases.txt
 
     - name: Commit and Push Changes
       env:
@@ -32,5 +37,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add docs/update.mb
-        git commit -m "Update update.mb for release ${{ github.event.release.tag_name }}"
+        git commit -m "Update update.mb with all releases"
         git push
