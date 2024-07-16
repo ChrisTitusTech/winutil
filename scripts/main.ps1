@@ -460,7 +460,7 @@ if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
 }
 
 
-Set-WinUtilTaskbaritem -overlay "logo" | Out-Null
+Set-WinUtilTaskbaritem -overlay "logo"
 
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
