@@ -31,21 +31,9 @@ jobs:
             Write-Error "Version not found in winutil.ps1"
             exit 1
           }
+          git tag $version
+          git push origin $version
         shell: pwsh
-
-      - name: List Tags Before
-        run: git tag
-
-      - name: Create Tag
-        id: create_tag
-        run: |
-          git tag ${{ steps.extract_version.outputs.version }}
-          git push origin ${{ steps.extract_version.outputs.version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: List Tags After
-        run: git tag
 
       - name: Create and Upload Release
         id: create_release
