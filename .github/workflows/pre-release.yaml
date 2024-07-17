@@ -29,7 +29,7 @@ jobs:
         id: create_tag
         run: |
           $tagExists = git tag -l $env:VERSION
-          if ($null -eq $tagExists) {
+          if ($tagExists -eq "") {
             git tag $env:VERSION
             git push origin $env:VERSION
           } else {
