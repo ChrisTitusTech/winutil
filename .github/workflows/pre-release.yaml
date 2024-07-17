@@ -1,8 +1,12 @@
 name: Pre-Release WinUtil
 
+permissions:
+  contents: write
+  actions: read
+
 on:
   workflow_run:
-    workflows: ["Compile"] #Ensure Compile winget.ps1 is done
+    workflows: ["Compile"]
     types:
       - completed
   workflow_dispatch: # Manual trigger added
@@ -19,18 +23,8 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
-          $version = ''
-          Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
-            if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
-              $version = "pre"+$matches[1]
-              echo "version=$version" >> $GITHUB_OUTPUT
-              break
-            }
-          }
-          if (-not $version) {
-            Write-Error "Version not found in winutil.ps1"
-            exit 1
-          }
+          $version = "pre" + (Get-Date -Format "yyyy-MM-dd")
+          echo "version=$version" >> $env:GITHUB_ENV
           git tag $version
           git push origin $version
         shell: pwsh
