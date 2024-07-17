@@ -4,5 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    allow:
+    ignore:
       - dependency-name: "actions/stale"
+        versions: '>= 9'
