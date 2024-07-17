@@ -56,12 +56,10 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
 
     # Replace every XML Special Character so it'll render correctly in final build
     # Only do so if json files has content to be displayed (for example the applications, tweaks, features json files)
-        # Some Type Convertion using Casting and Cleaning Up of the convertion result using 'Replace' Method
+        # Make an Array List containing every name at first level of Json File
         $jsonAsObject = $json | convertfrom-json
-        $firstLevelJsonList = ([System.String]$jsonAsObject).split('=;') | ForEach-Object {
-            $_.Replace('=}','').Replace('@{','').Replace(' ','')
-        }
-
+        $firstLevelJsonList = [System.Collections.ArrayList]::new()
+        $jsonAsObject.PSObject.Properties.Name | ForEach-Object {$null = $firstLevelJsonList.Add($_)}
         # Note:
         #  Avoid using HTML Entity Codes, for example '&rdquo;' (stands for "Right Double Quotation Mark"),
         #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
