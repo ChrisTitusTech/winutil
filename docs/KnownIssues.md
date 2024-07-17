@@ -53,7 +53,7 @@ Get-Service -Name "XboxGipSvc" | Set-Service -StartupType Automatic
 - Explorer no longer launches: Go to Control Panel, File Explorer Options, Change the 'Open File Explorer to' option to 'This PC'.
 
 ### Battery drains too fast.
-When your battery on the laptop drains too fast, please perform these steps and report the results back to the Winutil community.
+* When your battery on the laptop drains too fast, please perform these steps and report the results back to the Winutil community.
 
 1. **Check Battery Health:**
    - Open a Command Prompt as an administrator.
@@ -134,13 +134,13 @@ When your battery on the laptop drains too fast, please perform these steps and 
     - Check settings/preferences of individual applications for power-related options.
     - Uninstall unnecessary or problematic software.
 
-By following these detailed instructions, you should be able to thoroughly diagnose and address battery drain issues on your Windows laptop. Adjust settings as needed to optimize power management and improve battery life.
+* By following these detailed instructions, you should be able to thoroughly diagnose and address battery drain issues on your Windows laptop. Adjust settings as needed to optimize power management and improve battery life.
 
 ### Troubleshoot errors during Microwin usage
 
 #### Error `0x80041031`
 
-This error code typically indicates an issue related to Windows Management Instrumentation (WMI). Here are a few steps you can try to resolve the issue:
+* This error code typically indicates an issue related to Windows Management Instrumentation (WMI). Here are a few steps you can try to resolve the issue:
 
 1. **Reboot Your Computer:**
    Sometimes, a simple reboot can resolve temporary issues. Restart your computer and try mounting the ISO again.
@@ -174,4 +174,4 @@ This error code typically indicates an issue related to Windows Management Instr
 7. **ISO File Integrity:**
    Ensure that the ISO file you are trying to mount is uncorrupted. Try mounting a different ISO file to see if the issue persists.
 
-If the problem persists after trying these steps, additional troubleshooting is required. Consider seeking assistance from Microsoft support or community forums for more specific guidance based on your system configuration and the software you use to mount the ISO.
+* If the problem persists after trying these steps, additional troubleshooting is required. Consider seeking assistance from Microsoft support or community forums for more specific guidance based on your system configuration and the software you use to mount the ISO.

@@ -1,7 +1,7 @@
 # User Guide
 
 ## Overview
-* short one
+* WinUtil is built for ease of use. check
 
 
 ## Walkthrough

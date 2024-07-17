@@ -10,7 +10,7 @@
 
 * If you're doing code changes, then you can submit a PR to `main` branch, but I am very selective about these.
 
-> [!WARNING]
+> [WARNING]
 > Do not use a code formatter, massive amounts of line changes, and make multiple feature changes.
 > EACH FEATURE CHANGE SHOULD BE IT'S OWN Pull Request!
 
@@ -18,14 +18,19 @@
 
 * By following these guidelines, we can maintain a high standard of quality and ensure that the codebase remains organized and well-documented.
 
-> [!NOTE]
+> [NOTE]
 > When creating a function, please include "WPF" or "WinUtil" in the file name so it can be loaded into the runspace.
 
 ## Walk through
 
+* This is a Guide for beginners. If you are still having issues look following official GitHub docs:
+* * [Commit through WEB](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)
+* * [Commit through GitHub Desktop](https://docs.github.com/en/desktop/making-changes-in-a-branch/committing-and-reviewing-changes-to-your-project-in-github-desktop#about-commits)
+* * [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your Repository-list.
-![Fork](assets/ForkButton.png)
+![Fork Image](assets/ForkButton.png)
 
 ### Clone the Fork
 * While you can make your changes directly through the Web, we recommend cloning the repo to your device to test your fork easily.
@@ -35,21 +40,23 @@
 * Choose the fork under "Your Repositories" and press "clone {repo name}"
 * Create a new Branch and name it something relatable to your changes,
 
-* Now you can modify WinUtil to your liking using your prefered text editor.
+* Now you can modify WinUtil to your liking using your preferred text editor.
 
 
 ### Testing your changes
-* To test to see if your changes work as intended run following commands in a powershell teminal:
+* To test to see if your changes work as intended run following commands in a powershell terminal:
 
 * Change the directory where you are running the commands to the forked project.
 * `cd {path to the folder with the compile.ps1}`
-* Run following command to compile and run Winutil
+* Run following command to compile and run Winutil.
 * `.\Compile.ps1 -run`
 * After seeing that your changes work properly feel free to commit the changes to the repository and make a PR, for help on that follow the documentation below.
 
-### Commiting the changes
-* Commit your changes once you are fine with the result
+### Committing the changes
+* Commit your changes once you are fine with the result.
+![Commit Image](assets/CommitScreen.png)
 * Push the changes to "upload" them to your fork on github.com.
+![Push Commit Image](assets/PushCommitScreen.png)
 
 ### Making a PR
 * To make a PR on your repo under a new branch linking to the main branch a button will show and say Preview and Create pull request. Click that button and fill in all information that is provided on the template. Once all the information is filled in correctly check your PR to make sure there is not a WinUtil.ps1 file attached to the PR. Once everything is good make the PR and wait for Chris (The Maintainer) to accept or deny your PR. Once it is accepted in by Chris you will be able to see your changes in the /windev build.
