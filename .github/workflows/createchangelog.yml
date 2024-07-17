@@ -2,7 +2,8 @@ name: Update update.mb on Release
 
 on:
   release:
-    types: [published]
+    types: [published, prereleased]
+  workflow_dispatch:  # Add this line to enable manual triggering
 
 jobs:
   update-file:
@@ -10,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Get all releases and update update.mb file
       run: |
-        # Fetch all releases using GitHub CLI
-        gh release list --limit 1000 > releases.txt
+        # Fetch all releases including pre-releases using GitHub CLI
+        gh release list --limit 5 > releases.txt
         
         # Extract numeric versions and create update.mb content
         echo "" > docs/update.mb

@@ -22,10 +22,8 @@
 [Discuss the impact of your changes on the project. This might include effects on performance, new dependencies, or changes in behaviour.]
 
 ## Issue related to PR
-[What issue is related to this PR (if any)]
+[What issue/discussion is related to this PR (if any)]
 - Resolves #
-[What discussion is related to this PR (if any)]
-- Discussion: #
 
 ## Additional Information
 [Any additional information that reviewers should be aware of.]
@@ -35,4 +33,4 @@
 - [ ] I have performed a self-review of my own code.
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation.
-- [ ] My changes generate no errors/warnings/merge conflicts. 
+- [ ] My changes generate no errors/warnings/merge conflicts.
