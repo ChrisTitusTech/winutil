@@ -21,7 +21,7 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
-          $version = (Get-Date -Format "yy-MM-dd")
+          $version = (Get-Date -Format "yy.MM.dd")
           echo "version=$version" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -29,11 +29,11 @@ jobs:
         id: create_tag
         run: |
           $tagExists = git tag -l $env:VERSION
-          if ($tagExists) {
-            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
-          } else {
+          if (-not $tagExists) {
             git tag $env:VERSION
             git push origin $env:VERSION
+          } else {
+            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
         shell: pwsh
 
