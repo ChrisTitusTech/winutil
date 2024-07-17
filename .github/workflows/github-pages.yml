@@ -1,9 +1,8 @@
 name: GitHub Pages Deploy
 on:
-  push:
-    branches:
-      - master
-      - main
+  release:
+    types: [published, prereleased]
+  workflow_dispatch: 
 permissions:
   contents: write
 jobs:
