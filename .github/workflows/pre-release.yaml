@@ -23,8 +23,18 @@ jobs:
         run: |
           $version = (Get-Date -Format "yy-MM-dd")
           echo "version=$version" >> $env:GITHUB_ENV
-          git tag $version
-          git push origin $version
+        shell: pwsh
+
+      - name: Create Tag
+        id: create_tag
+        run: |
+          $tagExists = git tag -l $env:VERSION
+          if ($tagExists) {
+            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
+          } else {
+            git tag $env:VERSION
+            git push origin $env:VERSION
+          }
         shell: pwsh
 
       - name: Create and Upload Release
