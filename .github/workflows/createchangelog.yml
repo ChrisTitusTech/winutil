@@ -1,17 +1,42 @@
-name: On release published
+name: Update update.mb on Release
+
 on:
   release:
-    types: [published]
+    types: [published, prereleased]
+  workflow_dispatch:  # Add this line to enable manual triggering
 
 jobs:
-  changelog:
-    name: Update changelog
+  update-file:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: main
-      - uses: rhysd/changelog-from-release/action@v3
-        with:
-          file: /docs/updates.md
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Get all releases and update update.mb file
+      run: |
+        # Fetch all releases including pre-releases using GitHub CLI
+        gh release list --limit 5 > releases.txt
+        
+        # Extract numeric versions and create update.mb content
+        echo "" > docs/update.mb
+        while read -r line; do
+          tag=$(echo "$line" | awk '{print $1}')
+          name=$(echo "$line" | awk -F'\t' '{print $2}')
+          version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
+          body=$(gh release view "$tag" --json body --jq .body)
+          echo "## $version_numeric" >> docs/update.mb
+          echo "Release name: $name" >> docs/update.mb
+          echo "Release body: $body" >> docs/update.mb
+          echo "" >> docs/update.mb
+        done < releases.txt
+
+    - name: Commit and Push Changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add docs/update.mb
+        git commit -m "Update update.mb with all releases"
+        git push

@@ -33,7 +33,7 @@
 
 #### Tweaks Addition
 * To enable tweaks on your system select Tweaks at the top next to Install.
-* Then you can select what tweaks you want adding to your system. We do have some presets you can select from at the top you can see this in the picture below. 
+* Then you can select what tweaks you want adding to your system. We do have some presets you can select from at the top you can see this in the picture below.
 ![Tweaks Screen](assets/TweaksScreen.PNG)
 * After you have chosen your tweaks click the Run Tweaks button at the bottom of the screen.
 
@@ -114,7 +114,7 @@
 * **Keep Provisioned Packages**: leaving this option unticked (default) will try to remove every operating system package
 
 	Some packages may remain after processing. This can happen if the packages in question were permanent ones or had been superseded by newer versions
-	
+
 * **Keep Appx Packages**: leaving this option unticked (default) will try to remove every Microsoft Store app from the Windows image
 
 	This option will exclude some applications that are essential in the case that you want or need to add a Store app later on
@@ -122,7 +122,7 @@
 * **Keep Defender**: leaving this option unticked will try to remove every part of Windows Defender, including the Windows Security app
 
 	Leaving this option unticked is **NOT recommended** unless you plan to use a third-party antivirus solution on your MicroWin installation. On that regard, don't install AVs with bad reputation or rogueware
-	
+
 * **Keep Edge**: leaving this option unticked will try to remove every part of the Microsoft Edge browser using the best methods available
 
 	Leaving this option unticked is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
@@ -141,7 +141,7 @@
 * **Copy to Ventoy** will copy the target ISO file to any USB drive with [Ventoy](https://ventoy.net/en/index.html) installed
 
 	Ventoy is a solution that lets you boot to any ISO file stored in a drive. Think of it as having multiple bootable USBs in one. Do note though that your drive needs to have enough free space for the target ISO file
-	
+
 
 ## Automation
 
