@@ -14,8 +14,6 @@ on:
 jobs:
   build-runspace:
     runs-on: windows-latest
-    outputs:
-      version: ${{ steps.extract_version.outputs.version }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -23,7 +21,7 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
-          $version = "pre" + (Get-Date -Format "yyyy-MM-dd")
+          $version = (Get-Date -Format "yy-MM-dd")
           echo "version=$version" >> $env:GITHUB_ENV
           git tag $version
           git push origin $version
@@ -33,8 +31,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.extract_version.outputs.version }}
-          name: Pre-Release ${{ steps.extract_version.outputs.version }}
+          tag_name: ${{ env.VERSION }}
+          name: Pre-Release ${{ env.VERSION }}
           body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ steps.extract_version.outputs.version }}/winutil.ps1)"
           append_body: false
           files: ./winutil.ps1
