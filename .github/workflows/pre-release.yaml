@@ -33,6 +33,9 @@ jobs:
           }
         shell: pwsh
 
+      - name: List Tags Before
+        run: git tag
+
       - name: Create Tag
         id: create_tag
         run: |
@@ -40,6 +43,9 @@ jobs:
           git push origin ${{ steps.extract_version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List Tags After
+        run: git tag
 
       - name: Create and Upload Release
         id: create_release
