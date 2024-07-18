@@ -1990,6 +1990,19 @@
       }
     ]
   },
+  "WPFTweaksClassicContextMenu": {
+  "Content": "Enable Classic Context Menu",
+  "Description": "Changes the Windows 11 context menu to the classic Windows 10 style.",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "Order": "a006_",
+  "InvokeScript": [
+    "reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve"
+  ],
+  "UndoScript": [
+    "reg.exe delete \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" /f"
+  ]
+},
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
