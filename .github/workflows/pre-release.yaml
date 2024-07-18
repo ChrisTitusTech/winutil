@@ -17,8 +17,18 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
-          $version = (Get-Date -Format "yy.MM.dd")
-          echo "version=$version" >> $env:GITHUB_ENV
+          $version = ''
+          Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
+            if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
+              $version = $matches[1]
+              echo "version=$version" >> $env:VERSION
+              break
+            }
+          }
+          if (-not $version) {
+            Write-Error "Version not found in winutil.ps1"
+            exit 1
+          }
         shell: pwsh
 
       - name: Create Tag
