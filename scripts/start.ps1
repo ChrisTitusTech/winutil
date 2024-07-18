@@ -44,6 +44,14 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
+if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage')
+{
+    Write-Host "Current language mode is $($ExecutionContext.SessionState.LanguageMode)"
+    Write-Host "Many PowerShell commands are disabled in this mode. Please run:"
+    Write-Host "  `$ExecutionContext.SessionState.LanguageMode = `"FullLanguage`""
+    break
+}
+
 # If script isn't running as admin, show error message and quit
 If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544")
 {
