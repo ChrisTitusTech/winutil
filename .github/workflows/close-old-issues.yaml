@@ -12,6 +12,7 @@ jobs:
       issues: write  # Ensure necessary permissions for issues
       pull-requests: none
       contents: none
+    if: (github.event_name == 'schedule' && github.repository == 'ChrisTitusTech/winutil') || (github.event_name != 'schedule')
     steps:
     - name: Close inactive issues
       uses: actions/stale@v8

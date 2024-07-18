@@ -10,6 +10,7 @@ on:
 jobs:
   build-runspace:
     runs-on: windows-latest
+    if: ${{ github.repository == 'ChrisTitusTech/winutil' }}
     steps:
     - uses: actions/checkout@v4
       with:
