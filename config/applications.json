@@ -2945,7 +2945,7 @@
 	},
 	"XnConvert": {
 		"category": "Utilities",
-		"choco": "xnview",
+		"choco": "xnconvert",
 		"content": "XnConvert",
 		"description": "XnConvert is a fast, powerful and free cross-platform batch image converter.",
 		"link": "https://www.xnview.com/en/xnconvert/",
