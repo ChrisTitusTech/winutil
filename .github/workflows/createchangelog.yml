@@ -1,4 +1,4 @@
-name: Update update.mb on Release
+name: Update changelog.md on Release
 
 on:
   release:
@@ -13,22 +13,22 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Get all releases and update update.mb file
+    - name: Get all releases and update changelog.md file
       run: |
         # Fetch all releases including pre-releases using GitHub CLI
         gh release list --limit 5 > releases.txt
         
-        # Extract numeric versions and create update.mb content
-        echo "" > docs/update.mb
+        # Extract numeric versions and create changelog.md content
+        echo "" > docs/changelog.md
         while read -r line; do
           tag=$(echo "$line" | awk '{print $1}')
           name=$(echo "$line" | awk -F'\t' '{print $2}')
           version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
           body=$(gh release view "$tag" --json body --jq .body)
-          echo "## $version_numeric" >> docs/update.mb
-          echo "Release name: $name" >> docs/update.mb
-          echo "Release body: $body" >> docs/update.mb
-          echo "" >> docs/update.mb
+          echo "## $version_numeric" >> docs/changelog.md
+          echo "Release name: $name" >> docs/changelog.md
+          echo "Release body: $body" >> docs/changelog.md
+          echo "" >> docs/changelog.md
         done < releases.txt
 
     - name: Commit and Push Changes
@@ -37,6 +37,6 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add docs/update.mb
-        git commit -m "Update update.mb with all releases"
+        git add docs/changelog.md
+        git commit -m "Update changelog.md with all releases"
         git push

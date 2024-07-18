@@ -5,7 +5,7 @@ nav:
   - Introduction: 'index.md'
   - User Guide: 'userguide.md'
   - Contribute: 'contribute.md'
-  - Updates: 'updates.md'
+  - Changelog: 'changelog.md'
   - Known Issues: 'KnownIssues.md'
   - FAQ: 'faq.md'
 
