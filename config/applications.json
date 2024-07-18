@@ -2942,5 +2942,13 @@
 		"description": "Fork - a fast and friendly git client.",
 		"link": "https://git-fork.com/",
 		"winget": "Fork.Fork"
+	},
+	"CloudflareWarp": {
+		"category": "Utilities",
+		"choco": "warp",
+		"content": "CloudflareWarp",
+		"description": "Cloudflare Warp is a Modern VPN. The free app that makes your Internet safer. ",
+		"link": "https://one.one.one.one",
+		"winget": "Cloudflare.Warp"
 	}
 }
