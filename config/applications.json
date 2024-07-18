@@ -2942,5 +2942,13 @@
 		"description": "Fork - a fast and friendly git client.",
 		"link": "https://git-fork.com/",
 		"winget": "Fork.Fork"
+	},
+	"XnConvert": {
+		"category": "Utilities",
+		"choco": "xnview",
+		"content": "xnconvert.install",
+		"description": "XnConvert is a fast, powerful and free cross-platform batch image converter.",
+		"link": "https://www.xnview.com/en/xnconvert/",
+		"winget": "XnSoft.XnConvert"
 	}
 }
