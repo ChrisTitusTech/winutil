@@ -17,7 +17,7 @@ jobs:
           Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
               $version = $matches[1]
-              echo "version=$version" >> $env:VERSION
+              echo "version=$version" >> $env:GITHUB_ENV
               break
             }
           }
