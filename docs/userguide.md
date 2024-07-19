@@ -34,7 +34,7 @@
 #### Tweaks Addition
 * To enable tweaks on your system select Tweaks at the top next to Install.
 * Then you can select what tweaks you want adding to your system. We do have some presets you can select from at the top you can see this in the picture below.
-![Tweaks Screen](assets/TweaksScreen.PNG)
+![Tweaks Screen](assets/TweaksScreen.png)
 * After you have chosen your tweaks click the Run Tweaks button at the bottom of the screen.
 
 #### Tweaks Removal
@@ -58,7 +58,7 @@
 #### Shortcuts
 
 
-![Tweaks Screen](assets/TweaksScreen.PNG)
+![Tweaks Screen](assets/TweaksScreen.png)
 
 ### Config
 
