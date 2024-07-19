@@ -82,7 +82,6 @@ jobs:
           name=${name_arr[$i]}
           isprerelease=${isprerelease_arr[$i]}
           islatest=${islatest_arr[$i]}
-          version_numeric=$(echo "$tag" | grep -o -E '[0-9.]+')
           body=$(gh release view "$tag" --json body --jq .body)
 
           # The generation of changelog file contents
@@ -93,9 +92,9 @@ jobs:
           echo "> [!WARNING]" >> $changelog_path
           echo "> This file **SHOULD NOT** be edited directly, any PRs that tries changing it directly will either be requested on not changing it, or it'll get rejected." >> $changelog_path
           echo "" >> $changelog_path
-          echo "# $version_numeric" >> $changelog_path
-          echo "Release name: $name" >> $changelog_path
-          echo "Release body: $body" >> $changelog_path
+          echo "# $name" >> $changelog_path
+          echo "" >> $changelog_path
+          echo "$body" >> $changelog_path
           echo "" >> $changelog_path
         done
       env:
