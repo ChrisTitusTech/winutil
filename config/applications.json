@@ -1887,6 +1887,14 @@
 		"link": "https://semiconductor.samsung.com/consumer-storage/magician/",
 		"winget": "Samsung.SamsungMagician"
 	},
+	"samsungsmartswitch": {
+		"category": "Utilities",
+		"choco": "samsung-smartswitch",
+		"content": "Samsung SmartSwitch",
+		"description": "Samsung Smart Switch is a very useful utility for backing up and restoring files and phone settings for Samsung phones.",
+		"link": "https://www.samsung.com/in/apps/smart-switch/",
+		"winget": "Samsung.SmartSwitch"
+	},
 	"sandboxie": {
 		"category": "Utilities",
 		"choco": "sandboxie",
