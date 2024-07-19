@@ -1247,6 +1247,14 @@
 		"link": "https://www.msi.com/Landing/afterburner",
 		"winget": "Guru3D.Afterburner"
 	},
+	"msicenter": {
+		"category": "Utilities",
+		"choco": "na",
+		"content": "MSI Center",
+		"description": "MSI Center is a Control Center for MSI Laptops, PC & Other MSI Products",
+		"link": "https://www.msi.com/Landing/MSI-Center",
+		"winget": "9NVMNJCR03XV"
+	},
 	"mullvadvpn": {
 		"category": "Pro Tools",
 		"choco": "mullvad-app",
