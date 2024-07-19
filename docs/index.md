@@ -10,12 +10,13 @@
 
 ## Getting Started
 
-* Chris Titus WinUtil offers several ways to get up and running quickly. Choose the method that suits your needs.
-* You will first ned to start a Powershell Terminal **as Admin**.
+* Chris Titus WinUtil offers several ways to get up and running quickly. Choose the method that suits your needs:
 
 ### Running WinUtil
 
-* There are two recommended methods to run WinUtil, each offering different release versions for your convenience:
+* There are four methods to run WinUtil, each offering different release versions for your convenience:
+
+* You will first ned to start a Powershell Terminal **as Admin**.
 
 1. **Run latest Full Release**
    ```ps
@@ -26,4 +27,5 @@
    ```ps
    irm christitus.com/win | iex
    ```
-   This is the newest development release. It is recommended for testing purposes and may cause issues.
+   This is a development release. It is exists for developers to test the utility and report/fix bugs before they get added into the stable release.
+

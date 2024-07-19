@@ -6,28 +6,35 @@
 
 ## Walkthrough
 
-### Program
+### Install
 
-#### Installation & Updates
-* To install programs select the programs you wish to install or update like the picture below.
-![Program Install](assets/ProgramInstall.png)
-* Once you have selected the programs you wish to install click the select Install/Upgrade Selected button as seen below.
-![Program Install Button](assets/ProgramInstallButton.png)
+=== "Installation & Updates"
 
-#### Upgrade All
-* Press the button to upgrade all installed programs that are supported by WinGet, there is no selection needed.
+    * To install programs select the programs you wish to install or update like the picture below.
+	![Program Install](assets/ProgramInstall.png)
+	* Once you have selected the programs you wish to install click the select Install/Upgrade Selected button as seen below.
+	![Program Install Button](assets/ProgramInstallButton.png)
 
-#### Uninstall
-* To uninstall programs select the programs you wish to uninstall like the picture below.
-![Program Uninstall](assets/ProgramInstall.png)
-* Once you have selected the programs you wish to uninstall click the select Uninstall Selected button as seen below.
-![Program Uninstall Button](assets/ProgramUninstall.png)
+=== "Upgrade All"
 
-#### Get Installed
-* Checks for installed programs that are supported by WinGet and selects them in the Utility.
+    * Press the button to upgrade all installed programs that are supported by WinGet, there is no selection needed.
 
-#### Clear Selection
-* Clears ur current selection so no program is checked.
+=== "Uninstall"
+
+    * To uninstall programs select the programs you wish to uninstall like the picture below.
+	![Program Uninstall](assets/ProgramInstall.png)
+	* Once you have selected the programs you wish to uninstall click the select Uninstall Selected button as seen below.
+	![Program Uninstall Button](assets/ProgramUninstall.png)
+
+=== "Get Installed"
+
+    * Checks for installed programs that are supported by WinGet and selects them in the Utility.
+	![Program Get Installed Button](assets/get-installed.png)
+
+=== "Clear Selection"
+
+    * Clears ur current selection so no program is checked.
+	![Program clear selection Button](assets/clear-selection.png)
 
 ### Tweaks
 
@@ -56,7 +63,6 @@
 #### Performance Plans
 
 #### Shortcuts
-
 
 ![Tweaks Screen](assets/TweaksScreen.PNG)
 
