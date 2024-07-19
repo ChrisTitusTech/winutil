@@ -30,6 +30,8 @@ jobs:
           echo "Release body: $body" >> docs/changelog.md
           echo "" >> docs/changelog.md
         done < releases.txt
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     - name: Commit and Push Changes
       env:
