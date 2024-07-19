@@ -16,7 +16,7 @@ jobs:
     - name: Get all releases and update changelog.md file
       run: |
         # Fetch all releases including pre-releases using GitHub CLI
-        gh release list --limit 1000000 > releases.txt
+        gh release list --exclude-drafts --exclude-pre-releases --limit 1000000 > releases.txt
         
         # Extract numeric versions and create changelog.md content
         echo "" > docs/changelog.md
