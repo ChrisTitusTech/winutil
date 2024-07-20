@@ -1,47 +1,47 @@
 # User Guide
 
-## Overview
-* WinUtil is built for ease of use. check
-
-
 ## Walkthrough
 
 ### Install
 
+![Tweaks Screen](assets/Install-Tab-Dark.png#only-dark)
+![Tweaks Screen](assets/Install-Tab-Light.png#only-light)
+
+* If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
+
 === "Installation & Updates"
 
-    * To install programs select the programs you wish to install or update like the picture below.
-	![Program Install](assets/ProgramInstall.png)
-	* Once you have selected the programs you wish to install click the select Install/Upgrade Selected button as seen below.
-	![Program Install Button](assets/ProgramInstallButton.png)
+	* Choose the programs you want to install or upgrade.
+		* For programs not currently installed, this action will install them.
+		* For programs already installed, this action will update them to the latest version.
+	* Click the `Install/Upgrade Selected` button to start the installation or upgrade process.
 
 === "Upgrade All"
 
-    * Press the button to upgrade all installed programs that are supported by WinGet, there is no selection needed.
+    * Simply press the `Upgrade All` button.
+	* This will upgrade all applicable programs without the need for individual selection.
 
 === "Uninstall"
 
-    * To uninstall programs select the programs you wish to uninstall like the picture below.
-	![Program Uninstall](assets/ProgramInstall.png)
-	* Once you have selected the programs you wish to uninstall click the select Uninstall Selected button as seen below.
-	![Program Uninstall Button](assets/ProgramUninstall.png)
+    * Select the programs you wish to uninstall.
+	* Click the `Uninstall Selected` button to remove the selected programs.
 
 === "Get Installed"
 
-    * Checks for installed programs that are supported by WinGet and selects them in the Utility.
-	![Program Get Installed Button](assets/get-installed.png)
+    * Click the `Get Installed` button.
+	* This will scan for and selects all installed programs in WinUtil that WinGet supports.
 
 === "Clear Selection"
 
-    * Clears ur current selection so no program is checked.
-	![Program clear selection Button](assets/clear-selection.png)
+    * Click the `Clear Selection` button.
+	* This will deselect all checked programs.
 
 ### Tweaks
 
 #### Tweaks Addition
-* To enable tweaks on your system select Tweaks at the top next to Install.
-* Then you can select what tweaks you want adding to your system. We do have some presets you can select from at the top you can see this in the picture below.
-![Tweaks Screen](assets/TweaksScreen.PNG)
+* To run tweaks on your system select the Tweaks tab.
+* Now you can select what tweaks you want to run on your system. We do have some presets you can select from at the top you can see this in the picture below.
+![Tweaks Screen](assets/Tweaks-Tab.png)
 * After you have chosen your tweaks click the Run Tweaks button at the bottom of the screen.
 
 #### Tweaks Removal
@@ -63,8 +63,6 @@
 #### Performance Plans
 
 #### Shortcuts
-
-![Tweaks Screen](assets/TweaksScreen.PNG)
 
 ### Config
 
@@ -94,14 +92,15 @@
 #### Basic usage
 
 1. Specify the source Windows ISO to customize
-
 	* If you don't have a Windows ISO file prepared, you can download it using the Media Creation Tool for the respective Windows version. [Here](https://go.microsoft.com/fwlink/?linkid=2156295) is the Windows 11 version, and [here](https://go.microsoft.com/fwlink/?LinkId=2265055) is the Windows 10 version
 
 2. Configure the debloat process
 3. Specify the target location for the new ISO file
 4. Let the magic happen!
 
-**NOTE:** this feature is still in development and you may encounter some issues with the generated images. If that happens, don't hesitate to report an issue!
+!!! warning "Heads-up"
+
+    this feature is still in development and you may encounter some issues with the generated images. If that happens, don't hesitate to report an issue!
 
 #### Options
 
@@ -145,9 +144,9 @@
 ##### Ventoy options
 
 * **Copy to Ventoy** will copy the target ISO file to any USB drive with [Ventoy](https://ventoy.net/en/index.html) installed
+!!! info
 
-	Ventoy is a solution that lets you boot to any ISO file stored in a drive. Think of it as having multiple bootable USBs in one. Do note though that your drive needs to have enough free space for the target ISO file
-
+    Ventoy is a solution that lets you boot to any ISO file stored in a drive. Think of it as having multiple bootable USBs in one. Do note though that your drive needs to have enough free space for the target ISO file
 
 ## Automation
 
@@ -158,8 +157,13 @@
 * Click on the Settings cog in the upper right corner and chose Export, chose file file and location, this will export the setting file.
 ![SettingsExport](assets/Settings-Export.png)
 * Copy this file to a USB or somewhere you can use after Windows installation.
-* Use Microwin tab to create a custom Windows image.
-* Install the Windows image.
-* In the new Windows, Open PowerShell in the admin mode and run command to automatically apply tweaks and install apps from the config file.
-* ``` iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run" ```
+
+!!! tip
+
+    Use Microwin tab to create a custom Windows image & Install the Windows image.
+
+* On any supported Windows Machine, open PowerShell **as Admin** and run following command to automatically apply tweaks and install apps from the config file.
+ 	```ps1
+	iex "& { $(irm christitus.com/win) } -Config [path-to-your-config] -Run"
+	```
 * Have a cup of coffee! Come back when it's done.

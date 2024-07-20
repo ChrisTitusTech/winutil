@@ -56,5 +56,6 @@ markdown_extensions:
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-plugins:
-  - privacy
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true

@@ -1,5 +1,18 @@
 # How to Contribute?
 
+## Testing
+
+* Test the latest changes of WinUtil by running the pre-Release and report issues you are encountering to help us to continually improve WinUtil!
+
+#### **Run latest Pre-Release**
+   ```ps1
+   irm christitus.com/windev | iex
+   ```
+   
+!!! bug "Keep in mind"
+
+    This is a pre-release and should be treated as such. It exists for developers to test the utility and report/fix bugs before they get added into the stable release. Don't use it in production!
+
 ## Issues
 
 * If you encounter any challenges or problems with the script, I kindly request that you submit them via the "Issues" tab on the GitHub repository. By filling out the provided template, you can provide specific details about the issue, allowing me (and others in the community) to promptly address any bugs, or consider feature requests.
@@ -25,18 +38,20 @@
 
 ## Walk through
 
-* This is a Guide for beginners. If you are still having issues look following official GitHub docs:
-* * [Commit through WEB](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)
-* * [Commit through GitHub Desktop](https://docs.github.com/en/desktop/making-changes-in-a-branch/committing-and-reviewing-changes-to-your-project-in-github-desktop#about-commits)
-* * [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+* This is a Guide for beginners. If you are still having issues look following official GitHub documentation:
+    * [Commit through WEB](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits)
+    * [Commit through GitHub Desktop](https://docs.github.com/en/desktop/making-changes-in-a-branch/committing-and-reviewing-changes-to-your-project-in-github-desktop#about-commits)
+    * [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your Repository-list.
-![Fork Image](assets/ForkButton.png)
+![Fork Image](assets/Fork-Button.png)
 
 ### Clone the Fork
-* While you can make your changes directly through the Web, we recommend cloning the repo to your device to test your fork easily.
-* Using the application GitHub Desktop (available in WinUtil) you can easily manage your repos locally. You can do it using other tools like git-cli (available in WinUtil), we recommend GitHub Desktop for ease of use.
+!!! info
+
+    While you can make your changes directly through the Web, we recommend cloning the repo to your device using the application GitHub Desktop (available in WinUtil) to test your fork easily.
+
 * Install GitHub Desktop if not already installed
 * Log in using the same GitHub account u used to fork WinUtil
 * Choose the fork under "Your Repositories" and press "clone {repo name}"
@@ -52,13 +67,16 @@
 * `cd {path to the folder with the compile.ps1}`
 * Run following command to compile and run Winutil.
 * `.\Compile.ps1 -run`
+* ![Compile](assets/Compile.png)
 * After seeing that your changes work properly feel free to commit the changes to the repository and make a PR, for help on that follow the documentation below.
 
 ### Committing the changes
-* Commit your changes once you are fine with the result.
-![Commit Image](assets/CommitScreen.png)
-* Push the changes to "upload" them to your fork on github.com.
-![Push Commit Image](assets/PushCommitScreen.png)
+* Before committing your changes please discard changes made to the `winutil.ps1` file like following:
+- ![Push Commit Image](assets/Discard-GHD.png)
+* Now, commit your changes once you are happy with the result.
+![Commit Image](assets/Commit-GHD.png)
+* Push the changes to upload them to your fork on github.com.
+![Push Commit Image](assets/Push-Commit.png)
 
 ### Making a PR
 * To make a PR on your repo under a new branch linking to the main branch a button will show and say Preview and Create pull request. Click that button and fill in all information that is provided on the template. Once all the information is filled in correctly check your PR to make sure there is not a WinUtil.ps1 file attached to the PR. Once everything is good make the PR and wait for Chris (The Maintainer) to accept or deny your PR. Once it is accepted in by Chris you will be able to see your changes in the /windev build.

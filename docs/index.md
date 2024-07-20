@@ -1,31 +1,18 @@
-# Welcome to Chris Titus WinUtil Documentation!
+# Welcome to the WinUtil Documentation!
 
 [![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
 ![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=Total%20Downloads&style=for-the-badge)
 
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ChrisTitusTech/winutil)
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ)](https://discord.gg/RUbZUZyByQ)
+[![Discord Community Server](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ)](https://discord.gg/RUbZUZyByQ)
 
-* Welcome to the official documentation for WinUtil, your go-to utility for optimizing and managing your Windows environment. Whether you’re an IT professional, power user or regular user WinUtil provides a comprehensive set of tools to enhance your Windows experience.
+Welcome to the official documentation for WinUtil, your go-to utility for optimizing and managing your Windows environment. Whether you’re an IT professional, power user or regular user WinUtil provides a comprehensive set of tools to enhance your Windows experience.
 
-## Getting Started
-
-* Chris Titus WinUtil offers several ways to get up and running quickly. Choose the method that suits your needs:
-
-### Running WinUtil
-
-* There are four methods to run WinUtil, each offering different release versions for your convenience:
+## Running WinUtil
 
 * You will first ned to start a Powershell Terminal **as Admin**.
 
-1. **Run latest Full Release**
-   ```ps
+### **Run latest Full Release**
+   ```ps1
    irm christitus.com/win | iex
    ```
-   This is considered a stable release and is recommended for general usage.
-1. **Run latest Pre-Release**
-   ```ps
-   irm christitus.com/win | iex
-   ```
-   This is a development release. It is exists for developers to test the utility and report/fix bugs before they get added into the stable release.
-
+   This is considered a stable release and is recommended for daily usage.

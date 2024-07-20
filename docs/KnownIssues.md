@@ -1,5 +1,3 @@
-## Known Issues and Fixes
-
 ### Launch Issues:
 
 - Windows Security (formerly Defender) and other anti-virus software are known to block the script. The script gets flagged due to the fact that it requires administrator privileges & makes drastic system changes.
@@ -14,10 +12,14 @@
 - If you are unable to resolve `christitus.com/win` and are getting  errors launching the tool, it might be due to India blocking GitHub's content domain and preventing downloads.
   - Source: <https://timesofindia.indiatimes.com/gadgets-news/github-content-domain-blocked-for-these-indian-users-reports/articleshow/96687992.cms>
 
-If you are still having issues try using a **VPN**, or changing your **DNS provider** to:
+If you are still having issues try using a **VPN**, or changing your **DNS provider** to one of following two providers:
 
-| `1.1.1.1` | `1.0.0.1` | or  | `8.8.8.8` | `8.8.4.4` |
-|---------|---------|-----|---------|---------|
+|   Provider   | Primary DNS  | Secondary DNS |
+|:------------:|:------------:|:-------------:|
+| Cloudflare   | `1.1.1.1`    | `1.0.0.1`     |
+| Google       | `8.8.8.8`    | `8.8.4.4`     |
+
+
 
 - Script doesn't run/PowerShell crashes:
   1. Press Windows Key+X and select 'PowerShell (Admin)' (Windows 10) or 'Windows Terminal (Admin)' (Windows 11)
