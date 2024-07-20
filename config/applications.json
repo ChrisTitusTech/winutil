@@ -727,6 +727,14 @@
 		"link": "https://git-scm.com/",
 		"winget": "Git.Git"
 	},
+	"gitbutler": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Git GUI",
+		"description": "A Git client for simultaneous branches on top of your existing workflow.",
+		"link": "https://gitbutler.com/",
+		"winget": "GitButler.GitButler"
+	},
 	"gitextensions": {
 		"category": "Development",
 		"choco": "git;gitextensions",
