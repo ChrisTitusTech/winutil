@@ -19,7 +19,7 @@ jobs:
           echo '${{ github.event.pull_request.body }}' > pr_body.txt
 
           discussion_ids_arr=()
-          cat pr_body.txt | grep -i -Po '^\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}' > discussion_ids_list.txt
+          cat pr_body.txt | grep -i -Po '^\s*-?\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*-?\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*-?\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}' > discussion_ids_list.txt
           while read -r line; do
             discussion_ids_arr+=("$line")
           done < discussion_ids_list.txt
