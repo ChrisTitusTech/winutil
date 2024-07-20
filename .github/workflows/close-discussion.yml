@@ -12,7 +12,7 @@ jobs:
         if: github.event.pull_request.merged == true
         run: echo "PR was merged"
 
-      - name: Extract Discussion Number
+      - name: Extract Discussion Number & Close If any Where Found
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
@@ -23,19 +23,11 @@ jobs:
           while read -r line; do
             discussion_ids_arr+=("$line")
           done < discussion_ids_list.txt
-          echo "discussion_ids=(${discussion_ids_arr[@]})" >> $GITHUB_OUTPUT
-        shell: bash
 
-      - name: Close the discussion
-        if: github.event.pull_request.merged == true && steps.extract-discussion.outputs.discussion_ids
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISCUSSION_IDS: ${{ steps.extract-discussion.outputs.discussion_ids }}
-        run: |
-          number_of_ids=${#DISCUSSION_IDS[@]}
+          number_of_ids=${#discussion_ids_arr[@]}
           for (( i=0; i<${number_of_ids}; i++ ));
           do
-            discussion_id=${DISCUSSION_IDS[$i]}
+            discussion_id=${discussion_ids_arr[$i]}
             echo "$discussion_id"
             curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
                  -d '{"state": "closed"}' \
