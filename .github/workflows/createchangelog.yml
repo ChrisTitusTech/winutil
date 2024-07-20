@@ -34,28 +34,28 @@ jobs:
 
         # Make array for git tag names
         tag_arr=()
-        cat releases.txt | grep -Po '"tagName":.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g > tags_list.txt
+        cat releases.txt | grep -Po '"tagName":\s*.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g > tags_list.txt
         while read -r line; do
           tag_arr+=("$line")
         done < tags_list.txt
 
         # Make array for releases names
         name_arr=()
-        cat releases.txt | grep -Po '"name":.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g > releases_names_list.txt
+        cat releases.txt | grep -Po '"name":\s*.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g > releases_names_list.txt
         while read -r line; do
           name_arr+=("$line")
         done < releases_names_list.txt
 
         # Make array for isPrerelease
         isprerelease_arr=()
-        cat releases.txt | grep -Po '"isPrerelease":.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g | sed s/,//g > isprerelease_list.txt
+        cat releases.txt | grep -Po '"isPrerelease":\s*(false|true)' | awk -F ':' '{print $2}' | sed s/\"//g > isprerelease_list.txt
         while read -r line; do
           isprerelease_arr+=("$line")
         done < isprerelease_list.txt
 
         # Make array for isLatest
         islatest_arr=()
-        cat releases.txt | grep -Po '"isLatest":.*?[^\\]"' | awk -F ':' '{print $2}' | sed s/\"//g | sed s/,//g > islatest_list.txt
+        cat releases.txt | grep -Po '"isLatest":\s*(false|true)' | awk -F ':' '{print $2}' | sed s/\"//g > islatest_list.txt
         while read -r line; do
           islatest_arr+=("$line")
         done < islatest_list.txt
