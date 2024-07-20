@@ -16,15 +16,24 @@ jobs:
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
-          echo "discussion=$(echo '${{ github.event.pull_request.body }}' | grep -oP '(?<=Resolves #)\d+')" >> $GITHUB_OUTPUT
+          echo '${{ github.event.pull_request.body }}' > pr_body.txt
+
+          discussion_ids_arr=()
+          cat pr_body.txt | grep -i -Po '^\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}' > discussion_ids_list.txt
+          while read -r line; do
+            discussion_ids_arr+=("$line")
+          done < discussion_ids_list.txt
+          echo "discussion_ids=(${discussion_ids_arr[@]})" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Close the discussion
-        if: github.event.pull_request.merged == true && steps.extract-discussion.outputs.discussion
+        if: github.event.pull_request.merged == true && steps.extract-discussion.outputs.discussion_ids
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISCUSSION_ID: ${{ steps.extract-discussion.outputs.discussion }}
+          DISCUSSION_IDS: ${{ steps.extract-discussion.outputs.discussion_ids }}
         run: |
-          curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-               -d '{"state": "closed"}' \
-               "https://api.github.com/repos/${{ github.repository }}/discussions/${DISCUSSION_ID}"
+          echo $DISCUSSION_IDS
+          #curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+          #     -d '{"state": "closed"}' \
+          #     "https://api.github.com/repos/${{ github.repository }}/discussions/${DISCUSSION_ID}"
+        shell: bash
