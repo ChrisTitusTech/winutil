@@ -32,8 +32,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISCUSSION_IDS: ${{ steps.extract-discussion.outputs.discussion_ids }}
         run: |
-          echo $DISCUSSION_IDS
-          #curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-          #     -d '{"state": "closed"}' \
-          #     "https://api.github.com/repos/${{ github.repository }}/discussions/${DISCUSSION_ID}"
+          number_of_ids=${#DISCUSSION_IDS[@]}
+          for (( i=0; i<${number_of_ids}; i++ ));
+          do
+            discussion_id=${DISCUSSION_IDS[$i]}
+            echo "$discussion_id"
+            curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+                 -d '{"state": "closed"}' \
+                 "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id"
+          done
         shell: bash
