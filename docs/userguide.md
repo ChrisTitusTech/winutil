@@ -1,13 +1,7 @@
-# User Guide
+# Walkthrough
 
-## Walkthrough
-
-### Install
-
-![Tweaks Screen](assets/Install-Tab-Dark.png#only-dark)
-![Tweaks Screen](assets/Install-Tab-Light.png#only-light)
-
-* If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
+## Install
+---
 
 === "Installation & Updates"
 
@@ -19,7 +13,7 @@
 === "Upgrade All"
 
     * Simply press the `Upgrade All` button.
-	* This will upgrade all applicable programs without the need for individual selection.
+	* This will upgrade all applicable programs that are installed without the need for individual selection.
 
 === "Uninstall"
 
@@ -36,40 +30,77 @@
     * Click the `Clear Selection` button.
 	* This will deselect all checked programs.
 
-### Tweaks
+![Install Image](assets/Install-Tab-Dark.png#only-dark)
+![Install Image](assets/Install-Tab-Light.png#only-light)
+* If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
 
-#### Tweaks Addition
-* To run tweaks on your system select the Tweaks tab.
-* Now you can select what tweaks you want to run on your system. We do have some presets you can select from at the top you can see this in the picture below.
-![Tweaks Screen](assets/Tweaks-Tab.png)
-* After you have chosen your tweaks click the Run Tweaks button at the bottom of the screen.
+## Tweaks
+---
 
-#### Tweaks Removal
-* To disable tweaks on your system select Tweaks at the top next to Install.
-* Then you can select what tweaks you want removing from your system.
-* After you have chosen your tweaks you want to remove click the Undo Selected Tweaks button at the bottom of the screen.
+![Tweaks Image](assets/Tweaks-Tab-Dark.png#only-dark)
+![Tweaks Image](assets/Tweaks-Tab-Light.png#only-light)
 
-#### Essential Tweaks
-* The Tweaks under the Essential
+### Run Tweaks
+* **Open Tweaks Tab**: Navigate to the 'Tweaks' tab in the application.
+* **Select Tweaks**: Choose the tweaks you want to apply. You can use the presets available at the top for convenience.
+* **Run Tweaks**: After selecting the desired tweaks, click the 'Run Tweaks' button at the bottom of the screen.
 
-#### Advanced Tweaks - CAUTION
+### Undo Tweaks
+* **Open Tweaks Tab**: Go to the 'Tweaks' tab located next to 'Install'.
+* **Select Tweaks to Remove**: Choose the tweaks you want to disable or remove.
+* **Undo Tweaks**: Click the 'Undo Selected Tweaks' button at the bottom of the screen to apply the changes.
 
-#### O&O Shutup
+### Essential Tweaks
+Essential Tweaks are modifications and optimizations that are generally safe for most users to implement. These tweaks are designed to enhance system performance, improve privacy, and reduce unnecessary system activities. They are considered low-risk and are recommended for users who want to ensure their system runs smoothly and efficiently without delving too deeply into complex configurations. The goal of Essential Tweaks is to provide noticeable improvements with minimal risk, making them suitable for a wide range of users, including those who may not have advanced technical knowledge.
 
-#### DNS
+### Advanced Tweaks - CAUTION
+Advanced Tweaks are intended for experienced users who have a solid understanding of their system and the potential implications of making deep-level changes. These tweaks involve more significant alterations to the operating system and can provide substantial customizations. However, they also carry a higher risk of causing system instability or unintended side effects if not implemented correctly. Users who choose to apply Advanced Tweaks should proceed with caution, ensuring they have adequate knowledge and backups in place to recover if something goes wrong. These tweaks are not recommended for novice users or those unfamiliar with the inner workings of their operating system.
 
-#### Customize Preferences
+### O&O Shutup
 
-#### Performance Plans
+[O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with only one button click. It is a free privacy tool for Windows that lets users easily manage privacy settings. It disables telemetry, controls updates, and manages app permissions to enhance security and privacy. The tool offers recommended settings for optimal privacy with just a few clicks.
 
-#### Shortcuts
+<iframe width="640" height="360" src="https://www.youtube.com/embed/3HvNr8eMcv0" title="O&O ShutUp10++: For Windows 10 & 11, with Dark Mode" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-### Config
 
-#### Features
+### DNS
+
+The utility provides a convenient DNS selection feature, allowing users to choose between various DNS providers for both IPv4 and IPv6. This enables users to optimize their internet connection for speed, security, and privacy according to their specific needs. Here are the available options:
+
+* **Default**: Uses the default DNS settings configured by your ISP or network.
+* **DHCP**: Automatically acquires DNS settings from the DHCP server.
+* [**Google**](https://developers.google.com/speed/public-dns?hl=de): A reliable and fast DNS service provided by Google.
+* [**Cloudflare**](https://developers.cloudflare.com/1.1.1.1/): Known for speed and privacy, Cloudflare DNS is a popular choice for enhancing internet performance.
+* [**Cloudflare_Malware**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malicious%20content%3A): Provides additional protection by blocking malware sites.
+* [**Cloudflare_Malware_Adult**](https://developers.cloudflare.com/1.1.1.1/setup/#:~:text=Use%20the%20following%20DNS%20resolvers%20to%20block%20malware%20and%20adult%20content%3A): Blocks both malware and adult content, offering more comprehensive filtering.
+* [**Level3**](https://www.lumen.com/): Another fast and reliable DNS service option.
+* [**Open_DNS**](https://www.opendns.com/setupguide/#familyshield): Offers customizable filtering and enhanced security features.
+* [**Quad9**](https://quad9.net/): Focuses on security by blocking known malicious domains.
+
+### Customize Preferences
+
+The Customize Preferences section allows users to personalize their Windows experience by toggling various visual and functional features. These preferences are designed to enhance usability and tailor the system to the user’s specific needs and preferences.
+
+### Performance Plans
+
+The Performance Plans section allows users to manage the Ultimate Performance Profile on their system. This feature is designed to optimize the system for maximum performance.
+
+#### Add and Activate Ultimate Performance Profile: 
+* Enables and activates the Ultimate Performance Profile to enhance system performance by minimizing latency and increasing efficiency.
+#### Remove Ultimate Performance Profile: 
+* Deactivates the Ultimate Performance Profile, changing the system to the Balanced Profile.
+
+### Shortcuts
+
+The utility includes a feature to easily create a desktop shortcut, providing quick access to the script.
+
+## Config
+---
+
+### Features
 * Install the most used Windows Features by checking the checkbox and clicking "Install Features" to install them
 
-#### Fixes
+### Fixes
 * Quick Fixes for your system if you are having Issues.
 
 * Set Up Autologin
@@ -79,15 +110,44 @@
 * WinGet Reinstall
 * Remove Adobe Creative Cloud
 
-#### Legacy Windows Panels
+### Legacy Windows Panels
 
-### Updates | Not working rn
+## Updates
+---
 
-### MicroWin
+The utility provides three distinct settings for managing Windows updates: Default (Out of Box) Settings, Security (Recommended) Settings, and Disable ALL Updates (NOT RECOMMENDED!). Each setting offers a different approach to handling updates, catering to various user needs and preferences.
 
-**MicroWin** lets you customize your Windows 10 and 11 installation images by debloating them however you want.
+### Default (Out of Box) Settings
+- **Description**: This setting retains the default configurations that come with Windows, ensuring no modifications are made.
+- **Functionality**: It will remove any custom Windows update settings previously applied.
+- **Note**: If update errors persist, reset all updates in the configuration tab to restore all Microsoft Update Services to their default settings, reinstalling them from their servers.
 
-![MicroWin](assets/MicroWinScreen.png)
+### Security (Recommended) Settings
+- **Description**: This is the recommended setting for all computers.
+- **Update Schedule**:
+  - **Feature Updates**: Delays feature updates by 2 years to avoid potential bugs and instability.
+  - **Security Updates**: Installs security updates 4 days after their release to ensure system protection against pressing security flaws.
+- **Rationale**: 
+  - **Feature Updates**: Often introduce new features and bugs; delaying these updates minimizes the risk of system disruptions.
+  - **Security Updates**: Essential for patching critical security vulnerabilities. Delaying them by a few days allows for verification of stability and compatibility without leaving the system exposed for extended periods.
+
+### Disable ALL Updates (NOT RECOMMENDED!)
+- **Description**: This setting completely disables all Windows updates.
+- **Suitability**: May be appropriate for systems used for specific purposes that do not require active internet browsing.
+- **Warning**: Disabling updates significantly increases the risk of the system being hacked or infected due to the lack of security patches.
+- **Note**: It is strongly advised against using this setting due to the heightened security risks.
+
+!!! bug
+
+    The Updates Tab is currently non-functional. We are actively working on a resolution to restore its functionality.
+
+## MicroWin
+---
+
+* **MicroWin** lets you customize your Windows 10 and 11 installation images by debloating them however you want.
+
+![Microwin](assets/Microwin-Dark.png#only-dark)
+![Microwin](assets/Microwin-Light.png#only-light)
 
 #### Basic usage
 
@@ -153,9 +213,13 @@
 * Some features are available through automation. This allows you to save your config file pass it to Winutil walk away and come back to a finished system. Here is how you can set it up currently with Winutil >24.01.15
 
 * On the Install Tab, click "Get Installed", this will get all installed apps **supported by Winutil** on the system
-![GetInstalled](assets/Get-Installed.png)
+![GetInstalled](assets/Get-Installed-Dark.png#only-dark)
+![GetInstalled](assets/Get-Installed-Light.png#only-light)
+
 * Click on the Settings cog in the upper right corner and chose Export, chose file file and location, this will export the setting file.
-![SettingsExport](assets/Settings-Export.png)
+![SettingsExport](assets/Settings-Export-Dark.png#only-dark)
+![SettingsExport](assets/Settings-Export-Light.png#only-light)
+
 * Copy this file to a USB or somewhere you can use after Windows installation.
 
 !!! tip

@@ -2,7 +2,7 @@
 
 ## Testing
 
-* Test the latest changes of WinUtil by running the pre-Release and report issues you are encountering to help us to continually improve WinUtil!
+* Test the latest changes of WinUtil by running the pre-Release and report issues you are encountering to help us continually improve WinUtil!
 
 #### **Run latest Pre-Release**
    ```ps1
@@ -43,12 +43,34 @@
     * [Commit through GitHub Desktop](https://docs.github.com/en/desktop/making-changes-in-a-branch/committing-and-reviewing-changes-to-your-project-in-github-desktop#about-commits)
     * [Create a Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
+
+### Overview
+
+``` mermaid
+graph LR
+  A[Fork Project] --> B[Clone Repository];
+  B --> C[Create New Branch];
+  C --> D[Make Changes];
+  D --> G[Test Changes];
+  G --> H{Tests Passed?};
+  H -->|Yes| E[Commit Changes];
+  E --> F[Push Branch];
+  H -->|No| J[Fix Issues];
+  F --> K[Create Pull Request];
+  K --> L[Fill out PR template];
+  J --> G;
+```
+!!! info
+
+    This is a diagram to guide you through the process. It may vary depending on the type of change you're making.
+
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your Repository-list.
-![Fork Image](assets/Fork-Button.png)
+![Fork Image](assets/Fork-Button-Dark.png#only-dark)
+![FOrk Image](assets/Fork-Button-Light.png#only-light)
 
 ### Clone the Fork
-!!! info
+!!! tip
 
     While you can make your changes directly through the Web, we recommend cloning the repo to your device using the application GitHub Desktop (available in WinUtil) to test your fork easily.
 

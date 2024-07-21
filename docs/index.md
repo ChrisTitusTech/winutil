@@ -7,12 +7,14 @@
 
 Welcome to the official documentation for WinUtil, your go-to utility for optimizing and managing your Windows environment. Whether you’re an IT professional, power user or regular user WinUtil provides a comprehensive set of tools to enhance your Windows experience.
 
-## Running WinUtil
+## Running latest release of WinUtil
 
 * You will first ned to start a Powershell Terminal **as Admin**.
-
-### **Run latest Full Release**
+* Now you will need to run following command:
    ```ps1
    irm christitus.com/win | iex
    ```
-   This is considered a stable release and is recommended for daily usage.
+
+!!! info
+
+    WinUtil is updated weekly as of the time of writing. Consequently, features and functionalities may evolve, and the documentation may not always reflect the most current images or information.
