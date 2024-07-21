@@ -34,7 +34,7 @@
 ![Install Image](assets/Install-Tab-Light.png#only-light)
 !!! tip
 
-   If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
+    If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
 
 ## Tweaks
 ---
