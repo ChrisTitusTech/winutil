@@ -730,7 +730,7 @@
 	"gitbutler": {
 		"category": "Development",
 		"choco": "na",
-		"content": "Git GUI",
+		"content": "Git Butler",
 		"description": "A Git client for simultaneous branches on top of your existing workflow.",
 		"link": "https://gitbutler.com/",
 		"winget": "GitButler.GitButler"
