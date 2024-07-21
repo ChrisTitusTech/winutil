@@ -32,7 +32,9 @@
 
 ![Install Image](assets/Install-Tab-Dark.png#only-dark)
 ![Install Image](assets/Install-Tab-Light.png#only-light)
-* If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
+!!! tip
+
+   If you have trouble finding an application press `ctrl + f` and search the name of it, applications will filter depending on your input.
 
 ## Tweaks
 ---
