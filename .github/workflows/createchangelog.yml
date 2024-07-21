@@ -2,7 +2,7 @@ name: Update changelog.md on Release
 
 on:
   release:
-    types: [published, prereleased]
+    types: [published, created, edited, deleted]
   workflow_dispatch:  # Add this line to enable manual triggering
 
 jobs:
