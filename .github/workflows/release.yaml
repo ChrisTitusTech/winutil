@@ -2,10 +2,11 @@ name: Compile & Release WinUtil
 
 on:
   workflow_dispatch: # Manual trigger added
-    is_prerelease:
-      description: 'True to make the release a Pre-Release one'
-      required: true
-      type: boolean
+    inputs:
+      is_prerelease:
+        description: 'True to make the release a Pre-Release one'
+        required: true
+        type: boolean
 
 jobs:
   build-runspace:
