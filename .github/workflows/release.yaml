@@ -1,14 +1,29 @@
-name: Release WinUtil
+name: Compile & Release WinUtil
 
 on:
   workflow_dispatch: # Manual trigger added
+    is_prerelease:
+      description: 'True to make the release a Pre-Release one'
+      required: true
+      type: boolean
 
 jobs:
   build-runspace:
     runs-on: windows-latest
+    shell: pwsh
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Compile WinUtil
+        id: compile_winutil
+        run: |
+          # Run 'Compile.ps1' Script and the script name for WinUtil will be 'winutil.ps1',
+          # which's expected by the next steps in this Workflow
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          ./Compile.ps1
+        continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Extract Version from winutil.ps1
         id: extract_version
@@ -25,7 +40,7 @@ jobs:
             Write-Error "Version not found in winutil.ps1"
             exit 1
           }
-        shell: pwsh
+        continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Create Tag
         id: create_tag
@@ -38,7 +53,6 @@ jobs:
           } else {
             Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
-        shell: pwsh
 
       - name: Create and Upload Release
         id: create_release
@@ -49,8 +63,8 @@ jobs:
           body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ env.VERSION }}/winutil.ps1)"
           append_body: true
           files: ./winutil.ps1
-          prerelease: false
+          prerelease: ${{ !github.event.inputs.is_prerelease }}
           generate_release_notes: true
-          make_latest: "true"
+          make_latest: "${{ github.event.inputs.is_prerelease }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
