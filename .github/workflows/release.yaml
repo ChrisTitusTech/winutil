@@ -10,7 +10,6 @@ on:
 jobs:
   build-runspace:
     runs-on: windows-latest
-    shell: pwsh
 
     steps:
       - name: Checkout Repository
@@ -23,6 +22,7 @@ jobs:
           # which's expected by the next steps in this Workflow
           Set-ExecutionPolicy Bypass -Scope Process -Force
           ./Compile.ps1
+        shell: pwsh
         continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Extract Version from winutil.ps1
@@ -40,6 +40,7 @@ jobs:
             Write-Error "Version not found in winutil.ps1"
             exit 1
           }
+        shell: pwsh
         continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Create Tag
@@ -53,6 +54,7 @@ jobs:
           } else {
             Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
+        shell: pwsh
 
       - name: Create and Upload Release
         id: create_release
