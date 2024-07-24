@@ -2949,6 +2949,6 @@
 		"content": "Cursor",
 		"description": "The AI Code Editor - Built to make you extraordinarily productive, Cursor is the best way to code with AI.",
 		"link": "https://www.cursor.com/",
-		"winget": "Anysphere.Cursor"
+		"winget": "Anysphere.Cursor --exact --source winget --accept-source-agreements --silent --disable-interactivity  --accept-package-agreements"
 	}
 }
