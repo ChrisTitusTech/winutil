@@ -2942,5 +2942,13 @@
 		"description": "Fork - a fast and friendly git client.",
 		"link": "https://git-fork.com/",
 		"winget": "Fork.Fork"
+	},
+	"Cursor": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Cursor",
+		"description": "The AI Code Editor - Built to make you extraordinarily productive, Cursor is the best way to code with AI.",
+		"link": "https://www.cursor.com/",
+		"winget": "Anysphere.Cursor"
 	}
 }
