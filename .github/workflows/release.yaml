@@ -66,8 +66,13 @@ jobs:
           body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.VERSION }}/winutil.ps1)"
           append_body: true
           files: ./winutil.ps1
-          prerelease: ${{ !github.event.inputs.publish_as_stable }}
+          prerelease: ${{ !(inputs.publish_as_stable == 'true') }}
           generate_release_notes: true
-          make_latest: "${{ github.event.inputs.publish_as_stable }}"
+          make_latest: "${{ inputs.publish_as_stable == 'true' }}"
+          # Note:
+          #   inputs for workflow are weird, as their values are strings & powered by JavaScript under the hood,
+          #   meaning if you use 'github.event.inputs.INPUT_NAME' or 'inputs.INPUT_NAME', it'll treat every input as a string,
+          #   so for boolean paramters, always convert your boolean input parameter (which is a string) to an actual boolean value,
+          #   by doing '${{ inputs.INPUT_NAME == 'true' }}', resource: https://github.com/actions/runner/issues/1483
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
