@@ -5,10 +5,6 @@ permissions:
   actions: read
 
 on:
-  workflow_run:
-    workflows: ["Compile"]
-    types:
-      - completed
   workflow_dispatch: # Manual trigger added
 
 jobs:
