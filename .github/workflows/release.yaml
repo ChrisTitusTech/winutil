@@ -6,6 +6,7 @@ on:
       publish_as_stable:
         description: 'Publish as Stable Release'
         required: true
+        default: false
         type: boolean
 
 jobs:
