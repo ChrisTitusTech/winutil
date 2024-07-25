@@ -107,13 +107,17 @@ jobs:
           body: "${{ env.RELEASE_BODY }}"
           append_body: true
           files: ./winutil.ps1
-          prerelease: ${{ !(inputs.publish_as_stable == 'true') }}
+          prerelease: ${{ ! fromJSON(env.PUBLISH_AS_STABLE) }}
           generate_release_notes: true
-          make_latest: "${{ inputs.publish_as_stable == 'true' }}"
+          make_latest: "${{ fromJSON(env.PUBLISH_AS_STABLE) }}"
           # Note:
           #   inputs for workflow are weird, as their values are strings & powered by JavaScript under the hood,
           #   meaning if you use 'github.event.inputs.INPUT_NAME' or 'inputs.INPUT_NAME', it'll treat every input as a string,
           #   so for boolean paramters, always convert your boolean input parameter (which is a string) to an actual boolean value,
-          #   by doing '${{ inputs.INPUT_NAME == 'true' }}', resource: https://github.com/actions/runner/issues/1483
+          #   by putting your input in an env so you type-cast it to boolean using 'fromJSON' built-in GitHub Actions Expression, resource:
+          #     - https://github.com/actions/runner/issues/1483
+          #     - https://github.com/actions/runner/issues/1483#issuecomment-1031671517
+          #     - https://github.com/actions/runner/issues/1483#issuecomment-1090972149
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_AS_STABLE: ${{ inputs.publish_as_stable }}
