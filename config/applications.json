@@ -2950,5 +2950,13 @@
 		"description": "Unchecky is a free and open-source software that allows you to remove unwanted software from your computer.",
 		"link": "https://unchecky.com/",
 		"winget": "Unchecky.Unchecky"
+	},
+	"Mpv.net": {
+		"category": "Multimedia Tools",
+		"choco": "mpv.net",
+		"content": "Mpv.net",
+		"description": "mpv.net is a media player for Windows with a modern GUI.",
+		"link": "https://github.com/mpvnet-player/mpv.net",
+		"winget": "mpv.net"
 	}
 }
