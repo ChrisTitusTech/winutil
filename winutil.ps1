@@ -12383,7 +12383,7 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
@@ -14761,9 +14761,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <ComboBoxItem  Content="Cloudflare" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Cloudflare_Malware" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Cloudflare_Malware_Adult" FontSize="{FontSize}"/>
-                                <ComboBoxItem  Content="Level3" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Open_DNS" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Quad9" FontSize="{FontSize}"/>
+                                <ComboBoxItem  Content="AdGuard_Ads_Trackers" FontSize="{FontSize}"/>
+                                <ComboBoxItem  Content="AdGuard_Ads_Trackers_Malware_Adult" FontSize="{FontSize}"/>
                                 </ComboBox>
                             </StackPanel>
                             <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
