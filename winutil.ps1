@@ -12234,7 +12234,7 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFToggleDarkMode": {
-    "Content": "Enable Dark Theme for Windows",
+    "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12242,7 +12242,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleBingSearch": {
-    "Content": "Enable Bing Search in Start Menu",
+    "Content": "Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12250,7 +12250,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleNumLock": {
-    "Content": "Enable NumLock on Startup",
+    "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12258,7 +12258,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleVerboseLogon": {
-    "Content": "Enable Verbose Messages During Logon",
+    "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12266,7 +12266,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapWindow": {
-    "Content": "Enable Snap Window",
+    "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12274,7 +12274,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapFlyout": {
-    "Content": "Enable Snap Assist Flyout",
+    "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12282,7 +12282,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapSuggestion": {
-    "Content": "Enable Snap Assist Suggestion",
+    "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12290,7 +12290,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleMouseAcceleration": {
-    "Content": "Enable Mouse Acceleration",
+    "Content": "Mouse Acceleration",
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12298,7 +12298,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleStickyKeys": {
-    "Content": "Enable Sticky Keys",
+    "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12322,7 +12322,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
-    "Content": "Show Search Button in Taskbar",
+    "Content": "Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12330,7 +12330,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
-    "Content": "Show Task View Button in Taskbar",
+    "Content": "Task View Button in Taskbar",
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12338,7 +12338,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
-    "Content": "Show Widgets Button in Taskbar",
+    "Content": "Widgets Button in Taskbar",
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12346,7 +12346,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarAlignment": {
-    "Content": "Switch Taskbar Items between Center &#38; Left",
+    "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -14760,39 +14760,39 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Dark Theme for Windows" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Dark Theme for Windows" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Bing Search in Start Menu" ToolTip="If enable then includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Bing Search in Start Menu" ToolTip="If enable then includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Verbose Messages During Logon" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Verbose Messages During Logon" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapWindow" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Window" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Window" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Assist Flyout" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Assist Flyout" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapSuggestion" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Assist Suggestion" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Assist Suggestion" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleHiddenFiles" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
@@ -14804,19 +14804,19 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Search Button in Taskbar" ToolTip="If Enabled Search Button will be on the taskbar." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Search Button in Taskbar" ToolTip="If Enabled Search Button will be on the taskbar." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskView" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarAlignment" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Switch Taskbar Items between Center &#38; Left" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Center Taskbar Items" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
 
                             <Label Name="WPFLabelPerformancePlans" Content="Performance Plans" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
