@@ -5035,7 +5035,7 @@ function Invoke-WPFShortcut {
                 $shell = "powershell.exe"
             }
 
-            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
 
