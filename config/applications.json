@@ -2883,7 +2883,7 @@
 		"category": "Utilities",
 		"choco": "ofgb",
 		"content": "OFGB (Oh Frick Go Back)",
-		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
+		"description":"GUI Tool to remove ads from various places around Windows 11",
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
 	},
