@@ -2942,5 +2942,13 @@
 		"description": "Fork - a fast and friendly git client.",
 		"link": "https://git-fork.com/",
 		"winget": "Fork.Fork"
+	},
+	"Unchecky": {
+		"category": "Utilities",
+		"choco": "unchecky",
+		"content": "Unchecky",
+		"description": "Unchecky is a free and open-source software that allows you to remove unwanted software from your computer.",
+		"link": "https://unchecky.com/",
+		"winget": "Unchecky.Unchecky"
 	}
 }
