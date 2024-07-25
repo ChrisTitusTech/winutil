@@ -6938,12 +6938,12 @@ $sync.configs.applications = '{
     "link": "https://motrix.app/",
     "winget": "agalwood.Motrix"
   },
-  "WPFInstallmpc": {
+  "WPFInstallmpchc": {
     "category": "Multimedia Tools",
-    "choco": "mpc-hc",
-    "content": "Media Player Classic (Video Player)",
-    "description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
-    "link": "https://mpc-hc.org/",
+    "choco": "mpc-hc-clsid2",
+    "content": "Media Player Classic - Home Cinema",
+    "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
+    "link": "https://github.com/clsid2/mpc-hc/",
     "winget": "clsid2.mpc-hc"
   },
   "WPFInstallmremoteng": {
@@ -13939,8 +13939,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallmp3tagLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mp3tag.de/en/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/"/>
+                                <CheckBox Name="WPFInstallmpchc" Content="Media Player Classic - Home Cinema" ToolTip="Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallmpchcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/clsid2/mpc-hc/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmusescore" Content="MuseScore" ToolTip="Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore." Margin="0,0,2,0"/>
