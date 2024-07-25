@@ -11208,6 +11208,27 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksRemoveHomeGallery": {
+    "Content": "Remove Home and Gallery from explorer",
+    "Description": "Removes the Home and Gallery from explorer and sets This PC as default",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a029_",
+    "InvokeScript": [
+      "
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
+      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      "
+    ],
+    "UndoScript": [
+      "
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
+      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      "
+    ]
+  },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
@@ -14711,6 +14732,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                             <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
                             <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: AveYo"/>
+                            <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" Margin="5,0" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default"/>
                             <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it."/>
                             <Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
