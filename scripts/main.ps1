@@ -154,6 +154,10 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
+# Progress bar in taskbaritem > Set-WinUtilProgressbar
+$sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+Set-WinUtilTaskbaritem -state "None"
+
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
@@ -287,38 +291,6 @@ Add-Type @"
 
         }
     }
-
-
-    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
-
-    # URL of the image
-    $imageUrl = "https://christitus.com/images/logo-full.png"
-
-    # Download the image
-    $imagePath = "$env:TEMP\logo-full.png"
-    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
-
-    # Read the image file as a byte array
-    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
-
-    # Convert the byte array to a Base64 string
-    $base64String = [System.Convert]::ToBase64String($imageBytes)
-
-    # Create a streaming image by streaming the base64 string to a bitmap streamsource
-    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-    $bitmap.BeginInit()
-    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
-    $bitmap.EndInit()
-    $bitmap.Freeze()
-
-    # Ensure TaskbarItemInfo is created if not already
-    if (-not $sync["Form"].TaskbarItemInfo) {
-        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
-    }
-
-    # Set the overlay icon for the taskbar
-    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
-
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
@@ -456,6 +428,42 @@ $sync["SearchBar"].Add_TextChanged({
     foreach ($category in $inactiveCategories){
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
+})
+
+# Initialize the hashtable
+$winutildir = @{}
+
+# Set the path for the winutil directory
+$winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
+if (-NOT (Test-Path -Path $winutildir["path"])) {
+    New-Item -Path $winutildir["path"] -ItemType Directory
+}
+
+# Set the path for the logo and checkmark images
+$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
+$winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
+if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
+}
+
+if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
+    ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
+}
+
+$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
+$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
+if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
+}
+if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
+}
+
+
+Set-WinUtilTaskbaritem -overlay "logo"
+
+$sync["Form"].Add_Activated({
+    Set-WinUtilTaskbaritem -overlay "logo"
 })
 
 # Define event handler for button click

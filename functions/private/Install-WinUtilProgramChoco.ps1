@@ -54,12 +54,18 @@ function Install-WinUtilProgramChoco {
 		}
 		if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)){
                     Write-Host "$($Program.choco) installed successfully using Chocolatey."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to install $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $installOutputFilePath)."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to install $($Program.choco) due to an error: $_"
+                $X++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
 
@@ -71,15 +77,20 @@ function Install-WinUtilProgramChoco {
 		$chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
 		if($chocoUninstallStatus -eq 0){
                     Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to uninstall $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $uninstallOutputFilePath)."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to uninstall $($Program.choco) due to an error: $_"
+                $x++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
 	}
-        $x++
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
