@@ -15,12 +15,12 @@ function Update-Progress {
         [Parameter(Mandatory, position=0)]
         [string]$StatusMessage,
 
-	[Parameter(Mandatory, position=1)]
-	[ValidateRange(0,100)]
+        [Parameter(Mandatory, position=1)]
+        [ValidateRange(0,100)]
         [int]$Percent,
 
-	[Parameter(position=2)]
-	[string]$Activity = "Compiling"
+        [Parameter(position=2)]
+        [string]$Activity = "Compiling"
     )
 
     Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
@@ -65,15 +65,15 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
         #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
         for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
             $firstLevelName = $firstLevelJsonList[$i]
-	    if ($jsonAsObject.$firstLevelName.content -ne $null) {
+            if ($jsonAsObject.$firstLevelName.content -ne $null) {
                 $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
             }
             if ($jsonAsObject.$firstLevelName.description -ne $null) {
                 $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-	    }
-	}
+            }
+        }
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
     if ($psitem.Name -eq "applications.json") {
