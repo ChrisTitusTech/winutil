@@ -2951,10 +2951,10 @@
 		"link": "https://unchecky.com/",
 		"winget": "Unchecky.Unchecky"
 	},
-	"Mpv.net": {
+	"MpvdotNet": {
 		"category": "Multimedia Tools",
 		"choco": "mpv.net",
-		"content": "Mpv.net",
+		"content": "MpvdotNet",
 		"description": "mpv.net is a media player for Windows with a modern GUI.",
 		"link": "https://github.com/mpvnet-player/mpv.net",
 		"winget": "mpv.net"
