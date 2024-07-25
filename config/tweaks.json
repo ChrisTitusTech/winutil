@@ -60,7 +60,7 @@
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
-    "Description": "Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
+    "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a014_",
@@ -2006,6 +2006,27 @@
       }
     ]
   },
+  "WPFTweaksRemoveHomeGallery": {
+    "Content": "Remove Home and Gallery from explorer",
+    "Description": "Removes the Home and Gallery from explorer and sets This PC as default",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a029_",
+    "InvokeScript": [
+      "
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
+      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      "
+  ],
+  "UndoScript": [
+      "
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
+      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      "
+  ]
+  },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
@@ -3012,7 +3033,7 @@
     ]
   },
   "WPFToggleDarkMode": {
-    "Content": "Enable Dark Theme for Windows",
+    "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3020,7 +3041,7 @@
     "Type": "Toggle"
   },
   "WPFToggleBingSearch": {
-    "Content": "Enable Bing Search in Start Menu",
+    "Content": "Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3028,7 +3049,7 @@
     "Type": "Toggle"
   },
   "WPFToggleNumLock": {
-    "Content": "Enable NumLock on Startup",
+    "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3036,7 +3057,7 @@
     "Type": "Toggle"
   },
   "WPFToggleVerboseLogon": {
-    "Content": "Enable Verbose Messages During Logon",
+    "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3044,7 +3065,7 @@
     "Type": "Toggle"
   },
   "WPFToggleSnapWindow": {
-    "Content": "Enable Snap Window",
+    "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3052,7 +3073,7 @@
     "Type": "Toggle"
   },
   "WPFToggleSnapFlyout": {
-    "Content": "Enable Snap Assist Flyout",
+    "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3060,7 +3081,7 @@
     "Type": "Toggle"
   },
   "WPFToggleSnapSuggestion": {
-    "Content": "Enable Snap Assist Suggestion",
+    "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3068,7 +3089,7 @@
     "Type": "Toggle"
   },
   "WPFToggleMouseAcceleration": {
-    "Content": "Enable Mouse Acceleration",
+    "Content": "Mouse Acceleration",
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3076,7 +3097,7 @@
     "Type": "Toggle"
   },
   "WPFToggleStickyKeys": {
-    "Content": "Enable Sticky Keys",
+    "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3100,7 +3121,7 @@
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
-    "Content": "Show Search Button in Taskbar",
+    "Content": "Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3108,7 +3129,7 @@
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
-    "Content": "Show Task View Button in Taskbar",
+    "Content": "Task View Button in Taskbar",
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3116,7 +3137,7 @@
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
-    "Content": "Show Widgets Button in Taskbar",
+    "Content": "Widgets Button in Taskbar",
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -3124,7 +3145,7 @@
     "Type": "Toggle"
   },
   "WPFToggleTaskbarAlignment": {
-    "Content": "Switch Taskbar Items between Center & Left",
+    "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
