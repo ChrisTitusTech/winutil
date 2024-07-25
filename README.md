@@ -10,21 +10,20 @@ This utility is a compilation of Windows tasks I perform on each Windows system 
 
 ## 💡 Usage
 
-Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, open PowerShell or Windows Terminal as an administrator. Here are a few ways to do it:
+Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, run PowerShell as an administrator. Here are a few ways to do it:
 
-1. **Right-Click Method:**
+1. **Start menu Method:**
    - Right-click on the start menu.
    - Choose "Windows PowerShell (Admin)" (for Windows 10) or "Terminal (Admin)" (for Windows 11).
 
 2. **Search and Launch Method:**
    - Press the Windows key.
    - Type "PowerShell" or "Terminal" (for Windows 11).
-   - Press `Ctrl + Shift + Enter` to launch it with administrator privileges.
-
+   - Press `Ctrl + Shift + Enter` or Right-click and choose "Run as administrator" to launch it with administrator privileges.
 
 ### Launch Command
 
-#### Stable Branch
+#### Stable Branch (Recommended)
 
 ```ps1
 irm "https://christitus.com/win" | iex
@@ -44,7 +43,6 @@ If you have Issues, refer to [Known Issues](https://christitustech.github.io/win
 ### [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
 
 ### [ChrisTitus.com Article](https://christitus.com/windows-tool/)
-
 
 ## 💖 Support
 - To morally and mentally support the project, make sure to leave a ⭐️!
