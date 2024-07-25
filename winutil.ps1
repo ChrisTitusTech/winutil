@@ -8598,7 +8598,7 @@ $sync.configs.applications = '{
     "category": "Utilities",
     "choco": "ofgb",
     "content": "OFGB (Oh Frick Go Back)",
-    "description": "GUI Tool To Removes Ads From Various Places Around Windows 11",
+    "description": "GUI Tool to remove ads from various places around Windows 11",
     "link": "https://github.com/xM4ddy/OFGB",
     "winget": "xM4ddy.OFGB"
   },
@@ -14400,7 +14400,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallnvcleanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/nvcleanstall/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallOFGB" Content="OFGB (Oh Frick Go Back)" ToolTip="GUI Tool To Removes Ads From Various Places Around Windows 11" Margin="0,0,2,0"/>
+                                <CheckBox Name="WPFInstallOFGB" Content="OFGB (Oh Frick Go Back)" ToolTip="GUI Tool to remove ads from various places around Windows 11" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallOFGBLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/xM4ddy/OFGB"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
