@@ -32,15 +32,21 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
-          $version = ''
+          $winutil_version = ''
           Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
-              $version = $matches[1]
-              echo "version=$version" >> $env:GITHUB_ENV
+              $winutil_version = $matches[1]
+              echo "winutil_version=$winutil_version" >> $env:GITHUB_ENV
+              if ("${{ inputs.publish_as_stable }}" -eq "true") {
+                $tag_version = "$winutil_version"
+              } else {
+                $tag_version = "pre-$winutil_version"
+              }
+              echo "tag_version=$tag_version" >> $env:GITHUB_ENV
               break
             }
           }
-          if (-not $version) {
+          if (-not $winutil_version) {
             Write-Error "Version not found in winutil.ps1"
             exit 1
           }
@@ -49,20 +55,20 @@ jobs:
       - name: Create Tag
         id: create_tag
         run: |
-          $tagExists = git tag -l "$env:VERSION"
+          $tagExists = git tag -l "$env:TAG_VERSION"
           if ($tagExists -eq "") {
-            Write-Host "Making new tag, tag name: '$env:VERSION'"
-            git tag "$env:VERSION"
-            git push origin "$env:VERSION"
+            Write-Host "Making new tag, tag name: '$env:TAG_VERSION'"
+            git tag "$env:TAG_VERSION"
+            git push origin "$env:TAG_VERSION"
           } else {
-            Write-Host "Tag '$env:VERSION' already exists, skipping tag creation"
+            Write-Host "Tag '$env:TAG_VERSION' already exists, skipping tag creation"
           }
 
       - name: Add & Check Release Body
         id: add_check_release_body
         run: |
           # By default, we'll try adding release body (for example, Download Counter), and only in very specific instances where we won't add it
-          $release_body = "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.VERSION }}/winutil.ps1)"
+          $release_body = "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.TAG_VERSION }}/winutil.ps1)"
 
           # Make an Object Array (Object[]) containing all tag releases
           $release_tags = gh release list --json tagName | ConvertFrom-Json | select tagName
@@ -75,7 +81,7 @@ jobs:
 
           $found_tag_in_list = $False
           for ($i = 0; $i -lt $release_tags.Count; $i++) {
-            if ($release_tags[$i].tagName -eq "$env:VERSION") {
+            if ($release_tags[$i].tagName -eq "$env:TAG_VERSION") {
               $found_tag_in_list = $True
               break
             }
@@ -84,7 +90,7 @@ jobs:
           if ($found_tag_in_list) {
             # Get Release Content for specific tag (WinUtil Version)
             # Which's of type Object Array (Object[]), iterate over every item (line) in the array, and check if it has the release body.
-            $gh_release_content = gh release view "$env:VERSION"
+            $gh_release_content = gh release view "$env:TAG_VERSION"
             for ($i = 0; $i -lt $gh_release_content.Count; $i++) {
               if ($gh_release_content[$i] -eq $release_body) {
                 $release_body = ""
@@ -102,8 +108,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}
-          name: Release ${{ env.VERSION }}
+          tag_name: ${{ env.TAG_VERSION }}
+          name: Release ${{ env.TAG_VERSION }}
           body: "${{ env.RELEASE_BODY }}"
           append_body: true
           files: ./winutil.ps1
