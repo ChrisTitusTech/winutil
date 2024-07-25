@@ -1,6 +1,7 @@
 param (
     [switch]$Debug,
-    [switch]$Run
+    [switch]$Run,
+    [switch]$SkipPreprocessing
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
@@ -26,6 +27,29 @@ function Update-Progress {
     Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
 }
 
+function Do-PreProcessing {
+    param (
+        [Parameter(Mandatory, position=0)]
+        [string]$ProgressStatusMessage,
+
+        [Parameter(position=1)]
+        [string]$ProgressActivity = "Pre-Processing"
+    )
+
+    $excludedFiles = @('.\git\', '.gitignore', '.gitattributes', '.\.github\CODEOWNERS', 'LICENSE', 'winutil.ps1', '.\docs\changelog.md', '*.png', '*.jpg', '*.jpeg', '*.exe')
+
+    $files = Get-ChildItem $PSScriptRoot -Recurse -Exclude $excludedFiles -Attributes !Directory
+    $numOfFiles = $files.Count
+
+    for ($i = 0; $i -lt $numOfFiles; $i++) {
+        $file = $files[$i]
+        (Get-Content "$file").TrimEnd() | Set-Content "$file"
+        Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
+    }
+
+    Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished Task Successfully" -Completed
+}
+
 $header = @"
 ################################################################################################################
 ###                                                                                                          ###
@@ -34,6 +58,11 @@ $header = @"
 ################################################################################################################
 "@
 
+if (-NOT $SkipPreprocessing) {
+    $msg = "Pre-req: Code Formatting"
+    Update-Progress "Pre-req: Allocating Memory" 0
+    Do-PreProcessing $msg
+}
 
 # Create the script in memory.
 Update-Progress "Pre-req: Allocating Memory" 0
