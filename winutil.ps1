@@ -942,12 +942,18 @@ function Install-WinUtilProgramChoco {
 		}
 		if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)){
                     Write-Host "$($Program.choco) installed successfully using Chocolatey."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to install $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $installOutputFilePath)."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to install $($Program.choco) due to an error: $_"
+                $X++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
 
@@ -959,15 +965,20 @@ function Install-WinUtilProgramChoco {
 		$chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
 		if($chocoUninstallStatus -eq 0){
                     Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to uninstall $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $uninstallOutputFilePath)."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to uninstall $($Program.choco) due to an error: $_"
+                $x++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
 	}
-        $x++
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
@@ -1022,20 +1033,24 @@ Function Install-WinUtilProgramWinget {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User scope"
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User scope."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User prompt"
@@ -1050,15 +1065,18 @@ Function Install-WinUtilProgramWinget {
                 }
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User prompt."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
             } catch {
                 Write-Host "Failed to install $($Program.winget). With winget"
                 $failedPackages += $Program
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
         elseif($manage -eq "Uninstalling") {
@@ -1067,6 +1085,7 @@ Function Install-WinUtilProgramWinget {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program.winget) --silent" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -ne 0) {
                     Write-Host "Failed to uninstall $($Program.winget)."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                 } else {
                     Write-Host "$($Program.winget) uninstalled successfully."
                     $failedPackages += $Program
@@ -1074,7 +1093,9 @@ Function Install-WinUtilProgramWinget {
             } catch {
                 Write-Host "Failed to uninstall $($Program.winget) due to an error: $_"
                 $failedPackages += $Program
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
             }
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
         }
         else {
             throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
@@ -1103,6 +1124,7 @@ function Install-WinUtilWinget {
         } else {
             Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
+
 
         # Gets the computer's information
         if ($null -eq $sync.ComputerInfo){
@@ -1148,6 +1170,7 @@ function Install-WinUtilWinget {
             throw [WingetFailedInstall]::new('Failed to install!')
         }
     }
+
 }
 function Test-CompatibleImage() {
 <#
@@ -2001,6 +2024,8 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
+    $x = 0
+
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
             Foreach( $feature in $sync.configs.feature.$psitem.feature ){
@@ -2011,9 +2036,11 @@ function Invoke-WinUtilFeatureInstall {
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                     }
 
                     else{
+
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
@@ -2031,15 +2058,19 @@ function Invoke-WinUtilFeatureInstall {
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                     }
 
                     else{
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
                 }
             }
         }
+        $X++
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) })
     }
 }
 function Invoke-WinUtilGPU {
@@ -2896,6 +2927,92 @@ Function Set-WinUtilService {
     }
 
 }
+function Set-WinUtilTaskbaritem {
+    <#
+
+    .SYNOPSIS
+        Modifies the Taskbaritem of the WPF Form
+
+    .PARAMETER value
+        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
+        Value does not affect item without setting the state to 'Normal', 'Error' or 'Paused'
+        Set-WinUtilTaskbaritem -value 0.5
+
+    .PARAMETER state
+        State can be 'None' > No progress, 'Indeterminate' > inf. loading gray, 'Normal' > Gray, 'Error' > Red, 'Paused' > Yellow
+        no value needed:
+        - Set-WinUtilTaskbaritem -state "None"
+        - Set-WinUtilTaskbaritem -state "Indeterminate"
+        value needed:
+        - Set-WinUtilTaskbaritem -state "Error"
+        - Set-WinUtilTaskbaritem -state "Normal"
+        - Set-WinUtilTaskbaritem -state "Paused"
+
+    .PARAMETER overlay
+        Overlay icon to display on the taskbar item, there are the presets 'None', 'logo' and 'checkmark' or you can specify a path/link to an image file.
+        CTT logo preset:
+        - Set-WinUtilTaskbaritem -overlay "logo"
+        Checkmark preset:
+        - Set-WinUtilTaskbaritem -overlay "checkmark"
+        Warning preset:
+        - Set-WinUtilTaskbaritem -overlay "warning"
+        No overlay:
+        - Set-WinUtilTaskbaritem -overlay "None"
+        Custom icon (needs to be supported by WPF):
+        - Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
+
+    .PARAMETER description
+        Description to display on the taskbar item preview
+        Set-WinUtilTaskbaritem -description "This is a description"
+    #>
+    param (
+        [string]$state,
+        [double]$value,
+        [string]$overlay,
+        [string]$description
+    )
+
+    if ($value) {
+        $sync["Form"].taskbarItemInfo.ProgressValue = $value
+    }
+
+    if ($state) {
+        switch ($state) {
+            'None' { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
+            'Indeterminate' { $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate" }
+            'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
+            'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
+            'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
+            default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
+        }
+    }
+
+    if ($overlay) {
+        switch ($overlay) {
+            'logo' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+            }
+            'checkmark' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
+            }
+            'warning' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
+            }
+            'None' {
+                $sync["Form"].taskbarItemInfo.Overlay = $null
+            }
+            default {
+                if (Test-Path $overlay) {
+                    $sync["Form"].taskbarItemInfo.Overlay = $overlay
+                }
+            }
+        }
+    }
+
+    if ($description) {
+        $sync["Form"].taskbarItemInfo.Description = $description
+    }
+}
 function Set-WinUtilUITheme {
     <#
 
@@ -3502,12 +3619,18 @@ function Invoke-WPFFeatureInstall {
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
-
         $sync.ProcessRunning = $true
+        if ($Features.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
 
         Invoke-WinUtilFeatureInstall $Features
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
@@ -3911,6 +4034,7 @@ function Invoke-WPFGetInstalled {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
         if($checkbox -eq "winget"){
             Write-Host "Getting Installed Programs..."
@@ -3929,6 +4053,7 @@ function Invoke-WPFGetInstalled {
 
         Write-Host "Done..."
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "None" })
     }
 }
 function Invoke-WPFGetIso {
@@ -3947,6 +4072,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
+
 
 
     Write-Host "         _                     __    __  _         "
@@ -4021,6 +4147,8 @@ function Invoke-WPFGetIso {
         return
     }
 
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path $filePath).Length
     Write-Debug "Size of ISO file: $($isoSize) bytes"
@@ -4037,6 +4165,7 @@ function Invoke-WPFGetIso {
     {
         # It's critical and we can't continue. Output an error
         Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
     else
@@ -4055,6 +4184,7 @@ function Invoke-WPFGetIso {
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
         Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
     # storing off values in hidden fields for further steps
@@ -4132,6 +4262,7 @@ function Invoke-WPFGetIso {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             throw
         }
         elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))
@@ -4172,6 +4303,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
+    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
 
 
@@ -4258,8 +4390,14 @@ function Invoke-WPFInstall {
         return
     }
 
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -4290,13 +4428,14 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
-        Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False
     }
 }
@@ -4317,6 +4456,8 @@ function Invoke-WPFInstallUpgrade {
         return
     }
 
+    # Set-WinUtilTaskbaritem -state "Indeterminate"
+
     Update-WinUtilProgramWinget
 
     Write-Host "==========================================="
@@ -4329,6 +4470,7 @@ function Invoke-WPFMicrowin {
         .DESCRIPTION
         Invoke MicroWin routines...
     #>
+
 
 	if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
@@ -4365,8 +4507,11 @@ public class PowerManagement {
 
     if ($SaveDialog.FileName -eq "") {
         Write-Host "No file name for the target image was specified"
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
+
+	Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -4400,6 +4545,7 @@ public class PowerManagement {
             $msg = "The export process has failed and MicroWin processing cannot continue"
             Write-Host "Failed to export the image"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
 		}
 	}
@@ -4413,6 +4559,7 @@ public class PowerManagement {
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
 		Write-Host $msg
 		[System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -4421,6 +4568,7 @@ public class PowerManagement {
 	if (-not $mountDirExists -or -not $scratchDirExists)
 	{
         Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -4435,6 +4583,7 @@ public class PowerManagement {
         else
         {
             Write-Host "Could not mount image. Exiting..."
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
 
@@ -4704,6 +4853,7 @@ public class PowerManagement {
 		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
 		{
 			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
 			return
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
@@ -4805,6 +4955,7 @@ public class PowerManagement {
 			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
+			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
@@ -5040,8 +5191,8 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
-    $iconPath = $null
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available, else don't add a Custom Icon.
+
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
@@ -5056,12 +5207,6 @@ function Invoke-WPFShortcut {
 
             $DestinationName = "WinUtil.lnk"
 
-            Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
-
-            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                $iconPath = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
-                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-            }
         }
     }
 
@@ -5081,10 +5226,10 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $shell
-    $Shortcut.Arguments = $shellArgs
-    if ($null -ne $iconPath) {
-        $shortcut.IconLocation = $iconPath
+    $Shortcut.TargetPath = $SourceExe
+    $Shortcut.Arguments = $ArgumentsToSourceExe
+    if (Test-Path -Path $winutildir["logo.ico"]) {
+        $shortcut.IconLocation = $winutildir["logo.ico"]
     }
 
     # Save the Shortcut to disk
@@ -5251,15 +5396,22 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
+    if ($Tweaks.count -eq 1){
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+    } else {
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+    }
     $cnt = 0
     # Execute other selected tweaks
     foreach ($tweak in $Tweaks) {
       Write-Debug "This is a tweak to run $tweak count: $cnt"
       Invoke-WinUtilTweaks $tweak
       $cnt += 1
+      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
     }
 
     $sync.ProcessRunning = $false
+    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
@@ -5350,12 +5502,21 @@ function Invoke-WPFundoall {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        if ($Tweaks.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
+        $cnt = 0
 
         Foreach ($tweak in $tweaks){
             Invoke-WinUtilTweaks $tweak -undo $true
+            $cnt += 1
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
         }
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
@@ -5551,8 +5712,14 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -5578,23 +5745,21 @@ function Invoke-WPFUnInstall {
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Uninstalls are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
         $sync.ProcessRunning = $False
+
     }
 }
 function Invoke-WPFUpdatesdefault {
@@ -15291,6 +15456,10 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
+# Progress bar in taskbaritem > Set-WinUtilProgressbar
+$sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+Set-WinUtilTaskbaritem -state "None"
+
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
@@ -15424,38 +15593,6 @@ Add-Type @"
 
         }
     }
-
-
-    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
-
-    # URL of the image
-    $imageUrl = "https://christitus.com/images/logo-full.png"
-
-    # Download the image
-    $imagePath = "$env:TEMP\logo-full.png"
-    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
-
-    # Read the image file as a byte array
-    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
-
-    # Convert the byte array to a Base64 string
-    $base64String = [System.Convert]::ToBase64String($imageBytes)
-
-    # Create a streaming image by streaming the base64 string to a bitmap streamsource
-    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-    $bitmap.BeginInit()
-    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
-    $bitmap.EndInit()
-    $bitmap.Freeze()
-
-    # Ensure TaskbarItemInfo is created if not already
-    if (-not $sync["Form"].TaskbarItemInfo) {
-        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
-    }
-
-    # Set the overlay icon for the taskbar
-    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
-
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
@@ -15593,6 +15730,42 @@ $sync["SearchBar"].Add_TextChanged({
     foreach ($category in $inactiveCategories){
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
+})
+
+# Initialize the hashtable
+$winutildir = @{}
+
+# Set the path for the winutil directory
+$winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
+if (-NOT (Test-Path -Path $winutildir["path"])) {
+    New-Item -Path $winutildir["path"] -ItemType Directory
+}
+
+# Set the path for the logo and checkmark images
+$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
+$winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
+if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
+}
+
+if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
+    ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
+}
+
+$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
+$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
+if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
+}
+if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
+}
+
+
+Set-WinUtilTaskbaritem -overlay "logo"
+
+$sync["Form"].Add_Activated({
+    Set-WinUtilTaskbaritem -overlay "logo"
 })
 
 # Define event handler for button click
