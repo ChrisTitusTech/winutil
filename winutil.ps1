@@ -1189,90 +1189,104 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
-	if ($dumpFeatures)
+	try
 	{
-		$featlist > allfeaturesdump.txt
+		$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+		if ($dumpFeatures)
+		{
+			$featlist > allfeaturesdump.txt
+		}
+
+		$featlist = $featlist | Where-Object {
+			$_ -NotLike "*Printing*" -AND
+			$_ -NotLike "*TelnetClient*" -AND
+			$_ -NotLike "*PowerShell*" -AND
+			$_ -NotLike "*NetFx*" -AND
+			$_ -NotLike "*Media*" -AND
+			$_ -NotLike "*NFS*"
+		}
+
+		if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
+
+		foreach($feature in $featlist)
+		{
+			$status = "Removing feature $feature"
+			Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
+			Write-Debug "Removing feature $feature"
+			Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+		}
+		Write-Progress -Activity "Removing features" -Status "Ready" -Completed
+		Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."		
 	}
-
-	$featlist = $featlist | Where-Object {
-		$_ -NotLike "*Printing*" -AND
-		$_ -NotLike "*TelnetClient*" -AND
-		$_ -NotLike "*PowerShell*" -AND
-		$_ -NotLike "*NetFx*" -AND
-		$_ -NotLike "*Media*" -AND
-		$_ -NotLike "*NFS*"
-	}
-
-	if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
-
-	foreach($feature in $featlist)
+	catch
 	{
-		$status = "Removing feature $feature"
-		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-		Write-Debug "Removing feature $feature"
-		Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+		Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
 	}
-	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
-	Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
 }
 
 function Remove-Packages
 {
-	$pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
-
-	$pkglist = $pkglist | Where-Object {
-			$_ -NotLike "*ApplicationModel*" -AND
-			$_ -NotLike "*indows-Client-LanguagePack*" -AND
-			$_ -NotLike "*LanguageFeatures-Basic*" -AND
-			$_ -NotLike "*Package_for_ServicingStack*" -AND
-			$_ -NotLike "*.NET*" -AND
-			$_ -NotLike "*Store*" -AND
-			$_ -NotLike "*VCLibs*" -AND
-			$_ -NotLike "*AAD.BrokerPlugin",
-			$_ -NotLike "*LockApp*" -AND
-			$_ -NotLike "*Notepad*" -AND
-			$_ -NotLike "*immersivecontrolpanel*" -AND
-			$_ -NotLike "*ContentDeliveryManager*" -AND
-			$_ -NotLike "*PinningConfirMationDialog*" -AND
-			$_ -NotLike "*SecHealthUI*" -AND
-			$_ -NotLike "*SecureAssessmentBrowser*" -AND
-			$_ -NotLike "*PrintDialog*" -AND
-			$_ -NotLike "*AssignedAccessLockApp*" -AND
-			$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-			$_ -NotLike "*Apprep.ChxApp*" -AND
-			$_ -NotLike "*CBS*" -AND
-			$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-			$_ -NotLike "*PeopleExperienceHost*" -AND
-			$_ -NotLike "*ParentalControls*" -AND
-			$_ -NotLike "*Win32WebViewHost*" -AND
-			$_ -NotLike "*InputApp*" -AND
-			$_ -NotLike "*AccountsControl*" -AND
-			$_ -NotLike "*AsyncTextService*" -AND
-			$_ -NotLike "*CapturePicker*" -AND
-			$_ -NotLike "*CredDialogHost*" -AND
-			$_ -NotLike "*BioEnrollMent*" -AND
-			$_ -NotLike "*ShellExperienceHost*" -AND
-			$_ -NotLike "*DesktopAppInstaller*" -AND
-			$_ -NotLike "*WebMediaExtensions*" -AND
-			$_ -NotLike "*WMIC*" -AND
-			$_ -NotLike "*UI.XaML*"
-		}
-
-	foreach ($pkg in $pkglist)
+	try
 	{
-		try {
-			$status = "Removing $pkg"
-			Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
-			Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
+		$pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
+
+		$pkglist = $pkglist | Where-Object {
+				$_ -NotLike "*ApplicationModel*" -AND
+				$_ -NotLike "*indows-Client-LanguagePack*" -AND
+				$_ -NotLike "*LanguageFeatures-Basic*" -AND
+				$_ -NotLike "*Package_for_ServicingStack*" -AND
+				$_ -NotLike "*.NET*" -AND
+				$_ -NotLike "*Store*" -AND
+				$_ -NotLike "*VCLibs*" -AND
+				$_ -NotLike "*AAD.BrokerPlugin",
+				$_ -NotLike "*LockApp*" -AND
+				$_ -NotLike "*Notepad*" -AND
+				$_ -NotLike "*immersivecontrolpanel*" -AND
+				$_ -NotLike "*ContentDeliveryManager*" -AND
+				$_ -NotLike "*PinningConfirMationDialog*" -AND
+				$_ -NotLike "*SecHealthUI*" -AND
+				$_ -NotLike "*SecureAssessmentBrowser*" -AND
+				$_ -NotLike "*PrintDialog*" -AND
+				$_ -NotLike "*AssignedAccessLockApp*" -AND
+				$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
+				$_ -NotLike "*Apprep.ChxApp*" -AND
+				$_ -NotLike "*CBS*" -AND
+				$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
+				$_ -NotLike "*PeopleExperienceHost*" -AND
+				$_ -NotLike "*ParentalControls*" -AND
+				$_ -NotLike "*Win32WebViewHost*" -AND
+				$_ -NotLike "*InputApp*" -AND
+				$_ -NotLike "*AccountsControl*" -AND
+				$_ -NotLike "*AsyncTextService*" -AND
+				$_ -NotLike "*CapturePicker*" -AND
+				$_ -NotLike "*CredDialogHost*" -AND
+				$_ -NotLike "*BioEnrollMent*" -AND
+				$_ -NotLike "*ShellExperienceHost*" -AND
+				$_ -NotLike "*DesktopAppInstaller*" -AND
+				$_ -NotLike "*WebMediaExtensions*" -AND
+				$_ -NotLike "*WMIC*" -AND
+				$_ -NotLike "*UI.XaML*"
+			}
+
+		foreach ($pkg in $pkglist)
+		{
+			try {
+				$status = "Removing $pkg"
+				Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
+				Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
+			}
+			catch {
+				# This can happen if the package that is being removed is a permanent one, like FodMetadata
+				Write-Host "Could not remove OS package $($pkg)"
+				continue
+			}
 		}
-		catch {
-			# This can happen if the package that is being removed is a permanent one, like FodMetadata
-			Write-Host "Could not remove OS package $($pkg)"
-			continue
-		}
+		Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed		
 	}
-	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+	catch
+	{
+		Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"		
+	}
 }
 
 function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
