@@ -109,7 +109,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_VERSION }}
-          name: Release ${{ env.TAG_VERSION }}
+          name: Release ${{ env.WINUTIL_VERSION }}
           body: "${{ env.RELEASE_BODY }}"
           append_body: true
           files: ./winutil.ps1
