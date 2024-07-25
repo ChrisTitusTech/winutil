@@ -26,7 +26,6 @@
     * This will scan for and select all installed programs in WinUtil that WinGet supports.
 
 === "Clear Selection"
-
     * Click the `Clear Selection` button.
     * This will unselect all checked programs.
 
@@ -59,6 +58,7 @@ Essential Tweaks are modifications and optimizations that are generally safe for
 Advanced Tweaks are intended for experienced users who have a solid understanding of their system and the potential implications of making deep-level changes. These tweaks involve more significant alterations to the operating system and can provide substantial customization. However, they also carry a higher risk of causing system instability or unintended side effects if not implemented correctly. Users who choose to apply Advanced Tweaks should proceed with caution, ensuring they have adequate knowledge and backups in place to recover if something goes wrong. These tweaks are not recommended for novice users or those unfamiliar with the inner workings of their operating system.
 
 ### O&O Shutup
+
 
 [O&O ShutUp10++](https://www.oo-software.com/en/shutup10) can be launched from WinUtil with only one button click. It is a free privacy tool for Windows that lets users easily manage their privacy settings. It disables telemetry, controls updates, and manages app permissions to enhance security and privacy. The tool offers recommended settings for optimal privacy with just a few clicks.
 
