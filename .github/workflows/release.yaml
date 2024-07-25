@@ -58,13 +58,32 @@ jobs:
             Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
 
+      - name: Add & Check Release Body
+        id: add_check_release_body
+        run: |
+          # Get Release Content for specific tag (WinUtil Version)
+          $gh_release_content = gh release view $env:VERSION
+
+          # Add the Download Counter (or the release body) if the release does not exist,
+          # otherwise don't add anything, because the release does exist.
+          if ($gh_release_content -eq "release not found") {
+            $release_body = "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.VERSION }}/winutil.ps1)"
+          } else {
+            $release_body = ""
+          }
+
+          # Output value to GitHub Environment Variable, so subsequent steps can use it.
+          echo "release_body=$release_body" >> $env:GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
-          body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.VERSION }}/winutil.ps1)"
+          body: "${{ env.RELEASE_BODY }}"
           append_body: true
           files: ./winutil.ps1
           prerelease: ${{ !(inputs.publish_as_stable == 'true') }}
