@@ -44,7 +44,18 @@ function Do-PreProcessing {
 
     for ($i = 0; $i -lt $numOfFiles; $i++) {
         $file = $files[$i]
-        (Get-Content "$file").TrimEnd() | Set-Content "$file"
+        # TODO:
+        #   make more formatting rules, and document them in WinUtil Official Documentation
+        (Get-Content -Raw "$file").TrimEnd() `
+            -replace ('\t', '    ') `
+            -replace ('\)\{', ') {') `
+            -replace ('\)\r?\n\s*{', ') {') `
+            -replace ('Try \{', 'try {') `
+            -replace ('try\{', 'try {') `
+            -replace ('try\r?\n\s*\{', 'try {') `
+            -replace ('}\r?\n\s*catch', '} catch') `
+            -replace ('\} Catch', '} catch') `
+        | Set-Content "$file"
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
     }
 
@@ -146,7 +157,7 @@ $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
 $script_content.Add($(Get-Content "$workingdir\scripts\main.ps1"))
 
-if ($Debug){
+if ($Debug) {
     Update-Progress "Writing debug files" 95
     $appXamlContent | Out-File -FilePath "$workingdir\xaml\inputApp.xaml" -Encoding ascii
     $tweaksXamlContent | Out-File -FilePath "$workingdir\xaml\inputTweaks.xaml" -Encoding ascii
@@ -162,11 +173,10 @@ else {
 Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
-if ($run){
+if ($run) {
     try {
         Start-Process -FilePath "pwsh" -ArgumentList "$workingdir\$scriptname"
-    }
-    catch {
+    } catch {
         Start-Process -FilePath "powershell" -ArgumentList "$workingdir\$scriptname"
     }
 
