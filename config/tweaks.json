@@ -1733,34 +1733,6 @@
         "Type": "DWord",
         "Value": "0",
         "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "DefaultGeolocationSetting",
-        "Type": "DWord",
-        "Value": "2",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "DefaultLocalFontsSetting",
-        "Type": "DWord",
-        "Value": "2",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "DefaultSensorsSetting",
-        "Type": "DWord",
-        "Value": "2",
-        "OriginalValue": "1"
-      },
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
-        "Name": "DefaultNotificationsSetting",
-        "Type": "DWord",
-        "Value": "2",
-        "OriginalValue": "1"
       }
     ]
   },
