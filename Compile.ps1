@@ -9,7 +9,7 @@ $workingdir = $PSScriptRoot
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.PSScriptRoot = $PSScriptRoot
+$sync.PSScriptRoot = $workingdir
 $sync.configs = @{}
 
 function Update-Progress {
