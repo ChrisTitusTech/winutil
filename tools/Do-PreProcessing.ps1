@@ -42,11 +42,10 @@ function Do-PreProcessing {
             -replace ('\t', '    ') `
             -replace ('\)\{', ') {') `
             -replace ('\)\r?\n\s*{', ') {') `
-            -replace ('Try \{', 'try {') `
-            -replace ('try\{', 'try {') `
+            -replace ('Try(\s*)?\{', 'try {') `
             -replace ('try\r?\n\s*\{', 'try {') `
             -replace ('}\r?\n\s*catch', '} catch') `
-            -replace ('\} Catch', '} catch') `
+            -replace ('\}(\s*)?Catch', '} catch') `
         | Set-Content "$file"
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
     }
