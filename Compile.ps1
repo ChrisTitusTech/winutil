@@ -37,11 +37,11 @@ $header = @"
 "@
 
 if (-NOT $SkipPreprocessing) {
-    # Dot source the 'Do-PreProcessing' Function from 'tools/Do-PreProcessing.ps1' Function
-    . "$workingdir\tools\Do-PreProcessing.ps1"
+    # Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
+    . "$workingdir\tools\Invoke-Preprocessing.ps1"
     $msg = "Pre-req: Code Formatting"
     Update-Progress "Pre-req: Allocating Memory" 0
-    Do-PreProcessing $msg
+    Invoke-Preprocessing $msg
 }
 
 # Create the script in memory.

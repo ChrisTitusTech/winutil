@@ -1,4 +1,4 @@
-function Do-PreProcessing {
+function Invoke-Preprocessing {
     param (
         [Parameter(Mandatory, position=0)]
         [string]$ProgressStatusMessage,
@@ -7,8 +7,8 @@ function Do-PreProcessing {
         [string]$ProgressActivity = "Pre-Processing"
     )
 
-    # We could do Pre-processing on this script file, but by excluding it.. we could possible weird behavior,
-    # like future runs of this tool being different then previous ones, as the script has modified it self before one or more times.
+    # We can do Pre-processing on this script file, but by excluding it we're avoiding possible weird behavior,
+    # like future runs of this tool being different then previous ones, as the script has modified it self before (one or more times).
     #
     # Note:
     #   There's way too many possible edge cases, not to mention there's no Unit Testing for these tools.. which's a Good Recipe for a Janky/Sensitive Script.
@@ -21,7 +21,7 @@ function Do-PreProcessing {
     for ($i = 0; $i -lt $numOfFiles; $i++) {
         $file = $files[$i]
 
-        # Make sure the file isn't in Excluded Files List
+        # If the file is in Exclude List, don't proceed to check/modify said file.
         $fileIsExcluded = $False
         for ($j = 0; $j -lt $excludedFiles.Count; $j++) {
             $excluded = $excludedFiles[$j]
