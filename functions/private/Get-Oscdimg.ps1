@@ -1,15 +1,17 @@
 function Get-Oscdimg {
     <#
-
         .DESCRIPTION
         This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
     #>
-    param( [Parameter(Mandatory=$true)]
+
+    param(
+        [Parameter(Mandatory, position=0)]
         [string]$oscdimgPath
     )
+
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
     $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath

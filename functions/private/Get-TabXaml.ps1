@@ -1,19 +1,23 @@
 function Get-TabXaml {
     <#
-    .SYNOPSIS
-        Generates XAML for a tab in the WinUtil GUI
-        This function is used to generate the XAML for the applications tab in the WinUtil GUI
-        It takes the tabname and the number of columns to display the applications in as input and returns the XAML for the tab as output
-    .PARAMETER tabname
-        The name of the tab to generate XAML for
-        Note: the 'tabname' parameter must equal one of the json files found in $sync.configs variable
-              Otherwise, it'll throw an exception
-    .PARAMETER columncount
-        The number of columns to display the applications in, default is 0
-    .OUTPUTS
-        The XAML for the tab
-    .EXAMPLE
-        Get-TabXaml "applications" 3
+        .SYNOPSIS
+            Generates XAML for a tab in the WinUtil GUI
+            This function is used to generate the XAML for the applications tab in the WinUtil GUI
+            It takes the tabname and the number of columns to display the applications in as input and returns the XAML for the tab as output
+
+        .PARAMETER tabname
+            The name of the tab to generate XAML for
+            Note: the 'tabname' parameter must equal one of the json files found in $sync.configs variable
+                  Otherwise, it'll throw an exception
+
+        .PARAMETER columncount
+            The number of columns to display the applications in, default is 0
+
+        .OUTPUTS
+            The XAML for the tab
+
+        .EXAMPLE
+            Get-TabXaml "applications" 3
     #>
 
 
