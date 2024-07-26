@@ -391,6 +391,14 @@
 		"link": "https://discord.com/",
 		"winget": "Discord.Discord"
 	},
+	"webex": {
+		"category": "Communications",
+		"choco": "webex",
+		"content": "Webex",
+		"description": "Webex is a communication and collaboration tool created by Cisco",
+		"link": "https://www.webex.com/",
+		"winget": "Cisco.Webex"
+	},
 	"ditto": {
 		"category": "Utilities",
 		"choco": "ditto",
