@@ -1,22 +1,96 @@
-function Invoke-Preprocessing {
-    param (
-        [Parameter(Mandatory, position=0)]
-        [string]$ProgressStatusMessage,
+ function Invoke-Preprocessing {
+    <#
+        .SYNOPSIS
+        A function that does Code Formatting using RegEx, useful when trying to force specific coding standard(s) to a project.
+
+        .PARAMETER ThrowExceptionOnEmptyFilesList
+        A switch which'll throw an exception upon not finding any files inside the provided 'WorkingDir'.
+
+        .PARAMETER SkipExcludedFilesValidation
+        A switch to stop file path validation on 'ExcludedFiles' list.
+
+        .PARAMETER ExcludedFiles
+        A list of file paths which're *relative to* 'WorkingDir' Folder, every item in the list can be pointing to File (doesn't end with '\') or Directory (ends with '\') or None-Existing File/Directory.
+        By default, it checks if everyitem exists, and throws an exception if one or more are not found (None-Existing), if you want to skip this validation, please consider providing the '-SkipExcludedFilesValidation' switch to skip this check.
+
+        .PARAMETER WorkingDir
+        The folder to search inside recursively for files which're going to be Preprocessed (Code Formatted), unless they're found in 'ExcludedFiles' List.
+        Note: The path should be absolute, NOT relative.
+
+        .PARAMETER ProgressStatusMessage
+        The status message used when displaying the progress bar, which's done through PowerShell 'Write-Progress' Cmdlet.
+        This's a Required Parameter, as the information displayed to terminal is useful when running this function,
+        which might take less than 1 sec to minutes depending on project's scale & hardware performance.
+
+        .PARAMETER ProgressActivity
+        The activity message used when displaying the progress bar, which's done through PowerShell 'Write-Progress' Cmdlet,
+        This's an Optional Parameter, default value is 'Preprocessing', used in combination with 'ProgressStatusMessage' Parameter Value.
+
+        .EXAMPLE
+        Invoke-Preprocessing -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
+
+        Calls 'Invoke-Preprocessing' function using Named Paramters, with 'WorkingDir' (Mandatory Parameter) which's used as the base folder when searching for files recursively (using 'Get-ChildItem'), other two paramters are, in order from right to left, the Optional 'ExcludeFiles', which can be a path to a file, folder, or pattern-matched (like '*.png'), and the 'ProgressStatusMessage', which's used in Progress Bar.
+
+        .EXAMPLE
+        Invoke-Preprocessing -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing" -ProgressActivity "Re-Formatting Code"
+
+        Same as Example No. 1, but uses 'ProgressActivity' which's used in Progress Bar.
+
+        .EXAMPLE
+        Invoke-Preprocessing -ThrowExceptionOnEmptyFilesList -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
+
+        Same as Example No. 1, but will throw an exception when 'Invoke-Preprocessing' function doesn't find any files in 'WorkingDir' (not including 'ExcludedFiles' list).
+
+        .EXAMPLE
+        Invoke-Preprocessing -Skip -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
+
+        Same as Example No. 1, but uses '-SkipExcludedFilesValidation', which'll skip the validation step for 'ExcludedFiles' list. This can be useful when 'ExcludedFiles' list is generated from another function, or from unreliable source (you can't guarantee every item in list is a valid path), but you want to silently continue through the function.
+    #>
+
+     param (
+        [Parameter(position=0)]
+        [switch]$SkipExcludedFilesValidation,
 
         [Parameter(position=1)]
-        [string]$ProgressActivity = "Pre-Processing"
-    )
+        [switch]$ThrowExceptionOnEmptyFilesList,
 
-    # We can do Pre-processing on this script file, but by excluding it we're avoiding possible weird behavior,
-    # like future runs of this tool being different then previous ones, as the script has modified it self before (one or more times).
-    #
-    # Note:
-    #   There's way too many possible edge cases, not to mention there's no Unit Testing for these tools.. which's a Good Recipe for a Janky/Sensitive Script.
-    #   Also, the '.\' isn't necessary, I just like adding them :D (You can remove it, and it should work just fine)
-    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', '.\tools\Do-PreProcessing.ps1', '.\docs\changelog.md', '*.png', '*.jpg', '*.jpeg', '*.exe')
+        [Parameter(Mandatory, position=2)]
+        [ValidateScript({[System.IO.Path]::IsPathRooted($_)})]
+        [string]$WorkingDir,
 
-    $files = Get-ChildItem $sync.PSScriptRoot -Recurse -Exclude $excludedFiles -Attributes !Directory
+        [Parameter(position=3)]
+        [string[]]$ExcludedFiles,
+
+        [Parameter(Mandatory, position=4)]
+        [string]$ProgressStatusMessage,
+
+        [Parameter(position=5)]
+        [string]$ProgressActivity = "Preprocessing"
+     )
+
+    if (-NOT (Test-Path -PathType Container -Path "$WorkingDir")) {
+        throw "[Invoke-Preprocessing] Invalid Paramter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
+    }
+
+    if ((-NOT ($ExcludedFiles.Count -eq 0)) -AND (-NOT $SkipExcludedFilesValidation)) {
+        ForEach ($excludedFile in $ExcludedFiles) {
+            $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
+            if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
+                throw "[Invoke-Preprocessing] File Path & File Pattern was not found '$filePath', use '-SkipExcludedFilesValidation' switch to skip this check."
+            }
+        }
+    }
+
+    $files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File
     $numOfFiles = $files.Count
+
+    if ($numOfFiles -eq 0) {
+        if ($ThrowExceptionOnEmptyFilesList) {
+            throw "[Invoke-Preprocessing] Found 0 Files to Preprocess inside 'WorkingDir' Directory and '-ThrowExceptionOnEmptyFilesList' Switch is provided, value of 'WorkingDir': '$WorkingDir'."
+        } else {
+            return # Do an early return, there's nothing else to do
+        }
+    }
 
     for ($i = 0; $i -lt $numOfFiles; $i++) {
         $file = $files[$i]
@@ -40,13 +114,18 @@ function Invoke-Preprocessing {
         #   make more formatting rules, and document them in WinUtil Official Documentation
         (Get-Content -Raw "$file").TrimEnd() `
             -replace ('\t', '    ') `
-            -replace ('\)\{', ') {') `
-            -replace ('\)\r?\n\s*{', ') {') `
-            -replace ('Try(\s*)?\{', 'try {') `
-            -replace ('try\r?\n\s*\{', 'try {') `
-            -replace ('}\r?\n\s*catch', '} catch') `
-            -replace ('\}(\s*)?Catch', '} catch') `
+            -replace ('\)(\s*)?((\r?\n)+)?(\s*)?\{', ') {') `
+            -replace ('(if|for|foreach)(\s*)?((\r?\n)+)?(\s*)?(\(.*\))(\s*)?((\r?\n)+)?(\s*)?\{', '$1 $6 {') `
+            -replace ('elseif(\s*)?((\r?\n)+)?(\s*)?(\(.*\))(\s*)?((\r?\n)+)?(\s*)?\{', 'elseif $5 {') `
+            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?else(\s*)?((\r?\n)+)?(\s*)?\{', '} else {') `
+            -replace ('Try(\s*)?((\r?\n)+)?(\s*)?\{', 'try {') `
+            -replace ('Catch(\s*)?((\r?\n)+)?(\s*)?\{', 'catch {') `
+            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch', '} catch') `
+            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch(\s*)?((\r?\n)+)?(\s*)?((\[.*\](\,)?(\s*)?((\r?\n)+)?(\s*)?)+)(\s*)?((\r?\n)+)?(\s*)?\{', '} catch $9 {') `
+            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch(\s*)?((\r?\n)+)?(\s*)?(\[.*\])(\s*)?((\r?\n)+)?(\s*)?\{', '} catch $9 {') `
+            -replace ('\[(.*)\]\s*(\$.*$)', '[$1]$2') `
         | Set-Content "$file"
+
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
     }
 

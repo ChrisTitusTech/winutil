@@ -37,11 +37,15 @@ $header = @"
 "@
 
 if (-NOT $SkipPreprocessing) {
+    Update-Progress "Pre-req: Running Preprocessor..." 0
+
     # Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
-    . "$workingdir\tools\Invoke-Preprocessing.ps1"
+    $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
+    . "$(($workingdir -replace ('\\$', '')) + '\' + ($preprocessingFilePath -replace ('\.\\', '')))"
+
+    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', "$preprocessingFilePath", '.\docs\changelog.md', '*.png', '*.exe')
     $msg = "Pre-req: Code Formatting"
-    Update-Progress "Pre-req: Allocating Memory" 0
-    Invoke-Preprocessing $msg
+    Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 }
 
 # Create the script in memory.
@@ -130,8 +134,7 @@ if ($Debug) {
     $appXamlContent | Out-File -FilePath "$workingdir\xaml\inputApp.xaml" -Encoding ascii
     $tweaksXamlContent | Out-File -FilePath "$workingdir\xaml\inputTweaks.xaml" -Encoding ascii
     $featuresXamlContent | Out-File -FilePath "$workingdir\xaml\inputFeatures.xaml" -Encoding ascii
-}
-else {
+} else {
     Update-Progress "Removing temporary files" 99
     Remove-Item "$workingdir\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
     Remove-Item "$workingdir\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
