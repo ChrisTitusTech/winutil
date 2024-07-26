@@ -6,9 +6,9 @@
                     "CustomDialogWidth":          "400",
                     "CustomDialogHeight":         "200",
 
-                    "FontSize":         "12",
+                    "FontSize":         "0.35cm",
                     "FontFamily":       "Arial",
-                    "FontSizeHeading":  "14",
+                    "FontSizeHeading":  "0.4cm",
                     "HeaderFontFamily": "Consolas, Monaco",
 
                     "CheckBoxBulletDecoratorSize": "14",
@@ -77,9 +77,9 @@
                     "CustomDialogWidth":          "400",
                     "CustomDialogHeight":         "200",
 
-                    "FontSize":         "12",
+                    "FontSize":         "0.35cm",
                     "FontFamily":       "Arial",
-                    "FontSizeHeading":  "14",
+                    "FontSizeHeading":  "0.4cm",
                     "HeaderFontFamily": "Consolas, Monaco",
 
                     "CheckBoxBulletDecoratorSize": "14",
@@ -146,9 +146,9 @@
                     "CustomDialogWidth":          "400",
                     "CustomDialogHeight":         "200",
 
-                    "FontSize":         "12",
+                    "FontSize":         "0.35cm",
                     "FontFamily":       "Arial",
-                    "FontSizeHeading":  "14",
+                    "FontSizeHeading":  "0.4cm",
                     "HeaderFontFamily": "Consolas, Monaco",
 
                     "CheckBoxBulletDecoratorSize": "14",
