@@ -115,7 +115,7 @@ function Get-TabXaml {
             }
 
             # Dot-source the Get-WPFObjectName function
-            . .\functions\private\Get-WPFObjectName
+            . "$($sync.PSScriptRoot)\functions\private\Get-WPFObjectName.ps1"
 
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent

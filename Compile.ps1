@@ -5,6 +5,7 @@ param (
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
+$workingdir = $PSScriptRoot
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
@@ -36,9 +37,9 @@ function Do-PreProcessing {
         [string]$ProgressActivity = "Pre-Processing"
     )
 
-    $excludedFiles = @('.\git\', '.gitignore', '.gitattributes', '.\.github\CODEOWNERS', 'LICENSE', 'winutil.ps1', '.\docs\changelog.md', '*.png', '*.jpg', '*.jpeg', '*.exe')
+    $excludedFiles = @('git\', '.gitignore', '.gitattributes', '.github\CODEOWNERS', 'LICENSE', 'winutil.ps1', 'docs\changelog.md', '*.png', '*.jpg', '*.jpeg', '*.exe')
 
-    $files = Get-ChildItem $PSScriptRoot -Recurse -Exclude $excludedFiles -Attributes !Directory
+    $files = Get-ChildItem $workingdir -Recurse -Exclude $excludedFiles -Attributes !Directory
     $numOfFiles = $files.Count
 
     for ($i = 0; $i -lt $numOfFiles; $i++) {
@@ -72,14 +73,14 @@ Update-Progress "Adding: Header" 5
 $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
-$script_content.Add($(Get-Content .\scripts\start.ps1).replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
+$script_content.Add($(Get-Content "$workingdir\scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
 
 Update-Progress "Adding: Functions" 20
-Get-ChildItem .\functions -Recurse -File | ForEach-Object {
+Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
     }
 Update-Progress "Adding: Config *.json" 40
-Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
+Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
 
     $json = (Get-Content $psitem.FullName).replace("'","''")
 
@@ -124,10 +125,10 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
 
-$xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
+$xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
 
 # Dot-source the Get-TabXaml function
-. .\functions\private\Get-TabXaml.ps1
+. "$workingdir\functions\private\Get-TabXaml.ps1"
 
 Update-Progress "Building: Xaml " 75
 $appXamlContent = Get-TabXaml "applications" 5
@@ -143,30 +144,30 @@ $xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
-$script_content.Add($(Get-Content .\scripts\main.ps1))
+$script_content.Add($(Get-Content "$workingdir\scripts\main.ps1"))
 
 if ($Debug){
     Update-Progress "Writing debug files" 95
-    $appXamlContent | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
-    $tweaksXamlContent | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
-    $featuresXamlContent | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii
+    $appXamlContent | Out-File -FilePath "$workingdir\xaml\inputApp.xaml" -Encoding ascii
+    $tweaksXamlContent | Out-File -FilePath "$workingdir\xaml\inputTweaks.xaml" -Encoding ascii
+    $featuresXamlContent | Out-File -FilePath "$workingdir\xaml\inputFeatures.xaml" -Encoding ascii
 }
 else {
     Update-Progress "Removing temporary files" 99
-    Remove-Item ".\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
-    Remove-Item ".\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
-    Remove-Item ".\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
-Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
+Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
 if ($run){
     try {
-        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
+        Start-Process -FilePath "pwsh" -ArgumentList "$workingdir\$scriptname"
     }
     catch {
-        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+        Start-Process -FilePath "powershell" -ArgumentList "$workingdir\$scriptname"
     }
 
 }
