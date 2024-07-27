@@ -679,22 +679,25 @@
 
                 <ProgressBar
                     Grid.Column="1"
-                    Width="{SearchBarWidth}"
-                    Height="{SearchBarHeight}"
                     Minimum="0"
                     Maximum="100"
-                    Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
+                    Width="250"
+                    Height="{SearchBarHeight}"
+                    Foreground="{ProgressBarForegroundColor}" Background="{MainBackgroundColor}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
-                    BorderThickness="1" Padding="2,2,2,2"
+                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
                     Name="ProgressBar">
                 </ProgressBar>
                 <Label
                     Grid.Column="1"
+                    Width="250"
+                    Height="{SearchBarHeight}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontSize="{SearchBarTextBoxFontSize}"
                     Background="Transparent"
-                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
+                    Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
                     Name="ProgressBarLabel">
+                    <TextBlock TextTrimming="CharacterEllipsis" Background="Transparent"></TextBlock>
                 </Label>
                 
                 <Button Name="SettingsButton"

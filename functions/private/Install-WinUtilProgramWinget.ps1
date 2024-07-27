@@ -2,17 +2,17 @@ Function Install-WinUtilProgramWinget {
 
     <#
     .SYNOPSIS
-    Manages the provided programs using Winget
+    Runs the designated action on the provided programs using Winget
 
     .PARAMETER ProgramsToInstall
-    A list of programs to manage
+    A list of programs to process
 
-    .PARAMETER manage
+    .PARAMETER action
     The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
 
     .NOTES
     The triple quotes are required any time you need a " in a normal script block.
-    The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-manager/winget/returnCodes.md
+    The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-actionr/winget/returnCodes.md
     #>
 
     param(
@@ -20,32 +20,24 @@ Function Install-WinUtilProgramWinget {
         [PsCustomObject]$ProgramsToInstall,
 
         [Parameter(Position=1)]
-        [String]$manage = "Installing"
+        [String]$action = "Installing"
     )
 
     $count = $ProgramsToInstall.Count
 
-    function Set-Progressbar{
-        param(
-            [string]$label,
-            [int]$percent
-        )
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content = $label}) 
-        $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
-    }
-    
+
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
     for ($i = 0; $i -lt $count; $i++) {
         $Program = $ProgramsToInstall[$i]
         $failedPackages = @()
-        Set-ProgressBar -label "$manage $($Program.winget)" -percent ($i / ($count) * 100)
-        if($manage -eq "Installing") {
+        Set-WinUtilProgressBar -label "$action $($Program.winget)" -percent ($i / ($count) * 100)
+        if($action -eq "Installing") {
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
             # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
-            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
+            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package actionrs.
             Write-Host "Starting install of $($Program.winget) with winget."
             
             try {
@@ -98,7 +90,7 @@ Function Install-WinUtilProgramWinget {
                 $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
-        elseif($manage -eq "Uninstalling") {
+        elseif($action -eq "Uninstalling") {
             # Uninstall package via ID using winget directly.
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program.winget) --silent" -Wait -PassThru -NoNewWindow).ExitCode
@@ -117,14 +109,14 @@ Function Install-WinUtilProgramWinget {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
         }
         else {
-            throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
+            throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'action', Provided Value is: $action"
         }
     }
-    if ($manage -eq "Installing"){
-        Set-ProgressBar -label "Installation finished" -percent 100
+    if ($action -eq "Installing"){
+        Set-WinUtilProgressBar -label "Installation finished" -percent 100
     }
     else{
-        Set-ProgressBar -label "Uninstallation finished" -percent 100
+        Set-WinUtilProgressBar -label "Uninstallation finished" -percent 100
     }
     return $failedPackages;
 }

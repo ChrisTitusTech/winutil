@@ -95,6 +95,7 @@
 
                     "MicroWinLogoSize": "10",
 
+                    "ProgressBarForegroundColor": "#a3a4a6",
                     "ComboBoxBackgroundColor":  "#000000",
                     "LabelboxForegroundColor":  "#FFEE58",
                     "MainForegroundColor":  "#9CCC65",
