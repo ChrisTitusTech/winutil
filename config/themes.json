@@ -1,5 +1,5 @@
 {
-    "Classic": {
+    "_default": {
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogIconSize":       "25",
@@ -68,35 +68,38 @@
         "ButtonCornerRadius": "2",
         "BorderColor": "#000000",
         "BorderOpacity": "0.2",
+        "ShadowPulse": "0:0:6"
+    },
+    "Classic": {
+        "ComboBoxBackgroundColor":  "#FFFFFF",
+        "LabelboxForegroundColor":  "#000000",
+        "MainForegroundColor":  "#000000",
+        "MainBackgroundColor":  "#FFFFFF",
+        "LabelBackgroundColor":  "#FAFAFA",
+        "LinkForegroundColor":  "#000000",
+        "LinkHoverForegroundColor":  "#000000",
+        "GroupBorderBackgroundColor":  "#000000",
+        "ComboBoxForegroundColor":  "#000000",
+
+        "ButtonInstallBackgroundColor":  "#FFFFFF",
+        "ButtonTweaksBackgroundColor":  "#FFFFFF",
+        "ButtonConfigBackgroundColor":  "#FFFFFF",
+        "ButtonUpdatesBackgroundColor":  "#FFFFFF",
+        "ButtonInstallForegroundColor":  "#000000",
+        "ButtonTweaksForegroundColor":  "#000000",
+        "ButtonConfigForegroundColor":  "#000000",
+        "ButtonUpdatesForegroundColor":  "#000000",
+        "ButtonBackgroundColor":  "#F5F5F5",
+        "ButtonBackgroundPressedColor":  "#1A1A1A",
+        "CheckboxMouseOverColor": "#999999",
+        "ButtonBackgroundMouseoverColor":  "#C2C2C2",
+        "ButtonBackgroundSelectedColor":  "#F0F0F0",
+        "ButtonForegroundColor":  "#000000",
+        "ToggleButtonOnColor":  "#2e77ff",
+
         "ShadowPulse": "Forever"
     },
     "Matrix": {
-        "CustomDialogFontSize":       "12",
-        "CustomDialogFontSizeHeader": "14",
-        "CustomDialogIconSize":       "25",
-        "CustomDialogWidth":          "400",
-        "CustomDialogHeight":         "200",
-
-        "FontSize":         "0.35cm",
-        "FontFamily":       "Arial",
-        "FontSizeHeading":  "0.4cm",
-        "HeaderFontFamily": "Consolas, Monaco",
-
-        "CheckBoxBulletDecoratorSize": "14",
-        "CheckBoxMargin": "15,0,0,2",
-
-        "TabButtonFontSize":      "14",
-        "TabButtonWidth":         "100",
-        "TabButtonHeight":        "25",
-        "TabRowHeightInPixels":   "50",
-        "IconFontSize":     "14",
-        "IconButtonSize":   "35",
-        "WinUtilIconSize":        "Auto",
-        "SettingsIconFontSize":   "18",
-        "CloseIconFontSize":      "18",
-
-        "MicroWinLogoSize": "10",
-
         "ComboBoxBackgroundColor":  "#000000",
         "LabelboxForegroundColor":  "#FFEE58",
         "MainForegroundColor":  "#9CCC65",
@@ -105,17 +108,6 @@
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#FFFFFF",
         "ComboBoxForegroundColor":  "#FFEE58",
-
-        "ButtonFontSize":   "12",
-        "ButtonFontFamily": "Arial",
-        "ButtonWidth":      "200",
-        "ButtonHeight":     "25",
-        "ConfigTabButtonFontSize":      "16",
-
-        "SearchBarWidth":               "200",
-        "SearchBarHeight":              "25",
-        "SearchBarTextBoxFontSize":     "16",
-        "SearchBarClearButtonFontSize": "14",
 
         "ButtonInstallBackgroundColor":  "#222222",
         "ButtonTweaksBackgroundColor":  "#333333",
@@ -132,40 +124,11 @@
         "ButtonForegroundColor":  "#9CCC65",
         "ToggleButtonOnColor":  "#2e77ff",
 
-        "ButtonBorderThickness":  "1",
-        "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2",
         "BorderColor": "#FFAC1C",
         "BorderOpacity": "0.8",
         "ShadowPulse": "0:0:3"
     },
     "Dark": {
-        "CustomDialogFontSize":       "12",
-        "CustomDialogFontSizeHeader": "14",
-        "CustomDialogIconSize":       "25",
-        "CustomDialogWidth":          "400",
-        "CustomDialogHeight":         "200",
-
-        "FontSize":         "0.35cm",
-        "FontFamily":       "Arial",
-        "FontSizeHeading":  "0.4cm",
-        "HeaderFontFamily": "Consolas, Monaco",
-
-        "CheckBoxBulletDecoratorSize": "14",
-        "CheckBoxMargin": "15,0,0,2",
-
-        "TabButtonFontSize":      "14",
-        "TabButtonWidth":         "100",
-        "TabButtonHeight":        "25",
-        "TabRowHeightInPixels":   "50",
-        "IconFontSize":     "14",
-        "IconButtonSize":   "35",
-        "WinUtilIconSize":        "Auto",
-        "SettingsIconFontSize":   "18",
-        "CloseIconFontSize":      "18",
-
-        "MicroWinLogoSize": "10",
-
         "ComboBoxBackgroundColor":  "#000000",
         "LabelboxForegroundColor":  "#FFEE58",
         "MainForegroundColor":  "#9CCC65",
@@ -174,17 +137,6 @@
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#FFFFFF",
         "ComboBoxForegroundColor":  "#FFEE58",
-
-        "ButtonFontSize":   "12",
-        "ButtonFontFamily": "Arial",
-        "ButtonWidth":      "200",
-        "ButtonHeight":     "25",
-        "ConfigTabButtonFontSize":      "16",
-
-        "SearchBarWidth":               "200",
-        "SearchBarHeight":              "25",
-        "SearchBarTextBoxFontSize":     "16",
-        "SearchBarClearButtonFontSize": "14",
 
         "ButtonInstallBackgroundColor": "#222222",
         "ButtonTweaksBackgroundColor":  "#333333",
@@ -201,11 +153,6 @@
         "ButtonForegroundColor":  "#9CCC65",
         "ToggleButtonOnColor":    "#2e77ff",
 
-        "ButtonBorderThickness":  "1",
-        "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2",
-        "BorderColor": "#FFAC1C",
-        "BorderOpacity": "0.2",
-        "ShadowPulse": "Forever"
+        "BorderColor": "#FFAC1C"
     }
 }
