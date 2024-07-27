@@ -1,0 +1,13 @@
+/* Custom styles for MkDocs Material */
+body {
+    background-color: #c22525;
+}
+
+.md-nav__link {
+    color: #ff5722;
+}
+
+.md-typeset h1 {
+    font-size: 2.5em;
+    color: #3f51b5;
+}

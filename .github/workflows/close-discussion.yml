@@ -12,19 +12,27 @@ jobs:
         if: github.event.pull_request.merged == true
         run: echo "PR was merged"
 
-      - name: Extract Discussion Number
+      - name: Extract Discussion Number & Close If any Where Found
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
-          echo "::set-output name=discussion::$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?<=Resolves #)\d+')"
-        shell: bash
+          echo '${{ github.event.pull_request.body }}' > pr_body.txt
 
-      - name: Close the discussion
-        if: github.event.pull_request.merged == true && steps.extract-discussion.outputs.discussion
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISCUSSION_ID: ${{ steps.extract-discussion.outputs.discussion }}
-        run: |
-          curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
-               -d '{"state": "closed"}' \
-               "https://api.github.com/repos/${{ github.repository }}/discussions/${DISCUSSION_ID}"
+          discussion_ids_arr=()
+          cat pr_body.txt | grep -i -Po '^\s*(-|\d+\.)?\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}' > discussion_ids_list.txt
+          while read -r line; do
+            discussion_ids_arr+=("$line")
+          done < discussion_ids_list.txt
+
+          number_of_ids=${#discussion_ids_arr[@]}
+          for (( i=0; i<${number_of_ids}; i++ ));
+          do
+            discussion_id=${discussion_ids_arr[$i]}
+            echo "$discussion_id"
+            curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+                 -d '{"state": "closed"}' \
+                 'https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id'
+          done
+        shell: bash

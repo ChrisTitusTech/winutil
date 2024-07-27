@@ -17,8 +17,8 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
-    $iconPath = $null
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available, else don't add a Custom Icon.
+
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
@@ -29,16 +29,10 @@ function Invoke-WPFShortcut {
                 $shell = "powershell.exe"
             }
 
-            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
 
-            Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
-
-            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                $iconPath = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
-                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-            }
         }
     }
 
@@ -58,10 +52,10 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $shell
-    $Shortcut.Arguments = $shellArgs
-    if ($null -ne $iconPath) {
-        $shortcut.IconLocation = $iconPath
+    $Shortcut.TargetPath = $SourceExe
+    $Shortcut.Arguments = $ArgumentsToSourceExe
+    if (Test-Path -Path $winutildir["logo.ico"]) {
+        $shortcut.IconLocation = $winutildir["logo.ico"]
     }
 
     # Save the Shortcut to disk

@@ -20,8 +20,14 @@ function Invoke-WPFInstall {
         return
     }
 
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -52,13 +58,14 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
-        Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False
     }
 }

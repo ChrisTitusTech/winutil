@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.16
+    Version        : 24.07.25
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.16"
+$sync.version = "24.07.25"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -942,12 +942,18 @@ function Install-WinUtilProgramChoco {
 		}
 		if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)){
                     Write-Host "$($Program.choco) installed successfully using Chocolatey."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to install $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $installOutputFilePath)."
+                    $X++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to install $($Program.choco) due to an error: $_"
+                $X++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
 
@@ -959,15 +965,20 @@ function Install-WinUtilProgramChoco {
 		$chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
 		if($chocoUninstallStatus -eq 0){
                     Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
                     continue
                 } else {
                     Write-Host "Failed to uninstall $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $uninstallOutputFilePath)."
+                    $x++
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
                 }
             } catch {
                 Write-Host "Failed to uninstall $($Program.choco) due to an error: $_"
+                $x++
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
 	}
-        $x++
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
@@ -1008,10 +1019,10 @@ Function Install-WinUtilProgramWinget {
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
-    for ($i = 0; $i -le $ProgramsToInstall.Count; $i++) {
+    for ($i = 0; $i -lt $count; $i++) {
         $Program = $ProgramsToInstall[$i]
         $failedPackages = @()
-        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $(($i/$count) * 100)
+        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $((($i + 1)/$count) * 100)
         if($manage -eq "Installing") {
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
@@ -1022,20 +1033,24 @@ Function Install-WinUtilProgramWinget {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User scope"
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User scope."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 Write-Host "Attempt with User prompt"
@@ -1050,15 +1065,18 @@ Function Install-WinUtilProgramWinget {
                 }
                 if($status -eq 0) {
                     Write-Host "$($Program.winget) installed successfully with User prompt."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
                 if ($status -eq -1978335189) {
                     Write-Host "$($Program.winget) No applicable update found"
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
                     continue
                 }
             } catch {
                 Write-Host "Failed to install $($Program.winget). With winget"
                 $failedPackages += $Program
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
         }
         elseif($manage -eq "Uninstalling") {
@@ -1067,6 +1085,7 @@ Function Install-WinUtilProgramWinget {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program.winget) --silent" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -ne 0) {
                     Write-Host "Failed to uninstall $($Program.winget)."
+                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                 } else {
                     Write-Host "$($Program.winget) uninstalled successfully."
                     $failedPackages += $Program
@@ -1074,7 +1093,9 @@ Function Install-WinUtilProgramWinget {
             } catch {
                 Write-Host "Failed to uninstall $($Program.winget) due to an error: $_"
                 $failedPackages += $Program
+                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
             }
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
         }
         else {
             throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
@@ -1103,6 +1124,7 @@ function Install-WinUtilWinget {
         } else {
             Write-Host "`nWinget is not Installed. Continuing with install.`r" -ForegroundColor Red
         }
+
 
         # Gets the computer's information
         if ($null -eq $sync.ComputerInfo){
@@ -1148,6 +1170,7 @@ function Install-WinUtilWinget {
             throw [WingetFailedInstall]::new('Failed to install!')
         }
     }
+
 }
 function Test-CompatibleImage() {
 <#
@@ -1189,90 +1212,104 @@ function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender
         Remove-Features -keepDefender:$false
 
 #>
-	$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
-	if ($dumpFeatures)
+	try
 	{
-		$featlist > allfeaturesdump.txt
+		$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+		if ($dumpFeatures)
+		{
+			$featlist > allfeaturesdump.txt
+		}
+
+		$featlist = $featlist | Where-Object {
+			$_ -NotLike "*Printing*" -AND
+			$_ -NotLike "*TelnetClient*" -AND
+			$_ -NotLike "*PowerShell*" -AND
+			$_ -NotLike "*NetFx*" -AND
+			$_ -NotLike "*Media*" -AND
+			$_ -NotLike "*NFS*"
+		}
+
+		if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
+
+		foreach($feature in $featlist)
+		{
+			$status = "Removing feature $feature"
+			Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
+			Write-Debug "Removing feature $feature"
+			Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+		}
+		Write-Progress -Activity "Removing features" -Status "Ready" -Completed
+		Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."		
 	}
-
-	$featlist = $featlist | Where-Object {
-		$_ -NotLike "*Printing*" -AND
-		$_ -NotLike "*TelnetClient*" -AND
-		$_ -NotLike "*PowerShell*" -AND
-		$_ -NotLike "*NetFx*" -AND
-		$_ -NotLike "*Media*" -AND
-		$_ -NotLike "*NFS*"
-	}
-
-	if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
-
-	foreach($feature in $featlist)
+	catch
 	{
-		$status = "Removing feature $feature"
-		Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-		Write-Debug "Removing feature $feature"
-		Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+		Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
 	}
-	Write-Progress -Activity "Removing features" -Status "Ready" -Completed
-	Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
 }
 
 function Remove-Packages
 {
-	$pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
-
-	$pkglist = $pkglist | Where-Object {
-			$_ -NotLike "*ApplicationModel*" -AND
-			$_ -NotLike "*indows-Client-LanguagePack*" -AND
-			$_ -NotLike "*LanguageFeatures-Basic*" -AND
-			$_ -NotLike "*Package_for_ServicingStack*" -AND
-			$_ -NotLike "*.NET*" -AND
-			$_ -NotLike "*Store*" -AND
-			$_ -NotLike "*VCLibs*" -AND
-			$_ -NotLike "*AAD.BrokerPlugin",
-			$_ -NotLike "*LockApp*" -AND
-			$_ -NotLike "*Notepad*" -AND
-			$_ -NotLike "*immersivecontrolpanel*" -AND
-			$_ -NotLike "*ContentDeliveryManager*" -AND
-			$_ -NotLike "*PinningConfirMationDialog*" -AND
-			$_ -NotLike "*SecHealthUI*" -AND
-			$_ -NotLike "*SecureAssessmentBrowser*" -AND
-			$_ -NotLike "*PrintDialog*" -AND
-			$_ -NotLike "*AssignedAccessLockApp*" -AND
-			$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-			$_ -NotLike "*Apprep.ChxApp*" -AND
-			$_ -NotLike "*CBS*" -AND
-			$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-			$_ -NotLike "*PeopleExperienceHost*" -AND
-			$_ -NotLike "*ParentalControls*" -AND
-			$_ -NotLike "*Win32WebViewHost*" -AND
-			$_ -NotLike "*InputApp*" -AND
-			$_ -NotLike "*AccountsControl*" -AND
-			$_ -NotLike "*AsyncTextService*" -AND
-			$_ -NotLike "*CapturePicker*" -AND
-			$_ -NotLike "*CredDialogHost*" -AND
-			$_ -NotLike "*BioEnrollMent*" -AND
-			$_ -NotLike "*ShellExperienceHost*" -AND
-			$_ -NotLike "*DesktopAppInstaller*" -AND
-			$_ -NotLike "*WebMediaExtensions*" -AND
-			$_ -NotLike "*WMIC*" -AND
-			$_ -NotLike "*UI.XaML*"
-		}
-
-	foreach ($pkg in $pkglist)
+	try
 	{
-		try {
-			$status = "Removing $pkg"
-			Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
-			Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
+		$pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
+
+		$pkglist = $pkglist | Where-Object {
+				$_ -NotLike "*ApplicationModel*" -AND
+				$_ -NotLike "*indows-Client-LanguagePack*" -AND
+				$_ -NotLike "*LanguageFeatures-Basic*" -AND
+				$_ -NotLike "*Package_for_ServicingStack*" -AND
+				$_ -NotLike "*.NET*" -AND
+				$_ -NotLike "*Store*" -AND
+				$_ -NotLike "*VCLibs*" -AND
+				$_ -NotLike "*AAD.BrokerPlugin",
+				$_ -NotLike "*LockApp*" -AND
+				$_ -NotLike "*Notepad*" -AND
+				$_ -NotLike "*immersivecontrolpanel*" -AND
+				$_ -NotLike "*ContentDeliveryManager*" -AND
+				$_ -NotLike "*PinningConfirMationDialog*" -AND
+				$_ -NotLike "*SecHealthUI*" -AND
+				$_ -NotLike "*SecureAssessmentBrowser*" -AND
+				$_ -NotLike "*PrintDialog*" -AND
+				$_ -NotLike "*AssignedAccessLockApp*" -AND
+				$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
+				$_ -NotLike "*Apprep.ChxApp*" -AND
+				$_ -NotLike "*CBS*" -AND
+				$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
+				$_ -NotLike "*PeopleExperienceHost*" -AND
+				$_ -NotLike "*ParentalControls*" -AND
+				$_ -NotLike "*Win32WebViewHost*" -AND
+				$_ -NotLike "*InputApp*" -AND
+				$_ -NotLike "*AccountsControl*" -AND
+				$_ -NotLike "*AsyncTextService*" -AND
+				$_ -NotLike "*CapturePicker*" -AND
+				$_ -NotLike "*CredDialogHost*" -AND
+				$_ -NotLike "*BioEnrollMent*" -AND
+				$_ -NotLike "*ShellExperienceHost*" -AND
+				$_ -NotLike "*DesktopAppInstaller*" -AND
+				$_ -NotLike "*WebMediaExtensions*" -AND
+				$_ -NotLike "*WMIC*" -AND
+				$_ -NotLike "*UI.XaML*"
+			}
+
+		foreach ($pkg in $pkglist)
+		{
+			try {
+				$status = "Removing $pkg"
+				Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
+				Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
+			}
+			catch {
+				# This can happen if the package that is being removed is a permanent one, like FodMetadata
+				Write-Host "Could not remove OS package $($pkg)"
+				continue
+			}
 		}
-		catch {
-			# This can happen if the package that is being removed is a permanent one, like FodMetadata
-			Write-Host "Could not remove OS package $($pkg)"
-			continue
-		}
+		Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed		
 	}
-	Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+	catch
+	{
+		Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"		
+	}
 }
 
 function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
@@ -1987,6 +2024,8 @@ function Invoke-WinUtilFeatureInstall {
         $CheckBox
     )
 
+    $x = 0
+
     $CheckBox | ForEach-Object {
         if($sync.configs.feature.$psitem.feature){
             Foreach( $feature in $sync.configs.feature.$psitem.feature ){
@@ -1997,9 +2036,11 @@ function Invoke-WinUtilFeatureInstall {
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                     }
 
                     else{
+
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
@@ -2017,15 +2058,19 @@ function Invoke-WinUtilFeatureInstall {
                 Catch{
                     if ($psitem.Exception.Message -like "*requires elevation*"){
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                     }
 
                     else{
+                        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
                     }
                 }
             }
         }
+        $X++
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$CheckBox.Count) })
     }
 }
 function Invoke-WinUtilGPU {
@@ -2882,6 +2927,92 @@ Function Set-WinUtilService {
     }
 
 }
+function Set-WinUtilTaskbaritem {
+    <#
+
+    .SYNOPSIS
+        Modifies the Taskbaritem of the WPF Form
+
+    .PARAMETER value
+        Value can be between 0 and 1, 0 being no progress done yet and 1 being fully completed
+        Value does not affect item without setting the state to 'Normal', 'Error' or 'Paused'
+        Set-WinUtilTaskbaritem -value 0.5
+
+    .PARAMETER state
+        State can be 'None' > No progress, 'Indeterminate' > inf. loading gray, 'Normal' > Gray, 'Error' > Red, 'Paused' > Yellow
+        no value needed:
+        - Set-WinUtilTaskbaritem -state "None"
+        - Set-WinUtilTaskbaritem -state "Indeterminate"
+        value needed:
+        - Set-WinUtilTaskbaritem -state "Error"
+        - Set-WinUtilTaskbaritem -state "Normal"
+        - Set-WinUtilTaskbaritem -state "Paused"
+
+    .PARAMETER overlay
+        Overlay icon to display on the taskbar item, there are the presets 'None', 'logo' and 'checkmark' or you can specify a path/link to an image file.
+        CTT logo preset:
+        - Set-WinUtilTaskbaritem -overlay "logo"
+        Checkmark preset:
+        - Set-WinUtilTaskbaritem -overlay "checkmark"
+        Warning preset:
+        - Set-WinUtilTaskbaritem -overlay "warning"
+        No overlay:
+        - Set-WinUtilTaskbaritem -overlay "None"
+        Custom icon (needs to be supported by WPF):
+        - Set-WinUtilTaskbaritem -overlay "C:\path\to\icon.png"
+
+    .PARAMETER description
+        Description to display on the taskbar item preview
+        Set-WinUtilTaskbaritem -description "This is a description"
+    #>
+    param (
+        [string]$state,
+        [double]$value,
+        [string]$overlay,
+        [string]$description
+    )
+
+    if ($value) {
+        $sync["Form"].taskbarItemInfo.ProgressValue = $value
+    }
+
+    if ($state) {
+        switch ($state) {
+            'None' { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
+            'Indeterminate' { $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate" }
+            'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
+            'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
+            'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
+            default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
+        }
+    }
+
+    if ($overlay) {
+        switch ($overlay) {
+            'logo' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+            }
+            'checkmark' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
+            }
+            'warning' {
+                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
+            }
+            'None' {
+                $sync["Form"].taskbarItemInfo.Overlay = $null
+            }
+            default {
+                if (Test-Path $overlay) {
+                    $sync["Form"].taskbarItemInfo.Overlay = $overlay
+                }
+            }
+        }
+    }
+
+    if ($description) {
+        $sync["Form"].taskbarItemInfo.Description = $description
+    }
+}
 function Set-WinUtilUITheme {
     <#
 
@@ -3488,12 +3619,18 @@ function Invoke-WPFFeatureInstall {
 
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
-
         $sync.ProcessRunning = $true
+        if ($Features.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
 
         Invoke-WinUtilFeatureInstall $Features
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+
         Write-Host "==================================="
         Write-Host "---   Features are Installed    ---"
         Write-Host "---  A Reboot may be required   ---"
@@ -3897,6 +4034,7 @@ function Invoke-WPFGetInstalled {
         param($checkbox, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
         if($checkbox -eq "winget"){
             Write-Host "Getting Installed Programs..."
@@ -3915,6 +4053,7 @@ function Invoke-WPFGetInstalled {
 
         Write-Host "Done..."
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state "None" })
     }
 }
 function Invoke-WPFGetIso {
@@ -3933,6 +4072,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Visible"
     $sync.BusyText.Text="N Busy"
+
 
 
     Write-Host "         _                     __    __  _         "
@@ -4007,6 +4147,8 @@ function Invoke-WPFGetIso {
         return
     }
 
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+
     # Detect the file size of the ISO and compare it with the free space of the system drive
     $isoSize = (Get-Item -Path $filePath).Length
     Write-Debug "Size of ISO file: $($isoSize) bytes"
@@ -4023,6 +4165,7 @@ function Invoke-WPFGetIso {
     {
         # It's critical and we can't continue. Output an error
         Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
     else
@@ -4041,6 +4184,7 @@ function Invoke-WPFGetIso {
         Write-Error "Failed to mount the image. Error: $($_.Exception.Message)"
         Write-Error "This is NOT winutil's problem, your ISO might be corrupt, or there is a problem on the system"
         Write-Error "Please refer to this wiki for more details https://github.com/ChrisTitusTech/winutil/blob/main/wiki/Error-in-Winutil-MicroWin-during-ISO-mounting%2Cmd"
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
     # storing off values in hidden fields for further steps
@@ -4118,6 +4262,7 @@ function Invoke-WPFGetIso {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             throw
         }
         elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))
@@ -4158,6 +4303,7 @@ function Invoke-WPFGetIso {
 
     $sync.BusyMessage.Visibility="Hidden"
     $sync.ProcessRunning = $false
+    Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
 
 
@@ -4244,8 +4390,14 @@ function Invoke-WPFInstall {
         return
     }
 
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -4276,13 +4428,14 @@ function Invoke-WPFInstall {
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
-        Start-Sleep -Seconds 5
         $sync.ProcessRunning = $False
     }
 }
@@ -4303,6 +4456,8 @@ function Invoke-WPFInstallUpgrade {
         return
     }
 
+    # Set-WinUtilTaskbaritem -state "Indeterminate"
+
     Update-WinUtilProgramWinget
 
     Write-Host "==========================================="
@@ -4315,6 +4470,7 @@ function Invoke-WPFMicrowin {
         .DESCRIPTION
         Invoke MicroWin routines...
     #>
+
 
 	if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
@@ -4351,8 +4507,11 @@ public class PowerManagement {
 
     if ($SaveDialog.FileName -eq "") {
         Write-Host "No file name for the target image was specified"
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
+
+	Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -4386,6 +4545,7 @@ public class PowerManagement {
             $msg = "The export process has failed and MicroWin processing cannot continue"
             Write-Host "Failed to export the image"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
 		}
 	}
@@ -4399,6 +4559,7 @@ public class PowerManagement {
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
 		Write-Host $msg
 		[System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -4407,6 +4568,7 @@ public class PowerManagement {
 	if (-not $mountDirExists -or -not $scratchDirExists)
 	{
         Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -4421,6 +4583,7 @@ public class PowerManagement {
         else
         {
             Write-Host "Could not mount image. Exiting..."
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
 
@@ -4690,6 +4853,7 @@ public class PowerManagement {
 		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
 		{
 			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
 			return
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
@@ -4791,6 +4955,7 @@ public class PowerManagement {
 			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
+			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
@@ -5026,8 +5191,8 @@ function Invoke-WPFShortcut {
         [bool]$RunAsAdmin = $false
     )
 
-    # add an a Custom Icon if it's available at "$env:TEMP\cttlogo.png", else don't add a Custom Icon.
-    $iconPath = $null
+    # Preper the Shortcut Fields and add an a Custom Icon if it's available, else don't add a Custom Icon.
+
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
@@ -5038,16 +5203,10 @@ function Invoke-WPFShortcut {
                 $shell = "powershell.exe"
             }
 
-            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://christitus.com/win | iex`"`'"
+            $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
 
-            Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile "$env:TEMP\cttlogo.png"
-
-            if (Test-Path -Path "$env:TEMP\cttlogo.png") {
-                $iconPath = "$env:LOCALAPPDATA\winutil\cttlogo.ico"
-                ConvertTo-Icon -bitmapPath "$env:TEMP\cttlogo.png" -iconPath $iconPath
-            }
         }
     }
 
@@ -5067,10 +5226,10 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $shell
-    $Shortcut.Arguments = $shellArgs
-    if ($null -ne $iconPath) {
-        $shortcut.IconLocation = $iconPath
+    $Shortcut.TargetPath = $SourceExe
+    $Shortcut.Arguments = $ArgumentsToSourceExe
+    if (Test-Path -Path $winutildir["logo.ico"]) {
+        $shortcut.IconLocation = $winutildir["logo.ico"]
     }
 
     # Save the Shortcut to disk
@@ -5237,15 +5396,22 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
+    if ($Tweaks.count -eq 1){
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+    } else {
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+    }
     $cnt = 0
     # Execute other selected tweaks
     foreach ($tweak in $Tweaks) {
       Write-Debug "This is a tweak to run $tweak count: $cnt"
       Invoke-WinUtilTweaks $tweak
       $cnt += 1
+      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
     }
 
     $sync.ProcessRunning = $false
+    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
     Write-Host "================================="
     Write-Host "--     Tweaks are Finished    ---"
     Write-Host "================================="
@@ -5336,12 +5502,21 @@ function Invoke-WPFundoall {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
+        if ($Tweaks.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
+        $cnt = 0
 
         Foreach ($tweak in $tweaks){
             Invoke-WinUtilTweaks $tweak -undo $true
+            $cnt += 1
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
         }
 
         $sync.ProcessRunning = $false
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
@@ -5537,8 +5712,14 @@ function Invoke-WPFUnInstall {
 
     if($confirm -eq "No"){return}
 
+
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
+        if ($PackagesToInstall.count -eq 1){
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
+        } else {
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
+        }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
@@ -5564,23 +5745,21 @@ function Invoke-WPFUnInstall {
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
-            $ButtonType = [System.Windows.MessageBoxButton]::OK
-            $MessageboxTitle = "Uninstalls are Finished "
-            $Messageboxbody = ("Done")
-            $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
             [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         }
         Catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -overlay "warning" })
         }
         $sync.ProcessRunning = $False
+
     }
 }
 function Invoke-WPFUpdatesdefault {
@@ -6445,6 +6624,14 @@ $sync.configs.applications = '{
     "link": "https://git-scm.com/",
     "winget": "Git.Git"
   },
+  "WPFInstallgitbutler": {
+    "category": "Development",
+    "choco": "na",
+    "content": "Git Butler",
+    "description": "A Git client for simultaneous branches on top of your existing workflow.",
+    "link": "https://gitbutler.com/",
+    "winget": "GitButler.GitButler"
+  },
   "WPFInstallgitextensions": {
     "category": "Development",
     "choco": "git;gitextensions",
@@ -6933,12 +7120,12 @@ $sync.configs.applications = '{
     "link": "https://motrix.app/",
     "winget": "agalwood.Motrix"
   },
-  "WPFInstallmpc": {
+  "WPFInstallmpchc": {
     "category": "Multimedia Tools",
-    "choco": "mpc-hc",
-    "content": "Media Player Classic (Video Player)",
-    "description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
-    "link": "https://mpc-hc.org/",
+    "choco": "mpc-hc-clsid2",
+    "content": "Media Player Classic - Home Cinema",
+    "description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
+    "link": "https://github.com/clsid2/mpc-hc/",
     "winget": "clsid2.mpc-hc"
   },
   "WPFInstallmremoteng": {
@@ -8601,7 +8788,7 @@ $sync.configs.applications = '{
     "category": "Utilities",
     "choco": "ofgb",
     "content": "OFGB (Oh Frick Go Back)",
-    "description": "GUI Tool To Removes Ads From Various Places Around Windows 11",
+    "description": "GUI Tool to remove ads from various places around Windows 11",
     "link": "https://github.com/xM4ddy/OFGB",
     "winget": "xM4ddy.OFGB"
   },
@@ -9257,7 +9444,7 @@ $sync.configs.tweaks = '{
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
-    "Description": "Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
+    "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a014_",
@@ -11203,6 +11390,27 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksRemoveHomeGallery": {
+    "Content": "Remove Home and Gallery from explorer",
+    "Description": "Removes the Home and Gallery from explorer and sets This PC as default",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a029_",
+    "InvokeScript": [
+      "
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
+      REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
+      "
+    ],
+    "UndoScript": [
+      "
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
+      REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
+      "
+    ]
+  },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
@@ -12208,7 +12416,7 @@ $sync.configs.tweaks = '{
     ]
   },
   "WPFToggleDarkMode": {
-    "Content": "Enable Dark Theme for Windows",
+    "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12216,7 +12424,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleBingSearch": {
-    "Content": "Enable Bing Search in Start Menu",
+    "Content": "Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12224,7 +12432,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleNumLock": {
-    "Content": "Enable NumLock on Startup",
+    "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12232,7 +12440,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleVerboseLogon": {
-    "Content": "Enable Verbose Messages During Logon",
+    "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12240,7 +12448,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapWindow": {
-    "Content": "Enable Snap Window",
+    "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12248,7 +12456,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapFlyout": {
-    "Content": "Enable Snap Assist Flyout",
+    "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12256,7 +12464,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleSnapSuggestion": {
-    "Content": "Enable Snap Assist Suggestion",
+    "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12264,7 +12472,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleMouseAcceleration": {
-    "Content": "Enable Mouse Acceleration",
+    "Content": "Mouse Acceleration",
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12272,7 +12480,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleStickyKeys": {
-    "Content": "Enable Sticky Keys",
+    "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12296,7 +12504,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarSearch": {
-    "Content": "Show Search Button in Taskbar",
+    "Content": "Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12304,7 +12512,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskView": {
-    "Content": "Show Task View Button in Taskbar",
+    "Content": "Task View Button in Taskbar",
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12312,7 +12520,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarWidgets": {
-    "Content": "Show Widgets Button in Taskbar",
+    "Content": "Widgets Button in Taskbar",
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12320,7 +12528,7 @@ $sync.configs.tweaks = '{
     "Type": "Toggle"
   },
   "WPFToggleTaskbarAlignment": {
-    "Content": "Switch Taskbar Items between Center &#38; Left",
+    "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
     "panel": "2",
@@ -12340,7 +12548,7 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Level3 Open_DNS Quad9"
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
@@ -13333,6 +13541,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallgitLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://git-scm.com/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallgitbutler" Content="Git Butler" ToolTip="A Git client for simultaneous branches on top of your existing workflow." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallgitbutlerLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://gitbutler.com/"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallgitextensions" Content="Git Extensions" ToolTip="Git Extensions is a graphical user interface for Git, providing additional features for easier source code management." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallgitextensionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://gitextensions.github.io/"/>
                             </StackPanel>
@@ -13424,14 +13636,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallpostman" Content="Postman" ToolTip="Postman is a collaboration platform for API development that simplifies the process of developing APIs." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpostmanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.postman.com/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallPulsarEdit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallPulsarEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="1">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallPulsarEdit" Content="Pulsar" ToolTip="A Community-led Hyper-Hackable Text Editor" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallPulsarEditLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pulsar-edit.dev/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpyenvwin" Content="Python Version Manager (pyenv-win)" ToolTip="pyenv for Windows is a simple python version management tool. It lets you easily switch between multiple versions of Python." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpyenvwinLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://pyenv-win.github.io/pyenv-win/"/>
@@ -13725,14 +13937,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallnuget" Content="NuGet" ToolTip="NuGet is a package manager for the .NET framework, enabling developers to manage and share libraries in their .NET applications." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallnugetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.nuget.org/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="2">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallonedrive" Content="OneDrive" ToolTip="OneDrive is a cloud storage service provided by Microsoft, allowing users to store and share files securely across devices." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallonedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://onedrive.live.com/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallpowerautomate" Content="Power Automate" ToolTip="Using Power Automate Desktop you can automate tasks on the desktop as well as the Web." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallpowerautomateLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.microsoft.com/en-us/power-platform/products/power-automate"/>
@@ -13909,8 +14121,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallmp3tagLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.mp3tag.de/en/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallmpc" Content="Media Player Classic (Video Player)" ToolTip="Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallmpcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mpc-hc.org/"/>
+                                <CheckBox Name="WPFInstallmpchc" Content="Media Player Classic - Home Cinema" ToolTip="Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallmpchcLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/clsid2/mpc-hc/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmusescore" Content="MuseScore" ToolTip="Create, play back and print beautiful sheet music with free and easy to use music notation software MuseScore." Margin="0,0,2,0"/>
@@ -14035,14 +14247,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstallheidisql" Content="HeidiSQL" ToolTip="HeidiSQL is a powerful and easy-to-use client for MySQL, MariaDB, Microsoft SQL Server, and PostgreSQL databases. It provides tools for database management and development." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallheidisqlLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.heidisql.com/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="3">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstallmremoteng" Content="mRemoteNG" ToolTip="mRemoteNG is a free and open-source remote connections manager. It allows you to view and manage multiple remote sessions in a single interface." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstallmremotengLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://mremoteng.org/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstallmullvadvpn" Content="Mullvad VPN" ToolTip="This is the VPN client software for the Mullvad VPN service." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallmullvadvpnLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/mullvad/mullvadvpn-app"/>
@@ -14338,14 +14550,14 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <CheckBox Name="WPFInstalllivelywallpaper" Content="Lively Wallpaper" ToolTip="Free and open-source software that allows users to set animated desktop wallpapers and screensavers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllivelywallpaperLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.rocksdanister.com/lively/"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/>
-                                <TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Grid.Column="4">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFInstalllocalsend" Content="LocalSend" ToolTip="An open source cross-platform alternative to AirDrop." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFInstalllocalsendLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://localsend.org/"/>
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <CheckBox Name="WPFInstalllockhunter" Content="LockHunter" ToolTip="LockHunter is a free tool to delete files blocked by something you do not know." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstalllockhunterLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://lockhunter.com/"/>
@@ -14403,7 +14615,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallnvcleanLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.techpowerup.com/nvcleanstall/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallOFGB" Content="OFGB (Oh Frick Go Back)" ToolTip="GUI Tool To Removes Ads From Various Places Around Windows 11" Margin="0,0,2,0"/>
+                                <CheckBox Name="WPFInstallOFGB" Content="OFGB (Oh Frick Go Back)" ToolTip="GUI Tool to remove ads from various places around Windows 11" Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallOFGBLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://github.com/xM4ddy/OFGB"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -14685,7 +14897,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
                             <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary"/>
                             <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
-                            <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected stadby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
+                            <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
 
                             <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
@@ -14702,6 +14914,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
                             <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
                             <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: AveYo"/>
+                            <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" Margin="5,0" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default"/>
                             <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it."/>
                             <Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
@@ -14713,9 +14926,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <ComboBoxItem  Content="Cloudflare" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Cloudflare_Malware" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Cloudflare_Malware_Adult" FontSize="{FontSize}"/>
-                                <ComboBoxItem  Content="Level3" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Open_DNS" FontSize="{FontSize}"/>
                                 <ComboBoxItem  Content="Quad9" FontSize="{FontSize}"/>
+                                <ComboBoxItem  Content="AdGuard_Ads_Trackers" FontSize="{FontSize}"/>
+                                <ComboBoxItem  Content="AdGuard_Ads_Trackers_Malware_Adult" FontSize="{FontSize}"/>
                                 </ComboBox>
                             </StackPanel>
                             <Button Name="WPFTweaksbutton" Content="Run Tweaks" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
@@ -14729,39 +14943,39 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleDarkMode" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Dark Theme for Windows" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Dark Theme for Windows" ToolTip="Enable/Disable Dark Mode." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleBingSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Bing Search in Start Menu" ToolTip="If enable then includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Bing Search in Start Menu" ToolTip="If enable then includes web search results from Bing in your Start Menu search." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleNumLock" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="NumLock on Startup" ToolTip="Toggle the Num Lock key state when your computer starts." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleVerboseLogon" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Verbose Messages During Logon" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Verbose Messages During Logon" ToolTip="Show detailed messages during the login process for troubleshooting and diagnostics." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapWindow" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Window" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Window" ToolTip="If enabled you can align windows by dragging them. | Relogin Required" HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapFlyout" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Assist Flyout" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Assist Flyout" ToolTip="If enabled then Snap preview is disabled when maximize button is hovered." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleSnapSuggestion" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Snap Assist Suggestion" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Snap Assist Suggestion" ToolTip="If enabled then you will get suggestions to snap other applications in the left over spaces." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleMouseAcceleration" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Mouse Acceleration" ToolTip="If Enabled then Cursor movement is affected by the speed of your physical mouse movements." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleStickyKeys" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Enable Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Sticky Keys" ToolTip="If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleHiddenFiles" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
@@ -14773,19 +14987,19 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarSearch" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Search Button in Taskbar" ToolTip="If Enabled Search Button will be on the taskbar." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Search Button in Taskbar" ToolTip="If Enabled Search Button will be on the taskbar." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskView" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Task View Button in Taskbar" ToolTip="If Enabled then Task View Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarAlignment" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Switch Taskbar Items between Center &#38; Left" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Center Taskbar Items" ToolTip="[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
-                            <Label Content="Show Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                            <Label Content="Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
 
                             <Label Name="WPFLabelPerformancePlans" Content="Performance Plans" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
@@ -15242,6 +15456,10 @@ Invoke-WPFRunspace -ScriptBlock {
 # Print the logo
 Invoke-WPFFormVariables
 
+# Progress bar in taskbaritem > Set-WinUtilProgressbar
+$sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
+Set-WinUtilTaskbaritem -state "None"
+
 # Set the titlebar
 $sync["Form"].title = $sync["Form"].title + " " + $sync.version
 # Set the commands that will run when the form is closed
@@ -15375,38 +15593,6 @@ Add-Type @"
 
         }
     }
-
-
-    # Using a TaskbarItem Overlay until someone figures out how to replace the icon correctly
-
-    # URL of the image
-    $imageUrl = "https://christitus.com/images/logo-full.png"
-
-    # Download the image
-    $imagePath = "$env:TEMP\logo-full.png"
-    Invoke-WebRequest -Uri $imageUrl -OutFile $imagePath
-
-    # Read the image file as a byte array
-    $imageBytes = [System.IO.File]::ReadAllBytes($imagePath)
-
-    # Convert the byte array to a Base64 string
-    $base64String = [System.Convert]::ToBase64String($imageBytes)
-
-    # Create a streaming image by streaming the base64 string to a bitmap streamsource
-    $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-    $bitmap.BeginInit()
-    $bitmap.StreamSource = [System.IO.MemoryStream][System.Convert]::FromBase64String($base64String)
-    $bitmap.EndInit()
-    $bitmap.Freeze()
-
-    # Ensure TaskbarItemInfo is created if not already
-    if (-not $sync["Form"].TaskbarItemInfo) {
-        $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
-    }
-
-    # Set the overlay icon for the taskbar
-    $sync["Form"].TaskbarItemInfo.Overlay = $bitmap
-
 
     $rect = New-Object RECT
     [Window]::GetWindowRect($windowHandle, [ref]$rect)
@@ -15544,6 +15730,42 @@ $sync["SearchBar"].Add_TextChanged({
     foreach ($category in $inactiveCategories){
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
+})
+
+# Initialize the hashtable
+$winutildir = @{}
+
+# Set the path for the winutil directory
+$winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
+if (-NOT (Test-Path -Path $winutildir["path"])) {
+    New-Item -Path $winutildir["path"] -ItemType Directory
+}
+
+# Set the path for the logo and checkmark images
+$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
+$winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
+if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
+}
+
+if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
+    ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
+}
+
+$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
+$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
+if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
+}
+if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
+    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
+}
+
+
+Set-WinUtilTaskbaritem -overlay "logo"
+
+$sync["Form"].Add_Activated({
+    Set-WinUtilTaskbaritem -overlay "logo"
 })
 
 # Define event handler for button click

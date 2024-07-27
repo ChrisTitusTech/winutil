@@ -4,6 +4,7 @@ function Invoke-WPFMicrowin {
         Invoke MicroWin routines...
     #>
 
+
 	if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
@@ -39,8 +40,11 @@ public class PowerManagement {
 
     if ($SaveDialog.FileName -eq "") {
         Write-Host "No file name for the target image was specified"
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
+
+	Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
@@ -74,6 +78,7 @@ public class PowerManagement {
             $msg = "The export process has failed and MicroWin processing cannot continue"
             Write-Host "Failed to export the image"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
 		}
 	}
@@ -87,6 +92,7 @@ public class PowerManagement {
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
 		Write-Host $msg
 		[System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -95,6 +101,7 @@ public class PowerManagement {
 	if (-not $mountDirExists -or -not $scratchDirExists)
 	{
         Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
+		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
@@ -109,6 +116,7 @@ public class PowerManagement {
         else
         {
             Write-Host "Could not mount image. Exiting..."
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
 
@@ -378,6 +386,7 @@ public class PowerManagement {
 		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
 		{
 			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
 			return
 		}
 		Write-Host "Windows image completed. Continuing with boot.wim."
@@ -479,6 +488,7 @@ public class PowerManagement {
 			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
+			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."

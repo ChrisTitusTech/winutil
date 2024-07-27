@@ -727,6 +727,14 @@
 		"link": "https://git-scm.com/",
 		"winget": "Git.Git"
 	},
+	"gitbutler": {
+		"category": "Development",
+		"choco": "na",
+		"content": "Git Butler",
+		"description": "A Git client for simultaneous branches on top of your existing workflow.",
+		"link": "https://gitbutler.com/",
+		"winget": "GitButler.GitButler"
+	},
 	"gitextensions": {
 		"category": "Development",
 		"choco": "git;gitextensions",
@@ -1215,12 +1223,12 @@
 		"link": "https://motrix.app/",
 		"winget": "agalwood.Motrix"
 	},
-	"mpc": {
+	"mpchc": {
 		"category": "Multimedia Tools",
-		"choco": "mpc-hc",
-		"content": "Media Player Classic (Video Player)",
-		"description": "Media Player Classic is a lightweight, open-source media player that supports a wide range of audio and video formats. It includes features like customizable toolbars and support for subtitles.",
-		"link": "https://mpc-hc.org/",
+		"choco": "mpc-hc-clsid2",
+		"content": "Media Player Classic - Home Cinema",
+		"description": "Media Player Classic - Home Cinema (MPC-HC) is a free and open-source video and audio player for Windows. MPC-HC is based on the original Guliverkli project and contains many additional features and bug fixes.",
+		"link": "https://github.com/clsid2/mpc-hc/",
 		"winget": "clsid2.mpc-hc"
 	},
 	"mremoteng": {
@@ -2883,7 +2891,7 @@
 		"category": "Utilities",
 		"choco": "ofgb",
 		"content": "OFGB (Oh Frick Go Back)",
-		"description":"GUI Tool To Removes Ads From Various Places Around Windows 11",
+		"description":"GUI Tool to remove ads from various places around Windows 11",
 		"link": "https://github.com/xM4ddy/OFGB",
 		"winget": "xM4ddy.OFGB"
 	},
