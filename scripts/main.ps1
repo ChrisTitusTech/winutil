@@ -83,6 +83,185 @@ try {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
+
+
+
+
+
+# Ensure we have a reference to the main window
+$mainWindow = $sync["Form"]
+
+# Reference to the Grid named 'appspanel'
+$appspanel = $mainWindow.FindName("appspanel")
+
+if ($appspanel -eq $null) {
+    throw "The Grid named 'appspanel' was not found in the main window."
+}
+
+# Clear any existing children from the Grid
+$appspanel.Children.Clear()
+$appspanel.ColumnDefinitions.Clear()
+$appspanel.RowDefinitions.Clear()
+
+# Set the number of columns
+$columnCount = 5
+
+# Create the required number of columns
+for ($i = 0; $i -lt $columnCount; $i++) {
+    $colDef = New-Object System.Windows.Controls.ColumnDefinition
+    $colDef.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+    $appspanel.ColumnDefinitions.Add($colDef)
+}
+
+# Create a single row (since all columns will be in the same row)
+$rowDef = New-Object System.Windows.Controls.RowDefinition
+$rowDef.Height = [System.Windows.GridLength]::Auto
+$appspanel.RowDefinitions.Add($rowDef)
+
+# Create a StackPanel for each column
+$columnPanels = @()
+for ($i = 0; $i -lt $columnCount; $i++) {
+    $border = New-Object System.Windows.Controls.Border
+    $border.Margin = New-Object System.Windows.Thickness(10)
+    $border.BorderThickness = New-Object System.Windows.Thickness(1)
+    $border.BorderBrush = [System.Windows.Media.Brushes]::LightGray
+
+    $stackPanel = New-Object System.Windows.Controls.StackPanel
+    $stackPanel.Orientation = "Vertical"
+    $border.Child = $stackPanel
+
+    [System.Windows.Controls.Grid]::SetColumn($border, $i)
+    $appspanel.Children.Add($border) | Out-Null
+
+    $columnPanels += $stackPanel
+}
+
+# Group applications by category
+$applicationsByCategory = @{}
+foreach ($appName in $sync.configs.applications.PSObject.Properties.Name) {
+    $appInfo = $sync.configs.applications.$appName
+    if (-not $applicationsByCategory.ContainsKey($appInfo.Category)) {
+        $applicationsByCategory[$appInfo.Category] = @()
+    }
+    $applicationsByCategory[$appInfo.Category] += [PSCustomObject]@{
+        Name = $appName
+        Info = $appInfo
+    }
+}
+
+# Sort categories alphabetically
+$sortedCategories = $applicationsByCategory.Keys | Sort-Object
+
+# Collect all applications in sorted order by category
+$allApplications = @()
+foreach ($category in $sortedCategories) {
+    $allApplications += [PSCustomObject]@{
+        IsCategory = $true
+        Category = $category
+        App = $null
+    }
+    $allApplications += $applicationsByCategory[$category] | Sort-Object { $_.Info.Content } | ForEach-Object {
+        [PSCustomObject]@{
+            IsCategory = $false
+            Category = $category
+            App = $_
+        }
+    }
+}
+
+# Flatten the applications list to maintain the correct order
+$flatAppsList = @()
+foreach ($categoryGroup in $allApplications) {
+    # Add a label for the category
+    if ($categoryGroup.IsCategory) {
+        $flatAppsList += $categoryGroup
+    } else {
+        # Add the applications
+        $flatAppsList += $categoryGroup
+    }
+}
+
+# Calculate number of apps per column
+$appsPerColumn = [math]::Ceiling($flatAppsList.Count / $columnCount)
+
+# Distribute the flat apps list evenly across columns
+$columnApps = @(@(), @(), @(), @(), @())  # Initialize an array of arrays for columns
+
+$currentColumn = 0
+$currentCount = 0
+
+foreach ($item in $flatAppsList) {
+    if ($currentCount -ge $appsPerColumn) {
+        $currentColumn++
+        $currentCount = 0
+    }
+    $columnApps[$currentColumn] += $item
+    $currentCount++
+}
+
+# Add applications to the respective columns
+for ($i = 0; $i -lt $columnApps.Count; $i++) {
+    foreach ($item in $columnApps[$i]) {
+        if ($item.IsCategory) {
+            $categoryLabel = New-Object System.Windows.Controls.Label
+            $categoryLabel.Content = $item.Category
+            $categoryLabel.FontSize = 16  # Adjust the font size as needed
+            $categoryLabel.FontFamily = "Arial"  # Adjust the font family as needed
+            $categoryLabel.Margin = New-Object System.Windows.Thickness(5, 10, 5, 5)
+            $columnPanels[$i].Children.Add($categoryLabel) | Out-Null
+        } else {
+            $appInfo = $item.App.Info
+
+            # Create a new StackPanel for the app entry
+            $appStackPanel = New-Object System.Windows.Controls.StackPanel
+            $appStackPanel.Orientation = "Horizontal"
+            $appStackPanel.Margin = New-Object System.Windows.Thickness(2)  # Reduced margin
+
+            # Create a new CheckBox for the app install option
+            $checkBox = New-Object System.Windows.Controls.CheckBox
+            $checkBox.Name = $item.App.Name
+            $checkBox.Content = $appInfo.Content
+            $checkBox.ToolTip = $appInfo.Description
+            $checkBox.Margin = New-Object System.Windows.Thickness(0, 0, 2, 0)
+
+            # Create a new Hyperlink for the app link
+            $hyperlink = New-Object System.Windows.Documents.Hyperlink
+            $hyperlink.Inlines.Add(" ?")
+            $hyperlink.NavigateUri = [Uri]$appInfo.Link
+
+            # Attach the RequestNavigate event handler
+            if ($hyperlink -ne $null) {
+                $hyperlink.AddHandler([System.Windows.Documents.Hyperlink]::RequestNavigateEvent, 
+                    [System.Windows.Navigation.RequestNavigateEventHandler]{
+                        param($sender, $e)
+                        [System.Diagnostics.Process]::Start("explorer.exe", $e.Uri.AbsoluteUri) | Out-Null
+                    })
+            }
+
+            # Add the Hyperlink to a TextBlock
+            $hyperlinkBlock = New-Object System.Windows.Controls.TextBlock
+            $hyperlinkBlock.Inlines.Add($hyperlink)
+            $hyperlinkBlock.ToolTip = $appInfo.Link
+            $hyperlinkBlock.Margin = New-Object System.Windows.Thickness(0, 0, 0, 0)
+
+            # Add elements to the app StackPanel
+            $appStackPanel.Children.Add($checkBox) | Out-Null
+            $appStackPanel.Children.Add($hyperlinkBlock) | Out-Null
+
+            # Add the app StackPanel to the appropriate column StackPanel
+            $columnPanels[$i].Children.Add($appStackPanel) | Out-Null
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================

@@ -108,7 +108,7 @@ $featuresXamlContent = Get-TabXaml "feature"
 
 Update-Progress "Adding: Xaml " 90
 # Replace the placeholder in $inputXML with the content of inputApp.xaml
-$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
+#$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
 $xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
 $xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
