@@ -114,16 +114,16 @@
         #   make more formatting rules, and document them in WinUtil Official Documentation
         (Get-Content -Raw "$file").TrimEnd() `
             -replace ('\t', '    ') `
-            -replace ('\)(\s*)?((\r?\n)+)?(\s*)?\{', ') {') `
-            -replace ('(if|for|foreach)(\s*)?((\r?\n)+)?(\s*)?(\(.*\))(\s*)?((\r?\n)+)?(\s*)?\{', '$1 $6 {') `
-            -replace ('elseif(\s*)?((\r?\n)+)?(\s*)?(\(.*\))(\s*)?((\r?\n)+)?(\s*)?\{', 'elseif $5 {') `
-            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?else(\s*)?((\r?\n)+)?(\s*)?\{', '} else {') `
-            -replace ('Try(\s*)?((\r?\n)+)?(\s*)?\{', 'try {') `
-            -replace ('Catch(\s*)?((\r?\n)+)?(\s*)?\{', 'catch {') `
-            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch', '} catch') `
-            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch(\s*)?((\r?\n)+)?(\s*)?((\[.*\](\,)?(\s*)?((\r?\n)+)?(\s*)?)+)(\s*)?((\r?\n)+)?(\s*)?\{', '} catch $9 {') `
-            -replace ('\}(\s*)?((\r?\n)+)?(\s*)?Catch(\s*)?((\r?\n)+)?(\s*)?(\[.*\])(\s*)?((\r?\n)+)?(\s*)?\{', '} catch $9 {') `
-            -replace ('\[(.*)\]\s*(\$.*$)', '[$1]$2') `
+            -replace ('\)\s*\{', ') {') `
+            -replace ('(?<keyword>if|for|foreach)\s*(?<condition>\([\s\S]\))\s*\{', '${keyword} ${condition} {') `
+            -replace ('\}\s*elseif\s*(?<condition>\([\s\S]\))\s*\{', '} elseif ${condition} {') `
+            -replace ('\}\s*else\s*\{', '} else {') `
+            -replace ('Try\s*\{', 'try {') `
+            -replace ('Catch\s*\{', 'catch {') `
+            -replace ('\}\s*Catch', '} catch') `
+            -replace ('\}\s*Catch\s*(?<exceptions>(\[.*?\]\s*(\,)?\s*)+)\s*\{', '} catch ${exceptions} {') `
+            -replace ('\}\s*Catch\s*(?<exceptions>\[.*?\])\s*\{', '} catch ${exceptions} {') `
+	    -replace ('(?<parameter_type>\[.*?\])\s*(?<str_after_type>\$.*?(,|\s*\)))', '${parameter_type}${str_after_type}') `
         | Set-Content "$file"
 
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
