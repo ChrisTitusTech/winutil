@@ -684,6 +684,7 @@
                     Width="250"
                     Height="{SearchBarHeight}"
                     Foreground="{ProgressBarForegroundColor}" Background="{MainBackgroundColor}"
+                    Visibility="Collapsed"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
                     Name="ProgressBar">
@@ -695,6 +696,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontSize="{SearchBarTextBoxFontSize}"
                     Background="Transparent"
+                    Visibility="Collapsed"
                     Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
                     Name="ProgressBarLabel">
                     <TextBlock TextTrimming="CharacterEllipsis" Background="Transparent"></TextBlock>
