@@ -116,7 +116,7 @@ Function Invoke-WinUtilWingetProgram {
         $Program = $ProgramsToInstall[$i]
         $result = $false
         Set-WinUtilProgressBar -label "$action $($Program)" -percent ($i / $count * 100)
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count * 100) })
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
         if ($action -eq "Install") {
             $result = Invoke-Install -Program $Program
         } elseif ($action -eq "Uninstall") {
