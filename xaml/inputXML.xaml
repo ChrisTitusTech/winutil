@@ -633,6 +633,7 @@
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
@@ -652,7 +653,7 @@
                     Height="{SearchBarHeight}"
                     FontSize="{SearchBarTextBoxFontSize}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
+                    BorderThickness="1"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
@@ -676,9 +677,29 @@
                     Style="{StaticResource SearchBarClearButtonStyle}"
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
+                <ProgressBar
+                    Grid.Column="1"
+                    Width="{SearchBarWidth}"
+                    Height="{SearchBarHeight}"
+                    Minimum="0"
+                    Maximum="100"
+                    Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    BorderThickness="1" Padding="2,2,2,2"
+                    Name="ProgressBar">
+                </ProgressBar>
+                <Label
+                    Grid.Column="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    FontSize="{SearchBarTextBoxFontSize}"
+                    Background="Transparent"
+                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
+                    Name="ProgressBarLabel">
+                </Label>
+                
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent"
+                    Grid.Column="2" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="{SettingsIconFontSize}"
@@ -687,7 +708,7 @@
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup"
+                <Popup Grid.Column="2" Name="SettingsPopup"
                     IsOpen="False"
                     PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -703,7 +724,7 @@
                 </Popup>
 
             <Button
-                Grid.Column="2"
+                Grid.Column="3"
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"

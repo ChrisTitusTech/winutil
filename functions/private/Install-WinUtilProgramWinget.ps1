@@ -25,20 +25,29 @@ Function Install-WinUtilProgramWinget {
 
     $count = $ProgramsToInstall.Count
 
-    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
+    function Set-Progressbar{
+        param(
+            [string]$label,
+            [int]$percent
+        )
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content = $label}) 
+        $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
+    }
+    
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
     for ($i = 0; $i -lt $count; $i++) {
         $Program = $ProgramsToInstall[$i]
         $failedPackages = @()
-        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $((($i + 1)/$count) * 100)
+        Set-ProgressBar -label "$manage $($Program.winget)" -percent ($i / ($count) * 100)
         if($manage -eq "Installing") {
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
             # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
             # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
             # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
             Write-Host "Starting install of $($Program.winget) with winget."
+            
             try {
                 $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
                 if($status -eq 0) {
@@ -111,6 +120,11 @@ Function Install-WinUtilProgramWinget {
             throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
         }
     }
-    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
+    if ($manage -eq "Installing"){
+        Set-ProgressBar -label "Installation finished" -percent 100
+    }
+    else{
+        Set-ProgressBar -label "Uninstallation finished" -percent 100
+    }
     return $failedPackages;
 }
