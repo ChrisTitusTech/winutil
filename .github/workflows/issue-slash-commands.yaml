@@ -6,6 +6,8 @@ on:
 
 jobs:
   closeIssueOnClose:
+    # Skip this job if the comment was created/edited on a PR
+    if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
