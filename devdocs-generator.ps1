@@ -144,15 +144,25 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         # Write to the markdown file
         Set-Content -Path $filename -Value $header -Encoding utf8
         Add-Content -Path $filename -Value $autoupdatenotice -Encoding utf8
-        Add-Content -Path $filename -Value $description -Encoding utf8
+        if ($itemDetails.Description) {
+            Add-Content -Path $filename -Value $description -Encoding utf8
+        }
         Add-Content -Path $filename -Value $customContentStartTag -Encoding utf8
         Add-Content -Path $filename -Value $customContent -Encoding utf8
         Add-Content -Path $filename -Value $customContentEndTag -Encoding utf8
         Add-Content -Path $filename -Value $codeBlock -Encoding utf8
-        Add-Content -Path $filename -Value $InvokeScript -Encoding utf8
-        Add-Content -Path $filename -Value $UndoScript -Encoding utf8
-        Add-Content -Path $filename -Value $registryDocs -Encoding utf8
-        Add-Content -Path $filename -Value $serviceDocs -Encoding utf8
+        if ($itemDetails.InvokeScript) {
+            Add-Content -Path $filename -Value $InvokeScript -Encoding utf8
+        }
+        if ($itemDetails.UndoScript) {
+            Add-Content -Path $filename -Value $UndoScript -Encoding utf8
+        }
+        if ($itemDetails.registry) {
+            Add-Content -Path $filename -Value $registryDocs -Encoding utf8
+        }
+        if ($itemDetails.service) {
+            Add-Content -Path $filename -Value $serviceDocs -Encoding utf8
+        }
         Add-Content -Path $filename -Value $secondCustomContentStartTag -Encoding utf8
         Add-Content -Path $filename -Value $secondCustomContent -Encoding utf8
         Add-Content -Path $filename -Value $secondCustomContentEndTag -Encoding utf8

@@ -2,7 +2,7 @@
 
 
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a bit part of the dev-docs stays up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
 
 
 ## Description
@@ -1438,9 +1438,6 @@ Turns a bunch of system services to manual that don't need to be running all the
 }
 ```
 </details>
-
-
-
 
 ## Service Changes
 Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
