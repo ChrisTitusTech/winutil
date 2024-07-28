@@ -32,7 +32,7 @@ Function Invoke-WinUtilWingetProgram {
     The Id of the Program that Winget should Install/Uninstall
 
     .PARAMETER scope
-    Determins the installation mode. Can be "user" or "machine" (For more info look at the winget documentation)
+    Determines the installation mode. Can be "user" or "machine" (For more info look at the winget documentation)
 
     .PARAMETER credential
     The PSCredential Object of the user that should be used to run winget
@@ -43,24 +43,30 @@ Function Invoke-WinUtilWingetProgram {
         param (
             [string]$wingetId,
             [string]$scope = "",
-            [PSCredential]$credential = $null
+            [PScredential]$credential = $null
         )
+
         $commonArguments = "--id $wingetId --silent"
-        if ($action -eq "Install"){
-            $arguments = "install $commonArguments --accept-source-agreements --accept-package-agreements"
-            if ($scope){
-                $arguments += " --scope $scope"
-            }
+        $arguments = if ($Action -eq "Install"){
+            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})" 
         }
         else {
-            $arguments = "uninstall $commonArguments"
+            "uninstall $commonArguments"
+        }
+
+        $processParams = @{
+            FilePath = "winget"
+            ArgumentList = $arguments
+            Wait = $true
+            PassThru = $true
+            NoNewWindow = $true
         }
 
         if ($credential) {
-            return (Start-Process -FilePath "winget" -ArgumentList $arguments -Wait -PassThru -NoNewWindow -Credential $credential).ExitCode           
-        } else {
-            return (Start-Process -FilePath "winget" -ArgumentList $arguments -Wait -PassThru -NoNewWindow).ExitCode
+            $processParams.credential = $credential
         }
+        
+        return (Start-Process @processParams).ExitCode           
     }
 
     Function Invoke-Install {
@@ -82,7 +88,7 @@ Function Invoke-WinUtilWingetProgram {
             Write-Host "$($Program) No applicable update found"
             return $true
         }
-        
+
         Write-Host "Attempt installation of $($Program) with User scope"
         $status = Invoke-Winget -wingetId $Program -scope "user"
         if ($status -eq 0) {
@@ -93,7 +99,7 @@ Function Invoke-WinUtilWingetProgram {
             return $true
         }
 
-        $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $($Program) installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User Credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
+        $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $($Program) installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
         if ($userChoice -eq 'Yes') {
             $getcreds = Get-Credential
             $status = Invoke-Winget -wingetId $Program -credential $getcreds
@@ -146,20 +152,20 @@ Function Invoke-WinUtilWingetProgram {
     for ($i = 0; $i -lt $count; $i++) {
         $Program = $Programs[$i]
         $result = $false
-        Set-WinUtilProgressBar -label "$action $($Program)" -percent ($i / $count * 100)
+        Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($i / $count * 100)
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
-        if ($action -eq "Install") {
-            $result = Invoke-Install -Program $Program
-        } elseif ($action -eq "Uninstall") {
-            $result = Invoke-Uninstall -Program $Program
-        } else {
-            throw "[Install-WinUtilProgramWinget] Value for Parameter 'Action' not implemented, Provided Value is: $action"
+        
+        $result = switch ($Action) {
+            "Install" {Invoke-Install -Program $Program}
+            "Uninstall" {Invoke-Uninstall -Program $Program}
+            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}    
         }
+
         if (-not $result) {
             $failedPackages += $Program
         }
     }
 
-    Set-WinUtilProgressBar -label "$($action)ation done" -percent 100
+    Set-WinUtilProgressBar -label "$($Action)ation done" -percent 100
     return $failedPackages
 }
