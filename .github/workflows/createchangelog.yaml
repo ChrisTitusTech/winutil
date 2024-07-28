@@ -5,7 +5,7 @@ on:
   workflow_call: # Make this Working a re-usable one (can be called form another workflow)
 
 jobs:
-  update-file:
+  update-changelog-file:
     runs-on: ubuntu-latest
 
     steps:
