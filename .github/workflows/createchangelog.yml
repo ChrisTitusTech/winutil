@@ -1,9 +1,8 @@
 name: Update changelog.md on Release
 
 on:
-  release:
-    types: [published, created, edited, deleted]
-  workflow_dispatch:  # Add this line to enable manual triggering
+  workflow_dispatch: # Manual trigger added
+  workflow_call: # Make this Working a re-usable one (can be called form another workflow)
 
 jobs:
   update-file:

@@ -8,7 +8,10 @@ on:
   workflow_dispatch: # Manual trigger added
 
 jobs:
-  build-runspace:
+  call_github_pages_workflow:
+    uses: ./.github/workflows/github-pages.yaml
+
+  release_winutil_as_prerelease:
     runs-on: windows-latest
     steps:
       - name: Checkout Repository

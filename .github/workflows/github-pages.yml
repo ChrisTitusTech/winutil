@@ -1,22 +1,32 @@
 name: GitHub Pages Deploy
 on:
-  release:
-    types: [published, prereleased]
-  workflow_dispatch: 
+  workflow_dispatch: # Manual trigger added
+  workflow_call: # Make this Working a re-usable one (can be called form another workflow)
+
 permissions:
   contents: write
+
 jobs:
-  deploy:
+  call_createchangelog:
+    uses: ./.github/workflows/createchangelog.yaml
+
+  build_and_deploy:
+    needs: call_createchangelog
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - uses: actions/cache@v4
-        with:
-          key: ${{ github.ref }}
-          path: .cache
-      - run: pip install mkdocs-material
-      - run: pip install pillow cairosvg
-      - run: mkdocs gh-deploy --force
+
+      - name: Install Additional Python Dependencies
+        run: |
+          pip install mkdocs-material
+          pip install pillow cairosvg
+
+      - name: Build using MkDocs & Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force

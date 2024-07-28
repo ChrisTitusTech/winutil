@@ -4,10 +4,11 @@ on:
   workflow_dispatch: # Manual trigger added
 
 jobs:
-  build-runspace:
+  release_winutil:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -42,3 +43,6 @@ jobs:
           make_latest: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  call_github_pages:
+    uses: ./.github/workflows/github_pages.yaml
