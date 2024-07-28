@@ -7,11 +7,12 @@ permissions:
   contents: write
 
 jobs:
-  call_createchangelog:
+  update-changelog:
     uses: ./.github/workflows/createchangelog.yaml
 
-  build_and_deploy:
-    needs: call_createchangelog
+  bulid-deploy-gh-pages:
+    # Make sure 'update-changelog' run first, then run this job afterward
+    needs: update-changelog
     runs-on: ubuntu-latest
 
     steps:

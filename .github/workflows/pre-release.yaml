@@ -8,11 +8,7 @@ on:
   workflow_dispatch: # Manual trigger added
 
 jobs:
-  call_github_pages_workflow:
-    needs: release_winutil_as_prerelease
-    uses: ./.github/workflows/github-pages.yaml
-
-  release_winutil_as_prerelease:
+  release:
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
@@ -50,3 +46,8 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-github-pages:
+    # Make sure 'release' job runs first, then run this job afterward
+    needs: release
+    uses: ./.github/workflows/github-pages.yaml
