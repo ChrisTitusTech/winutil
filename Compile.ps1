@@ -134,10 +134,10 @@ Write-Progress -Activity "Compiling" -Completed
 
 if ($run){
     try {
-        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
+        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname" -PassThru -NoNewWindow
     }
     catch {
-        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname" -PassThru -NoNewWindow
     }
 
 }

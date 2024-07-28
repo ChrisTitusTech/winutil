@@ -29,4 +29,3 @@ function Invoke-WinUtilNumLock {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
-}
