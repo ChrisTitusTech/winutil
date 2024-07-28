@@ -3,7 +3,7 @@ Function Invoke-WinUtilWingetProgram {
     .SYNOPSIS
     Runs the designated action on the provided programs using Winget
 
-    .PARAMETER ProgramsToInstall
+    .PARAMETER Programs
     A list of programs to process
 
     .PARAMETER action
@@ -16,14 +16,30 @@ Function Invoke-WinUtilWingetProgram {
 
     param(
         [Parameter(Mandatory, Position=0)]
-        [PsCustomObject]$ProgramsToInstall,
+        $Programs,
         
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("Install", "Uninstall")]
-        [String]$Action = ""
+        [String]$Action
     )
 
     Function Invoke-Winget {
+    <#
+    .SYNOPSIS
+    Invokes the winget.exe with the provided arguments and return the exit code
+
+    .PARAMETER wingetId
+    The Id of the Program that Winget should Install/Uninstall
+
+    .PARAMETER scope
+    Determins the installation mode. Can be "user" or "machine" (For more info look at the winget documentation)
+
+    .PARAMETER credential
+    The PSCredential Object of the user that should be used to run winget
+    
+    .NOTES
+    Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
+    #>
         param (
             [string]$wingetId,
             [string]$scope = "",
@@ -46,9 +62,17 @@ Function Invoke-WinUtilWingetProgram {
             return (Start-Process -FilePath "winget" -ArgumentList $arguments -Wait -PassThru -NoNewWindow).ExitCode
         }
     }
+
     Function Invoke-Install {
+    <#
+    .SYNOPSIS
+    Contains the Install Logic and return code handling from winget
+    
+    .PARAMETER Program
+    The Winget ID of the Program that should be installed
+    #>
         param (
-            [psobject]$Program
+            [string]$Program
         )
         $status = Invoke-Winget -wingetId $Program
         if ($status -eq 0) {
@@ -86,12 +110,19 @@ Function Invoke-WinUtilWingetProgram {
     }
 
     Function Invoke-Uninstall {
+        <#
+        .SYNOPSIS
+        Contains the Uninstall Logic and return code handling from winget
+        
+        .PARAMETER Program
+        The Winget ID of the Program that should be uninstalled
+        #>
         param (
             [psobject]$Program
         )
         
         try {
-            $status = (Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program) --silent" -Wait -PassThru -NoNewWindow).ExitCode
+            $status = Invoke-Winget -wingetId $Program
             if ($status -eq 0) {
                 Write-Host "$($Program) uninstalled successfully."
                 return $true
@@ -105,7 +136,7 @@ Function Invoke-WinUtilWingetProgram {
         }
     }
 
-    $count = $ProgramsToInstall.Count
+    $count = $Programs.Count
     $failedPackages = @()
     
     Write-Host "==========================================="
@@ -113,7 +144,7 @@ Function Invoke-WinUtilWingetProgram {
     Write-Host "==========================================="
     
     for ($i = 0; $i -lt $count; $i++) {
-        $Program = $ProgramsToInstall[$i]
+        $Program = $Programs[$i]
         $result = $false
         Set-WinUtilProgressBar -label "$action $($Program)" -percent ($i / $count * 100)
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
