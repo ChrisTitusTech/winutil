@@ -111,6 +111,19 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
             }
         }
 
+        $scheduledTaskDocs = ""
+        if ($itemDetails.ScheduledTask -ne $null) {
+            $scheduledTaskDocs += "## Scheduled Task Changes`n"
+            $scheduledTaskDocs += "Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.`n`n"
+            $scheduledTaskDocs += "You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).`n"
+
+            foreach ($task in $itemDetails.ScheduledTask) {
+                $scheduledTaskDocs += "### Task Name: $($task.Name)`n"
+                $scheduledTaskDocs += "**State:** $($task.State)`n`n"
+                $scheduledTaskDocs += "**Original State:** $($task.OriginalState)`n`n"
+            }
+        }
+
         $jsonLink = "`n[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)`n"
 
         # Check for existing custom content
@@ -153,6 +166,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         }
         if ($itemDetails.service) {
             Add-Content -Path $filename -Value $serviceDocs -Encoding utf8
+        }
+        if ($itemDetails.ScheduledTask) {
+            Add-Content -Path $filename -Value $scheduledTaskDocs -Encoding utf8
         }
         Add-Content -Path $filename -Value $secondCustomContentStartTag -Encoding utf8
         Add-Content -Path $filename -Value $secondCustomContent -Encoding utf8

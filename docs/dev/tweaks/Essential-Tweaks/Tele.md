@@ -661,6 +661,76 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 
+## Scheduled Task Changes
+Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.
+
+You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).
+### Task Name: Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Application Experience\ProgramDataUpdater
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Autochk\Proxy
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Customer Experience Improvement Program\Consolidator
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Customer Experience Improvement Program\UsbCeip
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Feedback\Siuf\DmClient
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Windows Error Reporting\QueueReporting
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Application Experience\MareBackup
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Application Experience\StartupAppTask
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Application Experience\PcaPatchDbTask
+**State:** Disabled
+
+**Original State:** Enabled
+
+### Task Name: Microsoft\Windows\Maps\MapsUpdateTask
+**State:** Disabled
+
+**Original State:** Enabled
+
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
