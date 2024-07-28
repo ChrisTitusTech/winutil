@@ -11,6 +11,12 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+        # Make sure to get latest commits, like the one committed by the previous job in jobs list.
+        # reference: https://github.com/orgs/community/discussions/110853
+        with:
+          fetch-tags: 'true'
+          submodules: 'recursive'
+          ref: ${{ github.ref_name }}
 
     - name: Get all releases and update changelog.md file
       run: |
