@@ -19,6 +19,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
         # Make sure to get latest commits, like the one committed by the previous job in jobs list.
+        # reference: https://github.com/orgs/community/discussions/110853
         with:
           ref: ${{ github.ref_name }}
 
