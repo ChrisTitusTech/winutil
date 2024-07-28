@@ -36,17 +36,8 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
             New-Item -ItemType Directory -Path $categoryDir | Out-Null
         }
 
-        # Remove "WPF", "WinUtil" prefix and category from the name
-        $displayName = $itemName -replace 'WPF', ''
-        $displayName = $displayName -replace 'WinUtil', ''
-        $displayName = $displayName -replace 'Toggle', ''
-        $displayName = $displayName -replace 'Disable', ''
-        $displayName = $displayName -replace 'Enable', ''
-        $displayName = $displayName -replace $category, ''
-        $displayName = $displayName -replace 'Features', ''
-        $displayName = $displayName -replace 'Tweaks', ''
-        $displayName = $displayName -replace 'Panel', ''
-        $displayName = $displayName -replace 'Fixes', ''
+        # Remove prefixes from the name
+        $displayName = $itemName -replace 'WPF|WinUtil|Toggle|Disable|Enable|Features|Tweaks|Panel|Fixes', ''
 
         $filename = "$categoryDir/$displayName.md"
         $relativePath = "$outputDir/$category/$displayName.md" -replace '^docs/', ''
