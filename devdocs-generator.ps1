@@ -28,7 +28,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
 
     foreach ($itemName in $data.PSObject.Properties.Name) {
         $itemDetails = $data.$itemName
-        $category = $itemDetails.Category -replace '[^a-zA-Z0-9]', '-' # Sanitize category name for directory
+        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-' # Sanitize category name for directory
         $categoryDir = "$outputDir/$category"
 
         # Create the category directory if it doesn't exist
@@ -36,14 +36,24 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
             New-Item -ItemType Directory -Path $categoryDir | Out-Null
         }
 
-        $filename = "$categoryDir/$itemName.md"
-        $relativePath = "$outputDir/$category/$itemName.md" -replace '^docs/', ''
+        # Remove "WPF", "WinUtil" prefix and category from the name
+        $displayName = $itemName -replace 'WPF', ''
+        $displayName = $displayName -replace 'WinUtil', ''
+        $displayName = $displayName -replace 'Toggle', ''
+        $displayName = $displayName -replace $category, ''
+        $displayName = $displayName -replace 'Features', ''
+        $displayName = $displayName -replace 'Tweaks', ''
+        $displayName = $displayName -replace 'Panel', ''
+        $displayName = $displayName -replace 'Fixes', ''
+
+        $filename = "$categoryDir/$displayName.md"
+        $relativePath = "$outputDir/$category/$displayName.md" -replace '^docs/', ''
 
         # Collect paths for TOC
         $tocEntries += @{
             Category = $category
             Path = $relativePath
-            Name = $itemName
+            Name = $displayName
             Type = $type
         }
 
