@@ -31,8 +31,8 @@
 - [Storage](dev/tweaks/Essential-Tweaks/Storage.md)
 ### z--Advanced-Tweaks---CAUTION
 
-- [DisableFSO](dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO.md)
-- [Disableipsix](dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix.md)
+- [FSO](dev/tweaks/z--Advanced-Tweaks---CAUTION/FSO.md)
+- [ipsix](dev/tweaks/z--Advanced-Tweaks---CAUTION/ipsix.md)
 - [Undoall](dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall.md)
 - [button](dev/tweaks/z--Advanced-Tweaks---CAUTION/button.md)
 - [changedns](dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns.md)
@@ -42,11 +42,11 @@
 - [Display](dev/tweaks/z--Advanced-Tweaks---CAUTION/Display.md)
 - [RemoveHomeGallery](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery.md)
 - [DebloatAdobe](dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe.md)
-- [DisableNotifications](dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications.md)
+- [Notifications](dev/tweaks/z--Advanced-Tweaks---CAUTION/Notifications.md)
 - [RemoveOnedrive](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive.md)
 - [RightClickMenu](dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu.md)
 - [BlockAdobeNet](dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet.md)
-- [DisableLMS1](dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1.md)
+- [LMS1](dev/tweaks/z--Advanced-Tweaks---CAUTION/LMS1.md)
 - [RemoveCopilot](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot.md)
 - [RemoveEdge](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge.md)
 ### Customize-Preferences
@@ -80,18 +80,18 @@
 - [region](dev/features/Legacy-Windows-Panels/region.md)
 ### Features
 
-- [Featurewsl](dev/features/Features/Featurewsl.md)
-- [Featurenfs](dev/features/Features/Featurenfs.md)
-- [FeatureEnableSearchSuggestions](dev/features/Features/FeatureEnableSearchSuggestions.md)
+- [wsl](dev/features/Features/wsl.md)
+- [nfs](dev/features/Features/nfs.md)
+- [SearchSuggestions](dev/features/Features/SearchSuggestions.md)
 - [dotnet](dev/features/Features/dotnet.md)
 - [hyperv](dev/features/Features/hyperv.md)
 - [legacymedia](dev/features/Features/legacymedia.md)
-- [FeatureDisableLegacyRecovery](dev/features/Features/FeatureDisableLegacyRecovery.md)
-- [andbox](dev/features/Features/andbox.md)
-- [FeatureInstall](dev/features/Features/FeatureInstall.md)
-- [FeatureDisableSearchSuggestions](dev/features/Features/FeatureDisableSearchSuggestions.md)
-- [FeatureRegBackup](dev/features/Features/FeatureRegBackup.md)
-- [FeatureEnableLegacyRecovery](dev/features/Features/FeatureEnableLegacyRecovery.md)
+- [LegacyRecovery](dev/features/Features/LegacyRecovery.md)
+- [sandbox](dev/features/Features/sandbox.md)
+- [Install](dev/features/Features/Install.md)
+- [SearchSuggestions](dev/features/Features/SearchSuggestions.md)
+- [RegBackup](dev/features/Features/RegBackup.md)
+- [LegacyRecovery](dev/features/Features/LegacyRecovery.md)
 ### Fixes
 
 - [Winget](dev/features/Fixes/Winget.md)

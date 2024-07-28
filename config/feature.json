@@ -49,7 +49,7 @@
 
     ]
   },
-  "WPFFeaturewsl": {
+  "WPFFeatureswsl": {
     "Content": "Windows Subsystem for Linux",
     "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
     "category": "Features",
@@ -63,7 +63,7 @@
 
     ]
   },
-  "WPFFeaturenfs": {
+  "WPFFeaturesnfs": {
     "Content": "NFS - Network File System",
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
     "category": "Features",
@@ -82,7 +82,7 @@
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
     ]
   },
-  "WPFFeatureEnableSearchSuggestions": {
+  "WPFFeaturesEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Enables web suggestions when searching using Windows Search.",
     "category": "Features",
@@ -100,7 +100,7 @@
       "
     ]
   },
-  "WPFFeatureDisableSearchSuggestions": {
+  "WPFFeaturesDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Disables web suggestions when searching using Windows Search.",
     "category": "Features",
@@ -118,7 +118,7 @@
       "
     ]
   },
-  "WPFFeatureRegBackup": {
+  "WPFFeaturesRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
     "category": "Features",
@@ -136,7 +136,7 @@
       "
     ]
   },
-  "WPFFeatureEnableLegacyRecovery": {
+  "WPFFeaturesEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
@@ -154,7 +154,7 @@
       "
     ]
   },
-  "WPFFeatureDisableLegacyRecovery": {
+  "WPFFeaturesDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
     "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
     "category": "Features",
@@ -172,14 +172,14 @@
       "
     ]
   },
-  "WPFFeaturesandbox": {
+  "WPFFeaturessandbox": {
     "Content": "Windows Sandbox",
     "category": "Features",
     "panel": "1",
     "Order": "a021_",
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
   },
-  "WPFFeatureInstall": {
+  "WPFFeaturesInstall": {
     "Content": "Install Features",
     "category": "Features",
     "panel": "1",

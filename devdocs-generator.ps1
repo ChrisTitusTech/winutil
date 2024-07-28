@@ -40,6 +40,8 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         $displayName = $itemName -replace 'WPF', ''
         $displayName = $displayName -replace 'WinUtil', ''
         $displayName = $displayName -replace 'Toggle', ''
+        $displayName = $displayName -replace 'Disable', ''
+        $displayName = $displayName -replace 'Enable', ''
         $displayName = $displayName -replace $category, ''
         $displayName = $displayName -replace 'Features', ''
         $displayName = $displayName -replace 'Tweaks', ''
