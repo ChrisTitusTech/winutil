@@ -17,7 +17,9 @@ jobs:
     - name: Compile project
       shell: pwsh
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        ./Compile.ps1
+        ./devdocs-generator.ps1
       continue-on-error: false # Directly fail the job on error, removing the need for a separate check
     - uses: stefanzweifel/git-auto-commit-action@v5
       with:
