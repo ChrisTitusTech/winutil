@@ -116,4 +116,9 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add docs/changelog.md
           git commit -m "Update changelog.md with all releases"
-          git push
+          echo "Event name: ${{ github.event_name }}"
+          if ['${{ github.event_name }}' = 'release']; then
+            git push --force
+          else
+            git push
+          fi
