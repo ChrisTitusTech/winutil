@@ -63,7 +63,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         $header = "# $([string]$itemDetails.Content)`n"
         $autoupdatenotice = "
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a bit part of the dev-docs stays up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`n`n"
+     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`n`n"
         $description = "## Description`n`n$([string]$itemDetails.Description)`n"
         $jsonContent = $itemDetails | ConvertTo-Json -Depth 10
         $codeBlock = "
