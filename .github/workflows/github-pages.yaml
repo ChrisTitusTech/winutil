@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-tags: 'true'
           submodules: 'recursive'
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
 
       - name: Setup Python
         uses: actions/setup-python@v4

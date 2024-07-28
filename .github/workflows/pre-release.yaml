@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-tags: 'true'
           submodules: 'recursive'
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
 
       - name: Extract Version from winutil.ps1
         id: extract_version
