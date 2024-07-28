@@ -1,5 +1,7 @@
 name: GitHub Pages Deploy
 on:
+  release:
+    types: [edited, deleted] # Make sure changelog is up-to-date by updating it, and building GitHub Pages.
   workflow_dispatch: # Manual trigger added
   workflow_call: # Make this Working a re-usable one (can be called form another workflow)
 
