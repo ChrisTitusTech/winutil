@@ -2973,22 +2973,6 @@
       "netsh interface teredo set state default"
     ]
   },
-  "WPFTweaksDisableBGapps": {
-    "Content": "Disable Background Apps",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "Order": "a015_",
-    "registry": [
-      {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
-        "Name": "GlobalUserDisabled",
-        "Value": "1",
-        "OriginalValue": "0",
-        "Type": "DWord"
-      }
-    ]
-  },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
@@ -3009,6 +2993,22 @@
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+    ]
+  },
+  "WPFTweaksDisableBGapps": {
+    "Content": "Disable Background Apps",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a024_",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "Name": "GlobalUserDisabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
     ]
   },
   "WPFTweaksDisableFSO": {
