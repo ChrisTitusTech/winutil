@@ -9,10 +9,10 @@ on:
 
 jobs:
   call_github_pages_workflow:
+    needs: release_winutil_as_prerelease
     uses: ./.github/workflows/github-pages.yaml
 
   release_winutil_as_prerelease:
-    needs: call_github_pages_workflow
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
