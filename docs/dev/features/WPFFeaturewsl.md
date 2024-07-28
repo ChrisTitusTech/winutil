@@ -1,0 +1,42 @@
+# Windows Subsystem for Linux
+
+
+!!! info
+     The Development Documentation is auto generated for every compilation of WinUtil, meaning a bit part of the dev-docs stays up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+
+
+## Description
+
+Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.
+
+<!-- BEGIN CUSTOM CONTENT -->
+
+<!-- END CUSTOM CONTENT -->
+
+<details>
+<summary>Preview Code</summary>
+
+```json
+{
+  "Content": "Windows Subsystem for Linux",
+  "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+  "category": "Features",
+  "panel": "1",
+  "Order": "a020_",
+  "feature": [
+    "VirtualMachinePlatform",
+    "Microsoft-Windows-Subsystem-Linux"
+  ],
+  "InvokeScript": []
+}
+```
+</details>
+
+
+
+<!-- BEGIN SECOND CUSTOM CONTENT -->
+
+<!-- END SECOND CUSTOM CONTENT -->
+
+[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
+
