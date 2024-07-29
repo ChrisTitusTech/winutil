@@ -25,7 +25,7 @@ jobs:
           #   Because there's a chance where this'll get triggered by a Release Creation, Edit, Deletion..
           #   the value of 'github.ref' will be 'refs/tags/TAG-NAME', and this tag can not be handled easily by
           #   the 'actions/checkout' action.. we need to handle this case by always changing to main branch.
-          declare -rA number_of_refname_instances=$(git branch -a | grep -F '${{ github.ref_name }}' | wc --lines)
+          declare -rA number_of_refname_instances=$(git branch -a | grep -F '${{ github.ref_name }}' | grep -i -v -e 'HEAD\s*detached' | wc --lines)
           if [[ $number_of_refname_instances = 0 ]] ; then
             echo "branch_name=main" >> $GITHUB_OUTPUT
           else
