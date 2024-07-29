@@ -6,7 +6,7 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning){
+  if($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -16,7 +16,7 @@ function Invoke-WPFtweaksbutton {
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -30,7 +30,7 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
-    if ($Tweaks.count -eq 1){
+    if ($Tweaks.count -eq 1) {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
     } else {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })

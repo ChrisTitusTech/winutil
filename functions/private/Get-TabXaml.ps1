@@ -192,7 +192,7 @@ function Get-TabXaml {
 
                     # else it is a checkbox
                     default {
-                        $checkedStatus = If ($appInfo.Checked -eq $null) {""} Else {" IsChecked=""$($appInfo.Checked)"""}
+                        $checkedStatus = If ($appInfo.Checked -eq $null) {""} else {" IsChecked=""$($appInfo.Checked)"""}
                         if ($appInfo.Link -eq $null) {
                             $blockXml += $precal_indent +
                                             "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""$($checkedStatus) Margin=""5,0""" + " " +

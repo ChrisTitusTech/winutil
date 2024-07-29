@@ -16,9 +16,9 @@ function Set-WinUtilUITheme {
     param
     (
          [Parameter(Mandatory, position=0)]
-         [string] $inputXML,
+         [string]$inputXML,
          [Parameter(position=1)]
-         [string] $themeName = 'matrix'
+         [string]$themeName = 'matrix'
     )
 
     try {
@@ -37,13 +37,11 @@ function Set-WinUtilUITheme {
                 # Replace the key with the value in the input XML
                 $inputXML = $inputXML.Replace($formattedKey, $value)
             }
-        }
-        else {
+        } else {
             Write-Host "Theme '$themeName' not found."
         }
 
-    }
-    catch {
+    } catch {
         Write-Warning "Unable to apply theme"
         Write-Warning $psitem.Exception.StackTrace
     }

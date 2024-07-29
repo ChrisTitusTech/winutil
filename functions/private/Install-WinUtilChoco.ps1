@@ -18,8 +18,7 @@ function Install-WinUtilChoco {
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
 
-    }
-    Catch {
+    } catch {
         Write-Host "===========================================" -Foregroundcolor Red
         Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
         Write-Host "===========================================" -Foregroundcolor Red

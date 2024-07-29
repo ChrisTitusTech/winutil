@@ -10,10 +10,10 @@ function Copy-Files {
 
     #>
     param (
-        [string] $Path,
-        [string] $Destination,
-        [switch] $Recurse = $false,
-        [switch] $Force = $false
+        [string]$Path,
+        [string]$Destination,
+        [switch]$Recurse = $false,
+        [switch]$Force = $false
     )
 
     try {

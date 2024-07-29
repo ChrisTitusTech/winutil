@@ -15,7 +15,7 @@ function Invoke-WPFButton {
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
-    Switch -Wildcard ($Button){
+    Switch -Wildcard ($Button) {
 
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}

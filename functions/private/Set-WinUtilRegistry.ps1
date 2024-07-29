@@ -27,8 +27,8 @@ function Set-WinUtilRegistry {
         $Value
     )
 
-    Try{
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+    try {
+        if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
 
         If (!(Test-Path $Path)) {
             Write-Host "$Path was not found, Creating..."
@@ -37,14 +37,11 @@ function Set-WinUtilRegistry {
 
         Write-Host "Set $Path\$Name to $Value"
         Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }

@@ -30,8 +30,7 @@ Function Install-WinUtilProgramWinget {
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
     for ($i = 0; $i -lt $count; $i++) {
-        $Program = $ProgramsToInstall[$i]
-        $failedPackages = @()
+        $Program = $ProgramsToInstall[$i]$failedPackages = @()
         Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $((($i + 1)/$count) * 100)
         if($manage -eq "Installing") {
             # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
@@ -106,8 +105,7 @@ Function Install-WinUtilProgramWinget {
                 $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
             }
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-        }
-        else {
+        } else {
             throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
         }
     }

@@ -86,8 +86,7 @@ function ConvertTo-Icon {
         $icon.Save($file)
         $file.Close()
         $icon.Dispose()
-    }
-    else {
+    } else {
         throw [System.IO.FileNotFoundException] "[ConvertTo-Icon] The provided bitmap File Path is not found at '$bitmapPath'."
     }
 }

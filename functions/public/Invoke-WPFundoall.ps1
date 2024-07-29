@@ -6,7 +6,7 @@ function Invoke-WPFundoall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -14,7 +14,7 @@ function Invoke-WPFundoall {
 
     $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
 
-    if ($tweaks.count -eq 0){
+    if ($tweaks.count -eq 0) {
         $msg = "Please check the tweaks you wish to undo."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -24,14 +24,14 @@ function Invoke-WPFundoall {
         param($Tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        if ($Tweaks.count -eq 1){
+        if ($Tweaks.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
         $cnt = 0
 
-        Foreach ($tweak in $tweaks){
+        Foreach ($tweak in $tweaks) {
             Invoke-WinUtilTweaks $tweak -undo $true
             $cnt += 1
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })

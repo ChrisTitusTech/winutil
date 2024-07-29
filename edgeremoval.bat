@@ -84,7 +84,7 @@ $edges = @(); $bho = @(); 'LocalApplicationData','ProgramFilesX86','ProgramFiles
 ## use dedicated C:\Scripts path to save OpenWebSearch (due to Sigma rules FUD)
 $DIR = "$env:SystemDrive\Scripts"; mkdir $DIR -ea 0 >''
 ## export OpenWebSearch innovative redirector - used by MSEdgeRedirect as well
-foreach ($b in $bho) { if (test-path $b) { try {copy $b "$DIR\ie_to_edge_stub.exe" -force -ea 0} catch{} } }
+foreach ($b in $bho) { if (test-path $b) { try {copy $b "$DIR\ie_to_edge_stub.exe" -force -ea 0} catch {} } }
 
 ## 4 remove found *Edge* appx packages with unblock tricks
 $provisioned = get-appxprovisionedpackage -online; $appxpackage = get-appxpackage -allusers; $eol = @()

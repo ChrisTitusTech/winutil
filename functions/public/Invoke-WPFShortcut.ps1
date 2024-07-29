@@ -22,10 +22,9 @@ function Invoke-WPFShortcut {
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
-            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
                 $shell = "pwsh.exe"
-            }
-            else{
+            } else {
                 $shell = "powershell.exe"
             }
 

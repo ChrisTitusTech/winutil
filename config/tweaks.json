@@ -2277,7 +2277,7 @@
 
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists){
+        if($null -eq $exists) {
             write-host 'Changing system to allow multiple restore points per day'
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
@@ -2511,17 +2511,16 @@
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
-      if (Test-Path $regPath){
+      if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
-      }
-      else{
+      } else {
           Write-Host \"Onedrive dosn't seem to be installed anymore\" -ForegroundColor Red
           return
       }
       # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)){
+      if (-not (Test-Path $regPath)) {
       Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
       Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
 
@@ -2583,8 +2582,7 @@
       Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
       Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
       Start-Sleep 5
-      }
-      else{
+      } else {
       Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
       }
       "
@@ -2784,8 +2782,7 @@
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
           Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to download the HOSTS file. Error: $_\"
       }
 
@@ -2811,8 +2808,7 @@
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output \"Successfully added the AdobeNetBlock.\"
           }
-      }
-      catch {
+      } catch {
           Write-Error \"Error during processing: $_\"
       }
 
@@ -2823,8 +2819,7 @@
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
@@ -2837,8 +2832,7 @@
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to load the HOSTS file. Error: $_\"
           return
       }
@@ -2864,8 +2858,7 @@
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
           Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
       }
 
@@ -2873,8 +2866,7 @@
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
