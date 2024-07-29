@@ -123,8 +123,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Commit and Push Changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -134,3 +132,5 @@ jobs:
           git commit -m "Update changelog.md with all releases"
           echo "Event name: ${{ github.event_name }}"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
