@@ -361,7 +361,7 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 
 ## Invoke Script
 
-```json
+```powershell
 
       bcdedit /set `{current`} bootmenupolicy Legacy | Out-Null
         If ((get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild -lt 22557) {

@@ -35,7 +35,7 @@ Intel LMS service is always listening on all ports and could be a huge security 
 
 ## Invoke Script
 
-```json
+```powershell
 
         Write-Host "Kill LMS"
         $serviceName = "LMS"
@@ -82,7 +82,7 @@ Intel LMS service is always listening on all ports and could be a huge security 
 ```
 ## Undo Script
 
-```json
+```powershell
 
       Write-Host "LMS vPro needs to be redownloaded from intel.com"
 

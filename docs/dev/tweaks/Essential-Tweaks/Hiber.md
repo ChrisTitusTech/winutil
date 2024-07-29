@@ -51,13 +51,13 @@ Hibernation is really meant for laptops as it saves what's in memory before turn
 
 ## Invoke Script
 
-```json
+```powershell
 powercfg.exe /hibernate off
 
 ```
 ## Undo Script
 
-```json
+```powershell
 powercfg.exe /hibernate on
 
 ```

@@ -35,7 +35,7 @@ Disables Advanced Boot Options screen that lets you start Windows in advanced tr
 
 ## Invoke Script
 
-```json
+```powershell
 
       If (!(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager\LastKnownGood')) {
             New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager\LastKnownGood' -Force | Out-Null

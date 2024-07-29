@@ -35,13 +35,13 @@ Storage Sense deletes temp files automatically.
 
 ## Invoke Script
 
-```json
+```powershell
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Value 0 -Type Dword -Force
 
 ```
 ## Undo Script
 
-```json
+```powershell
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Value 1 -Type Dword -Force
 
 ```

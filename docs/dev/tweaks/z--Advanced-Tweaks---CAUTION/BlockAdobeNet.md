@@ -35,7 +35,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
 
 ## Invoke Script
 
-```json
+```powershell
 
       # Define the URL of the remote HOSTS file and the local paths
       $remoteHostsUrl = "https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts"
@@ -94,7 +94,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
 ```
 ## Undo Script
 
-```json
+```powershell
 
       # Define the local path of the HOSTS file
       $localHostsPath = "C:\Windows\System32\drivers\etc\hosts"

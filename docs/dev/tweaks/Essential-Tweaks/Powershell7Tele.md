@@ -35,13 +35,13 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
 
 ## Invoke Script
 
-```json
+```powershell
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
 
 ```
 ## Undo Script
 
-```json
+```powershell
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
 
 ```

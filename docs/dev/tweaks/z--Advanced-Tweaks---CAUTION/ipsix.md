@@ -44,13 +44,13 @@ Disables IPv6.
 
 ## Invoke Script
 
-```json
+```powershell
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
 
 ```
 ## Undo Script
 
-```json
+```powershell
 Enable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
 
 ```

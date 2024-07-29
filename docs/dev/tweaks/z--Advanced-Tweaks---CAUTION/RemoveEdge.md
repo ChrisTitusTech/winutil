@@ -35,7 +35,7 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
 
 ## Invoke Script
 
-```json
+```powershell
 
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
         Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat" -OutFile "$ENV:TEMP\edgeremoval.bat"
@@ -45,7 +45,7 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
 ```
 ## Undo Script
 
-```json
+```powershell
 
       Write-Host "Install Microsoft Edge"
       Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge " -NoNewWindow -Wait

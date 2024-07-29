@@ -108,7 +108,7 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 
 ## Invoke Script
 
-```json
+```powershell
 
         $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
         $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')

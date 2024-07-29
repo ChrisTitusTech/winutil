@@ -51,7 +51,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 
 ## Invoke Script
 
-```json
+```powershell
 
       Write-Host "Turn on Hibernation"
       Start-Process -FilePath powercfg -ArgumentList "/hibernate on" -NoNewWindow -Wait
@@ -66,7 +66,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 ```
 ## Undo Script
 
-```json
+```powershell
 
       Write-Host "Turn off Hibernation"
       Start-Process -FilePath powercfg -ArgumentList "/hibernate off" -NoNewWindow -Wait

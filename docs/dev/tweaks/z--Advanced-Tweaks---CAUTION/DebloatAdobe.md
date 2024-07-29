@@ -87,7 +87,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 ## Invoke Script
 
-```json
+```powershell
 
       function CCStopper {
         $path = "C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\Adobe Desktop Service.exe"
@@ -140,7 +140,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 ```
 ## Undo Script
 
-```json
+```powershell
 
       function RestoreCCService {
         $originalPath = "C:\Program Files (x86)\Common Files\Adobe\Adobe Desktop Common\ADS\Adobe Desktop Service.exe.old"

@@ -33,7 +33,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
 
 ## Invoke Script
 
-```json
+```powershell
 
         # Check if the user has administrative privileges
         if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

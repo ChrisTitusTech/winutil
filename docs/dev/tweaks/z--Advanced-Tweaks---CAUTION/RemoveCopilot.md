@@ -58,7 +58,7 @@ Disables MS Copilot AI built into Windows since 23H2.
 
 ## Invoke Script
 
-```json
+```powershell
 
       Write-Host "Remove Copilot"
       dism /online /remove-package /package-name:Microsoft.Windows.Copilot
@@ -67,7 +67,7 @@ Disables MS Copilot AI built into Windows since 23H2.
 ```
 ## Undo Script
 
-```json
+```powershell
 
       Write-Host "Install Copilot"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot

@@ -35,7 +35,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 
 ## Invoke Script
 
-```json
+```powershell
 
       $OneDrivePath = $($env:OneDrive)
       Write-Host "Removing OneDrive"
@@ -121,7 +121,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 ```
 ## Undo Script
 
-```json
+```powershell
 
       Write-Host "Install OneDrive"
       Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive " -NoNewWindow -Wait

@@ -35,7 +35,7 @@ Disables web suggestions when searching using Windows Search.
 
 ## Invoke Script
 
-```json
+```powershell
 
       If (!(Test-Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer')) {
             New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Force | Out-Null

@@ -41,7 +41,7 @@ Network File System (NFS) is a mechanism for storing files on a network.
 
 ## Invoke Script
 
-```json
+```powershell
 nfsadmin client stop
 Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default' -Name 'AnonymousUID' -Type DWord -Value 0
 Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ClientForNFS\CurrentVersion\Default' -Name 'AnonymousGID' -Type DWord -Value 0

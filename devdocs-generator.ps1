@@ -22,9 +22,40 @@ if (-Not (Test-Path -Path $featuresOutputDir)) {
     New-Item -ItemType Directory -Path $featuresOutputDir | Out-Null
 }
 
+# Load functions from private and public directories
+$privateFunctionsDir = "functions/private"
+$publicFunctionsDir = "functions/public"
+$functions = @{}
+
+function Load-Functions($dir) {
+    Get-ChildItem -Path $dir -Filter *.ps1 | ForEach-Object {
+        $functionName = $_.BaseName
+        $functionContent = Get-Content -Path $_.FullName -Raw
+        $functions[$functionName] = $functionContent
+    }
+}
+
+Load-Functions -dir $privateFunctionsDir
+Load-Functions -dir $publicFunctionsDir
+
+# Function to check if a function is called in a script
+function Get-CalledFunctions($scriptLines, $functionList) {
+    $calledFunctions = @()
+    foreach ($functionName in $functionList) {
+        foreach ($line in $scriptLines) {
+            if ($line -match "\b$functionName\b") {
+                $calledFunctions += $functionName
+                break
+            }
+        }
+    }
+    return $calledFunctions
+}
+
 # Function to generate markdown files
 function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
     $tocEntries = @()
+    $includedFunctions = @()
 
     foreach ($itemName in $data.PSObject.Properties.Name) {
         $itemDetails = $data.$itemName
@@ -70,7 +101,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
             $InvokeScript = @"
 ## Invoke Script
 
-``````json`n$InvokeScriptContent`n``````
+``````powershell`n$InvokeScriptContent`n``````
 "@
         }
 
@@ -80,8 +111,24 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
             $UndoScript = @"
 ## Undo Script
 
-``````json`n$UndoScriptContent`n``````
+``````powershell`n$UndoScriptContent`n``````
 "@
+        }
+
+        $FunctionDetails = ""
+        $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript)
+        foreach ($script in $allScripts) {
+            if ($script -ne $null) {
+                $calledFunctions = Get-CalledFunctions -scriptLines $script -functionList $functions.Keys
+                foreach ($functionName in $calledFunctions) {
+                    if ($functions.ContainsKey($functionName) -and -not $includedFunctions.Contains($functionName)) {
+                        $FunctionDetails += "## Function: $functionName`n"
+                        $FunctionDetails += "``````powershell`n$($functions[$functionName])`n``````
+`n"
+                        $includedFunctions += $functionName
+                    }
+                }
+            }
         }
 
         $registryDocs = ""
@@ -160,6 +207,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         }
         if ($itemDetails.UndoScript) {
             Add-Content -Path $filename -Value $UndoScript -Encoding utf8
+        }
+        if ($FunctionDetails) {
+            Add-Content -Path $filename -Value $FunctionDetails -Encoding utf8
         }
         if ($itemDetails.registry) {
             Add-Content -Path $filename -Value $registryDocs -Encoding utf8

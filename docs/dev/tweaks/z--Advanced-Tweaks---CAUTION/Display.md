@@ -128,13 +128,13 @@ Sets the system preferences to performance. You can do this manually with sysdm.
 
 ## Invoke Script
 
-```json
+```powershell
 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](144,18,3,128,16,0,0,0))
 
 ```
 ## Undo Script
 
-```json
+```powershell
 Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask"
 
 ```

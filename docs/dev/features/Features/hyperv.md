@@ -42,7 +42,7 @@ Hyper-V is a hardware virtualization product developed by Microsoft that allows 
 
 ## Invoke Script
 
-```json
+```powershell
 Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /set hypervisorschedulertype classic' -Wait
 
 ```

@@ -44,13 +44,13 @@ Teredo network tunneling is a ipv6 feature that can cause additional latency.
 
 ## Invoke Script
 
-```json
+```powershell
 netsh interface teredo set state disabled
 
 ```
 ## Undo Script
 
-```json
+```powershell
 netsh interface teredo set state default
 
 ```

@@ -32,7 +32,7 @@ Runs Disk Cleanup on Drive C: and removes old Windows Updates.
 
 ## Invoke Script
 
-```json
+```powershell
 
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase

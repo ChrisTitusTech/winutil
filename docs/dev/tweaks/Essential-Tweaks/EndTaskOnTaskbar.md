@@ -35,7 +35,7 @@ Enables option to end task when right clicking a program in the taskbar
 
 ## Invoke Script
 
-```json
+```powershell
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
       $name = "TaskbarEndTask"
       $value = 1
@@ -51,7 +51,7 @@ $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Taskb
 ```
 ## Undo Script
 
-```json
+```powershell
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
       $name = "TaskbarEndTask"
       $value = 0

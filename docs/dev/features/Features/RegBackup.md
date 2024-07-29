@@ -35,7 +35,7 @@ Enables daily registry backup, previously disabled by Microsoft in Windows 10 18
 
 ## Invoke Script
 
-```json
+```powershell
 
       New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager' -Name 'EnablePeriodicBackup' -Type DWord -Value 1 -Force
       New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager' -Name 'BackupCount' -Type DWord -Value 2 -Force
