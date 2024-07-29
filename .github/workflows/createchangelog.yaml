@@ -25,12 +25,19 @@ jobs:
           #   Because there's a chance where this'll get triggered by a Release Creation, Edit, Deletion..
           #   the value of 'github.ref' will be 'refs/tags/TAG-NAME', and this tag can not be handled easily by
           #   the 'actions/checkout' action.. we need to handle this case by always changing to main branch.
+          branch_name=""
           declare -rA number_of_refname_instances=$(git branch -a | grep -F '${{ github.ref_name }}' | grep -i -v -e 'HEAD\s*detached' | wc --lines)
           if [[ $number_of_refname_instances = 0 ]] ; then
-            echo "branch_name=main" >> $GITHUB_OUTPUT
+            branch_name="main"
           else
-            echo "branch_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            branch_name="${{ github.ref_name }}"
           fi
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git switch $branch_name
+          git pull
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get all releases and update changelog.md file
         run: |
@@ -124,13 +131,8 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git switch ${{ steps.get_correct_branch.outputs.branch_name }}
-          git pull
           git add docs/changelog.md
           git commit -m "Update changelog.md with all releases"
-          echo "Event name: ${{ github.event_name }}"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
