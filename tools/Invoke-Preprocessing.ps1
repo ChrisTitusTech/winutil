@@ -72,12 +72,18 @@
         throw "[Invoke-Preprocessing] Invalid Paramter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
     }
 
-    if ((-NOT ($ExcludedFiles.Count -eq 0)) -AND (-NOT $SkipExcludedFilesValidation)) {
-        ForEach ($excludedFile in $ExcludedFiles) {
+    $count = $ExcludedFiles.Count
+    if ((-NOT ($count -eq 0)) -AND (-NOT $SkipExcludedFilesValidation)) {
+        for ($i = 0; $i -lt $count; $i++) {
+            $excludedFile = $ExcludedFiles[$i]
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
             if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
-                throw "[Invoke-Preprocessing] File Path & File Pattern was not found '$filePath', use '-SkipExcludedFilesValidation' switch to skip this check."
+                $failedFilesList += "'$filePath', "
             }
+        }
+        $failedFilesList = $failedFilesList -replace (',\s*$', '')
+        if (-NOT $failedFilesList -eq "") {
+            throw "[Invoke-Preprocessing] One or more File Paths & File Patterns were not found, you can use '-SkipExcludedFilesValidation' switch to skip this check, and the failed files are: $failedFilesList"
         }
     }
 
@@ -123,7 +129,7 @@
             -replace ('\}\s*Catch', '} catch') `
             -replace ('\}\s*Catch\s*(?<exceptions>(\[.*?\]\s*(\,)?\s*)+)\s*\{', '} catch ${exceptions} {') `
             -replace ('\}\s*Catch\s*(?<exceptions>\[.*?\])\s*\{', '} catch ${exceptions} {') `
-	    -replace ('(?<parameter_type>\[.*?\])\s*(?<str_after_type>\$.*?(,|\s*\)))', '${parameter_type}${str_after_type}') `
+            -replace ('(?<parameter_type>\[.*?\])\s*(?<str_after_type>\$.*?(,|\s*\)))', '${parameter_type}${str_after_type}') `
         | Set-Content "$file"
 
         Write-Progress -Activity $ProgressActivity -Status "$ProgressStatusMessage - Finished $i out of $numOfFiles" -PercentComplete (($i/$numOfFiles)*100)
