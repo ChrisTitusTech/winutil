@@ -27,8 +27,13 @@ jobs:
           done < discussion_ids_list.txt
 
           number_of_ids=${#discussion_ids_arr[@]}
-          for (( i=0; i<${number_of_ids}; i++ ));
-          do
+
+          echo "Number of IDs: ${number_of_ids}"
+          echo "IDs Array:     ${discussion_ids_arr[@]}"
+          echo "IDs List:"
+          cat discussion_ids_list.txt
+
+          for (( i=0; i<${number_of_ids}; i++ )); do
             discussion_id=${discussion_ids_arr[$i]}
             echo "$discussion_id"
             curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
