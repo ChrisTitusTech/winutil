@@ -33,6 +33,6 @@ jobs:
             echo "$discussion_id"
             curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
                  -d '{"state": "closed"}' \
-                 'https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id'
+                 "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id"
           done
         shell: bash
