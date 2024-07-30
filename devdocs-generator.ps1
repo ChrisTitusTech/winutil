@@ -10,6 +10,10 @@
 $tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
 $features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
 
+# Get the last modified dates of the JSON files
+$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd")
+$featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
+
 # Create the output directories if they don't exist
 $tweaksOutputDir = "docs/dev/tweaks"
 $featuresOutputDir = "docs/dev/features"
@@ -53,7 +57,7 @@ function Get-CalledFunctions($scriptLines, $functionList) {
 }
 
 # Function to generate markdown files
-function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
+function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified, $type) {
     $tocEntries = @()
     $includedFunctions = @()
 
@@ -83,6 +87,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
 
         # Create the markdown content
         $header = "# $([string]$itemDetails.Content)`n"
+        $lastUpdatedNotice = "Last Updated: $lastModified`n"
         $autoupdatenotice = "
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`n`n"
@@ -194,6 +199,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
 
         # Write to the markdown file
         Set-Content -Path $filename -Value $header -Encoding utf8
+        Add-Content -Path $filename -Value $lastUpdatedNotice -Encoding utf8
         Add-Content -Path $filename -Value $autoupdatenotice -Encoding utf8
         if ($itemDetails.Description) {
             Add-Content -Path $filename -Value $description -Encoding utf8
@@ -230,8 +236,8 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
 }
 
 # Generate markdown files for tweaks and features and collect TOC entries
-$tweakTocEntries = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -type "tweak"
-$featureTocEntries = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -type "feature"
+$tweakTocEntries = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
+$featureTocEntries = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
 
 # Combine TOC entries and group by type and category
 $allTocEntries = $tweakTocEntries + $featureTocEntries
