@@ -77,7 +77,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $type) {
         $tocEntries += @{
             Category = $category
             Path = $relativePath
-            Name = $displayName
+            Name = $itemDetails.Content
             Type = $type
         }
 
