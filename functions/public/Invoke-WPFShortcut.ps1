@@ -1,4 +1,3 @@
-
 function Invoke-WPFShortcut {
     <#
 
@@ -52,8 +51,8 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }
