@@ -14,11 +14,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Extract Version from winutil.ps1
+      - name: Set Version to Todays Date
         id: extract_version
         run: |
           $version = (Get-Date -Format "yy.MM.dd")
-          echo "version=$version" >> $env:GITHUB_ENV
+          echo "VERSION=$version" >> $env:GITHUB_ENV
         shell: pwsh
 
       - name: Create Tag
@@ -27,7 +27,15 @@ jobs:
           $tagExists = git tag -l $env:VERSION
           if ($tagExists -eq "") {
             git tag $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to create tag $env:VERSION"
+              exit 1
+            }
             git push origin $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to push tag $env:VERSION"
+              exit 1
+            }
           } else {
             Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }

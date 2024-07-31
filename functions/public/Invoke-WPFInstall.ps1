@@ -29,14 +29,14 @@ function Invoke-WPFInstall {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
         $packagesWinget, $packagesChoco = {
-            $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
+            $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
             foreach ($package in $PackagesToInstall) {
                 if ($package.winget -eq "na") {
                     $packagesChoco.add($package)
                     Write-Host "Queueing $($package.choco) for Chocolatey install"
                 } else {
-                    $packagesWinget.add($package)
+                    $null = $packagesWinget.add($($package.winget))
                     Write-Host "Queueing $($package.winget) for Winget install"
                 }
             }
@@ -48,7 +48,7 @@ function Invoke-WPFInstall {
             $errorPackages = @()
             if($packagesWinget.Count -gt 0){
                 Install-WinUtilWinget
-                $errorPackages += Install-WinUtilProgramWinget -ProgramsToInstall $packagesWinget
+                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget 
                 $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
             }
             if($packagesChoco.Count -gt 0){
