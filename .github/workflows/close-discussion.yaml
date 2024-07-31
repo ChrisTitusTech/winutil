@@ -8,6 +8,9 @@ jobs:
   closeDiscussion:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Check if PR was merged
         if: github.event.pull_request.merged == true
         run: echo "PR was merged"
@@ -24,7 +27,13 @@ jobs:
         if: github.event.pull_request.merged == true
         id: extract-discussion
         run: |
-          echo '${{ github.event.pull_request.body }}' > pr_body.txt
+          pr_body="${{ github.event.pull_request.body }}"
+          discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
+          
+          if [ -z "$discussion_ids" ]; then
+            echo "No discussion IDs found."
+            exit 0
+          fi
 
           discussion_ids_arr=()
           cat pr_body.txt | grep -i -Po '^\s*(-|\d+\.)?\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}' > discussion_ids_list.txt

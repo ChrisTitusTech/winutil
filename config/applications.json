@@ -205,7 +205,7 @@
 		"content": "Advanced Renamer",
 		"description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
 		"link": "https://www.advancedrenamer.com/",
-		"winget": "XP9MD3S1KFCPH1"
+		"winget": "HulubuluSoftware.AdvancedRenamer"
 	},
 	"calibre": {
 		"category": "Document",
@@ -2466,8 +2466,8 @@
 	"wingetui": {
 		"category": "Utilities",
 		"choco": "wingetui",
-		"content": "UnigetUI",
-		"description": "WingetUI is a graphical user interface for Microsoft's Windows Package Manager (winget).",
+		"content": "UniGetUI",
+		"description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
 		"link": "https://www.marticliment.com/wingetui/",
 		"winget": "SomePythonThings.WingetUIStore"
 	},

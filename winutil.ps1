@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.25
+    Version        : 24.07.31
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.25"
+$sync.version = "24.07.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -744,6 +744,15 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
+        $DetailedBSoD = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
+        if($DetailedBSoD -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
 }
 function Get-WinUtilVariables {
 
@@ -987,122 +996,6 @@ function Install-WinUtilProgramChoco {
     if(Test-Path -Path $uninstallOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
 
     return;
-}
-Function Install-WinUtilProgramWinget {
-
-    <#
-    .SYNOPSIS
-    Manages the provided programs using Winget
-
-    .PARAMETER ProgramsToInstall
-    A list of programs to manage
-
-    .PARAMETER manage
-    The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
-
-    .NOTES
-    The triple quotes are required any time you need a " in a normal script block.
-    The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-manager/winget/returnCodes.md
-    #>
-
-    param(
-        [Parameter(Mandatory, Position=0)]
-        [PsCustomObject]$ProgramsToInstall,
-
-        [Parameter(Position=1)]
-        [String]$manage = "Installing"
-    )
-
-    $count = $ProgramsToInstall.Count
-
-    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
-    Write-Host "==========================================="
-    Write-Host "--    Configuring winget packages       ---"
-    Write-Host "==========================================="
-    for ($i = 0; $i -lt $count; $i++) {
-        $Program = $ProgramsToInstall[$i]
-        $failedPackages = @()
-        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.winget) $($i + 1) of $count" -PercentComplete $((($i + 1)/$count) * 100)
-        if($manage -eq "Installing") {
-            # Install package via ID, if it fails try again with different scope and then with an unelevated prompt.
-            # Since Install-WinGetPackage might not be directly available, we use winget install command as a workaround.
-            # Winget, not all installers honor any of the following: System-wide, User Installs, or Unelevated Prompt OR Silent Install Mode.
-            # This is up to the individual package maintainers to enable these options. Aka. not as clean as Linux Package Managers.
-            Write-Host "Starting install of $($Program.winget) with winget."
-            try {
-                $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -eq 0) {
-                    Write-Host "$($Program.winget) installed successfully."
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-                if ($status -eq -1978335189) {
-                    Write-Host "$($Program.winget) No applicable update found"
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-                Write-Host "Attempt with User scope"
-                $status = $(Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --scope user --silent --accept-source-agreements --accept-package-agreements" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -eq 0) {
-                    Write-Host "$($Program.winget) installed successfully with User scope."
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-                if ($status -eq -1978335189) {
-                    Write-Host "$($Program.winget) No applicable update found"
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-                Write-Host "Attempt with User prompt"
-                $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $($Program.winget) installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User Credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
-                if ($userChoice -eq 'Yes') {
-                    $getcreds = Get-Credential
-                    $process = Start-Process -FilePath "winget" -ArgumentList "install --id $($Program.winget) --silent --accept-source-agreements --accept-package-agreements" -Credential $getcreds -PassThru -NoNewWindow
-                    Wait-Process -Id $process.Id
-                    $status = $process.ExitCode
-                } else {
-                    Write-Host "Skipping installation with specific user credentials."
-                }
-                if($status -eq 0) {
-                    Write-Host "$($Program.winget) installed successfully with User prompt."
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-                if ($status -eq -1978335189) {
-                    Write-Host "$($Program.winget) No applicable update found"
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-                    continue
-                }
-            } catch {
-                Write-Host "Failed to install $($Program.winget). With winget"
-                $failedPackages += $Program
-                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
-            }
-        }
-        elseif($manage -eq "Uninstalling") {
-            # Uninstall package via ID using winget directly.
-            try {
-                $status = $(Start-Process -FilePath "winget" -ArgumentList "uninstall --id $($Program.winget) --silent" -Wait -PassThru -NoNewWindow).ExitCode
-                if($status -ne 0) {
-                    Write-Host "Failed to uninstall $($Program.winget)."
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                } else {
-                    Write-Host "$($Program.winget) uninstalled successfully."
-                    $failedPackages += $Program
-                }
-            } catch {
-                Write-Host "Failed to uninstall $($Program.winget) due to an error: $_"
-                $failedPackages += $Program
-                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-            }
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($x/$count) })
-        }
-        else {
-            throw "[Install-WinUtilProgramWinget] Invalid Value for Parameter 'manage', Provided Value is: $manage"
-        }
-    }
-    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
-    return $failedPackages;
 }
 function Install-WinUtilWinget {
     <#
@@ -2012,6 +1905,40 @@ Function Invoke-WinUtilDarkMode {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+Function Invoke-WinUtilDetailedBSoD {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Detailed BSoD
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters').DisplayParameters
+        
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Detailed BSoD"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Detailed BSoD"
+            $value =0
+        }
+
+        $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
+        Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
 function Invoke-WinUtilFeatureInstall {
     <#
 
@@ -2722,6 +2649,177 @@ function Invoke-WinUtilVerboseLogon {
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+Function Invoke-WinUtilWingetProgram {
+    <#
+    .SYNOPSIS
+    Runs the designated action on the provided programs using Winget
+
+    .PARAMETER Programs
+    A list of programs to process
+
+    .PARAMETER action
+    The action to perform on the programs, can be either 'Install' or 'Uninstall'
+
+    .NOTES
+    The triple quotes are required any time you need a " in a normal script block.
+    The winget Return codes are documented here: https://github.com/microsoft/winget-cli/blob/master/doc/windows/package-actionr/winget/returnCodes.md
+    #>
+
+    param(
+        [Parameter(Mandatory, Position=0)]
+        $Programs,
+        
+        [Parameter(Mandatory, Position=1)]
+        [ValidateSet("Install", "Uninstall")]
+        [String]$Action
+    )
+
+    Function Invoke-Winget {
+    <#
+    .SYNOPSIS
+    Invokes the winget.exe with the provided arguments and return the exit code
+
+    .PARAMETER wingetId
+    The Id of the Program that Winget should Install/Uninstall
+
+    .PARAMETER scope
+    Determines the installation mode. Can be "user" or "machine" (For more info look at the winget documentation)
+
+    .PARAMETER credential
+    The PSCredential Object of the user that should be used to run winget
+    
+    .NOTES
+    Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
+    #>
+        param (
+            [string]$wingetId,
+            [string]$scope = "",
+            [PScredential]$credential = $null
+        )
+
+        $commonArguments = "--id $wingetId --silent"
+        $arguments = if ($Action -eq "Install"){
+            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})" 
+        }
+        else {
+            "uninstall $commonArguments"
+        }
+
+        $processParams = @{
+            FilePath = "winget"
+            ArgumentList = $arguments
+            Wait = $true
+            PassThru = $true
+            NoNewWindow = $true
+        }
+
+        if ($credential) {
+            $processParams.credential = $credential
+        }
+        
+        return (Start-Process @processParams).ExitCode           
+    }
+
+    Function Invoke-Install {
+    <#
+    .SYNOPSIS
+    Contains the Install Logic and return code handling from winget
+    
+    .PARAMETER Program
+    The Winget ID of the Program that should be installed
+    #>
+        param (
+            [string]$Program
+        )
+        $status = Invoke-Winget -wingetId $Program
+        if ($status -eq 0) {
+            Write-Host "$($Program) installed successfully."
+            return $true
+        } elseif ($status -eq -1978335189) {
+            Write-Host "$($Program) No applicable update found"
+            return $true
+        }
+
+        Write-Host "Attempt installation of $($Program) with User scope"
+        $status = Invoke-Winget -wingetId $Program -scope "user"
+        if ($status -eq 0) {
+            Write-Host "$($Program) installed successfully with User scope."
+            return $true
+        } elseif ($status -eq -1978335189) {
+            Write-Host "$($Program) No applicable update found"
+            return $true
+        }
+
+        $userChoice = [System.Windows.MessageBox]::Show("Do you want to attempt $($Program) installation with specific user credentials? Select 'Yes' to proceed or 'No' to skip.", "User credential Prompt", [System.Windows.MessageBoxButton]::YesNo)
+        if ($userChoice -eq 'Yes') {
+            $getcreds = Get-Credential
+            $status = Invoke-Winget -wingetId $Program -credential $getcreds
+            if ($status -eq 0) {
+                Write-Host "$($Program) installed successfully with User prompt."
+                return $true
+            }
+        } else {
+            Write-Host "Skipping installation with specific user credentials."
+        }
+
+        Write-Host "Failed to install $($Program)."
+        return $false
+    }
+
+    Function Invoke-Uninstall {
+        <#
+        .SYNOPSIS
+        Contains the Uninstall Logic and return code handling from winget
+        
+        .PARAMETER Program
+        The Winget ID of the Program that should be uninstalled
+        #>
+        param (
+            [psobject]$Program
+        )
+        
+        try {
+            $status = Invoke-Winget -wingetId $Program
+            if ($status -eq 0) {
+                Write-Host "$($Program) uninstalled successfully."
+                return $true
+            } else {
+                Write-Host "Failed to uninstall $($Program)."
+                return $false
+            }
+        } catch {
+            Write-Host "Failed to uninstall $($Program) due to an error: $_"
+            return $false
+        }
+    }
+
+    $count = $Programs.Count
+    $failedPackages = @()
+    
+    Write-Host "==========================================="
+    Write-Host "--    Configuring winget packages       ---"
+    Write-Host "==========================================="
+    
+    for ($i = 0; $i -lt $count; $i++) {
+        $Program = $Programs[$i]
+        $result = $false
+        Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($i / $count * 100)
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
+        
+        $result = switch ($Action) {
+            "Install" {Invoke-Install -Program $Program}
+            "Uninstall" {Invoke-Uninstall -Program $Program}
+            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}    
+        }
+
+        if (-not $result) {
+            $failedPackages += $Program
+        }
+    }
+
+    Set-WinUtilProgressBar -label "$($Action)ation done" -percent 100
+    return $failedPackages
+}
 function Remove-WinUtilAPPX {
     <#
 
@@ -2792,6 +2890,37 @@ function Set-WinUtilDNS {
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
+}
+function Set-WinUtilProgressbar{
+    <#
+    .SYNOPSIS
+        This function is used to Update the Progress Bar displayed in the winutil GUI. 
+        It will be automatically hidden if the user clicks something and no process is running 
+    .PARAMETER Label
+        The Text to be overlayed onto the Progress Bar
+    .PARAMETER PERCENT
+        The percentage of the Progress Bar that should be filled (0-100) 
+    .PARAMETER Hide
+        If provided, the Progress Bar and the label will be hidden
+    #>
+    param(
+        [string]$Label,
+        [ValidateRange(0,100)]
+        [int]$Percent,
+        $Hide
+    )
+    if ($hide){
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"}) 
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})     
+    }
+    else{
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"}) 
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})     
+    }
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label}) 
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label}) 
+    $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
+    
 }
 function Set-WinUtilRegistry {
     <#
@@ -3525,9 +3654,12 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-
+    if (-not $sync.ProcessRunning){
+        Set-WinUtilProgressBar  -label "" -percent 0 -hide $true
+    }
+    
     Switch -Wildcard ($Button){
-
+    
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
         "WPFuninstall" {Invoke-WPFUnInstall}
@@ -4399,14 +4531,14 @@ function Invoke-WPFInstall {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
         $packagesWinget, $packagesChoco = {
-            $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
+            $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
             foreach ($package in $PackagesToInstall) {
                 if ($package.winget -eq "na") {
                     $packagesChoco.add($package)
                     Write-Host "Queueing $($package.choco) for Chocolatey install"
                 } else {
-                    $packagesWinget.add($package)
+                    $null = $packagesWinget.add($($package.winget))
                     Write-Host "Queueing $($package.winget) for Winget install"
                 }
             }
@@ -4418,7 +4550,7 @@ function Invoke-WPFInstall {
             $errorPackages = @()
             if($packagesWinget.Count -gt 0){
                 Install-WinUtilWinget
-                $errorPackages += Install-WinUtilProgramWinget -ProgramsToInstall $packagesWinget
+                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget 
                 $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
             }
             if($packagesChoco.Count -gt 0){
@@ -4920,22 +5052,16 @@ public class PowerManagement {
 		}
 
 		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
-		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		#Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
-		#Start-Process -FilePath $oscdimgPath -ArgumentList '-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`"' -NoNewWindow -Wait
-        $oscdimgProc = New-Object System.Diagnostics.Process
-        $oscdimgProc.StartInfo.FileName = $oscdimgPath
-        $oscdimgProc.StartInfo.Arguments = "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`""
-        $oscdimgProc.StartInfo.CreateNoWindow = $True
-        $oscdimgProc.StartInfo.WindowStyle = "Hidden"
-        $oscdimgProc.StartInfo.UseShellExecute = $False
-        $oscdimgProc.Start()
-        $oscdimgProc.WaitForExit()
+		
+		$oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
+		
+		$LASTEXITCODE = $oscdimgProc.ExitCode
+		
+		Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
 
 		if ($copyToUSB)
 		{
 			Write-Host "Copying target ISO to the USB drive"
-			#Copy-ToUSB("$env:temp\microwin.iso")
 			Copy-ToUSB("$($SaveDialog.FileName)")
 			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
 		}
@@ -4952,13 +5078,23 @@ public class PowerManagement {
 			Write-Host "`n`nPerforming Cleanup..."
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
-			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
 			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
+			try
+			{
+				# This creates a new Win32 exception from which we can extract a message in the system language.
+				# Now, this will NOT throw an exception
+				$exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
+				Write-Host "Reason: $($exitCode.Message)"
+			}
+			catch
+			{
+				# Could not get error description from Windows APIs
+			}
 		}
 
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
@@ -5309,6 +5445,7 @@ function Invoke-WPFToggle {
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
         "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
         "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $(Get-WinUtilToggleStatus WPFToggleTaskbarAlignment)}
+        "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $(Get-WinUtilToggleStatus WPFToggleDetailedBSoD)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -5330,7 +5467,7 @@ function Invoke-WPFTweakPS7{
                 Write-Host "Powershell 7 is already installed."
             } else {
                 Write-Host "Installing Powershell 7..."
-                Install-WinUtilProgramWinget -ProgramsToInstall @(@{"winget"="Microsoft.PowerShell"})
+                Invoke-WinUtilWingetProgram -Action Install -Programs @("Microsoft.PowerShell")
             }
             $targetTerminalName = "PowerShell"
         }
@@ -5401,15 +5538,14 @@ function Invoke-WPFtweaksbutton {
     } else {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
     }
-    $cnt = 0
     # Execute other selected tweaks
-    foreach ($tweak in $Tweaks) {
-      Write-Debug "This is a tweak to run $tweak count: $cnt"
-      Invoke-WinUtilTweaks $tweak
-      $cnt += 1
-      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
+    
+    for ($i = 0; $i -lt $Tweaks.Count; $i++){
+      Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $Tweaks.Count * 100)
+      Invoke-WinUtilTweaks $tweaks[$i]
+      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
     }
-
+    Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
     $sync.ProcessRunning = $false
     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
     Write-Host "================================="
@@ -5490,7 +5626,7 @@ function Invoke-WPFundoall {
         return
     }
 
-    $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+    $tweaks = (Get-WinUtilCheckBoxes)["WPFtweaks"]
 
     if ($tweaks.count -eq 0){
         $msg = "Please check the tweaks you wish to undo."
@@ -5498,188 +5634,31 @@ function Invoke-WPFundoall {
         return
     }
 
-    Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
-        param($Tweaks, $DebugPreference)
+    Invoke-WPFRunspace -ArgumentList $tweaks -DebugPreference $DebugPreference -ScriptBlock {
+        param($tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        if ($Tweaks.count -eq 1){
+        if ($tweaks.count -eq 1){
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
-        $cnt = 0
+        
 
-        Foreach ($tweak in $tweaks){
-            Invoke-WinUtilTweaks $tweak -undo $true
-            $cnt += 1
-            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
+        for ($i = 0; $i -lt $tweaks.Count; $i++){
+            Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
+            Invoke-WinUtiltweaks $tweaks[$i] -undo $true
+            $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) })
         }
 
+        Set-WinUtilProgressBar -Label "Undo Tweaks Finished" -Percent 100
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })        
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
 
-        $ButtonType = [System.Windows.MessageBoxButton]::OK
-        $MessageboxTitle = "Tweaks are Finished "
-        $Messageboxbody = ("Done")
-        $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-        [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
     }
-
-<#
-
-    Write-Host "Creating Restore Point in case something bad happens"
-    Enable-ComputerRestore -Drive "$env:SystemDrive"
-    Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
-
-    Write-Host "Enabling Telemetry..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Type DWord -Value 1
-    Write-Host "Enabling Wi-Fi Sense"
-    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "Value" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\Software\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots" -Name "Value" -Type DWord -Value 1
-    Write-Host "Enabling Application suggestions..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "ContentDeliveryAllowed" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "OemPreInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "PreInstalledAppsEverEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SilentInstalledAppsEnabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338388Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338389Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-353698Enabled" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SystemPaneSuggestionsEnabled" -Type DWord -Value 1
-    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Type DWord -Value 0
-    Write-Host "Enabling Activity History..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Type DWord -Value 1
-    Write-Host "Enable Location Tracking..."
-    If (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value 1
-    Write-Host "Enabling automatic Maps updates..."
-    Set-ItemProperty -Path "HKLM:\SYSTEM\Maps" -Name "AutoUpdateEnabled" -Type DWord -Value 1
-    Write-Host "Enabling Feedback..."
-    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Siuf\Rules" -Name "NumberOfSIUFInPeriod" -Type DWord -Value 0
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "DoNotShowFeedbackNotifications" -Type DWord -Value 0
-    Write-Host "Enabling Tailored Experiences..."
-    If (Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableTailoredExperiencesWithDiagnosticData" -Type DWord -Value 0
-    Write-Host "Disabling Advertising ID..."
-    If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo") {
-        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo" -Name "DisabledByGroupPolicy" -Type DWord -Value 0
-    Write-Host "Allow Error reporting..."
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting" -Name "Disabled" -Type DWord -Value 0
-    Write-Host "Allowing Diagnostics Tracking Service..."
-    Stop-Service "DiagTrack" -WarningAction SilentlyContinue
-    Set-Service "DiagTrack" -StartupType Manual
-    Write-Host "Allowing WAP Push Service..."
-    Stop-Service "dmwappushservice" -WarningAction SilentlyContinue
-    Set-Service "dmwappushservice" -StartupType Manual
-    Write-Host "Allowing Home Groups services..."
-    Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue
-    Set-Service "HomeGroupListener" -StartupType Manual
-    Stop-Service "HomeGroupProvider" -WarningAction SilentlyContinue
-    Set-Service "HomeGroupProvider" -StartupType Manual
-    Write-Host "Enabling Storage Sense..."
-    New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" | Out-Null
-    Write-Host "Allowing Superfetch service..."
-    Stop-Service "SysMain" -WarningAction SilentlyContinue
-    Set-Service "SysMain" -StartupType Manual
-    Write-Host "Setting BIOS time to Local Time instead of UTC..."
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "RealTimeIsUniversal" -Type DWord -Value 0
-    Write-Host "Enabling Hibernation..."
-    Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Session Manager\Power" -Name "HibernteEnabled" -Type Dword -Value 1
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings" -Name "ShowHibernateOption" -Type Dword -Value 1
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreen" -ErrorAction SilentlyContinue
-
-    Write-Host "Hiding file operations details..."
-    If (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager") {
-        Remove-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Recurse -ErrorAction SilentlyContinue
-    }
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWord -Value 0
-    Write-Host "Showing Task View button..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name "PeopleBand" -Type DWord -Value 1
-
-    Write-Host "Changing default Explorer view to Quick Access..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Type DWord -Value 0
-
-    Write-Host "Unrestricting AutoLogger directory"
-    $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
-    icacls $autoLoggerDir /grant:r SYSTEM:`(OI`)`(CI`)F | Out-Null
-
-    Write-Host "Enabling and starting Diagnostics Tracking Service"
-    Set-Service "DiagTrack" -StartupType Automatic
-    Start-Service "DiagTrack"
-
-    Write-Host "Hiding known file extensions"
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Type DWord -Value 1
-
-    Write-Host "Reset Local Group Policies to Stock Defaults"
-    # cmd /c secedit /configure /cfg %windir%\inf\defltbase.inf /db defltbase.sdb /verbose
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicyUsers"
-    cmd /c RD /S /Q "%WinDir%\System32\GroupPolicy"
-    cmd /c gpupdate /force
-    # Considered using Invoke-GPUpdate but requires module most people won't have installed
-
-    Write-Host "Adjusting visual effects for appearance..."
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "DragFullWindows" -Type String -Value 1
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "MenuShowDelay" -Type String -Value 400
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Type Binary -Value ([byte[]](158, 30, 7, 128, 18, 0, 0, 0))
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name "MinAnimate" -Type String -Value 1
-    Set-ItemProperty -Path "HKCU:\Control Panel\Keyboard" -Name "KeyboardDelay" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewAlphaSelect" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ListviewShadow" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAnimations" -Type DWord -Value 1
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Type DWord -Value 3
-    Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\DWM" -Name "EnableAeroPeek" -Type DWord -Value 1
-    Remove-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "HungAppTimeout" -ErrorAction SilentlyContinue
-    Write-Host "Restoring Clipboard History..."
-    Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Clipboard" -Name "EnableClipboardHistory" -ErrorAction SilentlyContinue
-    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "AllowClipboardHistory" -ErrorAction SilentlyContinue
-    Write-Host "Enabling Notifications and Action Center"
-    Remove-Item -Path HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer -Force
-    Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled"
-    Write-Host "Restoring Default Right Click Menu Layout"
-    Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Confirm:$false -Force
-
-    Write-Host "Reset News and Interests"
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -Type DWord -Value 1
-    # Remove "News and Interest" from taskbar
-    Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
-    Write-Host "Done - Reverted to Stock Settings"
-
-    Write-Host "Essential Undo Completed"
-
-    $ButtonType = [System.Windows.MessageBoxButton]::OK
-    $MessageboxTitle = "Undo All"
-    $Messageboxbody = ("Done")
-    $MessageIcon = [System.Windows.MessageBoxImage]::Information
-
-    [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
-
-    Write-Host "================================="
-    Write-Host "---   Undo All is Finished    ---"
-    Write-Host "================================="
-    #>
 }
 function Invoke-WPFUnInstall {
     <#
@@ -5728,7 +5707,7 @@ function Invoke-WPFUnInstall {
                     $packagesChoco.add($package)
                     Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
                 } else {
-                    $packagesWinget.add($package)
+                    $packagesWinget.add($($package.winget))
                     Write-Host "Queueing $($package.winget) for Winget Uninstall"
                 }
             }
@@ -5739,13 +5718,11 @@ function Invoke-WPFUnInstall {
 
             # Install all selected programs in new window
             if($packagesWinget.Count -gt 0){
-                Install-WinUtilProgramWinget -ProgramsToInstall $packagesWinget -Manage "Uninstalling"
+                Invoke-WinUtilWingetProgram -Action Uninstall -Programs $packagesWinget
             }
             if($packagesChoco.Count -gt 0){
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
-
-            [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
             Write-Host "==========================================="
             Write-Host "--       Uninstalls have finished       ---"
@@ -6102,7 +6079,7 @@ $sync.configs.applications = '{
     "content": "Advanced Renamer",
     "description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
     "link": "https://www.advancedrenamer.com/",
-    "winget": "XP9MD3S1KFCPH1"
+    "winget": "HulubuluSoftware.AdvancedRenamer"
   },
   "WPFInstallcalibre": {
     "category": "Document",
@@ -8363,8 +8340,8 @@ $sync.configs.applications = '{
   "WPFInstallwingetui": {
     "category": "Utilities",
     "choco": "wingetui",
-    "content": "UnigetUI",
-    "description": "WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget).",
+    "content": "UniGetUI",
+    "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
     "link": "https://www.marticliment.com/wingetui/",
     "winget": "SomePythonThings.WingetUIStore"
   },
@@ -9223,6 +9200,9 @@ $sync.configs.themes = '{
     "WinUtilIconSize": "Auto",
     "SettingsIconFontSize": "18",
     "MicroWinLogoSize": "10",
+    "ProgressBarForegroundColor": "#FFAC1C",
+    "ProgressBarBackgroundColor": "Transparent",
+    "ProgressBarTextColor": "#000000",
     "ComboBoxBackgroundColor": "#FFFFFF",
     "LabelboxForegroundColor": "#000000",
     "MainForegroundColor": "#000000",
@@ -9284,6 +9264,9 @@ $sync.configs.themes = '{
     "WinUtilIconSize": "Auto",
     "SettingsIconFontSize": "18",
     "MicroWinLogoSize": "10",
+    "ProgressBarForegroundColor": "#222222",
+    "ProgressBarBackgroundColor": "Transparent",
+    "ProgressBarTextColor": "#cccccc",
     "ComboBoxBackgroundColor": "#000000",
     "LabelboxForegroundColor": "#FFEE58",
     "MainForegroundColor": "#9CCC65",
@@ -9343,6 +9326,9 @@ $sync.configs.themes = '{
     "WinUtilIconSize": "Auto",
     "SettingsIconFontSize": "18",
     "MicroWinLogoSize": "10",
+    "ProgressBarForegroundColor": "#222222",
+    "ProgressBarBackgroundColor": "Transparent",
+    "ProgressBarTextColor": "#FFFFFF",
     "ComboBoxBackgroundColor": "#000000",
     "LabelboxForegroundColor": "#FFEE58",
     "MainForegroundColor": "#9CCC65",
@@ -12399,6 +12385,22 @@ $sync.configs.tweaks = '{
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
     ]
   },
+  "WPFTweaksDisableBGapps": {
+    "Content": "Disable Background Apps",
+    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a024_",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "Name": "GlobalUserDisabled",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ]
+  },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
@@ -12533,6 +12535,14 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
+    "Type": "Toggle"
+  },
+  "WPFToggleDetailedBSoD": {
+    "Content": "Detailed BSoD",
+    "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a205_",
     "Type": "Toggle"
   },
   "WPFOOSUbutton": {
@@ -13224,6 +13234,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
@@ -13243,7 +13254,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Height="{SearchBarHeight}"
                     FontSize="{SearchBarTextBoxFontSize}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
-                    Margin="10,0,0,0" BorderThickness="1" Padding="22,2,2,2"
+                    BorderThickness="1"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
@@ -13267,9 +13278,38 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Style="{StaticResource SearchBarClearButtonStyle}"
                     Margin="193,0,0,0" Visibility="Collapsed"/>
 
+                <ProgressBar
+                    Grid.Column="1"
+                    Minimum="0"
+                    Maximum="100"
+                    Width="250"
+                    Height="{SearchBarHeight}"
+                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}" 
+                    Visibility="Collapsed"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
+                    Name="ProgressBar">
+                </ProgressBar>
+                <Label
+                    Grid.Column="1"
+                    Width="250"
+                    Height="{SearchBarHeight}"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    FontSize="{SearchBarTextBoxFontSize}"
+                    Background="Transparent"
+                    Visibility="Collapsed"
+                    Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
+                    Name="ProgressBarLabel">
+                    <TextBlock 
+                        TextTrimming="CharacterEllipsis" 
+                        Background="Transparent"
+                        Foreground="{ProgressBarTextColor}">
+                    </TextBlock>
+                </Label>
+                
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
-                    Grid.Column="1" BorderBrush="Transparent"
+                    Grid.Column="2" BorderBrush="Transparent"
                     Background="{MainBackgroundColor}"
                     Foreground="{MainForegroundColor}"
                     FontSize="{SettingsIconFontSize}"
@@ -13278,7 +13318,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
-                <Popup Grid.Column="1" Name="SettingsPopup"
+                <Popup Grid.Column="2" Name="SettingsPopup"
                     IsOpen="False"
                     PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -13294,7 +13334,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                 </Popup>
 
             <Button
-                Grid.Column="2"
+                Grid.Column="3"
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{MainBackgroundColor}"
@@ -14803,7 +14843,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallwingetui" Content="UnigetUI" ToolTip="WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget)." Margin="0,0,2,0"/>
+                                <CheckBox Name="WPFInstallwingetui" Content="UniGetUI" ToolTip="UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.marticliment.com/wingetui/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -14905,6 +14945,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" Margin="5,0" ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs"/>
                             <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" Margin="5,0" ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
                             <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
+                            <CheckBox Name="WPFTweaksDisableBGapps" Content="Disable Background Apps" Margin="5,0" ToolTip="Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11"/>
                             <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0" ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
                             <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" Margin="5,0" ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
                             <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0" ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
@@ -15000,6 +15041,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleDetailedBSoD" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Detailed BSoD" ToolTip="If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
 
                             <Label Name="WPFLabelPerformancePlans" Content="Performance Plans" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
