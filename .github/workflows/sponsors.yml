@@ -8,6 +8,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: (github.event_name == 'schedule' && github.repository == 'ChrisTitusTech/winutil') || (github.event_name != 'schedule')
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
