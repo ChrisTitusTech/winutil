@@ -22,7 +22,7 @@ jobs:
         id: extract-discussion
         run: |
           pr_body="${{ github.event.pull_request.body }}"
-          discussion_ids=$(echo "$pr_body" | jq -r 'scan("(?i)(resolve|fix|close)[s|d]? #[0-9]+")' | grep -o '#[0-9]*' | tr -d '#')
+          discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
           
           if [ -z "$discussion_ids" ]; then
             echo "No discussion IDs found."
