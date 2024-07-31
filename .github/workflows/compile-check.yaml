@@ -1,0 +1,27 @@
+name: Compile & Check 
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: # Manual trigger added
+  workflow_call: # Allow other Actions to call this workflow 
+  
+jobs:
+  Compile-and-Check:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Compile winutil.ps1
+      shell: pwsh
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+      continue-on-error: false # Directly fail the job on error, removing the need for a separate check
+    - name: Check Syntax of winutil.ps1 
+      shell: pwsh
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; Get-Command -Syntax .\winutil.ps1 
+      continue-on-error: false

@@ -19,6 +19,7 @@ winutil.pdb
 xaml/inputApp.xaml
 xaml/inputFeatures.xaml
 xaml/inputTweaks.xaml
+winutil.ps1
 
 # Executables and Configs
 winget.msixbundle
@@ -28,7 +29,6 @@ ooshutup10.cfg
 winutil.exe.config
 Microsoft.UI.Xaml*
 license1.xml
-winutil.ps1
 
 # Libraries
 System.Management.Automation.dll
@@ -44,4 +44,3 @@ Microsoft.PowerShell.ConsoleHost.dll
 microwin.log
 True
 test.ps1
-winutil.ps1
