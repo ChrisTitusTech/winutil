@@ -453,22 +453,16 @@ public class PowerManagement {
 		}
 
 		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
-		#& oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso
-		#Start-Process -FilePath $oscdimgPath -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir $env:temp\microwin.iso" -NoNewWindow -Wait
-		#Start-Process -FilePath $oscdimgPath -ArgumentList '-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`"' -NoNewWindow -Wait
-        $oscdimgProc = New-Object System.Diagnostics.Process
-        $oscdimgProc.StartInfo.FileName = $oscdimgPath
-        $oscdimgProc.StartInfo.Arguments = "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin $mountDir `"$($SaveDialog.FileName)`""
-        $oscdimgProc.StartInfo.CreateNoWindow = $True
-        $oscdimgProc.StartInfo.WindowStyle = "Hidden"
-        $oscdimgProc.StartInfo.UseShellExecute = $False
-        $oscdimgProc.Start()
-        $oscdimgProc.WaitForExit()
+		
+		$oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
+		
+		$LASTEXITCODE = $oscdimgProc.ExitCode
+		
+		Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
 
 		if ($copyToUSB)
 		{
 			Write-Host "Copying target ISO to the USB drive"
-			#Copy-ToUSB("$env:temp\microwin.iso")
 			Copy-ToUSB("$($SaveDialog.FileName)")
 			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
 		}
@@ -485,13 +479,23 @@ public class PowerManagement {
 			Write-Host "`n`nPerforming Cleanup..."
 				Remove-Item -Recurse -Force "$($scratchDir)"
 				Remove-Item -Recurse -Force "$($mountDir)"
-			#$msg = "Done. ISO image is located here: $env:temp\microwin.iso"
 			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
 			Write-Host $msg
 			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
 		} else {
 			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
+			try
+			{
+				# This creates a new Win32 exception from which we can extract a message in the system language.
+				# Now, this will NOT throw an exception
+				$exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
+				Write-Host "Reason: $($exitCode.Message)"
+			}
+			catch
+			{
+				# Could not get error description from Windows APIs
+			}
 		}
 
 		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
