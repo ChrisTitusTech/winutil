@@ -35,15 +35,14 @@ function Invoke-WPFtweaksbutton {
     } else {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
     }
-    $cnt = 0
     # Execute other selected tweaks
-    foreach ($tweak in $Tweaks) {
-      Write-Debug "This is a tweak to run $tweak count: $cnt"
-      Invoke-WinUtilTweaks $tweak
-      $cnt += 1
-      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($cnt/$Tweaks.Count) })
+    
+    for ($i = 0; $i -lt $Tweaks.Count; $i++){
+      Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $Tweaks.Count * 100)
+      Invoke-WinUtilTweaks $tweaks[$i]
+      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
     }
-
+    Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
     $sync.ProcessRunning = $false
     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
     Write-Host "================================="
