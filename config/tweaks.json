@@ -3152,6 +3152,14 @@
     "Order": "a204_",
     "Type": "Toggle"
   },
+  "WPFToggleDetailedBSoD": {
+    "Content": "Detailed BSoD",
+    "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a205_",
+    "Type": "Toggle"
+  },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
