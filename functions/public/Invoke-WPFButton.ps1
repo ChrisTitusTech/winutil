@@ -14,9 +14,12 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-
+    if (-not $sync.ProcessRunning){
+        Set-WinUtilProgressBar  -label "" -percent 0 -hide $true
+    }
+    
     Switch -Wildcard ($Button){
-
+    
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
         "WPFuninstall" {Invoke-WPFUnInstall}

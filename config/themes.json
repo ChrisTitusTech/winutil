@@ -26,6 +26,10 @@
 
         "MicroWinLogoSize": "10",
 
+        "ProgressBarForegroundColor": "#FFAC1C",
+        "ProgressBarBackgroundColor": "Transparent",
+        "ProgressBarTextColor": "#000000",
+
         "ComboBoxBackgroundColor":  "#FFFFFF",
         "LabelboxForegroundColor":  "#000000",
         "MainForegroundColor":  "#000000",
@@ -68,7 +72,7 @@
         "ButtonCornerRadius": "2",
         "BorderColor": "#000000",
         "BorderOpacity": "0.2",
-        "ShadowPulse": "0:0:6"
+        "ShadowPulse": "Forever"
     },
     "Classic": {
         "ComboBoxBackgroundColor":  "#FFFFFF",
@@ -95,9 +99,7 @@
         "ButtonBackgroundMouseoverColor":  "#C2C2C2",
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#000000",
-        "ToggleButtonOnColor":  "#2e77ff",
-
-        "ShadowPulse": "Forever"
+        "ToggleButtonOnColor":  "#2e77ff"
     },
     "Matrix": {
         "ComboBoxBackgroundColor":  "#000000",
@@ -108,6 +110,10 @@
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#FFFFFF",
         "ComboBoxForegroundColor":  "#FFEE58",
+
+        "ProgressBarForegroundColor": "#222222",
+        "ProgressBarBackgroundColor": "Transparent",
+        "ProgressBarTextColor": "#cccccc",
 
         "ButtonInstallBackgroundColor":  "#222222",
         "ButtonTweaksBackgroundColor":  "#333333",
@@ -137,6 +143,10 @@
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#FFFFFF",
         "ComboBoxForegroundColor":  "#FFEE58",
+
+        "ProgressBarForegroundColor": "#222222",
+        "ProgressBarBackgroundColor": "Transparent",
+        "ProgressBarTextColor": "#cccccc",
 
         "ButtonInstallBackgroundColor": "#222222",
         "ButtonTweaksBackgroundColor":  "#333333",
