@@ -6079,7 +6079,7 @@ $sync.configs.applications = '{
     "content": "Advanced Renamer",
     "description": "Advanced Renamer is a program for renaming multiple files and folders at once. By configuring renaming methods the names can be manipulated in various ways.",
     "link": "https://www.advancedrenamer.com/",
-    "winget": "XP9MD3S1KFCPH1"
+    "winget": "HulubuluSoftware.AdvancedRenamer"
   },
   "WPFInstallcalibre": {
     "category": "Document",
