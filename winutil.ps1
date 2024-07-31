@@ -8411,8 +8411,8 @@ $sync.configs.applications = '{
   "WPFInstallwingetui": {
     "category": "Utilities",
     "choco": "wingetui",
-    "content": "UnigetUI",
-    "description": "WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget).",
+    "content": "UniGetUI",
+    "description": "UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers.",
     "link": "https://www.marticliment.com/wingetui/",
     "winget": "SomePythonThings.WingetUIStore"
   },
@@ -14875,7 +14875,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 <TextBlock Name="WPFInstallwindowspchealthLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://support.microsoft.com/en-us/windows/how-to-use-the-pc-health-check-app-9c8abd9b-03ba-4e67-81ef-36f37caa7844"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Name="WPFInstallwingetui" Content="UnigetUI" ToolTip="WingetUI is a graphical user interface for Microsoft&#39;s Windows Package Manager (winget)." Margin="0,0,2,0"/>
+                                <CheckBox Name="WPFInstallwingetui" Content="UniGetUI" ToolTip="UniGetUI is a GUI for Winget, Chocolatey, and other Windows CLI package managers." Margin="0,0,2,0"/>
                                 <TextBlock Name="WPFInstallwingetuiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://www.marticliment.com/wingetui/"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
