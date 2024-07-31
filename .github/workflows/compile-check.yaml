@@ -12,14 +12,15 @@ jobs:
   Compile-and-Check:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }}
+    - name: Checkout Sources
+      uses: actions/checkout@v4
+
     - name: Compile winutil.ps1
       shell: pwsh
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
       continue-on-error: false # Directly fail the job on error, removing the need for a separate check
+      
     - name: Check Syntax of winutil.ps1 
       shell: pwsh
       run: |
