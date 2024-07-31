@@ -48,7 +48,7 @@ function Set-WinUtilUITheme {
             throw [GenericException]::new("[Invoke-Theming] Failed to apply theme, StackTrace: $($psitem.Exception.StackTrace)")
         }
 
-	return $XMLToProcess
+        return $XMLToProcess
     }
 
 
@@ -59,8 +59,8 @@ function Set-WinUtilUITheme {
             throw [GenericException]::new("[Set-WinUtilTheme] Did not find 'config.themes' inside `$sync variable.")
         }
 
-	$defaultTheme = $themes."_default"
-	if (-NOT $defaultTheme) {
+        $defaultTheme = $themes."_default"
+        if (-NOT $defaultTheme) {
             throw [GenericException]::new("[Set-WinUtilTheme] Did not find '_default' theme in the themes config file.")
         }
 
@@ -70,9 +70,9 @@ function Set-WinUtilUITheme {
             Write-Warning "[Set-WinUtilTheme] Theme '$themeName' was not found."
         } else {
             $inputXML = Invoke-Theming -XMLToProcess $inputXML -theme $selectedTheme
-	}
+        }
 
-	$inputXML = Invoke-Theming -XMLToProcess $inputXML -theme $defaultTheme
+        $inputXML = Invoke-Theming -XMLToProcess $inputXML -theme $defaultTheme
 
     }
     catch {
