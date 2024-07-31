@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.25
+    Version        : 24.07.31
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.25"
+$sync.version = "24.07.31"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -738,6 +738,15 @@ Function Get-WinUtilToggleStatus {
     if ($ToggleSwitch -eq "WPFToggleTaskbarAlignment") {
         $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
         if($TaskbarAlignment -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
+    if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
+        $DetailedBSoD = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
+        if($DetailedBSoD -eq 0) {
             return $false
         }
         else{
@@ -2000,6 +2009,40 @@ Function Invoke-WinUtilDarkMode {
         $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+Function Invoke-WinUtilDetailedBSoD {
+    <#
+
+    .SYNOPSIS
+        Enables/Disables Detailed BSoD
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters').DisplayParameters
+        
+
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Detailed BSoD"
+            $value = 1
+        }
+        else {
+            Write-Host "Disabling Detailed BSoD"
+            $value =0
+        }
+
+        $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
+        Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -5309,6 +5352,7 @@ function Invoke-WPFToggle {
         "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
         "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
         "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $(Get-WinUtilToggleStatus WPFToggleTaskbarAlignment)}
+        "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $(Get-WinUtilToggleStatus WPFToggleDetailedBSoD)}
     }
 }
 function Invoke-WPFTweakPS7{
@@ -12535,6 +12579,14 @@ $sync.configs.tweaks = '{
     "Order": "a204_",
     "Type": "Toggle"
   },
+  "WPFToggleDetailedBSoD": {
+    "Content": "Detailed BSoD",
+    "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "category": "Customize Preferences",
+    "panel": "2",
+    "Order": "a205_",
+    "Type": "Toggle"
+  },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
@@ -15000,6 +15052,10 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <DockPanel LastChildFill="True">
                             <CheckBox Name="WPFToggleTaskbarWidgets" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
                             <Label Content="Widgets Button in Taskbar" ToolTip="If Enabled then Widgets Button in Taskbar will be shown." HorizontalAlignment="Left" FontSize="{FontSize}"/>
+                        </DockPanel>
+                        <DockPanel LastChildFill="True">
+                            <CheckBox Name="WPFToggleDetailedBSoD" Style="{StaticResource ColorfulToggleSwitchStyle}" Margin="4,0" HorizontalAlignment="Right" FontSize="{FontSize}"/>
+                            <Label Content="Detailed BSoD" ToolTip="If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information." HorizontalAlignment="Left" FontSize="{FontSize}"/>
                         </DockPanel>
 
                             <Label Name="WPFLabelPerformancePlans" Content="Performance Plans" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
