@@ -30,7 +30,7 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default 
       toggle:
-        icon: material/brightness-auto
+        icon: material/brightness-4
         name: Switch to dark mode
 
     # Palette toggle for dark mode
