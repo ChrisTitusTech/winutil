@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
         # Make sure to get latest commits, like the one committed by the previous job in jobs list.
         # reference: https://github.com/orgs/community/discussions/110853
         with:
           fetch-tags: 'true'
           submodules: 'recursive'
-          ref: ${{ github.ref }}
+          ref: main # Always pull from & push to 'main' branch, as without doing so, it'll cause some problems.
 
       - name: Setup Python
         uses: actions/setup-python@v4

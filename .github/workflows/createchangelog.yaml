@@ -16,28 +16,7 @@ jobs:
         with:
           fetch-tags: 'true'
           submodules: 'recursive'
-          ref: ${{ github.ref }}
-
-      - name: Get correct branch to use for committing changes
-        id: get_correct_branch
-        run: |
-          # NOTE/TODO:
-          #   Because there's a chance where this'll get triggered by a Release Creation, Edit, Deletion..
-          #   the value of 'github.ref' will be 'refs/tags/TAG-NAME', and this tag can not be handled easily by
-          #   the 'actions/checkout' action.. we need to handle this case by always changing to main branch.
-          branch_name=""
-          declare -rA number_of_refname_instances=$(git branch -a | grep -F '${{ github.ref_name }}' | grep -i -v -e 'HEAD\s*detached' | wc --lines)
-          if [[ $number_of_refname_instances = 0 ]] ; then
-            branch_name="main"
-          else
-            branch_name="${{ github.ref_name }}"
-          fi
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git switch $branch_name
-          git pull
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ref: main # Always pull from & push to 'main' branch, as without doing so, it'll cause some problems.
 
       - name: Get all releases and update changelog.md file
         run: |
