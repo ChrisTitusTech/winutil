@@ -3,7 +3,12 @@ name: Update changelog.md on Release
 on:
   release:
     types: [published, created, edited, deleted]
-  workflow_dispatch:  # Add this line to enable manual triggering
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual update'
 
 jobs:
   update-file:
@@ -18,7 +23,7 @@ jobs:
         # Initialize some values
         changelog_path="docs/changelog.md"
         gh release list --exclude-drafts --json tagName,name,isLatest,isPrerelease --limit 1000000 > releases.txt
-        declare -rA number_of_releases=$(cat releases.txt | grep -Po '"tagName"' | wc --lines)
+        declare -r number_of_releases=$(cat releases.txt | grep -Po '"tagName"' | wc --lines)
 
         # Clear the contents of changelog file
         echo "" > $changelog_path
@@ -91,7 +96,7 @@ jobs:
           name=${name_arr[$i]}
           isprerelease=${isprerelease_arr[$i]}
           islatest=${islatest_arr[$i]}
-          body=$(gh release view "$tag" --json body --jq .body)
+          body=$(gh release view "$tag" --json body --jq .body) || { echo "Failed to fetch release body for $tag"; exit 1; }
 
           # The generation of changelog file contents
           echo "# $name" >> $changelog_path
@@ -109,5 +114,4 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add docs/changelog.md
-        git commit -m "Update changelog.md with all releases"
-        git push
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update changelog.md with all releases" && git push)
