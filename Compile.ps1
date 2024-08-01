@@ -132,6 +132,16 @@ else {
 Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
+Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
+Start-Process -FilePath pwsh.exe -ArgumentList '-Command Get-Command -Syntax .\winutil.ps1' -NoNewWindow -Wait -ErrorAction SilentlyContinue -RedirectStandardOutput .\syntax_validation_output.txt
+$syntaxCheckResult = Get-Content .\syntax_validation_output.txt
+Remove-Item .\syntax_validation_output.txt
+if ($syntaxCheckResult -match '\x1b\[(\d+|;)+mGet-Command') {
+    Write-Host "Syntax Validation for 'winutil.ps1' has failed, result of validation:`n$syntaxCheckResult" -ForegroundColor Red
+    exit 1
+}
+Write-Progress -Activity "Validating" -Completed
+
 if ($run){
     try {
         Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
