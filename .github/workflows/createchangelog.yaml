@@ -128,9 +128,9 @@ jobs:
           done
 
           # Make http(s) links clickable by converting any links to a format understandable by Markdown
-          sed -ri 's/(https?:\/\/.*?\/(pull|compare)\/(.*?[ \t\r\n]))/\[\3\](\1)/g' $changelog_path
-          sed -ri 's/\[([0-9]+)\]\((https?:\/\/.*?\/pull\/.*?[ \t\r\n])\)/\[#\1\]\(\2\)/g' $changelog_path
-          sed -ri 's/@([^ \t\n]+)/[@\1](https:\/\/github\.com\/\1)/g' $changelog_path
+          sed -ri 's/(https?:\/\/.*?\/(pull|compare)\/([^ \t\r\n]+))/\[\3\](\1)/g' $changelog_path
+          sed -ri 's/\[([0-9]+)\]\((https?:\/\/.*?\/pull\/[^ \t\r\n]+)\)/\[#\1\]\(\2\)/g' $changelog_path
+          sed -ri 's/@([^ \t\r\n]+)/[@\1](https:\/\/github\.com\/\1)/g' $changelog_path
         env:
           GH_TOKEN: ${{ github.token }}
 
