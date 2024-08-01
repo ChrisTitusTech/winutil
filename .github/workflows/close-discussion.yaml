@@ -36,7 +36,7 @@ jobs:
                  - https://github.com/orgs/community/discussions/43
                  - https://github.com/orgs/community/discussions/43#discussioncomment-399047
                  - https://docs.github.com/en/graphql/guides/using-the-graphql-api-for-discussions
-DELIMITER)
+          DELIMITER)
           echo "$output_str"
           exit 1
           #pr_body="${{ github.event.pull_request.body }}"
