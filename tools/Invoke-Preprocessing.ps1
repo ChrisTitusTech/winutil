@@ -118,11 +118,11 @@
 
         # TODO:
         #   make more formatting rules, and document them in WinUtil Official Documentation
-        (Get-Content -Raw "$file").TrimEnd() `
+        (Get-Content "$file").TrimEnd() `
             -replace ('\t', '    ') `
             -replace ('\)\s*\{', ') {') `
-            -replace ('(?<keyword>if|for|foreach)\s*(?<condition>\([\s\S]\))\s*\{', '${keyword} ${condition} {') `
-            -replace ('\}\s*elseif\s*(?<condition>\([\s\S]\))\s*\{', '} elseif ${condition} {') `
+            -replace ('(?<keyword>if|for|foreach)\s*(?<condition>\([.*?]\))\s*\{', '${keyword} ${condition} {') `
+            -replace ('\}\s*elseif\s*(?<condition>\([.*?]\))\s*\{', '} elseif ${condition} {') `
             -replace ('\}\s*else\s*\{', '} else {') `
             -replace ('Try\s*\{', 'try {') `
             -replace ('Catch\s*\{', 'catch {') `
