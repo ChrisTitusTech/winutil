@@ -7,10 +7,10 @@ $filePath = "C:\Windows\System32\IntegratedServicesRegionPolicySet.json"
 #Getting current ACL for the file path
 $acl = Get-Acl -Path $filePath
 
-# Define the new permission rule
+# Defining the new permission rule
 $permission = "Everyone", "FullControl", "Allow"
 
-# Create the new access rule
+# Creating the new access rule
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
 
 # Add the new access rule to the ACL
@@ -24,7 +24,7 @@ $lines = Get-Content -Path $filePath
 
 # Check if there are at least 8 lines
 if ($lines.Length -ge 8) {
-    # Replace 'disabled' with 'enabled' on the 8th line
+    # Replace 'disabled' with 'enabled' on the 8th line. This sets Edge is uninstallable to enabled in ISRPS.json
     $lines[7] = $lines[7] -replace 'disabled', 'enabled'
     
     # Write the modified lines back to the file
@@ -33,7 +33,7 @@ if ($lines.Length -ge 8) {
     Write-Host "The file does not contain 8 lines."
 }
 
-# Define the registry path and value name
+# Defining the registry path and value name
 $registryPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge"
 $valueName = "NoRemove"
 Set-ItemProperty -Path $registryPath -Name $valueName -Value 0
