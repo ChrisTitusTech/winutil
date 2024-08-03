@@ -1,6 +1,6 @@
 ﻿# Set Up Autologin
 
-Last Updated: 2024-07-31
+Last Updated: 2024-08-03
 
 
 !!! info
@@ -25,6 +25,24 @@ Last Updated: 2024-07-31
 }
 ```
 </details>
+
+## Function: Invoke-WPFPanelAutologin
+```powershell
+function Invoke-WPFPanelAutologin {
+    <#
+
+    .SYNOPSIS
+        Enables autologin using Sysinternals Autologon.exe
+
+    #>
+
+    # Official Microsoft recommendation: https://learn.microsoft.com/en-us/sysinternals/downloads/autologon
+    Invoke-WebRequest -Uri "https://live.sysinternals.com/Autologon.exe" -OutFile "$env:temp\autologin.exe"
+    cmd /c "$env:temp\autologin.exe" /accepteula
+}
+
+```
+
 
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 

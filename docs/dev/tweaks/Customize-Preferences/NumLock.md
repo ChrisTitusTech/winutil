@@ -1,6 +1,6 @@
 ﻿# NumLock on Startup
 
-Last Updated: 2024-07-29
+Last Updated: 2024-08-03
 
 
 !!! info
@@ -29,6 +29,43 @@ Toggle the Num Lock key state when your computer starts.
 }
 ```
 </details>
+
+## Function: Invoke-WinUtilNumLock
+```powershell
+function Invoke-WinUtilNumLock {
+    <#
+    .SYNOPSIS
+        Disables/Enables NumLock on startup
+    .PARAMETER Enabled
+        Indicates whether to enable or disable Numlock on startup
+    #>
+    Param($Enabled)
+    Try{
+        if ($Enabled -eq $false){
+            Write-Host "Enabling Numlock on startup"
+            $value = 2
+        }
+        else {
+            Write-Host "Disabling Numlock on startup"
+            $value = 0
+        }
+        New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
+        $Path = "HKU:\.Default\Control Panel\Keyboard"
+        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+    }
+    Catch [System.Security.SecurityException] {
+        Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
+    }
+    Catch [System.Management.Automation.ItemNotFoundException] {
+        Write-Warning $psitem.Exception.ErrorRecord
+    }
+    Catch{
+        Write-Warning "Unable to set $Name due to unhandled exception"
+        Write-Warning $psitem.Exception.StackTrace
+    }
+}
+```
+
 
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 

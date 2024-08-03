@@ -1,6 +1,6 @@
 ﻿# WinGet Reinstall
 
-Last Updated: 2024-07-31
+Last Updated: 2024-08-03
 
 
 !!! info
@@ -25,6 +25,25 @@ Last Updated: 2024-07-31
 }
 ```
 </details>
+
+## Function: Invoke-WPFFixesWinget
+```powershell
+function Invoke-WPFFixesWinget {
+
+    <#
+
+    .SYNOPSIS
+        Fixes Winget by running choco install winget
+    .DESCRIPTION
+        BravoNorris for the fantastic idea of a button to reinstall winget
+    #>
+    # Install Choco if not already present
+    Install-WinUtilChoco
+    Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
+
+}
+```
+
 
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 

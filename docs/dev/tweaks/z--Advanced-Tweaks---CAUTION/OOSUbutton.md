@@ -1,6 +1,6 @@
 ﻿# Run OO Shutup 10
 
-Last Updated: 2024-07-29
+Last Updated: 2024-08-03
 
 
 !!! info
@@ -24,6 +24,31 @@ Last Updated: 2024-07-29
 }
 ```
 </details>
+
+## Function: Invoke-WPFOOSU
+```powershell
+function Invoke-WPFOOSU {
+    <#
+    .SYNOPSIS
+        Downloads and runs OO Shutup 10
+    #>
+    try {
+        $OOSU_filepath = "$ENV:temp\OOSU10.exe"
+        $Initial_ProgressPreference = $ProgressPreference
+        $ProgressPreference = "SilentlyContinue" # Disables the Progress Bar to drasticly speed up Invoke-WebRequest
+        Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
+        Write-Host "Starting OO Shutup 10 ..."
+        Start-Process $OOSU_filepath
+    }
+    catch {
+        Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
+    }
+    finally {
+        $ProgressPreference = $Initial_ProgressPreference
+    }
+}
+```
+
 
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 

@@ -1,6 +1,6 @@
 ﻿# Disable Powershell 7 Telemetry
 
-Last Updated: 2024-07-29
+Last Updated: 2024-08-03
 
 
 !!! info

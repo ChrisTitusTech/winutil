@@ -42,24 +42,61 @@ function Load-Functions($dir) {
 Load-Functions -dir $privateFunctionsDir
 Load-Functions -dir $publicFunctionsDir
 
-# Function to check if a function is called in a script
-function Get-CalledFunctions($scriptLines, $functionList) {
+# Function to check if a function is called in a script recursively
+function Get-CalledFunctions {
+    Param (
+        [string]$scriptContent,
+        [hashtable]$functionList,
+        [ref]$includedFunctions
+    )
+
     $calledFunctions = @()
-    foreach ($functionName in $functionList) {
-        foreach ($line in $scriptLines) {
-            if ($line -match "\b$functionName\b") {
-                $calledFunctions += $functionName
-                break
+    foreach ($functionName in $functionList.Keys) {
+        if ($scriptContent -match "\b$functionName\b" -and -not $includedFunctions.Value.Contains($functionName)) {
+            $calledFunctions += $functionName
+            $includedFunctions.Value += $functionName
+            if ($functionList[$functionName]) {
+                $nestedFunctions = Get-CalledFunctions -scriptContent $functionList[$functionName] -functionList $functionList -includedFunctions $includedFunctions
+                $calledFunctions += $nestedFunctions
             }
         }
     }
     return $calledFunctions
 }
 
+# Function to get additional functions from Invoke-WPFToggle
+function Get-AdditionalFunctionsFromToggle {
+    Param ([string]$buttonName)
+
+    $invokeWpfToggleContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFToggle.ps1" -Raw
+    $lines = $invokeWpfToggleContent -split "`n"
+    foreach ($line in $lines) {
+        # Match the line with the button name and extract the function name
+        if ($line -match "`"$buttonName`" \{Invoke-(WinUtil[a-zA-Z]+)") {
+            return $matches[1]  # Return the matched function name
+        }
+    }
+    return $null
+}
+
+# Function to get additional functions from Invoke-WPFButton
+function Get-AdditionalFunctionsFromButton {
+    Param ([string]$buttonName)
+
+    $invokeWpfButtonContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFButton.ps1" -Raw
+    $lines = $invokeWpfButtonContent -split "`n"
+    foreach ($line in $lines) {
+        # Match the line with the button name and extract the function name
+        if ($line -match "`"$buttonName`" \{Invoke-(WPF[a-zA-Z]+)") {
+            return $matches[1]  # Return the matched function name
+        }
+    }
+    return $null
+}
+
 # Function to generate markdown files
 function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified, $type) {
     $tocEntries = @()
-    $includedFunctions = @()
 
     foreach ($itemName in $data.PSObject.Properties.Name) {
         $itemDetails = $data.$itemName
@@ -71,7 +108,10 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             New-Item -ItemType Directory -Path $categoryDir | Out-Null
         }
 
-        # Remove prefixes from the name
+        # Preserve the full name for matching purposes
+        $fullItemName = $itemName
+
+        # Remove prefixes from the name for display
         $displayName = $itemName -replace 'WPF|WinUtil|Toggle|Disable|Enable|Features|Tweaks|Panel|Fixes', ''
 
         $filename = "$categoryDir/$displayName.md"
@@ -120,19 +160,63 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 "@
         }
 
+        $ToggleScript = ""
+        if ($itemDetails.ToggleScript -ne $null) {
+            $ToggleScriptContent = $itemDetails.ToggleScript | Out-String
+            $ToggleScript = @"
+## Toggle Script
+
+``````powershell`n$ToggleScriptContent`n``````
+"@
+        }
+
+        $ButtonScript = ""
+        if ($itemDetails.ButtonScript -ne $null) {
+            $ButtonScriptContent = $itemDetails.ButtonScript | Out-String
+            $ButtonScript = @"
+## Button Script
+
+``````powershell`n$ButtonScriptContent`n``````
+"@
+        }
+
         $FunctionDetails = ""
-        $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript)
+        $includedFunctions = @()  # Reset included functions for each entry
+        $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript, $itemDetails.ToggleScript, $itemDetails.ButtonScript)
         foreach ($script in $allScripts) {
             if ($script -ne $null) {
-                $calledFunctions = Get-CalledFunctions -scriptLines $script -functionList $functions.Keys
+                $calledFunctions = Get-CalledFunctions -scriptContent $script -functionList $functions -includedFunctions ([ref]$includedFunctions)
                 foreach ($functionName in $calledFunctions) {
-                    if ($functions.ContainsKey($functionName) -and -not $includedFunctions.Contains($functionName)) {
+                    if ($functions.ContainsKey($functionName)) {
                         $FunctionDetails += "## Function: $functionName`n"
                         $FunctionDetails += "``````powershell`n$($functions[$functionName])`n``````
 `n"
-                        $includedFunctions += $functionName
                     }
                 }
+            }
+        }
+
+        # Check for additional functions from Invoke-WPFToggle
+        $additionalFunctionToggle = Get-AdditionalFunctionsFromToggle -buttonName $fullItemName
+        if ($additionalFunctionToggle -ne $null) {
+            $additionalFunctionNameToggle = "Invoke-$additionalFunctionToggle"
+            if ($functions.ContainsKey($additionalFunctionNameToggle) -and -not $includedFunctions.Contains($additionalFunctionNameToggle)) {
+                $FunctionDetails += "## Function: $additionalFunctionNameToggle`n"
+                $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameToggle])`n``````
+`n"
+                $includedFunctions += $additionalFunctionNameToggle
+            }
+        }
+
+        # Check for additional functions from Invoke-WPFButton
+        $additionalFunctionButton = Get-AdditionalFunctionsFromButton -buttonName $fullItemName
+        if ($additionalFunctionButton -ne $null) {
+            $additionalFunctionNameButton = "Invoke-$additionalFunctionButton"
+            if ($functions.ContainsKey($additionalFunctionNameButton) -and -not $includedFunctions.Contains($additionalFunctionNameButton)) {
+                $FunctionDetails += "## Function: $additionalFunctionNameButton`n"
+                $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameButton])`n``````
+`n"
+                $includedFunctions += $additionalFunctionNameButton
             }
         }
 
@@ -213,6 +297,12 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         }
         if ($itemDetails.UndoScript) {
             Add-Content -Path $filename -Value $UndoScript -Encoding utf8
+        }
+        if ($itemDetails.ToggleScript) {
+            Add-Content -Path $filename -Value $ToggleScript -Encoding utf8
+        }
+        if ($itemDetails.ButtonScript) {
+            Add-Content -Path $filename -Value $ButtonScript -Encoding utf8
         }
         if ($FunctionDetails) {
             Add-Content -Path $filename -Value $FunctionDetails -Encoding utf8
