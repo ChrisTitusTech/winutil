@@ -11758,7 +11758,7 @@ $sync.configs.tweaks = '{
     "Order": "a029_",
     "InvokeScript": [
       "
-        Invoke-WebRequest -Uri \"https://github.com/Linget0/WPFEdgeRemoval/blob/main/edgeremoval.ps1" -OutFile \"$ENV:TEMP\\edgeremoval.ps1\"
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/Linget0/WPFEdgeRemoval/main/edgeremoval.ps1" -OutFile \"$ENV:TEMP\\edgeremoval.ps1\"
         Start-Process $ENV:temp\\edgeremoval.ps1
         "
     ],
