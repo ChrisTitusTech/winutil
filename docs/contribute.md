@@ -19,6 +19,12 @@
 
 ## Contribute Code
 
+!!! bug "IMPORTANT"
+     The File winutil.ps1 is no longer intended to exist in the GIT Repo in it's compiled form (only in Releases).
+     Do not include the File in your PRs
+     To remove the file from your local GIT Tracking, please run the following command from the commandline in your REPO.
+     `git rm --cached .\winutil.ps1`
+
 * Pull requests are now handled directly on the **MAIN branch**. This was done since we can now select specific releases to launch via releases in GitHub.
 
 * If you're doing code changes, then you can submit a PR to `main` branch, but I am very selective about these.
