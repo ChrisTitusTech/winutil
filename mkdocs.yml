@@ -10,9 +10,8 @@ nav:
       - Dev Docs: 'devdocs.md'
   - Community:
       - Code Of Conduct: 'CodeOfConduct.md'
-      - FAQ: 'faq.md'
   - Changelog: 'changelog.md'
-
+  - FAQ: 'faq.md'
 
 theme:
   name: material
@@ -86,3 +85,4 @@ markdown_extensions:
 plugins:
   - search
   - awesome-pages
+  - git-revision-date-localized
