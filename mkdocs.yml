@@ -1,18 +1,18 @@
 site_name: WinUtil Documentation
 repo_url: https://github.com/ChrisTitusTech/winutil
 
-plugins:
-  - search
-  - awesome-pages
-
 nav:
   - Introduction: 'index.md'
   - User Guide: 'userguide.md'
-  - Contribute: 'contribute.md'
-  - Dev Docs: 'devdocs.md'
+  - Documentation:
+      - Contribute: 'contribute.md'
+      - Known Issues: 'KnownIssues.md'
+      - Dev Docs: 'devdocs.md'
+  - Community:
+      - Code Of Conduct: 'CodeOfConduct.md'
+      - FAQ: 'faq.md'
   - Changelog: 'changelog.md'
-  - Known Issues: 'KnownIssues.md'
-  - FAQ: 'faq.md'
+
 
 theme:
   name: material
@@ -82,3 +82,7 @@ markdown_extensions:
       custom_checkbox: true
   - toc:
       permalink: true
+
+plugins:
+  - search
+  - awesome-pages
