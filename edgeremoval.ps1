@@ -21,9 +21,17 @@ Set-Acl -Path $filePath -AclObject $acl
 
 # Read all lines from the file
 $lines = Get-Content -Path $filePath
-#Goes to line 8 of the json file and replaces disabled with enabled for Edge is uninstallable
-$lines[7] = $lines[7] -replace 'disabled', 'enabled'
 
+# Check if there are at least 8 lines
+if ($lines.Length -ge 8) {
+    # Replace 'disabled' with 'enabled' on the 8th line. This sets Edge is uninstallable to enabled in ISRPS.json
+    $lines[7] = $lines[7] -replace 'disabled', 'enabled'
+    
+    # Write the modified lines back to the file
+    Set-Content -Path $filePath -Value $lines
+} else {
+    Write-Host "The file does not contain 8 lines."
+}
 
 # Defining the registry path and value name
 $registryPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge"
