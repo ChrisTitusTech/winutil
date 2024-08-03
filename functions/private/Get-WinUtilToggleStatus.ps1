@@ -154,4 +154,13 @@ Function Get-WinUtilToggleStatus {
             return $true
         }
     }
+    if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
+        $DetailedBSoD = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
+        if($DetailedBSoD -eq 0) {
+            return $false
+        }
+        else{
+            return $true
+        }
+    }
 }
