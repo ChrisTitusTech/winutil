@@ -39,10 +39,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default 
-      primary: teal
       accent: blue
-
-
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
