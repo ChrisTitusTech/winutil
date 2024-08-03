@@ -11758,9 +11758,8 @@ $sync.configs.tweaks = '{
     "Order": "a029_",
     "InvokeScript": [
       "
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Linget0/WPFEdgeRemoval/main/edgeremoval.bat" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/Linget0/WPFEdgeRemoval/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
         Start-Process $ENV:temp\\edgeremoval.bat
-      
         "
     ],
     "UndoScript": [
