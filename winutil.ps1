@@ -11758,7 +11758,7 @@ $sync.configs.tweaks = '{
     "Order": "a029_",
     "InvokeScript": [
       "
-        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/Linget0/WPFEdgeRemoval/main/edgeremoval.ps1" Invoke-Expression
+        Invoke-WebRequest "https://raw.githubusercontent.com/Linget0/WPFEdgeRemoval/main/edgeremoval.ps1" | Invoke-Expression
         "
     ],
     "UndoScript": [
