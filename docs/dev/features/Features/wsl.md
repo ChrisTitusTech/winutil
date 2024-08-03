@@ -22,6 +22,7 @@ Windows Subsystem for Linux is an optional feature of Windows that allows Linux 
 {
     "Content":  "Windows Subsystem for Linux",
     "Description":  "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
+    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a020_",

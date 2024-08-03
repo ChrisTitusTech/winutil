@@ -22,6 +22,7 @@ Network File System (NFS) is a mechanism for storing files on a network.
 {
     "Content":  "NFS - Network File System",
     "Description":  "Network File System (NFS) is a mechanism for storing files on a network.",
+    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a014_",

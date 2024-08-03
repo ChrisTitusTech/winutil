@@ -22,6 +22,7 @@ Disables Location Tracking...DUH!
 {
     "Content":  "Disable Location Tracking",
     "Description":  "Disables Location Tracking...DUH!",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

@@ -22,6 +22,7 @@ If Enabled Search Button will be on the taskbar.
 {
     "Content":  "Search Button in Taskbar",
     "Description":  "If Enabled Search Button will be on the taskbar.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a202_",

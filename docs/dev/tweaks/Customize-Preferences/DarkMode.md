@@ -22,6 +22,7 @@ Enable/Disable Dark Mode.
 {
     "Content":  "Dark Theme for Windows",
     "Description":  "Enable/Disable Dark Mode.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a100_",

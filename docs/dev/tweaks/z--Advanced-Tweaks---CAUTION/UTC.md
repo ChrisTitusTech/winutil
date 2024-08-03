@@ -22,6 +22,7 @@ Essential for computers that are dual booting. Fixes the time sync with Linux Sy
 {
     "Content":  "Set Time to UTC (Dual Boot)",
     "Description":  "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a027_",

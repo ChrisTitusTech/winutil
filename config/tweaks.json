@@ -1,7 +1,8 @@
-{
+﻿{
   "WPFTweaksAH": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -32,6 +33,7 @@
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -61,6 +63,7 @@
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a014_",
@@ -108,6 +111,7 @@
   "WPFTweaksHome": {
     "Content": "Disable Homegroup",
     "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -127,6 +131,7 @@
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -164,6 +169,7 @@
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a014_",
@@ -1583,6 +1589,7 @@
   "WPFTweaksConsumerFeatures":{
     "Content": "Disable ConsumerFeatures",
     "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a003_",
@@ -1599,6 +1606,7 @@
   "WPFTweaksTele": {
     "Content": "Disable Telemetry",
     "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a003_",
@@ -1970,6 +1978,7 @@
   "WPFTweaksWifi": {
     "Content": "Disable Wifi-Sense",
     "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -1993,6 +2002,7 @@
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a027_",
@@ -2009,6 +2019,7 @@
   "WPFTweaksRemoveHomeGallery": {
     "Content": "Remove Home and Gallery from explorer",
     "Description": "Removes the Home and Gallery from explorer and sets This PC as default",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
@@ -2030,6 +2041,7 @@
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a027_",
@@ -2136,6 +2148,7 @@
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a028_",
@@ -2255,6 +2268,7 @@
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Checked": "False",
@@ -2311,6 +2325,7 @@
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
     "Description": "Enables option to end task when right clicking a program in the taskbar",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a006_",
@@ -2344,6 +2359,7 @@
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -2357,6 +2373,7 @@
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
     "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -2370,6 +2387,7 @@
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -2383,6 +2401,7 @@
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
     "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
@@ -2403,6 +2422,7 @@
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a025_",
@@ -2446,6 +2466,7 @@
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a026_",
@@ -2503,6 +2524,7 @@
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
     "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
@@ -2599,6 +2621,7 @@
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
     "Description": "Disables all Notifications INCLUDING Calendar",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a026_",
@@ -2622,6 +2645,7 @@
   "WPFTweaksDebloatAdobe": {
     "Content": "Adobe Debloat",
     "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a021_",
@@ -2770,6 +2794,7 @@
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a021_",
@@ -2883,6 +2908,7 @@
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a027_",
@@ -2907,6 +2933,7 @@
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a009_",
@@ -2920,6 +2947,7 @@
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
     "Description": "Erases TEMP Folders",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a002_",
@@ -2931,6 +2959,7 @@
   "WPFTweaksDVR": {
     "Content": "Disable GameDVR",
     "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -2975,6 +3004,7 @@
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
@@ -2997,6 +3027,7 @@
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a023_",
@@ -3019,6 +3050,7 @@
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
     "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a024_",
@@ -3035,6 +3067,7 @@
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a024_",
@@ -3051,6 +3084,7 @@
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a100_",
@@ -3059,6 +3093,7 @@
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a101_",
@@ -3067,6 +3102,7 @@
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a102_",
@@ -3075,6 +3111,7 @@
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a103_",
@@ -3083,6 +3120,7 @@
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a104_",
@@ -3091,6 +3129,7 @@
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a105_",
@@ -3099,6 +3138,7 @@
   "WPFToggleSnapSuggestion": {
     "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a106_",
@@ -3107,6 +3147,7 @@
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a107_",
@@ -3115,6 +3156,7 @@
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a108_",
@@ -3123,6 +3165,7 @@
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a200_",
@@ -3131,6 +3174,7 @@
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a201_",
@@ -3139,6 +3183,7 @@
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a202_",
@@ -3147,6 +3192,7 @@
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a203_",
@@ -3155,6 +3201,7 @@
   "WPFToggleTaskbarWidgets": {
     "Content": "Widgets Button in Taskbar",
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
@@ -3163,6 +3210,7 @@
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
@@ -3171,6 +3219,7 @@
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
     "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a205_",
@@ -3230,3 +3279,6 @@
     "ButtonWidth": "300"
   }
 }
+
+
+

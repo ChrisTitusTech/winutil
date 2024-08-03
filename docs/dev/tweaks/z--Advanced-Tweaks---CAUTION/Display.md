@@ -22,6 +22,7 @@ Sets the system preferences to performance. You can do this manually with sysdm.
 {
     "Content":  "Set Display for Performance",
     "Description":  "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a027_",

@@ -1,4 +1,4 @@
-﻿# Disable ConsumerFeatures
+﻿# Disable Background Apps
 
 Last Updated: 2024-08-03
 
@@ -9,7 +9,7 @@ Last Updated: 2024-08-03
 
 ## Description
 
-Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)
+Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11
 
 <!-- BEGIN CUSTOM CONTENT -->
 
@@ -20,18 +20,18 @@ Windows 10 will not automatically install any games, third-party apps, or applic
 
 ```json
 {
-    "Content":  "Disable ConsumerFeatures",
-    "Description":  "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
+    "Content":  "Disable Background Apps",
+    "Description":  "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
     "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
-    "category":  "Essential Tweaks",
+    "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
-    "Order":  "a003_",
+    "Order":  "a024_",
     "registry":  [
                      {
-                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-                         "OriginalValue":  "0",
-                         "Name":  "DisableWindowsConsumerFeatures",
+                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+                         "Name":  "GlobalUserDisabled",
                          "Value":  "1",
+                         "OriginalValue":  "0",
                          "Type":  "DWord"
                      }
                  ]
@@ -43,7 +43,7 @@ Windows 10 will not automatically install any games, third-party apps, or applic
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
-### Registry Key: DisableWindowsConsumerFeatures
+### Registry Key: GlobalUserDisabled
 **Type:** DWord
 
 **Original Value:** 0

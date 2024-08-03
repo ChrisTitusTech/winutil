@@ -22,6 +22,7 @@ Hyper-V is a hardware virtualization product developed by Microsoft that allows 
 {
     "Content":  "HyperV Virtualization",
     "Description":  "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
+    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a011_",

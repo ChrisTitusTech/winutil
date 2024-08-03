@@ -22,6 +22,7 @@ Removes the Home and Gallery from explorer and sets This PC as default
 {
     "Content":  "Remove Home and Gallery from explorer",
     "Description":  "Removes the Home and Gallery from explorer and sets This PC as default",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a029_",

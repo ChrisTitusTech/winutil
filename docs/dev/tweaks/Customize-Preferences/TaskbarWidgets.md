@@ -22,6 +22,7 @@ If Enabled then Widgets Button in Taskbar will be shown.
 {
     "Content":  "Widgets Button in Taskbar",
     "Description":  "If Enabled then Widgets Button in Taskbar will be shown.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a204_",

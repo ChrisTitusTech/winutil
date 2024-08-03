@@ -368,3 +368,41 @@ $indexContent += "`n"
 
 # Write the devdocs.md file
 Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
+
+# Function to add or update the link attribute in the JSON file text
+function Add-LinkAttributeToJson {
+    Param (
+        [string]$jsonFilePath,
+        [string]$outputDir
+    )
+
+    # Read the JSON file as text
+    $jsonText = Get-Content -Path $jsonFilePath -Raw
+
+    # Process each item to determine its correct path
+    $jsonData = $jsonText | ConvertFrom-Json
+    foreach ($item in $jsonData.PSObject.Properties) {
+        $itemName = $item.Name
+        $itemDetails = $item.Value
+        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
+        $displayName = $itemName -replace 'WPF|WinUtil|Toggle|Disable|Enable|Features|Tweaks|Panel|Fixes', ''
+        $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
+        $docLink = "https://christitustech.github.io/winutil/$relativePath"
+
+        # Check if the link attribute exists
+        if ($jsonText -match '"link"\s*:\s*"[^"]*"') {
+            # Update the existing link attribute
+            $jsonText = $jsonText -replace '("link"\s*:\s*")[^"]*(")', "`$1$docLink`$2"
+        } else {
+            # Insert the link attribute after the Description attribute
+            $jsonText = $jsonText -replace '("Description"\s*:\s*"[^"]*"\s*,)', "`$1`n    `"link`": `"$docLink`","
+        }
+    }
+
+    # Write the modified text back to the JSON file
+    Set-Content -Path $jsonFilePath -Value $jsonText -Encoding utf8
+}
+
+# Add link attribute to tweaks and features JSON files
+Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
+Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"

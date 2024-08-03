@@ -22,6 +22,7 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
 {
     "Content":  "Remove Microsoft Edge - NOT RECOMMENDED",
     "Description":  "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a029_",

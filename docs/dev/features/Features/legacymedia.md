@@ -22,6 +22,7 @@ Enables legacy programs from previous versions of windows
 {
     "Content":  "Legacy Media (WMP, DirectPlay)",
     "Description":  "Enables legacy programs from previous versions of windows",
+    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a012_",

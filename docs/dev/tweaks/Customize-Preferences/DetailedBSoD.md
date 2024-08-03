@@ -1,4 +1,4 @@
-﻿# Sticky Keys
+﻿# Detailed BSoD
 
 Last Updated: 2024-08-03
 
@@ -9,7 +9,7 @@ Last Updated: 2024-08-03
 
 ## Description
 
-If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.
+If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.
 
 <!-- BEGIN CUSTOM CONTENT -->
 
@@ -20,38 +20,41 @@ If Enabled then Sticky Keys is activated - Sticky keys is an accessibility featu
 
 ```json
 {
-    "Content":  "Sticky Keys",
-    "Description":  "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+    "Content":  "Detailed BSoD",
+    "Description":  "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
-    "Order":  "a108_",
+    "Order":  "a205_",
     "Type":  "Toggle"
 }
 ```
 </details>
 
-## Function: Invoke-WinUtilStickyKeys
+## Function: Invoke-WinUtilDetailedBSoD
 ```powershell
-Function Invoke-WinUtilStickyKeys {
+Function Invoke-WinUtilDetailedBSoD {
     <#
+
     .SYNOPSIS
-        Disables/Enables Sticky Keyss on startup
-    .PARAMETER Enabled
-        Indicates whether to enable or disable Sticky Keys on startup
+        Enables/Disables Detailed BSoD
+        (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters').DisplayParameters
+        
+
     #>
     Param($Enabled)
-    Try {
+    Try{
         if ($Enabled -eq $false){
-            Write-Host "Enabling Sticky Keys On startup"
-            $value = 510
+            Write-Host "Enabling Detailed BSoD"
+            $value = 1
         }
         else {
-            Write-Host "Disabling Sticky Keys On startup"
-            $value = 58
+            Write-Host "Disabling Detailed BSoD"
+            $value =0
         }
-        $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
-        Set-ItemProperty -Path $Path -Name Flags -Value $value
+
+        $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
+        Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"

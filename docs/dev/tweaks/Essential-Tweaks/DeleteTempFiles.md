@@ -22,6 +22,7 @@ Erases TEMP Folders
 {
     "Content":  "Delete Temporary Files",
     "Description":  "Erases TEMP Folders",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a002_",

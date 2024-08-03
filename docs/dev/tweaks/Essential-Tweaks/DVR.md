@@ -22,6 +22,7 @@ GameDVR is a Windows App that is a dependency for some Store Games. I've never m
 {
     "Content":  "Disable GameDVR",
     "Description":  "GameDVR is a Windows App that is a dependency for some Store Games. I\u0027ve never met someone that likes it, but it\u0027s there for the XBOX crowd.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

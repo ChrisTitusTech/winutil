@@ -22,6 +22,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 {
     "Content":  "Remove OneDrive",
     "Description":  "Moves OneDrive files to Default Home Folders and Uninstalls it.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a030_",

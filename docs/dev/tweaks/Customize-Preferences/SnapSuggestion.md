@@ -22,6 +22,7 @@ If enabled then you will get suggestions to snap other applications in the left 
 {
     "Content":  "Snap Assist Suggestion",
     "Description":  "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a106_",
