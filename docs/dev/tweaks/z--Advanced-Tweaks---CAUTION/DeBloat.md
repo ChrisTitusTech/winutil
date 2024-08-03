@@ -22,7 +22,7 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 {
     "Content":  "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description":  "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a028_",

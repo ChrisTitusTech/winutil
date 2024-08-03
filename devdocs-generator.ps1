@@ -1,9 +1,7 @@
 <#
-
     .DESCRIPTION
     This script generates markdown files for the development documentation based on the existing JSON files.
-    Create table of content.
-
+    Create table of content and archive any files in the dev folder not modified by this script.
 #>
 
 # Load the JSON files
@@ -17,6 +15,7 @@ $featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString(
 # Create the output directories if they don't exist
 $tweaksOutputDir = "docs/dev/tweaks"
 $featuresOutputDir = "docs/dev/features"
+$archiveDir = "docs/archive"
 
 if (-Not (Test-Path -Path $tweaksOutputDir)) {
     New-Item -ItemType Directory -Path $tweaksOutputDir | Out-Null
@@ -24,6 +23,10 @@ if (-Not (Test-Path -Path $tweaksOutputDir)) {
 
 if (-Not (Test-Path -Path $featuresOutputDir)) {
     New-Item -ItemType Directory -Path $featuresOutputDir | Out-Null
+}
+
+if (-Not (Test-Path -Path $archiveDir)) {
+    New-Item -ItemType Directory -Path $archiveDir | Out-Null
 }
 
 # Load functions from private and public directories
@@ -97,6 +100,7 @@ function Get-AdditionalFunctionsFromButton {
 # Function to generate markdown files
 function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified, $type) {
     $tocEntries = @()
+    $processedFiles = @()
 
     foreach ($itemName in $data.PSObject.Properties.Name) {
         $itemDetails = $data.$itemName
@@ -124,6 +128,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             Name = $itemDetails.Content
             Type = $type
         }
+
+        # Track processed files
+        $processedFiles += (Get-Item $filename).FullName
 
         # Create the markdown content
         $header = "# $([string]$itemDetails.Content)`n"
@@ -322,15 +329,18 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         Add-Content -Path $filename -Value $jsonLink -Encoding utf8
     }
 
-    return $tocEntries
+    return [PSCustomObject]@{
+        TocEntries = $tocEntries
+        ProcessedFiles = $processedFiles
+    }
 }
 
 # Generate markdown files for tweaks and features and collect TOC entries
-$tweakTocEntries = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
-$featureTocEntries = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
+$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
+$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
 
 # Combine TOC entries and group by type and category
-$allTocEntries = $tweakTocEntries + $featureTocEntries
+$allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
 $tweakEntries = $allTocEntries | Where-Object { $_.Type -eq 'tweak' } | Sort-Object Category, Name
 $featureEntries = $allTocEntries | Where-Object { $_.Type -eq 'feature' } | Sort-Object Category, Name
 
@@ -406,3 +416,51 @@ function Add-LinkAttributeToJson {
 # Add link attribute to tweaks and features JSON files
 Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
 Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"
+
+# Archive unmodified files
+function Archive-UnmodifiedFiles {
+    Param (
+        [string]$outputDir,
+        [array]$processedFiles,
+        [string]$archiveDir
+    )
+
+    $allFiles = Get-ChildItem -Path $outputDir -Recurse -File
+    $processedFilesHashSet = @{}
+    $processedFiles | ForEach-Object { $processedFilesHashSet[$_] = $true }
+
+    $filesToMove = @()
+    foreach ($file in $allFiles) {
+        if (-Not $processedFilesHashSet.ContainsKey($file.FullName)) {
+            $filesToMove += $file
+        }
+    }
+
+    # Create necessary directories and move files
+    foreach ($file in $filesToMove) {
+        $relativePath = $file.FullName -replace [regex]::Escape((Get-Item $outputDir).FullName), ''
+        $archivePath = Join-Path -Path $archiveDir -ChildPath $relativePath.TrimStart('\')
+
+        # Create the directory if it doesn't exist
+        $archiveDirectory = [System.IO.Path]::GetDirectoryName($archivePath)
+        if (-Not (Test-Path -Path $archiveDirectory)) {
+            New-Item -ItemType Directory -Path $archiveDirectory | Out-Null
+        }
+
+        # Handle file name conflicts
+        $newArchivePath = $archivePath
+        $count = 1
+        while (Test-Path -Path $newArchivePath) {
+            $baseName = [System.IO.Path]::GetFileNameWithoutExtension($archivePath)
+            $extension = [System.IO.Path]::GetExtension($archivePath)
+            $newArchivePath = Join-Path -Path $archiveDirectory -ChildPath "$baseName($count)$extension"
+            $count++
+        }
+
+        # Move the file
+        Move-Item -Path $file.FullName -Destination $newArchivePath
+    }
+}
+
+Archive-UnmodifiedFiles -outputDir $tweaksOutputDir -processedFiles $tweakResult.ProcessedFiles -archiveDir $archiveDir
+Archive-UnmodifiedFiles -outputDir $featuresOutputDir -processedFiles $featureResult.ProcessedFiles -archiveDir $archiveDir

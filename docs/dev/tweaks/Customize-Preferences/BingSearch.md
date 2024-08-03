@@ -22,7 +22,7 @@ If enable then includes web search results from Bing in your Start Menu search.
 {
     "Content":  "Bing Search in Start Menu",
     "Description":  "If enable then includes web search results from Bing in your Start Menu search.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a101_",

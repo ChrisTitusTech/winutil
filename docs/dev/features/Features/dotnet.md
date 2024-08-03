@@ -22,7 +22,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "All .Net Framework (2,3,4)",
     "Description":  ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a010_",

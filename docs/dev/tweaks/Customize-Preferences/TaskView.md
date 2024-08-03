@@ -22,7 +22,7 @@ If Enabled then Task View Button in Taskbar will be shown.
 {
     "Content":  "Task View Button in Taskbar",
     "Description":  "If Enabled then Task View Button in Taskbar will be shown.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a203_",

@@ -22,7 +22,7 @@ This will edit the config file of the Windows Terminal replacing PowerShell 5 wi
 {
     "Content":  "Change Windows Terminal default: PowerShell 5 -\u003e PowerShell 7",
     "Description":  "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a009_",

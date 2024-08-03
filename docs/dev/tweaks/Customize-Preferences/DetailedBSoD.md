@@ -22,7 +22,7 @@ If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more in
 {
     "Content":  "Detailed BSoD",
     "Description":  "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a205_",

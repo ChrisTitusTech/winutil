@@ -22,7 +22,7 @@ Runs Disk Cleanup on Drive C: and removes old Windows Updates.
 {
     "Content":  "Run Disk Cleanup",
     "Description":  "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a009_",

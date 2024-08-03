@@ -22,7 +22,7 @@ Hibernation is really meant for laptops as it saves what's in memory before turn
 {
     "Content":  "Disable Hibernation",
     "Description":  "Hibernation is really meant for laptops as it saves what\u0027s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don\u0027t be like Bob. Bob likes hibernation.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

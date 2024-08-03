@@ -22,7 +22,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
 {
     "Content":  "Adobe Network Block",
     "Description":  "Reduce user interruptions by selectively blocking connections to Adobe\u0027s activation and telemetry servers. Credit: Ruddernation-Designs",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a021_",

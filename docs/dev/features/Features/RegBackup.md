@@ -22,7 +22,7 @@ Enables daily registry backup, previously disabled by Microsoft in Windows 10 18
 {
     "Content":  "Enable Daily Registry Backup Task 12.30am",
     "Description":  "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
-    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a017_",

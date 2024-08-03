@@ -22,7 +22,7 @@ Enables option to end task when right clicking a program in the taskbar
 {
     "Content":  "Enable End Task With Right Click",
     "Description":  "Enables option to end task when right clicking a program in the taskbar",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a006_",

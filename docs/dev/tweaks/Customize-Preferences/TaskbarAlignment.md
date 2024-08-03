@@ -22,7 +22,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Center Taskbar Items",
     "Description":  "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a204_",

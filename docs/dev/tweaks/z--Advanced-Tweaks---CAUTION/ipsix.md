@@ -22,7 +22,7 @@ Disables IPv6.
 {
     "Content":  "Disable IPv6",
     "Description":  "Disables IPv6.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a023_",

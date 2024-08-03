@@ -22,7 +22,7 @@ If enabled then Snap preview is disabled when maximize button is hovered.
 {
     "Content":  "Snap Assist Flyout",
     "Description":  "If enabled then Snap preview is disabled when maximize button is hovered.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a105_",

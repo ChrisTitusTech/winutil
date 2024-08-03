@@ -22,7 +22,7 @@ Disables web suggestions when searching using Windows Search.
 {
     "Content":  "Disable Search Box Web Suggestions in Registry(explorer restart)",
     "Description":  "Disables web suggestions when searching using Windows Search.",
-    "link":  "https://christitustech.github.io/win/dev/features/Legacy-Windows-Panels/user",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
     "panel":  "1",
     "Order":  "a016_",

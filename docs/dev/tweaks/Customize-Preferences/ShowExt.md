@@ -22,7 +22,7 @@ If enabled then File extensions (e.g., .txt, .jpg) are visible.
 {
     "Content":  "Show File Extensions",
     "Description":  "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a201_",

@@ -22,7 +22,7 @@ Disables all Microsoft Store apps from running in the background, which has to b
 {
     "Content":  "Disable Background Apps",
     "Description":  "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a024_",

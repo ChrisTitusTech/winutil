@@ -22,7 +22,7 @@ If Enabled then Cursor movement is affected by the speed of your physical mouse 
 {
     "Content":  "Mouse Acceleration",
     "Description":  "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a107_",

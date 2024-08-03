@@ -22,7 +22,7 @@ Windows 10 will not automatically install any games, third-party apps, or applic
 {
     "Content":  "Disable ConsumerFeatures",
     "Description":  "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a003_",

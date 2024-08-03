@@ -22,7 +22,7 @@ Wifi Sense is a spying service that phones home all nearby scanned wifi networks
 {
     "Content":  "Disable Wifi-Sense",
     "Description":  "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

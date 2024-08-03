@@ -22,7 +22,7 @@ Intel LMS service is always listening on all ports and could be a huge security 
 {
     "Content":  "Disable Intel MM (vPro LMS)",
     "Description":  "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a026_",

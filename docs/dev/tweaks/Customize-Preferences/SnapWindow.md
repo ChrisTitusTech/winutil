@@ -22,7 +22,7 @@ If enabled you can align windows by dragging them. | Relogin Required
 {
     "Content":  "Snap Window",
     "Description":  "If enabled you can align windows by dragging them. | Relogin Required",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a104_",

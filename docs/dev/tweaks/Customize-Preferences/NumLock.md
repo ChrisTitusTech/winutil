@@ -22,7 +22,7 @@ Toggle the Num Lock key state when your computer starts.
 {
     "Content":  "NumLock on Startup",
     "Description":  "Toggle the Num Lock key state when your computer starts.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a102_",

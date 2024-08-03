@@ -22,7 +22,7 @@ Storage Sense deletes temp files automatically.
 {
     "Content":  "Disable Storage Sense",
     "Description":  "Storage Sense deletes temp files automatically.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

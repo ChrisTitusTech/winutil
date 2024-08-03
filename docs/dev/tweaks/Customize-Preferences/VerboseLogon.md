@@ -22,7 +22,7 @@ Show detailed messages during the login process for troubleshooting and diagnost
 {
     "Content":  "Verbose Messages During Logon",
     "Description":  "Show detailed messages during the login process for troubleshooting and diagnostics.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a103_",

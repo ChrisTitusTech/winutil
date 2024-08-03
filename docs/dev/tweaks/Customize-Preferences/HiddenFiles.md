@@ -22,7 +22,7 @@ If Enabled then Hidden Files will be shown.
 {
     "Content":  "Show Hidden Files",
     "Description":  "If Enabled then Hidden Files will be shown.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
     "panel":  "2",
     "Order":  "a200_",

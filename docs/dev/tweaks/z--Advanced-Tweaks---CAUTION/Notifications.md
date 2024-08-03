@@ -22,7 +22,7 @@ Disables all Notifications INCLUDING Calendar
 {
     "Content":  "Disable Notification Tray/Calendar",
     "Description":  "Disables all Notifications INCLUDING Calendar",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a026_",

@@ -22,7 +22,7 @@ This erases recent docs, clipboard, and run history.
 {
     "Content":  "Disable Activity History",
     "Description":  "This erases recent docs, clipboard, and run history.",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
     "panel":  "1",
     "Order":  "a005_",

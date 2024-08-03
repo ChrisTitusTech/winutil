@@ -22,7 +22,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 {
     "Content":  "Adobe Debloat",
     "Description":  "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
-    "link":  "https://christitustech.github.io/win/dev/tweaks/Shortcuts/Shortcut",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
     "panel":  "1",
     "Order":  "a021_",
