@@ -47,16 +47,16 @@ function Get-CalledFunctions {
     Param (
         [string]$scriptContent,
         [hashtable]$functionList,
-        [ref]$includedFunctions
+        [ref]$processedFunctions
     )
 
     $calledFunctions = @()
     foreach ($functionName in $functionList.Keys) {
-        if ($scriptContent -match "\b$functionName\b" -and -not $includedFunctions.Value.Contains($functionName)) {
+        if ($scriptContent -match "\b$functionName\b" -and -not $processedFunctions.Value.Contains($functionName)) {
             $calledFunctions += $functionName
-            $includedFunctions.Value += $functionName
+            $processedFunctions.Value.Add($functionName)
             if ($functionList[$functionName]) {
-                $nestedFunctions = Get-CalledFunctions -scriptContent $functionList[$functionName] -functionList $functionList -includedFunctions $includedFunctions
+                $nestedFunctions = Get-CalledFunctions -scriptContent $functionList[$functionName] -functionList $functionList -processedFunctions $processedFunctions
                 $calledFunctions += $nestedFunctions
             }
         }
@@ -181,11 +181,11 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         }
 
         $FunctionDetails = ""
-        $includedFunctions = @()  # Reset included functions for each entry
+        $processedFunctions = New-Object 'System.Collections.Generic.HashSet[System.String]'
         $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript, $itemDetails.ToggleScript, $itemDetails.ButtonScript)
         foreach ($script in $allScripts) {
             if ($script -ne $null) {
-                $calledFunctions = Get-CalledFunctions -scriptContent $script -functionList $functions -includedFunctions ([ref]$includedFunctions)
+                $calledFunctions = Get-CalledFunctions -scriptContent $script -functionList $functions -processedFunctions ([ref]$processedFunctions)
                 foreach ($functionName in $calledFunctions) {
                     if ($functions.ContainsKey($functionName)) {
                         $FunctionDetails += "## Function: $functionName`n"
@@ -200,11 +200,11 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         $additionalFunctionToggle = Get-AdditionalFunctionsFromToggle -buttonName $fullItemName
         if ($additionalFunctionToggle -ne $null) {
             $additionalFunctionNameToggle = "Invoke-$additionalFunctionToggle"
-            if ($functions.ContainsKey($additionalFunctionNameToggle) -and -not $includedFunctions.Contains($additionalFunctionNameToggle)) {
+            if ($functions.ContainsKey($additionalFunctionNameToggle) -and -not $processedFunctions.Contains($additionalFunctionNameToggle)) {
                 $FunctionDetails += "## Function: $additionalFunctionNameToggle`n"
                 $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameToggle])`n``````
 `n"
-                $includedFunctions += $additionalFunctionNameToggle
+                $processedFunctions.Add($additionalFunctionNameToggle)
             }
         }
 
@@ -212,11 +212,11 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         $additionalFunctionButton = Get-AdditionalFunctionsFromButton -buttonName $fullItemName
         if ($additionalFunctionButton -ne $null) {
             $additionalFunctionNameButton = "Invoke-$additionalFunctionButton"
-            if ($functions.ContainsKey($additionalFunctionNameButton) -and -not $includedFunctions.Contains($additionalFunctionNameButton)) {
+            if ($functions.ContainsKey($additionalFunctionNameButton) -and -not $processedFunctions.Contains($additionalFunctionNameButton)) {
                 $FunctionDetails += "## Function: $additionalFunctionNameButton`n"
                 $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameButton])`n``````
 `n"
-                $includedFunctions += $additionalFunctionNameButton
+                $processedFunctions.Add($additionalFunctionNameButton)
             }
         }
 
