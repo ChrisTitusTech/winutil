@@ -11752,15 +11752,14 @@ $sync.configs.tweaks = '{
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
+    "Description": "Removes MS Edge",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
       "
-        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
-        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
-        Start-Process $ENV:temp\\edgeremoval.bat
+        Invoke-WebRequest -Uri \"https://github.com/Linget0/WPFEdgeRemoval/blob/main/edgeremoval.ps1" -OutFile \"$ENV:TEMP\\edgeremoval.ps1\"
+        Start-Process $ENV:temp\\edgeremoval.ps1
         "
     ],
     "UndoScript": [
