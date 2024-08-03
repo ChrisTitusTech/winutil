@@ -11,11 +11,13 @@ on:
 jobs:
   Compile-and-Check:
     runs-on: windows-latest
+    env:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
     steps:
     - name: Checkout Sources
       uses: actions/checkout@v4
 
-    - name: Compile winutil.ps1
+    - name: Compile and Syntaxcheck winutil.ps1
       shell: pwsh
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
