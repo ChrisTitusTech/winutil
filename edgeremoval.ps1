@@ -1,5 +1,17 @@
-Stop-Process -Name "msedge"
-Stop-Process -Name "widgets"
+$msedgeProcess = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
+$widgetsProcess = Get-Process -Name "widgets" -ErrorAction SilentlyContinue
+# Checking if Microsoft Edge is running
+if ($msedgeProcess) {
+    Stop-Process -Name "msedge" -Force
+} else {
+    Write-Output "msedge process is not running."
+}
+# Checking if Widgets is running
+if ($widgetsProcess) {
+    Stop-Process -Name "widgets" -Force
+} else {
+    Write-Output "widgets process is not running."
+}
 
 #Creating a variable to the necessary file path
 $filePath = "C:\Windows\System32\IntegratedServicesRegionPolicySet.json"
