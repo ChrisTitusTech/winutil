@@ -46,6 +46,28 @@ jobs:
             Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
         shell: pwsh
+      
+      - name: Create and import code signing certificate
+        if: (github.repository == 'ChrisTitusTech/winutil')
+        shell: pwsh
+        run: |
+          [System.IO.File]::WriteAllBytes("$env:USERPROFILE\code-signing-cert.pfx", [System.Convert]::FromBase64String("$env:CERTIFICATE_BASE64"))
+          Import-PfxCertificate -FilePath "$env:USERPROFILE\code-signing-cert.pfx" -CertStoreLocation Cert:\CurrentUser\My
+      
+      - name: Code sign winutil.ps1
+        if: (github.repository == 'ChrisTitusTech/winutil')
+        shell: pwsh
+        run: |
+          $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+          if ($null -eq $cert) { throw "Code signing certificate not found" }
+          Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert
+      
+      - name: Verify code signature
+        if: (github.repository == 'ChrisTitusTech/winutil')
+        shell: pwsh
+        run: |
+          $signature = Get-AuthenticodeSignature -FilePath ./winutil.ps1
+          if ($signature.Status -ne 'Valid') { throw "Code signing failed" }
 
       - name: Create and Upload Release
         id: create_release
