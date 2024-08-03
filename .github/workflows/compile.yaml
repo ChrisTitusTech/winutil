@@ -32,6 +32,11 @@ jobs:
         $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
         if ($null -eq $cert) { throw "Code signing certificate not found" }
         Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert
+    - name: Upload winutil.ps1 as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: winutil
+        path: ./winutil.ps1
     - uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: Compile Winutil
