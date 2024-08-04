@@ -51,7 +51,7 @@ function ConvertTo-Icon {
             # Handle the thrown exception here...
         }
 
-        This Example make use of '-overrideIconFile' Optional Parameter, the default for this paramter is $true.
+        This Example make use of '-overrideIconFile' Optional Parameter, the default for this parameter is $true.
         By doing '-overrideIconFile $false', the 'ConvertTo-Icon' function will raise an exception that needs to be catched throw a 'catch' Code Block,
         otherwise it'll crash the running PowerShell instance/process.
 
