@@ -2,11 +2,32 @@
     .DESCRIPTION
     This script generates markdown files for the development documentation based on the existing JSON files.
     Create table of content and archive any files in the dev folder not modified by this script.
+    This script is not meant to be used manually, it is called by the github action workflow.
 #>
+
+function Update-Progress {
+    param (
+        [Parameter(Mandatory, position=0)]
+        [string]$StatusMessage,
+
+	[Parameter(Mandatory, position=1)]
+	[ValidateRange(0,100)]
+        [int]$Percent,
+
+	[Parameter(position=2)]
+	[string]$Activity = "Compiling"
+    )
+
+    Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
+}
+
+Update-Progress "Pre-req: Load JSON files" 1
 
 # Load the JSON files
 $tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
 $features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
+
+Update-Progress "Pre-req: Get last modified dates of the JSON files" 10
 
 # Get the last modified dates of the JSON files
 $tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd") #  For more detail add " HH:mm:ss zzz"
@@ -16,6 +37,13 @@ $featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString(
 $tweaksOutputDir = "docs/dev/tweaks"
 $featuresOutputDir = "docs/dev/features"
 $archiveDir = "docs/archive"
+
+# Load functions from private and public directories
+$privateFunctionsDir = "functions/private"
+$publicFunctionsDir = "functions/public"
+$functions = @{}
+
+Update-Progress "Pre-req: create Directories" 20
 
 if (-Not (Test-Path -Path $tweaksOutputDir)) {
     New-Item -ItemType Directory -Path $tweaksOutputDir | Out-Null
@@ -29,10 +57,7 @@ if (-Not (Test-Path -Path $archiveDir)) {
     New-Item -ItemType Directory -Path $archiveDir | Out-Null
 }
 
-# Load functions from private and public directories
-$privateFunctionsDir = "functions/private"
-$publicFunctionsDir = "functions/public"
-$functions = @{}
+Update-Progress "Pre-req: Load existing Functions" 30
 
 function Load-Functions($dir) {
     Get-ChildItem -Path $dir -Filter *.ps1 | ForEach-Object {
@@ -339,6 +364,8 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
     }
 }
 
+Update-Progress "Generate content for documentation" 20
+
 # Generate markdown files for tweaks and features and collect TOC entries
 $tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
 $featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
@@ -383,7 +410,9 @@ $indexContent += "`n"
 # Write the devdocs.md file
 Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
 
-# F Functioto add or update the link attribute in the JSON file text
+Update-Progress "Write documentation links to json files" 90
+
+# Function to add or update the link attribute in the JSON file text
 function Add-LinkAttributeToJson {
     Param (
         [string]$jsonFilePath,
@@ -421,6 +450,8 @@ function Add-LinkAttributeToJson {
 Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
 Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"
 
+Update-Progress "Archive unused documentation" 95
+
 # Archive unmodified files
 function Archive-UnmodifiedFiles {
     Param (
@@ -444,12 +475,6 @@ function Archive-UnmodifiedFiles {
     foreach ($file in $filesToMove) {
         $relativePath = $file.FullName -replace [regex]::Escape((Get-Item $outputDir).FullName), ''
         $archivePath = Join-Path -Path $archiveDir -ChildPath $relativePath.TrimStart('\')
-
-        # Create the directory if it doesn't exist
-        $archiveDirectory = [System.IO.Path]::GetDirectoryName($archivePath)
-        if (-Not (Test-Path -Path $archiveDirectory)) {
-            New-Item -ItemType Directory -Path $archiveDirectory | Out-Null
-        }
 
         # Handle file name conflicts
         $newArchivePath = $archivePath
