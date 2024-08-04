@@ -82,18 +82,18 @@
 - [Region](dev/features/Legacy-Windows-Panels/region.md)
 ### Features
 
-- [Windows Subsystem for Linux](dev/features/Features/wsl.md)
-- [NFS - Network File System](dev/features/Features/nfs.md)
-- [Enable Search Box Web Suggestions in Registry(explorer restart)](dev/features/Features/SearchSuggestions.md)
+- [Windows Subsystem for Linux](dev/features/Features/Featurewsl.md)
+- [NFS - Network File System](dev/features/Features/Featurenfs.md)
+- [Enable Search Box Web Suggestions in Registry(explorer restart)](dev/features/Features/FeatureSearchSuggestions.md)
 - [All .Net Framework (2,3,4)](dev/features/Features/dotnet.md)
 - [HyperV Virtualization](dev/features/Features/hyperv.md)
 - [Legacy Media (WMP, DirectPlay)](dev/features/Features/legacymedia.md)
-- [Disable Legacy F8 Boot Recovery](dev/features/Features/LegacyRecovery.md)
-- [Windows Sandbox](dev/features/Features/Sandbox.md)
-- [Install Features](dev/features/Features/Install.md)
-- [Disable Search Box Web Suggestions in Registry(explorer restart)](dev/features/Features/SearchSuggestions.md)
-- [Enable Daily Registry Backup Task 12.30am](dev/features/Features/RegBackup.md)
-- [Enable Legacy F8 Boot Recovery](dev/features/Features/LegacyRecovery.md)
+- [Disable Legacy F8 Boot Recovery](dev/features/Features/FeatureLegacyRecovery.md)
+- [Windows Sandbox](dev/features/Features/andbox.md)
+- [Install Features](dev/features/Features/FeatureInstall.md)
+- [Disable Search Box Web Suggestions in Registry(explorer restart)](dev/features/Features/FeatureSearchSuggestions.md)
+- [Enable Daily Registry Backup Task 12.30am](dev/features/Features/FeatureRegBackup.md)
+- [Enable Legacy F8 Boot Recovery](dev/features/Features/FeatureLegacyRecovery.md)
 ### Fixes
 
 - [WinGet Reinstall](dev/features/Fixes/Winget.md)
