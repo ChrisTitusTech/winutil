@@ -1,4 +1,4 @@
-# Remove OneDrive
+﻿# Remove OneDrive
 
 Last Updated: 2024-08-04
 
@@ -20,14 +20,13 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 
 ```json
 {
-  "Content": "Remove OneDrive",
-  "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive",
-  "panel": "1",
-  "Order": "a030_",
-  "InvokeScript": [
-    "
+    "Content":  "Remove OneDrive",
+    "Description":  "Moves OneDrive files to Default Home Folders and Uninstalls it.",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a030_",
+    "InvokeScript":  [
+                         "
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
@@ -37,13 +36,13 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
       }
       else{
-          Write-Host \"Onedrive dosn't seem to be installed anymore\" -ForegroundColor Red
+          Write-Host \"Onedrive dosn\u0027t seem to be installed anymore\" -ForegroundColor Red
           return
       }
       # Check if OneDrive got Uninstalled
       if (-not (Test-Path $regPath)){
       Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
-      Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
+      Start-Process -FilePath powershell -ArgumentList \"robocopy \u0027$($OneDrivePath)\u0027 \u0027$($env:USERPROFILE.TrimEnd())\\\u0027 /mov /e /xj\" -NoNewWindow -Wait
 
       Write-Host \"Removing OneDrive leftovers\"
       Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \"$env:localappdata\\Microsoft\\OneDrive\"
@@ -69,7 +68,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
 
       Write-Host \"Removing scheduled task\"
-      Get-ScheduledTask -TaskPath '\\' -TaskName 'OneDrive*' -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+      Get-ScheduledTask -TaskPath \u0027\\\u0027 -TaskName \u0027OneDrive*\u0027 -ea SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
 
       # Add Shell folders restoring default locations
       Write-Host \"Shell Fixing\"
@@ -108,13 +107,13 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
       }
       "
-  ],
-  "UndoScript": [
-    "
+                     ],
+    "UndoScript":  [
+                       "
       Write-Host \"Install OneDrive\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
-  ]
+                   ]
 }
 ```
 </details>

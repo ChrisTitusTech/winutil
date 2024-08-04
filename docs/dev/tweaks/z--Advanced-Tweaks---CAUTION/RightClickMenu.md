@@ -1,4 +1,4 @@
-# Set Classic Right-Click Menu 
+﻿# Set Classic Right-Click Menu 
 
 Last Updated: 2024-08-04
 
@@ -20,29 +20,28 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
 
 ```json
 {
-  "Content": "Set Classic Right-Click Menu ",
-  "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu",
-  "panel": "1",
-  "Order": "a027_",
-  "InvokeScript": [
-    "
+    "Content":  "Set Classic Right-Click Menu ",
+    "Description":  "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a027_",
+    "InvokeScript":  [
+                         "
       New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-  ],
-  "UndoScript": [
-    "
+                     ],
+    "UndoScript":  [
+                       "
       Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
       # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-  ]
+                   ]
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Show File Extensions
+﻿# Show File Extensions
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,12 @@ If enabled then File extensions (e.g., .txt, .jpg) are visible.
 
 ```json
 {
-  "Content": "Show File Extensions",
-  "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
-  "category": "Customize Preferences",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt",
-  "panel": "2",
-  "Order": "a201_",
-  "Type": "Toggle"
+    "Content":  "Show File Extensions",
+    "Description":  "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
+    "category":  "Customize Preferences",
+    "panel":  "2",
+    "Order":  "a201_",
+    "Type":  "Toggle"
 }
 ```
 </details>

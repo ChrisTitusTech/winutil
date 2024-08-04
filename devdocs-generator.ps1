@@ -43,6 +43,8 @@ $privateFunctionsDir = "functions/private"
 $publicFunctionsDir = "functions/public"
 $functions = @{}
 
+$itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)"
+
 Update-Progress "Pre-req: create Directories" 20
 
 if (-Not (Test-Path -Path $tweaksOutputDir)) {
@@ -141,7 +143,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         $fullItemName = $itemName
 
         # Remove prefixes from the name for display
-        $displayName = $itemName -replace 'WPF|WinUtil|Toggle|Disable|Enable|Features|Tweaks|Panel|Fixes', ''
+        $displayName = $itemName -replace $itemnametocut, ''
 
         $filename = "$categoryDir/$displayName.md"
         $relativePath = "$outputDir/$category/$displayName.md" -replace '^docs/', ''
@@ -428,7 +430,7 @@ function Add-LinkAttributeToJson {
         $itemName = $item.Name
         $itemDetails = $item.Value
         $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
-        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)', ''
+        $displayName = $itemName -replace $itemnametocut, ''
         $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
         $docLink = "https://christitustech.github.io/winutil/$relativePath"
 

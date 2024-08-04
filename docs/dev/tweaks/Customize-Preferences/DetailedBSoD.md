@@ -1,4 +1,4 @@
-# Detailed BSoD
+﻿# Detailed BSoD
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,12 @@ If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more in
 
 ```json
 {
-  "Content": "Detailed BSoD",
-  "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
-  "category": "Customize Preferences",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD",
-  "panel": "2",
-  "Order": "a205_",
-  "Type": "Toggle"
+    "Content":  "Detailed BSoD",
+    "Description":  "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
+    "category":  "Customize Preferences",
+    "panel":  "2",
+    "Order":  "a205_",
+    "Type":  "Toggle"
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Adobe Network Block
+﻿# Adobe Network Block
 
 Last Updated: 2024-08-04
 
@@ -20,14 +20,13 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
 
 ```json
 {
-  "Content": "Adobe Network Block",
-  "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet",
-  "panel": "1",
-  "Order": "a021_",
-  "InvokeScript": [
-    "
+    "Content":  "Adobe Network Block",
+    "Description":  "Reduce user interruptions by selectively blocking connections to Adobe\u0027s activation and telemetry servers. Credit: Ruddernation-Designs",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a021_",
+    "InvokeScript":  [
+                         "
       # Define the URL of the remote HOSTS file and the local paths
       $remoteHostsUrl = \"https://raw.githubusercontent.com/Ruddernation-Designs/Adobe-URL-Block-List/master/hosts\"
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
@@ -81,9 +80,9 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
-  ],
-  "UndoScript": [
-    "
+                     ],
+    "UndoScript":  [
+                       "
       # Define the local path of the HOSTS file
       $localHostsPath = \"C:\\Windows\\System32\\drivers\\etc\\hosts\"
 
@@ -131,7 +130,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
-  ]
+                   ]
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Set Up Autologin
+﻿# Set Up Autologin
 
 Last Updated: 2024-08-04
 
@@ -16,13 +16,12 @@ Last Updated: 2024-08-04
 
 ```json
 {
-  "Content": "Set Up Autologin",
-  "category": "Fixes",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin",
-  "Order": "a040_",
-  "panel": "1",
-  "Type": "Button",
-  "ButtonWidth": "300"
+    "Content":  "Set Up Autologin",
+    "category":  "Fixes",
+    "Order":  "a040_",
+    "panel":  "1",
+    "Type":  "Button",
+    "ButtonWidth":  "300"
 }
 ```
 </details>

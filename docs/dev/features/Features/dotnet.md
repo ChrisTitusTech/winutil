@@ -1,4 +1,4 @@
-# All .Net Framework (2,3,4)
+﻿# All .Net Framework (2,3,4)
 
 Last Updated: 2024-08-04
 
@@ -20,17 +20,18 @@ Last Updated: 2024-08-04
 
 ```json
 {
-  "Content": "All .Net Framework (2,3,4)",
-  "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-  "category": "Features",
-  "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet",
-  "panel": "1",
-  "Order": "a010_",
-  "feature": [
-    "NetFx4-AdvSrvs",
-    "NetFx3"
-  ],
-  "InvokeScript": []
+    "Content":  "All .Net Framework (2,3,4)",
+    "Description":  ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
+    "category":  "Features",
+    "panel":  "1",
+    "Order":  "a010_",
+    "feature":  [
+                    "NetFx4-AdvSrvs",
+                    "NetFx3"
+                ],
+    "InvokeScript":  [
+
+                     ]
 }
 ```
 </details>

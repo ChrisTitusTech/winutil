@@ -1,4 +1,4 @@
-# Reset Windows Update
+﻿# Reset Windows Update
 
 Last Updated: 2024-08-04
 
@@ -16,13 +16,12 @@ Last Updated: 2024-08-04
 
 ```json
 {
-  "Content": "Reset Windows Update",
-  "category": "Fixes",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update",
-  "panel": "1",
-  "Order": "a041_",
-  "Type": "Button",
-  "ButtonWidth": "300"
+    "Content":  "Reset Windows Update",
+    "category":  "Fixes",
+    "panel":  "1",
+    "Order":  "a041_",
+    "Type":  "Button",
+    "ButtonWidth":  "300"
 }
 ```
 </details>

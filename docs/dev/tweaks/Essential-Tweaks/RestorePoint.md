@@ -1,4 +1,4 @@
-# Create Restore Point
+﻿# Create Restore Point
 
 Last Updated: 2024-08-04
 
@@ -20,15 +20,14 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
 
 ```json
 {
-  "Content": "Create Restore Point",
-  "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
-  "category": "Essential Tweaks",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint",
-  "panel": "1",
-  "Checked": "False",
-  "Order": "a001_",
-  "InvokeScript": [
-    "
+    "Content":  "Create Restore Point",
+    "Description":  "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
+    "category":  "Essential Tweaks",
+    "panel":  "1",
+    "Checked":  "False",
+    "Order":  "a001_",
+    "InvokeScript":  [
+                         "
         # Check if the user has administrative privileges
         if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
             Write-Host \"Please run this script as an administrator.\"
@@ -46,7 +45,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
         if($null -eq $exists){
-            write-host 'Changing system to allow multiple restore points per day'
+            write-host \u0027Changing system to allow multiple restore points per day\u0027
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
 
@@ -74,7 +73,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
       "
-  ]
+                     ]
 }
 ```
 </details>

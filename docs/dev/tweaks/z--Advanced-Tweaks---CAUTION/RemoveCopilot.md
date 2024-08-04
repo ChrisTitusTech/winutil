@@ -1,4 +1,4 @@
-# Disable Microsoft Copilot
+﻿# Disable Microsoft Copilot
 
 Last Updated: 2024-08-04
 
@@ -20,47 +20,46 @@ Disables MS Copilot AI built into Windows since 23H2.
 
 ```json
 {
-  "Content": "Disable Microsoft Copilot",
-  "Description": "Disables MS Copilot AI built into Windows since 23H2.",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot",
-  "panel": "1",
-  "Order": "a025_",
-  "registry": [
-    {
-      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-      "Name": "TurnOffWindowsCopilot",
-      "Type": "DWord",
-      "Value": "1",
-      "OriginalValue": "0"
-    },
-    {
-      "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-      "Name": "TurnOffWindowsCopilot",
-      "Type": "DWord",
-      "Value": "1",
-      "OriginalValue": "0"
-    },
-    {
-      "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-      "Name": "ShowCopilotButton",
-      "Type": "DWord",
-      "Value": "0",
-      "OriginalValue": "1"
-    }
-  ],
-  "InvokeScript": [
-    "
+    "Content":  "Disable Microsoft Copilot",
+    "Description":  "Disables MS Copilot AI built into Windows since 23H2.",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a025_",
+    "registry":  [
+                     {
+                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+                         "Name":  "TurnOffWindowsCopilot",
+                         "Type":  "DWord",
+                         "Value":  "1",
+                         "OriginalValue":  "0"
+                     },
+                     {
+                         "Path":  "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+                         "Name":  "TurnOffWindowsCopilot",
+                         "Type":  "DWord",
+                         "Value":  "1",
+                         "OriginalValue":  "0"
+                     },
+                     {
+                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                         "Name":  "ShowCopilotButton",
+                         "Type":  "DWord",
+                         "Value":  "0",
+                         "OriginalValue":  "1"
+                     }
+                 ],
+    "InvokeScript":  [
+                         "
       Write-Host \"Remove Copilot\"
       dism /online /remove-package /package-name:Microsoft.Windows.Copilot
       "
-  ],
-  "UndoScript": [
-    "
+                     ],
+    "UndoScript":  [
+                       "
       Write-Host \"Install Copilot\"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
       "
-  ]
+                   ]
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Set Time to UTC (Dual Boot)
+﻿# Set Time to UTC (Dual Boot)
 
 Last Updated: 2024-08-04
 
@@ -20,21 +20,20 @@ Essential for computers that are dual booting. Fixes the time sync with Linux Sy
 
 ```json
 {
-  "Content": "Set Time to UTC (Dual Boot)",
-  "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC",
-  "panel": "1",
-  "Order": "a027_",
-  "registry": [
-    {
-      "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
-      "Name": "RealTimeIsUniversal",
-      "Type": "DWord",
-      "Value": "1",
-      "OriginalValue": "0"
-    }
-  ]
+    "Content":  "Set Time to UTC (Dual Boot)",
+    "Description":  "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a027_",
+    "registry":  [
+                     {
+                         "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+                         "Name":  "RealTimeIsUniversal",
+                         "Type":  "DWord",
+                         "Value":  "1",
+                         "OriginalValue":  "0"
+                     }
+                 ]
 }
 ```
 </details>

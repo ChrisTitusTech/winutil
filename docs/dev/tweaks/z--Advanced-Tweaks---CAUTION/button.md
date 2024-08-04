@@ -1,4 +1,4 @@
-# Run Tweaks
+﻿# Run Tweaks
 
 Last Updated: 2024-08-04
 
@@ -16,12 +16,11 @@ Last Updated: 2024-08-04
 
 ```json
 {
-  "Content": "Run Tweaks",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button",
-  "panel": "1",
-  "Order": "a041_",
-  "Type": "Button"
+    "Content":  "Run Tweaks",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a041_",
+    "Type":  "Button"
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Disable Hibernation
+﻿# Disable Hibernation
 
 Last Updated: 2024-08-04
 
@@ -20,34 +20,33 @@ Hibernation is really meant for laptops as it saves what's in memory before turn
 
 ```json
 {
-  "Content": "Disable Hibernation",
-  "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
-  "category": "Essential Tweaks",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber",
-  "panel": "1",
-  "Order": "a005_",
-  "registry": [
-    {
-      "Path": "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
-      "Name": "HibernateEnabled",
-      "Type": "DWord",
-      "Value": "0",
-      "OriginalValue": "1"
-    },
-    {
-      "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
-      "Name": "ShowHibernateOption",
-      "Type": "DWord",
-      "Value": "0",
-      "OriginalValue": "1"
-    }
-  ],
-  "InvokeScript": [
-    "powercfg.exe /hibernate off"
-  ],
-  "UndoScript": [
-    "powercfg.exe /hibernate on"
-  ]
+    "Content":  "Disable Hibernation",
+    "Description":  "Hibernation is really meant for laptops as it saves what\u0027s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don\u0027t be like Bob. Bob likes hibernation.",
+    "category":  "Essential Tweaks",
+    "panel":  "1",
+    "Order":  "a005_",
+    "registry":  [
+                     {
+                         "Path":  "HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power",
+                         "Name":  "HibernateEnabled",
+                         "Type":  "DWord",
+                         "Value":  "0",
+                         "OriginalValue":  "1"
+                     },
+                     {
+                         "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+                         "Name":  "ShowHibernateOption",
+                         "Type":  "DWord",
+                         "Value":  "0",
+                         "OriginalValue":  "1"
+                     }
+                 ],
+    "InvokeScript":  [
+                         "powercfg.exe /hibernate off"
+                     ],
+    "UndoScript":  [
+                       "powercfg.exe /hibernate on"
+                   ]
 }
 ```
 </details>

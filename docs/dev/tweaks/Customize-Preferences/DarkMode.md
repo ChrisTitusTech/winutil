@@ -1,4 +1,4 @@
-# Dark Theme for Windows
+﻿# Dark Theme for Windows
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,12 @@ Enable/Disable Dark Mode.
 
 ```json
 {
-  "Content": "Dark Theme for Windows",
-  "Description": "Enable/Disable Dark Mode.",
-  "category": "Customize Preferences",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode",
-  "panel": "2",
-  "Order": "a100_",
-  "Type": "Toggle"
+    "Content":  "Dark Theme for Windows",
+    "Description":  "Enable/Disable Dark Mode.",
+    "category":  "Customize Preferences",
+    "panel":  "2",
+    "Order":  "a100_",
+    "Type":  "Toggle"
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-# Snap Assist Flyout
+﻿# Snap Assist Flyout
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,12 @@ If enabled then Snap preview is disabled when maximize button is hovered.
 
 ```json
 {
-  "Content": "Snap Assist Flyout",
-  "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
-  "category": "Customize Preferences",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout",
-  "panel": "2",
-  "Order": "a105_",
-  "Type": "Toggle"
+    "Content":  "Snap Assist Flyout",
+    "Description":  "If enabled then Snap preview is disabled when maximize button is hovered.",
+    "category":  "Customize Preferences",
+    "panel":  "2",
+    "Order":  "a105_",
+    "Type":  "Toggle"
 }
 ```
 </details>

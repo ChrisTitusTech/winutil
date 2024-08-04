@@ -1,4 +1,4 @@
-# Mouse Acceleration
+﻿# Mouse Acceleration
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,12 @@ If Enabled then Cursor movement is affected by the speed of your physical mouse 
 
 ```json
 {
-  "Content": "Mouse Acceleration",
-  "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
-  "category": "Customize Preferences",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration",
-  "panel": "2",
-  "Order": "a107_",
-  "Type": "Toggle"
+    "Content":  "Mouse Acceleration",
+    "Description":  "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
+    "category":  "Customize Preferences",
+    "panel":  "2",
+    "Order":  "a107_",
+    "Type":  "Toggle"
 }
 ```
 </details>

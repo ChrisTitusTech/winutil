@@ -1,4 +1,4 @@
-# Remove ALL MS Store Apps - NOT RECOMMENDED
+﻿# Remove ALL MS Store Apps - NOT RECOMMENDED
 
 Last Updated: 2024-08-04
 
@@ -20,92 +20,91 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 
 ```json
 {
-  "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
-  "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat",
-  "panel": "1",
-  "Order": "a028_",
-  "appx": [
-    "Microsoft.Microsoft3DViewer",
-    "Microsoft.AppConnector",
-    "Microsoft.BingFinance",
-    "Microsoft.BingNews",
-    "Microsoft.BingSports",
-    "Microsoft.BingTranslator",
-    "Microsoft.BingWeather",
-    "Microsoft.BingFoodAndDrink",
-    "Microsoft.BingHealthAndFitness",
-    "Microsoft.BingTravel",
-    "Microsoft.MinecraftUWP",
-    "Microsoft.GamingServices",
-    "Microsoft.GetHelp",
-    "Microsoft.Getstarted",
-    "Microsoft.Messaging",
-    "Microsoft.Microsoft3DViewer",
-    "Microsoft.MicrosoftSolitaireCollection",
-    "Microsoft.NetworkSpeedTest",
-    "Microsoft.News",
-    "Microsoft.Office.Lens",
-    "Microsoft.Office.Sway",
-    "Microsoft.Office.OneNote",
-    "Microsoft.OneConnect",
-    "Microsoft.People",
-    "Microsoft.Print3D",
-    "Microsoft.SkypeApp",
-    "Microsoft.Wallet",
-    "Microsoft.Whiteboard",
-    "Microsoft.WindowsAlarms",
-    "microsoft.windowscommunicationsapps",
-    "Microsoft.WindowsFeedbackHub",
-    "Microsoft.WindowsMaps",
-    "Microsoft.WindowsPhone",
-    "Microsoft.WindowsSoundRecorder",
-    "Microsoft.XboxApp",
-    "Microsoft.ConnectivityStore",
-    "Microsoft.CommsPhone",
-    "Microsoft.ScreenSketch",
-    "Microsoft.Xbox.TCUI",
-    "Microsoft.XboxGameOverlay",
-    "Microsoft.XboxGameCallableUI",
-    "Microsoft.XboxSpeechToTextOverlay",
-    "Microsoft.MixedReality.Portal",
-    "Microsoft.XboxIdentityProvider",
-    "Microsoft.ZuneMusic",
-    "Microsoft.ZuneVideo",
-    "Microsoft.Getstarted",
-    "Microsoft.MicrosoftOfficeHub",
-    "*EclipseManager*",
-    "*ActiproSoftwareLLC*",
-    "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
-    "*Duolingo-LearnLanguagesforFree*",
-    "*PandoraMediaInc*",
-    "*CandyCrush*",
-    "*BubbleWitch3Saga*",
-    "*Wunderlist*",
-    "*Flipboard*",
-    "*Twitter*",
-    "*Facebook*",
-    "*Royal Revolt*",
-    "*Sway*",
-    "*Speed Test*",
-    "*Dolby*",
-    "*Viber*",
-    "*ACGMediaPlayer*",
-    "*Netflix*",
-    "*OneCalendar*",
-    "*LinkedInforWindows*",
-    "*HiddenCityMysteryofShadows*",
-    "*Hulu*",
-    "*HiddenCity*",
-    "*AdobePhotoshopExpress*",
-    "*HotspotShieldFreeVPN*",
-    "*Microsoft.Advertising.Xaml*"
-  ],
-  "InvokeScript": [
-    "
-        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
-        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+    "Content":  "Remove ALL MS Store Apps - NOT RECOMMENDED",
+    "Description":  "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a028_",
+    "appx":  [
+                 "Microsoft.Microsoft3DViewer",
+                 "Microsoft.AppConnector",
+                 "Microsoft.BingFinance",
+                 "Microsoft.BingNews",
+                 "Microsoft.BingSports",
+                 "Microsoft.BingTranslator",
+                 "Microsoft.BingWeather",
+                 "Microsoft.BingFoodAndDrink",
+                 "Microsoft.BingHealthAndFitness",
+                 "Microsoft.BingTravel",
+                 "Microsoft.MinecraftUWP",
+                 "Microsoft.GamingServices",
+                 "Microsoft.GetHelp",
+                 "Microsoft.Getstarted",
+                 "Microsoft.Messaging",
+                 "Microsoft.Microsoft3DViewer",
+                 "Microsoft.MicrosoftSolitaireCollection",
+                 "Microsoft.NetworkSpeedTest",
+                 "Microsoft.News",
+                 "Microsoft.Office.Lens",
+                 "Microsoft.Office.Sway",
+                 "Microsoft.Office.OneNote",
+                 "Microsoft.OneConnect",
+                 "Microsoft.People",
+                 "Microsoft.Print3D",
+                 "Microsoft.SkypeApp",
+                 "Microsoft.Wallet",
+                 "Microsoft.Whiteboard",
+                 "Microsoft.WindowsAlarms",
+                 "microsoft.windowscommunicationsapps",
+                 "Microsoft.WindowsFeedbackHub",
+                 "Microsoft.WindowsMaps",
+                 "Microsoft.WindowsPhone",
+                 "Microsoft.WindowsSoundRecorder",
+                 "Microsoft.XboxApp",
+                 "Microsoft.ConnectivityStore",
+                 "Microsoft.CommsPhone",
+                 "Microsoft.ScreenSketch",
+                 "Microsoft.Xbox.TCUI",
+                 "Microsoft.XboxGameOverlay",
+                 "Microsoft.XboxGameCallableUI",
+                 "Microsoft.XboxSpeechToTextOverlay",
+                 "Microsoft.MixedReality.Portal",
+                 "Microsoft.XboxIdentityProvider",
+                 "Microsoft.ZuneMusic",
+                 "Microsoft.ZuneVideo",
+                 "Microsoft.Getstarted",
+                 "Microsoft.MicrosoftOfficeHub",
+                 "*EclipseManager*",
+                 "*ActiproSoftwareLLC*",
+                 "*AdobeSystemsIncorporated.AdobePhotoshopExpress*",
+                 "*Duolingo-LearnLanguagesforFree*",
+                 "*PandoraMediaInc*",
+                 "*CandyCrush*",
+                 "*BubbleWitch3Saga*",
+                 "*Wunderlist*",
+                 "*Flipboard*",
+                 "*Twitter*",
+                 "*Facebook*",
+                 "*Royal Revolt*",
+                 "*Sway*",
+                 "*Speed Test*",
+                 "*Dolby*",
+                 "*Viber*",
+                 "*ACGMediaPlayer*",
+                 "*Netflix*",
+                 "*OneCalendar*",
+                 "*LinkedInforWindows*",
+                 "*HiddenCityMysteryofShadows*",
+                 "*Hulu*",
+                 "*HiddenCity*",
+                 "*AdobePhotoshopExpress*",
+                 "*HotspotShieldFreeVPN*",
+                 "*Microsoft.Advertising.Xaml*"
+             ],
+    "InvokeScript":  [
+                         "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, \u0027Microsoft\u0027, \u0027Teams\u0027)
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, \u0027Update.exe\u0027)
 
         Write-Host \"Stopping Teams process...\"
         Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
@@ -128,16 +127,16 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 
         Write-Host \"Deleting Teams uninstall registry key\"
         # Uninstall from Uninstall registry key UninstallString
-        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like \u0027*Teams*\u0027}).UninstallString
         if ($us.Length -gt 0) {
-            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
-            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())
-            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))
+            $us = ($us.Replace(\u0027/I\u0027, \u0027/uninstall \u0027) + \u0027 /quiet\u0027).Replace(\u0027  \u0027, \u0027 \u0027)
+            $FilePath = ($us.Substring(0, $us.IndexOf(\u0027.exe\u0027) + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf(\u0027.exe\u0027) + 5).Trim().replace(\u0027  \u0027, \u0027 \u0027))
             $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
             $proc.WaitForExit()
         }
       "
-  ]
+                     ]
 }
 ```
 </details>

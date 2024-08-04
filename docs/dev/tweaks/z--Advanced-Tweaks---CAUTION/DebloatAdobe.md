@@ -1,4 +1,4 @@
-# Adobe Debloat
+﻿# Adobe Debloat
 
 Last Updated: 2024-08-04
 
@@ -20,14 +20,13 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 ```json
 {
-  "Content": "Adobe Debloat",
-  "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
-  "category": "z__Advanced Tweaks - CAUTION",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe",
-  "panel": "1",
-  "Order": "a021_",
-  "InvokeScript": [
-    "
+    "Content":  "Adobe Debloat",
+    "Description":  "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
+    "category":  "z__Advanced Tweaks - CAUTION",
+    "panel":  "1",
+    "Order":  "a021_",
+    "InvokeScript":  [
+                         "
       function CCStopper {
         $path = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
 
@@ -51,7 +50,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
         # 0 = Do not download or install updates automatically
         # 2 = Automatically download updates but let the user choose when to install them
         # 3 = Automatically download and install updates (default value)
-        # 4 = Notify the user when an update is available but don't download or install it automatically
+        # 4 = Notify the user when an update is available but don\u0027t download or install it automatically
         #   = It notifies the user using Windows Notifications. It runs on startup without having to have a Service/Acrobat/Reader running, therefore 0 is the next best thing.
 
         $rootPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Adobe\\Adobe ARM\\Legacy\\Acrobat\"
@@ -75,9 +74,9 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
       CCStopper
       AcrobatUpdates
       "
-  ],
-  "UndoScript": [
-    "
+                     ],
+    "UndoScript":  [
+                       "
       function RestoreCCService {
         $originalPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe.old\"
         $newPath = \"C:\\Program Files (x86)\\Common Files\\Adobe\\Adobe Desktop Common\\ADS\\Adobe Desktop Service.exe\"
@@ -114,59 +113,59 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
       RestoreCCService
       AcrobatUpdates
       "
-  ],
-  "service": [
-    {
-      "Name": "AGSService",
-      "StartupType": "Disabled",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "AGMService",
-      "StartupType": "Disabled",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "AdobeUpdateService",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "Adobe Acrobat Update",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "Adobe Genuine Monitor Service",
-      "StartupType": "Disabled",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "AdobeARMservice",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "Adobe Licensing Console",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "CCXProcess",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "AdobeIPCBroker",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    },
-    {
-      "Name": "CoreSync",
-      "StartupType": "Manual",
-      "OriginalType": "Automatic"
-    }
-  ]
+                   ],
+    "service":  [
+                    {
+                        "Name":  "AGSService",
+                        "StartupType":  "Disabled",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "AGMService",
+                        "StartupType":  "Disabled",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "AdobeUpdateService",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "Adobe Acrobat Update",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "Adobe Genuine Monitor Service",
+                        "StartupType":  "Disabled",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "AdobeARMservice",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "Adobe Licensing Console",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "CCXProcess",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "AdobeIPCBroker",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    },
+                    {
+                        "Name":  "CoreSync",
+                        "StartupType":  "Manual",
+                        "OriginalType":  "Automatic"
+                    }
+                ]
 }
 ```
 </details>
