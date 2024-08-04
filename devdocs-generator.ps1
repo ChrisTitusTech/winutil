@@ -391,11 +391,10 @@ function Add-LinkAttributeToJson {
         [string]$outputDir
     )
 
-    # Read the JSON file as text
-    $jsonText = Get-Content -Path $jsonFilePath -Raw
+    # Read the JSON file
+    $jsonData = Get-Content -Path $jsonFilePath | ConvertFrom-Json
 
     # Process each item to determine its correct path
-    $jsonData = $jsonText | ConvertFrom-Json
     foreach ($item in $jsonData.PSObject.Properties) {
         $itemName = $item.Name
         $itemDetails = $item.Value
@@ -404,18 +403,21 @@ function Add-LinkAttributeToJson {
         $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
         $docLink = "https://christitustech.github.io/winutil/$relativePath"
 
-        # Check if the link attribute exists
-        if ($jsonText -match '"link"\s*:\s*"[^"]*"') {
-            # Update the existing link attribute
-            $jsonText = $jsonText -replace '("link"\s*:\s*")[^"]*(")', "`$1$docLink`$2"
+        # Update or add the link attribute
+        if ($itemDetails.PSObject.Properties.Match('link')) {
+            $itemDetails.link = $docLink
+            Write-Host "update link $docLink"
         } else {
-            # Insert the link attribute after the category attribute
-            $jsonText = $jsonText -replace '("category"\s*:\s*"[^"]*"\s*,)', "`$1`n    `"link`": `"$docLink`","
+            Add-Member -InputObject $itemDetails -MemberType NoteProperty -Name link -Value $docLink
+            Write-Host "create link $docLink"
         }
     }
 
-    # Write the modified text back to the JSON file without empty rows
-    Set-Content -Path $jsonFilePath -Value ($jsonText.Trim()) -Encoding utf8
+    # Convert the updated JSON object back to JSON string
+    $updatedJsonText = $jsonData | ConvertTo-Json -Depth 10
+
+    # Write the modified text back to the JSON file
+    Set-Content -Path $jsonFilePath -Value $updatedJsonText -Encoding utf8
 }
 
 # Add link attribute to tweaks and features JSON files
