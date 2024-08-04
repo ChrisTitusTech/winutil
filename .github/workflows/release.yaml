@@ -15,6 +15,7 @@ jobs:
       - name: Extract Version from winutil.ps1
         id: extract_version
         run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force ./devdocs-generator.ps1
           $version = ''
           Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
             if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {

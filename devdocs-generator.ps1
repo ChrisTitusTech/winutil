@@ -404,13 +404,13 @@ function Add-LinkAttributeToJson {
             # Update the existing link attribute
             $jsonText = $jsonText -replace '("link"\s*:\s*")[^"]*(")', "`$1$docLink`$2"
         } else {
-            # Insert the link attribute after the Description attribute
-            $jsonText = $jsonText -replace '("Description"\s*:\s*"[^"]*"\s*,)', "`$1`n    `"link`": `"$docLink`","
+            # Insert the link attribute after the category attribute
+            $jsonText = $jsonText -replace '("category"\s*:\s*"[^"]*"\s*,)', "`$1`n    `"link`": `"$docLink`","
         }
     }
 
-    # Write the modified text back to the JSON file
-    Set-Content -Path $jsonFilePath -Value $jsonText -Encoding utf8
+    # Write the modified text back to the JSON file without empty rows
+    Set-Content -Path $jsonFilePath -Value ($jsonText.Trim()) -Encoding utf8
 }
 
 # Add link attribute to tweaks and features JSON files

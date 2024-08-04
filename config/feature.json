@@ -2,8 +2,8 @@
   "WPFFeaturesdotnet": {
     "Content": "All .Net Framework (2,3,4)",
     "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a010_",
     "feature": [
@@ -17,8 +17,8 @@
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
     "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a011_",
     "feature": [
@@ -38,8 +38,8 @@
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
     "Description": "Enables legacy programs from previous versions of windows",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a012_",
     "feature": [
@@ -52,11 +52,11 @@
 
     ]
   },
-  "WPFFeatureswsl": {
+  "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
     "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a020_",
     "feature": [
@@ -67,11 +67,11 @@
 
     ]
   },
-  "WPFFeaturesnfs": {
+  "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
     "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a014_",
     "feature": [
@@ -87,11 +87,11 @@
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
     ]
   },
-  "WPFFeaturesEnableSearchSuggestions": {
+  "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Enables web suggestions when searching using Windows Search.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a015_",
     "feature": [
@@ -106,11 +106,11 @@
       "
     ]
   },
-  "WPFFeaturesDisableSearchSuggestions": {
+  "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
     "Description": "Disables web suggestions when searching using Windows Search.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a016_",
     "feature": [
@@ -125,11 +125,11 @@
       "
     ]
   },
-  "WPFFeaturesRegBackup": {
+  "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
     "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a017_",
     "feature": [
@@ -144,11 +144,11 @@
       "
     ]
   },
-  "WPFFeaturesEnableLegacyRecovery": {
+  "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
     "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a018_",
     "feature": [
@@ -163,11 +163,11 @@
       "
     ]
   },
-  "WPFFeaturesDisableLegacyRecovery": {
+  "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
     "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a019_",
     "feature": [
@@ -182,16 +182,18 @@
       "
     ]
   },
-  "WPFFeaturessandbox": {
+  "WPFFeaturesandbox": {
     "Content": "Windows Sandbox",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a021_",
     "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
   },
-  "WPFFeaturesInstall": {
+  "WPFFeatureInstall": {
     "Content": "Install Features",
     "category": "Features",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a060_",
     "Type": "Button",
@@ -200,6 +202,7 @@
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "Order": "a040_",
     "panel": "1",
     "Type": "Button",
@@ -208,6 +211,7 @@
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a041_",
     "Type": "Button",
@@ -216,6 +220,7 @@
   "WPFFixesNetwork": {
     "Content": "Reset Network",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "Order": "a042_",
     "panel": "1",
     "Type": "Button",
@@ -224,6 +229,7 @@
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a043_",
     "Type": "Button",
@@ -232,6 +238,7 @@
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a044_",
     "Type": "Button",
@@ -240,6 +247,7 @@
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
     "category": "Fixes",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "1",
     "Order": "a045_",
     "Type": "Button",
@@ -248,6 +256,7 @@
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -255,6 +264,7 @@
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -262,6 +272,7 @@
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -269,6 +280,7 @@
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -276,6 +288,7 @@
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -283,6 +296,7 @@
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
@@ -290,11 +304,9 @@
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel": "2",
     "Type": "Button",
     "ButtonWidth": "300"
   }
 }
-
-
-
