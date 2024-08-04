@@ -97,7 +97,7 @@ function Get-AdditionalFunctionsFromToggle {
     Param ([string]$buttonName)
 
     $invokeWpfToggleContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFToggle.ps1" -Raw
-    $lines = $invokeWpfToggleContent -split "`n"
+    $lines = $invokeWpfToggleContent -split "`r`n"
     foreach ($line in $lines) {
         # Match the line with the button name and extract the function name
         if ($line -match "`"$buttonName`" \{Invoke-(WinUtil[a-zA-Z]+)") {
@@ -112,7 +112,7 @@ function Get-AdditionalFunctionsFromButton {
     Param ([string]$buttonName)
 
     $invokeWpfButtonContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFButton.ps1" -Raw
-    $lines = $invokeWpfButtonContent -split "`n"
+    $lines = $invokeWpfButtonContent -split "`r`n"
     foreach ($line in $lines) {
         # Match the line with the button name and extract the function name
         if ($line -match "`"$buttonName`" \{Invoke-(WPF[a-zA-Z]+)") {
@@ -163,18 +163,18 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         $processedFiles += (Get-Item $filename).FullName
 
         # Create the markdown content
-        $header = "# $([string]$itemDetails.Content)`n"
-        $lastUpdatedNotice = "Last Updated: $lastModified`n"
+        $header = "# $([string]$itemDetails.Content)`r`n"
+        $lastUpdatedNotice = "Last Updated: $lastModified`r`n"
         $autoupdatenotice = "
 !!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`n`n"
-        $description = "## Description`n`n$([string]$itemDetails.Description)`n"
-        $jsonContent = $itemDetails | ConvertTo-Json -Depth 10
+     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`r`n`r`n"
+        $description = "## Description`r`n`r`n$([string]$itemDetails.Description)`r`n"
+        $jsonContent = ($itemDetails | ConvertTo-Json -Depth 10).replace('\r\n',"`r`n")
         $codeBlock = "
 <details>
 <summary>Preview Code</summary>
 
-``````json`n$jsonContent`n``````
+``````json`r`n$jsonContent`r`n``````
 </details>
 "
         $InvokeScript = ""
@@ -183,7 +183,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             $InvokeScript = @"
 ## Invoke Script
 
-``````powershell`n$InvokeScriptContent`n``````
+``````powershell`r`n$InvokeScriptContent`r`n``````
 "@
         }
 
@@ -193,7 +193,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             $UndoScript = @"
 ## Undo Script
 
-``````powershell`n$UndoScriptContent`n``````
+``````powershell`r`n$UndoScriptContent`r`n``````
 "@
         }
 
@@ -203,7 +203,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             $ToggleScript = @"
 ## Toggle Script
 
-``````powershell`n$ToggleScriptContent`n``````
+``````powershell`r`n$ToggleScriptContent`r`n``````
 "@
         }
 
@@ -213,7 +213,7 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
             $ButtonScript = @"
 ## Button Script
 
-``````powershell`n$ButtonScriptContent`n``````
+``````powershell`r`n$ButtonScriptContent`r`n``````
 "@
         }
 
@@ -225,9 +225,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 $calledFunctions = Get-CalledFunctions -scriptContent $script -functionList $functions -processedFunctions ([ref]$processedFunctions)
                 foreach ($functionName in $calledFunctions) {
                     if ($functions.ContainsKey($functionName)) {
-                        $FunctionDetails += "## Function: $functionName`n"
-                        $FunctionDetails += "``````powershell`n$($functions[$functionName])`n``````
-`n"
+                        $FunctionDetails += "## Function: $functionName`r`n"
+                        $FunctionDetails += "``````powershell`r`n$($functions[$functionName])`r`n``````
+`r`n"
                     }
                 }
             }
@@ -237,9 +237,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         if ($additionalFunctionToggle -ne $null) {
             $additionalFunctionNameToggle = "Invoke-$additionalFunctionToggle"
             if ($functions.ContainsKey($additionalFunctionNameToggle) -and -not $processedFunctions.Contains($additionalFunctionNameToggle)) {
-                $FunctionDetails += "## Function: $additionalFunctionNameToggle`n"
-                $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameToggle])`n``````
-`n"
+                $FunctionDetails += "## Function: $additionalFunctionNameToggle`r`n"
+                $FunctionDetails += "``````powershell`r`n$($functions[$additionalFunctionNameToggle])`r`n``````
+`r`n"
                 $processedFunctions.Add($additionalFunctionNameToggle)
             }
         }
@@ -249,54 +249,54 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         if ($additionalFunctionButton -ne $null) {
             $additionalFunctionNameButton = "Invoke-$additionalFunctionButton"
             if ($functions.ContainsKey($additionalFunctionNameButton) -and -not $processedFunctions.Contains($additionalFunctionNameButton)) {
-                $FunctionDetails += "## Function: $additionalFunctionNameButton`n"
-                $FunctionDetails += "``````powershell`n$($functions[$additionalFunctionNameButton])`n``````
-`n"
+                $FunctionDetails += "## Function: $additionalFunctionNameButton`r`n"
+                $FunctionDetails += "``````powershell`r`n$($functions[$additionalFunctionNameButton])`r`n``````
+`r`n"
                 $processedFunctions.Add($additionalFunctionNameButton)
             }
         }
 
         $registryDocs = ""
         if ($itemDetails.registry -ne $null) {
-            $registryDocs += "## Registry Changes`n"
-            $registryDocs += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`n`n"
-            $registryDocs += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`n"
+            $registryDocs += "## Registry Changes`r`n"
+            $registryDocs += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
+            $registryDocs += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
 
             foreach ($regEntry in $itemDetails.registry) {
-                $registryDocs += "### Registry Key: $($regEntry.Name)`n"
-                $registryDocs += "**Type:** $($regEntry.Type)`n`n"
-                $registryDocs += "**Original Value:** $($regEntry.OriginalValue)`n`n"
-                $registryDocs += "**New Value:** $($regEntry.Value)`n`n"
+                $registryDocs += "### Registry Key: $($regEntry.Name)`r`n"
+                $registryDocs += "**Type:** $($regEntry.Type)`r`n`r`n"
+                $registryDocs += "**Original Value:** $($regEntry.OriginalValue)`r`n`r`n"
+                $registryDocs += "**New Value:** $($regEntry.Value)`r`n`r`n"
             }
         }
 
         $serviceDocs = ""
         if ($itemDetails.service -ne $null) {
-            $serviceDocs += "## Service Changes`n"
-            $serviceDocs += "Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.`n`n"
-            $serviceDocs += "You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).`n"
+            $serviceDocs += "## Service Changes`r`n"
+            $serviceDocs += "Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.`r`n`r`n"
+            $serviceDocs += "You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).`r`n"
 
             foreach ($service in $itemDetails.service) {
-                $serviceDocs += "### Service Name: $($service.Name)`n"
-                $serviceDocs += "**Startup Type:** $($service.StartupType)`n`n"
-                $serviceDocs += "**Original Type:** $($service.OriginalType)`n`n"
+                $serviceDocs += "### Service Name: $($service.Name)`r`n"
+                $serviceDocs += "**Startup Type:** $($service.StartupType)`r`n`r`n"
+                $serviceDocs += "**Original Type:** $($service.OriginalType)`r`n`r`n"
             }
         }
 
         $scheduledTaskDocs = ""
         if ($itemDetails.ScheduledTask -ne $null) {
-            $scheduledTaskDocs += "## Scheduled Task Changes`n"
-            $scheduledTaskDocs += "Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.`n`n"
-            $scheduledTaskDocs += "You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).`n"
+            $scheduledTaskDocs += "## Scheduled Task Changes`r`n"
+            $scheduledTaskDocs += "Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.`r`n`r`n"
+            $scheduledTaskDocs += "You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).`r`n"
 
             foreach ($task in $itemDetails.ScheduledTask) {
-                $scheduledTaskDocs += "### Task Name: $($task.Name)`n"
-                $scheduledTaskDocs += "**State:** $($task.State)`n`n"
-                $scheduledTaskDocs += "**Original State:** $($task.OriginalState)`n`n"
+                $scheduledTaskDocs += "### Task Name: $($task.Name)`r`n"
+                $scheduledTaskDocs += "**State:** $($task.State)`r`n`r`n"
+                $scheduledTaskDocs += "**Original State:** $($task.OriginalState)`r`n`r`n"
             }
         }
 
-        $jsonLink = "`n[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)`n"
+        $jsonLink = "`r`n[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)`r`n"
 
         # Check for existing custom content
         $customContentStartTag = "<!-- BEGIN CUSTOM CONTENT -->"
@@ -386,26 +386,26 @@ function Generate-TypeSectionContent($entries) {
         $categories[$entry.Category] += $entry
     }
     foreach ($category in $categories.Keys) {
-        $sectionContent += "### $category`n`n"
+        $sectionContent += "### $category`r`n`r`n"
         foreach ($entry in $categories[$category]) {
-            $sectionContent += "- [$($entry.Name)]($($entry.Path))`n"
+            $sectionContent += "- [$($entry.Name)]($($entry.Path))`r`n"
         }
     }
     return $sectionContent
 }
 
 # Generate the devdocs.md content
-$indexContent = "# Table of Contents`n`n"
+$indexContent = "# Table of Contents`r`n`r`n"
 
 # Add tweaks section
-$indexContent += "## Tweaks`n`n"
+$indexContent += "## Tweaks`r`n`r`n"
 $indexContent += Generate-TypeSectionContent $tweakEntries
-$indexContent += "`n"
+$indexContent += "`r`n"
 
 # Add features section
-$indexContent += "## Features`n`n"
+$indexContent += "## Features`r`n`r`n"
 $indexContent += Generate-TypeSectionContent $featureEntries
-$indexContent += "`n"
+$indexContent += "`r`n"
 
 # Write the devdocs.md file
 Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
@@ -428,22 +428,18 @@ function Add-LinkAttributeToJson {
         $itemName = $item.Name
         $itemDetails = $item.Value
         $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
-        $displayName = $itemName -replace 'WPF|WinUtil|Toggle|Disable|Enable|Features|Tweaks|Panel|Fixes', ''
+        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)', ''
         $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
         $docLink = "https://christitustech.github.io/winutil/$relativePath"
 
-        # Check if the link attribute exists
-        if ($jsonText -match '"link"\s*:\s*"[^"]*"') {
-            # Update the existing link attribute
-            $jsonText = $jsonText -replace '("link"\s*:\s*")[^"]*(")', "`$1$docLink`$2"
-        } else {
-            # Insert the link attribute after the category attribute
-            $jsonText = $jsonText -replace '("category"\s*:\s*"[^"]*"\s*,)', "`$1`n    `"link`": `"$docLink`","
-        }
+        $jsonData.$itemName.link = $docLink
     }
 
+    # Convert Json Data to Text, so we could write it to `$jsonFilePath`
+    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\r\n',"`r`n")
+
     # Write the modified text back to the JSON file without empty rows
-    Set-Content -Path $jsonFilePath -Value ($jsonText.Trim()) -Encoding utf8
+    Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8
 }
 
 # Add link attribute to tweaks and features JSON files
