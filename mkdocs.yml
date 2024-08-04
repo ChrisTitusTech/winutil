@@ -5,11 +5,11 @@ nav:
   - Introduction: 'index.md'
   - User Guide: 'userguide.md'
   - Documentation:
-      - Contribute: 'contribute.md'
-      - Known Issues: 'KnownIssues.md'
       - Dev Docs: 'devdocs.md'
+      - Known Issues: 'KnownIssues.md'
   - Community:
       - Code Of Conduct: 'CodeOfConduct.md'
+      - Contribute: 'contribute.md'
   - Changelog: 'changelog.md'
   - FAQ: 'faq.md'
 

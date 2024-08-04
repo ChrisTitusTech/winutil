@@ -24,7 +24,6 @@ jobs:
       - name: Create Tag
         id: create_tag
         run: |
-          Set-ExecutionPolicy Bypass -Scope Process -Force ./devdocs-generator.ps1
           $tagExists = git tag -l $env:VERSION
           if ($tagExists -eq "") {
             git tag $env:VERSION
