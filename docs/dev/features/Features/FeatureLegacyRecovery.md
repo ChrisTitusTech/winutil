@@ -1,4 +1,4 @@
-﻿# Disable Legacy F8 Boot Recovery
+# Disable Legacy F8 Boot Recovery
 
 Last Updated: 2024-08-04
 
@@ -20,18 +20,22 @@ Disables Advanced Boot Options screen that lets you start Windows in advanced tr
 
 ```json
 {
-    "Content":  "Disable Legacy F8 Boot Recovery",
-    "Description":  "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category":  "Features",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
-    "panel":  "1",
-    "Order":  "a019_",
-    "feature":  [
-
-                ],
-    "InvokeScript":  [
-                         "\r\n      If (!(Test-Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027)) {\r\n            New-Item -Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027 -Force | Out-Null\r\n      }\r\n      New-ItemProperty -Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027 -Name \u0027Enabled\u0027 -Type DWord -Value 0 -Force\r\n      Start-Process -FilePath cmd.exe -ArgumentList \u0027/c bcdedit /Set {Current} BootMenuPolicy Standard\u0027 -Wait\r\n      "
-                     ]
+  "Content": "Disable Legacy F8 Boot Recovery",
+  "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+  "category": "Features",
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery",
+  "panel": "1",
+  "Order": "a019_",
+  "feature": [],
+  "InvokeScript": [
+    "
+      If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {
+            New-Item -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Force | Out-Null
+      }
+      New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 0 -Force
+      Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Standard' -Wait
+      "
+  ]
 }
 ```
 </details>

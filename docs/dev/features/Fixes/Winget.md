@@ -1,4 +1,4 @@
-﻿# WinGet Reinstall
+# WinGet Reinstall
 
 Last Updated: 2024-08-04
 
@@ -16,13 +16,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "WinGet Reinstall",
-    "category":  "Fixes",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
-    "panel":  "1",
-    "Order":  "a044_",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "WinGet Reinstall",
+  "category": "Fixes",
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget",
+  "panel": "1",
+  "Order": "a044_",
+  "Type": "Button",
+  "ButtonWidth": "300"
 }
 ```
 </details>

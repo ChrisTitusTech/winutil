@@ -1,9 +1,9 @@
-﻿{
+{
   "WPFTweaksAH": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -34,7 +34,7 @@
     "Content": "Disable Hibernation",
     "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don't be like Bob. Bob likes hibernation.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -54,17 +54,17 @@
       }
     ],
     "InvokeScript": [
-        "powercfg.exe /hibernate off"
+      "powercfg.exe /hibernate off"
     ],
     "UndoScript": [
-        "powercfg.exe /hibernate on"
+      "powercfg.exe /hibernate on"
     ]
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
     "Description": "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation",
     "panel": "1",
     "Order": "a014_",
     "registry": [
@@ -112,7 +112,7 @@
     "Content": "Disable Homegroup",
     "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home",
     "panel": "1",
     "Order": "a005_",
     "service": [
@@ -132,7 +132,7 @@
     "Content": "Disable Location Tracking",
     "Description": "Disables Location Tracking...DUH!",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -170,7 +170,7 @@
     "Content": "Set Services to Manual",
     "Description": "Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services",
     "panel": "1",
     "Order": "a014_",
     "service": [
@@ -1586,20 +1586,20 @@
       }
     ]
   },
-  "WPFTweaksConsumerFeatures":{
+  "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
     "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures",
     "panel": "1",
     "Order": "a003_",
     "registry": [
       {
-      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-      "OriginalValue": "0",
-      "Name": "DisableWindowsConsumerFeatures",
-      "Value": "1",
-      "Type": "DWord"
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "OriginalValue": "0",
+        "Name": "DisableWindowsConsumerFeatures",
+        "Value": "1",
+        "Type": "DWord"
       }
     ]
   },
@@ -1607,7 +1607,7 @@
     "Content": "Disable Telemetry",
     "Description": "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele",
     "panel": "1",
     "Order": "a003_",
     "ScheduledTask": [
@@ -1847,7 +1847,7 @@
         "Type": "DWord"
       },
       {
-        "_Comment" : "Driver searching is a function that should be left in",
+        "_Comment": "Driver searching is a function that should be left in",
         "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
         "OriginalValue": "1",
         "Name": "SearchOrderConfig",
@@ -1979,7 +1979,7 @@
     "Content": "Disable Wifi-Sense",
     "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -2003,7 +2003,7 @@
     "Content": "Set Time to UTC (Dual Boot)",
     "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux Systems.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC",
     "panel": "1",
     "Order": "a027_",
     "registry": [
@@ -2020,7 +2020,7 @@
     "Content": "Remove Home and Gallery from explorer",
     "Description": "Removes the Home and Gallery from explorer and sets This PC as default",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
@@ -2029,20 +2029,20 @@
       REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f
       REG ADD \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\" /t REG_DWORD /d \"1\"
       "
-  ],
-  "UndoScript": [
+    ],
+    "UndoScript": [
       "
       REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\" /f /ve /t REG_SZ /d \"{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}\"
       REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
       REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
       "
-  ]
+    ]
   },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display",
     "panel": "1",
     "Order": "a027_",
     "registry": [
@@ -2149,7 +2149,7 @@
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description": "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat",
     "panel": "1",
     "Order": "a028_",
     "appx": [
@@ -2269,7 +2269,7 @@
     "Content": "Create Restore Point",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint",
     "panel": "1",
     "Checked": "False",
     "Order": "a001_",
@@ -2326,7 +2326,7 @@
     "Content": "Enable End Task With Right Click",
     "Description": "Enables option to end task when right clicking a program in the taskbar",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar",
     "panel": "1",
     "Order": "a006_",
     "InvokeScript": [
@@ -2360,7 +2360,7 @@
     "Content": "Change Windows Terminal default: PowerShell 5 -> PowerShell 7",
     "Description": "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7",
     "panel": "1",
     "Order": "a009_",
     "InvokeScript": [
@@ -2374,7 +2374,7 @@
     "Content": "Disable Powershell 7 Telemetry",
     "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele",
     "panel": "1",
     "Order": "a009_",
     "InvokeScript": [
@@ -2388,7 +2388,7 @@
     "Content": "Disable Storage Sense",
     "Description": "Storage Sense deletes temp files automatically.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage",
     "panel": "1",
     "Order": "a005_",
     "InvokeScript": [
@@ -2402,11 +2402,11 @@
     "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
     "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
-        "
+      "
         #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
         Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
         Start-Process $ENV:temp\\edgeremoval.bat
@@ -2423,12 +2423,11 @@
     "Content": "Disable Microsoft Copilot",
     "Description": "Disables MS Copilot AI built into Windows since 23H2.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot",
     "panel": "1",
     "Order": "a025_",
     "registry": [
       {
-
         "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
         "Name": "TurnOffWindowsCopilot",
         "Type": "DWord",
@@ -2467,11 +2466,11 @@
     "Content": "Disable Intel MM (vPro LMS)",
     "Description": "Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1",
     "panel": "1",
     "Order": "a026_",
     "InvokeScript": [
-        "
+      "
         Write-Host \"Kill LMS\"
         $serviceName = \"LMS\"
         Write-Host \"Stopping and disabling service: $serviceName\"
@@ -2525,7 +2524,7 @@
     "Content": "Remove OneDrive",
     "Description": "Moves OneDrive files to Default Home Folders and Uninstalls it.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive",
     "panel": "1",
     "Order": "a030_",
     "InvokeScript": [
@@ -2622,7 +2621,7 @@
     "Content": "Disable Notification Tray/Calendar",
     "Description": "Disables all Notifications INCLUDING Calendar",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications",
     "panel": "1",
     "Order": "a026_",
     "registry": [
@@ -2646,7 +2645,7 @@
     "Content": "Adobe Debloat",
     "Description": "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe",
     "panel": "1",
     "Order": "a021_",
     "InvokeScript": [
@@ -2795,7 +2794,7 @@
     "Content": "Adobe Network Block",
     "Description": "Reduce user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet",
     "panel": "1",
     "Order": "a021_",
     "InvokeScript": [
@@ -2909,7 +2908,7 @@
     "Content": "Set Classic Right-Click Menu ",
     "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu",
     "panel": "1",
     "Order": "a027_",
     "InvokeScript": [
@@ -2934,7 +2933,7 @@
     "Content": "Run Disk Cleanup",
     "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup",
     "panel": "1",
     "Order": "a009_",
     "InvokeScript": [
@@ -2948,7 +2947,7 @@
     "Content": "Delete Temporary Files",
     "Description": "Erases TEMP Folders",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles",
     "panel": "1",
     "Order": "a002_",
     "InvokeScript": [
@@ -2960,7 +2959,7 @@
     "Content": "Disable GameDVR",
     "Description": "GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -3005,7 +3004,7 @@
     "Content": "Disable Teredo",
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
     "category": "Essential Tweaks",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo",
     "panel": "1",
     "Order": "a005_",
     "registry": [
@@ -3028,7 +3027,7 @@
     "Content": "Disable IPv6",
     "Description": "Disables IPv6.",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix",
     "panel": "1",
     "Order": "a023_",
     "registry": [
@@ -3051,7 +3050,7 @@
     "Content": "Disable Background Apps",
     "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps",
     "panel": "1",
     "Order": "a024_",
     "registry": [
@@ -3068,7 +3067,7 @@
     "Content": "Disable Fullscreen Optimizations",
     "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO",
     "panel": "1",
     "Order": "a024_",
     "registry": [
@@ -3085,7 +3084,7 @@
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode",
     "panel": "2",
     "Order": "a100_",
     "Type": "Toggle"
@@ -3094,7 +3093,7 @@
     "Content": "Bing Search in Start Menu",
     "Description": "If enable then includes web search results from Bing in your Start Menu search.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch",
     "panel": "2",
     "Order": "a101_",
     "Type": "Toggle"
@@ -3103,7 +3102,7 @@
     "Content": "NumLock on Startup",
     "Description": "Toggle the Num Lock key state when your computer starts.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock",
     "panel": "2",
     "Order": "a102_",
     "Type": "Toggle"
@@ -3112,7 +3111,7 @@
     "Content": "Verbose Messages During Logon",
     "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon",
     "panel": "2",
     "Order": "a103_",
     "Type": "Toggle"
@@ -3121,7 +3120,7 @@
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow",
     "panel": "2",
     "Order": "a104_",
     "Type": "Toggle"
@@ -3130,7 +3129,7 @@
     "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout",
     "panel": "2",
     "Order": "a105_",
     "Type": "Toggle"
@@ -3139,7 +3138,7 @@
     "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion",
     "panel": "2",
     "Order": "a106_",
     "Type": "Toggle"
@@ -3148,7 +3147,7 @@
     "Content": "Mouse Acceleration",
     "Description": "If Enabled then Cursor movement is affected by the speed of your physical mouse movements.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration",
     "panel": "2",
     "Order": "a107_",
     "Type": "Toggle"
@@ -3157,7 +3156,7 @@
     "Content": "Sticky Keys",
     "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys",
     "panel": "2",
     "Order": "a108_",
     "Type": "Toggle"
@@ -3166,7 +3165,7 @@
     "Content": "Show Hidden Files",
     "Description": "If Enabled then Hidden Files will be shown.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles",
     "panel": "2",
     "Order": "a200_",
     "Type": "Toggle"
@@ -3175,7 +3174,7 @@
     "Content": "Show File Extensions",
     "Description": "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt",
     "panel": "2",
     "Order": "a201_",
     "Type": "Toggle"
@@ -3184,7 +3183,7 @@
     "Content": "Search Button in Taskbar",
     "Description": "If Enabled Search Button will be on the taskbar.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch",
     "panel": "2",
     "Order": "a202_",
     "Type": "Toggle"
@@ -3193,7 +3192,7 @@
     "Content": "Task View Button in Taskbar",
     "Description": "If Enabled then Task View Button in Taskbar will be shown.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView",
     "panel": "2",
     "Order": "a203_",
     "Type": "Toggle"
@@ -3202,7 +3201,7 @@
     "Content": "Widgets Button in Taskbar",
     "Description": "If Enabled then Widgets Button in Taskbar will be shown.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets",
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle"
@@ -3211,7 +3210,7 @@
     "Content": "Center Taskbar Items",
     "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment",
     "panel": "2",
     "Order": "a204_",
     "Type": "Toggle"
@@ -3220,7 +3219,7 @@
     "Content": "Detailed BSoD",
     "Description": "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
     "category": "Customize Preferences",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD",
     "panel": "2",
     "Order": "a205_",
     "Type": "Toggle"
@@ -3228,7 +3227,7 @@
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFOOSUbutton",
     "panel": "1",
     "Order": "a039_",
     "Type": "Button"
@@ -3236,7 +3235,7 @@
   "WPFchangedns": {
     "Content": "DNS",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFchangedns",
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
@@ -3245,7 +3244,7 @@
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button",
     "panel": "1",
     "Order": "a041_",
     "Type": "Button"
@@ -3253,7 +3252,7 @@
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFUndoall",
     "panel": "1",
     "Order": "a042_",
     "Type": "Button"
@@ -3261,7 +3260,7 @@
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
     "category": "Performance Plans",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFAddUltPerf",
     "panel": "2",
     "Order": "a080_",
     "Type": "Button",
@@ -3270,7 +3269,7 @@
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
     "category": "Performance Plans",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFRemoveUltPerf",
     "panel": "2",
     "Order": "a081_",
     "Type": "Button",

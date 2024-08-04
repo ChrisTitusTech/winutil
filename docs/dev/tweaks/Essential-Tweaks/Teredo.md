@@ -1,4 +1,4 @@
-﻿# Disable Teredo
+# Disable Teredo
 
 Last Updated: 2024-08-04
 
@@ -20,27 +20,27 @@ Teredo network tunneling is a ipv6 feature that can cause additional latency.
 
 ```json
 {
-    "Content":  "Disable Teredo",
-    "Description":  "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
-    "category":  "Essential Tweaks",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a005_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-                         "Name":  "DisabledComponents",
-                         "Value":  "1",
-                         "OriginalValue":  "0",
-                         "Type":  "DWord"
-                     }
-                 ],
-    "InvokeScript":  [
-                         "netsh interface teredo set state disabled"
-                     ],
-    "UndoScript":  [
-                       "netsh interface teredo set state default"
-                   ]
+  "Content": "Disable Teredo",
+  "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+  "category": "Essential Tweaks",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo",
+  "panel": "1",
+  "Order": "a005_",
+  "registry": [
+    {
+      "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+      "Name": "DisabledComponents",
+      "Value": "1",
+      "OriginalValue": "0",
+      "Type": "DWord"
+    }
+  ],
+  "InvokeScript": [
+    "netsh interface teredo set state disabled"
+  ],
+  "UndoScript": [
+    "netsh interface teredo set state default"
+  ]
 }
 ```
 </details>

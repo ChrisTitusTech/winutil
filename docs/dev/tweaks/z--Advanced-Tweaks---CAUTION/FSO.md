@@ -1,4 +1,4 @@
-﻿# Disable Fullscreen Optimizations
+# Disable Fullscreen Optimizations
 
 Last Updated: 2024-08-04
 
@@ -20,21 +20,21 @@ Disables FSO in all applications. NOTE: This will disable Color Management in Ex
 
 ```json
 {
-    "Content":  "Disable Fullscreen Optimizations",
-    "Description":  "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a024_",
-    "registry":  [
-                     {
-                         "Path":  "HKCU:\\System\\GameConfigStore",
-                         "Name":  "GameDVR_DXGIHonorFSEWindowsCompatible",
-                         "Value":  "1",
-                         "OriginalValue":  "0",
-                         "Type":  "DWord"
-                     }
-                 ]
+  "Content": "Disable Fullscreen Optimizations",
+  "Description": "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO",
+  "panel": "1",
+  "Order": "a024_",
+  "registry": [
+    {
+      "Path": "HKCU:\\System\\GameConfigStore",
+      "Name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+      "Value": "1",
+      "OriginalValue": "0",
+      "Type": "DWord"
+    }
+  ]
 }
 ```
 </details>

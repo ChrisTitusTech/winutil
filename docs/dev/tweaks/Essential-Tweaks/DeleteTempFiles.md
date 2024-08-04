@@ -1,4 +1,4 @@
-﻿# Delete Temporary Files
+# Delete Temporary Files
 
 Last Updated: 2024-08-04
 
@@ -20,15 +20,16 @@ Erases TEMP Folders
 
 ```json
 {
-    "Content":  "Delete Temporary Files",
-    "Description":  "Erases TEMP Folders",
-    "category":  "Essential Tweaks",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a002_",
-    "InvokeScript":  [
-                         "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse\r\n    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-                     ]
+  "Content": "Delete Temporary Files",
+  "Description": "Erases TEMP Folders",
+  "category": "Essential Tweaks",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles",
+  "panel": "1",
+  "Order": "a002_",
+  "InvokeScript": [
+    "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
+  ]
 }
 ```
 </details>

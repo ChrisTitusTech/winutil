@@ -1,4 +1,4 @@
-﻿# Snap Assist Suggestion
+# Snap Assist Suggestion
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,13 @@ If enabled then you will get suggestions to snap other applications in the left 
 
 ```json
 {
-    "Content":  "Snap Assist Suggestion",
-    "Description":  "If enabled then you will get suggestions to snap other applications in the left over spaces.",
-    "category":  "Customize Preferences",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "2",
-    "Order":  "a106_",
-    "Type":  "Toggle"
+  "Content": "Snap Assist Suggestion",
+  "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
+  "category": "Customize Preferences",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion",
+  "panel": "2",
+  "Order": "a106_",
+  "Type": "Toggle"
 }
 ```
 </details>

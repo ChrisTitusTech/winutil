@@ -1,4 +1,4 @@
-﻿# Windows Sandbox
+# Windows Sandbox
 
 Last Updated: 2024-08-04
 
@@ -20,12 +20,12 @@ Windows Sandbox is a lightweight virtual machine that provides a temporary deskt
 
 ```json
 {
-    "Content":  "Windows Sandbox",
-    "category":  "Features",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
-    "panel":  "1",
-    "Order":  "a021_",
-    "Description":  "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+  "Content": "Windows Sandbox",
+  "category": "Features",
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/andbox",
+  "panel": "1",
+  "Order": "a021_",
+  "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
 }
 ```
 </details>

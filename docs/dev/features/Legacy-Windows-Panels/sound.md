@@ -1,4 +1,4 @@
-﻿# Sound Settings
+# Sound Settings
 
 Last Updated: 2024-08-04
 
@@ -16,12 +16,12 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Sound Settings",
-    "category":  "Legacy Windows Panels",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
-    "panel":  "2",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "Sound Settings",
+  "category": "Legacy Windows Panels",
+  "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound",
+  "panel": "2",
+  "Type": "Button",
+  "ButtonWidth": "300"
 }
 ```
 </details>

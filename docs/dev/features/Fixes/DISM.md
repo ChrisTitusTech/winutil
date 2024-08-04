@@ -1,4 +1,4 @@
-﻿# System Corruption Scan
+# System Corruption Scan
 
 Last Updated: 2024-08-04
 
@@ -16,13 +16,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "System Corruption Scan",
-    "category":  "Fixes",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
-    "panel":  "1",
-    "Order":  "a043_",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "System Corruption Scan",
+  "category": "Fixes",
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/DISM",
+  "panel": "1",
+  "Order": "a043_",
+  "Type": "Button",
+  "ButtonWidth": "300"
 }
 ```
 </details>

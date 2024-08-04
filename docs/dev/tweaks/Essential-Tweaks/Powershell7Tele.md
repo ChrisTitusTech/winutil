@@ -1,4 +1,4 @@
-﻿# Disable Powershell 7 Telemetry
+# Disable Powershell 7 Telemetry
 
 Last Updated: 2024-08-04
 
@@ -20,18 +20,18 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
 
 ```json
 {
-    "Content":  "Disable Powershell 7 Telemetry",
-    "Description":  "This will create an Environment Variable called \u0027POWERSHELL_TELEMETRY_OPTOUT\u0027 with a value of \u00271\u0027 which will tell Powershell 7 to not send Telemetry Data.",
-    "category":  "Essential Tweaks",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a009_",
-    "InvokeScript":  [
-                         "[Environment]::SetEnvironmentVariable(\u0027POWERSHELL_TELEMETRY_OPTOUT\u0027, \u00271\u0027, \u0027Machine\u0027)"
-                     ],
-    "UndoScript":  [
-                       "[Environment]::SetEnvironmentVariable(\u0027POWERSHELL_TELEMETRY_OPTOUT\u0027, \u0027\u0027, \u0027Machine\u0027)"
-                   ]
+  "Content": "Disable Powershell 7 Telemetry",
+  "Description": "This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.",
+  "category": "Essential Tweaks",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele",
+  "panel": "1",
+  "Order": "a009_",
+  "InvokeScript": [
+    "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')"
+  ],
+  "UndoScript": [
+    "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')"
+  ]
 }
 ```
 </details>

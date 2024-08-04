@@ -1,4 +1,4 @@
-﻿# Run OO Shutup 10
+# Run OO Shutup 10
 
 Last Updated: 2024-08-04
 
@@ -16,12 +16,12 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Run OO Shutup 10",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a039_",
-    "Type":  "Button"
+  "Content": "Run OO Shutup 10",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFOOSUbutton",
+  "panel": "1",
+  "Order": "a039_",
+  "Type": "Button"
 }
 ```
 </details>

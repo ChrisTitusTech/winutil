@@ -1,4 +1,4 @@
-﻿# Show Hidden Files
+# Show Hidden Files
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,13 @@ If Enabled then Hidden Files will be shown.
 
 ```json
 {
-    "Content":  "Show Hidden Files",
-    "Description":  "If Enabled then Hidden Files will be shown.",
-    "category":  "Customize Preferences",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "2",
-    "Order":  "a200_",
-    "Type":  "Toggle"
+  "Content": "Show Hidden Files",
+  "Description": "If Enabled then Hidden Files will be shown.",
+  "category": "Customize Preferences",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles",
+  "panel": "2",
+  "Order": "a200_",
+  "Type": "Toggle"
 }
 ```
 </details>

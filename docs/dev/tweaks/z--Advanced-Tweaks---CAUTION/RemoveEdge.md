@@ -1,4 +1,4 @@
-﻿# Remove Microsoft Edge - NOT RECOMMENDED
+# Remove Microsoft Edge - NOT RECOMMENDED
 
 Last Updated: 2024-08-04
 
@@ -20,18 +20,25 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
 
 ```json
 {
-    "Content":  "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description":  "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a029_",
-    "InvokeScript":  [
-                         "\r\n        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat\r\n        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"\r\n        Start-Process $ENV:temp\\edgeremoval.bat\r\n        "
-                     ],
-    "UndoScript":  [
-                       "\r\n      Write-Host \"Install Microsoft Edge\"\r\n      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait\r\n      "
-                   ]
+  "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
+  "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge",
+  "panel": "1",
+  "Order": "a029_",
+  "InvokeScript": [
+    "
+        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
+        Start-Process $ENV:temp\\edgeremoval.bat
+        "
+  ],
+  "UndoScript": [
+    "
+      Write-Host \"Install Microsoft Edge\"
+      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
+      "
+  ]
 }
 ```
 </details>

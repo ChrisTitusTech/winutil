@@ -1,4 +1,4 @@
-﻿# NumLock on Startup
+# NumLock on Startup
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,13 @@ Toggle the Num Lock key state when your computer starts.
 
 ```json
 {
-    "Content":  "NumLock on Startup",
-    "Description":  "Toggle the Num Lock key state when your computer starts.",
-    "category":  "Customize Preferences",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "2",
-    "Order":  "a102_",
-    "Type":  "Toggle"
+  "Content": "NumLock on Startup",
+  "Description": "Toggle the Num Lock key state when your computer starts.",
+  "category": "Customize Preferences",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock",
+  "panel": "2",
+  "Order": "a102_",
+  "Type": "Toggle"
 }
 ```
 </details>

@@ -1,4 +1,4 @@
-﻿# Disable IPv6
+# Disable IPv6
 
 Last Updated: 2024-08-04
 
@@ -20,27 +20,27 @@ Disables IPv6.
 
 ```json
 {
-    "Content":  "Disable IPv6",
-    "Description":  "Disables IPv6.",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "1",
-    "Order":  "a023_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-                         "Name":  "DisabledComponents",
-                         "Value":  "255",
-                         "OriginalValue":  "0",
-                         "Type":  "DWord"
-                     }
-                 ],
-    "InvokeScript":  [
-                         "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-                     ],
-    "UndoScript":  [
-                       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-                   ]
+  "Content": "Disable IPv6",
+  "Description": "Disables IPv6.",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix",
+  "panel": "1",
+  "Order": "a023_",
+  "registry": [
+    {
+      "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+      "Name": "DisabledComponents",
+      "Value": "255",
+      "OriginalValue": "0",
+      "Type": "DWord"
+    }
+  ],
+  "InvokeScript": [
+    "Disable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+  ],
+  "UndoScript": [
+    "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
+  ]
 }
 ```
 </details>

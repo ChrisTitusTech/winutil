@@ -1,4 +1,4 @@
-﻿# Task View Button in Taskbar
+# Task View Button in Taskbar
 
 Last Updated: 2024-08-04
 
@@ -20,13 +20,13 @@ If Enabled then Task View Button in Taskbar will be shown.
 
 ```json
 {
-    "Content":  "Task View Button in Taskbar",
-    "Description":  "If Enabled then Task View Button in Taskbar will be shown.",
-    "category":  "Customize Preferences",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
-    "panel":  "2",
-    "Order":  "a203_",
-    "Type":  "Toggle"
+  "Content": "Task View Button in Taskbar",
+  "Description": "If Enabled then Task View Button in Taskbar will be shown.",
+  "category": "Customize Preferences",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView",
+  "panel": "2",
+  "Order": "a203_",
+  "Type": "Toggle"
 }
 ```
 </details>
