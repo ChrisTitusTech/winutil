@@ -1,6 +1,6 @@
 ﻿# Remove ALL MS Store Apps - NOT RECOMMENDED
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
 {
     "Content":  "Remove ALL MS Store Apps - NOT RECOMMENDED",
     "Description":  "USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a028_",
     "appx":  [

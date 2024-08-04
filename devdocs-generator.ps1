@@ -9,7 +9,7 @@ $tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
 $features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
 
 # Get the last modified dates of the JSON files
-$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd")
+$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd") #  For more detail add " HH:mm:ss zzz"
 $featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
 
 # Create the output directories if they don't exist
@@ -120,6 +120,11 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 
         $filename = "$categoryDir/$displayName.md"
         $relativePath = "$outputDir/$category/$displayName.md" -replace '^docs/', ''
+
+        # Ensure the file exists before adding to processed files
+        if (-Not (Test-Path -Path $filename)) {
+            Set-Content -Path $filename -Value "" -Encoding utf8
+        }
 
         # Collect paths for TOC
         $tocEntries += @{

@@ -1,6 +1,6 @@
 ﻿# Create Restore Point
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
 {
     "Content":  "Create Restore Point",
     "Description":  "Creates a restore point at runtime in case a revert is needed from WinUtil modifications",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Checked":  "False",
     "Order":  "a001_",

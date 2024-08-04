@@ -1,6 +1,6 @@
 ﻿# Remove Home and Gallery from explorer
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Removes the Home and Gallery from explorer and sets This PC as default
 {
     "Content":  "Remove Home and Gallery from explorer",
     "Description":  "Removes the Home and Gallery from explorer and sets This PC as default",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a029_",
     "InvokeScript":  [

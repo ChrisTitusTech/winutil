@@ -89,7 +89,7 @@
 - [HyperV Virtualization](dev/features/Features/hyperv.md)
 - [Legacy Media (WMP, DirectPlay)](dev/features/Features/legacymedia.md)
 - [Disable Legacy F8 Boot Recovery](dev/features/Features/LegacyRecovery.md)
-- [Windows Sandbox](dev/features/Features/sandbox.md)
+- [Windows Sandbox](dev/features/Features/Sandbox.md)
 - [Install Features](dev/features/Features/Install.md)
 - [Disable Search Box Web Suggestions in Registry(explorer restart)](dev/features/Features/SearchSuggestions.md)
 - [Enable Daily Registry Backup Task 12.30am](dev/features/Features/RegBackup.md)

@@ -1,6 +1,6 @@
 ﻿# Disable Wifi-Sense
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Wifi Sense is a spying service that phones home all nearby scanned wifi networks
 {
     "Content":  "Disable Wifi-Sense",
     "Description":  "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a005_",
     "registry":  [

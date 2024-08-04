@@ -1,6 +1,6 @@
 ﻿# Disable Homegroup
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Disables HomeGroup - HomeGroup is a password-protected home networking service t
 {
     "Content":  "Disable Homegroup",
     "Description":  "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a005_",
     "service":  [

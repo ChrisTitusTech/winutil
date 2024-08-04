@@ -1,6 +1,6 @@
 ﻿# Disable IPv6
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Disables IPv6.
 {
     "Content":  "Disable IPv6",
     "Description":  "Disables IPv6.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a023_",
     "registry":  [

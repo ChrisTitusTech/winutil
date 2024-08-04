@@ -1,6 +1,6 @@
 ﻿# Create WinUtil Shortcut
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -18,6 +18,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Create WinUtil Shortcut",
     "category":  "Shortcuts",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a082_",
     "Type":  "Button",

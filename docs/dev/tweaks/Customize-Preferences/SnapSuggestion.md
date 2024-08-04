@@ -1,6 +1,6 @@
 ﻿# Snap Assist Suggestion
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If enabled then you will get suggestions to snap other applications in the left 
 {
     "Content":  "Snap Assist Suggestion",
     "Description":  "If enabled then you will get suggestions to snap other applications in the left over spaces.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a106_",
     "Type":  "Toggle"

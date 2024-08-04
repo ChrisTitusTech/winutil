@@ -1,6 +1,6 @@
 ﻿# Bing Search in Start Menu
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If enable then includes web search results from Bing in your Start Menu search.
 {
     "Content":  "Bing Search in Start Menu",
     "Description":  "If enable then includes web search results from Bing in your Start Menu search.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a101_",
     "Type":  "Toggle"

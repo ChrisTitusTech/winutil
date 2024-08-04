@@ -1,6 +1,6 @@
 ﻿# Legacy Media (WMP, DirectPlay)
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Enables legacy programs from previous versions of windows
 {
     "Content":  "Legacy Media (WMP, DirectPlay)",
     "Description":  "Enables legacy programs from previous versions of windows",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel":  "1",
     "Order":  "a012_",
     "feature":  [

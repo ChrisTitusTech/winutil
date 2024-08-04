@@ -1,6 +1,6 @@
 ﻿# Delete Temporary Files
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Erases TEMP Folders
 {
     "Content":  "Delete Temporary Files",
     "Description":  "Erases TEMP Folders",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a002_",
     "InvokeScript":  [

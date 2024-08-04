@@ -1,6 +1,6 @@
 ﻿# Add and Activate Ultimate Performance Profile
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -18,6 +18,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Add and Activate Ultimate Performance Profile",
     "category":  "Performance Plans",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a080_",
     "Type":  "Button",

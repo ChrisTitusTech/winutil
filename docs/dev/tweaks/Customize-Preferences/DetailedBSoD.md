@@ -1,6 +1,6 @@
 ﻿# Detailed BSoD
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more in
 {
     "Content":  "Detailed BSoD",
     "Description":  "If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more information.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a205_",
     "Type":  "Toggle"

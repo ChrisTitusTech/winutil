@@ -1,6 +1,6 @@
 ﻿# Remove Adobe Creative Cloud
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -18,6 +18,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Remove Adobe Creative Cloud",
     "category":  "Fixes",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel":  "1",
     "Order":  "a045_",
     "Type":  "Button",

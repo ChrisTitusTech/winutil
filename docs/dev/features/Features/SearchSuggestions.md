@@ -1,6 +1,6 @@
 ﻿# Disable Search Box Web Suggestions in Registry(explorer restart)
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Disables web suggestions when searching using Windows Search.
 {
     "Content":  "Disable Search Box Web Suggestions in Registry(explorer restart)",
     "Description":  "Disables web suggestions when searching using Windows Search.",
-    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "category":  "Features",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "panel":  "1",
     "Order":  "a016_",
     "feature":  [

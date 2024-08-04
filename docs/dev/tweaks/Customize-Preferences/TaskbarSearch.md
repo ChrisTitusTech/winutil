@@ -1,6 +1,6 @@
 ﻿# Search Button in Taskbar
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If Enabled Search Button will be on the taskbar.
 {
     "Content":  "Search Button in Taskbar",
     "Description":  "If Enabled Search Button will be on the taskbar.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a202_",
     "Type":  "Toggle"

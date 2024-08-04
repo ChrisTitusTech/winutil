@@ -1,6 +1,6 @@
 ﻿# Disable Fullscreen Optimizations
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Disables FSO in all applications. NOTE: This will disable Color Management in Ex
 {
     "Content":  "Disable Fullscreen Optimizations",
     "Description":  "Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a024_",
     "registry":  [

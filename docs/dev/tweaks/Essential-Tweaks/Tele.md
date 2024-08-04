@@ -1,6 +1,6 @@
 ﻿# Disable Telemetry
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 {
     "Content":  "Disable Telemetry",
     "Description":  "Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a003_",
     "ScheduledTask":  [

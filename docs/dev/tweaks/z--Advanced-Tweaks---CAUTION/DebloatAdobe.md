@@ -1,6 +1,6 @@
 ﻿# Adobe Debloat
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 {
     "Content":  "Adobe Debloat",
     "Description":  "Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a021_",
     "InvokeScript":  [

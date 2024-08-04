@@ -1,6 +1,6 @@
 ﻿# Disable Activity History
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ This erases recent docs, clipboard, and run history.
 {
     "Content":  "Disable Activity History",
     "Description":  "This erases recent docs, clipboard, and run history.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a005_",
     "registry":  [

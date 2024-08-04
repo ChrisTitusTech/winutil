@@ -1,6 +1,6 @@
 ﻿# Change Windows Terminal default: PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ This will edit the config file of the Windows Terminal replacing PowerShell 5 wi
 {
     "Content":  "Change Windows Terminal default: PowerShell 5 -\u003e PowerShell 7",
     "Description":  "This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a009_",
     "InvokeScript":  [

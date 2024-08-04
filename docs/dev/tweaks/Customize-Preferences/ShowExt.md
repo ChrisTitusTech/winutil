@@ -1,6 +1,6 @@
 ﻿# Show File Extensions
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If enabled then File extensions (e.g., .txt, .jpg) are visible.
 {
     "Content":  "Show File Extensions",
     "Description":  "If enabled then File extensions (e.g., .txt, .jpg) are visible.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a201_",
     "Type":  "Toggle"

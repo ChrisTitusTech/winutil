@@ -1,6 +1,6 @@
 ﻿# Set Hibernation as default (good for laptops)
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Most modern laptops have connected standby enabled which drains the battery, thi
 {
     "Content":  "Set Hibernation as default (good for laptops)",
     "Description":  "Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a014_",
     "registry":  [

@@ -1,6 +1,6 @@
 ﻿# Set Classic Right-Click Menu 
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
 {
     "Content":  "Set Classic Right-Click Menu ",
     "Description":  "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a027_",
     "InvokeScript":  [

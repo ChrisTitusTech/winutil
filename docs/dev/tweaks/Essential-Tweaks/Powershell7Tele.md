@@ -1,6 +1,6 @@
 ﻿# Disable Powershell 7 Telemetry
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
 {
     "Content":  "Disable Powershell 7 Telemetry",
     "Description":  "This will create an Environment Variable called \u0027POWERSHELL_TELEMETRY_OPTOUT\u0027 with a value of \u00271\u0027 which will tell Powershell 7 to not send Telemetry Data.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Essential Tweaks",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a009_",
     "InvokeScript":  [

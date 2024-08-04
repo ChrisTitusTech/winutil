@@ -1,6 +1,6 @@
 ﻿# Undo Selected Tweaks
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -18,6 +18,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Undo Selected Tweaks",
     "category":  "z__Advanced Tweaks - CAUTION",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "1",
     "Order":  "a042_",
     "Type":  "Button"

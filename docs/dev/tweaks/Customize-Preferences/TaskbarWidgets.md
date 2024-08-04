@@ -1,6 +1,6 @@
 ﻿# Widgets Button in Taskbar
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -22,8 +22,8 @@ If Enabled then Widgets Button in Taskbar will be shown.
 {
     "Content":  "Widgets Button in Taskbar",
     "Description":  "If Enabled then Widgets Button in Taskbar will be shown.",
-    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "category":  "Customize Preferences",
+    "link":  "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut",
     "panel":  "2",
     "Order":  "a204_",
     "Type":  "Toggle"

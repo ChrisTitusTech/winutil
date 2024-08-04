@@ -1,6 +1,6 @@
 ﻿# Reset Network
 
-Last Updated: 2024-08-03
+Last Updated: 2024-08-04
 
 
 !!! info
@@ -18,6 +18,7 @@ Last Updated: 2024-08-03
 {
     "Content":  "Reset Network",
     "category":  "Fixes",
+    "link":  "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user",
     "Order":  "a042_",
     "panel":  "1",
     "Type":  "Button",
