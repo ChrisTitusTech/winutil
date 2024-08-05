@@ -498,6 +498,7 @@ $sync["ExportMenuItem"].Add_Click({
 $sync["AboutMenuItem"].Add_Click({
     # Handle Export menu item click
     Write-Debug "About clicked"
+    $dateWithoutDots = $sync.version -replace '\.', ''
     $sync["SettingsPopup"].IsOpen = $false
     $authorInfo = @"
 Author   : <a href="https://github.com/ChrisTitusTech">@christitustech</a>
@@ -505,6 +506,7 @@ Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
 MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
+Changelog: <a href="https://mydrift-user.github.io/winutil/changelog/#release-$($dateWithoutDots)">Release $($sync.version)</a>
 "@
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
