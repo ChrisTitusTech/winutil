@@ -2,6 +2,26 @@
 
 ## Tweaks
 
+### Essential-Tweaks
+
+- [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](dev/tweaks/Essential-Tweaks/Powershell7.md)
+- [Create Restore Point](dev/tweaks/Essential-Tweaks/RestorePoint.md)
+- [Delete Temporary Files](dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
+- [Disable Activity History](dev/tweaks/Essential-Tweaks/AH.md)
+- [Disable ConsumerFeatures](dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
+- [Disable GameDVR](dev/tweaks/Essential-Tweaks/DVR.md)
+- [Disable Hibernation](dev/tweaks/Essential-Tweaks/Hiber.md)
+- [Disable Homegroup](dev/tweaks/Essential-Tweaks/Home.md)
+- [Disable Location Tracking](dev/tweaks/Essential-Tweaks/Loc.md)
+- [Disable Powershell 7 Telemetry](dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
+- [Disable Storage Sense](dev/tweaks/Essential-Tweaks/Storage.md)
+- [Disable Telemetry](dev/tweaks/Essential-Tweaks/Tele.md)
+- [Disable Teredo](dev/tweaks/Essential-Tweaks/Teredo.md)
+- [Disable Wifi-Sense](dev/tweaks/Essential-Tweaks/Wifi.md)
+- [Enable End Task With Right Click](dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar.md)
+- [Run Disk Cleanup](dev/tweaks/Essential-Tweaks/DiskCleanup.md)
+- [Set Hibernation as default (good for laptops)](dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
+- [Set Services to Manual](dev/tweaks/Essential-Tweaks/Services.md)
 ### z--Advanced-Tweaks---CAUTION
 
 - [Adobe Debloat](dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe.md)
@@ -48,29 +68,17 @@
 
 - [Add and Activate Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFAddUltPerf.md)
 - [Remove Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFRemoveUltPerf.md)
-### Essential-Tweaks
-
-- [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](dev/tweaks/Essential-Tweaks/Powershell7.md)
-- [Create Restore Point](dev/tweaks/Essential-Tweaks/RestorePoint.md)
-- [Delete Temporary Files](dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
-- [Disable Activity History](dev/tweaks/Essential-Tweaks/AH.md)
-- [Disable ConsumerFeatures](dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
-- [Disable GameDVR](dev/tweaks/Essential-Tweaks/DVR.md)
-- [Disable Hibernation](dev/tweaks/Essential-Tweaks/Hiber.md)
-- [Disable Homegroup](dev/tweaks/Essential-Tweaks/Home.md)
-- [Disable Location Tracking](dev/tweaks/Essential-Tweaks/Loc.md)
-- [Disable Powershell 7 Telemetry](dev/tweaks/Essential-Tweaks/Powershell7Tele.md)
-- [Disable Storage Sense](dev/tweaks/Essential-Tweaks/Storage.md)
-- [Disable Telemetry](dev/tweaks/Essential-Tweaks/Tele.md)
-- [Disable Teredo](dev/tweaks/Essential-Tweaks/Teredo.md)
-- [Disable Wifi-Sense](dev/tweaks/Essential-Tweaks/Wifi.md)
-- [Enable End Task With Right Click](dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar.md)
-- [Run Disk Cleanup](dev/tweaks/Essential-Tweaks/DiskCleanup.md)
-- [Set Hibernation as default (good for laptops)](dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
-- [Set Services to Manual](dev/tweaks/Essential-Tweaks/Services.md)
 
 ## Features
 
+### Fixes
+
+- [Remove Adobe Creative Cloud](dev/features/Fixes/WPFRunAdobeCCCleanerTool.md)
+- [Reset Network](dev/features/Fixes/Network.md)
+- [Reset Windows Update](dev/features/Fixes/Update.md)
+- [Set Up Autologin](dev/features/Fixes/Autologin.md)
+- [System Corruption Scan](dev/features/Fixes/DISM.md)
+- [WinGet Reinstall](dev/features/Fixes/Winget.md)
 ### Legacy-Windows-Panels
 
 - [Control Panel](dev/features/Legacy-Windows-Panels/control.md)
@@ -94,13 +102,5 @@
 - [NFS - Network File System](dev/features/Features/nfs.md)
 - [Windows Sandbox](dev/features/Features/andbox.md)
 - [Windows Subsystem for Linux](dev/features/Features/wsl.md)
-### Fixes
-
-- [Remove Adobe Creative Cloud](dev/features/Fixes/WPFRunAdobeCCCleanerTool.md)
-- [Reset Network](dev/features/Fixes/Network.md)
-- [Reset Windows Update](dev/features/Fixes/Update.md)
-- [Set Up Autologin](dev/features/Fixes/Autologin.md)
-- [System Corruption Scan](dev/features/Fixes/DISM.md)
-- [WinGet Reinstall](dev/features/Fixes/Winget.md)
 
 

@@ -388,6 +388,8 @@ Update-Progress "Generate content for documentation" 20
 $tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
 $featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
 
+Update-Progress "Generate table of content" 30
+
 # Combine TOC entries and group by type and category
 $allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
 $tweakEntries = $allTocEntries | Where-Object { $_.Type -eq 'tweak' } | Sort-Object Category, Name
@@ -470,7 +472,7 @@ foreach ($jsonPath in $jsonPaths) {
     Add-LinkAttribute -jsonObject $json
 
     # Convert back to JSON with the original formatting
-    $jsonString = ($json | ConvertTo-Json -Depth 100) -replace '\n',"`n"
+    $jsonString = ($json | ConvertTo-Json -Depth 100).replace('\n',"`n").replace('\r',"`r")
 
     # Save the JSON back to the file
     Set-Content -Path $jsonPath -Value $jsonString
@@ -500,7 +502,7 @@ function Add-LinkAttributeToJson {
     }
 
     # Convert Json Data to Text, so we could write it to `$jsonFilePath`
-    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n")
+    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r',"`r")
 
     # Write the modified text back to the JSON file without empty rows
     Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8
