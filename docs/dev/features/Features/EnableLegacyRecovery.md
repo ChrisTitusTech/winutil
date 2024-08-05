@@ -1,6 +1,6 @@
-﻿# Enable Legacy F8 Boot Recovery
+# Enable Legacy F8 Boot Recovery
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,23 +20,16 @@ Enables Advanced Boot Options screen that lets you start Windows in advanced tro
 
 ```json
 {
-    "Content":  "Enable Legacy F8 Boot Recovery",
-    "Description":  "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
-    "category":  "Features",
-    "panel":  "1",
-    "Order":  "a018_",
-    "feature":  [
-
-                ],
-    "InvokeScript":  [
-                         "
-      If (!(Test-Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027)) {
-            New-Item -Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027 -Force | Out-Null
-      }
-      New-ItemProperty -Path \u0027HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood\u0027 -Name \u0027Enabled\u0027 -Type DWord -Value 1 -Force
-      Start-Process -FilePath cmd.exe -ArgumentList \u0027/c bcdedit /Set {Current} BootMenuPolicy Legacy\u0027 -Wait
-      "
-                     ]
+  "Content": "Enable Legacy F8 Boot Recovery",
+  "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.",
+  "category": "Features",
+  "panel": "1",
+  "Order": "a018_",
+  "feature": [],
+  "InvokeScript": [
+    "\n      If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {\n            New-Item -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Force | Out-Null\n      }\n      New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 1 -Force\n      Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Legacy' -Wait\n      "
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
 }
 ```
 </details>

@@ -1,6 +1,6 @@
-﻿# Disable Homegroup
+# Disable Homegroup
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,23 +20,24 @@ Disables HomeGroup - HomeGroup is a password-protected home networking service t
 
 ```json
 {
-    "Content":  "Disable Homegroup",
-    "Description":  "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a005_",
-    "service":  [
-                    {
-                        "Name":  "HomeGroupListener",
-                        "StartupType":  "Manual",
-                        "OriginalType":  "Automatic"
-                    },
-                    {
-                        "Name":  "HomeGroupProvider",
-                        "StartupType":  "Manual",
-                        "OriginalType":  "Automatic"
-                    }
-                ]
+  "Content": "Disable Homegroup",
+  "Description": "Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network.",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a005_",
+  "service": [
+    {
+      "Name": "HomeGroupListener",
+      "StartupType": "Manual",
+      "OriginalType": "Automatic"
+    },
+    {
+      "Name": "HomeGroupProvider",
+      "StartupType": "Manual",
+      "OriginalType": "Automatic"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
 }
 ```
 </details>

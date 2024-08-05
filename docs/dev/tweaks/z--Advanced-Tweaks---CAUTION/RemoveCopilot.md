@@ -1,6 +1,6 @@
-﻿# Disable Microsoft Copilot
+# Disable Microsoft Copilot
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,46 +20,41 @@ Disables MS Copilot AI built into Windows since 23H2.
 
 ```json
 {
-    "Content":  "Disable Microsoft Copilot",
-    "Description":  "Disables MS Copilot AI built into Windows since 23H2.",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "panel":  "1",
-    "Order":  "a025_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-                         "Name":  "TurnOffWindowsCopilot",
-                         "Type":  "DWord",
-                         "Value":  "1",
-                         "OriginalValue":  "0"
-                     },
-                     {
-                         "Path":  "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-                         "Name":  "TurnOffWindowsCopilot",
-                         "Type":  "DWord",
-                         "Value":  "1",
-                         "OriginalValue":  "0"
-                     },
-                     {
-                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-                         "Name":  "ShowCopilotButton",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     }
-                 ],
-    "InvokeScript":  [
-                         "
-      Write-Host \"Remove Copilot\"
-      dism /online /remove-package /package-name:Microsoft.Windows.Copilot
-      "
-                     ],
-    "UndoScript":  [
-                       "
-      Write-Host \"Install Copilot\"
-      dism /online /add-package /package-name:Microsoft.Windows.Copilot
-      "
-                   ]
+  "Content": "Disable Microsoft Copilot",
+  "Description": "Disables MS Copilot AI built into Windows since 23H2.",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "Order": "a025_",
+  "registry": [
+    {
+      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+      "Name": "TurnOffWindowsCopilot",
+      "Type": "DWord",
+      "Value": "1",
+      "OriginalValue": "0"
+    },
+    {
+      "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+      "Name": "TurnOffWindowsCopilot",
+      "Type": "DWord",
+      "Value": "1",
+      "OriginalValue": "0"
+    },
+    {
+      "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "Name": "ShowCopilotButton",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    }
+  ],
+  "InvokeScript": [
+    "\n      Write-Host \"Remove Copilot\"\n      dism /online /remove-package /package-name:Microsoft.Windows.Copilot\n      "
+  ],
+  "UndoScript": [
+    "\n      Write-Host \"Install Copilot\"\n      dism /online /add-package /package-name:Microsoft.Windows.Copilot\n      "
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
 }
 ```
 </details>

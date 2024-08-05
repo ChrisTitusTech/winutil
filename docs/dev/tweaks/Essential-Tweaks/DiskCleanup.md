@@ -1,6 +1,6 @@
-﻿# Run Disk Cleanup
+# Run Disk Cleanup
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,17 +20,15 @@ Runs Disk Cleanup on Drive C: and removes old Windows Updates.
 
 ```json
 {
-    "Content":  "Run Disk Cleanup",
-    "Description":  "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a009_",
-    "InvokeScript":  [
-                         "
-      cleanmgr.exe /d C: /VERYLOWDISK
-      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
-      "
-                     ]
+  "Content": "Run Disk Cleanup",
+  "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates.",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a009_",
+  "InvokeScript": [
+    "\n      cleanmgr.exe /d C: /VERYLOWDISK\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase\n      "
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
 }
 ```
 </details>

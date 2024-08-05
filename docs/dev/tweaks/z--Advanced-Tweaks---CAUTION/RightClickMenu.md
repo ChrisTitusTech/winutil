@@ -1,6 +1,6 @@
-﻿# Set Classic Right-Click Menu 
+# Set Classic Right-Click Menu 
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,28 +20,18 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
 
 ```json
 {
-    "Content":  "Set Classic Right-Click Menu ",
-    "Description":  "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "panel":  "1",
-    "Order":  "a027_",
-    "InvokeScript":  [
-                         "
-      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"
-      Write-Host Restarting explorer.exe ...
-      $process = Get-Process -Name \"explorer\"
-      Stop-Process -InputObject $process
-      "
-                     ],
-    "UndoScript":  [
-                       "
-      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force
-      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.
-      Write-Host Restarting explorer.exe ...
-      $process = Get-Process -Name \"explorer\"
-      Stop-Process -InputObject $process
-      "
-                   ]
+  "Content": "Set Classic Right-Click Menu ",
+  "Description": "Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "Order": "a027_",
+  "InvokeScript": [
+    "\n      New-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Name \"InprocServer32\" -force -value \"\"\n      Write-Host Restarting explorer.exe ...\n      $process = Get-Process -Name \"explorer\"\n      Stop-Process -InputObject $process\n      "
+  ],
+  "UndoScript": [
+    "\n      Remove-Item -Path \"HKCU:\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\" -Recurse -Confirm:$false -Force\n      # Restarting Explorer in the Undo Script might not be necessary, as the Registry change without restarting Explorer does work, but just to make sure.\n      Write-Host Restarting explorer.exe ...\n      $process = Get-Process -Name \"explorer\"\n      Stop-Process -InputObject $process\n      "
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
 }
 ```
 </details>

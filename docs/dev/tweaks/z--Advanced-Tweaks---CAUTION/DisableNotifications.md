@@ -1,6 +1,6 @@
-﻿# Disable Notification Tray/Calendar
+# Disable Notification Tray/Calendar
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,27 +20,28 @@ Disables all Notifications INCLUDING Calendar
 
 ```json
 {
-    "Content":  "Disable Notification Tray/Calendar",
-    "Description":  "Disables all Notifications INCLUDING Calendar",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "panel":  "1",
-    "Order":  "a026_",
-    "registry":  [
-                     {
-                         "Path":  "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
-                         "Name":  "DisableNotificationCenter",
-                         "Type":  "DWord",
-                         "Value":  "1",
-                         "OriginalValue":  "0"
-                     },
-                     {
-                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
-                         "Name":  "ToastEnabled",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     }
-                 ]
+  "Content": "Disable Notification Tray/Calendar",
+  "Description": "Disables all Notifications INCLUDING Calendar",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "Order": "a026_",
+  "registry": [
+    {
+      "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+      "Name": "DisableNotificationCenter",
+      "Type": "DWord",
+      "Value": "1",
+      "OriginalValue": "0"
+    },
+    {
+      "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+      "Name": "ToastEnabled",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
 }
 ```
 </details>

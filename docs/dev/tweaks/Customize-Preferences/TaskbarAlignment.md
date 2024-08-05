@@ -1,6 +1,6 @@
-﻿# Center Taskbar Items
+# Center Taskbar Items
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,12 +20,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Center Taskbar Items",
-    "Description":  "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
-    "category":  "Customize Preferences",
-    "panel":  "2",
-    "Order":  "a204_",
-    "Type":  "Toggle"
+  "Content": "Center Taskbar Items",
+  "Description": "[Windows 11] If Enabled then the Taskbar Items will be shown on the Center, otherwise the Taskbar Items will be shown on the Left.",
+  "category": "Customize Preferences",
+  "panel": "2",
+  "Order": "a204_",
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
 }
 ```
 </details>

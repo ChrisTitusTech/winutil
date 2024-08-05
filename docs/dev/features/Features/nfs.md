@@ -1,6 +1,6 @@
-﻿# NFS - Network File System
+# NFS - Network File System
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,23 +20,24 @@ Network File System (NFS) is a mechanism for storing files on a network.
 
 ```json
 {
-    "Content":  "NFS - Network File System",
-    "Description":  "Network File System (NFS) is a mechanism for storing files on a network.",
-    "category":  "Features",
-    "panel":  "1",
-    "Order":  "a014_",
-    "feature":  [
-                    "ServicesForNFS-ClientOnly",
-                    "ClientForNFS-Infrastructure",
-                    "NFS-Administration"
-                ],
-    "InvokeScript":  [
-                         "nfsadmin client stop",
-                         "Set-ItemProperty -Path \u0027HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default\u0027 -Name \u0027AnonymousUID\u0027 -Type DWord -Value 0",
-                         "Set-ItemProperty -Path \u0027HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default\u0027 -Name \u0027AnonymousGID\u0027 -Type DWord -Value 0",
-                         "nfsadmin client start",
-                         "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-                     ]
+  "Content": "NFS - Network File System",
+  "Description": "Network File System (NFS) is a mechanism for storing files on a network.",
+  "category": "Features",
+  "panel": "1",
+  "Order": "a014_",
+  "feature": [
+    "ServicesForNFS-ClientOnly",
+    "ClientForNFS-Infrastructure",
+    "NFS-Administration"
+  ],
+  "InvokeScript": [
+    "nfsadmin client stop",
+    "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousUID' -Type DWord -Value 0",
+    "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousGID' -Type DWord -Value 0",
+    "nfsadmin client start",
+    "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
 }
 ```
 </details>

@@ -1,6 +1,6 @@
-﻿# Disable Activity History
+# Disable Activity History
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,34 +20,35 @@ This erases recent docs, clipboard, and run history.
 
 ```json
 {
-    "Content":  "Disable Activity History",
-    "Description":  "This erases recent docs, clipboard, and run history.",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a005_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-                         "Name":  "EnableActivityFeed",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     },
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-                         "Name":  "PublishUserActivities",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     },
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-                         "Name":  "UploadUserActivities",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     }
-                 ]
+  "Content": "Disable Activity History",
+  "Description": "This erases recent docs, clipboard, and run history.",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a005_",
+  "registry": [
+    {
+      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+      "Name": "EnableActivityFeed",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+      "Name": "PublishUserActivities",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+      "Name": "UploadUserActivities",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
 }
 ```
 </details>

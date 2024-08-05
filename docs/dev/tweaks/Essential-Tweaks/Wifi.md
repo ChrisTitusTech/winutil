@@ -1,6 +1,6 @@
-﻿# Disable Wifi-Sense
+# Disable Wifi-Sense
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,27 +20,28 @@ Wifi Sense is a spying service that phones home all nearby scanned wifi networks
 
 ```json
 {
-    "Content":  "Disable Wifi-Sense",
-    "Description":  "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a005_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
-                         "Name":  "Value",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     },
-                     {
-                         "Path":  "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
-                         "Name":  "Value",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     }
-                 ]
+  "Content": "Disable Wifi-Sense",
+  "Description": "Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location.",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a005_",
+  "registry": [
+    {
+      "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+      "Name": "Value",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+      "Name": "Value",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"
 }
 ```
 </details>

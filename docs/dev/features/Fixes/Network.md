@@ -1,6 +1,6 @@
-﻿# Reset Network
+# Reset Network
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -16,12 +16,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Reset Network",
-    "category":  "Fixes",
-    "Order":  "a042_",
-    "panel":  "1",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "Reset Network",
+  "category": "Fixes",
+  "Order": "a042_",
+  "panel": "1",
+  "Type": "Button",
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
 }
 ```
 </details>

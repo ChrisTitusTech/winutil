@@ -1,6 +1,6 @@
-﻿# Disable Search Box Web Suggestions in Registry(explorer restart)
+# Disable Search Box Web Suggestions in Registry(explorer restart)
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,23 +20,16 @@ Disables web suggestions when searching using Windows Search.
 
 ```json
 {
-    "Content":  "Disable Search Box Web Suggestions in Registry(explorer restart)",
-    "Description":  "Disables web suggestions when searching using Windows Search.",
-    "category":  "Features",
-    "panel":  "1",
-    "Order":  "a016_",
-    "feature":  [
-
-                ],
-    "InvokeScript":  [
-                         "
-      If (!(Test-Path \u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027)) {
-            New-Item -Path \u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027 -Force | Out-Null
-      }
-      New-ItemProperty -Path \u0027HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\u0027 -Name \u0027DisableSearchBoxSuggestions\u0027 -Type DWord -Value 1 -Force
-      Stop-Process -name explorer -force
-      "
-                     ]
+  "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
+  "Description": "Disables web suggestions when searching using Windows Search.",
+  "category": "Features",
+  "panel": "1",
+  "Order": "a016_",
+  "feature": [],
+  "InvokeScript": [
+    "\n      If (!(Test-Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer')) {\n            New-Item -Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer' -Force | Out-Null\n      }\n      New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer' -Name 'DisableSearchBoxSuggestions' -Type DWord -Value 1 -Force\n      Stop-Process -name explorer -force\n      "
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"
 }
 ```
 </details>

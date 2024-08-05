@@ -1,6 +1,6 @@
-﻿# Search Button in Taskbar
+# Search Button in Taskbar
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,12 +20,13 @@ If Enabled Search Button will be on the taskbar.
 
 ```json
 {
-    "Content":  "Search Button in Taskbar",
-    "Description":  "If Enabled Search Button will be on the taskbar.",
-    "category":  "Customize Preferences",
-    "panel":  "2",
-    "Order":  "a202_",
-    "Type":  "Toggle"
+  "Content": "Search Button in Taskbar",
+  "Description": "If Enabled Search Button will be on the taskbar.",
+  "category": "Customize Preferences",
+  "panel": "2",
+  "Order": "a202_",
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
 }
 ```
 </details>

@@ -1,6 +1,6 @@
-﻿# Verbose Messages During Logon
+# Verbose Messages During Logon
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,12 +20,13 @@ Show detailed messages during the login process for troubleshooting and diagnost
 
 ```json
 {
-    "Content":  "Verbose Messages During Logon",
-    "Description":  "Show detailed messages during the login process for troubleshooting and diagnostics.",
-    "category":  "Customize Preferences",
-    "panel":  "2",
-    "Order":  "a103_",
-    "Type":  "Toggle"
+  "Content": "Verbose Messages During Logon",
+  "Description": "Show detailed messages during the login process for troubleshooting and diagnostics.",
+  "category": "Customize Preferences",
+  "panel": "2",
+  "Order": "a103_",
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
 }
 ```
 </details>

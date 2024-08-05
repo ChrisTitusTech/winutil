@@ -1,6 +1,6 @@
-﻿# Disable Location Tracking
+# Disable Location Tracking
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,41 +20,42 @@ Disables Location Tracking...DUH!
 
 ```json
 {
-    "Content":  "Disable Location Tracking",
-    "Description":  "Disables Location Tracking...DUH!",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a005_",
-    "registry":  [
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
-                         "Name":  "Value",
-                         "Type":  "String",
-                         "Value":  "Deny",
-                         "OriginalValue":  "Allow"
-                     },
-                     {
-                         "Path":  "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
-                         "Name":  "SensorPermissionState",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     },
-                     {
-                         "Path":  "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
-                         "Name":  "Status",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     },
-                     {
-                         "Path":  "HKLM:\\SYSTEM\\Maps",
-                         "Name":  "AutoUpdateEnabled",
-                         "Type":  "DWord",
-                         "Value":  "0",
-                         "OriginalValue":  "1"
-                     }
-                 ]
+  "Content": "Disable Location Tracking",
+  "Description": "Disables Location Tracking...DUH!",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a005_",
+  "registry": [
+    {
+      "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
+      "Name": "Value",
+      "Type": "String",
+      "Value": "Deny",
+      "OriginalValue": "Allow"
+    },
+    {
+      "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
+      "Name": "SensorPermissionState",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\lfsvc\\Service\\Configuration",
+      "Name": "Status",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\SYSTEM\\Maps",
+      "Name": "AutoUpdateEnabled",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"
 }
 ```
 </details>

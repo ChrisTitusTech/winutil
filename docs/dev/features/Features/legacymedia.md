@@ -1,6 +1,6 @@
-﻿# Legacy Media (WMP, DirectPlay)
+# Legacy Media (WMP, DirectPlay)
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,20 +20,19 @@ Enables legacy programs from previous versions of windows
 
 ```json
 {
-    "Content":  "Legacy Media (WMP, DirectPlay)",
-    "Description":  "Enables legacy programs from previous versions of windows",
-    "category":  "Features",
-    "panel":  "1",
-    "Order":  "a012_",
-    "feature":  [
-                    "WindowsMediaPlayer",
-                    "MediaPlayback",
-                    "DirectPlay",
-                    "LegacyComponents"
-                ],
-    "InvokeScript":  [
-
-                     ]
+  "Content": "Legacy Media (WMP, DirectPlay)",
+  "Description": "Enables legacy programs from previous versions of windows",
+  "category": "Features",
+  "panel": "1",
+  "Order": "a012_",
+  "feature": [
+    "WindowsMediaPlayer",
+    "MediaPlayback",
+    "DirectPlay",
+    "LegacyComponents"
+  ],
+  "InvokeScript": [],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
 }
 ```
 </details>

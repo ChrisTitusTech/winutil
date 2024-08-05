@@ -1,6 +1,6 @@
-﻿# Sticky Keys
+# Sticky Keys
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,12 +20,13 @@ If Enabled then Sticky Keys is activated - Sticky keys is an accessibility featu
 
 ```json
 {
-    "Content":  "Sticky Keys",
-    "Description":  "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
-    "category":  "Customize Preferences",
-    "panel":  "2",
-    "Order":  "a108_",
-    "Type":  "Toggle"
+  "Content": "Sticky Keys",
+  "Description": "If Enabled then Sticky Keys is activated - Sticky keys is an accessibility feature of some graphical user interfaces which assists users who have physical disabilities or help users reduce repetitive strain injury.",
+  "category": "Customize Preferences",
+  "panel": "2",
+  "Order": "a108_",
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
 }
 ```
 </details>

@@ -1,6 +1,6 @@
-﻿# Add and Activate Ultimate Performance Profile
+# Add and Activate Ultimate Performance Profile
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -16,12 +16,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Add and Activate Ultimate Performance Profile",
-    "category":  "Performance Plans",
-    "panel":  "2",
-    "Order":  "a080_",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "Add and Activate Ultimate Performance Profile",
+  "category": "Performance Plans",
+  "panel": "2",
+  "Order": "a080_",
+  "Type": "Button",
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFAddUltPerf"
 }
 ```
 </details>

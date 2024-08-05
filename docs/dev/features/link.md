@@ -1,4 +1,4 @@
-# Windows Sandbox
+# 
 
 Last Updated: 2024-08-05
 
@@ -6,10 +6,6 @@ Last Updated: 2024-08-05
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
 
-
-## Description
-
-Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.
 
 <!-- BEGIN CUSTOM CONTENT -->
 
@@ -19,14 +15,7 @@ Windows Sandbox is a lightweight virtual machine that provides a temporary deskt
 <summary>Preview Code</summary>
 
 ```json
-{
-  "Content": "Windows Sandbox",
-  "category": "Features",
-  "panel": "1",
-  "Order": "a021_",
-  "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
-  "link": "https://christitustech.github.io/winutil/dev/features/Features/andbox"
-}
+""
 ```
 </details>
 

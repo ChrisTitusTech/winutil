@@ -36,7 +36,6 @@ $featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString(
 # Create the output directories if they don't exist
 $tweaksOutputDir = "docs/dev/tweaks"
 $featuresOutputDir = "docs/dev/features"
-$archiveDir = "docs/archive"
 
 # Load functions from private and public directories
 $privateFunctionsDir = "functions/private"
@@ -53,10 +52,6 @@ if (-Not (Test-Path -Path $tweaksOutputDir)) {
 
 if (-Not (Test-Path -Path $featuresOutputDir)) {
     New-Item -ItemType Directory -Path $featuresOutputDir | Out-Null
-}
-
-if (-Not (Test-Path -Path $archiveDir)) {
-    New-Item -ItemType Directory -Path $archiveDir | Out-Null
 }
 
 Update-Progress "Pre-req: Load existing Functions" 30
@@ -414,7 +409,47 @@ Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
 
 Update-Progress "Write documentation links to json files" 90
 
-# Function to add or update the link attribute in the JSON file text
+
+# Define the JSON file paths
+$jsonPaths = @(".\config\feature.json", ".\config\tweaks.json")
+
+# Function to recursively add the "link" attribute
+function Add-LinkAttribute {
+    param (
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject] $jsonObject
+    )
+
+    foreach ($property in $jsonObject.PSObject.Properties) {
+        if ($property.Value -is [PSCustomObject]) {
+            Add-LinkAttribute -jsonObject $property.Value
+        } elseif ($property.Value -is [System.Collections.ArrayList]) {
+            foreach ($item in $property.Value) {
+                if ($item -is [PSCustomObject]) {
+                    Add-LinkAttribute -jsonObject $item
+                }
+            }
+        }
+    }
+
+    $jsonObject | Add-Member -NotePropertyName "link" -NotePropertyValue "" -Force
+}
+
+# Loop through each JSON file path
+foreach ($jsonPath in $jsonPaths) {
+    # Load the JSON content
+    $json = Get-Content -Raw -Path $jsonPath | ConvertFrom-Json
+
+    # Add the "link" attribute to the JSON
+    Add-LinkAttribute -jsonObject $json
+
+    # Convert back to JSON with the original formatting
+    $jsonString = ($json | ConvertTo-Json -Depth 100) -replace '(?<!\\)\\n',"`n"
+
+    # Save the JSON back to the file
+    Set-Content -Path $jsonPath -Value $jsonString
+}
+
 function Add-LinkAttributeToJson {
     Param (
         [string]$jsonFilePath,
@@ -430,7 +465,7 @@ function Add-LinkAttributeToJson {
         $itemName = $item.Name
         $itemDetails = $item.Value
         $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
-        $displayName = $itemName -replace $itemnametocut, ''
+        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Feature(s)?|Tweaks?|Panel|Fix(es)?)', ''
         $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
         $docLink = "https://christitustech.github.io/winutil/$relativePath"
 
@@ -447,47 +482,3 @@ function Add-LinkAttributeToJson {
 # Add link attribute to tweaks and features JSON files
 Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
 Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"
-
-Update-Progress "Archive unused documentation" 95
-
-# Archive unmodified files
-function Archive-UnmodifiedFiles {
-    Param (
-        [string]$outputDir,
-        [array]$processedFiles,
-        [string]$archiveDir
-    )
-
-    $allFiles = Get-ChildItem -Path $outputDir -Recurse -File
-    $processedFilesHashSet = @{}
-    $processedFiles | ForEach-Object { $processedFilesHashSet[$_] = $true }
-
-    $filesToMove = @()
-    foreach ($file in $allFiles) {
-        if (-Not $processedFilesHashSet.ContainsKey($file.FullName)) {
-            $filesToMove += $file
-        }
-    }
-
-    # Create necessary directories and move files
-    foreach ($file in $filesToMove) {
-        $relativePath = $file.FullName -replace [regex]::Escape((Get-Item $outputDir).FullName), ''
-        $archivePath = Join-Path -Path $archiveDir -ChildPath $relativePath.TrimStart('\')
-
-        # Handle file name conflicts
-        $newArchivePath = $archivePath
-        $count = 1
-        while (Test-Path -Path $newArchivePath) {
-            $baseName = [System.IO.Path]::GetFileNameWithoutExtension($archivePath)
-            $extension = [System.IO.Path]::GetExtension($archivePath)
-            $newArchivePath = Join-Path -Path $archiveDirectory -ChildPath "$baseName($count)$extension"
-            $count++
-        }
-
-        # Move the file
-        Move-Item -Path $file.FullName -Destination $newArchivePath
-    }
-}
-
-Archive-UnmodifiedFiles -outputDir $tweaksOutputDir -processedFiles $tweakResult.ProcessedFiles -archiveDir $archiveDir
-Archive-UnmodifiedFiles -outputDir $featuresOutputDir -processedFiles $featureResult.ProcessedFiles -archiveDir $archiveDir

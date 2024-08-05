@@ -1,6 +1,6 @@
-﻿# Create WinUtil Shortcut
+# Create WinUtil Shortcut
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -16,12 +16,13 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "Create WinUtil Shortcut",
-    "category":  "Shortcuts",
-    "panel":  "2",
-    "Order":  "a082_",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "Create WinUtil Shortcut",
+  "category": "Shortcuts",
+  "panel": "2",
+  "Order": "a082_",
+  "Type": "Button",
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
 }
 ```
 </details>

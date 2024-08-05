@@ -1,6 +1,6 @@
-﻿# Disable Background Apps
+# Disable Background Apps
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,20 +20,21 @@ Disables all Microsoft Store apps from running in the background, which has to b
 
 ```json
 {
-    "Content":  "Disable Background Apps",
-    "Description":  "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
-    "category":  "z__Advanced Tweaks - CAUTION",
-    "panel":  "1",
-    "Order":  "a024_",
-    "registry":  [
-                     {
-                         "Path":  "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
-                         "Name":  "GlobalUserDisabled",
-                         "Value":  "1",
-                         "OriginalValue":  "0",
-                         "Type":  "DWord"
-                     }
-                 ]
+  "Content": "Disable Background Apps",
+  "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11",
+  "category": "z__Advanced Tweaks - CAUTION",
+  "panel": "1",
+  "Order": "a024_",
+  "registry": [
+    {
+      "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+      "Name": "GlobalUserDisabled",
+      "Value": "1",
+      "OriginalValue": "0",
+      "Type": "DWord"
+    }
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"
 }
 ```
 </details>

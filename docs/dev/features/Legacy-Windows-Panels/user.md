@@ -1,6 +1,6 @@
-﻿# User Accounts
+# User Accounts
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -16,11 +16,12 @@ Last Updated: 2024-08-04
 
 ```json
 {
-    "Content":  "User Accounts",
-    "category":  "Legacy Windows Panels",
-    "panel":  "2",
-    "Type":  "Button",
-    "ButtonWidth":  "300"
+  "Content": "User Accounts",
+  "category": "Legacy Windows Panels",
+  "panel": "2",
+  "Type": "Button",
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
 }
 ```
 </details>

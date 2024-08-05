@@ -1,6 +1,6 @@
-﻿# Snap Window
+# Snap Window
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,12 +20,13 @@ If enabled you can align windows by dragging them. | Relogin Required
 
 ```json
 {
-    "Content":  "Snap Window",
-    "Description":  "If enabled you can align windows by dragging them. | Relogin Required",
-    "category":  "Customize Preferences",
-    "panel":  "2",
-    "Order":  "a104_",
-    "Type":  "Toggle"
+  "Content": "Snap Window",
+  "Description": "If enabled you can align windows by dragging them. | Relogin Required",
+  "category": "Customize Preferences",
+  "panel": "2",
+  "Order": "a104_",
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
 }
 ```
 </details>

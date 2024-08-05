@@ -1,6 +1,6 @@
-﻿# Disable Storage Sense
+# Disable Storage Sense
 
-Last Updated: 2024-08-04
+Last Updated: 2024-08-05
 
 
 !!! info
@@ -20,17 +20,18 @@ Storage Sense deletes temp files automatically.
 
 ```json
 {
-    "Content":  "Disable Storage Sense",
-    "Description":  "Storage Sense deletes temp files automatically.",
-    "category":  "Essential Tweaks",
-    "panel":  "1",
-    "Order":  "a005_",
-    "InvokeScript":  [
-                         "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
-                     ],
-    "UndoScript":  [
-                       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
-                   ]
+  "Content": "Disable Storage Sense",
+  "Description": "Storage Sense deletes temp files automatically.",
+  "category": "Essential Tweaks",
+  "panel": "1",
+  "Order": "a005_",
+  "InvokeScript": [
+    "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 0 -Type Dword -Force"
+  ],
+  "UndoScript": [
+    "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"
 }
 ```
 </details>
