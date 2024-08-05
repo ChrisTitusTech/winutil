@@ -25,8 +25,7 @@ If enable then includes web search results from Bing in your Start Menu search.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a101_",
-  "Type": "Toggle",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
+  "Type": "Toggle"
 }
 ```
 </details>

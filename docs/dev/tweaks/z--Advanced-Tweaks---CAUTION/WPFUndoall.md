@@ -20,8 +20,7 @@ Last Updated: 2024-08-05
   "category": "z__Advanced Tweaks - CAUTION",
   "panel": "1",
   "Order": "a042_",
-  "Type": "Button",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFUndoall"
+  "Type": "Button"
 }
 ```
 </details>

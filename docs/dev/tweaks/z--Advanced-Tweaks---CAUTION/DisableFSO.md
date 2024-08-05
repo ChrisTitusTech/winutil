@@ -33,8 +33,7 @@ Disables FSO in all applications. NOTE: This will disable Color Management in Ex
       "OriginalValue": "0",
       "Type": "DWord"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"
+  ]
 }
 ```
 </details>

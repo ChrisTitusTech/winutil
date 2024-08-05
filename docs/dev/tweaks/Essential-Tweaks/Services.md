@@ -1436,8 +1436,7 @@ Turns a bunch of system services to manual that don't need to be running all the
       "StartupType": "Manual",
       "OriginalType": "Manual"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"
+  ]
 }
 ```
 </details>

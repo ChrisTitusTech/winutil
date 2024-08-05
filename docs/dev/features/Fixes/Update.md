@@ -21,8 +21,7 @@ Last Updated: 2024-08-05
   "panel": "1",
   "Order": "a041_",
   "Type": "Button",
-  "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
+  "ButtonWidth": "300"
 }
 ```
 </details>

@@ -46,8 +46,7 @@ Hibernation is really meant for laptops as it saves what's in memory before turn
   ],
   "UndoScript": [
     "powercfg.exe /hibernate on"
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"
+  ]
 }
 ```
 </details>

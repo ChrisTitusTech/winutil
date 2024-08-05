@@ -31,8 +31,7 @@ Enables legacy programs from previous versions of windows
     "DirectPlay",
     "LegacyComponents"
   ],
-  "InvokeScript": [],
-  "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
+  "InvokeScript": []
 }
 ```
 </details>

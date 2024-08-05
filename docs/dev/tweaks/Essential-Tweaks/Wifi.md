@@ -40,8 +40,7 @@ Wifi Sense is a spying service that phones home all nearby scanned wifi networks
       "Value": "0",
       "OriginalValue": "1"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"
+  ]
 }
 ```
 </details>

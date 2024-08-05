@@ -29,8 +29,7 @@ Last Updated: 2024-08-05
     "NetFx4-AdvSrvs",
     "NetFx3"
   ],
-  "InvokeScript": [],
-  "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet"
+  "InvokeScript": []
 }
 ```
 </details>

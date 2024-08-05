@@ -26,9 +26,11 @@ Runs Disk Cleanup on Drive C: and removes old Windows Updates.
   "panel": "1",
   "Order": "a009_",
   "InvokeScript": [
-    "\n      cleanmgr.exe /d C: /VERYLOWDISK\n      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase\n      "
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
+    "
+      cleanmgr.exe /d C: /VERYLOWDISK
+      Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+      "
+  ]
 }
 ```
 </details>

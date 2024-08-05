@@ -33,8 +33,7 @@ Disables all Microsoft Store apps from running in the background, which has to b
       "OriginalValue": "0",
       "Type": "DWord"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"
+  ]
 }
 ```
 </details>

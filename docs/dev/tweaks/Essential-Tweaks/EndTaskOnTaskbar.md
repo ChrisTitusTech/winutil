@@ -26,12 +26,31 @@ Enables option to end task when right clicking a program in the taskbar
   "panel": "1",
   "Order": "a006_",
   "InvokeScript": [
-    "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"\n      $name = \"TaskbarEndTask\"\n      $value = 1\n\n      # Ensure the registry key exists\n      if (-not (Test-Path $path)) {\n        New-Item -Path $path -Force | Out-Null\n      }\n\n      # Set the property, creating it if it doesn't exist\n      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
+    "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 1
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
   ],
   "UndoScript": [
-    "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"\n      $name = \"TaskbarEndTask\"\n      $value = 0\n\n      # Ensure the registry key exists\n      if (-not (Test-Path $path)) {\n        New-Item -Path $path -Force | Out-Null\n      }\n\n      # Set the property, creating it if it doesn't exist\n      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
+    "$path = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings\"
+      $name = \"TaskbarEndTask\"
+      $value = 0
+
+      # Ensure the registry key exists
+      if (-not (Test-Path $path)) {
+        New-Item -Path $path -Force | Out-Null
+      }
+
+      # Set the property, creating it if it doesn't exist
+      New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
+  ]
 }
 ```
 </details>

@@ -49,12 +49,17 @@ Disables MS Copilot AI built into Windows since 23H2.
     }
   ],
   "InvokeScript": [
-    "\n      Write-Host \"Remove Copilot\"\n      dism /online /remove-package /package-name:Microsoft.Windows.Copilot\n      "
+    "
+      Write-Host \"Remove Copilot\"
+      dism /online /remove-package /package-name:Microsoft.Windows.Copilot
+      "
   ],
   "UndoScript": [
-    "\n      Write-Host \"Install Copilot\"\n      dism /online /add-package /package-name:Microsoft.Windows.Copilot\n      "
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
+    "
+      Write-Host \"Install Copilot\"
+      dism /online /add-package /package-name:Microsoft.Windows.Copilot
+      "
+  ]
 }
 ```
 </details>

@@ -102,9 +102,41 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
     "*Microsoft.Advertising.Xaml*"
   ],
   "InvokeScript": [
-    "\n        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')\n        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')\n\n        Write-Host \"Stopping Teams process...\"\n        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue\n\n        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"\n        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {\n            # Uninstall app\n            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru\n            $proc.WaitForExit()\n        }\n\n        Write-Host \"Removing Teams AppxPackage...\"\n        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue\n        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue\n\n        Write-Host \"Deleting Teams directory\"\n        if ([System.IO.Directory]::Exists($TeamsPath)) {\n            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue\n        }\n\n        Write-Host \"Deleting Teams uninstall registry key\"\n        # Uninstall from Uninstall registry key UninstallString\n        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString\n        if ($us.Length -gt 0) {\n            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')\n            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())\n            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))\n            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru\n            $proc.WaitForExit()\n        }\n      "
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
+    "
+        $TeamsPath = [System.IO.Path]::Combine($env:LOCALAPPDATA, 'Microsoft', 'Teams')
+        $TeamsUpdateExePath = [System.IO.Path]::Combine($TeamsPath, 'Update.exe')
+
+        Write-Host \"Stopping Teams process...\"
+        Stop-Process -Name \"*teams*\" -Force -ErrorAction SilentlyContinue
+
+        Write-Host \"Uninstalling Teams from AppData\\Microsoft\\Teams\"
+        if ([System.IO.File]::Exists($TeamsUpdateExePath)) {
+            # Uninstall app
+            $proc = Start-Process $TeamsUpdateExePath \"-uninstall -s\" -PassThru
+            $proc.WaitForExit()
+        }
+
+        Write-Host \"Removing Teams AppxPackage...\"
+        Get-AppxPackage \"*Teams*\" | Remove-AppxPackage -ErrorAction SilentlyContinue
+        Get-AppxPackage \"*Teams*\" -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+
+        Write-Host \"Deleting Teams directory\"
+        if ([System.IO.Directory]::Exists($TeamsPath)) {
+            Remove-Item $TeamsPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+
+        Write-Host \"Deleting Teams uninstall registry key\"
+        # Uninstall from Uninstall registry key UninstallString
+        $us = (Get-ChildItem -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall, HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall | Get-ItemProperty | Where-Object { $_.DisplayName -like '*Teams*'}).UninstallString
+        if ($us.Length -gt 0) {
+            $us = ($us.Replace('/I', '/uninstall ') + ' /quiet').Replace('  ', ' ')
+            $FilePath = ($us.Substring(0, $us.IndexOf('.exe') + 4).Trim())
+            $ProcessArgs = ($us.Substring($us.IndexOf('.exe') + 5).Trim().replace('  ', ' '))
+            $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
+            $proc.WaitForExit()
+        }
+      "
+  ]
 }
 ```
 </details>

@@ -33,8 +33,7 @@ Windows 10 will not automatically install any games, third-party apps, or applic
       "Value": "1",
       "Type": "DWord"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"
+  ]
 }
 ```
 </details>

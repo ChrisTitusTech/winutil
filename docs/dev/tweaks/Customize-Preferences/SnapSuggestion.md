@@ -25,8 +25,7 @@ If enabled then you will get suggestions to snap other applications in the left 
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a106_",
-  "Type": "Toggle",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
+  "Type": "Toggle"
 }
 ```
 </details>

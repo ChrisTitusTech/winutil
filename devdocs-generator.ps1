@@ -432,13 +432,18 @@ function Add-LinkAttribute {
         }
     }
 
-    $jsonObject | Add-Member -NotePropertyName "link" -NotePropertyValue "" -Force
+    if ($jsonObject -ne $global:rootObject) {
+        $jsonObject | Add-Member -NotePropertyName "link" -NotePropertyValue "" -Force
+    }
 }
 
 # Loop through each JSON file path
 foreach ($jsonPath in $jsonPaths) {
     # Load the JSON content
     $json = Get-Content -Raw -Path $jsonPath | ConvertFrom-Json
+
+    # Set the global root object to the current json object
+    $global:rootObject = $json
 
     # Add the "link" attribute to the JSON
     Add-LinkAttribute -jsonObject $json
@@ -449,6 +454,7 @@ foreach ($jsonPath in $jsonPaths) {
     # Save the JSON back to the file
     Set-Content -Path $jsonPath -Value $jsonString
 }
+
 
 function Add-LinkAttributeToJson {
     Param (

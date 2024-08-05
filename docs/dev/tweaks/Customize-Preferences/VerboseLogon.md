@@ -25,8 +25,7 @@ Show detailed messages during the login process for troubleshooting and diagnost
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a103_",
-  "Type": "Toggle",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
+  "Type": "Toggle"
 }
 ```
 </details>

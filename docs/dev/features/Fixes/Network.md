@@ -21,8 +21,7 @@ Last Updated: 2024-08-05
   "Order": "a042_",
   "panel": "1",
   "Type": "Button",
-  "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
+  "ButtonWidth": "300"
 }
 ```
 </details>

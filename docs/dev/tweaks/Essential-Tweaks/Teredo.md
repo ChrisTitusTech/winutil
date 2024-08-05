@@ -39,8 +39,7 @@ Teredo network tunneling is a ipv6 feature that can cause additional latency.
   ],
   "UndoScript": [
     "netsh interface teredo set state default"
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"
+  ]
 }
 ```
 </details>

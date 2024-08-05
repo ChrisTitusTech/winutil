@@ -26,12 +26,18 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
   "panel": "1",
   "Order": "a029_",
   "InvokeScript": [
-    "\n        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat\n        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"\n        Start-Process $ENV:temp\\edgeremoval.bat\n        "
+    "
+        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
+        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
+        Start-Process $ENV:temp\\edgeremoval.bat
+        "
   ],
   "UndoScript": [
-    "\n      Write-Host \"Install Microsoft Edge\"\n      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait\n      "
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
+    "
+      Write-Host \"Install Microsoft Edge\"
+      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
+      "
+  ]
 }
 ```
 </details>

@@ -30,8 +30,7 @@ Storage Sense deletes temp files automatically.
   ],
   "UndoScript": [
     "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"
+  ]
 }
 ```
 </details>

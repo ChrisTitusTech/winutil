@@ -36,8 +36,7 @@ Disables HomeGroup - HomeGroup is a password-protected home networking service t
       "StartupType": "Manual",
       "OriginalType": "Automatic"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
+  ]
 }
 ```
 </details>

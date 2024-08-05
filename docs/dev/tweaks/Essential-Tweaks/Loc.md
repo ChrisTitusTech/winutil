@@ -54,8 +54,7 @@ Disables Location Tracking...DUH!
       "Value": "0",
       "OriginalValue": "1"
     }
-  ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"
+  ]
 }
 ```
 </details>

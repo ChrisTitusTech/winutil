@@ -21,8 +21,7 @@ Last Updated: 2024-08-05
   "panel": "2",
   "Order": "a082_",
   "Type": "Button",
-  "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
+  "ButtonWidth": "300"
 }
 ```
 </details>

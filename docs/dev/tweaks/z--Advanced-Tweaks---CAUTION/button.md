@@ -20,8 +20,7 @@ Last Updated: 2024-08-05
   "category": "z__Advanced Tweaks - CAUTION",
   "panel": "1",
   "Order": "a041_",
-  "Type": "Button",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button"
+  "Type": "Button"
 }
 ```
 </details>
