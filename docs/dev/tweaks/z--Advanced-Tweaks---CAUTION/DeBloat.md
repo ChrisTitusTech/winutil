@@ -136,7 +136,8 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
             $proc.WaitForExit()
         }
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
 }
 ```
 </details>

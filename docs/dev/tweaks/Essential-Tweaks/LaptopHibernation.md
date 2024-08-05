@@ -64,7 +64,8 @@ Most modern laptops have connected standby enabled which drains the battery, thi
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"
 }
 ```
 </details>

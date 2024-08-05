@@ -25,7 +25,8 @@ If Enabled then you will see a detailed Blue Screen of Death (BSOD) with more in
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a205_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
 }
 ```
 </details>

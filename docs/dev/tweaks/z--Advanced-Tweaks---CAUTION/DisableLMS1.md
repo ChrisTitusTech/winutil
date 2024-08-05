@@ -74,7 +74,8 @@ Intel LMS service is always listening on all ports and could be a huge security 
       Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
 }
 ```
 </details>

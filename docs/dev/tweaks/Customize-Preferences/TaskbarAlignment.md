@@ -25,7 +25,8 @@ Last Updated: 2024-08-05
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a204_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
 }
 ```
 </details>

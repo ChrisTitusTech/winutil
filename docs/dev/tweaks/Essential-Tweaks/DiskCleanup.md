@@ -30,7 +30,8 @@ Runs Disk Cleanup on Drive C: and removes old Windows Updates.
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
 }
 ```
 </details>

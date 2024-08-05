@@ -28,7 +28,8 @@ Erases TEMP Folders
   "InvokeScript": [
     "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
 }
 ```
 </details>

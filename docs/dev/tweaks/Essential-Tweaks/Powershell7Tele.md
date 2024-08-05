@@ -30,7 +30,8 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
   ],
   "UndoScript": [
     "[Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"
 }
 ```
 </details>

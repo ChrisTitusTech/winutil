@@ -25,7 +25,8 @@ If Enabled then Sticky Keys is activated - Sticky keys is an accessibility featu
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a108_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
 }
 ```
 </details>

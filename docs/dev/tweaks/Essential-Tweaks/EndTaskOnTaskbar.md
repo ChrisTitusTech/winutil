@@ -50,7 +50,8 @@ Enables option to end task when right clicking a program in the taskbar
 
       # Set the property, creating it if it doesn't exist
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
 }
 ```
 </details>

@@ -25,7 +25,8 @@ If Enabled Search Button will be on the taskbar.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a202_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
 }
 ```
 </details>

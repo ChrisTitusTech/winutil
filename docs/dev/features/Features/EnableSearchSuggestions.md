@@ -34,7 +34,8 @@ Enables web suggestions when searching using Windows Search.
       New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer' -Name 'DisableSearchBoxSuggestions' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"
 }
 ```
 </details>

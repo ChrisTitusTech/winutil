@@ -20,7 +20,8 @@ Last Updated: 2024-08-05
   "category": "Legacy Windows Panels",
   "panel": "2",
   "Type": "Button",
-  "ButtonWidth": "300"
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/region"
 }
 ```
 </details>

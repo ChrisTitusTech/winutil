@@ -21,7 +21,8 @@ Last Updated: 2024-08-05
   "Order": "a040_",
   "panel": "1",
   "Type": "Button",
-  "ButtonWidth": "300"
+  "ButtonWidth": "300",
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
 }
 ```
 </details>

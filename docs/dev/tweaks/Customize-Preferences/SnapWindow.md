@@ -25,7 +25,8 @@ If enabled you can align windows by dragging them. | Relogin Required
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a104_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
 }
 ```
 </details>

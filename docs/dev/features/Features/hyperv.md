@@ -37,7 +37,8 @@ Hyper-V is a hardware virtualization product developed by Microsoft that allows 
   ],
   "InvokeScript": [
     "Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /set hypervisorschedulertype classic' -Wait"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/hyperv"
 }
 ```
 </details>

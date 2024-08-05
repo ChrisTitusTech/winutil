@@ -33,7 +33,8 @@ Essential for computers that are dual booting. Fixes the time sync with Linux Sy
       "Value": "1",
       "OriginalValue": "0"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"
 }
 ```
 </details>

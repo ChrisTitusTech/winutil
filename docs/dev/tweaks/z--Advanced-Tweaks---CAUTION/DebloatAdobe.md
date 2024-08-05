@@ -165,7 +165,8 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
       "StartupType": "Manual",
       "OriginalType": "Automatic"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"
 }
 ```
 </details>

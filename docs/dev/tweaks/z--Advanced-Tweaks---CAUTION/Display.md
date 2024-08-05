@@ -123,7 +123,8 @@ Sets the system preferences to performance. You can do this manually with sysdm.
   ],
   "UndoScript": [
     "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"
 }
 ```
 </details>

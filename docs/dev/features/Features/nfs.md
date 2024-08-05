@@ -36,7 +36,8 @@ Network File System (NFS) is a mechanism for storing files on a network.
     "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousGID' -Type DWord -Value 0",
     "nfsadmin client start",
     "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
 }
 ```
 </details>

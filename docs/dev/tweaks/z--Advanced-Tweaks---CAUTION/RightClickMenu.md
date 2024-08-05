@@ -41,7 +41,8 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
 }
 ```
 </details>

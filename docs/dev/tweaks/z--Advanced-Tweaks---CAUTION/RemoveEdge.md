@@ -37,7 +37,8 @@ Removes MS Edge when it gets reinstalled by updates. Credit: AveYo
       Write-Host \"Install Microsoft Edge\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
 }
 ```
 </details>

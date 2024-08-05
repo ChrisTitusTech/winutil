@@ -25,7 +25,8 @@ If Enabled then Hidden Files will be shown.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a200_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
 }
 ```
 </details>

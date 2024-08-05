@@ -25,7 +25,8 @@ If Enabled then Cursor movement is affected by the speed of your physical mouse 
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a107_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
 }
 ```
 </details>

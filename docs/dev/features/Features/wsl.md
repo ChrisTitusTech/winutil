@@ -29,7 +29,8 @@ Windows Subsystem for Linux is an optional feature of Windows that allows Linux 
     "VirtualMachinePlatform",
     "Microsoft-Windows-Subsystem-Linux"
   ],
-  "InvokeScript": []
+  "InvokeScript": [],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/wsl"
 }
 ```
 </details>

@@ -25,7 +25,8 @@ If enabled then Snap preview is disabled when maximize button is hovered.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a105_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
 }
 ```
 </details>

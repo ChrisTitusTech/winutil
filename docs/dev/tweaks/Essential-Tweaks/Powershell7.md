@@ -30,7 +30,8 @@ This will edit the config file of the Windows Terminal replacing PowerShell 5 wi
   ],
   "UndoScript": [
     "Invoke-WPFTweakPS7 -action \"PS5\""
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"
 }
 ```
 </details>

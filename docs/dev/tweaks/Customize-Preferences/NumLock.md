@@ -25,7 +25,8 @@ Toggle the Num Lock key state when your computer starts.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a102_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
 }
 ```
 </details>

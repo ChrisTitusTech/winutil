@@ -113,7 +113,8 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       Write-Host \"Install OneDrive\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
 }
 ```
 </details>

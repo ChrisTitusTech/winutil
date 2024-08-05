@@ -59,7 +59,8 @@ Disables MS Copilot AI built into Windows since 23H2.
       Write-Host \"Install Copilot\"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
 }
 ```
 </details>

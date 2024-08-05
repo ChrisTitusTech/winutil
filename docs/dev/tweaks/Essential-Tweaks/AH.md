@@ -47,7 +47,8 @@ This erases recent docs, clipboard, and run history.
       "Value": "0",
       "OriginalValue": "1"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
 }
 ```
 </details>

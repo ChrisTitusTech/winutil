@@ -449,7 +449,7 @@ foreach ($jsonPath in $jsonPaths) {
     Add-LinkAttribute -jsonObject $json
 
     # Convert back to JSON with the original formatting
-    $jsonString = ($json | ConvertTo-Json -Depth 100) -replace '(?<!\\)\\n',"`n"
+    $jsonString = ($json | ConvertTo-Json -Depth 100) -replace '\n',"`n"
 
     # Save the JSON back to the file
     Set-Content -Path $jsonPath -Value $jsonString
@@ -479,7 +479,7 @@ function Add-LinkAttributeToJson {
     }
 
     # Convert Json Data to Text, so we could write it to `$jsonFilePath`
-    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\r\n',"`r`n")
+    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n")
 
     # Write the modified text back to the JSON file without empty rows
     Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8

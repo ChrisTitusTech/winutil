@@ -39,7 +39,8 @@ Disables IPv6.
   ],
   "UndoScript": [
     "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"
 }
 ```
 </details>

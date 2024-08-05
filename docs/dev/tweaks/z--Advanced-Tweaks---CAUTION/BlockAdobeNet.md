@@ -130,7 +130,8 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"
 }
 ```
 </details>

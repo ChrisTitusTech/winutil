@@ -34,7 +34,8 @@ Enables Advanced Boot Options screen that lets you start Windows in advanced tro
       New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 1 -Force
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Legacy' -Wait
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
 }
 ```
 </details>

@@ -40,7 +40,8 @@ Disables all Notifications INCLUDING Calendar
       "Value": "0",
       "OriginalValue": "1"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
 }
 ```
 </details>

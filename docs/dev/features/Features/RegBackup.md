@@ -34,7 +34,8 @@ Enables daily registry backup, previously disabled by Microsoft in Windows 10 18
       $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
       Register-ScheduledTask -Action $action -Trigger $trigger -TaskName 'AutoRegBackup' -Description 'Create System Registry Backups' -User 'System'
       "
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/RegBackup"
 }
 ```
 </details>

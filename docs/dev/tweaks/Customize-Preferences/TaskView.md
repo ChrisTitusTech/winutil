@@ -25,7 +25,8 @@ If Enabled then Task View Button in Taskbar will be shown.
   "category": "Customize Preferences",
   "panel": "2",
   "Order": "a203_",
-  "Type": "Toggle"
+  "Type": "Toggle",
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
 }
 ```
 </details>

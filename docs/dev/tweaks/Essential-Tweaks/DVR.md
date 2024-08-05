@@ -61,7 +61,8 @@ GameDVR is a Windows App that is a dependency for some Store Games. I've never m
       "OriginalValue": "1",
       "Type": "DWord"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
 }
 ```
 </details>
