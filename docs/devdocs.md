@@ -41,6 +41,13 @@
 - [Task View Button in Taskbar](dev/tweaks/Customize-Preferences/TaskView.md)
 - [Verbose Messages During Logon](dev/tweaks/Customize-Preferences/VerboseLogon.md)
 - [Widgets Button in Taskbar](dev/tweaks/Customize-Preferences/TaskbarWidgets.md)
+### Shortcuts
+
+- [Create WinUtil Shortcut](dev/tweaks/Shortcuts/Shortcut.md)
+### Performance-Plans
+
+- [Add and Activate Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFAddUltPerf.md)
+- [Remove Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFRemoveUltPerf.md)
 ### Essential-Tweaks
 
 - [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](dev/tweaks/Essential-Tweaks/Powershell7.md)
@@ -61,16 +68,18 @@
 - [Run Disk Cleanup](dev/tweaks/Essential-Tweaks/DiskCleanup.md)
 - [Set Hibernation as default (good for laptops)](dev/tweaks/Essential-Tweaks/LaptopHibernation.md)
 - [Set Services to Manual](dev/tweaks/Essential-Tweaks/Services.md)
-### Performance-Plans
-
-- [Add and Activate Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFAddUltPerf.md)
-- [Remove Ultimate Performance Profile](dev/tweaks/Performance-Plans/WPFRemoveUltPerf.md)
-### Shortcuts
-
-- [Create WinUtil Shortcut](dev/tweaks/Shortcuts/Shortcut.md)
 
 ## Features
 
+### Legacy-Windows-Panels
+
+- [Control Panel](dev/features/Legacy-Windows-Panels/control.md)
+- [Network Connections](dev/features/Legacy-Windows-Panels/network.md)
+- [Power Panel](dev/features/Legacy-Windows-Panels/power.md)
+- [Region](dev/features/Legacy-Windows-Panels/region.md)
+- [Sound Settings](dev/features/Legacy-Windows-Panels/sound.md)
+- [System Properties](dev/features/Legacy-Windows-Panels/system.md)
+- [User Accounts](dev/features/Legacy-Windows-Panels/user.md)
 ### Features
 
 - [All .Net Framework (2,3,4)](dev/features/Features/dotnet.md)
@@ -85,15 +94,6 @@
 - [NFS - Network File System](dev/features/Features/nfs.md)
 - [Windows Sandbox](dev/features/Features/andbox.md)
 - [Windows Subsystem for Linux](dev/features/Features/wsl.md)
-### Legacy-Windows-Panels
-
-- [Control Panel](dev/features/Legacy-Windows-Panels/control.md)
-- [Network Connections](dev/features/Legacy-Windows-Panels/network.md)
-- [Power Panel](dev/features/Legacy-Windows-Panels/power.md)
-- [Region](dev/features/Legacy-Windows-Panels/region.md)
-- [Sound Settings](dev/features/Legacy-Windows-Panels/sound.md)
-- [System Properties](dev/features/Legacy-Windows-Panels/system.md)
-- [User Accounts](dev/features/Legacy-Windows-Panels/user.md)
 ### Fixes
 
 - [Remove Adobe Creative Cloud](dev/features/Fixes/WPFRunAdobeCCCleanerTool.md)

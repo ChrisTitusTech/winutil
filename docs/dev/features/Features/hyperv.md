@@ -43,6 +43,21 @@ Hyper-V is a hardware virtualization product developed by Microsoft that allows 
 ```
 </details>
 
+## Features
+
+Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.
+
+You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).
+### Features to install
+- HypervisorPlatform
+- Microsoft-Hyper-V-All
+- Microsoft-Hyper-V
+- Microsoft-Hyper-V-Tools-All
+- Microsoft-Hyper-V-Management-PowerShell
+- Microsoft-Hyper-V-Hypervisor
+- Microsoft-Hyper-V-Services
+- Microsoft-Hyper-V-Management-Clients
+
 ## Invoke Script
 
 ```powershell

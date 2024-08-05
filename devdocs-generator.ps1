@@ -174,6 +174,24 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````json`r`n$jsonContent`r`n``````
 </details>
 "
+
+        $FeaturesDocs = ""
+        if ($itemDetails.feature -ne $null) {
+            $FeaturesDocs += "## Features`r`n`r`n"
+            $FeaturesDocs += "Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.`r`n`r`n"
+            $FeaturesDocs += "You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).`r`n"
+
+            if (($itemDetails.feature).count -gt 1) {
+                $FeaturesDocs += "### Features to install`r`n"
+            } else {
+                $FeaturesDocs += "### Feature to install`r`n"
+            }
+
+            foreach ($feature in $itemDetails.feature) {
+                $FeaturesDocs += "- $($feature)`r`n"
+            }
+        }
+
         $InvokeScript = ""
         if ($itemDetails.InvokeScript -ne $null) {
             $InvokeScriptContent = $itemDetails.InvokeScript | Out-String
@@ -325,6 +343,9 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         Add-Content -Path $filename -Value $customContent -Encoding utf8
         Add-Content -Path $filename -Value $customContentEndTag -Encoding utf8
         Add-Content -Path $filename -Value $codeBlock -Encoding utf8
+        if ($FeaturesDocs) {
+            Add-Content -Path $filename -Value $FeaturesDocs -Encoding utf8
+        }
         if ($itemDetails.InvokeScript) {
             Add-Content -Path $filename -Value $InvokeScript -Encoding utf8
         }
