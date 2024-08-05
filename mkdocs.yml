@@ -83,3 +83,8 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
+  - minify:
+      minify_html: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true
