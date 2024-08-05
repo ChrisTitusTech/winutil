@@ -10,53 +10,21 @@ function Update-Progress {
         [Parameter(Mandatory, position=0)]
         [string]$StatusMessage,
 
-	[Parameter(Mandatory, position=1)]
-	[ValidateRange(0,100)]
+        [Parameter(Mandatory, position=1)]
+        [ValidateRange(0,100)]
         [int]$Percent,
 
-	[Parameter(position=2)]
-	[string]$Activity = "Compiling"
+        [Parameter(position=2)]
+        [string]$Activity = "Compiling"
     )
 
     Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
 }
 
-Update-Progress "Pre-req: Load JSON files" 1
-
-# Load the JSON files
-$tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
-$features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
-
-Update-Progress "Pre-req: Get last modified dates of the JSON files" 10
-
-# Get the last modified dates of the JSON files
-$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd") #  For more detail add " HH:mm:ss zzz"
-$featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
-
-# Create the output directories if they don't exist
-$tweaksOutputDir = "docs/dev/tweaks"
-$featuresOutputDir = "docs/dev/features"
-
-# Load functions from private and public directories
-$privateFunctionsDir = "functions/private"
-$publicFunctionsDir = "functions/public"
-$functions = @{}
-
-$itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)"
-
-Update-Progress "Pre-req: create Directories" 20
-
-if (-Not (Test-Path -Path $tweaksOutputDir)) {
-    New-Item -ItemType Directory -Path $tweaksOutputDir | Out-Null
-}
-
-if (-Not (Test-Path -Path $featuresOutputDir)) {
-    New-Item -ItemType Directory -Path $featuresOutputDir | Out-Null
-}
-
-Update-Progress "Pre-req: Load existing Functions" 30
-
-function Load-Functions($dir) {
+function Load-Functions {
+    param (
+        [string]$dir
+    )
     Get-ChildItem -Path $dir -Filter *.ps1 | ForEach-Object {
         $functionName = $_.BaseName
         $functionContent = Get-Content -Path $_.FullName -Raw
@@ -64,17 +32,12 @@ function Load-Functions($dir) {
     }
 }
 
-Load-Functions -dir $privateFunctionsDir
-Load-Functions -dir $publicFunctionsDir
-
-# Function to check if a function is called in a script recursively
 function Get-CalledFunctions {
-    Param (
+    param (
         [string]$scriptContent,
         [hashtable]$functionList,
         [ref]$processedFunctions
     )
-
     $calledFunctions = @()
     foreach ($functionName in $functionList.Keys) {
         if ($scriptContent -match "\b$functionName\b" -and -not $processedFunctions.Value.Contains($functionName)) {
@@ -89,77 +52,100 @@ function Get-CalledFunctions {
     return $calledFunctions
 }
 
-# Function to get additional functions from Invoke-WPFToggle
 function Get-AdditionalFunctionsFromToggle {
-    Param ([string]$buttonName)
-
+    param (
+        [string]$buttonName
+    )
     $invokeWpfToggleContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFToggle.ps1" -Raw
     $lines = $invokeWpfToggleContent -split "`r`n"
     foreach ($line in $lines) {
-        # Match the line with the button name and extract the function name
         if ($line -match "`"$buttonName`" \{Invoke-(WinUtil[a-zA-Z]+)") {
-            return $matches[1]  # Return the matched function name
+            return $matches[1]
         }
     }
     return $null
 }
 
-# Function to get additional functions from Invoke-WPFButton
 function Get-AdditionalFunctionsFromButton {
-    Param ([string]$buttonName)
-
+    param (
+        [string]$buttonName
+    )
     $invokeWpfButtonContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFButton.ps1" -Raw
     $lines = $invokeWpfButtonContent -split "`r`n"
     foreach ($line in $lines) {
-        # Match the line with the button name and extract the function name
         if ($line -match "`"$buttonName`" \{Invoke-(WPF[a-zA-Z]+)") {
-            return $matches[1]  # Return the matched function name
+            return $matches[1]
         }
     }
     return $null
 }
 
-# Function to generate markdown files
-function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified, $type) {
+function Add-LinkAttribute {
+    param (
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject]$jsonObject
+    )
+
+    $totalProperties = ($jsonObject.PSObject.Properties | Measure-Object).Count
+    $progressIncrement = 50 / $totalProperties
+    $currentProgress = 50
+
+    foreach ($property in $jsonObject.PSObject.Properties) {
+        if ($property.Value -is [PSCustomObject]) {
+            Add-LinkAttribute -jsonObject $property.Value
+        } elseif ($property.Value -is [System.Collections.ArrayList]) {
+            foreach ($item in $property.Value) {
+                if ($item -is [PSCustomObject]) {
+                    Add-LinkAttribute -jsonObject $item
+                }
+            }
+        }
+        $currentProgress += $progressIncrement
+        $roundedProgress = [math]::Round($currentProgress)
+        Update-Progress -StatusMessage "Adding documentation links" -Percent $roundedProgress
+    }
+    if ($jsonObject -ne $global:rootObject) {
+        $jsonObject | Add-Member -NotePropertyName "link" -NotePropertyValue "" -Force
+    }
+}
+
+function Generate-MarkdownFiles {
+    param (
+        [PSCustomObject]$data,
+        [string]$outputDir,
+        [string]$jsonFilePath,
+        [string]$lastModified,
+        [string]$type,
+        [int]$initialProgress
+    )
+
+    $totalItems = ($data.PSObject.Properties | Measure-Object).Count
+    $progressIncrement = 10 / $totalItems
+    $currentProgress = $initialProgress
+
     $tocEntries = @()
     $processedFiles = @()
-
     foreach ($itemName in $data.PSObject.Properties.Name) {
         $itemDetails = $data.$itemName
-        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-' # Sanitize category name for directory
+        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
         $categoryDir = "$outputDir/$category"
-
-        # Create the category directory if it doesn't exist
         if (-Not (Test-Path -Path $categoryDir)) {
             New-Item -ItemType Directory -Path $categoryDir | Out-Null
         }
-
-        # Preserve the full name for matching purposes
         $fullItemName = $itemName
-
-        # Remove prefixes from the name for display
         $displayName = $itemName -replace $itemnametocut, ''
-
         $filename = "$categoryDir/$displayName.md"
         $relativePath = "$outputDir/$category/$displayName.md" -replace '^docs/', ''
-
-        # Ensure the file exists before adding to processed files
         if (-Not (Test-Path -Path $filename)) {
             Set-Content -Path $filename -Value "" -Encoding utf8
         }
-
-        # Collect paths for TOC
         $tocEntries += @{
             Category = $category
             Path = $relativePath
             Name = $itemDetails.Content
             Type = $type
         }
-
-        # Track processed files
         $processedFiles += (Get-Item $filename).FullName
-
-        # Create the markdown content
         $header = "# $([string]$itemDetails.Content)`r`n"
         $lastUpdatedNotice = "Last Updated: $lastModified`r`n"
         $autoupdatenotice = "
@@ -174,24 +160,20 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````json`r`n$jsonContent`r`n``````
 </details>
 "
-
         $FeaturesDocs = ""
         if ($itemDetails.feature -ne $null) {
             $FeaturesDocs += "## Features`r`n`r`n"
             $FeaturesDocs += "Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.`r`n`r`n"
             $FeaturesDocs += "You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).`r`n"
-
-            if (($itemDetails.feature).count -gt 1) {
+            if (($itemDetails.feature).Count -gt 1) {
                 $FeaturesDocs += "### Features to install`r`n"
             } else {
                 $FeaturesDocs += "### Feature to install`r`n"
             }
-
             foreach ($feature in $itemDetails.feature) {
                 $FeaturesDocs += "- $($feature)`r`n"
             }
         }
-
         $InvokeScript = ""
         if ($itemDetails.InvokeScript -ne $null) {
             $InvokeScriptContent = $itemDetails.InvokeScript | Out-String
@@ -201,7 +183,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````powershell`r`n$InvokeScriptContent`r`n``````
 "@
         }
-
         $UndoScript = ""
         if ($itemDetails.UndoScript -ne $null) {
             $UndoScriptContent = $itemDetails.UndoScript | Out-String
@@ -211,7 +192,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````powershell`r`n$UndoScriptContent`r`n``````
 "@
         }
-
         $ToggleScript = ""
         if ($itemDetails.ToggleScript -ne $null) {
             $ToggleScriptContent = $itemDetails.ToggleScript | Out-String
@@ -221,7 +201,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````powershell`r`n$ToggleScriptContent`r`n``````
 "@
         }
-
         $ButtonScript = ""
         if ($itemDetails.ButtonScript -ne $null) {
             $ButtonScriptContent = $itemDetails.ButtonScript | Out-String
@@ -231,7 +210,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
 ``````powershell`r`n$ButtonScriptContent`r`n``````
 "@
         }
-
         $FunctionDetails = ""
         $processedFunctions = New-Object 'System.Collections.Generic.HashSet[System.String]'
         $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript, $itemDetails.ToggleScript, $itemDetails.ButtonScript)
@@ -247,7 +225,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 }
             }
         }
-        # Check for additional functions from Invoke-WPFToggle
         $additionalFunctionToggle = Get-AdditionalFunctionsFromToggle -buttonName $fullItemName
         if ($additionalFunctionToggle -ne $null) {
             $additionalFunctionNameToggle = "Invoke-$additionalFunctionToggle"
@@ -258,8 +235,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 $processedFunctions.Add($additionalFunctionNameToggle)
             }
         }
-
-        # Check for additional functions from Invoke-WPFButton
         $additionalFunctionButton = Get-AdditionalFunctionsFromButton -buttonName $fullItemName
         if ($additionalFunctionButton -ne $null) {
             $additionalFunctionNameButton = "Invoke-$additionalFunctionButton"
@@ -270,13 +245,11 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 $processedFunctions.Add($additionalFunctionNameButton)
             }
         }
-
         $registryDocs = ""
         if ($itemDetails.registry -ne $null) {
             $registryDocs += "## Registry Changes`r`n"
             $registryDocs += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
             $registryDocs += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
-
             foreach ($regEntry in $itemDetails.registry) {
                 $registryDocs += "### Registry Key: $($regEntry.Name)`r`n"
                 $registryDocs += "**Type:** $($regEntry.Type)`r`n`r`n"
@@ -284,36 +257,29 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 $registryDocs += "**New Value:** $($regEntry.Value)`r`n`r`n"
             }
         }
-
         $serviceDocs = ""
         if ($itemDetails.service -ne $null) {
             $serviceDocs += "## Service Changes`r`n"
             $serviceDocs += "Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.`r`n`r`n"
             $serviceDocs += "You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).`r`n"
-
             foreach ($service in $itemDetails.service) {
                 $serviceDocs += "### Service Name: $($service.Name)`r`n"
                 $serviceDocs += "**Startup Type:** $($service.StartupType)`r`n`r`n"
                 $serviceDocs += "**Original Type:** $($service.OriginalType)`r`n`r`n"
             }
         }
-
         $scheduledTaskDocs = ""
         if ($itemDetails.ScheduledTask -ne $null) {
             $scheduledTaskDocs += "## Scheduled Task Changes`r`n"
             $scheduledTaskDocs += "Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.`r`n`r`n"
             $scheduledTaskDocs += "You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).`r`n"
-
             foreach ($task in $itemDetails.ScheduledTask) {
                 $scheduledTaskDocs += "### Task Name: $($task.Name)`r`n"
                 $scheduledTaskDocs += "**State:** $($task.State)`r`n`r`n"
                 $scheduledTaskDocs += "**Original State:** $($task.OriginalState)`r`n`r`n"
             }
         }
-
         $jsonLink = "`r`n[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)`r`n"
-
-        # Check for existing custom content
         $customContentStartTag = "<!-- BEGIN CUSTOM CONTENT -->"
         $customContentEndTag = "<!-- END CUSTOM CONTENT -->"
         $secondCustomContentStartTag = "<!-- BEGIN SECOND CUSTOM CONTENT -->"
@@ -331,8 +297,6 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
                 $secondCustomContent = $matches[1].Trim()
             }
         }
-
-        # Write to the markdown file
         Set-Content -Path $filename -Value $header -Encoding utf8
         Add-Content -Path $filename -Value $lastUpdatedNotice -Encoding utf8
         Add-Content -Path $filename -Value $autoupdatenotice -Encoding utf8
@@ -374,29 +338,26 @@ function Generate-MarkdownFiles($data, $outputDir, $jsonFilePath, $lastModified,
         Add-Content -Path $filename -Value $secondCustomContent -Encoding utf8
         Add-Content -Path $filename -Value $secondCustomContentEndTag -Encoding utf8
         Add-Content -Path $filename -Value $jsonLink -Encoding utf8
-    }
 
+        $currentProgress += $progressIncrement
+        $roundedProgress = [math]::Round($currentProgress)
+        Update-Progress -StatusMessage "Generating content for documentation" -Percent $roundedProgress
+    }
     return [PSCustomObject]@{
         TocEntries = $tocEntries
         ProcessedFiles = $processedFiles
     }
 }
 
-Update-Progress "Generate content for documentation" 20
+function Generate-TypeSectionContent {
+    param (
+        [array]$entries
+    )
 
-# Generate markdown files for tweaks and features and collect TOC entries
-$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak"
-$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature"
+    $totalEntries = $entries.Count
+    $progressIncrement = 10 / $totalEntries
+    $currentProgress = 90
 
-Update-Progress "Generate table of content" 30
-
-# Combine TOC entries and group by type and category
-$allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
-$tweakEntries = $allTocEntries | Where-Object { $_.Type -eq 'tweak' } | Sort-Object Category, Name
-$featureEntries = $allTocEntries | Where-Object { $_.Type -eq 'feature' } | Sort-Object Category, Name
-
-# Function to generate the content for each type section
-function Generate-TypeSectionContent($entries) {
     $sectionContent = ""
     $categories = @{}
     foreach ($entry in $entries) {
@@ -404,6 +365,10 @@ function Generate-TypeSectionContent($entries) {
             $categories[$entry.Category] = @()
         }
         $categories[$entry.Category] += $entry
+
+        $currentProgress += $progressIncrement
+        $roundedProgress = [math]::Round($currentProgress)
+        Update-Progress -StatusMessage "Generating table of contents" -Percent $roundedProgress
     }
     foreach ($category in $categories.Keys) {
         $sectionContent += "### $category`r`n`r`n"
@@ -414,51 +379,68 @@ function Generate-TypeSectionContent($entries) {
     return $sectionContent
 }
 
-# Generate the devdocs.md content
-$indexContent = "# Table of Contents`r`n`r`n"
+function Add-LinkAttributeToJson {
+    param (
+        [string]$jsonFilePath,
+        [string]$outputDir
+    )
 
-# Add tweaks section
-$indexContent += "## Tweaks`r`n`r`n"
-$indexContent += Generate-TypeSectionContent $tweakEntries
-$indexContent += "`r`n"
+    $jsonText = Get-Content -Path $jsonFilePath -Raw
+    $jsonData = $jsonText | ConvertFrom-Json
 
-# Add features section
-$indexContent += "## Features`r`n`r`n"
-$indexContent += Generate-TypeSectionContent $featureEntries
-$indexContent += "`r`n"
+    $totalItems = ($jsonData.PSObject.Properties | Measure-Object).Count
+    $progressIncrement = 20 / $totalItems
+    $currentProgress = 70
 
-# Write the devdocs.md file
-Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
+    foreach ($item in $jsonData.PSObject.Properties) {
+        $itemName = $item.Name
+        $itemDetails = $item.Value
+        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
+        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Feature(s)?|Tweaks?|Panel|Fix(es)?)', ''
+        $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
+        $docLink = "https://christitustech.github.io/winutil/$relativePath"
+        $jsonData.$itemName.link = $docLink
 
-Update-Progress "Write documentation links to json files" 90
+        $currentProgress += $progressIncrement
+        $roundedProgress = [math]::Round($currentProgress)
+        Update-Progress -StatusMessage "Adding documentation links to JSON" -Percent $roundedProgress
+    }
 
+    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r',"`r")
+    Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8
+}
+
+Update-Progress "Loading JSON files" 10
+$tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
+$features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
+
+Update-Progress "Getting last modified dates of the JSON files" 20
+$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd")
+$featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
+
+$tweaksOutputDir = "docs/dev/tweaks"
+$featuresOutputDir = "docs/dev/features"
+$privateFunctionsDir = "functions/private"
+$publicFunctionsDir = "functions/public"
+$functions = @{}
+$itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)"
+
+Update-Progress "Creating Directories" 30
+if (-Not (Test-Path -Path $tweaksOutputDir)) {
+    New-Item -ItemType Directory -Path $tweaksOutputDir | Out-Null
+}
+if (-Not (Test-Path -Path $featuresOutputDir)) {
+    New-Item -ItemType Directory -Path $featuresOutputDir | Out-Null
+}
+
+Update-Progress "Loading existing Functions" 40
+Load-Functions -dir $privateFunctionsDir
+Load-Functions -dir $publicFunctionsDir
+
+Update-Progress "Adding documentation links to JSON files" 50
 
 # Define the JSON file paths
 $jsonPaths = @(".\config\feature.json", ".\config\tweaks.json")
-
-# Function to recursively add the "link" attribute
-function Add-LinkAttribute {
-    param (
-        [Parameter(Mandatory = $true)]
-        [PSCustomObject] $jsonObject
-    )
-
-    foreach ($property in $jsonObject.PSObject.Properties) {
-        if ($property.Value -is [PSCustomObject]) {
-            Add-LinkAttribute -jsonObject $property.Value
-        } elseif ($property.Value -is [System.Collections.ArrayList]) {
-            foreach ($item in $property.Value) {
-                if ($item -is [PSCustomObject]) {
-                    Add-LinkAttribute -jsonObject $item
-                }
-            }
-        }
-    }
-
-    if ($jsonObject -ne $global:rootObject) {
-        $jsonObject | Add-Member -NotePropertyName "link" -NotePropertyValue "" -Force
-    }
-}
 
 # Loop through each JSON file path
 foreach ($jsonPath in $jsonPaths) {
@@ -478,36 +460,25 @@ foreach ($jsonPath in $jsonPaths) {
     Set-Content -Path $jsonPath -Value $jsonString
 }
 
-
-function Add-LinkAttributeToJson {
-    Param (
-        [string]$jsonFilePath,
-        [string]$outputDir
-    )
-
-    # Read the JSON file as text
-    $jsonText = Get-Content -Path $jsonFilePath -Raw
-
-    # Process each item to determine its correct path
-    $jsonData = $jsonText | ConvertFrom-Json
-    foreach ($item in $jsonData.PSObject.Properties) {
-        $itemName = $item.Name
-        $itemDetails = $item.Value
-        $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
-        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Feature(s)?|Tweaks?|Panel|Fix(es)?)', ''
-        $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
-        $docLink = "https://christitustech.github.io/winutil/$relativePath"
-
-        $jsonData.$itemName.link = $docLink
-    }
-
-    # Convert Json Data to Text, so we could write it to `$jsonFilePath`
-    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r',"`r")
-
-    # Write the modified text back to the JSON file without empty rows
-    Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8
-}
-
-# Add link attribute to tweaks and features JSON files
 Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
 Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"
+
+Update-Progress "Generating content for documentation" 60
+$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
+$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
+
+Update-Progress "Generating table of contents" 80
+$allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
+$tweakEntries = $allTocEntries | Where-Object { $_.Type -eq 'tweak' } | Sort-Object Category, Name
+$featureEntries = $allTocEntries | Where-Object { $_.Type -eq 'feature' } | Sort-Object Category, Name
+
+$indexContent = "# Table of Contents`r`n`r`n"
+$indexContent += "## Tweaks`r`n`r`n"
+$indexContent += Generate-TypeSectionContent $tweakEntries
+$indexContent += "`r`n"
+$indexContent += "## Features`r`n`r`n"
+$indexContent += Generate-TypeSectionContent $featureEntries
+$indexContent += "`r`n"
+Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
+
+Update-Progress "Process Completed" 100

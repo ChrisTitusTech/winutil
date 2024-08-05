@@ -100,7 +100,7 @@
 - [Install Features](dev/features/Features/Install.md)
 - [Legacy Media (WMP, DirectPlay)](dev/features/Features/legacymedia.md)
 - [NFS - Network File System](dev/features/Features/nfs.md)
-- [Windows Sandbox](dev/features/Features/andbox.md)
+- [Windows Sandbox](dev/features/Features/Sandbox.md)
 - [Windows Subsystem for Linux](dev/features/Features/wsl.md)
 
 

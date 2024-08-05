@@ -25,7 +25,7 @@ Windows Sandbox is a lightweight virtual machine that provides a temporary deskt
   "panel": "1",
   "Order": "a021_",
   "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
-  "link": "https://christitustech.github.io/winutil/dev/features/Features/andbox"
+  "link": "https://christitustech.github.io/winutil/dev/features/Features/Sandbox"
 }
 ```
 </details>
