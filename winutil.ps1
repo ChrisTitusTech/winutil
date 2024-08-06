@@ -2115,8 +2115,10 @@ function Invoke-WinUtilNumLock {
             $value = 0
         }
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
-        $Path = "HKU:\.Default\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+        $HKUPath = "HKU:\.Default\Control Panel\Keyboard"
+        $HKCUPath = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $HKUPath -Name InitialKeyboardIndicators -Value $value
+        Set-ItemProperty -Path $HKCUPath -Name InitialKeyboardIndicators -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
@@ -11698,11 +11700,10 @@ $sync.configs.tweaks = '{
       "microsoft.windowscommunicationsapps",
       "Microsoft.WindowsFeedbackHub",
       "Microsoft.WindowsMaps",
-      "Microsoft.WindowsPhone",
+      "Microsoft.YourPhone",
       "Microsoft.WindowsSoundRecorder",
       "Microsoft.XboxApp",
       "Microsoft.ConnectivityStore",
-      "Microsoft.CommsPhone",
       "Microsoft.ScreenSketch",
       "Microsoft.Xbox.TCUI",
       "Microsoft.XboxGameOverlay",
@@ -16050,8 +16051,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCf2YhvpvN0Lqkr
-# FLebGrWqkSf74dri62aBEVgSbJjM1qCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBZp2YSJFHp/uBH
+# a0aNk0bp5r7JlA41l4uMYadYNnla5qCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -16123,16 +16124,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCAGtMWezZrYL/T46kAeWszyIaCUf4BzXlowc2xUUPc6tjANBgkqhkiG
-# 9w0BAQEFAASCAgBjVCmp+0iFgtektdTltvMTXoUTvMOAAQa4aO8aMaOpBfxw0yxH
-# ljtJJ8Ee8YsLie493MP5z/W2+AZzhTMjJ8Q8202CbwXD0npVzEpcOSOVm1zepDo3
-# pBTYsOruMP+2leGD+1zoYlVjckhUhlMECfye5wusSk46X7kA9OhxIASeF+PLznEA
-# JqQxcPNpjltO7NDJErSn3QBfhoaI6MkT2nVJ/KIbxKEruNiqG0GKbrgjEeUUljcC
-# QDyA/GyGR08svNkgD3F190xXCCvJCzOQm563IBRxntV3wU5MVFkcpHJzhZW1rhvY
-# dDnWYQuaw5BDR8FogWosqYKdQQL8Y7AkxXHX1bjmnaJ5ElSSitIT6vK2it3zZ5TO
-# UJWTUih8+TB9MeqNZ1vYk7lTNq6vuCNl2Y5PROQQJmku0uBdlEbdHq4UFzsXr+sI
-# WaPbq74qDXcMX/BK0U8EpPYDWyQK9SYraFRcM5WAoKdgItFqNeR9Om4uoQwNE+eK
-# x7TwkNOvfO1t1XT3FU958dbLJIdghxJltodD3MlwZzrSbjx+6rj0BuuOSXEKnLjk
-# 454Y3FEwGMEbmTjLgSMwlRRNt4zqL11n04HuxzTANKOR0mXwo3JbqYJfyML+ifHn
-# 8Q8WXRsmVwVqj5bPeeaEM94ghdc2S0eFkS0hVby4ZgO659K4LtxXHbAmOg==
+# DQEJBDEiBCCz/J3b9tbPDTBI43EA/Ykb8Uyw2kHE4F8jiwtXLLWUADANBgkqhkiG
+# 9w0BAQEFAASCAgAduoubtRmARCZclV2z7Difr5sV9EHXPdjsAxaHqRaCWozJgzYA
+# 1jnXhCXn5P7IojE+HpHXCRQ7S4Uqy+7eOpqFtEvxhVTAezWyrHvpYoJTir95I2gE
+# DrenO+KQjKQUnzUYs883SgWAvrkEYU3WXo+f6MbcK93RS741cXEvGtJm/6h5TjaQ
+# rgjThgECFhlgF/zKNqeOhmZn3X910X3woE10vyeZMKK4+iHKAQRJU4I45Ob89H4v
+# 5OWNT1znlSMcqAf1RI9NEmxa2Tiwd2TOp48SShGp4mtRPtfi+Dnbxo0lCAzL+DVQ
+# tULElJMRN0cDjHlh7XJQthvzpMsNd8JPsxRkZPegdSOh5bIlH9OAC8Q0Zgb4/RGw
+# NVr0yRw5QzoznzAzl6/YJvS6Oz69aI5DCjgCUU09T2AGag1F5x6cCgR1ZC244clH
+# 8rUCe2Q66UAHv7GR/UHCmpo/6MgX45Nw4SH/VOzkq6vFypfKIYJW3NPtbyPQogHD
+# ULrB8qDzyEFSaB87rfoQwsdGYWxJ3EJLOMtiwZMbgzSQzid3fFdGVAt7NYj6Mw3g
+# 6xNXQrrogE8M3J6dc5O5SH+v0RchaCzPa0N+1yqZ0/FFb058nHwF/dGhD4Py8Wna
+# /9Aj4oCIhNTLqsf+KfrE+TuyZF8ttc3PpHysyfngVwlV7ow4MEn7d0jr8A==
 # SIG # End signature block

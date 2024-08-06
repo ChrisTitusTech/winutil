@@ -15,9 +15,12 @@ function Invoke-WinUtilNumLock {
             $value = 0
         }
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
-        $Path = "HKU:\.Default\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
-    } catch [System.Security.SecurityException] {
+        $HKUPath = "HKU:\.Default\Control Panel\Keyboard"
+        $HKCUPath = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $HKUPath -Name InitialKeyboardIndicators -Value $value
+        Set-ItemProperty -Path $HKCUPath -Name InitialKeyboardIndicators -Value $value
+    }
+    Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
     } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
