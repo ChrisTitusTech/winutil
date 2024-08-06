@@ -44,13 +44,14 @@ function Show-CustomDialog {
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = [Windows.Media.Brushes]::White
-    $backgroundColor = [Windows.Media.Brushes]::Black
+    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
+    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = [Windows.Media.Brushes]::Green
-    $buttonBackgroundColor = [Windows.Media.Brushes]::Black
-    $buttonForegroundColor = [Windows.Media.Brushes]::White
+    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
+    $logocolor = $sync.configs.themes.$ctttheme.ButtonBackgroundPressedColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -180,7 +181,7 @@ $cttLogoPath = @"
     # Add SVG path
     $svgPath = New-Object Windows.Shapes.Path
     $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
-    $svgPath.Fill = $foregroundColor  # Set fill color to white
+    $svgPath.Fill = $logocolor  # Set fill color to white
 
     # Add SVG path to Viewbox
     $viewbox.Child = $svgPath
@@ -192,7 +193,7 @@ $cttLogoPath = @"
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
     $winutilTextBlock.FontSize = $HeaderFontSize
-    $winutilTextBlock.Foreground = $foregroundColor
+    $winutilTextBlock.Foreground = $logocolor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
@@ -219,18 +220,19 @@ $cttLogoPath = @"
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+        
         $hyperlink.Add_Click({
             param($sender, $args)
             Start-Process $sender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $foregroundColor
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)
