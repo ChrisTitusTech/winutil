@@ -5,6 +5,30 @@
     This script is not meant to be used manually, it is called by the github action workflow.
 #>
 
+function Process-MultilineStrings {
+    param (
+        [Parameter(Mandatory, position=0)]
+        [string]$str
+    )
+
+    $lines = $str.Split("`r`n")
+    $count = $lines.Count
+
+    # Loop through every line, expect last line in the string
+    # We'll add it after the for loop
+    for ($i = 0; $i -lt ($count - 1); $i++) {
+         $line = $lines[$i]
+         $processedStr += $line -replace ('^\s*\\\\', '')
+         # Add the previously removed NewLine character by 'Split' Method
+         $processedStr += "`r`n"
+    }
+
+    # Add last line *without* a NewLine character.
+    $processedStr += $lines[$($count - 1)] -replace ('^\s*\\\\', '')
+
+    return $processedStr
+}
+
 function Update-Progress {
     param (
         [Parameter(Mandatory, position=0)]
@@ -23,8 +47,10 @@ function Update-Progress {
 
 function Load-Functions {
     param (
+        [Parameter(Mandatory, position=0)]
         [string]$dir
     )
+
     Get-ChildItem -Path $dir -Filter *.ps1 | ForEach-Object {
         $functionName = $_.BaseName
         $functionContent = Get-Content -Path $_.FullName -Raw
@@ -34,10 +60,16 @@ function Load-Functions {
 
 function Get-CalledFunctions {
     param (
-        [string]$scriptContent,
+        [Parameter(Mandatory, position=0)]
+        $scriptContent,
+
+        [Parameter(Mandatory, position=1)]
         [hashtable]$functionList,
+
+        [Parameter(Mandatory, position=2)]
         [ref]$processedFunctions
     )
+
     $calledFunctions = @()
     foreach ($functionName in $functionList.Keys) {
         if ($scriptContent -match "\b$functionName\b" -and -not $processedFunctions.Value.Contains($functionName)) {
@@ -54,8 +86,10 @@ function Get-CalledFunctions {
 
 function Get-AdditionalFunctionsFromToggle {
     param (
+        [Parameter(Mandatory, position=0)]
         [string]$buttonName
     )
+
     $invokeWpfToggleContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFToggle.ps1" -Raw
     $lines = $invokeWpfToggleContent -split "`r`n"
     foreach ($line in $lines) {
@@ -63,13 +97,14 @@ function Get-AdditionalFunctionsFromToggle {
             return $matches[1]
         }
     }
-    return $null
 }
 
 function Get-AdditionalFunctionsFromButton {
     param (
+        [Parameter(Mandatory, position=0)]
         [string]$buttonName
     )
+
     $invokeWpfButtonContent = Get-Content -Path "$publicFunctionsDir/Invoke-WPFButton.ps1" -Raw
     $lines = $invokeWpfButtonContent -split "`r`n"
     foreach ($line in $lines) {
@@ -77,12 +112,11 @@ function Get-AdditionalFunctionsFromButton {
             return $matches[1]
         }
     }
-    return $null
 }
 
 function Add-LinkAttribute {
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [PSCustomObject]$jsonObject
     )
 
@@ -111,27 +145,45 @@ function Add-LinkAttribute {
 
 function Generate-MarkdownFiles {
     param (
+        [Parameter(Mandatory, position=0)]
         [PSCustomObject]$data,
+
+        [Parameter(Mandatory, position=1)]
         [string]$outputDir,
+
+        [Parameter(Mandatory, position=2)]
         [string]$jsonFilePath,
+
+        [Parameter(Mandatory, position=3)]
         [string]$lastModified,
+
+        [Parameter(Mandatory, position=4)]
         [string]$type,
+
+        [Parameter(position=5)]
         [int]$initialProgress
     )
 
+    # TODO: Make the function reference generation better by making a Graph, so it highlights
+    #       Which function "depends" on which, and makes it clearer on a high-level for the reader
+    #       to understand the general structure.
+
     $totalItems = ($data.PSObject.Properties | Measure-Object).Count
     $progressIncrement = 10 / $totalItems
-    $currentProgress = $initialProgress
+    $currentProgress = [int]$initialProgress
 
     $tocEntries = @()
     $processedFiles = @()
     foreach ($itemName in $data.PSObject.Properties.Name) {
+        # Create Category Directory if needed.
         $itemDetails = $data.$itemName
         $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
         $categoryDir = "$outputDir/$category"
         if (-Not (Test-Path -Path $categoryDir)) {
             New-Item -ItemType Directory -Path $categoryDir | Out-Null
         }
+
+        # Create empty files with correct path
         $fullItemName = $itemName
         $displayName = $itemName -replace $itemnametocut, ''
         $filename = "$categoryDir/$displayName.md"
@@ -139,6 +191,9 @@ function Generate-MarkdownFiles {
         if (-Not (Test-Path -Path $filename)) {
             Set-Content -Path $filename -Value "" -Encoding utf8
         }
+
+        # Add the entry to 'tocEntries' so we can generate Table Of Content easily
+        # And add the Full FileName of entry
         $tocEntries += @{
             Category = $category
             Path = $relativePath
@@ -146,148 +201,248 @@ function Generate-MarkdownFiles {
             Type = $type
         }
         $processedFiles += (Get-Item $filename).FullName
-        $header = "# $([string]$itemDetails.Content)`r`n"
-        $lastUpdatedNotice = "Last Updated: $lastModified`r`n"
-        $autoupdatenotice = "
-!!! info
-     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**`r`n`r`n"
-        $description = "## Description`r`n`r`n$([string]$itemDetails.Description)`r`n"
-        $jsonContent = ($itemDetails | ConvertTo-Json -Depth 10).replace('\r\n',"`r`n")
-        $codeBlock = "
-<details>
-<summary>Preview Code</summary>
 
-``````json`r`n$jsonContent`r`n``````
-</details>
-"
+        $header = "# $([string]$itemDetails.Content)" + "`r`n"
+        $lastUpdatedNotice = "Last Updated: $lastModified" + "`r`n"
+        $autoupdatenotice = Process-MultilineStrings @"
+            \\!!! info
+            \\     The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
+"@
+
+        $description = Process-MultilineStrings @"
+            \\## Description
+            \\
+            \\$([string]$itemDetails.Description)
+"@
+
+        $jsonContent = ($itemDetails | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r', "`r")
+        $codeBlock = Process-MultilineStrings @"
+            \\<details>
+            \\<summary>Preview Code</summary>
+            \\
+            \\``````json
+            \\$jsonContent
+            \\``````
+            \\
+            \\</details>
+"@
+
+        # Clear the variable before continuing, will cause problems otherwise
         $FeaturesDocs = ""
-        if ($itemDetails.feature -ne $null) {
-            $FeaturesDocs += "## Features`r`n`r`n"
-            $FeaturesDocs += "Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.`r`n`r`n"
-            $FeaturesDocs += "You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).`r`n"
+        if ($itemDetails.feature) {
+            $FeaturesDocs += Process-MultilineStrings @"
+                \\## Features
+                \\
+                \\
+                \\Optional Windows Features are additional functionalities or components in the Windows operating system that users can choose to enable or disable based on their specific needs and preferences.
+                \\
+                \\
+                \\You can find information about Optional Windows Features on [Microsoft's Website for Optional Features](https://learn.microsoft.com/en-us/windows/client-management/client-tools/add-remove-hide-features?pivots=windows-11).
+                \\
+                \\
+"@
             if (($itemDetails.feature).Count -gt 1) {
-                $FeaturesDocs += "### Features to install`r`n"
+                $FeaturesDocs += "### Features to install" + "`r`n"
             } else {
-                $FeaturesDocs += "### Feature to install`r`n"
+                $FeaturesDocs += "### Feature to install" + "`r`n"
             }
             foreach ($feature in $itemDetails.feature) {
-                $FeaturesDocs += "- $($feature)`r`n"
+                $FeaturesDocs += "- $($feature)" + "`r`n"
             }
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $InvokeScript = ""
-        if ($itemDetails.InvokeScript -ne $null) {
+        if ($itemDetails.InvokeScript) {
             $InvokeScriptContent = $itemDetails.InvokeScript | Out-String
-            $InvokeScript = @"
-## Invoke Script
-
-``````powershell`r`n$InvokeScriptContent`r`n``````
+            $InvokeScript = Process-MultilineStrings @"
+                \\## Invoke Script
+                \\
+                \\``````powershell
+                \\$InvokeScriptContent
+                \\``````
 "@
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $UndoScript = ""
-        if ($itemDetails.UndoScript -ne $null) {
+        if ($itemDetails.UndoScript) {
             $UndoScriptContent = $itemDetails.UndoScript | Out-String
-            $UndoScript = @"
-## Undo Script
-
-``````powershell`r`n$UndoScriptContent`r`n``````
+            $UndoScript = Process-MultilineStrings @"
+                \\## Undo Script
+                \\
+                \\``````powershell
+                \\$UndoScriptContent
+                \\``````
 "@
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $ToggleScript = ""
-        if ($itemDetails.ToggleScript -ne $null) {
+        if ($itemDetails.ToggleScript) {
             $ToggleScriptContent = $itemDetails.ToggleScript | Out-String
-            $ToggleScript = @"
-## Toggle Script
-
-``````powershell`r`n$ToggleScriptContent`r`n``````
+            $ToggleScript = Process-MultilineStrings @"
+                \\## Toggle Script
+                \\
+                \\``````powershell
+                \\$ToggleScriptContent
+                \\``````
 "@
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $ButtonScript = ""
-        if ($itemDetails.ButtonScript -ne $null) {
+        if ($itemDetails.ButtonScript) {
             $ButtonScriptContent = $itemDetails.ButtonScript | Out-String
-            $ButtonScript = @"
-## Button Script
-
-``````powershell`r`n$ButtonScriptContent`r`n``````
+            $ButtonScript = Process-MultilineStrings @"
+                \\## Button Script
+                \\
+                \\``````powershell
+                \\$ButtonScriptContent
+                \\``````
 "@
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $FunctionDetails = ""
         $processedFunctions = New-Object 'System.Collections.Generic.HashSet[System.String]'
         $allScripts = @($itemDetails.InvokeScript, $itemDetails.UndoScript, $itemDetails.ToggleScript, $itemDetails.ButtonScript)
         foreach ($script in $allScripts) {
-            if ($script -ne $null) {
+            if ($script) {
                 $calledFunctions = Get-CalledFunctions -scriptContent $script -functionList $functions -processedFunctions ([ref]$processedFunctions)
                 foreach ($functionName in $calledFunctions) {
                     if ($functions.ContainsKey($functionName)) {
-                        $FunctionDetails += "## Function: $functionName`r`n"
-                        $FunctionDetails += "``````powershell`r`n$($functions[$functionName])`r`n``````
-`r`n"
+                        $FunctionDetails += Process-MultilineStrings @"
+                            \\## Function: $functionName
+                            \\
+                            \\``````powershell
+                            \\$($functions[$functionName])
+                            \\``````
+                            \\
+"@
                     }
                 }
             }
         }
+
         $additionalFunctionToggle = Get-AdditionalFunctionsFromToggle -buttonName $fullItemName
-        if ($additionalFunctionToggle -ne $null) {
+        if ($additionalFunctionToggle) {
             $additionalFunctionNameToggle = "Invoke-$additionalFunctionToggle"
             if ($functions.ContainsKey($additionalFunctionNameToggle) -and -not $processedFunctions.Contains($additionalFunctionNameToggle)) {
-                $FunctionDetails += "## Function: $additionalFunctionNameToggle`r`n"
-                $FunctionDetails += "``````powershell`r`n$($functions[$additionalFunctionNameToggle])`r`n``````
-`r`n"
+                $FunctionDetails += Process-MultilineStrings @"
+                    \\## Function: $additionalFunctionNameToggle
+                    \\
+                    \\``````powershell
+                    \\$($functions[$additionalFunctionNameToggle])
+                    \\``````
+                    \\
+"@
                 $processedFunctions.Add($additionalFunctionNameToggle)
             }
         }
+
         $additionalFunctionButton = Get-AdditionalFunctionsFromButton -buttonName $fullItemName
-        if ($additionalFunctionButton -ne $null) {
+        if ($additionalFunctionButton) {
             $additionalFunctionNameButton = "Invoke-$additionalFunctionButton"
             if ($functions.ContainsKey($additionalFunctionNameButton) -and -not $processedFunctions.Contains($additionalFunctionNameButton)) {
-                $FunctionDetails += "## Function: $additionalFunctionNameButton`r`n"
-                $FunctionDetails += "``````powershell`r`n$($functions[$additionalFunctionNameButton])`r`n``````
-`r`n"
+                $FunctionDetails += Process-MultilineStrings @"
+                    \\## Function: $additionalFunctionNameButton
+                    \\
+                    \\``````powershell
+                    \\$($functions[$additionalFunctionNameButton])
+                    \\``````
+                    \\
+"@
                 $processedFunctions.Add($additionalFunctionNameButton)
             }
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $registryDocs = ""
-        if ($itemDetails.registry -ne $null) {
-            $registryDocs += "## Registry Changes`r`n"
-            $registryDocs += "Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.`r`n`r`n"
-            $registryDocs += "You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).`r`n"
+        if ($itemDetails.registry) {
+            $registryDocs += Process-MultilineStrings @"
+                \\## Registry Changes
+                \\Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
+                \\
+                \\
+                \\You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+                \\
+                \\
+"@
             foreach ($regEntry in $itemDetails.registry) {
-                $registryDocs += "### Registry Key: $($regEntry.Name)`r`n"
-                $registryDocs += "**Type:** $($regEntry.Type)`r`n`r`n"
-                $registryDocs += "**Original Value:** $($regEntry.OriginalValue)`r`n`r`n"
-                $registryDocs += "**New Value:** $($regEntry.Value)`r`n`r`n"
+                $registryDocs += Process-MultilineStrings @"
+                    \\### Registry Key: $($regEntry.Name)
+                    \\
+                    \\**Type:** $($regEntry.Type)
+                    \\
+                    \\**Original Value:** $($regEntry.OriginalValue)
+                    \\
+                    \\**New Value:** $($regEntry.Value)
+                    \\
+                    \\
+"@
             }
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $serviceDocs = ""
-        if ($itemDetails.service -ne $null) {
-            $serviceDocs += "## Service Changes`r`n"
-            $serviceDocs += "Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.`r`n`r`n"
-            $serviceDocs += "You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).`r`n"
+        if ($itemDetails.service) {
+            $serviceDocs = Process-MultilineStrings @"
+                \\## Service Changes
+                \\
+                \\Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
+                \\
+                \\You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+                \\
+                \\
+"@
             foreach ($service in $itemDetails.service) {
-                $serviceDocs += "### Service Name: $($service.Name)`r`n"
-                $serviceDocs += "**Startup Type:** $($service.StartupType)`r`n`r`n"
-                $serviceDocs += "**Original Type:** $($service.OriginalType)`r`n`r`n"
+                $serviceDocs += Process-MultilineStrings @"
+                    \\### Service Name: $($service.Name)
+                    \\
+                    \\**Startup Type:** $($service.StartupType)
+                    \\
+                    \\**Original Type:** $($service.OriginalType)
+                    \\
+                    \\
+"@
             }
         }
+
+        # Clear the variable before continuing, will cause problems otherwise
         $scheduledTaskDocs = ""
-        if ($itemDetails.ScheduledTask -ne $null) {
-            $scheduledTaskDocs += "## Scheduled Task Changes`r`n"
-            $scheduledTaskDocs += "Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.`r`n`r`n"
-            $scheduledTaskDocs += "You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).`r`n"
+        if ($itemDetails.ScheduledTask) {
+            $scheduledTaskDocs = Process-MultilineStrings @"
+                \\## Scheduled Task Changes
+                \\
+                \\Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.
+                \\
+                \\
+                \\You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).
+                \\
+                \\
+"@
             foreach ($task in $itemDetails.ScheduledTask) {
-                $scheduledTaskDocs += "### Task Name: $($task.Name)`r`n"
-                $scheduledTaskDocs += "**State:** $($task.State)`r`n`r`n"
-                $scheduledTaskDocs += "**Original State:** $($task.OriginalState)`r`n`r`n"
+                $scheduledTaskDocs += Process-MultilineStrings @"
+                    \\### Task Name: $($task.Name)
+                    \\
+                    \\**State:** $($task.State)
+                    \\
+                    \\**Original State:** $($task.OriginalState)
+                    \\
+                    \\
+"@
             }
         }
-        $jsonLink = "`r`n[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)`r`n"
+
+        $jsonLink = "[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/$jsonFilePath)"
         $customContentStartTag = "<!-- BEGIN CUSTOM CONTENT -->"
         $customContentEndTag = "<!-- END CUSTOM CONTENT -->"
         $secondCustomContentStartTag = "<!-- BEGIN SECOND CUSTOM CONTENT -->"
         $secondCustomContentEndTag = "<!-- END SECOND CUSTOM CONTENT -->"
-        $customContent = ""
-        $secondCustomContent = ""
-        if (Test-Path -Path $filename) {
-            $existingContent = Get-Content -Path $filename -Raw
+
+        if (Test-Path -Path "$filename") {
+            $existingContent = Get-Content -Path "$filename" -Raw
             $customContentPattern = "(?s)$customContentStartTag(.*?)$customContentEndTag"
             $secondCustomContentPattern = "(?s)$secondCustomContentStartTag(.*?)$secondCustomContentEndTag"
             if ($existingContent -match $customContentPattern) {
@@ -297,52 +452,49 @@ function Generate-MarkdownFiles {
                 $secondCustomContent = $matches[1].Trim()
             }
         }
-        Set-Content -Path $filename -Value $header -Encoding utf8
-        Add-Content -Path $filename -Value $lastUpdatedNotice -Encoding utf8
-        Add-Content -Path $filename -Value $autoupdatenotice -Encoding utf8
-        if ($itemDetails.Description) {
-            Add-Content -Path $filename -Value $description -Encoding utf8
-        }
-        Add-Content -Path $filename -Value $customContentStartTag -Encoding utf8
-        Add-Content -Path $filename -Value $customContent -Encoding utf8
-        Add-Content -Path $filename -Value $customContentEndTag -Encoding utf8
-        Add-Content -Path $filename -Value $codeBlock -Encoding utf8
-        if ($FeaturesDocs) {
-            Add-Content -Path $filename -Value $FeaturesDocs -Encoding utf8
-        }
-        if ($itemDetails.InvokeScript) {
-            Add-Content -Path $filename -Value $InvokeScript -Encoding utf8
-        }
-        if ($itemDetails.UndoScript) {
-            Add-Content -Path $filename -Value $UndoScript -Encoding utf8
-        }
-        if ($itemDetails.ToggleScript) {
-            Add-Content -Path $filename -Value $ToggleScript -Encoding utf8
-        }
-        if ($itemDetails.ButtonScript) {
-            Add-Content -Path $filename -Value $ButtonScript -Encoding utf8
-        }
-        if ($FunctionDetails) {
-            Add-Content -Path $filename -Value $FunctionDetails -Encoding utf8
-        }
-        if ($itemDetails.registry) {
-            Add-Content -Path $filename -Value $registryDocs -Encoding utf8
-        }
-        if ($itemDetails.service) {
-            Add-Content -Path $filename -Value $serviceDocs -Encoding utf8
-        }
-        if ($itemDetails.ScheduledTask) {
-            Add-Content -Path $filename -Value $scheduledTaskDocs -Encoding utf8
-        }
-        Add-Content -Path $filename -Value $secondCustomContentStartTag -Encoding utf8
-        Add-Content -Path $filename -Value $secondCustomContent -Encoding utf8
-        Add-Content -Path $filename -Value $secondCustomContentEndTag -Encoding utf8
-        Add-Content -Path $filename -Value $jsonLink -Encoding utf8
 
+        $fileContent = Process-MultilineStrings @"
+            \\$header
+            \\$lastUpdatedNotice
+            \\
+            \\$autoupdatenotice
+            \\$( if ($itemDetails.Description) { $description } )
+            \\
+            \\$customContentStartTag
+            \\$customContent
+            \\$customContentEndTag
+            \\
+            \\$codeBlock
+            \\
+            \\$(
+               if ($FeaturesDocs) { $FeaturesDocs + "`r`n" }
+               if ($itemDetails.InvokeScript) { $InvokeScript + "`r`n" }
+               if ($itemDetails.UndoScript) { $UndoScript + "`r`n" }
+               if ($itemDetails.ToggleScript) { $ToggleScript + "`r`n" }
+               if ($itemDetails.ButtonScript) { $ButtonScript + "`r`n" }
+               if ($FunctionDetails) { $FunctionDetails + "`r`n" }
+               if ($itemDetails.registry) { $registryDocs + "`r`n" }
+               if ($itemDetails.service) { $serviceDocs + "`r`n" }
+               if ($itemDetails.ScheduledTask) { $scheduledTaskDocs + "`r`n" }
+            )
+            \\$secondCustomContentStartTag
+            \\$secondCustomContent
+            \\$secondCustomContentEndTag
+            \\
+            \\
+            \\$jsonLink
+"@
+
+        Set-Content -Path "$filename" -Value "$fileContent" -Encoding utf8
+
+        # TODO: For whatever reason, some headers have a space before them,
+        #       so as a temporary fix.. we'll remove these it so mkdocs can render properly
+        (Get-Content -Raw -Path "$filename").Replace(' ##', '##') | Set-Content "$filename"
         $currentProgress += $progressIncrement
         $roundedProgress = [math]::Round($currentProgress)
         Update-Progress -StatusMessage "Generating content for documentation" -Percent $roundedProgress
     }
+
     return [PSCustomObject]@{
         TocEntries = $tocEntries
         ProcessedFiles = $processedFiles
@@ -396,7 +548,7 @@ function Add-LinkAttributeToJson {
         $itemName = $item.Name
         $itemDetails = $item.Value
         $category = $itemDetails.category -replace '[^a-zA-Z0-9]', '-'
-        $displayName = $itemName -replace 'WPF(WinUtil|Toggle|Feature(s)?|Tweaks?|Panel|Fix(es)?)', ''
+        $displayName = $itemName -replace "$itemnametocut", ''
         $relativePath = "$outputDir/$category/$displayName" -replace '^docs/', ''
         $docLink = "https://christitustech.github.io/winutil/$relativePath"
         $jsonData.$itemName.link = $docLink
@@ -406,7 +558,7 @@ function Add-LinkAttributeToJson {
         Update-Progress -StatusMessage "Adding documentation links to JSON" -Percent $roundedProgress
     }
 
-    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r',"`r")
+    $jsonText = ($jsonData | ConvertTo-Json -Depth 10).replace('\n',"`n").replace('\r', "`r")
     Set-Content -Path $jsonFilePath -Value ($jsonText) -Encoding utf8
 }
 
@@ -454,7 +606,7 @@ foreach ($jsonPath in $jsonPaths) {
     Add-LinkAttribute -jsonObject $json
 
     # Convert back to JSON with the original formatting
-    $jsonString = ($json | ConvertTo-Json -Depth 100).replace('\n',"`n").replace('\r',"`r")
+    $jsonString = ($json | ConvertTo-Json -Depth 100).replace('\n',"`n").replace('\r', "`r")
 
     # Save the JSON back to the file
     Set-Content -Path $jsonPath -Value $jsonString
@@ -469,16 +621,24 @@ $featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutp
 
 Update-Progress "Generating table of contents" 80
 $allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
-$tweakEntries = $allTocEntries | Where-Object { $_.Type -eq 'tweak' } | Sort-Object Category, Name
-$featureEntries = $allTocEntries | Where-Object { $_.Type -eq 'feature' } | Sort-Object Category, Name
+$tweakEntries = ($allTocEntries).where{ $_.Type -eq 'tweak' } | Sort-Object Category, Name
+$featureEntries = ($allTocEntries).where{ $_.Type -eq 'feature' } | Sort-Object Category, Name
 
-$indexContent = "# Table of Contents`r`n`r`n"
-$indexContent += "## Tweaks`r`n`r`n"
-$indexContent += Generate-TypeSectionContent $tweakEntries
-$indexContent += "`r`n"
-$indexContent += "## Features`r`n`r`n"
-$indexContent += Generate-TypeSectionContent $featureEntries
-$indexContent += "`r`n"
+$indexContent += Process-MultilineStrings @"
+    \\# Table of Contents
+    \\
+    \\
+    \\## Tweaks
+    \\
+    \\
+"@
+$indexContent += $(Generate-TypeSectionContent $tweakEntries) + "`r`n"
+$indexContent += Process-MultilineStrings @"
+    \\## Features
+    \\
+    \\
+"@
+$indexContent += $(Generate-TypeSectionContent $featureEntries) + "`r`n"
 Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
 
 Update-Progress "Process Completed" 100
