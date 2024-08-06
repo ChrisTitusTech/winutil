@@ -5308,7 +5308,6 @@ function Invoke-WPFRunspace {
         [System.GC]::Collect()
     }
 }
-
 function Invoke-WPFShortcut {
     <#
 
@@ -5342,7 +5341,6 @@ function Invoke-WPFShortcut {
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
-
         }
     }
 
@@ -5362,8 +5360,8 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }
@@ -16050,8 +16048,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyt4EvMfEjVNe8
-# urxQYj3hCkundoN52rMnvwiaTV90v6CCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCsRYZ9NEOFa/hQ
+# GlWobWOLMJLvIavGfP/nsHwfd0nJ96CCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -16123,16 +16121,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCCzFlvJFMfBufNEm5L7izu0HhUObxHJ9FkvD8khdG5xeTANBgkqhkiG
-# 9w0BAQEFAASCAgBBYHR4QXcKEvMJxIk+XPV5Z1pvKQMf6xKP9ezvvgqoKSk4/Dfp
-# hrF+6MD+XJp+QfChCG7cLOOkIATEIr6rLH+5KicLGk1qmivE4ti2cH+1REAnvJ78
-# Oj5c1zklzm1Kmb5WMCQeL11Zy1C/TGCx66MvZaLX6b1YHyoy3OrsH5RGBFdrc7A5
-# ZwNFQfvxlQEy81oeQxnhaGlz2rcXttL5HjmRpqebTckDChX5lBdWPzgegfsvN5m+
-# /fLSDbrhXNVuwOTM+oxfNFKPjpOFlSXIT01jw6Zmy4xuR410ZLcuuJ9kWsrTuaFu
-# 8DNh1b8LRsv1M0tEHtps3OPITsSnHKOi2ADTEMZEE+1xkdA3HaHi/eS1lfKWVY7w
-# 1RjsEKL0S/4H6Z+oE9VLMNOKzT1K/IOf/zrB7iUoo+ZEEcE2kmBfuDo67Hj7HPXj
-# lcM5P67x33DmpALEm73tc+aiZbkxgz0qIqwdwtGncjI3pXcoNddg7SBeZ6d/qUli
-# wmFe5FTMsnrptp7EtPoCkYAzBpl1tR5/2256Wko4MGFVWC6k3NT/l4KQqGOjQQ+0
-# xm2oFn0sCOdmIapflb4USqOve3ADpZURUsR82QesFCrbPjeleGZbNe/XdrZul2b4
-# sgS0N+VRuGCfurYaC/63/EFR/5pEBN+631mHej3p4/V/ehyxctl3PKqnJw==
+# DQEJBDEiBCAlq0vPrqaPVPxSz6SjnupsBmplysDbN6HIiao7+Q+9ajANBgkqhkiG
+# 9w0BAQEFAASCAgBFbRfIOMyvk7ADsgm7EO0+g6SUKvZTxQc8jM/ii+LWgt4wtTLr
+# XzcODD0418pCHUdubMgh82lfJlpKqrkzgLpqaa+qb4gyiBDUv/grqeNs8M5PON6V
+# Zram8xxxCKPzTnzcMGmLtWAjTcTDoofymDFVPskPUTqFht+SSXrpZRRzeYya5hJh
+# nG2TwqDjJdWpJ9PJTaMX1lBdqNiKFPljsN5BLNYb2uz2p65oRg42Q9Tf+Sc+YKVE
+# arGuX2hNTJLQi4ZHHioJMOi9+duMKBbezVrCmeaQzJ78/QZ0Ea0QqyL4O2NBf3px
+# FJ0BL6jbY+4EousNxiSuurJep8mSqSMJFMOwm9ptIkGEl+ndCOlnoEzcQjyMKaLy
+# A+NLwN8qHrdwCkSV9Z3fzdzu9NGz+ScrH5GHhSjBpeaJpeQLQoRVGTxCdu4xTpTF
+# MVaQHrslDMEPct6D7aGNOPUK0LJFYhUyNpq38jeanrOH+hHlUlNpFiCRxKtGD2RZ
+# nrnssWdQWu8B5x/W18iwjyN8YQeRuHThZsvAIiu9KTgOuxACo1jvbT8bT7KE0fU0
+# oRbjDHTWw9j6U/vc/uDGtxAihbtNLfG2Af2pgfuqgC60gPAh6b9auzBlliSw2lSi
+# pWOUFLDLNRxgV1Vb1Ikh95nbHgXhjMHYl1a18t20d/0L+DDdPHkjqgyQ1Q==
 # SIG # End signature block
