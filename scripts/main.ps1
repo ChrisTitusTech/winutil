@@ -11,7 +11,7 @@ $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
 $functions = (Get-ChildItem function:\).where{$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
-foreach ($function in $functions){
+foreach ($function in $functions) {
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
 
@@ -55,12 +55,10 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
-    }
-    else {
+    } else {
         $ctttheme = 'Dark'
     }
-}
-else {
+} else {
     $ctttheme = 'Classic'
 }
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
@@ -90,9 +88,9 @@ try {
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
+    if($sync.$psitem) {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*"){
+                -and $sync["$psitem"].Name -like "WPFToggle*") {
             $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
 
             $sync["$psitem"].Add_Click({
@@ -101,14 +99,14 @@ $sync.keys | ForEach-Object {
             })
         }
 
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFButton $Sender.name
             })
         }
 
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFButton $Sender.name
@@ -134,7 +132,7 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    try{
+    try {
         $oldProgressPreference = $ProgressPreference
         $ProgressPreference = "SilentlyContinue"
         $sync.ConfigLoaded = $False
@@ -179,8 +177,7 @@ $commonKeyEvents = {
         return
     }
 
-    if ($_.Key -eq "Escape")
-    {
+    if ($_.Key -eq "Escape") {
         $sync.SearchBar.SelectAll()
         $sync.SearchBar.Text = ""
         $sync.SearchBarClearButton.Visibility = "Collapsed"
@@ -188,8 +185,7 @@ $commonKeyEvents = {
     }
 
     # don't ask, I know what I'm doing, just go...
-    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
-    {
+    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl")) {
         $this.Close()
     }
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
@@ -232,12 +228,9 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal)
-    {
+    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
         $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
-    }
-    else
-    {
+    } else {
         $sync["Form"].WindowState = [Windows.WindowState]::Normal;
     }
 })
@@ -283,11 +276,11 @@ Add-Type @"
 
    foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
         # Check if the process's MainWindowHandle is valid
-    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
+        if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
-	    } else {
-        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+        } else {
+            Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
 
         }
     }
@@ -328,9 +321,9 @@ Add-Type @"
 
     # maybe this is not the best place to load and execute config file?
     # maybe community can help?
-    if ($PARAM_CONFIG){
+    if ($PARAM_CONFIG) {
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        if ($PARAM_RUN){
+        if ($PARAM_RUN) {
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
@@ -377,8 +370,7 @@ $sync["SearchBar"].Add_TextChanged({
 
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
-    }
-    else {
+    } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
     }
 
@@ -404,8 +396,7 @@ $sync["SearchBar"].Add_TextChanged({
             if ($textBlock -ne $null) {
                 $textBlock.Visibility = "Visible"
             }
-        }
-        else {
+        } else {
              $CheckBox.Value.Visibility = "Collapsed"
             # Set the corresponding text block visibility
             if ($textBlock -ne $null) {
@@ -415,17 +406,16 @@ $sync["SearchBar"].Add_TextChanged({
     }
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
-    foreach ($category in $activeCategories){
+    foreach ($category in $activeCategories) {
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Visible"
     }
-    if ($activeCategories){
+    if ($activeCategories) {
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
-    }
-    else{
+    } else {
         $inactiveCategories = $allCategories
     }
-    foreach ($category in $inactiveCategories){
+    foreach ($category in $inactiveCategories) {
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
 })
@@ -471,8 +461,7 @@ $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
     if ($sync["SettingsPopup"].IsOpen) {
         $sync["SettingsPopup"].IsOpen = $false
-    }
-    else {
+    } else {
         $sync["SettingsPopup"].IsOpen = $true
     }
     $_.Handled = $false
@@ -528,8 +517,7 @@ $sync["SponsorMenuItem"].Add_Click({
 
         # Append the sponsors to the authorInfo
         $sponsors | ForEach-Object { $authorInfo += "$_`n" }
-    }
-    catch {
+    } catch {
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 

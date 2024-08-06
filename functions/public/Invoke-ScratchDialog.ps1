@@ -18,8 +18,7 @@ function Invoke-ScratchDialog {
     $filePath = $Dialog.SelectedPath
         Write-Host "No ISO is chosen+  $filePath"
 
-    if ([string]::IsNullOrEmpty($filePath))
-    {
+    if ([string]::IsNullOrEmpty($filePath)) {
         Write-Host "No Folder had chosen"
         return
     }

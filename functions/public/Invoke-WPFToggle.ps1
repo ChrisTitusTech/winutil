@@ -17,7 +17,7 @@ function Invoke-WPFToggle {
 
     $ToggleStatus = (Get-WinUtilToggleStatus $Button)
 
-    Switch -Wildcard ($Button){
+    Switch -Wildcard ($Button) {
 
         "WPFToggleDarkMode" {Invoke-WinUtilDarkMode $ToggleStatus}
         "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $ToggleStatus}

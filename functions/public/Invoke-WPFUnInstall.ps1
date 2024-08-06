@@ -6,7 +6,7 @@ function Invoke-WPFUnInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFUnInstall] Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -27,12 +27,12 @@ function Invoke-WPFUnInstall {
 
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
-    if($confirm -eq "No"){return}
+    if($confirm -eq "No") {return}
 
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1){
+        if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -51,14 +51,14 @@ function Invoke-WPFUnInstall {
             }
             return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
-        try{
+        try {
             $sync.ProcessRunning = $true
 
             # Install all selected programs in new window
-            if($packagesWinget.Count -gt 0){
+            if($packagesWinget.Count -gt 0) {
                 Invoke-WinUtilWingetProgram -Action Uninstall -Programs $packagesWinget
             }
-            if($packagesChoco.Count -gt 0){
+            if($packagesChoco.Count -gt 0) {
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
@@ -66,8 +66,7 @@ function Invoke-WPFUnInstall {
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
-        }
-        Catch {
+        } catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="

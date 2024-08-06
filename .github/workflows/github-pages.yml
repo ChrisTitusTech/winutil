@@ -2,7 +2,7 @@ name: GitHub Pages Deploy
 on:
   release:
     types: [published, prereleased]
-  workflow_dispatch: 
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:

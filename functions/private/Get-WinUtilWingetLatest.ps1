@@ -8,7 +8,7 @@ function Get-WinUtilWingetLatest {
     # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function
     $PreviousProgressPreference = $ProgressPreference
     $ProgressPreference = "silentlyContinue"
-    Try{
+    try {
         # Grabs the latest release of Winget from the Github API for the install process.
         $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
         $latestVersion = $response.tag_name #Stores version number of latest release.
@@ -19,8 +19,7 @@ function Get-WinUtilWingetLatest {
         Invoke-WebRequest -Uri $licenseWingetUrl -OutFile $ENV:TEMP\License1.xml
         # The only pain is that the msixbundle for winget-cli is 246MB. In some situations this can take a bit, with slower connections.
         Invoke-WebRequest -Uri $assetUrl -OutFile $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle
-    }
-    Catch{
+    } catch {
         throw [WingetFailedInstall]::new('Failed to get latest Winget release and license')
     }
     $ProgressPreference = $PreviousProgressPreference

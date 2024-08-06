@@ -30,12 +30,12 @@ function Test-WinUtilPackageManager {
         } catch {
             Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
             $wingetExists = $false
-	}
+    }
 
         # If Winget is available, Parse it's Version and give proper information to Terminal Output.
-	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+    # If it isn't available, the return of this funtion will be "not-installed", indicating that
         # Winget isn't installed/available on The System.
-	if ($wingetExists) {
+    if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
@@ -65,8 +65,7 @@ function Test-WinUtilPackageManager {
             if (!$wingetOutdated) {
                 Write-Host "    - Winget is Up to Date" -ForegroundColor Green
                 $status = "installed"
-            }
-            else {
+            } else {
                 Write-Host "    - Winget is Out of Date" -ForegroundColor Red
                 $status = "outdated"
             }
