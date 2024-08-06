@@ -1,6 +1,6 @@
 # Remove OneDrive
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -28,17 +28,16 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
-      if (Test-Path $regPath){
+      if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
-      }
-      else{
+      } else {
           Write-Host \"Onedrive dosn't seem to be installed anymore\" -ForegroundColor Red
           return
       }
       # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)){
+      if (-not (Test-Path $regPath)) {
       Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
       Start-Process -FilePath powershell -ArgumentList \"robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\\' /mov /e /xj\" -NoNewWindow -Wait
 
@@ -100,8 +99,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
       Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
       Start-Sleep 5
-      }
-      else{
+      } else {
       Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
       }
       "
@@ -125,17 +123,16 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       $OneDrivePath = $($env:OneDrive)
       Write-Host "Removing OneDrive"
       $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe"
-      if (Test-Path $regPath){
+      if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue "$regPath" -Name "UninstallString"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(" ")
           Start-Process -FilePath $OneDriveExe -ArgumentList "$OneDriveArgs /silent" -NoNewWindow -Wait
-      }
-      else{
+      } else {
           Write-Host "Onedrive dosn't seem to be installed anymore" -ForegroundColor Red
           return
       }
       # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)){
+      if (-not (Test-Path $regPath)) {
       Write-Host "Copy downloaded Files from the OneDrive Folder to Root UserProfile"
       Start-Process -FilePath powershell -ArgumentList "robocopy '$($OneDrivePath)' '$($env:USERPROFILE.TrimEnd())\' /mov /e /xj" -NoNewWindow -Wait
 
@@ -197,11 +194,10 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       Write-Host "Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder."
       Write-Host "If there are Files missing afterwards, please Login to Onedrive.com and Download them manually" -ForegroundColor Yellow
       Start-Sleep 5
-      }
-      else{
+      } else {
       Write-Host "Something went Wrong during the Unistallation of OneDrive" -ForegroundColor Red
       }
-      
+
 
 ```
 ## Undo Script
@@ -210,7 +206,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 
       Write-Host "Install OneDrive"
       Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive " -NoNewWindow -Wait
-      
+
 
 ```
 

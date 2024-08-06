@@ -1,6 +1,6 @@
 # Remove ALL MS Store Apps - NOT RECOMMENDED
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -56,11 +56,10 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
     "microsoft.windowscommunicationsapps",
     "Microsoft.WindowsFeedbackHub",
     "Microsoft.WindowsMaps",
-    "Microsoft.WindowsPhone",
+    "Microsoft.YourPhone",
     "Microsoft.WindowsSoundRecorder",
     "Microsoft.XboxApp",
     "Microsoft.ConnectivityStore",
-    "Microsoft.CommsPhone",
     "Microsoft.ScreenSketch",
     "Microsoft.Xbox.TCUI",
     "Microsoft.XboxGameOverlay",
@@ -177,7 +176,7 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
             $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
             $proc.WaitForExit()
         }
-      
+
 
 ```
 

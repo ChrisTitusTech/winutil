@@ -38,7 +38,7 @@ theme:
 
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
-      scheme: default 
+      scheme: default
       accent: blue
       toggle:
         icon: material/brightness-7

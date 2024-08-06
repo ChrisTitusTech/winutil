@@ -1,6 +1,6 @@
 # Sound Settings
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -42,7 +42,7 @@ function Invoke-WPFControlPanel {
     #>
     param($Panel)
 
-    switch ($Panel){
+    switch ($Panel) {
         "WPFPanelcontrol" {cmd /c control}
         "WPFPanelnetwork" {cmd /c ncpa.cpl}
         "WPFPanelpower"   {cmd /c powercfg.cpl}
@@ -52,6 +52,7 @@ function Invoke-WPFControlPanel {
         "WPFPaneluser"    {cmd /c "control userpasswords2"}
     }
 }
+
 ```
 
 

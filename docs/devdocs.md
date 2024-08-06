@@ -25,6 +25,7 @@
 
 - [Change Windows Terminal default: PowerShell 5 -> PowerShell 7](dev/tweaks/Essential-Tweaks/Powershell7.md)
 - [Create Restore Point](dev/tweaks/Essential-Tweaks/RestorePoint.md)
+- [Debloat Edge](dev/tweaks/Essential-Tweaks/EdgeDebloat.md)
 - [Delete Temporary Files](dev/tweaks/Essential-Tweaks/DeleteTempFiles.md)
 - [Disable Activity History](dev/tweaks/Essential-Tweaks/AH.md)
 - [Disable ConsumerFeatures](dev/tweaks/Essential-Tweaks/ConsumerFeatures.md)
@@ -61,7 +62,7 @@
 - [DNS](dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFchangedns.md)
 - [Remove ALL MS Store Apps - NOT RECOMMENDED](dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat.md)
 - [Remove Home and Gallery from explorer](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery.md)
-- [Remove Microsoft Edge - NOT RECOMMENDED](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge.md)
+- [Remove Microsoft Edge](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge.md)
 - [Remove OneDrive](dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive.md)
 - [Run OO Shutup 10](dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFOOSUbutton.md)
 - [Run Tweaks](dev/tweaks/z--Advanced-Tweaks---CAUTION/button.md)

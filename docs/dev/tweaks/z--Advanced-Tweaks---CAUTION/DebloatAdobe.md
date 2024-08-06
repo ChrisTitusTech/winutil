@@ -1,6 +1,6 @@
 # Adobe Debloat
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -220,7 +220,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
       CCStopper
       AcrobatUpdates
-      
+
 
 ```
 ## Undo Script
@@ -262,7 +262,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
       RestoreCCService
       AcrobatUpdates
-      
+
 
 ```
 ## Service Changes

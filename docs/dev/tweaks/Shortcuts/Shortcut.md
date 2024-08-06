@@ -1,6 +1,6 @@
 # Create WinUtil Shortcut
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -31,7 +31,6 @@ Last Updated: 2024-08-05
 ## Function: Invoke-WPFShortcut
 
 ```powershell
-
 function Invoke-WPFShortcut {
     <#
 
@@ -55,17 +54,15 @@ function Invoke-WPFShortcut {
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
-            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
                 $shell = "pwsh.exe"
-            }
-            else{
+            } else {
                 $shell = "powershell.exe"
             }
 
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
-
         }
     }
 
@@ -85,8 +82,8 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }

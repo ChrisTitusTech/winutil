@@ -1,6 +1,6 @@
 # Reset Windows Update
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -99,7 +99,7 @@ function Invoke-WPFFixesUpdate {
                 ).Trim()} catch {0}) `
                 <# And the current percentage is greater than the previous one #>`
                 -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
@@ -126,7 +126,7 @@ function Invoke-WPFFixesUpdate {
                         ) -join ''
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
@@ -145,7 +145,7 @@ function Invoke-WPFFixesUpdate {
                     [int]($_ -replace "\[" -replace "=" -replace " " -replace "%" -replace "\]")
                 } catch {0}) `
                 -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
@@ -170,7 +170,7 @@ function Invoke-WPFFixesUpdate {
                         ) -join ''
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
@@ -323,6 +323,7 @@ function Invoke-WPFFixesUpdate {
     Write-Progress -Id 9 -Activity "Starting Windows Update Services" -Completed
     Write-Progress -Id 10 -Activity "Forcing discovery" -Completed
 }
+
 ```
 
 

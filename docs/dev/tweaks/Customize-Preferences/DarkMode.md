@@ -1,6 +1,6 @@
 # Dark Theme for Windows
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -44,12 +44,11 @@ Function Invoke-WinUtilDarkMode {
 
     #>
     Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
+    try {
+        if ($DarkMoveEnabled -eq $false) {
             Write-Host "Enabling Dark Mode"
             $DarkMoveValue = 0
-        }
-        else {
+        } else {
             Write-Host "Disabling Dark Mode"
             $DarkMoveValue = 1
         }
@@ -57,18 +56,16 @@ Function Invoke-WinUtilDarkMode {
         $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
 }
+
 ```
 
 

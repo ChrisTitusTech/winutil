@@ -1,6 +1,6 @@
 # Remove Adobe Creative Cloud
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info

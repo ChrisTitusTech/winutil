@@ -1,6 +1,6 @@
 # WinGet Reinstall
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -45,6 +45,7 @@ function Invoke-WPFFixesWinget {
     Start-Process -FilePath "choco" -ArgumentList "install winget -y --force" -NoNewWindow -Wait
 
 }
+
 ```
 
 

@@ -1740,9 +1740,10 @@
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
   },
-  "WPFTweaksConsumerFeatures":{
+  "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
     "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
     "category": "Essential Tweaks",
@@ -2560,7 +2561,7 @@
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
-        "
+      "
          Uninstall-WinUtilEdgeBrowser
         "
     ],

@@ -1,6 +1,6 @@
 # Change Windows Terminal default: PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -78,13 +78,13 @@ function Invoke-WPFTweakPS7{
         }
     }
     # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
-    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)){
+    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)) {
         Write-Host "Windows Terminal not installed. Skipping Terminal preference"
         return
     }
     # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code)
     $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    if (-not (Test-Path -Path $settingsPath)){
+    if (-not (Test-Path -Path $settingsPath)) {
         Write-Host "Windows Terminal Settings file not found at $settingsPath"
         return
     }
@@ -125,9 +125,8 @@ Function Invoke-WinUtilWingetProgram {
     #>
 
     param(
-        [Parameter(Mandatory, Position=0)]
-        $Programs,
-        
+        [Parameter(Mandatory, Position=0)]$Programs,
+
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("Install", "Uninstall")]
         [String]$Action
@@ -146,7 +145,7 @@ Function Invoke-WinUtilWingetProgram {
 
     .PARAMETER credential
     The PSCredential Object of the user that should be used to run winget
-    
+
     .NOTES
     Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
     #>
@@ -157,10 +156,9 @@ Function Invoke-WinUtilWingetProgram {
         )
 
         $commonArguments = "--id $wingetId --silent"
-        $arguments = if ($Action -eq "Install"){
-            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})" 
-        }
-        else {
+        $arguments = if ($Action -eq "Install") {
+            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})"
+        } else {
             "uninstall $commonArguments"
         }
 
@@ -175,15 +173,15 @@ Function Invoke-WinUtilWingetProgram {
         if ($credential) {
             $processParams.credential = $credential
         }
-        
-        return (Start-Process @processParams).ExitCode           
+
+        return (Start-Process @processParams).ExitCode
     }
 
     Function Invoke-Install {
     <#
     .SYNOPSIS
     Contains the Install Logic and return code handling from winget
-    
+
     .PARAMETER Program
     The Winget ID of the Program that should be installed
     #>
@@ -229,14 +227,14 @@ Function Invoke-WinUtilWingetProgram {
         <#
         .SYNOPSIS
         Contains the Uninstall Logic and return code handling from winget
-        
+
         .PARAMETER Program
         The Winget ID of the Program that should be uninstalled
         #>
         param (
             [psobject]$Program
         )
-        
+
         try {
             $status = Invoke-Winget -wingetId $Program
             if ($status -eq 0) {
@@ -254,21 +252,21 @@ Function Invoke-WinUtilWingetProgram {
 
     $count = $Programs.Count
     $failedPackages = @()
-    
+
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
-    
+
     for ($i = 0; $i -lt $count; $i++) {
         $Program = $Programs[$i]
         $result = $false
         Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($i / $count * 100)
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
-        
+
         $result = switch ($Action) {
             "Install" {Invoke-Install -Program $Program}
             "Uninstall" {Invoke-Uninstall -Program $Program}
-            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}    
+            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}
         }
 
         if (-not $result) {
@@ -370,6 +368,7 @@ function Set-WinUtilTaskbaritem {
         $sync["Form"].taskbarItemInfo.Description = $description
     }
 }
+
 ```
 ## Function: Set-WinUtilProgressbar
 
@@ -377,12 +376,12 @@ function Set-WinUtilTaskbaritem {
 function Set-WinUtilProgressbar{
     <#
     .SYNOPSIS
-        This function is used to Update the Progress Bar displayed in the winutil GUI. 
-        It will be automatically hidden if the user clicks something and no process is running 
+        This function is used to Update the Progress Bar displayed in the winutil GUI.
+        It will be automatically hidden if the user clicks something and no process is running
     .PARAMETER Label
         The Text to be overlayed onto the Progress Bar
     .PARAMETER PERCENT
-        The percentage of the Progress Bar that should be filled (0-100) 
+        The percentage of the Progress Bar that should be filled (0-100)
     .PARAMETER Hide
         If provided, the Progress Bar and the label will be hidden
     #>
@@ -392,19 +391,19 @@ function Set-WinUtilProgressbar{
         [int]$Percent,
         $Hide
     )
-    if ($hide){
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"}) 
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})     
+    if ($hide) {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
+    } else {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
     }
-    else{
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"}) 
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})     
-    }
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label}) 
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label}) 
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label})
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label})
     $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
-    
+
 }
+
 ```
 
 

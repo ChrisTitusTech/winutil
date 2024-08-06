@@ -1,6 +1,6 @@
 # Reset Network
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -60,6 +60,7 @@ function Invoke-WPFFixesNetwork {
     Write-Host "-- Network Configuration has been Reset --"
     Write-Host "=========================================="
 }
+
 ```
 
 

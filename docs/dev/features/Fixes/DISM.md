@@ -1,6 +1,6 @@
 # System Corruption Scan
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -61,6 +61,7 @@ function Invoke-WPFPanelDISM {
     Write-Host '`n(4/4) SFC - 2nd scan' -ForegroundColor Green; sfc /scannow;
     Read-Host '`nPress Enter to Continue'" -verb runas
 }
+
 ```
 
 

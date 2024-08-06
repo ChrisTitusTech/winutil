@@ -1,6 +1,6 @@
 # Create Restore Point
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -42,7 +42,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
 
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists){
+        if($null -eq $exists) {
             write-host 'Changing system to allow multiple restore points per day'
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
@@ -98,7 +98,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
 
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -ErrorAction SilentlyContinue
-        if($null -eq $exists){
+        if($null -eq $exists) {
             write-host 'Changing system to allow multiple restore points per day'
             Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "SystemRestorePointCreationFrequency" -Value "0" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
@@ -126,7 +126,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
             Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
             Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
         }
-      
+
 
 ```
 

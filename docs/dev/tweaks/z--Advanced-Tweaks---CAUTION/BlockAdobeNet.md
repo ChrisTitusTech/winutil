@@ -1,6 +1,6 @@
 # Adobe Network Block
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -34,8 +34,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
           Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to download the HOSTS file. Error: $_\"
       }
 
@@ -61,8 +60,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output \"Successfully added the AdobeNetBlock.\"
           }
-      }
-      catch {
+      } catch {
           Write-Error \"Error during processing: $_\"
       }
 
@@ -73,8 +71,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
@@ -87,8 +84,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to load the HOSTS file. Error: $_\"
           return
       }
@@ -114,8 +110,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
           Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
       }
 
@@ -123,8 +118,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
@@ -148,8 +142,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
           Write-Output "Downloaded the remote HOSTS file to a temporary location."
-      }
-      catch {
+      } catch {
           Write-Error "Failed to download the HOSTS file. Error: $_"
       }
 
@@ -175,8 +168,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output "Successfully added the AdobeNetBlock."
           }
-      }
-      catch {
+      } catch {
           Write-Error "Error during processing: $_"
       }
 
@@ -187,11 +179,10 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-Expression "ipconfig /flushdns"
           Write-Output "DNS cache flushed successfully."
-      }
-      catch {
+      } catch {
           Write-Error "Failed to flush DNS cache. Error: $_"
       }
-      
+
 
 ```
 ## Undo Script
@@ -204,8 +195,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      }
-      catch {
+      } catch {
           Write-Error "Failed to load the HOSTS file. Error: $_"
           return
       }
@@ -231,8 +221,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
           Write-Output "Successfully removed the AdobeNetBlock section from the HOSTS file."
-      }
-      catch {
+      } catch {
           Write-Error "Failed to write back to the HOSTS file. Error: $_"
       }
 
@@ -240,11 +229,10 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       try {
           Invoke-Expression "ipconfig /flushdns"
           Write-Output "DNS cache flushed successfully."
-      }
-      catch {
+      } catch {
           Write-Error "Failed to flush DNS cache. Error: $_"
       }
-      
+
 
 ```
 

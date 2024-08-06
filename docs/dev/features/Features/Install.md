@@ -1,6 +1,6 @@
 # Install Features
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -39,7 +39,7 @@ function Invoke-WPFFeatureInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -50,7 +50,7 @@ function Invoke-WPFFeatureInstall {
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
         $sync.ProcessRunning = $true
-        if ($Features.count -eq 1){
+        if ($Features.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -67,6 +67,7 @@ function Invoke-WPFFeatureInstall {
         Write-Host "==================================="
     }
 }
+
 ```
 
 

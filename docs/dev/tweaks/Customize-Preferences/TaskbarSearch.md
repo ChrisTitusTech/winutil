@@ -1,6 +1,6 @@
 # Search Button in Taskbar
 
-Last Updated: 2024-08-05
+Last Updated: 2024-08-06
 
 
 !!! info
@@ -44,25 +44,21 @@ function Invoke-WinUtilTaskbarSearch {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Search Button"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Search Button"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\"
         Set-ItemProperty -Path $Path -Name SearchboxTaskbarMode -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
