@@ -575,7 +575,7 @@ $featuresOutputDir = "docs/dev/features"
 $privateFunctionsDir = "functions/private"
 $publicFunctionsDir = "functions/public"
 $functions = @{}
-$itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)"
+$itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)?"
 
 Update-Progress "Creating Directories" 30
 if (-Not (Test-Path -Path $tweaksOutputDir)) {

@@ -1,6 +1,6 @@
 # Undo Selected Tweaks
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -21,7 +21,7 @@ Last Updated: 2024-08-06
   "panel": "1",
   "Order": "a042_",
   "Type": "Button",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFUndoall"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
 }
 ```
 

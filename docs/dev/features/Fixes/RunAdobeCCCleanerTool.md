@@ -1,6 +1,6 @@
 # Remove Adobe Creative Cloud
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -22,7 +22,7 @@ Last Updated: 2024-08-06
   "Order": "a045_",
   "Type": "Button",
   "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/WPFRunAdobeCCCleanerTool"
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
 }
 ```
 

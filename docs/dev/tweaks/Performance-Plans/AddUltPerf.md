@@ -1,6 +1,6 @@
-# Remove Ultimate Performance Profile
+# Add and Activate Ultimate Performance Profile
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -16,13 +16,13 @@ Last Updated: 2024-08-06
 
 ```json
 {
-  "Content": "Remove Ultimate Performance Profile",
+  "Content": "Add and Activate Ultimate Performance Profile",
   "category": "Performance Plans",
   "panel": "2",
-  "Order": "a081_",
+  "Order": "a080_",
   "Type": "Button",
   "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFRemoveUltPerf"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
 }
 ```
 

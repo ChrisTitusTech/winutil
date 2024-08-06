@@ -1,6 +1,6 @@
 # Run OO Shutup 10
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -21,7 +21,7 @@ Last Updated: 2024-08-06
   "panel": "1",
   "Order": "a039_",
   "Type": "Button",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFOOSUbutton"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton"
 }
 ```
 
