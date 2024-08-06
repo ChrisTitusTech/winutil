@@ -683,7 +683,7 @@
                     Maximum="100"
                     Width="250"
                     Height="{SearchBarHeight}"
-                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}" 
+                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}"
                     Visibility="Collapsed"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
@@ -699,13 +699,13 @@
                     Visibility="Collapsed"
                     Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
                     Name="ProgressBarLabel">
-                    <TextBlock 
-                        TextTrimming="CharacterEllipsis" 
+                    <TextBlock
+                        TextTrimming="CharacterEllipsis"
                         Background="Transparent"
                         Foreground="{ProgressBarTextColor}">
                     </TextBlock>
                 </Label>
-                
+
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"

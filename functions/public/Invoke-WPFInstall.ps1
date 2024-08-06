@@ -48,7 +48,7 @@ function Invoke-WPFInstall {
             $errorPackages = @()
             if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
-                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget 
+                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget
                 $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
             }
             if($packagesChoco.Count -gt 0) {

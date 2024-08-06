@@ -36,7 +36,7 @@ function Invoke-WPFtweaksbutton {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
     }
     # Execute other selected tweaks
-    
+
     for ($i = 0; $i -lt $Tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $Tweaks.Count * 100)
       Invoke-WinUtilTweaks $tweaks[$i]$sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })

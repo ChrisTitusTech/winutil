@@ -221,7 +221,7 @@ $cttLogoPath = @"
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
         $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
-        
+
         $hyperlink.Add_Click({
             param($sender, $args)
             Start-Process $sender.NavigateUri.AbsoluteUri

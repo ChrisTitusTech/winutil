@@ -416,11 +416,11 @@ public class PowerManagement {
         }
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
-        
+
         $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
-        
+
         $LASTEXITCODE = $oscdimgProc.ExitCode
-        
+
         Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
 
         if ($copyToUSB) {

@@ -17,9 +17,9 @@ function Invoke-WPFButton {
     if (-not $sync.ProcessRunning) {
         Set-WinUtilProgressBar  -label "" -percent 0 -hide $true
     }
-    
+
     Switch -Wildcard ($Button) {
-    
+
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
         "WPFuninstall" {Invoke-WPFUnInstall}

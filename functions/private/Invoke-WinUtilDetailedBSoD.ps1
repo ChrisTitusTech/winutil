@@ -4,7 +4,7 @@ Function Invoke-WinUtilDetailedBSoD {
     .SYNOPSIS
         Enables/Disables Detailed BSoD
         (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters').DisplayParameters
-        
+
 
     #>
     Param($Enabled)

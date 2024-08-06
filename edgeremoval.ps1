@@ -23,7 +23,7 @@ function Uninstall-Process {
 
     # Set Nation to 84 (France) temporarily
     [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', 68, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
-    
+
     # credits to he3als for the Acl commands
     $fileName = "IntegratedServicesRegionPolicySet.json"
     $pathISRPS = [Environment]::SystemDirectory + "\" + $fileName
@@ -33,19 +33,19 @@ function Uninstall-Process {
     if (Test-Path -Path $pathISRPS) {
         try {
             $admin = [System.Security.Principal.NTAccount]$(New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
-        
+
             $aclISRPS.SetOwner($admin)
             $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($admin, 'FullControl', 'Allow')
             $aclISRPS.AddAccessRule($rule)
             Set-Acl -Path $pathISRPS -AclObject $aclISRPS
-        
+
             Rename-Item -Path $pathISRPS -NewName ($fileName + '.bak') -Force
         }
         catch {
             Write-Error "[$Mode] Failed to set owner for $pathISRPS"
-        }	
+        }
     }
-    
+
     $baseKey = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
     $registryPath = $baseKey + '\ClientState\' + $Key
 
@@ -84,16 +84,16 @@ function Uninstall-Process {
 
     if ((Get-ItemProperty -Path $baseKey).IsEdgeStableUninstalled -eq 1) {
         Write-Host "[$Mode] Edge Stable has been successfully uninstalled"
-    } 
+    }
 }
 
 function Uninstall-Edge {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
-   
+
     [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
 
     Uninstall-Process -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
-    
+
     @( "$env:ProgramData\Microsoft\Windows\Start Menu\Programs",
        "$env:PUBLIC\Desktop",
        "$env:USERPROFILE\Desktop" ) | ForEach-Object {
@@ -108,7 +108,7 @@ function Uninstall-Edge {
 function Uninstall-WebView {
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
 
-    # Force to use system-wide WebView2 
+    # Force to use system-wide WebView2
     # [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\WebView2\BrowserExecutableFolder", "*", "%%SystemRoot%%\System32\Microsoft-Edge-WebView")
 
     Uninstall-Process -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
