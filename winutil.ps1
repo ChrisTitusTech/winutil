@@ -3241,13 +3241,14 @@ function Show-CustomDialog {
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = [Windows.Media.Brushes]::White
-    $backgroundColor = [Windows.Media.Brushes]::Black
+    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
+    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = [Windows.Media.Brushes]::Green
-    $buttonBackgroundColor = [Windows.Media.Brushes]::Black
-    $buttonForegroundColor = [Windows.Media.Brushes]::White
+    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
+    $logocolor = $sync.configs.themes.$ctttheme.ButtonBackgroundPressedColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -3377,7 +3378,7 @@ $cttLogoPath = @"
     # Add SVG path
     $svgPath = New-Object Windows.Shapes.Path
     $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
-    $svgPath.Fill = $foregroundColor  # Set fill color to white
+    $svgPath.Fill = $logocolor  # Set fill color to white
 
     # Add SVG path to Viewbox
     $viewbox.Child = $svgPath
@@ -3389,7 +3390,7 @@ $cttLogoPath = @"
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
     $winutilTextBlock.FontSize = $HeaderFontSize
-    $winutilTextBlock.Foreground = $foregroundColor
+    $winutilTextBlock.Foreground = $logocolor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
@@ -3416,18 +3417,19 @@ $cttLogoPath = @"
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+        
         $hyperlink.Add_Click({
             param($sender, $args)
             Start-Process $sender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $foregroundColor
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)
@@ -16048,8 +16050,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCsRYZ9NEOFa/hQ
-# GlWobWOLMJLvIavGfP/nsHwfd0nJ96CCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCf2YhvpvN0Lqkr
+# FLebGrWqkSf74dri62aBEVgSbJjM1qCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -16121,16 +16123,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCAlq0vPrqaPVPxSz6SjnupsBmplysDbN6HIiao7+Q+9ajANBgkqhkiG
-# 9w0BAQEFAASCAgBFbRfIOMyvk7ADsgm7EO0+g6SUKvZTxQc8jM/ii+LWgt4wtTLr
-# XzcODD0418pCHUdubMgh82lfJlpKqrkzgLpqaa+qb4gyiBDUv/grqeNs8M5PON6V
-# Zram8xxxCKPzTnzcMGmLtWAjTcTDoofymDFVPskPUTqFht+SSXrpZRRzeYya5hJh
-# nG2TwqDjJdWpJ9PJTaMX1lBdqNiKFPljsN5BLNYb2uz2p65oRg42Q9Tf+Sc+YKVE
-# arGuX2hNTJLQi4ZHHioJMOi9+duMKBbezVrCmeaQzJ78/QZ0Ea0QqyL4O2NBf3px
-# FJ0BL6jbY+4EousNxiSuurJep8mSqSMJFMOwm9ptIkGEl+ndCOlnoEzcQjyMKaLy
-# A+NLwN8qHrdwCkSV9Z3fzdzu9NGz+ScrH5GHhSjBpeaJpeQLQoRVGTxCdu4xTpTF
-# MVaQHrslDMEPct6D7aGNOPUK0LJFYhUyNpq38jeanrOH+hHlUlNpFiCRxKtGD2RZ
-# nrnssWdQWu8B5x/W18iwjyN8YQeRuHThZsvAIiu9KTgOuxACo1jvbT8bT7KE0fU0
-# oRbjDHTWw9j6U/vc/uDGtxAihbtNLfG2Af2pgfuqgC60gPAh6b9auzBlliSw2lSi
-# pWOUFLDLNRxgV1Vb1Ikh95nbHgXhjMHYl1a18t20d/0L+DDdPHkjqgyQ1Q==
+# DQEJBDEiBCAGtMWezZrYL/T46kAeWszyIaCUf4BzXlowc2xUUPc6tjANBgkqhkiG
+# 9w0BAQEFAASCAgBjVCmp+0iFgtektdTltvMTXoUTvMOAAQa4aO8aMaOpBfxw0yxH
+# ljtJJ8Ee8YsLie493MP5z/W2+AZzhTMjJ8Q8202CbwXD0npVzEpcOSOVm1zepDo3
+# pBTYsOruMP+2leGD+1zoYlVjckhUhlMECfye5wusSk46X7kA9OhxIASeF+PLznEA
+# JqQxcPNpjltO7NDJErSn3QBfhoaI6MkT2nVJ/KIbxKEruNiqG0GKbrgjEeUUljcC
+# QDyA/GyGR08svNkgD3F190xXCCvJCzOQm563IBRxntV3wU5MVFkcpHJzhZW1rhvY
+# dDnWYQuaw5BDR8FogWosqYKdQQL8Y7AkxXHX1bjmnaJ5ElSSitIT6vK2it3zZ5TO
+# UJWTUih8+TB9MeqNZ1vYk7lTNq6vuCNl2Y5PROQQJmku0uBdlEbdHq4UFzsXr+sI
+# WaPbq74qDXcMX/BK0U8EpPYDWyQK9SYraFRcM5WAoKdgItFqNeR9Om4uoQwNE+eK
+# x7TwkNOvfO1t1XT3FU958dbLJIdghxJltodD3MlwZzrSbjx+6rj0BuuOSXEKnLjk
+# 454Y3FEwGMEbmTjLgSMwlRRNt4zqL11n04HuxzTANKOR0mXwo3JbqYJfyML+ifHn
+# 8Q8WXRsmVwVqj5bPeeaEM94ghdc2S0eFkS0hVby4ZgO659K4LtxXHbAmOg==
 # SIG # End signature block
