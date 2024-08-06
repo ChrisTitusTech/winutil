@@ -305,13 +305,13 @@
                         <Grid Background="{TemplateBinding Background}" Margin="{CheckBoxMargin}">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Grid Width="{CheckBoxBulletDecoratorFontSize}" Height="{CheckBoxBulletDecoratorFontSize}">
+                                    <Grid Width="{CheckBoxBulletDecoratorSize}" Height="{CheckBoxBulletDecoratorSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{ButtonBackgroundColor}"
                                                 BorderThickness="1"
-                                                Width="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
-                                                Height="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
+                                                Width="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
+                                                Height="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
@@ -741,7 +741,7 @@
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="{IconFontSize}" Name="WPFCloseButton" />
+                Foreground="{MainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 
         </DockPanel>

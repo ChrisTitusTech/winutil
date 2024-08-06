@@ -63,15 +63,27 @@ if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
 else {
     $ctttheme = 'Classic'
 }
-$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
+
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
+if ($returnVal.err -eq $null) {
+    Write-Warning "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages."
+    Write-Warning "Quitting winutil..."
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    return
+}
+$inputXML = $returnVal.processedXML
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
 # Read the XAML file
+$readerOperationSuccessful = $false # There's more cases of failure then success.
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
+    $readerOperationSuccessful = $true
 } catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -81,6 +93,14 @@ try {
     }
 } catch {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+}
+
+if (-NOT ($readerOperationSuccessful)) {
+    Write-Warning "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method, quitting winutil..."
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    return
 }
 
 #===========================================================================
@@ -283,11 +303,11 @@ Add-Type @"
 
    foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
         # Check if the process's MainWindowHandle is valid
-    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
+            if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
-	    } else {
-        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+            } else {
+                Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
 
         }
     }

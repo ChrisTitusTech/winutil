@@ -14,40 +14,77 @@ function Set-WinUtilUITheme {
         Set-WinUtilUITheme -inputXAML $inputXAML
 
     #>
-    param
-    (
-         [Parameter(Mandatory=$true, Position=0)]
+    param (
+         [Parameter(Mandatory, position=0)]
          [string] $inputXML,
-         [Parameter(Mandatory=$false, Position=1)]
+         [Parameter(position=1)]
          [string] $themeName = 'matrix'
     )
 
-    try {
-        # Convert the JSON to a PowerShell object
-        $themes = $sync.configs.themes
-        # Select the specified theme
-        $selectedTheme = $themes.$themeName
+    function Invoke-Theming {
+        param (
+            [Parameter(Mandatory, position=0)]
+            [string] $XMLToProcess,
 
-        if ($selectedTheme) {
+            [Parameter(Mandatory, position=1)]
+            [PSCustomObject] $theme
+        )
+
+        if ($XMLToProcess -eq "") {
+            throw [GenericException]::new("[Invoke-Theming] 'XMLToProcess' can not be an empty string")
+        }
+
+        try {
             # Loop through all key-value pairs in the selected theme
-            foreach ($property in $selectedTheme.PSObject.Properties) {
+            foreach ($property in $theme.PSObject.Properties) {
                 $key = $property.Name
                 $value = $property.Value
                 # Add curly braces around the key
                 $formattedKey = "{$key}"
                 # Replace the key with the value in the input XML
-                $inputXML = $inputXML.Replace($formattedKey, $value)
+                $XMLToProcess = $XMLToProcess.Replace($formattedKey, $value)
             }
+        } catch {
+            throw [GenericException]::new("[Invoke-Theming] Failed to apply theme, StackTrace: $($psitem.Exception.StackTrace)")
         }
-        else {
-            Write-Host "Theme '$themeName' not found."
+
+        return $XMLToProcess
+    }
+
+
+    try {
+        # Convert the JSON to a PowerShell object
+        $themes = $sync.configs.themes
+        if (-NOT $themes) {
+            throw [GenericException]::new("[Set-WinUtilTheme] Did not find 'config.themes' inside `$sync variable.")
         }
+
+        $defaultTheme = $themes."_default"
+        if (-NOT $defaultTheme) {
+            throw [GenericException]::new("[Set-WinUtilTheme] Did not find '_default' theme in the themes config file.")
+        }
+
+        # First apply the selected theme (if it exists), then apply the default theme
+        $selectedTheme = $themes.$themeName
+        if (-NOT $selectedTheme) {
+            Write-Warning "[Set-WinUtilTheme] Theme '$themeName' was not found."
+        } else {
+            $inputXML = Invoke-Theming -XMLToProcess $inputXML -theme $selectedTheme
+        }
+
+        $inputXML = Invoke-Theming -XMLToProcess $inputXML -theme $defaultTheme
 
     }
     catch {
-        Write-Warning "Unable to apply theme"
-        Write-Warning $psitem.Exception.StackTrace
+        Write-Warning "[Set-WinUtilTheme] Unable to apply theme"
+        $err = $psitem.Exception.StackTrace
+        Write-Warning $err
     }
 
-    return $inputXML;
+    $returnVal = @{
+        err="$err";
+        processedXML="$inputXML";
+    }
+
+    return $returnVal;
 }
