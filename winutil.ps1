@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.07.31
+    Version        : 24.08.06
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.07.31"
+$sync.version = "24.08.06"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -3241,13 +3241,14 @@ function Show-CustomDialog {
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = [Windows.Media.Brushes]::White
-    $backgroundColor = [Windows.Media.Brushes]::Black
+    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
+    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = [Windows.Media.Brushes]::Green
-    $buttonBackgroundColor = [Windows.Media.Brushes]::Black
-    $buttonForegroundColor = [Windows.Media.Brushes]::White
+    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
+    $logocolor = $sync.configs.themes.$ctttheme.ButtonBackgroundPressedColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -3377,7 +3378,7 @@ $cttLogoPath = @"
     # Add SVG path
     $svgPath = New-Object Windows.Shapes.Path
     $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
-    $svgPath.Fill = $foregroundColor  # Set fill color to white
+    $svgPath.Fill = $logocolor  # Set fill color to white
 
     # Add SVG path to Viewbox
     $viewbox.Child = $svgPath
@@ -3389,7 +3390,7 @@ $cttLogoPath = @"
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
     $winutilTextBlock.FontSize = $HeaderFontSize
-    $winutilTextBlock.Foreground = $foregroundColor
+    $winutilTextBlock.Foreground = $logocolor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
@@ -3416,18 +3417,19 @@ $cttLogoPath = @"
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+        
         $hyperlink.Add_Click({
             param($sender, $args)
             Start-Process $sender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $foregroundColor
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)
@@ -5308,7 +5310,6 @@ function Invoke-WPFRunspace {
         [System.GC]::Collect()
     }
 }
-
 function Invoke-WPFShortcut {
     <#
 
@@ -5342,7 +5343,6 @@ function Invoke-WPFShortcut {
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
-
         }
     }
 
@@ -5362,8 +5362,8 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }
@@ -10950,6 +10950,162 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksEdgeDebloat": {
+    "Content": "Debloat Edge",
+    "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a016_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
+        "Name": "CreateDesktopShortcutDefault",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeEnhanceImagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowRecommendationsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "HideFirstRunExperience",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "UserFeedbackAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "AlternateErrorPagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeFollowEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeShoppingAssistantEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "MicrosoftEdgeInsiderPromotionEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowMicrosoftRewards",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WebWidgetAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DiagnosticData",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeAssetDeliveryServiceEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "CryptoWalletEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WalletDonationEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
     "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
@@ -14939,6 +15095,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
                             <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                            <CheckBox Name="WPFTweaksEdgeDebloat" Content="Debloat Edge" Margin="5,0" ToolTip="Disables various telemetry options, popups, and other annoyances in Edge."/>
 
                             <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
@@ -15889,3 +16046,93 @@ $sync["SponsorMenuItem"].Add_Click({
 })
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
+
+# SIG # Begin signature block
+# MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
+# BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCf2YhvpvN0Lqkr
+# FLebGrWqkSf74dri62aBEVgSbJjM1qCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
+# Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
+# U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
+# MFQxCzAJBgNVBAYTAkdCMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQxKzApBgNV
+# BAMTIlNlY3RpZ28gUHVibGljIENvZGUgU2lnbmluZyBDQSBSMzYwggGiMA0GCSqG
+# SIb3DQEBAQUAA4IBjwAwggGKAoIBgQCbK51T+jU/jmAGQ2rAz/V/9shTUxjIztNs
+# fvxYB5UXeWUzCxEeAEZGbEN4QMgCsJLZUKhWThj/yPqy0iSZhXkZ6Pg2A2NVDgFi
+# gOMYzB2OKhdqfWGVoYW3haT29PSTahYkwmMv0b/83nbeECbiMXhSOtbam+/36F09
+# fy1tsB8je/RV0mIk8XL/tfCK6cPuYHE215wzrK0h1SWHTxPbPuYkRdkP05ZwmRmT
+# nAO5/arnY83jeNzhP06ShdnRqtZlV59+8yv+KIhE5ILMqgOZYAENHNX9SJDm+qxp
+# 4VqpB3MV/h53yl41aHU5pledi9lCBbH9JeIkNFICiVHNkRmq4TpxtwfvjsUedyz8
+# rNyfQJy/aOs5b4s+ac7IH60B+Ja7TVM+EKv1WuTGwcLmoU3FpOFMbmPj8pz44MPZ
+# 1f9+YEQIQty/NQd/2yGgW+ufflcZ/ZE9o1M7a5Jnqf2i2/uMSWymR8r2oQBMdlyh
+# 2n5HirY4jKnFH/9gRvd+QOfdRrJZb1sCAwEAAaOCAWQwggFgMB8GA1UdIwQYMBaA
+# FDLrkpr/NZZILyhAQnAgNpFcF4XmMB0GA1UdDgQWBBQPKssghyi47G9IritUpimq
+# F6TNDDAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/BAgwBgEB/wIBADATBgNVHSUE
+# DDAKBggrBgEFBQcDAzAbBgNVHSAEFDASMAYGBFUdIAAwCAYGZ4EMAQQBMEsGA1Ud
+# HwREMEIwQKA+oDyGOmh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGlnb1B1Ymxp
+# Y0NvZGVTaWduaW5nUm9vdFI0Ni5jcmwwewYIKwYBBQUHAQEEbzBtMEYGCCsGAQUF
+# BzAChjpodHRwOi8vY3J0LnNlY3RpZ28uY29tL1NlY3RpZ29QdWJsaWNDb2RlU2ln
+# bmluZ1Jvb3RSNDYucDdjMCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5zZWN0aWdv
+# LmNvbTANBgkqhkiG9w0BAQwFAAOCAgEABv+C4XdjNm57oRUgmxP/BP6YdURhw1aV
+# cdGRP4Wh60BAscjW4HL9hcpkOTz5jUug2oeunbYAowbFC2AKK+cMcXIBD0ZdOaWT
+# syNyBBsMLHqafvIhrCymlaS98+QpoBCyKppP0OcxYEdU0hpsaqBBIZOtBajjcw5+
+# w/KeFvPYfLF/ldYpmlG+vd0xqlqd099iChnyIMvY5HexjO2AmtsbpVn0OhNcWbWD
+# RF/3sBp6fWXhz7DcML4iTAWS+MVXeNLj1lJziVKEoroGs9Mlizg0bUMbOalOhOfC
+# ipnx8CaLZeVme5yELg09Jlo8BMe80jO37PU8ejfkP9/uPak7VLwELKxAMcJszkye
+# iaerlphwoKx1uHRzNyE6bxuSKcutisqmKL5OTunAvtONEoteSiabkPVSZ2z76mKn
+# zAfZxCl/3dq3dUNw4rg3sTCggkHSRqTqlLMS7gjrhTqBmzu1L90Y1KWN/Y5JKdGv
+# spbOrTfOXyXvmPL6E52z1NZJ6ctuMFBQZH3pwWvqURR8AgQdULUvrxjUYbHHj95E
+# jza63zdrEcxWLDX6xWls/GDnVNueKjWUH3fTv1Y8Wdho698YADR7TNx8X8z2Bev6
+# SivBBOHY+uqiirZtg0y9ShQoPzmCcn63Syatatvx157YK9hlcPmVoa1oDE5/L9Uo
+# 2bC5a4CH2RwwggZhMIIEyaADAgECAhAmzTnZ/yhC019IbbKDBpvFMA0GCSqGSIb3
+# DQEBDAUAMFQxCzAJBgNVBAYTAkdCMRgwFgYDVQQKEw9TZWN0aWdvIExpbWl0ZWQx
+# KzApBgNVBAMTIlNlY3RpZ28gUHVibGljIENvZGUgU2lnbmluZyBDQSBSMzYwHhcN
+# MjIwNTMwMDAwMDAwWhcNMjUwNTI5MjM1OTU5WjBVMQswCQYDVQQGEwJVUzEOMAwG
+# A1UECAwFVGV4YXMxGjAYBgNVBAoMEUNUIFRFQ0ggR1JPVVAgTExDMRowGAYDVQQD
+# DBFDVCBURUNIIEdST1VQIExMQzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoC
+# ggIBALDxiKQHPvjYMWMVlH40AhqVOaVq9mWPSezrfgN3UAeuJFj1zwOzQfHD1WZj
+# +eQtej48zIt3YHLKpy0VEHvtkFL7yqmuTrXbhGv55PggiMYp0hh0jv7vpFSsnShv
+# wsaneTWBy0v6EaK/qQ8a7tZCwEnfVE4cRepdPdfdpMG0AaiK+GWjfqh/lUdtJT9K
+# W2/SyTOuEFhb/+1ltsnmdoBSqj6mzk5FYXJIWH4193Gdq65j6EZeSFv0ev7tN3Zp
+# 1w7oc/J7odI0zxNZJW/E6v3cG3oBfdwy2mmfl6KBzP7ulzCh/oj1vYFGxpiBvy4w
+# fyblnhYnmk+VU2vwt5RobQYpFpOU2+b7v6RC8DlCScsFt16QtA7l6sBgf2Sg8OOe
+# Be6x29lRwHvcBni9Ih1VFnRJ5T5QkEIqgT18fY5+SLXmMj495fJbEwZkUr1NKIwn
+# ivZgnp66ImKgYSwwB7U/A4vdCqnAlo8po28vYq+yzuBsaOjUFhi9MWRpPPaaI4aw
+# 8UkzwVwdTxYBl1JXYrwTxsEA6dIiVxBhKnT3uKJcN6EwEHO3wnQGrWAgxQZWuHXQ
+# +gX5lQb6bdalEdXc0hiIQx7g/Fu2pQTcmzT7Lk//vu43RAOmxJOUOo6rkNmLuzkk
+# aSpPdJftm9GOnQ6J+pbs+mZGq07A+EqbX3gwCD2o2fbDkE6PAgMBAAGjggGsMIIB
+# qDAfBgNVHSMEGDAWgBQPKssghyi47G9IritUpimqF6TNDDAdBgNVHQ4EFgQUjnXb
+# LNZOgoZYQySE6eTTsyBbMYYwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAw
+# EwYDVR0lBAwwCgYIKwYBBQUHAwMwSgYDVR0gBEMwQTA1BgwrBgEEAbIxAQIBAwIw
+# JTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdvLmNvbS9DUFMwCAYGZ4EMAQQB
+# MEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9jcmwuc2VjdGlnby5jb20vU2VjdGln
+# b1B1YmxpY0NvZGVTaWduaW5nQ0FSMzYuY3JsMHkGCCsGAQUFBwEBBG0wazBEBggr
+# BgEFBQcwAoY4aHR0cDovL2NydC5zZWN0aWdvLmNvbS9TZWN0aWdvUHVibGljQ29k
+# ZVNpZ25pbmdDQVIzNi5jcnQwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3NwLnNlY3Rp
+# Z28uY29tMCEGA1UdEQQaMBiBFmNvbnRhY3RAY2hyaXN0aXR1cy5jb20wDQYJKoZI
+# hvcNAQEMBQADggGBADkTnvLMHdIb3hPzKixR3B7XaLL/92r0e7mQU6N4p8IZriTi
+# 6j0PjZGm9HN7K7UNJjTysnBsdeZGat517qfC9BLn6OZyiZjKXSW6EEhTm37Ryg/k
+# mfG+GsolkcY/4QnUz5hizj7Q3HVrIX5RduY1QwrlD/nkwAdycMvEXzHTNH7as9kN
+# 3vpWZr6VBy11gXOLLS7+kKaxwzndY/0xQER6RozNoKsRW6Vx08qF2nHDXygeXHla
+# iBz17QpqYZQ+i4aMkkG2xMkjzQIjwxOAANbpWEGmSBV4fw/JtEOlBGfEw/kadPsT
+# rUpVf+a+BMMY+QFGV/tYBkTYTnIUGEpiR/OgZ6pZLo2uIri4KLYLjwIgV6lip5+Q
+# VxdSTYQKuUhWqpUILtnGYluaYd4PLgBgMSpYBNS5NEqqMVqbhhwRluPKEPySjwYG
+# pRKP9RT6ke5BHVxuq+FWixnCSoIIXPh/NvCa0eqtRqdCiAy15bi+FkV/Ag5fPoxF
+# FAEDM6FnXN5M3H53bDGCAxowggMWAgEBMGgwVDELMAkGA1UEBhMCR0IxGDAWBgNV
+# BAoTD1NlY3RpZ28gTGltaXRlZDErMCkGA1UEAxMiU2VjdGlnbyBQdWJsaWMgQ29k
+# ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
+# AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
+# BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
+# DQEJBDEiBCAGtMWezZrYL/T46kAeWszyIaCUf4BzXlowc2xUUPc6tjANBgkqhkiG
+# 9w0BAQEFAASCAgBjVCmp+0iFgtektdTltvMTXoUTvMOAAQa4aO8aMaOpBfxw0yxH
+# ljtJJ8Ee8YsLie493MP5z/W2+AZzhTMjJ8Q8202CbwXD0npVzEpcOSOVm1zepDo3
+# pBTYsOruMP+2leGD+1zoYlVjckhUhlMECfye5wusSk46X7kA9OhxIASeF+PLznEA
+# JqQxcPNpjltO7NDJErSn3QBfhoaI6MkT2nVJ/KIbxKEruNiqG0GKbrgjEeUUljcC
+# QDyA/GyGR08svNkgD3F190xXCCvJCzOQm563IBRxntV3wU5MVFkcpHJzhZW1rhvY
+# dDnWYQuaw5BDR8FogWosqYKdQQL8Y7AkxXHX1bjmnaJ5ElSSitIT6vK2it3zZ5TO
+# UJWTUih8+TB9MeqNZ1vYk7lTNq6vuCNl2Y5PROQQJmku0uBdlEbdHq4UFzsXr+sI
+# WaPbq74qDXcMX/BK0U8EpPYDWyQK9SYraFRcM5WAoKdgItFqNeR9Om4uoQwNE+eK
+# x7TwkNOvfO1t1XT3FU958dbLJIdghxJltodD3MlwZzrSbjx+6rj0BuuOSXEKnLjk
+# 454Y3FEwGMEbmTjLgSMwlRRNt4zqL11n04HuxzTANKOR0mXwo3JbqYJfyML+ifHn
+# 8Q8WXRsmVwVqj5bPeeaEM94ghdc2S0eFkS0hVby4ZgO659K4LtxXHbAmOg==
+# SIG # End signature block
