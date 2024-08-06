@@ -1,0 +1,10 @@
+name: Release Drafter
+
+template: |
+  ## What’s Changed
+
+  $CHANGES
+
+
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR'
+version-template: 'v$MAJOR.$MINOR.$PATCH'
