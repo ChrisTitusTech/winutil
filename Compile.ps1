@@ -98,10 +98,6 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 
 Update-Progress "Adding: Xaml " 90
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-#$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
-$xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
