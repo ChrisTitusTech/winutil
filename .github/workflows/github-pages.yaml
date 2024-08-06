@@ -1,0 +1,41 @@
+name: GitHub Pages Deploy
+on:
+  release:
+    types: [edited, deleted] # Make sure changelog is up-to-date by updating it, and building GitHub Pages.
+  workflow_dispatch: # Manual trigger added
+  workflow_call: # Make this Working a re-usable one (can be called form another workflow)
+
+permissions:
+  contents: write
+
+jobs:
+  update-changelog:
+    uses: ./.github/workflows/createchangelog.yaml
+
+  bulid-deploy-gh-pages:
+    # Make sure 'update-changelog' run first, then run this job afterward
+    needs: update-changelog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        # Make sure to get latest commits, like the one committed by the previous job in jobs list.
+        # reference: https://github.com/orgs/community/discussions/110853
+        with:
+          fetch-tags: 'true'
+          submodules: 'recursive'
+          ref: main # Always pull from & push to 'main' branch, as without doing so, it'll cause some problems.
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Install Additional Python Dependencies
+        run: |
+          pip install mkdocs-material
+          pip install pillow cairosvg
+
+      - name: Build using MkDocs & Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force

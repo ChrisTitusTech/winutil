@@ -1,0 +1,59 @@
+name: Close Discussion on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  closeDiscussion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check if PR was merged
+        if: github.event.pull_request.merged == true
+        run: echo "PR was merged"
+
+      - name: Extract Discussion Number & Close If any Where Found
+        # Make the running bash script behave like it would when ran locally
+        # by default GitHub actions has 'set -e', which'll make the whole step fail
+        # upon small things, like grep not finding any matches.. which sometimes
+        # we do want this behavior, so we set shell to be 'bash {0}' to bring back control.
+        # reference: https://stackoverflow.com/questions/73066461/github-actions-why-an-intermediate-command-failure-in-shell-script-would-cause
+        shell: bash {0}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event.pull_request.merged == true
+        id: extract-discussion
+        run: |
+          output_str=$(cat <<DELIMITER
+             TODO:
+               Use GitHub's GraphQL to query the Discussion by ID, therefore checking if ID is for a discussion or not.
+               Then make a new comment to it, wait until it's created, and maybe wait additional seconds to make sure everything works great.
+               Then mark the newly created comment on discussion as the answer to discussion, so the discussion is "closed" so to speak.
+               Reference:
+                 - https://github.com/orgs/community/discussions/43
+                 - https://github.com/orgs/community/discussions/43#discussioncomment-399047
+                 - https://docs.github.com/en/graphql/guides/using-the-graphql-api-for-discussions
+          DELIMITER)
+          echo "$output_str"
+          exit 1
+          #pr_body="${{ github.event.pull_request.body }}"
+
+          #discussion_ids=$(echo "$pr_body" | grep -i -Po '^\s*(-|\d+\.)?\s*(Resolve(s|d)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Fix(es|ed)?)\s*#\d+\s*$|^\s*(-|\d+\.)?\s*(Close(s|d)?)\s*#\d+\s*$' | awk -F '#' '{print $2}')
+
+          #echo "IDs Array:     ${discussion_ids[@]}"
+
+          #if [ -z "$discussion_ids" ]; then
+          #  echo "No discussion IDs found."
+          #  exit 0
+          #fi
+
+          #for (( i=0; i<${number_of_ids}; i++ )); do
+          #  discussion_id=${discussion_ids_arr[$i]}
+          #  echo "$discussion_id"
+          #  curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+          #       -d '{"state": "closed"}' \
+          #       "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id"
+          #done
