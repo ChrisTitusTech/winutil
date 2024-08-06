@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
@@ -169,6 +167,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
   "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -267,63 +266,77 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
 ```
 ## Service Changes
+
 Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
 
 You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+
 ### Service Name: AGSService
+
 **Startup Type:** Disabled
 
 **Original Type:** Automatic
 
 ### Service Name: AGMService
+
 **Startup Type:** Disabled
 
 **Original Type:** Automatic
 
 ### Service Name: AdobeUpdateService
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: Adobe Acrobat Update
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: Adobe Genuine Monitor Service
+
 **Startup Type:** Disabled
 
 **Original Type:** Automatic
 
 ### Service Name: AdobeARMservice
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: Adobe Licensing Console
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: CCXProcess
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: AdobeIPCBroker
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: CoreSync
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

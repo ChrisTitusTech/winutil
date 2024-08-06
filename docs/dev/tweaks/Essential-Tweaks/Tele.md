@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser.
@@ -392,6 +390,7 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -435,8 +434,11 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 ## Registry Changes
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
+
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+
 ### Registry Key: AllowTelemetry
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -444,6 +446,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: AllowTelemetry
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -451,6 +454,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: ContentDeliveryAllowed
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -458,6 +462,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: OemPreInstalledAppsEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -465,6 +470,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: PreInstalledAppsEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -472,6 +478,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: PreInstalledAppsEverEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -479,6 +486,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SilentInstalledAppsEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -486,6 +494,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SubscribedContent-338387Enabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -493,6 +502,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SubscribedContent-338388Enabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -500,6 +510,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SubscribedContent-338389Enabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -507,6 +518,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SubscribedContent-353698Enabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -514,6 +526,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: SystemPaneSuggestionsEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -521,6 +534,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: NumberOfSIUFInPeriod
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -528,6 +542,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: DoNotShowFeedbackNotifications
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -535,6 +550,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: DisableTailoredExperiencesWithDiagnosticData
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -542,6 +558,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: DisabledByGroupPolicy
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -549,6 +566,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: Disabled
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -556,6 +574,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: DODownloadMode
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -563,6 +582,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: fAllowToGetHelp
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -570,6 +590,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: EnthusiastMode
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -577,6 +598,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: ShowTaskViewButton
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -584,6 +606,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: PeopleBand
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -591,6 +614,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: LaunchTo
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -598,6 +622,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: LongPathsEnabled
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -605,6 +630,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: SearchOrderConfig
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -612,6 +638,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: SystemResponsiveness
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -619,6 +646,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: NetworkThrottlingIndex
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -626,6 +654,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 4294967295
 
 ### Registry Key: MenuShowDelay
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -633,6 +662,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: AutoEndTasks
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -640,6 +670,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: ClearPageFileAtShutdown
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -647,6 +678,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: Start
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -654,6 +686,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 2
 
 ### Registry Key: MouseHoverTime
+
 **Type:** String
 
 **Original Value:** 400
@@ -661,6 +694,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 400
 
 ### Registry Key: IRPStackSize
+
 **Type:** DWord
 
 **Original Value:** 20
@@ -668,6 +702,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 30
 
 ### Registry Key: EnableFeeds
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -675,6 +710,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: ShellFeedsTaskbarViewMode
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -682,6 +718,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 2
 
 ### Registry Key: HideSCAMeetNow
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -689,6 +726,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: ScoobeSystemSettingEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -697,78 +735,96 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 
 
 ## Scheduled Task Changes
+
 Windows scheduled tasks are used to run scripts or programs at specific times or events. Disabling unnecessary tasks can improve system performance and reduce unwanted background activity.
 
+
 You can find information about scheduled tasks on [Wikipedia](https://www.wikiwand.com/en/Windows_Task_Scheduler) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/desktop/taskschd/about-the-task-scheduler).
+
 ### Task Name: Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Application Experience\ProgramDataUpdater
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Autochk\Proxy
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Customer Experience Improvement Program\Consolidator
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Customer Experience Improvement Program\UsbCeip
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Feedback\Siuf\DmClient
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Windows Error Reporting\QueueReporting
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Application Experience\MareBackup
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Application Experience\StartupAppTask
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Application Experience\PcaPatchDbTask
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 ### Task Name: Microsoft\Windows\Maps\MapsUpdateTask
+
 **State:** Disabled
 
 **Original State:** Enabled
 
 
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

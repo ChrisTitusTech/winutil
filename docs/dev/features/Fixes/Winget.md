@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFFixesWinget
+
 ```powershell
 function Invoke-WPFFixesWinget {
 
@@ -49,6 +51,7 @@ function Invoke-WPFFixesWinget {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

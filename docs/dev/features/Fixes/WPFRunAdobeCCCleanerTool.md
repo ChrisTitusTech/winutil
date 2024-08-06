@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Fixes/WPFRunAdobeCCCleanerTool"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFRunAdobeCCCleanerTool
+
 ```powershell
 function Invoke-WPFRunAdobeCCCleanerTool {
     <#
@@ -68,6 +70,7 @@ function Invoke-WPFRunAdobeCCCleanerTool {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

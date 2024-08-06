@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 If enable then includes web search results from Bing in your Start Menu search.
@@ -29,9 +27,11 @@ If enable then includes web search results from Bing in your Start Menu search.
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilBingSearch
+
 ```powershell
 function Invoke-WinUtilBingSearch {
     <#
@@ -73,6 +73,7 @@ function Invoke-WinUtilBingSearch {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

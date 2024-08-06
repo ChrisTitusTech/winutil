@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Disables all Notifications INCLUDING Calendar
@@ -44,13 +42,17 @@ Disables all Notifications INCLUDING Calendar
   "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
 }
 ```
+
 </details>
 
 ## Registry Changes
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
+
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+
 ### Registry Key: DisableNotificationCenter
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -58,6 +60,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: ToastEnabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -65,9 +68,11 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

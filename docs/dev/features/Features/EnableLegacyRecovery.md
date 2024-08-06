@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes.
@@ -38,6 +36,7 @@ Enables Advanced Boot Options screen that lets you start Windows in advanced tro
   "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -52,9 +51,11 @@ Enables Advanced Boot Options screen that lets you start Windows in advanced tro
       
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

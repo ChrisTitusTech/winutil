@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFPanelAutologin
+
 ```powershell
 function Invoke-WPFPanelAutologin {
     <#
@@ -48,6 +50,7 @@ function Invoke-WPFPanelAutologin {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

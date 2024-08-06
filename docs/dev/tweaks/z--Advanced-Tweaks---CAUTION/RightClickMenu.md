@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Great Windows 11 tweak to bring back good context menus when right clicking things in explorer.
@@ -45,6 +43,7 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
   "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -70,9 +69,11 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
       
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

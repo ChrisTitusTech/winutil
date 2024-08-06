@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Turns a bunch of system services to manual that don't need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand.
@@ -1440,1426 +1438,1713 @@ Turns a bunch of system services to manual that don't need to be running all the
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"
 }
 ```
+
 </details>
 
 ## Service Changes
+
 Windows services are background processes for system functions or applications. Setting some to manual optimizes performance by starting them only when needed.
 
 You can find information about services on [Wikipedia](https://www.wikiwand.com/en/Windows_service) and [Microsoft's Website](https://learn.microsoft.com/en-us/dotnet/framework/windows-services/introduction-to-windows-service-applications).
+
 ### Service Name: AJRouter
+
 **Startup Type:** Disabled
 
 **Original Type:** Manual
 
 ### Service Name: ALG
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: AppIDSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: AppMgmt
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: AppReadiness
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: AppVClient
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: AppXSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Appinfo
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: AssignedAccessManagerSvc
+
 **Startup Type:** Disabled
 
 **Original Type:** Manual
 
 ### Service Name: AudioEndpointBuilder
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: AudioSrv
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: Audiosrv
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: AxInstSV
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BDESVC
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BFE
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: BITS
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: BTAGService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BcastDVRUserService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BluetoothUserService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BrokerInfrastructure
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: Browser
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: BthAvctpSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: BthHFSrv
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: CDPSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: CDPUserSvc_*
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: COMSysApp
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: CaptureService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: CertPropSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: ClipSVC
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: ConsentUxUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: CoreMessagingRegistrar
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: CredentialEnrollmentManagerUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: CryptSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: CscService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DPS
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: DcomLaunch
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: DcpSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DevQueryBroker
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DeviceAssociationBrokerSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DeviceAssociationService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DeviceInstall
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DevicePickerUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DevicesFlowUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Dhcp
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: DiagTrack
+
 **Startup Type:** Disabled
 
 **Original Type:** Automatic
 
 ### Service Name: DialogBlockingService
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: DispBrokerDesktopSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: DisplayEnhancementService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DmEnrollmentSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Dnscache
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: DoSvc
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: DsSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DsmSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: DusmSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: EFS
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: EapHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: EntAppSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: EventLog
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: EventSystem
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: FDResPub
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Fax
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: FontCache
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: FrameServer
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: FrameServerMonitor
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: GraphicsPerfSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: HomeGroupListener
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: HomeGroupProvider
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: HvHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: IEEtwCollectorService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: IKEEXT
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: InstallService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: InventorySvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: IpxlatCfgSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: KeyIso
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: KtmRm
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: LSM
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: LanmanServer
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: LanmanWorkstation
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: LicenseManager
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: LxpSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MSDTC
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MSiSCSI
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MapsBroker
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: McpManagementService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MessagingService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MicrosoftEdgeElevationService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MixedRealityOpenXRSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: MpsSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: MsKeyboardFilter
+
 **Startup Type:** Manual
 
 **Original Type:** Disabled
 
 ### Service Name: NPSMSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NaturalAuthentication
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NcaSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NcbService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NcdAutoSetup
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NetSetupSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NetTcpPortSharing
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: Netlogon
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: Netman
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NgcCtnrSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NgcSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: NlaSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: OneSyncSvc_*
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: P9RdrService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PNRPAutoReg
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PNRPsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PcaSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: PeerDistSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PenService_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PerfHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PhoneSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PimIndexMaintenanceSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PlugPlay
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PolicyAgent
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Power
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: PrintNotify
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: PrintWorkflowUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: ProfSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: PushToInstall
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: QWAVE
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RasAuto
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RasMan
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RemoteAccess
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: RemoteRegistry
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: RetailDemo
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RmSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RpcEptMapper
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: RpcLocator
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: RpcSs
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SCPolicySvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SCardSvr
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SDRSVC
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SEMgrSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SENS
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SNMPTRAP
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SNMPTrap
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SSDPSRV
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SamSs
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: ScDeviceEnum
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Schedule
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SecurityHealthService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Sense
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SensorDataService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SensorService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SensrSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SessionEnv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SgrmBroker
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SharedAccess
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: SharedRealitySvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: ShellHWDetection
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SmsRouter
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Spooler
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SstpSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: StateRepository
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: StiSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: StorSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: SysMain
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: SystemEventsBroker
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: TabletInputService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TapiSrv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TermService
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: TextInputManagementService
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: Themes
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: TieringEngineService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TimeBroker
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TimeBrokerSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TokenBroker
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TrkWks
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: TroubleshootingSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: TrustedInstaller
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UI0Detect
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UdkUserSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UevAgentService
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: UmRdpService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UnistoreSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UserDataSvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: UserManager
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: UsoSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: VGAuthService
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: VMTools
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: VSS
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: VacSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: VaultSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: W32Time
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WEPHOSTSVC
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WFDSConMgrSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WMPNetworkSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WManSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WPDBusEnum
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WSService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WSearch
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: WaaSMedicSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WalletService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WarpJITSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WbioSrvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Wcmsvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: WcsPlugInService
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WdNisSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WdiServiceHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WdiSystemHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WebClient
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Wecsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WerSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WiaRpc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WinDefend
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: WinHttpAutoProxySvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WinRM
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: Winmgmt
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: WlanSvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: WpcMonSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: WpnService
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: WpnUserService_*
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: XblAuthManager
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: XblGameSave
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: XboxGipSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: XboxNetApiSvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: autotimesvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: bthserv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: camsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: cbdhsvc_*
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: cloudidsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: dcsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: defragsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: diagnosticshub.standardcollector.service
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: diagsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: dmwappushservice
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: dot3svc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: edgeupdate
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: edgeupdatem
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: embeddedmode
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: fdPHost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: fhsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: gpsvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: hidserv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: icssvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: iphlpsvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: lfsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: lltdsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: lmhosts
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: mpssvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: msiserver
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: netprofm
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: nsi
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: p2pimsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: p2psvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: perceptionsimulation
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: pla
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: seclogon
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: shpamsvc
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: smphost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: spectrum
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: sppsvc
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: ssh-agent
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: svsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: swprv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: tiledatamodelsvc
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: tzautoupdate
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: uhssvc
+
 **Startup Type:** Disabled
 
 **Original Type:** Disabled
 
 ### Service Name: upnphost
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vds
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vm3dservice
+
 **Startup Type:** Manual
 
 **Original Type:** Automatic
 
 ### Service Name: vmicguestinterface
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmicheartbeat
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmickvpexchange
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmicrdv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmicshutdown
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmictimesync
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmicvmsession
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmicvss
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: vmvss
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wbengine
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wcncsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: webthreatdefsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: webthreatdefusersvc_*
+
 **Startup Type:** Automatic
 
 **Original Type:** Automatic
 
 ### Service Name: wercplsupport
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wisvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wlidsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wlpasvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wmiApSrv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: workfolderssvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wscsvc
+
 **Startup Type:** AutomaticDelayedStart
 
 **Original Type:** Automatic
 
 ### Service Name: wuauserv
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 ### Service Name: wudfsvc
+
 **Startup Type:** Manual
 
 **Original Type:** Manual
 
 
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

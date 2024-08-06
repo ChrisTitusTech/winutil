@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFShortcut
+
 ```powershell
 
 function Invoke-WPFShortcut {
@@ -108,6 +110,7 @@ function Invoke-WPFShortcut {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

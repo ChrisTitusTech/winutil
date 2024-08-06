@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 GameDVR is a Windows App that is a dependency for some Store Games. I've never met someone that likes it, but it's there for the XBOX crowd.
@@ -65,13 +63,17 @@ GameDVR is a Windows App that is a dependency for some Store Games. I've never m
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
 }
 ```
+
 </details>
 
 ## Registry Changes
 Applications and System Components store and retrieve configuration data to modify windows settings, so we can use the registry to change many settings in one place.
 
+
 You can find information about the registry on [Wikipedia](https://www.wikiwand.com/en/Windows_Registry) and [Microsoft's Website](https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry).
+
 ### Registry Key: GameDVR_FSEBehavior
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -79,6 +81,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 2
 
 ### Registry Key: GameDVR_Enabled
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -86,6 +89,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: GameDVR_HonorUserFSEBehaviorMode
+
 **Type:** DWord
 
 **Original Value:** 0
@@ -93,6 +97,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 1
 
 ### Registry Key: GameDVR_EFSEFeatureFlags
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -100,6 +105,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 ### Registry Key: AllowGameDVR
+
 **Type:** DWord
 
 **Original Value:** 1
@@ -107,9 +113,11 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 **New Value:** 0
 
 
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

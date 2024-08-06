@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Creates a restore point at runtime in case a revert is needed from WinUtil modifications
@@ -77,6 +75,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -130,9 +129,11 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
       
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Toggle the Num Lock key state when your computer starts.
@@ -29,9 +27,11 @@ Toggle the Num Lock key state when your computer starts.
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilNumLock
+
 ```powershell
 function Invoke-WinUtilNumLock {
     <#
@@ -71,6 +71,7 @@ function Invoke-WinUtilNumLock {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

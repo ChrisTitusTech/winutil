@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFAddUltPerf"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFUltimatePerformance
+
 ```powershell
 Function Invoke-WPFUltimatePerformance {
     <#
@@ -88,6 +90,7 @@ Function Invoke-WPFUltimatePerformance {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

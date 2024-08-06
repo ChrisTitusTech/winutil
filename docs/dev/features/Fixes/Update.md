@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFFixesUpdate
+
 ```powershell
 function Invoke-WPFFixesUpdate {
 
@@ -327,6 +329,7 @@ function Invoke-WPFFixesUpdate {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

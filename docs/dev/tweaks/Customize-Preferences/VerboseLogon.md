@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Show detailed messages during the login process for troubleshooting and diagnostics.
@@ -29,9 +27,11 @@ Show detailed messages during the login process for troubleshooting and diagnost
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilVerboseLogon
+
 ```powershell
 function Invoke-WinUtilVerboseLogon {
     <#
@@ -70,6 +70,7 @@ function Invoke-WinUtilVerboseLogon {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

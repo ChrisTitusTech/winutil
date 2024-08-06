@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 If enabled then Snap preview is disabled when maximize button is hovered.
@@ -29,9 +27,11 @@ If enabled then Snap preview is disabled when maximize button is hovered.
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilSnapFlyout
+
 ```powershell
 function Invoke-WinUtilSnapFlyout {
     <#
@@ -73,6 +73,7 @@ function Invoke-WinUtilSnapFlyout {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

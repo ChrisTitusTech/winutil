@@ -24,9 +24,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/system"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFControlPanel
+
 ```powershell
 function Invoke-WPFControlPanel {
     <#
@@ -56,6 +58,7 @@ function Invoke-WPFControlPanel {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 

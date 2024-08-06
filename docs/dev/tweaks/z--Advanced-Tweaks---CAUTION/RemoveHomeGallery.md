@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Removes the Home and Gallery from explorer and sets This PC as default
@@ -42,6 +40,7 @@ Removes the Home and Gallery from explorer and sets This PC as default
   "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -64,9 +63,11 @@ Removes the Home and Gallery from explorer and sets This PC as default
       
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

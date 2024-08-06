@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 If Enabled Search Button will be on the taskbar.
@@ -29,9 +27,11 @@ If Enabled Search Button will be on the taskbar.
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilTaskbarSearch
+
 ```powershell
 function Invoke-WinUtilTaskbarSearch {
     <#
@@ -74,6 +74,7 @@ function Invoke-WinUtilTaskbarSearch {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 If Enabled then Cursor movement is affected by the speed of your physical mouse movements.
@@ -29,9 +27,11 @@ If Enabled then Cursor movement is affected by the speed of your physical mouse 
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WinUtilMouseAcceleration
+
 ```powershell
 Function Invoke-WinUtilMouseAcceleration {
     <#
@@ -81,6 +81,7 @@ Function Invoke-WinUtilMouseAcceleration {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

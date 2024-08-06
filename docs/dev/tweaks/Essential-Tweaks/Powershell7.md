@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary
@@ -34,6 +32,7 @@ This will edit the config file of the Windows Terminal replacing PowerShell 5 wi
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -49,6 +48,7 @@ Invoke-WPFTweakPS7 -action "PS5"
 
 ```
 ## Function: Invoke-WPFTweakPS7
+
 ```powershell
 function Invoke-WPFTweakPS7{
         <#
@@ -105,8 +105,8 @@ function Invoke-WPFTweakPS7{
 }
 
 ```
-
 ## Function: Invoke-WinUtilWingetProgram
+
 ```powershell
 Function Invoke-WinUtilWingetProgram {
     <#
@@ -281,8 +281,8 @@ Function Invoke-WinUtilWingetProgram {
 }
 
 ```
-
 ## Function: Set-WinUtilTaskbarItem
+
 ```powershell
 function Set-WinUtilTaskbaritem {
     <#
@@ -371,8 +371,8 @@ function Set-WinUtilTaskbaritem {
     }
 }
 ```
-
 ## Function: Set-WinUtilProgressbar
+
 ```powershell
 function Set-WinUtilProgressbar{
     <#
@@ -411,6 +411,7 @@ function Set-WinUtilProgressbar{
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

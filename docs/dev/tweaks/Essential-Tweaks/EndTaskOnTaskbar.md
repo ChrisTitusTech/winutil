@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 Enables option to end task when right clicking a program in the taskbar
@@ -54,6 +52,7 @@ Enables option to end task when right clicking a program in the taskbar
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -88,9 +87,11 @@ $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Taskb
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

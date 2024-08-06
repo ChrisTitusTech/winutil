@@ -5,8 +5,6 @@ Last Updated: 2024-08-05
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
-
-
 ## Description
 
 This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' with a value of '1' which will tell Powershell 7 to not send Telemetry Data.
@@ -34,6 +32,7 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
   "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"
 }
 ```
+
 </details>
 
 ## Invoke Script
@@ -48,9 +47,11 @@ This will create an Environment Variable called 'POWERSHELL_TELEMETRY_OPTOUT' wi
 [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
 
 ```
+
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 

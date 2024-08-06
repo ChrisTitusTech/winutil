@@ -25,9 +25,11 @@ Last Updated: 2024-08-05
   "link": "https://christitustech.github.io/winutil/dev/features/Features/Install"
 }
 ```
+
 </details>
 
 ## Function: Invoke-WPFFeatureInstall
+
 ```powershell
 function Invoke-WPFFeatureInstall {
     <#
@@ -71,6 +73,7 @@ function Invoke-WPFFeatureInstall {
 <!-- BEGIN SECOND CUSTOM CONTENT -->
 
 <!-- END SECOND CUSTOM CONTENT -->
+
 
 [View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/feature.json)
 
