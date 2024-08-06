@@ -1,25 +1,24 @@
 function Set-WinUtilUITheme {
     <#
+        .SYNOPSIS
+            Sets the theme of the XAML file
 
-    .SYNOPSIS
-        Sets the theme of the XAML file
+        .PARAMETER inputXML
+            A string representing the XAML object to modify
 
-    .PARAMETER inputXML
-        A string representing the XAML object to modify
+        .PARAMETER themeName
+            The name of the theme to set the XAML to. Defaults to 'matrix'
 
-    .PARAMETER themeName
-        The name of the theme to set the XAML to. Defaults to 'matrix'
-
-    .EXAMPLE
-        Set-WinUtilUITheme -inputXAML $inputXAML
-
+        .EXAMPLE
+            Set-WinUtilUITheme -inputXAML $inputXAML
     #>
+
     param
     (
-         [Parameter(Mandatory=$true, Position=0)]
-         [string] $inputXML,
-         [Parameter(Mandatory=$false, Position=1)]
-         [string] $themeName = 'matrix'
+         [Parameter(Mandatory, position=0)]
+         [string]$inputXML,
+         [Parameter(position=1)]
+         [string]$themeName = 'matrix'
     )
 
     try {
@@ -38,13 +37,11 @@ function Set-WinUtilUITheme {
                 # Replace the key with the value in the input XML
                 $inputXML = $inputXML.Replace($formattedKey, $value)
             }
-        }
-        else {
+        } else {
             Write-Host "Theme '$themeName' not found."
         }
 
-    }
-    catch {
+    } catch {
         Write-Warning "Unable to apply theme"
         Write-Warning $psitem.Exception.StackTrace
     }

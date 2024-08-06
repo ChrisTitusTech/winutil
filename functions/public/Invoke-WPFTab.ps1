@@ -21,8 +21,7 @@ function Invoke-WPFTab {
             $sync[$PSItem.Name].IsChecked = $false
             # $tabNumber = [int]($PSItem.Name -replace "WPFTab","" -replace "BT","") - 1
             # $sync.$tabNav.Items[$tabNumber].IsSelected = $false
-        }
-        else {
+        } else {
             $sync["$ClickedTab"].IsChecked = $true
             $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
             $sync.$tabNav.Items[$tabNumber].IsSelected = $true

@@ -19,31 +19,30 @@ function Invoke-WPFImpex {
         $Config = $null
     )
 
-    if ($type -eq "export"){
+    if ($type -eq "export") {
         $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
     }
-    if ($type -eq "import"){
+    if ($type -eq "import") {
         $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
     }
 
-    if (-not $Config){
+    if (-not $Config) {
         $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
         $FileBrowser.Filter = "JSON Files (*.json)|*.json"
         $FileBrowser.ShowDialog() | Out-Null
 
-        if($FileBrowser.FileName -eq ""){
+        if($FileBrowser.FileName -eq "") {
             return
-        }
-        else{
+        } else {
             $Config = $FileBrowser.FileName
         }
     }
 
-    if ($type -eq "export"){
+    if ($type -eq "export") {
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
-    if ($type -eq "import"){
+    if ($type -eq "import") {
         $jsonFile = Get-Content $Config | ConvertFrom-Json
 
         $flattenedJson = @()

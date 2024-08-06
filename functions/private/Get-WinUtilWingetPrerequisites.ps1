@@ -17,13 +17,12 @@ function Get-WinUtilWingetPrerequisites {
     $fileUIXaml = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v${versionUIXamlPatch}/Microsoft.UI.Xaml.${versionUIXamlMinor}.x64.appx"
     # Write-Host "$fileUIXaml"
 
-    Try{
+    try {
         Write-Host "Downloading Microsoft.VCLibs Dependency..."
         Invoke-WebRequest -Uri $fileVCLibs -OutFile $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx
         Write-Host "Downloading Microsoft.UI.Xaml Dependency...`n"
         Invoke-WebRequest -Uri $fileUIXaml -OutFile $ENV:TEMP\Microsoft.UI.Xaml.x64.appx
-    }
-    Catch{
+    } catch {
         throw [WingetFailedInstall]::new('Failed to install prerequsites')
     }
 }

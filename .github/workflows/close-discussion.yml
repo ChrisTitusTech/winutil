@@ -14,7 +14,7 @@ jobs:
       - name: Check if PR was merged
         if: github.event.pull_request.merged == true
         run: echo "PR was merged"
-        
+
       - name: Extract Discussion Number & Close If any Were Found
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,7 +23,7 @@ jobs:
         run: |
           pr_body="${{ github.event.pull_request.body }}"
           discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
-          
+
           if [ -z "$discussion_ids" ]; then
             echo "No discussion IDs found."
             exit 0
@@ -34,7 +34,7 @@ jobs:
             response=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
                  -d '{"state": "closed"}' \
                  "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id")
-            
+
             if [ "$response" -ne 200 ]; then
               echo "Failed to close discussion #$discussion_id. HTTP status code: $response"
               exit 1

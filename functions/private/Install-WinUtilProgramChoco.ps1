@@ -33,26 +33,26 @@ function Install-WinUtilProgramChoco {
     Write-Host "==========================================="
     Write-Host "--   Configuring Chocolatey pacakages   ---"
     Write-Host "==========================================="
-    Foreach ($Program in $ProgramsToInstall){
+    Foreach ($Program in $ProgramsToInstall) {
         Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.choco) $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        if($manage -eq "Installing"){
+        if($manage -eq "Installing") {
             write-host "Starting install of $($Program.choco) with Chocolatey."
-            try{
+            try {
                 $tryUpgrade = $false
-		$installOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
+        $installOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
         New-Item -ItemType File -Path $installOutputFilePath
-		$chocoInstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "install $($Program.choco) -y" -Wait -PassThru -RedirectStandardOutput $installOutputFilePath).ExitCode
+        $chocoInstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "install $($Program.choco) -y" -Wait -PassThru -RedirectStandardOutput $installOutputFilePath).ExitCode
             if(($chocoInstallStatus -eq 0) -AND (Test-Path -Path $installOutputFilePath)) {
                 $keywordsFound = Get-Content -Path $installOutputFilePath | Where-Object {$_ -match "reinstall" -OR $_ -match "already installed"}
-		        if ($keywordsFound) {
-		            $tryUpgrade = $true
-		        }
+                if ($keywordsFound) {
+                    $tryUpgrade = $true
+                }
             }
-		# TODO: Implement the Upgrade part using 'choco upgrade' command, this will make choco consistent with WinGet, as WinGet tries to Upgrade when you use the install command.
-		if ($tryUpgrade) {
-		    throw "Automatic Upgrade for Choco isn't implemented yet, a feature to make it consistent with WinGet, the install command using choco simply failed because $($Program.choco) is already installed."
-		}
-		if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)){
+        # TODO: Implement the Upgrade part using 'choco upgrade' command, this will make choco consistent with WinGet, as WinGet tries to Upgrade when you use the install command.
+        if ($tryUpgrade) {
+            throw "Automatic Upgrade for Choco isn't implemented yet, a feature to make it consistent with WinGet, the install command using choco simply failed because $($Program.choco) is already installed."
+        }
+        if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)) {
                     Write-Host "$($Program.choco) installed successfully using Chocolatey."
                     $X++
                     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
@@ -69,13 +69,13 @@ function Install-WinUtilProgramChoco {
             }
         }
 
-	if($manage -eq "Uninstalling"){
+    if($manage -eq "Uninstalling") {
             write-host "Starting uninstall of $($Program.choco) with Chocolatey."
-            try{
-		$uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
+            try {
+        $uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
         New-Item -ItemType File -Path $uninstallOutputFilePath
-		$chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
-		if($chocoUninstallStatus -eq 0){
+        $chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
+        if($chocoUninstallStatus -eq 0) {
                     Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
                     $x++
                     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
@@ -90,13 +90,13 @@ function Install-WinUtilProgramChoco {
                 $x++
                 $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
-	}
+    }
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
     # Cleanup leftovers files
-    if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $installOutputFilePath }
-    if(Test-Path -Path $uninstallOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
+    if(Test-Path -Path $installOutputFilePath) { Remove-Item -Path $installOutputFilePath }
+    if(Test-Path -Path $uninstallOutputFilePath) { Remove-Item -Path $uninstallOutputFilePath }
 
     return;
 }

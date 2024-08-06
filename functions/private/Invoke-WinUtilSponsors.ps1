@@ -37,8 +37,7 @@ Function Invoke-WinUtilSponsors {
 
         # Return the sponsors
         return $sponsors
-    }
-    catch {
+    } catch {
         Write-Error "An error occurred while fetching or processing the sponsors: $_"
         return $null
     }

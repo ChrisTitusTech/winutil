@@ -1,3 +1,12 @@
+Function Uninstall-WinUtilEdgeBrowser {
+
+    <#
+
+    .SYNOPSIS
+        This will uninstall edge by changing the region to Ireland and uninstalling edge the changing it back
+
+    #>
+
 $msedgeProcess = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
 $widgetsProcess = Get-Process -Name "widgets" -ErrorAction SilentlyContinue
 # Checking if Microsoft Edge is running
@@ -136,3 +145,8 @@ function Uninstall-EdgeUpdate {
 Uninstall-Edge
     # "WebView" { Uninstall-WebView }
     # "EdgeUpdate" { Uninstall-EdgeUpdate }
+
+
+
+
+}

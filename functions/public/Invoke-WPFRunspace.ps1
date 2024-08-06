@@ -38,8 +38,7 @@ function Invoke-WPFRunspace {
     $script:handle = $script:powershell.BeginInvoke()
 
     # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted)
-    {
+    if ($script:handle.IsCompleted) {
         $script:powershell.EndInvoke($script:handle)
         $script:powershell.Dispose()
         $sync.runspace.Dispose()

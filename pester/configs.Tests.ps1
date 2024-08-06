@@ -25,19 +25,19 @@ Describe "Config Files" -ForEach @(
         name = "tweaks"
         undo = $true
     }
-){
+) {
     Context "$name config file" {
         It "Imports with no errors" {
             $global:importedconfigs.$name | should -Not -BeNullOrEmpty
         }
-        if ($config){
+        if ($config) {
             It "Imports should be the correct structure" {
                 $applications = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                 $template = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                 $result = New-Object System.Collections.Generic.List[System.Object]
                 Foreach ($application in $applications) {
                     $compare = $global:importedconfigs.$name.$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                    if ($(Compare-Object $compare $template) -ne $null){
+                    if ($(Compare-Object $compare $template) -ne $null) {
                         $result.Add($application)
                     }
                 }
@@ -45,12 +45,12 @@ Describe "Config Files" -ForEach @(
                 $result | Select-String "WPF*" | should -BeNullOrEmpty
             }
         }
-        if($undo){
+        if($undo) {
             It "Tweaks should contain original Value" {
                 $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                 $result = New-Object System.Collections.Generic.List[System.Object]
 
-                foreach ($tweak in $tweaks){
+                foreach ($tweak in $tweaks) {
                     $Originals = @(
                         @{
                             name = "registry"
@@ -65,10 +65,10 @@ Describe "Config Files" -ForEach @(
                             value = "OriginalState"
                         }
                     )
-                    Foreach ($original in $Originals){
+                    Foreach ($original in $Originals) {
                         $TotalCount = ($global:importedconfigs.$name.$tweak.$($original.name)).count
                         $OriginalCount = ($global:importedconfigs.$name.$tweak.$($original.name).$($original.value) | Where-Object {$_}).count
-                        if($TotalCount -ne $OriginalCount){
+                        if($TotalCount -ne $OriginalCount) {
                             $result.Add("$Tweak,$($original.name)")
                         }
                     }
