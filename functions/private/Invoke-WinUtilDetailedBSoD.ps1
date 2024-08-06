@@ -8,26 +8,22 @@ Function Invoke-WinUtilDetailedBSoD {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Detailed BSoD"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Detailed BSoD"
             $value =0
         }
 
         $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
         Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }

@@ -15,8 +15,7 @@ Function Invoke-WinUtilWingetProgram {
     #>
 
     param(
-        [Parameter(Mandatory, Position=0)]
-        $Programs,
+        [Parameter(Mandatory, Position=0)]$Programs,
         
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("Install", "Uninstall")]
@@ -47,10 +46,9 @@ Function Invoke-WinUtilWingetProgram {
         )
 
         $commonArguments = "--id $wingetId --silent"
-        $arguments = if ($Action -eq "Install"){
+        $arguments = if ($Action -eq "Install") {
             "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})" 
-        }
-        else {
+        } else {
             "uninstall $commonArguments"
         }
 

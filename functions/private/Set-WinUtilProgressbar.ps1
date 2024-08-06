@@ -16,11 +16,10 @@ function Set-WinUtilProgressbar{
         [int]$Percent,
         $Hide
     )
-    if ($hide){
+    if ($hide) {
         $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"}) 
         $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})     
-    }
-    else{
+    } else {
         $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"}) 
         $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})     
     }

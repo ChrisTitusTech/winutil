@@ -1,13 +1,15 @@
 param (
     [switch]$Debug,
-    [switch]$Run
+    [switch]$Run,
+    [switch]$SkipPreprocessing
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
+$workingdir = $PSScriptRoot
 
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
-$sync.PSScriptRoot = $PSScriptRoot
+$sync.PSScriptRoot = $workingdir
 $sync.configs = @{}
 
 function Update-Progress {
@@ -15,12 +17,12 @@ function Update-Progress {
         [Parameter(Mandatory, position=0)]
         [string]$StatusMessage,
 
-	[Parameter(Mandatory, position=1)]
-	[ValidateRange(0,100)]
+        [Parameter(Mandatory, position=1)]
+        [ValidateRange(0,100)]
         [int]$Percent,
 
-	[Parameter(position=2)]
-	[string]$Activity = "Compiling"
+        [Parameter(position=2)]
+        [string]$Activity = "Compiling"
     )
 
     Write-Progress -Activity $Activity -Status $StatusMessage -PercentComplete $Percent
@@ -34,6 +36,17 @@ $header = @"
 ################################################################################################################
 "@
 
+if (-NOT $SkipPreprocessing) {
+    Update-Progress "Pre-req: Running Preprocessor..." 0
+
+    # Dot source the 'Invoke-Preprocessing' Function from 'tools/Invoke-Preprocessing.ps1' Script
+    $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
+    . "$(($workingdir -replace ('\\$', '')) + '\' + ($preprocessingFilePath -replace ('\.\\', '')))"
+
+    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', "$preprocessingFilePath", '.\docs\changelog.md', '*.png', '*.exe')
+    $msg = "Pre-req: Code Formatting"
+    Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
+}
 
 # Create the script in memory.
 Update-Progress "Pre-req: Allocating Memory" 0
@@ -43,14 +56,14 @@ Update-Progress "Adding: Header" 5
 $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
-$script_content.Add($(Get-Content .\scripts\start.ps1).replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
+$script_content.Add($(Get-Content "$workingdir\scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
 
 Update-Progress "Adding: Functions" 20
-Get-ChildItem .\functions -Recurse -File | ForEach-Object {
+Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
     $script_content.Add($(Get-Content $psitem.FullName))
     }
 Update-Progress "Adding: Config *.json" 40
-Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
+Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
 
     $json = (Get-Content $psitem.FullName).replace("'","''")
 
@@ -65,15 +78,15 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
         #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
         for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
             $firstLevelName = $firstLevelJsonList[$i]
-	    if ($jsonAsObject.$firstLevelName.content -ne $null) {
+            if ($jsonAsObject.$firstLevelName.content -ne $null) {
                 $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
             }
             if ($jsonAsObject.$firstLevelName.description -ne $null) {
                 $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
                 $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-	    }
-	}
+            }
+        }
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
     if ($psitem.Name -eq "applications.json") {
@@ -95,10 +108,10 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
 
-$xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
+$xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
 
 # Dot-source the Get-TabXaml function
-. .\functions\private\Get-TabXaml.ps1
+. "$workingdir\functions\private\Get-TabXaml.ps1"
 
 Update-Progress "Building: Xaml " 75
 $appXamlContent = Get-TabXaml "applications" 5
@@ -114,30 +127,28 @@ $xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
-$script_content.Add($(Get-Content .\scripts\main.ps1))
+$script_content.Add($(Get-Content "$workingdir\scripts\main.ps1"))
 
-if ($Debug){
+if ($Debug) {
     Update-Progress "Writing debug files" 95
-    $appXamlContent | Out-File -FilePath ".\xaml\inputApp.xaml" -Encoding ascii
-    $tweaksXamlContent | Out-File -FilePath ".\xaml\inputTweaks.xaml" -Encoding ascii
-    $featuresXamlContent | Out-File -FilePath ".\xaml\inputFeatures.xaml" -Encoding ascii
-}
-else {
+    $appXamlContent | Out-File -FilePath "$workingdir\xaml\inputApp.xaml" -Encoding ascii
+    $tweaksXamlContent | Out-File -FilePath "$workingdir\xaml\inputTweaks.xaml" -Encoding ascii
+    $featuresXamlContent | Out-File -FilePath "$workingdir\xaml\inputFeatures.xaml" -Encoding ascii
+} else {
     Update-Progress "Removing temporary files" 99
-    Remove-Item ".\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
-    Remove-Item ".\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
-    Remove-Item ".\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputApp.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputTweaks.xaml" -ErrorAction SilentlyContinue
+    Remove-Item "$workingdir\xaml\inputFeatures.xaml" -ErrorAction SilentlyContinue
 }
 
-Set-Content -Path $scriptname -Value ($script_content -join "`r`n") -Encoding ascii
+Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
-if ($run){
+if ($run) {
     try {
-        Start-Process -FilePath "pwsh" -ArgumentList ".\$scriptname"
-    }
-    catch {
-        Start-Process -FilePath "powershell" -ArgumentList ".\$scriptname"
+        Start-Process -FilePath "pwsh" -ArgumentList "$workingdir\$scriptname"
+    } catch {
+        Start-Process -FilePath "powershell" -ArgumentList "$workingdir\$scriptname"
     }
 
 }

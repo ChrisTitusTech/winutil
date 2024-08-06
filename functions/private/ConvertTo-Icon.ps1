@@ -57,9 +57,9 @@ function ConvertTo-Icon {
 
     #>
     param(
-        [Parameter(Mandatory=$true, position=0)]
+        [Parameter(Mandatory, position=0)]
         [string]$bitmapPath,
-        [Parameter(Mandatory=$true, position=1)]
+        [Parameter(Mandatory, position=1)]
         [string]$iconPath,
         [Parameter(position=2)]
         [bool]$overrideIconFile = $true
@@ -86,8 +86,7 @@ function ConvertTo-Icon {
         $icon.Save($file)
         $file.Close()
         $icon.Dispose()
-    }
-    else {
+    } else {
         throw [System.IO.FileNotFoundException] "[ConvertTo-Icon] The provided bitmap File Path is not found at '$bitmapPath'."
     }
 }

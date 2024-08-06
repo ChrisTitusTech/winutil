@@ -6,7 +6,7 @@ function Invoke-WPFInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -23,7 +23,7 @@ function Invoke-WPFInstall {
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1){
+        if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -43,15 +43,15 @@ function Invoke-WPFInstall {
             return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
 
-        try{
+        try {
             $sync.ProcessRunning = $true
             $errorPackages = @()
-            if($packagesWinget.Count -gt 0){
+            if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
                 $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget 
                 $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
             }
-            if($packagesChoco.Count -gt 0){
+            if($packagesChoco.Count -gt 0) {
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco
             }
@@ -59,8 +59,7 @@ function Invoke-WPFInstall {
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
-        }
-        Catch {
+        } catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="

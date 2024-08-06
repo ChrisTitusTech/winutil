@@ -6,7 +6,7 @@ function Invoke-WPFundoall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -14,7 +14,7 @@ function Invoke-WPFundoall {
 
     $tweaks = (Get-WinUtilCheckBoxes)["WPFtweaks"]
 
-    if ($tweaks.count -eq 0){
+    if ($tweaks.count -eq 0) {
         $msg = "Please check the tweaks you wish to undo."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -24,14 +24,14 @@ function Invoke-WPFundoall {
         param($tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        if ($tweaks.count -eq 1){
+        if ($tweaks.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
         
 
-        for ($i = 0; $i -lt $tweaks.Count; $i++){
+        for ($i = 0; $i -lt $tweaks.Count; $i++) {
             Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
             Invoke-WinUtiltweaks $tweaks[$i] -undo $true
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) })
