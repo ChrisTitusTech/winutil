@@ -83,6 +83,13 @@ try {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
+
+# Load the configuration files
+Invoke-WinUtilUIElements -configVariable $sync.configs.applications -panel "install"
+Invoke-WinUtilUIElements -configVariable $sync.configs.tweaks -panel "tweaks"
+Invoke-WinUtilUIElements -configVariable $sync.configs.feature -panel "features"
+
+
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================

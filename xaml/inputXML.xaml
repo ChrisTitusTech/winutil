@@ -764,8 +764,7 @@
 
                     <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                 BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            {{InstallPanel_applications}}
+                        <Grid Name="appspanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         </Grid>
                     </ScrollViewer>
 
@@ -781,7 +780,6 @@
                         <RowDefinition Height=".70*"/>
                         <RowDefinition Height=".10*"/>
                     </Grid.RowDefinitions>
-                    {{InstallPanel_tweaks}}
                     <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
                         <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
                         <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
@@ -789,6 +787,8 @@
                         <Button Name="WPFclear" Content=" Clear " Margin="2"/>
                         <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
                     </StackPanel>
+                    <Grid Name="tweakspanel" Grid.Row="1">
+                    </Grid>
                     <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
                         <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
                             <TextBlock Padding="10">
@@ -797,14 +797,12 @@
                             </TextBlock>
                         </StackPanel>
                     </Border>
-
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    {{InstallPanel_features}}
+                    <Grid Name="featurespanel" Grid.Row="1" Background="Transparent">
                     </Grid>
                 </ScrollViewer>
             </TabItem>

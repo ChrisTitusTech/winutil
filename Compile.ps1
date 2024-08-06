@@ -97,18 +97,9 @@ Get-ChildItem .\config | Where-Object {$psitem.extension -eq ".json"} | ForEach-
 
 $xaml = (Get-Content .\xaml\inputXML.xaml).replace("'","''")
 
-# Dot-source the Get-TabXaml function
-. .\functions\private\Get-TabXaml.ps1
-
-Update-Progress "Building: Xaml " 75
-$appXamlContent = Get-TabXaml "applications" 5
-$tweaksXamlContent = Get-TabXaml "tweaks"
-$featuresXamlContent = Get-TabXaml "feature"
-
-
 Update-Progress "Adding: Xaml " 90
 # Replace the placeholder in $inputXML with the content of inputApp.xaml
-$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
+#$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
 $xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
 $xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
