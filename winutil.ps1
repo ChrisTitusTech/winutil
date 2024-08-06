@@ -10950,6 +10950,162 @@ $sync.configs.tweaks = '{
       }
     ]
   },
+  "WPFTweaksEdgeDebloat": {
+    "Content": "Debloat Edge",
+    "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a016_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
+        "Name": "CreateDesktopShortcutDefault",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeEnhanceImagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowRecommendationsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "HideFirstRunExperience",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "UserFeedbackAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "AlternateErrorPagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeFollowEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeShoppingAssistantEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "MicrosoftEdgeInsiderPromotionEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowMicrosoftRewards",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WebWidgetAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DiagnosticData",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeAssetDeliveryServiceEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "CryptoWalletEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WalletDonationEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ]
+  },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
     "Description": "Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)",
@@ -14939,6 +15095,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                             <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
                             <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
                             <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                            <CheckBox Name="WPFTweaksEdgeDebloat" Content="Debloat Edge" Margin="5,0" ToolTip="Disables various telemetry options, popups, and other annoyances in Edge."/>
 
                             <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
@@ -15893,8 +16050,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCcU2gQXIP8mYVL
-# FIApc67vR3IMDb3vuZI4yUk9qWGC+qCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAyt4EvMfEjVNe8
+# urxQYj3hCkundoN52rMnvwiaTV90v6CCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -15966,16 +16123,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCAvzjz0wYtwWAYz9f7Rlsj+9xbvfrLyqG2EUlH59/EXujANBgkqhkiG
-# 9w0BAQEFAASCAgCU6Y2zq0dTXWMjpgBhkX1lHW1e9TG/p+qG6ISUFhqH+0A6hw4W
-# 7p1290/ORf+7usw8T956JPvAqZKS+Tk58Mfh5PtIuHRfEwjcoNOWmGvUVe2fP6BD
-# tl9oznLOYtj3ItA5UpirNoTJFwe7DXQYIqdvGpbw3/PnZliva4zbP++BN0KLtf8F
-# vR+xOA5Gi3CEJbkUQgE7tlR11CKxkUFuD5NuwF52FA5zztQmZSaH/C4tmdnPhbz7
-# b+dyt+9lrstUlPB/VpF+XP5V4PEuHfcLbmCXPuIWhhva1pVZe6iiMGNZc7gECb6G
-# l47In2bvAS0YNf/qLK11EhFDjanXa9G6vqs8OAa6Py8gC07ZQF7mmeQd0/qZCxvX
-# /uj3mfwBUbKBeY8gw7SFTjzZfL9asUjg/C2vsNMdWisPRgs0kw0cXRm+mze2mL2s
-# UVDZYDDKlQiAWrAhFY8kSWzxtkV3Jw+pxDj7OnUCCQ72a5Bog+iWsdNwbFXtcrqy
-# xXZYmS+nT5lSOP2BazFcqe+BItXjoAu3lXhY4zqb0fXiRF/+Cn+0AFjpGabP/iL7
-# YtvPnyyFNpJrtgE0JlEsPhdLXta4F4tKXmnvzhSxiaSP2uVR1ykiuIiZLhFWJMZV
-# BycA2VZigXE3Zlyfu3tD0lSDChTLUMkvTw7z+sLYkm/HgTSE949+3iPjcw==
+# DQEJBDEiBCCzFlvJFMfBufNEm5L7izu0HhUObxHJ9FkvD8khdG5xeTANBgkqhkiG
+# 9w0BAQEFAASCAgBBYHR4QXcKEvMJxIk+XPV5Z1pvKQMf6xKP9ezvvgqoKSk4/Dfp
+# hrF+6MD+XJp+QfChCG7cLOOkIATEIr6rLH+5KicLGk1qmivE4ti2cH+1REAnvJ78
+# Oj5c1zklzm1Kmb5WMCQeL11Zy1C/TGCx66MvZaLX6b1YHyoy3OrsH5RGBFdrc7A5
+# ZwNFQfvxlQEy81oeQxnhaGlz2rcXttL5HjmRpqebTckDChX5lBdWPzgegfsvN5m+
+# /fLSDbrhXNVuwOTM+oxfNFKPjpOFlSXIT01jw6Zmy4xuR410ZLcuuJ9kWsrTuaFu
+# 8DNh1b8LRsv1M0tEHtps3OPITsSnHKOi2ADTEMZEE+1xkdA3HaHi/eS1lfKWVY7w
+# 1RjsEKL0S/4H6Z+oE9VLMNOKzT1K/IOf/zrB7iUoo+ZEEcE2kmBfuDo67Hj7HPXj
+# lcM5P67x33DmpALEm73tc+aiZbkxgz0qIqwdwtGncjI3pXcoNddg7SBeZ6d/qUli
+# wmFe5FTMsnrptp7EtPoCkYAzBpl1tR5/2256Wko4MGFVWC6k3NT/l4KQqGOjQQ+0
+# xm2oFn0sCOdmIapflb4USqOve3ADpZURUsR82QesFCrbPjeleGZbNe/XdrZul2b4
+# sgS0N+VRuGCfurYaC/63/EFR/5pEBN+631mHej3p4/V/ehyxctl3PKqnJw==
 # SIG # End signature block
