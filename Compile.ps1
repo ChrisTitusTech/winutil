@@ -69,24 +69,32 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
 
     # Replace every XML Special Character so it'll render correctly in final build
     # Only do so if json files has content to be displayed (for example the applications, tweaks, features json files)
-        # Make an Array List containing every name at first level of Json File
-        $jsonAsObject = $json | convertfrom-json
-        $firstLevelJsonList = [System.Collections.ArrayList]::new()
-        $jsonAsObject.PSObject.Properties.Name | ForEach-Object {$null = $firstLevelJsonList.Add($_)}
-        # Note:
-        #  Avoid using HTML Entity Codes, for example '&rdquo;' (stands for "Right Double Quotation Mark"),
-        #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
-        for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
-            $firstLevelName = $firstLevelJsonList[$i]
-            if ($jsonAsObject.$firstLevelName.content -ne $null) {
-                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
-                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-            }
-            if ($jsonAsObject.$firstLevelName.description -ne $null) {
-                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
-                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-            }
+    # Make an Array List containing every name at first level of Json File
+    [PSCustomObject]$jsonAsObject = $json | convertfrom-json
+
+    # Remove properties like $schema and such from the json object (we don't need it at this point)
+    @(
+        "`$schema"
+    ) | ForEach-Object {
+        $jsonAsObject.PSObject.Properties.Remove($_) | Out-Null
+    }
+    
+    $firstLevelJsonList = [System.Collections.ArrayList]::new()
+    $jsonAsObject.PSObject.Properties.Name | ForEach-Object {$null = $firstLevelJsonList.Add($_)}
+    # Note:
+    #  Avoid using HTML Entity Codes, for example '&rdquo;' (stands for "Right Double Quotation Mark"),
+    #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
+    for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
+        $firstLevelName = $firstLevelJsonList[$i]
+        if ($jsonAsObject.$firstLevelName.content -ne $null) {
+            $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
+            $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
         }
+        if ($jsonAsObject.$firstLevelName.description -ne $null) {
+            $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
+            $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
+        }
+    }
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
     if ($psitem.Name -eq "applications.json") {
