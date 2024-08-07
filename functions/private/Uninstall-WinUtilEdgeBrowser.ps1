@@ -96,6 +96,6 @@ Function Uninstall-WinUtilEdgeBrowser {
     }
 
     Uninstall-Edge
-    Uninstall-WebView
+    # Uninstall-WebView - WebView is needed for Visual Studio and some MS Store Games like Forza
     Uninstall-EdgeUpdate
 }
