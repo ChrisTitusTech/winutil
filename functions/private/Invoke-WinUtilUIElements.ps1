@@ -188,6 +188,7 @@ function Invoke-WinUtilUIElements {
                         $checkBox.HorizontalAlignment = "Right"
                         $checkBox.FontSize = 14
                         $dockPanel.Children.Add($checkBox) | Out-Null
+                        $checkBox.Style = $window.FindResource("ColorfulToggleSwitchStyle")
 
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $appInfo.Content
