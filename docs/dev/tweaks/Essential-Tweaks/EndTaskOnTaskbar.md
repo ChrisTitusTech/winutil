@@ -1,6 +1,6 @@
 # Enable End Task With Right Click
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info

@@ -1,6 +1,6 @@
 # Change Windows Terminal default: PowerShell 5 -> PowerShell 7
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info

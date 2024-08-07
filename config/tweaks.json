@@ -3376,7 +3376,7 @@
     "panel": "1",
     "Order": "a039_",
     "Type": "Button",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFOOSUbutton"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton"
   },
   "WPFchangedns": {
     "Content": "DNS",
@@ -3385,7 +3385,7 @@
     "Order": "a040_",
     "Type": "Combobox",
     "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFchangedns"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
@@ -3401,7 +3401,7 @@
     "panel": "1",
     "Order": "a042_",
     "Type": "Button",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/WPFUndoall"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
@@ -3410,7 +3410,7 @@
     "Order": "a080_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFAddUltPerf"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
@@ -3419,7 +3419,7 @@
     "Order": "a081_",
     "Type": "Button",
     "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFRemoveUltPerf"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",

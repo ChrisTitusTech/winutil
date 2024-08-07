@@ -1,6 +1,6 @@
 # Enable Search Box Web Suggestions in Registry(explorer restart)
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -48,7 +48,7 @@ Enables web suggestions when searching using Windows Search.
       }
       New-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'DisableSearchBoxSuggestions' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
-
+      
 
 ```
 

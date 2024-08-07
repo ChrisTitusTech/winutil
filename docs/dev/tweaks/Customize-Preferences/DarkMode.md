@@ -1,6 +1,6 @@
 # Dark Theme for Windows
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info

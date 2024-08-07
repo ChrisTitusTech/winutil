@@ -1,6 +1,6 @@
 # Disable Telemetry
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -428,7 +428,7 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-
+        
 
 ```
 ## Registry Changes

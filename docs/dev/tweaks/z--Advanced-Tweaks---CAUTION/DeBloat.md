@@ -1,6 +1,6 @@
 # Remove ALL MS Store Apps - NOT RECOMMENDED
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -176,7 +176,7 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
             $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
             $proc.WaitForExit()
         }
-
+      
 
 ```
 

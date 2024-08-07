@@ -1,6 +1,6 @@
 # Remove OneDrive
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -197,7 +197,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
       } else {
       Write-Host "Something went Wrong during the Unistallation of OneDrive" -ForegroundColor Red
       }
-
+      
 
 ```
 ## Undo Script
@@ -206,7 +206,7 @@ Moves OneDrive files to Default Home Folders and Uninstalls it.
 
       Write-Host "Install OneDrive"
       Start-Process -FilePath winget -ArgumentList "install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive " -NoNewWindow -Wait
-
+      
 
 ```
 

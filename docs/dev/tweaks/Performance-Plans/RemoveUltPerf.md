@@ -22,7 +22,7 @@ Last Updated: 2024-08-07
   "Order": "a081_",
   "Type": "Button",
   "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFRemoveUltPerf"
 }
 ```
 

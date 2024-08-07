@@ -1,6 +1,6 @@
 # Debloat Edge
 
-Last Updated: 2024-08-06
+Last Updated: 2024-08-07
 
 
 !!! info
@@ -171,7 +171,8 @@ Disables various telemetry options, popups, and other annoyances in Edge.
       "Value": "0",
       "OriginalValue": "1"
     }
-  ]
+  ],
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
 }
 ```
 
