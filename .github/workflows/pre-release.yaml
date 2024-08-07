@@ -10,6 +10,8 @@ on:
 jobs:
   build-runspace:
     runs-on: windows-latest
+    env:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
