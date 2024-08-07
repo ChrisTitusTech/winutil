@@ -8,7 +8,6 @@ nav:
   - Documentation:
       - Dev Docs: 'devdocs.md'
       - Known Issues: 'KnownIssues.md'
-  - Changelog: 'changelog.md'
   - FAQ: 'faq.md'
 
 theme:
