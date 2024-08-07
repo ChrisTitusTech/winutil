@@ -1,12 +1,13 @@
-site_name: Chris Titus WinUtil Official Documentation
+site_name: WinUtil Documentation
 repo_url: https://github.com/ChrisTitusTech/winutil
 
 nav:
   - Introduction: 'index.md'
   - User Guide: 'userguide.md'
-  - Contribute: 'contribute.md'
-  - Changelog: 'changelog.md'
-  - Known Issues: 'KnownIssues.md'
+  - Contributing Guide: 'contribute.md'
+  - Documentation:
+      - Dev Docs: 'devdocs.md'
+      - Known Issues: 'KnownIssues.md'
   - FAQ: 'faq.md'
 
 theme:
@@ -35,8 +36,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-
-
+      accent: blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -44,11 +44,11 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: black
+      accent: blue
       toggle:
-        icon: material/toggle-switch
+        icon: material/weather-night
         name: Switch to light mode
-      primary: teal
-      accent: lime
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -73,3 +73,15 @@ markdown_extensions:
   - def_list
   - pymdownx.tasklist:
       custom_checkbox: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - awesome-pages
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true
