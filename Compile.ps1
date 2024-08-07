@@ -102,7 +102,7 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
 
     # The replace at the end is required, as without it the output of 'converto-json' will be somewhat weird for Multiline Strings
     # Most Notably is the scripts in some json files, making it harder for users who want to review these scripts, which're found in the compiled script
-    $json = ($jsonAsObject | convertto-json -Depth 3).replace('\r\n',"`r`n")
+    $json = ($jsonAsObject | convertto-json -Depth 3 -Compress).replace('\r\n',"`r`n")
 
     $sync.configs.$($psitem.BaseName) = $json | convertfrom-json
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
