@@ -4,12 +4,10 @@ repo_url: https://github.com/ChrisTitusTech/winutil
 nav:
   - Introduction: 'index.md'
   - User Guide: 'userguide.md'
+  - Contributing Guide: 'contribute.md'
   - Documentation:
       - Dev Docs: 'devdocs.md'
       - Known Issues: 'KnownIssues.md'
-  - Community:
-      - Code Of Conduct: 'CodeOfConduct.md'
-      - Contribute: 'contribute.md'
   - Changelog: 'changelog.md'
   - FAQ: 'faq.md'
 
