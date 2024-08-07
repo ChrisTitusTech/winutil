@@ -1,13 +1,12 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "patternProperties": {
-      "^[a-zA-Z_][a-zA-Z0-9_]*$": {
-        "type": "array",
-        "items": {
-            "type": "string"
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     }
   }
-  
+}

@@ -22,7 +22,8 @@
           "format": "ipv6"
         }
       },
-      "required": ["Primary", "Secondary", "Primary6", "Secondary6"]
+      "required": ["Primary", "Secondary", "Primary6", "Secondary6"],
+      "additionalProperties": false
     }
   }
 }

@@ -290,7 +290,8 @@
         "BorderColor",
         "BorderOpacity",
         "ShadowPulse"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }
