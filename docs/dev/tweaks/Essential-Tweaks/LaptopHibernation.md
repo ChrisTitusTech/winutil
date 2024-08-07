@@ -81,7 +81,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-dc 60" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-ac 10" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-dc 1" -NoNewWindow -Wait
-      
+
 
 ```
 ## Undo Script
@@ -96,7 +96,7 @@ Most modern laptops have connected standby enabled which drains the battery, thi
       Start-Process -FilePath powercfg -ArgumentList "/change standby-timeout-dc 15" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-ac 15" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList "/change monitor-timeout-dc 15" -NoNewWindow -Wait
-      
+
 
 ```
 ## Registry Changes
@@ -113,7 +113,7 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 
 **New Value:** 2
 
-### Registry Key: Attributes 
+### Registry Key: Attributes
 
 **Type:** DWord
 

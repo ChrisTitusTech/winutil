@@ -126,7 +126,7 @@ Creates a restore point at runtime in case a revert is needed from WinUtil modif
             Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS"
             Write-Host -ForegroundColor Green "System Restore Point Created Successfully"
         }
-      
+
 
 ```
 

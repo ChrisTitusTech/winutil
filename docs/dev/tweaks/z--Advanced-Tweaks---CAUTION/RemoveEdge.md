@@ -45,7 +45,7 @@ Removes MS Edge when it gets reinstalled by updates. Credit: Techie Jack
 ```powershell
 
          Uninstall-WinUtilEdgeBrowser
-        
+
 
 ```
 ## Undo Script
@@ -54,7 +54,7 @@ Removes MS Edge when it gets reinstalled by updates. Credit: Techie Jack
 
       Write-Host "Install Microsoft Edge"
       Start-Process -FilePath winget -ArgumentList "install --force -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge " -NoNewWindow -Wait
-      
+
 
 ```
 ## Function: Uninstall-WinUtilEdgeBrowser

@@ -220,7 +220,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
       CCStopper
       AcrobatUpdates
-      
+
 
 ```
 ## Undo Script
@@ -262,7 +262,7 @@ Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates
 
       RestoreCCService
       AcrobatUpdates
-      
+
 
 ```
 ## Service Changes

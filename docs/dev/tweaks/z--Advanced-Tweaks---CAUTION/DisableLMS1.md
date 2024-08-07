@@ -123,7 +123,7 @@ Intel LMS service is always listening on all ports and could be a huge security 
             Write-Host "All found LMS.exe files have been deleted.";
         }
         Write-Host 'Intel LMS vPro service has been disabled, removed, and blocked.';
-       
+
 
 ```
 ## Undo Script
@@ -132,7 +132,7 @@ Intel LMS service is always listening on all ports and could be a huge security 
 
       Write-Host "LMS vPro needs to be redownloaded from intel.com"
 
-      
+
 
 ```
 
