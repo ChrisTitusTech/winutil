@@ -69,7 +69,7 @@ jobs:
           if ($signature.Status -ne 'Valid') { throw "Code signing failed" }
           
       - name: Upload winutil.ps1 as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: winutil
           path: ./winutil.ps1
