@@ -22,7 +22,7 @@ Last Updated: 2024-08-07
   "Order": "a045_",
   "Type": "Button",
   "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/WPFRunAdobeCCCleanerTool"
+  "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
 }
 ```
 

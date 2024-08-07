@@ -22,7 +22,7 @@ Last Updated: 2024-08-07
   "Order": "a080_",
   "Type": "Button",
   "ButtonWidth": "300",
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/WPFAddUltPerf"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
 }
 ```
 
