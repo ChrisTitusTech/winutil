@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+      "type": "object",
+      "properties": {
+        "Content": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Essential Tweaks",
+            "Performance Plans",
+            "Customize Preferences",
+            "z__Advanced Tweaks - CAUTION",
+            "Shortcuts"
+          ]
+        },
+        "panel": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "Order": {
+          "type": "string",
+          "pattern": "^[0-9a-f]+_$"
+        },
+        "registry": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Path": {
+                "type": "string"
+              },
+              "Name": {
+                "type": "string"
+              },
+              "Type": {
+                "type": "string"
+              },
+              "Value": {
+                "type": "string"
+              },
+              "OriginalValue": {
+                "type": "string"
+              }
+            },
+            "required": ["Path", "Name", "Type", "Value", "OriginalValue"]
+          }
+        },
+        "service": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string"
+              },
+              "StartupType": {
+                "type": "string"
+              },
+              "OriginalType": {
+                "type": "string"
+              }
+            },
+            "required": ["Name", "StartupType", "OriginalType"]
+          }
+        },
+        "appx": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "InvokeScript": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "UndoScript": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["Content", "Description", "category", "panel", "Order"]
+    }
+  }
+}
