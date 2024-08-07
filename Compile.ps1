@@ -144,6 +144,16 @@ if ($Debug) {
 Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
 
+Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
+try {
+    $null = Get-Command -Syntax .\winutil.ps1
+}
+catch {
+    Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
+    Write-Host "$($Error[0])" -ForegroundColor Red
+}
+Write-Progress -Activity "Validating" -Completed
+
 if ($run) {
     try {
         Start-Process -FilePath "pwsh" -ArgumentList "$workingdir\$scriptname"
