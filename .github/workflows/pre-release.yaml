@@ -1,65 +1,56 @@
 name: Pre-Release WinUtil
 
+permissions:
+  contents: write
+  actions: read
+
 on:
-  workflow_run:
-    workflows: ["Compile"] # Ensure Compile winget.ps1 is done
-    types:
-      - completed
   workflow_dispatch: # Manual trigger added
 
 jobs:
   build-runspace:
     runs-on: windows-latest
-    outputs:
-      version: ${{ steps.extract_version.outputs.version }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Extract Version from winutil.ps1
+      - name: Set Version to Todays Date
         id: extract_version
         run: |
-          $version = ''
-          Get-Content ./winutil.ps1 -TotalCount 30 | ForEach-Object {
-            if ($_ -match 'Version\s*:\s*(\d{2}\.\d{2}\.\d{2})') {
-              $version = $matches[1]
-              echo "version=$version" >> $GITHUB_ENV
-              echo "::set-output name=version::$version"
-              break
+          $version = (Get-Date -Format "yy.MM.dd")
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      - name: Create Tag
+        id: create_tag
+        run: |
+          $tagExists = git tag -l $env:VERSION
+          if ($tagExists -eq "") {
+            git tag $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to create tag $env:VERSION"
+              exit 1
             }
-          }
-          if (-not $version) {
-            Write-Error "Version not found in winutil.ps1"
-            exit 1
+            git push origin $env:VERSION
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Failed to push tag $env:VERSION"
+              exit 1
+            }
+          } else {
+            Write-Host "Tag $env:VERSION already exists, skipping tag creation"
           }
         shell: pwsh
 
-      - name: Draft Release Changelog
-        id: draft_release
-        uses: release-drafter/release-drafter@v5
-        with:
-          version: ${{ steps.extract_version.outputs.version }}
-          name: Pre-Release ${{ steps.extract_version.outputs.version }}
-          tag: ${{ steps.extract_version.outputs.version }}
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload winutil.ps1
-        uses: actions/upload-artifact@v3
-        with:
-          name: winutil.ps1
-          path: ./winutil.ps1
-
-      - name: Publish Draft Release
+      - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.extract_version.outputs.version }}
-          name: Pre-Release ${{ steps.extract_version.outputs.version }}
-          body: ${{ steps.draft_release.outputs.draft_body }}
+          tag_name: ${{ env.VERSION }}
+          name: Pre-Release ${{ env.VERSION }}
+          body: "![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ env.VERSION }}/winutil.ps1)"
+          append_body: false
           files: ./winutil.ps1
-          draft: false
           prerelease: true
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
