@@ -1,0 +1,34 @@
+name: Remove winutil.ps1 if included in a Push
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  check-and-delete-file:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check if winutil.ps1 exists
+      id: check_existence
+      run: |
+        if [ -f "winutil.ps1" ]; then
+          echo "winutil_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "winutil_exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Delete winutil.ps1 if it exists
+      if: steps.check_existence.outputs.winutil_exists == 'true'
+      run: |
+        git config --global user.email "winutil-action@noreply.github.com"
+        git config --global user.name "winutil-action"
+        git rm winutil.ps1
+        git commit -m "Delete winutil.ps1 as it is not allowed"
+        git push origin HEAD:${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

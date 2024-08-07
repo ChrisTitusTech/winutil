@@ -10,9 +10,17 @@ on:
 jobs:
   build-runspace:
     runs-on: windows-latest
+    env:
+      CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Compile project
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy Bypass -Scope Process -Force; ./Compile.ps1
+        continue-on-error: false # Directly fail the job on error, removing the need for a separate check
 
       - name: Set Version to Todays Date
         id: extract_version
@@ -41,6 +49,31 @@ jobs:
           }
         shell: pwsh
 
+      - name: Create and import code signing certificate
+        shell: pwsh
+        run: |
+          [System.IO.File]::WriteAllBytes("$env:USERPROFILE\code-signing-cert.pfx", [System.Convert]::FromBase64String("$env:CERTIFICATE_BASE64"))
+          Import-PfxCertificate -FilePath "$env:USERPROFILE\code-signing-cert.pfx" -CertStoreLocation Cert:\CurrentUser\My
+
+      - name: Code sign winutil.ps1
+        shell: pwsh
+        run: |
+          $cert = Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+          if ($null -eq $cert) { throw "Code signing certificate not found" }
+          Set-AuthenticodeSignature -FilePath ./winutil.ps1 -Certificate $cert
+
+      - name: Verify code signature
+        shell: pwsh
+        run: |
+          $signature = Get-AuthenticodeSignature -FilePath ./winutil.ps1
+          if ($signature.Status -ne 'Valid') { throw "Code signing failed" }
+          
+      - name: Upload winutil.ps1 as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: winutil
+          path: ./winutil.ps1
+          
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
