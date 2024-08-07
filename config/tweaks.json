@@ -2556,14 +2556,14 @@
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
-    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: Techie Jack",
+    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: Psyirius",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
       "
-         Uninstall-WinUtilEdgeBrowser
-        "
+      Uninstall-WinUtilEdgeBrowser
+      "
     ],
     "UndoScript": [
       "

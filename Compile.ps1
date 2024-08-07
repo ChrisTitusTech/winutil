@@ -43,7 +43,7 @@ if (-NOT $SkipPreprocessing) {
     $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
     . "$(($workingdir -replace ('\\$', '')) + '\' + ($preprocessingFilePath -replace ('\.\\', '')))"
 
-    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', "$preprocessingFilePath", '*.png', '*.exe')
+    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe')
     $msg = "Pre-req: Code Formatting"
     Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 }
@@ -143,6 +143,16 @@ if ($Debug) {
 
 Set-Content -Path "$workingdir\$scriptname" -Value ($script_content -join "`r`n") -Encoding ascii
 Write-Progress -Activity "Compiling" -Completed
+
+Update-Progress -Activity "Validating" -StatusMessage "Checking winutil.ps1 Syntax" -Percent 0
+try {
+    $null = Get-Command -Syntax .\winutil.ps1
+}
+catch {
+    Write-Warning "Syntax Validation for 'winutil.ps1' has failed"
+    Write-Host "$($Error[0])" -ForegroundColor Red
+}
+Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
     try {
