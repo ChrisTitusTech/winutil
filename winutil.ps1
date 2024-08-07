@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.08.06
+    Version        : 24.08.07
 #>
 param (
     [switch]$Debug,
@@ -45,7 +45,7 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.08.06"
+$sync.version = "24.08.07"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
@@ -15951,8 +15951,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCASdst6rBqOnrRY
-# lkuvbkrLUlXr7EPNTrVc8iNJqDB6FKCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBwfa4pnNrVy98I
+# mTVpIIjPDqRRR4/HZkn8o/oErTxHkqCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -16024,16 +16024,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCAn+LI1XgvUxsdTqy9Kp9kQeuUA20W/GbgUGk9Sub19yzANBgkqhkiG
-# 9w0BAQEFAASCAgAWQCk9OgzXbfHeohIomXWRbs4AVy0Lzj40hdsXDvAyyPCA8XXf
-# yUVV7UAIZNAI2AU0kcto9nA5V+mc0aptD74pQSDsoQeMz/IFOpbKlk8KyPcyyiSU
-# ZETchflc/+Masin9i9SJJKVHmiNVlZ5D4E5jwXQvdRV/1hOfo1llolvTQy+OqIec
-# tQF0iKaARSCKhdAxFLxtrKE84AkwX2nVPf82f1+ZS9Z91A4CwcoeV2LF0/9Pjval
-# iyLC3I9bJCfPI+/XZozJBqzcUPVzzMrNXYwX5t0SmIXweMfYC4HuHG/knZhgptXF
-# A6zTqIX92LcZS/i1zPq79PyuytDaU8s6sKsN3YqcLKxnl1STY8GCzh6yTwLDj0ym
-# oufrOO523GKB+Koh2MLLBzwCbpvtmhhL2LJmB8k7deeYWqKZBlVxunvs85ZatUQX
-# aNCIlGGIqM8Ix6U/e1ZOv+mzP8McWuDOUlMlF6eUC+fsn5HvaE5ixOVOnpNcgTXZ
-# wmBxE1HHbDGlKsw28b1JDustvQSQk4AmI9cEWi2EJJv/1DB8p76SQNWFHI+tacMJ
-# ifAU1beowhld6kZKYAQkQBY2xM4Qq2GO2BGW0d/Hhj/3MDssZ6PWudxplMEamBrE
-# LhM1aX+msnyqqXC80O+eF9GDDmwyZ4V9qh1pPMqJ96YKnxb9jQPNRG/cmQ==
+# DQEJBDEiBCBp+VlAhVWx8v3J2911K5Y3gOVfTGF3DGyakuayxAVjnzANBgkqhkiG
+# 9w0BAQEFAASCAgCOo/Mi2xz5/7MZaCo1O1nn4RkhrNRKdKMA0vio3SiJKupSeawM
+# Ks/BB5CGqWUT8lW6t2l468Z6UX6gxkwju3OPy2qOPEnZtErjt6bMbA97xJkmeN5b
+# 3+YoraPkIvaJdWckbTFRCDItCJLx6T9sMk47Nx5NhF73orIf/mBORr5+v8hdQ/Ti
+# KxQkLOX59oqYi9ch7Z5v7U+uIr+o1SEuSwPYwbYkVX3PC375TY3l1GmBLHtgvZtV
+# sWc/GqpujKrP50ZnpQKoXh4HC3kj0sGlA3HNDWyZo62B/Tahzk4Xd3b6mzFSW4ba
+# hKCgJc7x5BkPWxnNTDcgDlk82I3ns/9fxCfgO6kAuhCONOtOkzpzYTsZyRUbIF6S
+# 9bL7MlRISSK2axBMx75kjiG94/2ou1909smesaY2/XbPDpPV0++bU4pFYLi7jj5+
+# CLT7NsJYOL4UXAdpGnUxKjf81or38AM+MZApzflNGepg5+LUtpLtM48LxiNT6MMY
+# 9dXV3N4pMxQqYwuTrB75VHMOnqFsTyNGf9RksmaSH1zcrUoo0FETjIlYzM+YZsTn
+# fvhZk7oVB0KZ8woB4onPbKCGFK7xXZkIeajC3zWDAH+w1fpfaWpX/Sam1sA0gJD+
+# zXDL51guV80bSW8fnON/n2FXBhEi+ecXM4omfEMOZOKkJertBtFCJB65yQ==
 # SIG # End signature block
