@@ -428,7 +428,7 @@ Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. M
 
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
-        
+
 
 ```
 ## Registry Changes

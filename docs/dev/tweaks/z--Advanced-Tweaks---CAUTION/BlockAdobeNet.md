@@ -182,7 +182,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       } catch {
           Write-Error "Failed to flush DNS cache. Error: $_"
       }
-      
+
 
 ```
 ## Undo Script
@@ -232,7 +232,7 @@ Reduce user interruptions by selectively blocking connections to Adobe's activat
       } catch {
           Write-Error "Failed to flush DNS cache. Error: $_"
       }
-      
+
 
 ```
 

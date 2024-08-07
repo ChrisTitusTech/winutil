@@ -1,4 +1,4 @@
-# Set Classic Right-Click Menu 
+# Set Classic Right-Click Menu
 
 Last Updated: 2024-08-07
 
@@ -54,7 +54,7 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name "explorer"
       Stop-Process -InputObject $process
-      
+
 
 ```
 ## Undo Script
@@ -66,7 +66,7 @@ Great Windows 11 tweak to bring back good context menus when right clicking thin
       Write-Host Restarting explorer.exe ...
       $process = Get-Process -Name "explorer"
       Stop-Process -InputObject $process
-      
+
 
 ```
 

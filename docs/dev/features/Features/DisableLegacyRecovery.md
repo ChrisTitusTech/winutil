@@ -48,7 +48,7 @@ Disables Advanced Boot Options screen that lets you start Windows in advanced tr
       }
       New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Configuration Manager\LastKnownGood' -Name 'Enabled' -Type DWord -Value 0 -Force
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Standard' -Wait
-      
+
 
 ```
 
