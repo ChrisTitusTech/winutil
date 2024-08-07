@@ -8811,7 +8811,8 @@ $sync.configs.feature = '{
       "NetFx4-AdvSrvs",
       "NetFx3"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet"
   },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
@@ -8831,7 +8832,8 @@ $sync.configs.feature = '{
     ],
     "InvokeScript": [
       "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/hyperv"
   },
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
@@ -8845,7 +8847,8 @@ $sync.configs.feature = '{
       "DirectPlay",
       "LegacyComponents"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
   },
   "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
@@ -8857,7 +8860,8 @@ $sync.configs.feature = '{
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/wsl"
   },
   "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
@@ -8876,7 +8880,8 @@ $sync.configs.feature = '{
       "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0",
       "nfsadmin client start",
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
   },
   "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
@@ -8893,7 +8898,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"
   },
   "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
@@ -8910,7 +8916,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"
   },
   "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
@@ -8927,7 +8934,8 @@ $sync.configs.feature = '{
       $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
       Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/RegBackup"
   },
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
@@ -8944,7 +8952,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
   },
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
@@ -8961,14 +8970,16 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"
   },
-  "WPFFeaturesandbox": {
+  "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",
     "category": "Features",
     "panel": "1",
     "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Sandbox"
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
@@ -8976,7 +8987,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a060_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Install"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
@@ -8984,7 +8996,8 @@ $sync.configs.feature = '{
     "Order": "a040_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
@@ -8992,7 +9005,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a041_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
@@ -9000,7 +9014,8 @@ $sync.configs.feature = '{
     "Order": "a042_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
@@ -9008,7 +9023,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a043_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/DISM"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
@@ -9016,7 +9032,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a044_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -9024,56 +9041,64 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a045_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/network"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/control"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/power"
   },
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/region"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/system"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -9321,7 +9346,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
@@ -9350,7 +9376,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "powercfg.exe /hibernate on"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
@@ -9397,7 +9424,8 @@ $sync.configs.tweaks = '{
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"
   },
   "WPFTweaksHome": {
     "Content": "Disable Homegroup",
@@ -9416,7 +9444,8 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
@@ -9453,7 +9482,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"
   },
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
@@ -10872,7 +10902,8 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Manual"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"
   },
   "WPFTweaksEdgeDebloat": {
     "Content": "Debloat Edge",
@@ -11028,7 +11059,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
@@ -11044,7 +11076,8 @@ $sync.configs.tweaks = '{
         "Value": "1",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"
   },
   "WPFTweaksTele": {
     "Content": "Disable Telemetry",
@@ -11415,7 +11448,8 @@ $sync.configs.tweaks = '{
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"
   },
   "WPFTweaksWifi": {
     "Content": "Disable Wifi-Sense",
@@ -11438,7 +11472,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
@@ -11454,7 +11489,8 @@ $sync.configs.tweaks = '{
         "Value": "1",
         "OriginalValue": "0"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"
   },
   "WPFTweaksRemoveHomeGallery": {
     "Content": "Remove Home and Gallery from explorer",
@@ -11475,7 +11511,8 @@ $sync.configs.tweaks = '{
       REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
       REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
@@ -11581,7 +11618,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
@@ -11699,7 +11737,8 @@ $sync.configs.tweaks = '{
             $proc.WaitForExit()
         }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
   },
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
@@ -11755,7 +11794,8 @@ $sync.configs.tweaks = '{
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
@@ -11788,7 +11828,8 @@ $sync.configs.tweaks = '{
 
       # Set the property, creating it if it doesn''t exist
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
   },
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7",
@@ -11801,7 +11842,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Invoke-WPFTweakPS7 -action \"PS5\""
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
@@ -11814,7 +11856,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "[Environment]::SetEnvironmentVariable(''POWERSHELL_TELEMETRY_OPTOUT'', '''', ''Machine'')"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"
   },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
@@ -11827,7 +11870,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"
   },
   "WPFTweaksRemoveEdge": {
     "Content": "Remove Microsoft Edge",
@@ -11845,7 +11889,8 @@ $sync.configs.tweaks = '{
       Write-Host \"Install Microsoft Edge\"
       Start-Process -FilePath winget -ArgumentList \"install --force -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
@@ -11887,7 +11932,8 @@ $sync.configs.tweaks = '{
       Write-Host \"Install Copilot\"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
   },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
@@ -11944,7 +11990,8 @@ $sync.configs.tweaks = '{
       Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
   },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
@@ -12038,7 +12085,8 @@ $sync.configs.tweaks = '{
       Write-Host \"Install OneDrive\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
@@ -12061,7 +12109,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
   },
   "WPFTweaksDebloatAdobe": {
     "Content": "Adobe Debloat",
@@ -12209,7 +12258,8 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
@@ -12316,7 +12366,8 @@ $sync.configs.tweaks = '{
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"
   },
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
@@ -12340,7 +12391,8 @@ $sync.configs.tweaks = '{
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
   },
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",
@@ -12353,7 +12405,8 @@ $sync.configs.tweaks = '{
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
   },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
@@ -12364,7 +12417,8 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
   },
   "WPFTweaksDVR": {
     "Content": "Disable GameDVR",
@@ -12408,7 +12462,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -12430,7 +12485,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "netsh interface teredo set state default"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
@@ -12452,7 +12508,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
@@ -12468,7 +12525,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "0",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"
   },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
@@ -12484,7 +12542,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "0",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"
   },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
@@ -12492,7 +12551,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a100_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
@@ -12500,7 +12560,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a101_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
   },
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
@@ -12508,7 +12569,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a102_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
   },
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
@@ -12516,7 +12578,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a103_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
   },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
@@ -12524,7 +12587,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a104_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
   },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
@@ -12532,7 +12596,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a105_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
   "WPFToggleSnapSuggestion": {
     "Content": "Snap Assist Suggestion",
@@ -12540,7 +12605,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a106_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -12548,7 +12614,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a107_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
@@ -12556,7 +12623,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a108_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
@@ -12564,7 +12632,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a200_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
@@ -12572,7 +12641,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a201_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
@@ -12580,7 +12650,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a202_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
@@ -12588,7 +12659,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a203_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
   },
   "WPFToggleTaskbarWidgets": {
     "Content": "Widgets Button in Taskbar",
@@ -12596,7 +12668,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets"
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
@@ -12604,7 +12677,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
   },
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
@@ -12612,14 +12686,16 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a205_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
   },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a039_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton"
   },
   "WPFchangedns": {
     "Content": "DNS",
@@ -12627,21 +12703,24 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult"
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a041_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button"
   },
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a042_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
@@ -12649,7 +12728,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a080_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
@@ -12657,7 +12737,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a081_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
@@ -12665,7 +12746,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a082_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
   }
 }' | convertfrom-json
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
@@ -14990,43 +15072,145 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                             <Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
-                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFTweaksConsumerFeatures" Content="Disable ConsumerFeatures" Margin="5,0" ToolTip="Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)"/>
-                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
-                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
-                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
-                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0" ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
-                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary"/>
-                            <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
-                            <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
-                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
-                            <CheckBox Name="WPFTweaksEdgeDebloat" Content="Debloat Edge" Margin="5,0" ToolTip="Disables various telemetry options, popups, and other annoyances in Edge."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRestorePointLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" ToolTip="Erases TEMP Folders" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDeleteTempFilesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksConsumerFeatures" Content="Disable ConsumerFeatures" ToolTip="Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksConsumerFeaturesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksTeleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" ToolTip="This erases recent docs, clipboard, and run history." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksAHLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDVRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksHiberLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksHomeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" ToolTip="Disables Location Tracking...DUH!" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksLocLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" ToolTip="Storage Sense deletes temp files automatically." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksStorageLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksTeredoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksWifiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" ToolTip="Enables option to end task when right clicking a program in the taskbar" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksEndTaskOnTaskbarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDiskCleanupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksPowershell7Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksPowershell7TeleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksLaptopHibernationLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksServicesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksEdgeDebloat" Content="Debloat Edge" ToolTip="Disables various telemetry options, popups, and other annoyances in Edge." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksEdgeDebloatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"/>
+                            </StackPanel>
 
                             <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" Margin="5,0" ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs"/>
-                            <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" Margin="5,0" ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
-                            <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                            <CheckBox Name="WPFTweaksDisableBGapps" Content="Disable Background Apps" Margin="5,0" ToolTip="Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11"/>
-                            <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0" ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
-                            <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" Margin="5,0" ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
-                            <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0" ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
-                            <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                            <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                            <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                            <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                            <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                            <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: Techie Jack"/>
-                            <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" Margin="5,0" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default"/>
-                            <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksBlockAdobeNetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDebloatAdobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" ToolTip="Disables IPv6." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableipsixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableBGapps" Content="Disable Background Apps" ToolTip="Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableBGappsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableFSOLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" ToolTip="Disables MS Copilot AI built into Windows since 23H2." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveCopilotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableLMS1Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" ToolTip="Disables all Notifications INCLUDING Calendar" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableNotificationsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRightClickMenuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksUTCLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDeBloatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: Techie Jack" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveEdgeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveHomeGalleryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveOnedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"/>
+                            </StackPanel>
                             <Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="{FontSize}"/>
@@ -15159,17 +15343,50 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                             <Label Name="WPFLabelFeatures" Content="Features" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
-                            <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
-                            <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0" ToolTip="Enables legacy programs from previous versions of windows"/>
-                            <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0" ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
-                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Enables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Disables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
-                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
-                            <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturesdotnetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/dotnet"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureshypervLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/hyperv"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" ToolTip="Enables legacy programs from previous versions of windows" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureslegacymediaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/legacymedia"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" ToolTip="Network File System (NFS) is a mechanism for storing files on a network." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturenfsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/nfs"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" ToolTip="Enables web suggestions when searching using Windows Search." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureEnableSearchSuggestionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" ToolTip="Disables web suggestions when searching using Windows Search." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureDisableSearchSuggestionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureRegBackupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/RegBackup"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureEnableLegacyRecoveryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureDisableLegacyRecoveryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturewslLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/wsl"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturesSandbox" Content="Windows Sandbox" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturesSandboxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/Sandbox"/>
+                            </StackPanel>
                             <Button Name="WPFFeatureInstall" Content="Install Features" HorizontalAlignment="Left" Margin="5" Padding="20,5" Width="300"/>
 
                             <Label Name="WPFLabelFixes" Content="Fixes" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
@@ -15951,8 +16168,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBwfa4pnNrVy98I
-# mTVpIIjPDqRRR4/HZkn8o/oErTxHkqCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCAg+qr2L1/v+F+8
+# mJWGh3LvHWCdBPvbnAUuAw/40WK5zqCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -16024,16 +16241,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCBp+VlAhVWx8v3J2911K5Y3gOVfTGF3DGyakuayxAVjnzANBgkqhkiG
-# 9w0BAQEFAASCAgCOo/Mi2xz5/7MZaCo1O1nn4RkhrNRKdKMA0vio3SiJKupSeawM
-# Ks/BB5CGqWUT8lW6t2l468Z6UX6gxkwju3OPy2qOPEnZtErjt6bMbA97xJkmeN5b
-# 3+YoraPkIvaJdWckbTFRCDItCJLx6T9sMk47Nx5NhF73orIf/mBORr5+v8hdQ/Ti
-# KxQkLOX59oqYi9ch7Z5v7U+uIr+o1SEuSwPYwbYkVX3PC375TY3l1GmBLHtgvZtV
-# sWc/GqpujKrP50ZnpQKoXh4HC3kj0sGlA3HNDWyZo62B/Tahzk4Xd3b6mzFSW4ba
-# hKCgJc7x5BkPWxnNTDcgDlk82I3ns/9fxCfgO6kAuhCONOtOkzpzYTsZyRUbIF6S
-# 9bL7MlRISSK2axBMx75kjiG94/2ou1909smesaY2/XbPDpPV0++bU4pFYLi7jj5+
-# CLT7NsJYOL4UXAdpGnUxKjf81or38AM+MZApzflNGepg5+LUtpLtM48LxiNT6MMY
-# 9dXV3N4pMxQqYwuTrB75VHMOnqFsTyNGf9RksmaSH1zcrUoo0FETjIlYzM+YZsTn
-# fvhZk7oVB0KZ8woB4onPbKCGFK7xXZkIeajC3zWDAH+w1fpfaWpX/Sam1sA0gJD+
-# zXDL51guV80bSW8fnON/n2FXBhEi+ecXM4omfEMOZOKkJertBtFCJB65yQ==
+# DQEJBDEiBCDEBAV242+n8TQdEFWzzFTibHIJNcr0NfyLYu6cjB2eiDANBgkqhkiG
+# 9w0BAQEFAASCAgChzHK0TS8X5SQKbk8x7RGla7gqSWpS8xXpwfA2xGzAtLoNmaWe
+# iYcuACmWC1inVIFHEELmheAhIdMZNfPyfp/InXJBunlN6E4GNHEUjwaaKcvosx+I
+# lqPoWpCbG7rsR1gHBzzNadvlY3xcOd9PUACeuS+Hc3ZbONT7LM5IKsVcnaQ8nmXd
+# o2Xvr/r6CcuhNP/VhqlrA0cnOzvuwzoUSUwgZ8uXaX4sc0zoSe79yL2+MzuWDVjy
+# U/V+s5G6BlyWERVC64JnNjvipvWKY3mS0VIhHWl4AbdQ5OdqYzpushS7fiuyTMVT
+# ZFEC3C6kBbmeXnvEEkZnqi4CMi2DBIQEtSt9K7P7PQxybIp7oJvlJ5ejZ33Y8JSh
+# M2lP8LUtNlVxXcmHvJa20TZuS+L9BFSWMCNNgYAhPR1befl6A4bNRDA7HoKVgMxe
+# 7SVhN2quvuQdf6DzQbVGSfHx3L2Kaeyxj+6KVMN3WNdj3I0oJQ/hI8rni2i3M33U
+# ZoBdbTgwueundNC77yPaDcOffdN1fMM8AeMTniI6J+7NhenwH/MF+JkUb7tnHwBC
+# Li1X+J7rayM1I6Qxyuj6Uojw++3ieD308sfB2E8Zi+JlW1V2xOj7X+5GPISyAYQH
+# VbfvbJ3/r8afNzylw0mAeOE1SSobFzlFzO9KpEqBNDCie3RCjYPz7/vJIg==
 # SIG # End signature block

@@ -70,7 +70,7 @@ Disables MS Copilot AI built into Windows since 23H2.
 
       Write-Host "Remove Copilot"
       dism /online /remove-package /package-name:Microsoft.Windows.Copilot
-      
+
 
 ```
 ## Undo Script
@@ -79,7 +79,7 @@ Disables MS Copilot AI built into Windows since 23H2.
 
       Write-Host "Install Copilot"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
-      
+
 
 ```
 ## Registry Changes

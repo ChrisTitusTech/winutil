@@ -43,7 +43,7 @@ if (-NOT $SkipPreprocessing) {
     $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
     . "$(($workingdir -replace ('\\$', '')) + '\' + ($preprocessingFilePath -replace ('\.\\', '')))"
 
-    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', "$preprocessingFilePath", '.\docs\changelog.md', '*.png', '*.exe')
+    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', '.\winutil.ps1', "$preprocessingFilePath", '*.png', '*.exe')
     $msg = "Pre-req: Code Formatting"
     Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg
 }

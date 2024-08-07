@@ -176,7 +176,7 @@ USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the e
             $proc = Start-Process -FilePath $FilePath -Args $ProcessArgs -PassThru
             $proc.WaitForExit()
         }
-      
+
 
 ```
 
