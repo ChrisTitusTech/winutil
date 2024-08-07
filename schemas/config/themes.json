@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "color": {
+      "type": "string",
+      "pattern": "^Transparent|(#[0-9A-Fa-f]{6})$"
+    },
+    "decimal": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d+)?$"
+    }
+  },
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z_][a-zA-Z0-9_]*$": {
+      "type": "object",
+      "properties": {
+        "CustomDialogFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "CustomDialogFontSizeHeader": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "CustomDialogIconSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "CustomDialogWidth": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "CustomDialogHeight": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "FontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "FontFamily": {
+          "type": "string"
+        },
+        "FontSizeHeading": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "HeaderFontFamily": {
+          "type": "string"
+        },
+        "CheckBoxBulletDecoratorFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "CheckBoxMargin": {
+          "type": "string"
+        },
+        "TabButtonFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "TabButtonWidth": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "TabButtonHeight": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "TabRowHeightInPixels": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "IconFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "IconButtonSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "WinUtilIconSize": {
+          "type": "string"
+        },
+        "SettingsIconFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "MicroWinLogoSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ProgressBarForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ProgressBarBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ProgressBarTextColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ComboBoxBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "LabelboxForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "MainForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "MainBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "LabelBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "LinkForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "LinkHoverForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "GroupBorderBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ComboBoxForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ButtonFontFamily": {
+          "type": "string"
+        },
+        "ButtonWidth": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ButtonHeight": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ConfigTabButtonFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "SearchBarWidth": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "SearchBarHeight": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "SearchBarTextBoxFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "SearchBarClearButtonFontSize": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ButtonInstallBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonTweaksBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonConfigBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonUpdatesBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonInstallForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonTweaksForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonConfigForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonUpdatesForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonBackgroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonBackgroundPressedColor": {
+          "$ref": "#/definitions/color"
+        },
+        "CheckboxMouseOverColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonBackgroundMouseoverColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonBackgroundSelectedColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonForegroundColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ToggleButtonOnColor": {
+          "$ref": "#/definitions/color"
+        },
+        "ButtonBorderThickness": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ButtonMargin": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "ButtonCornerRadius": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "BorderColor": {
+          "$ref": "#/definitions/color"
+        },
+        "BorderOpacity": {
+          "$ref": "#/definitions/decimal"
+        },
+        "ShadowPulse": {
+          "type": "string"
+        }
+      },
+      "required": []
+    }
+  }
+}
