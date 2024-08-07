@@ -9,9 +9,8 @@
       "NetFx4-AdvSrvs",
       "NetFx3"
     ],
-    "InvokeScript": [
-
-    ]
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet"
   },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
@@ -31,7 +30,8 @@
     ],
     "InvokeScript": [
       "Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /set hypervisorschedulertype classic' -Wait"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/hyperv"
   },
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
@@ -45,9 +45,8 @@
       "DirectPlay",
       "LegacyComponents"
     ],
-    "InvokeScript": [
-
-    ]
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
   },
   "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
@@ -59,9 +58,8 @@
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
     ],
-    "InvokeScript": [
-
-    ]
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/wsl"
   },
   "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
@@ -80,7 +78,8 @@
       "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default' -Name 'AnonymousGID' -Type DWord -Value 0",
       "nfsadmin client start",
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
   },
   "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
@@ -88,8 +87,7 @@
     "category": "Features",
     "panel": "1",
     "Order": "a015_",
-    "feature": [
-    ],
+    "feature": [],
     "InvokeScript": [
       "
       If (!(Test-Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer')) {
@@ -98,7 +96,8 @@
       New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer' -Name 'DisableSearchBoxSuggestions' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"
   },
   "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
@@ -106,8 +105,7 @@
     "category": "Features",
     "panel": "1",
     "Order": "a016_",
-    "feature": [
-    ],
+    "feature": [],
     "InvokeScript": [
       "
       If (!(Test-Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer')) {
@@ -116,7 +114,8 @@
       New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer' -Name 'DisableSearchBoxSuggestions' -Type DWord -Value 1 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"
   },
   "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
@@ -124,8 +123,7 @@
     "category": "Features",
     "panel": "1",
     "Order": "a017_",
-    "feature": [
-    ],
+    "feature": [],
     "InvokeScript": [
       "
       New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager' -Name 'EnablePeriodicBackup' -Type DWord -Value 1 -Force
@@ -134,7 +132,8 @@
       $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
       Register-ScheduledTask -Action $action -Trigger $trigger -TaskName 'AutoRegBackup' -Description 'Create System Registry Backups' -User 'System'
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/RegBackup"
   },
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
@@ -142,8 +141,7 @@
     "category": "Features",
     "panel": "1",
     "Order": "a018_",
-    "feature": [
-    ],
+    "feature": [],
     "InvokeScript": [
       "
       If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {
@@ -152,7 +150,8 @@
       New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 1 -Force
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Legacy' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
   },
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
@@ -160,8 +159,7 @@
     "category": "Features",
     "panel": "1",
     "Order": "a019_",
-    "feature": [
-    ],
+    "feature": [],
     "InvokeScript": [
       "
       If (!(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood')) {
@@ -170,14 +168,16 @@
       New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood' -Name 'Enabled' -Type DWord -Value 0 -Force
       Start-Process -FilePath cmd.exe -ArgumentList '/c bcdedit /Set {Current} BootMenuPolicy Standard' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"
   },
-  "WPFFeaturesandbox": {
+  "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",
     "category": "Features",
     "panel": "1",
     "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Sandbox"
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
@@ -185,7 +185,8 @@
     "panel": "1",
     "Order": "a060_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Install"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
@@ -193,7 +194,8 @@
     "Order": "a040_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
@@ -201,7 +203,8 @@
     "panel": "1",
     "Order": "a041_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
@@ -209,7 +212,8 @@
     "Order": "a042_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
@@ -217,7 +221,8 @@
     "panel": "1",
     "Order": "a043_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/DISM"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
@@ -225,7 +230,8 @@
     "panel": "1",
     "Order": "a044_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -233,55 +239,63 @@
     "panel": "1",
     "Order": "a045_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/network"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/control"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/power"
   },
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/region"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/system"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
   }
 }
