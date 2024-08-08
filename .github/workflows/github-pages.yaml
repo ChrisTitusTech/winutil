@@ -24,8 +24,8 @@ jobs:
           python-version: 3.x  # Install latest Stable release of Python 3
           cache: 'pip'  # caching pip dependencies
 
-      - name: Install Necessary Dependencies using 'pip'
-        run: pip install mkdocs-material pillow cairosvg mkdocs-awesome-pages-plugin mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin
+      - name: Install Necessary Dependencies using 'pip install -r requirements.txt'
+        run: pip install -r requirements.txt
 
       - name: Build & Deploy using 'mkdocs'
         run: mkdocs gh-deploy --force
