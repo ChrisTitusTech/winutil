@@ -118,7 +118,7 @@ Function Uninstall-WinUtilEdgeBrowser {
         $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
 
         try {
-            write-host "Installing Edge"
+            write-host "Installing Edge ..."
             Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
             Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
             Remove-item $tempEdgePath
