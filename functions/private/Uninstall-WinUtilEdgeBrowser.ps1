@@ -117,10 +117,15 @@ Function Uninstall-WinUtilEdgeBrowser {
     function Install-Edge {
         $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
 
-        write-host "Installing Edge"
-        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
-        Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
-        Remove-item $tempEdgePath
+        try {
+            write-host "Installing Edge"
+            Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
+            Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
+            Remove-item $tempEdgePath
+            write-host "Edge Installed Successfully"
+        } catch {
+            write-host "Failed to install Edge"
+        }
     }
 
     if ($action -eq "Install") {
