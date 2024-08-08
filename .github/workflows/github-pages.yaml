@@ -25,7 +25,7 @@ jobs:
           cache: 'pip'  # caching pip dependencies
 
       - name: Install Necessary Dependencies using 'pip'
-      - run: pip install mkdocs-material pillow cairosvg mkdocs-awesome-pages-plugin mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin
+        run: pip install mkdocs-material pillow cairosvg mkdocs-awesome-pages-plugin mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin
 
       - name: Build & Deploy using 'mkdocs'
-      - run: mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force
