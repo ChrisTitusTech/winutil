@@ -45,12 +45,18 @@ $sync.configs = @{}
 $sync.ProcessRunning = $false
 
 # If script isn't running as admin, show error message and quit
-If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544") {
-    Write-Host "===========================================" -Foregroundcolor Red
-    Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
-    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
-    Write-Host "===========================================" -Foregroundcolor Red
-    break
+if (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544") {
+    Write-Host "===========================================" -ForegroundColor Red
+    Write-Host "-- Scripts must be run as Administrator ---" -ForegroundColor Red
+    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -ForegroundColor Red
+    Write-Host "===========================================" -ForegroundColor Red
+    $choiceCmd = "$env:SystemRoot\System32\choice.exe /c YN /t 60 /D Y /N /M ""Would you like to restart as Administrator?"""
+    Invoke-Expression $choiceCmd
+    $choiceResult = $?
+    if ($choiceResult) {
+        & .\elevate.bat
+    }
+    exit
 }
 
 # Set PowerShell window title
