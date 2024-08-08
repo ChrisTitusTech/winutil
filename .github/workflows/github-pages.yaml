@@ -19,7 +19,7 @@ jobs:
           fetch-depth: '0'  # Fetch all commit history for all branches as well as tags.
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x  # Install latest Stable release of Python 3
           cache: 'pip'  # caching pip dependencies
