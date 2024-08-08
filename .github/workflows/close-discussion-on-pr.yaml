@@ -30,14 +30,19 @@ jobs:
           fi
 
           for discussion_id in $discussion_ids; do
-            echo "Closing discussion #$discussion_id"
-            response=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+            echo "Attempting to close discussion #$discussion_id"
+            response=$(curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+                 -H "Accept: application/vnd.github.v3+json" \
                  -d '{"state": "closed"}' \
                  "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id")
-
-            if [ "$response" -ne 200 ]; then
-              echo "Failed to close discussion #$discussion_id. HTTP status code: $response"
-              exit 1
+            
+            if echo "$response" | jq -e '.id' > /dev/null; then
+              echo "Successfully closed discussion #$discussion_id"
+            else
+              error_message=$(echo "$response" | jq -r '.message // "Unknown error"')
+              echo "Warning: Failed to close discussion #$discussion_id. Error: $error_message"
+              echo "Full response: $response"
             fi
           done
         shell: bash
+        continue-on-error: true
