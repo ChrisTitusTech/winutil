@@ -54,7 +54,17 @@ if (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-
     Invoke-Expression $choiceCmd
     $choiceResult = $?
     if ($choiceResult) {
-        & .\elevate.bat
+        if (-not (Get-Command fltmc -ErrorAction SilentlyContinue)) {
+            try {
+                # Attempt to restart the script with elevated privileges
+                Start-Process PowerShell -ArgumentList "Start-Process PowerShell -ArgumentList '-File ""$PSCommandPath""' -Verb RunAs" -NoNewWindow
+            } catch {
+                # If elevation fails, pause and exit with error code 1
+                Read-Host "Press Enter to continue..." | Out-Null
+                exit 1
+            }
+            exit
+        }
     }
     exit
 }
