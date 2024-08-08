@@ -6,6 +6,12 @@ Function Uninstall-WinUtilEdgeBrowser {
         This will switch up the region to one of the EEA countries temporarily and uninstall the Edge Browser (Chromium).
     #>
 
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("install", "uninstall")]
+        [string]$action
+    )
+
     function Uninstall-EdgeClient {
         param (
             [Parameter(Mandatory = $true)]
@@ -65,6 +71,16 @@ Function Uninstall-WinUtilEdgeBrowser {
         [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
 
         Uninstall-EdgeClient -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
+
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgePDF" -ErrorAction SilentlyContinue | Out-Null
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeHTM" -ErrorAction SilentlyContinue | Out-Null
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeMHT" -ErrorAction SilentlyContinue | Out-Null
+
+        # Remove Edge Polocy reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+
+        # Remove Edge reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
     }
 
     function Uninstall-WebView {
@@ -93,9 +109,25 @@ Function Uninstall-WinUtilEdgeBrowser {
         }
 
         Start-Process cmd.exe "/c $uninstallCmdLine" -WindowStyle Hidden -Wait
+
+        # Remove EdgeUpdate reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
     }
 
-    Uninstall-Edge
-    # Uninstall-WebView - WebView is needed for Visual Studio and some MS Store Games like Forza
-    Uninstall-EdgeUpdate
+    function Install-Edge {
+        $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
+
+        write-host "Installing Edge"
+        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
+        Start-Process -FilePath $tempEdgePath
+        Remove-item $tempEdgePath
+    }
+
+    if ($action -eq "Install") {
+        Install-Edge
+    } elseif ($action -eq "Uninstall") {
+        Uninstall-Edge
+        Uninstall-EdgeUpdate
+        # Uninstall-WebView - WebView is needed for Visual Studio and some MS Store Games like Forza
+    }
 }
