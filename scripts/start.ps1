@@ -50,23 +50,16 @@ if (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-
     Write-Host "-- Scripts must be run as Administrator ---" -ForegroundColor Red
     Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -ForegroundColor Red
     Write-Host "===========================================" -ForegroundColor Red
-    $choiceCmd = "$env:SystemRoot\System32\choice.exe /c YN /t 60 /D Y /N /M ""Would you like to restart as Administrator?"""
+    $choiceCmd = "$env:SystemRoot\System32\choice.exe /c YN /t 60 /D Y /N /M ""Would you like to restart as Administrator? (Y/N)"""
     Invoke-Expression $choiceCmd
     $choiceResult = $?
     if ($choiceResult) {
-        if (-not (Get-Command fltmc -ErrorAction SilentlyContinue)) {
-            try {
-                # Attempt to restart the script with elevated privileges
-                Start-Process PowerShell -ArgumentList "Start-Process PowerShell -ArgumentList '-File ""$PSCommandPath""' -Verb RunAs" -NoNewWindow
-            } catch {
-                # If elevation fails, pause and exit with error code 1
-                Read-Host "Press Enter to continue..." | Out-Null
-                exit 1
-            }
-            exit
+        if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
+        $CommandLine = "-File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
+        Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+        exit
         }
     }
-    exit
 }
 
 # Set PowerShell window title
