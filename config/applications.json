@@ -1,4 +1,5 @@
 {
+    "$schema": "../schemas/config/applications.json",
     "1password": {
         "category": "Utilities",
         "choco": "1password",

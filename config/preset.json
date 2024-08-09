@@ -1,4 +1,5 @@
 {
+  "$schema": "../schemas/config/preset.json",
   "Standard": [
     "WPFTweaksAH",
     "WPFTweaksConsumerFeatures",

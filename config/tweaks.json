@@ -1,4 +1,5 @@
 {
+  "$schema": "../schemas/config/tweaks.json",
   "WPFTweaksAH": {
     "Content": "Disable Activity History",
     "Description": "This erases recent docs, clipboard, and run history.",
