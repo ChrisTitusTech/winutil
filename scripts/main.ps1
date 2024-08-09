@@ -85,9 +85,9 @@ try {
 
 
 # Load the configuration files
-Invoke-WinUtilUIElements -configVariable $sync.configs.applications -panel "install"
-Invoke-WinUtilUIElements -configVariable $sync.configs.tweaks -panel "tweaks"
-Invoke-WinUtilUIElements -configVariable $sync.configs.feature -panel "features"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -panel "install"
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -panel "tweaks"
+Invoke-WPFUIElements -configVariable $sync.configs.feature -panel "features"
 
 
 #===========================================================================
