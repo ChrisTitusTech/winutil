@@ -46,18 +46,20 @@
 ### Overview
 
 ``` mermaid
-graph LR
+%%{init: {"flowchart": {"curve": "cardinal"}} }%%
+graph TD
   A[Fork Project] --> B[Clone Repository];
   B --> C[Create New Branch];
   C --> D[Make Changes];
   D --> G[Test Changes];
   G --> H{Tests Passed?};
   H -->|Yes| E[Commit Changes];
-  E --> F[Push Branch];
   H -->|No| J[Fix Issues];
+  J --> G;
+  E --> F[Push Branch];
   F --> K[Create Pull Request];
   K --> L[Fill out PR template];
-  J --> G;
+  classDef default stroke:#333,stroke-width:4px,font-size:12pt;
 ```
 !!! info
 
@@ -65,8 +67,10 @@ graph LR
 
 ### Fork the Repo
 * Fork the WinUtil Repository [here](https://github.com/ChrisTitusTech/winutil) to create a copy that will be available in your repository list.
+
 ![Fork Image](assets/Fork-Button-Dark.png#only-dark)
-![FOrk Image](assets/Fork-Button-Light.png#only-light)
+
+![Fork Image](assets/Fork-Button-Light.png#only-light)
 
 ### Clone the Fork
 !!! tip
@@ -89,15 +93,22 @@ graph LR
 * `cd {path to the folder with the compile.ps1}`
 * Run the following command to compile and run WinUtil:
 * `.\Compile.ps1 -run`
-* ![Compile](assets/Compile.png)
+
+![Compile](assets/Compile.png)
+
 * After seeing that your changes work properly, feel free to commit the changes to the repository and make a PR. For help on that, follow the documentation below.
 
 ### Committing the changes
 * Before committing your changes, please discard changes made to the `winutil.ps1` file, like the following:
-- ![Push Commit Image](assets/Discard-GHD.png)
+
+![Push Commit Image](assets/Discard-GHD.png)
+
 * Now, commit your changes once you are happy with the result.
+
 ![Commit Image](assets/Commit-GHD.png)
+
 * Push the changes to upload them to your fork on github.com.
+
 ![Push Commit Image](assets/Push-Commit.png)
 
 ### Making a PR
