@@ -8,14 +8,12 @@ function Invoke-WPFUIElements {
         The name of the grid to which the UI elements should be added.
     .PARAMETER columncount
         The number of columns to be used in the Grid. If not provided, a default value is used based on the panel.
-    .PARAMETER categoryPanelMap
-        A hashtable that maps specific categories to specific panels.
     .EXAMPLE
         $categoryPanelMap = @{
             "Essential Tweaks" = 0
             "Customize Preferences" = 1
         }
-        Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 4 -categoryPanelMap $categoryPanelMap
+        Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 5
     #>
 
     param(
@@ -25,8 +23,9 @@ function Invoke-WPFUIElements {
         [Parameter(Mandatory)]
         [string]$targetGridName,
 
+        [Parameter(Mandatory)]
         [int]$columncount
-    )
+    )    
 
     $theme = $sync.configs.themes.$ctttheme
 
@@ -39,43 +38,40 @@ function Invoke-WPFUIElements {
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
     foreach ($entry in $configHashtable.Keys) {
-        $appInfo = $configHashtable[$entry]
+        $entryInfo = $configHashtable[$entry]
 
         # Create an object for the application
-        $appObject = [PSCustomObject]@{
-            Name = $entry
-            Category = $appInfo.Category
-            Content = $appInfo.Content
-            Choco = $appInfo.choco
-            Winget = $appInfo.winget
-            Panel = if ($appInfo.Panel -ne $null) { $appInfo.Panel } else { "0" }
-            Link = $appInfo.link
-            Description = $appInfo.description
-            Type = $appInfo.type
-            ComboItems = $appInfo.ComboItems
-            Checked = $appInfo.Checked
-            ButtonWidth = $appInfo.ButtonWidth
+        $entryObject = [PSCustomObject]@{
+            Name = $entry.Name
+            Category = $entryInfo.Category
+            Content = $entryInfo.Content
+            Choco = $entryInfo.choco
+            Winget = $entryInfo.winget
+            Panel = if ($entryInfo.Panel -ne $null) { $entryInfo.Panel } else { "0" }
+            Link = $entryInfo.link
+            Description = $entryInfo.description
+            Type = $entryInfo.type
+            ComboItems = $entryInfo.ComboItems
+            Checked = $entryInfo.Checked
+            ButtonWidth = $entryInfo.ButtonWidth
         }
 
-        if (-not $organizedData.ContainsKey($appObject.Panel)) {
-            $organizedData[$appObject.Panel] = @{}
+        if (-not $organizedData.ContainsKey($entryObject.Panel)) {
+            $organizedData[$entryObject.Panel] = @{}
         }
 
-        if (-not $organizedData[$appObject.Panel].ContainsKey($appObject.Category)) {
-            $organizedData[$appObject.Panel][$appObject.Category] = @{}
+        if (-not $organizedData[$entryObject.Panel].ContainsKey($entryObject.Category)) {
+            $organizedData[$entryObject.Panel][$entryObject.Category] = @{}
         }
 
         # Store application data in a sub-array under the category
-        $organizedData[$appObject.Panel][$appInfo.Category]["$($appInfo.order)$entry"] = $appObject
+        $organizedData[$entryObject.Panel][$entryInfo.Category]["$($entryInfo.order)$entry"] = $entryObject
+
     }
 
     # Retrieve the main window and the target Grid by name
     $window = $sync["Form"]
     $targetGrid = $window.FindName($targetGridName)
-
-    if ($null -eq $targetGrid) {
-        throw "Grid '$targetGridName' not found."
-    }
 
     # Calculate the needed number of panels and columns
     $panelcount = 0
@@ -169,19 +165,20 @@ function Invoke-WPFUIElements {
                     }
                 }
 
-                $appInfo = $organizedData[$panelKey][$category][$entry]
-                switch ($appInfo.Type) {
+                $entryInfo = $organizedData[$panelKey][$category][$entry]
+                switch ($entryInfo.Type) {
                     "Toggle" {
                         $dockPanel = New-Object Windows.Controls.DockPanel
                         $checkBox = New-Object Windows.Controls.CheckBox
-                        $checkBox.Name = $appInfo.Name
+                        $checkBox.Name = $entryInfo.Name
+                        write-host $entryInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
                         $dockPanel.Children.Add($checkBox) | Out-Null
                         $checkBox.Style = $window.FindResource("ColorfulToggleSwitchStyle")
 
                         $label = New-Object Windows.Controls.Label
-                        $label.Content = $appInfo.Content
-                        $label.ToolTip = $appInfo.Description
+                        $label.Content = $entryInfo.Content
+                        $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.FontSize = $theme.FontSize
                         # Implement for consistent theming later on $label.Style = $window.FindResource("labelfortweaks")
@@ -196,21 +193,21 @@ function Invoke-WPFUIElements {
                         $horizontalStackPanel.Margin = "0,5,0,0"
 
                         $label = New-Object Windows.Controls.Label
-                        $label.Content = $appInfo.Content
+                        $label.Content = $entryInfo.Content
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
                         $label.FontSize = $theme.ButtonFontSize
                         $horizontalStackPanel.Children.Add($label) | Out-Null
 
                         $comboBox = New-Object Windows.Controls.ComboBox
-                        $comboBox.Name = $appInfo.Name
+                        $comboBox.Name = $entryInfo.Name
                         $comboBox.Height = $theme.ButtonHeight
                         $comboBox.Width = $theme.ButtonWidth
                         $comboBox.HorizontalAlignment = "Left"
                         $comboBox.VerticalAlignment = "Center"
                         $comboBox.Margin = "5,5"
 
-                        foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
+                        foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
                             $comboBoxItem.FontSize = $theme.ButtonFontSize
@@ -223,36 +220,36 @@ function Invoke-WPFUIElements {
 
                     "Button" {
                         $button = New-Object Windows.Controls.Button
-                        $button.Name = $appInfo.Name
-                        $button.Content = $appInfo.Content
+                        $button.Name = $entryInfo.Name
+                        $button.Content = $entryInfo.Content
                         $button.HorizontalAlignment = "Left"
                         $button.Margin = "5"
                         $button.Padding = "20,5"
                         $button.FontSize = $theme.ButtonFontSize
-                        if ($appInfo.ButtonWidth -ne $null) {
-                            $button.Width = $appInfo.ButtonWidth
+                        if ($entryInfo.ButtonWidth -ne $null) {
+                            $button.Width = $entryInfo.ButtonWidth
                         }
                         $stackPanel.Children.Add($button) | Out-Null
                     }
 
                     default {
                         $checkBox = New-Object Windows.Controls.CheckBox
-                        $checkBox.Name = $appInfo.Name
-                        $checkBox.Content = $appInfo.Content
+                        $checkBox.Name = $entryInfo.Name
+                        $checkBox.Content = $entryInfo.Content
                         $checkBox.FontSize = $theme.FontSize
-                        $checkBox.ToolTip = $appInfo.Description
+                        $checkBox.ToolTip = $entryInfo.Description
                         $checkBox.Margin = $theme.CheckBoxMargin
-                        if ($appInfo.Checked -ne $null) {
-                            $checkBox.IsChecked = $appInfo.Checked
+                        if ($entryInfo.Checked -ne $null) {
+                            $checkBox.IsChecked = $entryInfo.Checked
                         }
-                        if ($appInfo.Link -ne $null) {
+                        if ($entryInfo.Link -ne $null) {
                             $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                             $horizontalStackPanel.Orientation = "Horizontal"
                             $horizontalStackPanel.Children.Add($checkBox) | Out-Null
 
                             $textBlock = New-Object Windows.Controls.TextBlock
                             $textBlock.Text = "(?)"
-                            $textBlock.ToolTip = $appInfo.Link
+                            $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $window.FindResource("HoverTextBlockStyle")
 
                             # Add event handler for click to open link
