@@ -4,10 +4,18 @@ function Invoke-WPFUIElements {
         Adds UI elements to a specified Grid in the WinUtil GUI based on a JSON configuration.
     .PARAMETER configVariable
         The variable/link containing the JSON configuration.
-    .PARAMETER panel
-        The name of the panel for which the UI elements should be added.
+    .PARAMETER targetGridName
+        The name of the grid to which the UI elements should be added.
+    .PARAMETER columncount
+        The number of columns to be used in the Grid. If not provided, a default value is used based on the panel.
+    .PARAMETER categoryPanelMap
+        A hashtable that maps specific categories to specific panels.
     .EXAMPLE
-        Invoke-WinUtilUIElements -configVariable $sync.configs.applications -panel "install"
+        $categoryPanelMap = @{
+            "Essential Tweaks" = 0
+            "Customize Preferences" = 1
+        }
+        Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 4 -categoryPanelMap $categoryPanelMap
     #>
 
     param(
@@ -15,30 +23,12 @@ function Invoke-WPFUIElements {
         [PSCustomObject]$configVariable,
 
         [Parameter(Mandatory)]
-        [ValidateSet("install", "tweaks", "features")]
-        [string]$panel
+        [string]$targetGridName,
+
+        [int]$columncount
     )
 
-    # Ensure configVariable is not null
-    if ($null -eq $configVariable) {
-        throw "The configuration variable is null."
-    }
-
-    # Determine target grid and column count based on the panel
-    switch ($panel) {
-        "install" {
-            $targetGridName = "appspanel"
-            $columncount = 5
-        }
-        "tweaks" {
-            $targetGridName = "tweakspanel"
-            $columncount = 2
-        }
-        "features" {
-            $targetGridName = "featurespanel"
-            $columncount = 2
-        }
-    }
+    $theme = $sync.configs.themes.$ctttheme
 
     # Convert PSCustomObject to Hashtable
     $configHashtable = @{}
@@ -48,17 +38,17 @@ function Invoke-WPFUIElements {
 
     $organizedData = @{}
     # Iterate through JSON data and organize by panel and category
-    foreach ($appName in $configHashtable.Keys) {
-        $appInfo = $configHashtable[$appName]
+    foreach ($entry in $configHashtable.Keys) {
+        $appInfo = $configHashtable[$entry]
 
         # Create an object for the application
         $appObject = [PSCustomObject]@{
-            Name = $appName
+            Name = $entry
             Category = $appInfo.Category
             Content = $appInfo.Content
             Choco = $appInfo.choco
             Winget = $appInfo.winget
-            Panel = "0" # Set to 0 to force even distribution across columns
+            Panel = if ($appInfo.Panel -ne $null) { $appInfo.Panel } else { "0" }
             Link = $appInfo.link
             Description = $appInfo.description
             Type = $appInfo.type
@@ -76,7 +66,7 @@ function Invoke-WPFUIElements {
         }
 
         # Store application data in a sub-array under the category
-        $organizedData[$appObject.Panel][$appInfo.Category]["$($appInfo.order)$appName"] = $appObject
+        $organizedData[$appObject.Panel][$appInfo.Category]["$($appInfo.order)$entry"] = $appObject
     }
 
     # Retrieve the main window and the target Grid by name
@@ -149,13 +139,13 @@ function Invoke-WPFUIElements {
             }
 
             $label = New-Object Windows.Controls.Label
-            $label.Content = $category
-            $label.FontSize = 16
-            $label.FontFamily = "Segoe UI"
+            $label.Content = $category -replace ".*__"
+            $label.FontSize = $theme.FontSizeHeading
+            $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
 
             $sortedApps = $organizedData[$panelKey][$category].Keys | Sort-Object
-            foreach ($appName in $sortedApps) {
+            foreach ($entry in $sortedApps) {
                 $count++
                 if ($columncount -gt 0) {
                     $panelcount2 = [Int](($count) / $maxcount - 0.5)
@@ -179,14 +169,13 @@ function Invoke-WPFUIElements {
                     }
                 }
 
-                $appInfo = $organizedData[$panelKey][$category][$appName]
+                $appInfo = $organizedData[$panelKey][$category][$entry]
                 switch ($appInfo.Type) {
                     "Toggle" {
                         $dockPanel = New-Object Windows.Controls.DockPanel
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $appInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
-                        $checkBox.FontSize = 14
                         $dockPanel.Children.Add($checkBox) | Out-Null
                         $checkBox.Style = $window.FindResource("ColorfulToggleSwitchStyle")
 
@@ -194,7 +183,8 @@ function Invoke-WPFUIElements {
                         $label.Content = $appInfo.Content
                         $label.ToolTip = $appInfo.Description
                         $label.HorizontalAlignment = "Left"
-                        $label.FontSize = 14
+                        $label.FontSize = $theme.FontSize
+                        # Implement for consistent theming later on $label.Style = $window.FindResource("labelfortweaks")
                         $dockPanel.Children.Add($label) | Out-Null
 
                         $stackPanel.Children.Add($dockPanel) | Out-Null
@@ -209,13 +199,13 @@ function Invoke-WPFUIElements {
                         $label.Content = $appInfo.Content
                         $label.HorizontalAlignment = "Left"
                         $label.VerticalAlignment = "Center"
-                        $label.FontSize = 14
+                        $label.FontSize = $theme.ButtonFontSize
                         $horizontalStackPanel.Children.Add($label) | Out-Null
 
                         $comboBox = New-Object Windows.Controls.ComboBox
                         $comboBox.Name = $appInfo.Name
-                        $comboBox.Height = 32
-                        $comboBox.Width = 186
+                        $comboBox.Height = $theme.ButtonHeight
+                        $comboBox.Width = $theme.ButtonWidth
                         $comboBox.HorizontalAlignment = "Left"
                         $comboBox.VerticalAlignment = "Center"
                         $comboBox.Margin = "5,5"
@@ -223,7 +213,7 @@ function Invoke-WPFUIElements {
                         foreach ($comboitem in ($appInfo.ComboItems -split " ")) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
                             $comboBoxItem.Content = $comboitem
-                            $comboBoxItem.FontSize = 14
+                            $comboBoxItem.FontSize = $theme.ButtonFontSize
                             $comboBox.Items.Add($comboBoxItem) | Out-Null
                         }
 
@@ -238,6 +228,7 @@ function Invoke-WPFUIElements {
                         $button.HorizontalAlignment = "Left"
                         $button.Margin = "5"
                         $button.Padding = "20,5"
+                        $button.FontSize = $theme.ButtonFontSize
                         if ($appInfo.ButtonWidth -ne $null) {
                             $button.Width = $appInfo.ButtonWidth
                         }
@@ -248,8 +239,9 @@ function Invoke-WPFUIElements {
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $appInfo.Name
                         $checkBox.Content = $appInfo.Content
+                        $checkBox.FontSize = $theme.FontSize
                         $checkBox.ToolTip = $appInfo.Description
-                        $checkBox.Margin = "5,0"
+                        $checkBox.Margin = $theme.CheckBoxMargin
                         if ($appInfo.Checked -ne $null) {
                             $checkBox.IsChecked = $appInfo.Checked
                         }

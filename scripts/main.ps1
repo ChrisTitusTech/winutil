@@ -85,9 +85,9 @@ try {
 
 
 # Load the configuration files
-Invoke-WPFUIElements -configVariable $sync.configs.applications -panel "install"
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -panel "tweaks"
-Invoke-WPFUIElements -configVariable $sync.configs.feature -panel "features"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5 
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
 
 #===========================================================================
