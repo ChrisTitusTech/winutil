@@ -67,13 +67,13 @@ jobs:
         run: |
           $signature = Get-AuthenticodeSignature -FilePath ./winutil.ps1
           if ($signature.Status -ne 'Valid') { throw "Code signing failed" }
-          
+
       - name: Upload winutil.ps1 as artifact
         uses: actions/upload-artifact@v4
         with:
           name: winutil
           path: ./winutil.ps1
-          
+
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
