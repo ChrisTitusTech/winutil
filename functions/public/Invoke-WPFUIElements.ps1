@@ -73,21 +73,23 @@ function Invoke-WPFUIElements {
     $window = $sync["Form"]
     $targetGrid = $window.FindName($targetGridName)
 
-    # Calculate the needed number of panels and columns
-    $panelcount = 0
-    $paneltotal = $columncount # Use columncount for even distribution
-    $appcount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
-    $maxcount = [Math]::Round($appcount / $columncount + 0.5)
-
     # Clear existing ColumnDefinitions and Children
     $targetGrid.ColumnDefinitions.Clear() | Out-Null
     $targetGrid.Children.Clear() | Out-Null
 
     # Add ColumnDefinitions to the target Grid
-    for ($i = 0; $i -lt $paneltotal; $i++) {
+    for ($i = 0; $i -lt $columncount; $i++) {
         $colDef = New-Object Windows.Controls.ColumnDefinition
         $colDef.Width = New-Object Windows.GridLength(1, [Windows.GridUnitType]::Star)
         $targetGrid.ColumnDefinitions.Add($colDef) | Out-Null
+    }
+
+    # Only apply the logic for distributing entries across columns if the targetGridName is "appspanel"
+    if ($targetGridName -eq "appspanel") {
+        $panelcount = 0
+        $paneltotal = $columncount # Use columncount for even distribution
+        $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
+        $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
     }
 
     # Iterate through 'organizedData' by panel, category, and application
@@ -112,7 +114,7 @@ function Invoke-WPFUIElements {
 
         foreach ($category in ($organizedData[$panelKey].Keys | Sort-Object)) {
             $count++
-            if ($columncount -gt 0) {
+            if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
                 $panelcount2 = [Int](($count) / $maxcount - 0.5)
                 if ($panelcount -eq $panelcount2) {
                     # Create a new Border for the new column
@@ -140,10 +142,10 @@ function Invoke-WPFUIElements {
             $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
 
-            $sortedApps = $organizedData[$panelKey][$category].Keys | Sort-Object
-            foreach ($entry in $sortedApps) {
+            $entries = $organizedData[$panelKey][$category].Keys | Sort-Object
+            foreach ($entry in $entries) {
                 $count++
-                if ($columncount -gt 0) {
+                if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
                     $panelcount2 = [Int](($count) / $maxcount - 0.5)
                     if ($panelcount -eq $panelcount2) {
                         # Create a new Border for the new column
