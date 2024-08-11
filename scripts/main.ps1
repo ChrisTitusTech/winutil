@@ -95,19 +95,10 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 #===========================================================================
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {write-host $($psitem.Name)}
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*"){
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
-            })
-        }
-
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]

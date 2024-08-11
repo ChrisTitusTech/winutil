@@ -42,7 +42,7 @@ function Invoke-WPFUIElements {
 
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
-            Name = $entry.Name
+            Name = $entry
             Category = $entryInfo.Category
             Content = $entryInfo.Content
             Choco = $entryInfo.choco
@@ -173,7 +173,6 @@ function Invoke-WPFUIElements {
                         $dockPanel = New-Object Windows.Controls.DockPanel
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
-                        write-host $entryInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
                         $dockPanel.Children.Add($checkBox) | Out-Null
                         $checkBox.Style = $window.FindResource("ColorfulToggleSwitchStyle")
@@ -185,8 +184,16 @@ function Invoke-WPFUIElements {
                         $label.FontSize = $theme.FontSize
                         # Implement for consistent theming later on $label.Style = $window.FindResource("labelfortweaks")
                         $dockPanel.Children.Add($label) | Out-Null
-
                         $stackPanel.Children.Add($dockPanel) | Out-Null
+
+                        $sync["$entry"] = $checkBox
+
+                        $sync["$entry"].IsChecked = Get-WinUtilToggleStatus $sync["$entry"].Name
+
+                        $sync["$entry"].Add_Click({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFToggle $Sender.name
+                        })
                     }
 
                     "Combobox" {
@@ -218,6 +225,10 @@ function Invoke-WPFUIElements {
 
                         $horizontalStackPanel.Children.Add($comboBox) | Out-Null
                         $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
+
+                        $comboBox.SelectedIndex = 0
+
+                        $sync["$entry"] = $comboBox
                     }
 
                     "Button" {
@@ -232,6 +243,13 @@ function Invoke-WPFUIElements {
                             $button.Width = $entryInfo.ButtonWidth
                         }
                         $stackPanel.Children.Add($button) | Out-Null
+
+                        $sync["$entry"] = $button
+
+                        $sync["$entry"].Add_Click({
+                            [System.Object]$Sender = $args[0]
+                            Invoke-WPFButton $Sender.name
+                        })
                     }
 
                     default {
@@ -267,6 +285,8 @@ function Invoke-WPFUIElements {
                         } else {
                             $stackPanel.Children.Add($checkBox) | Out-Null
                         }
+
+                        $sync["$entry"] = $checkBox
                     }
                 }
             }
