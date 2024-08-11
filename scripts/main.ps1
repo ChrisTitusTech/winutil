@@ -85,6 +85,7 @@ try {
 
 
 # Load the configuration files
+#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
@@ -95,7 +96,6 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 #===========================================================================
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
-$xaml.SelectNodes("//*[@Name]") | ForEach-Object {write-host $($psitem.Name)}
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem){

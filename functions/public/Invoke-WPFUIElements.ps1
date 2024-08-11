@@ -43,6 +43,7 @@ function Invoke-WPFUIElements {
         # Create an object for the application
         $entryObject = [PSCustomObject]@{
             Name = $entry
+            Order = $entryInfo.order
             Category = $entryInfo.Category
             Content = $entryInfo.Content
             Choco = $entryInfo.choco
@@ -61,12 +62,11 @@ function Invoke-WPFUIElements {
         }
 
         if (-not $organizedData[$entryObject.Panel].ContainsKey($entryObject.Category)) {
-            $organizedData[$entryObject.Panel][$entryObject.Category] = @{}
+            $organizedData[$entryObject.Panel][$entryObject.Category] = @()
         }
 
-        # Store application data in a sub-array under the category
-        $organizedData[$entryObject.Panel][$entryInfo.Category]["$($entryInfo.order)$entry"] = $entryObject
-
+        # Store application data in an array under the category
+        $organizedData[$entryObject.Panel][$entryObject.Category] += $entryObject
     }
 
     # Retrieve the main window and the target Grid by name
@@ -97,11 +97,9 @@ function Invoke-WPFUIElements {
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
         # Create a Border for each column
         $border = New-Object Windows.Controls.Border
-        $border.BorderBrush = [Windows.Media.Brushes]::Gray
-        $border.BorderThickness = [Windows.Thickness]::new(1)
-        $border.Margin = [Windows.Thickness]::new(5)
         $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
+        $border.style = $window.FindResource("BorderStyle")
         $targetGrid.Children.Add($border) | Out-Null
 
         # Create a StackPanel inside the Border
@@ -119,11 +117,9 @@ function Invoke-WPFUIElements {
                 if ($panelcount -eq $panelcount2) {
                     # Create a new Border for the new column
                     $border = New-Object Windows.Controls.Border
-                    $border.BorderBrush = [Windows.Media.Brushes]::Gray
-                    $border.BorderThickness = [Windows.Thickness]::new(1)
-                    $border.Margin = [Windows.Thickness]::new(5)
                     $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
                     [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
+                    $border.style = $window.FindResource("BorderStyle")
                     $targetGrid.Children.Add($border) | Out-Null
 
                     # Create a new StackPanel inside the Border
@@ -142,19 +138,18 @@ function Invoke-WPFUIElements {
             $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
 
-            $entries = $organizedData[$panelKey][$category].Keys | Sort-Object
-            foreach ($entry in $entries) {
+            # Sort entries by Order and then by Name, but only display Name
+            $entries = $organizedData[$panelKey][$category] | Sort-Object Order, Name
+            foreach ($entryInfo in $entries) {
                 $count++
                 if ($targetGridName -eq "appspanel" -and $columncount -gt 0) {
                     $panelcount2 = [Int](($count) / $maxcount - 0.5)
                     if ($panelcount -eq $panelcount2) {
                         # Create a new Border for the new column
                         $border = New-Object Windows.Controls.Border
-                        $border.BorderBrush = [Windows.Media.Brushes]::Gray
-                        $border.BorderThickness = [Windows.Thickness]::new(1)
-                        $border.Margin = [Windows.Thickness]::new(5)
                         $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
                         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
+                        $border.style = $window.FindResource("BorderStyle")
                         $targetGrid.Children.Add($border) | Out-Null
 
                         # Create a new StackPanel inside the Border
@@ -167,7 +162,6 @@ function Invoke-WPFUIElements {
                     }
                 }
 
-                $entryInfo = $organizedData[$panelKey][$category][$entry]
                 switch ($entryInfo.Type) {
                     "Toggle" {
                         $dockPanel = New-Object Windows.Controls.DockPanel
@@ -186,14 +180,46 @@ function Invoke-WPFUIElements {
                         $dockPanel.Children.Add($label) | Out-Null
                         $stackPanel.Children.Add($dockPanel) | Out-Null
 
-                        $sync["$entry"] = $checkBox
+                        $sync[$entryInfo.Name] = $checkBox
 
-                        $sync["$entry"].IsChecked = Get-WinUtilToggleStatus $sync["$entry"].Name
+                        $sync[$entryInfo.Name].IsChecked = Get-WinUtilToggleStatus $sync[$entryInfo.Name].Name
 
-                        $sync["$entry"].Add_Click({
+                        $sync[$entryInfo.Name].Add_Click({
                             [System.Object]$Sender = $args[0]
                             Invoke-WPFToggle $Sender.name
                         })
+                    }
+
+                    "ToggleButton" {
+                        $toggleButton = New-Object Windows.Controls.ToggleButton
+                        $toggleButton.Name = $entryInfo.Name
+                        $toggleButton.Name = "WPFTab" + ($stackPanel.Children.Count + 1) + "BT"
+                        $toggleButton.HorizontalAlignment = "Left"
+                        $toggleButton.Height = $theme.TabButtonHeight
+                        $toggleButton.Width = $theme.TabButtonWidth
+                        $toggleButton.Background = $theme.ButtonInstallBackgroundColor
+                        $toggleButton.Foreground = [Windows.Media.Brushes]::White
+                        $toggleButton.FontWeight = [Windows.FontWeights]::Bold
+
+                        $textBlock = New-Object Windows.Controls.TextBlock
+                        $textBlock.FontSize = $theme.TabButtonFontSize
+                        $textBlock.Background = [Windows.Media.Brushes]::Transparent
+                        $textBlock.Foreground = $theme.ButtonInstallForegroundColor
+
+                        $underline = New-Object Windows.Documents.Underline
+                        $underline.Inlines.Add($entryInfo.name -replace "(.).*", "`$1")
+
+                        $run = New-Object Windows.Documents.Run
+                        $run.Text = $entryInfo.name -replace "^.", ""
+
+                        $textBlock.Inlines.Add($underline)
+                        $textBlock.Inlines.Add($run)
+
+                        $toggleButton.Content = $textBlock
+
+                        $stackPanel.Children.Add($toggleButton) | Out-Null
+
+                        $sync[$entryInfo.Name] = $toggleButton
                     }
 
                     "Combobox" {
@@ -228,7 +254,7 @@ function Invoke-WPFUIElements {
 
                         $comboBox.SelectedIndex = 0
 
-                        $sync["$entry"] = $comboBox
+                        $sync[$entryInfo.Name] = $comboBox
                     }
 
                     "Button" {
@@ -244,9 +270,9 @@ function Invoke-WPFUIElements {
                         }
                         $stackPanel.Children.Add($button) | Out-Null
 
-                        $sync["$entry"] = $button
+                        $sync[$entryInfo.Name] = $button
 
-                        $sync["$entry"].Add_Click({
+                        $sync[$entryInfo.Name].Add_Click({
                             [System.Object]$Sender = $args[0]
                             Invoke-WPFButton $Sender.name
                         })
@@ -286,7 +312,7 @@ function Invoke-WPFUIElements {
                             $stackPanel.Children.Add($checkBox) | Out-Null
                         }
 
-                        $sync["$entry"] = $checkBox
+                        $sync[$entryInfo.Name] = $checkBox
                     }
                 }
             }

@@ -502,7 +502,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style TargetType="Border">
+        <Style x:Key="BorderStyle" TargetType="Border">
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
             <Setter Property="BorderBrush" Value="{BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
