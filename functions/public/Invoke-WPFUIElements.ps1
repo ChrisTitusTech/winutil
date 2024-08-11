@@ -222,6 +222,17 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $toggleButton
                     }
 
+                    "Image" {
+                        $image = New-Object Windows.Controls.Image
+                        $image.Name = $entryInfo.Name
+                        $image.Source = $entryInfo.Content
+                        $image.Height = $theme.ImageHeight
+                        $image.Width = $theme.ImageWidth
+                        $image.HorizontalAlignment = "Center"
+                        $image.Margin = $theme.ImageMargin
+                        $stackPanel.Children.Add($image) | Out-Null
+                    }
+
                     "Combobox" {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
