@@ -303,6 +303,22 @@ public class PowerManagement {
             }
         }
 
+        # Prevent Windows Update Installing so called Expedited Apps
+        @(
+            'EdgeUpdate',
+            'DevHomeUpdate',
+            'OutlookUpdate',
+            'CrossDeviceUpdate'
+        ) | ForEach-Object {
+            Write-Host "Removing Windows Expedited App: $_"
+
+            # Copied here After Installation (Online)
+            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
+            
+            # When in Offline Image
+            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+        }
+
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
         Write-Host "Setting all services to start manually"
         reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
