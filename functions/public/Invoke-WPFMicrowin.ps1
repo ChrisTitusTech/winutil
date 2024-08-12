@@ -63,11 +63,11 @@ public class PowerManagement {
     $scratchDir = $sync.MicrowinScratchDir.Text
 
     # Detect if the Windows image is an ESD file and convert it to WIM
-    if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf)) {
+    if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
         Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
         if ($?) {
-            Remove-Item -Path $mountDir\sources\install.esd -Force
+            Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
             $index = 1
         } else {
@@ -116,7 +116,7 @@ public class PowerManagement {
             if (Test-Path "$env:TEMP\DRV_EXPORT") {
                 Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
             }
-            if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text))) {
+            if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
                 Write-Host "Using specified driver source..."
                 dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
                 if ($?) {
@@ -341,7 +341,7 @@ public class PowerManagement {
         Write-Host "Cleanup complete."
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
     }
 
     try {
@@ -403,7 +403,7 @@ public class PowerManagement {
         reg unload HKLM\zSYSTEM
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
 
         Write-Host "Creating ISO image"
 
@@ -417,7 +417,7 @@ public class PowerManagement {
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 
-        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
+        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b`"$mountDir\boot\etfsboot.com`"#pEF,e,b`"$mountDir\efi\microsoft\boot\efisys.bin`" `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
 
         $LASTEXITCODE = $oscdimgProc.ExitCode
 

@@ -157,7 +157,7 @@ function Remove-ProvisionedPackages([switch]$keepSecurity = $false) {
             $status = "Removing Provisioned $($appx.PackageName)"
             Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
             try {
-                Remove-AppxProvisionedPackage -Path $scratchDir -PackageName $appx.PackageName -ErrorAction SilentlyContinue
+                Remove-AppxProvisionedPackage -Path "$scratchDir" -PackageName $appx.PackageName -ErrorAction SilentlyContinue
             } catch {
                 Write-Host "Application $($appx.PackageName) could not be removed"
                 continue
@@ -175,9 +175,9 @@ function Copy-ToUSB([string]$fileToCopy) {
             $destinationPath = "$($volume.DriveLetter):\"
             #Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
             # Get the total size of the file
-            $totalSize = (Get-Item $fileToCopy).length
+            $totalSize = (Get-Item "$fileToCopy").length
 
-            Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
+            Copy-Item -Path "$fileToCopy" -Destination "$destinationPath" -Verbose -Force -Recurse -Container -PassThru |
                 ForEach-Object {
                     # Calculate the percentage completed
                     $completed = ($_.BytesTransferred / $totalSize) * 100
