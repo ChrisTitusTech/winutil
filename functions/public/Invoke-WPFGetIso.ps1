@@ -76,7 +76,7 @@ function Invoke-WPFGetIso {
     }
 
     Write-Host "File path $($filePath)"
-    if (-not (Test-Path -Path $filePath -PathType Leaf)) {
+    if (-not (Test-Path -Path "$filePath" -PathType Leaf)) {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
@@ -85,7 +85,7 @@ function Invoke-WPFGetIso {
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
-    $isoSize = (Get-Item -Path $filePath).Length
+    $isoSize = (Get-Item -Path "$filePath").Length
     Write-Debug "Size of ISO file: $($isoSize) bytes"
     # Use this procedure to get the free space of the drive depending on where the user profile folder is stored.
     # This is done to guarantee a dynamic solution, as the installation drive may be mounted to a letter different than C
@@ -122,7 +122,7 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
-    $mountedISOPath = (Split-Path -Path $filePath)
+    $mountedISOPath = (Split-Path -Path "$filePath")
      if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
         $sync.MicrowinScratchDirBox.Text =""
     }
@@ -186,7 +186,7 @@ function Invoke-WPFGetIso {
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
-        if ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (-not (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))) {
+        if ((-not (Test-Path -Path "$wimFile" -PathType Leaf)) -and (-not (Test-Path -Path "$($wimFile.Replace(".wim", ".esd").Trim())" -PathType Leaf))) {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)

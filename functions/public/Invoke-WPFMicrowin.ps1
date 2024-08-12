@@ -63,11 +63,11 @@ public class PowerManagement {
     $scratchDir = $sync.MicrowinScratchDir.Text
 
     # Detect if the Windows image is an ESD file and convert it to WIM
-    if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf)) {
+    if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
         Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
         if ($?) {
-            Remove-Item -Path $mountDir\sources\install.esd -Force
+            Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
             $index = 1
         } else {
@@ -116,7 +116,7 @@ public class PowerManagement {
             if (Test-Path "$env:TEMP\DRV_EXPORT") {
                 Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
             }
-            if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text))) {
+            if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
                 Write-Host "Using specified driver source..."
                 dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
                 if ($?) {
@@ -174,12 +174,13 @@ public class PowerManagement {
             Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
             Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
         }
-        if (!$keepEdge) {
-            Write-Host "Removing Edge"
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
-        }
+        # if (!$keepEdge) {
+        #     # this is destructive and might result in touching SystemApps is not recommended unless you going complete rogue on trimming edge and telemetry
+        #     Write-Host "Removing Edge"
+        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
+        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
+        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
+        # }
 
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
@@ -283,24 +284,72 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
         if (!$keepEdge) {
-            Write-Host "Removing Edge icon from taskbar"
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Favorites" /f           >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "FavoritesChanges" /f   >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
-            Write-Host "Edge icon removed from taskbar"
-            if (Test-Path "HKLM:\zSOFTWARE\WOW6432Node") {
-                # Remove leftovers of 64-bit installations
-                # ---
-                # Remove registry values first...
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /va /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /va /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /va /f > $null 2>&1
-                # ...then the registry keys
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f > $null 2>&1
+            # Undo changes made by -> Dism Add-Edge Edge.wim (Trust Me: this is the non-destructive way to unintegrate Edge)
+
+            Write-Host "Removing Edge"
+
+            # Microsoft Edge
+            reg delete "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\{9459C573-B17A-45AE-9F64-1857B5D58CEE}" /f | Out-Null
+
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\Clients\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /f | Out-Null
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /f | Out-Null
+
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f | Out-Null
+
+            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\Edge" -Type Container) {
+                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\Edge" -Recurse -Force | Out-Null
             }
+
+            # Extra
+            reg delete "HKLM\zSOFTWARE\Microsoft\MicrosoftEdge" /f | Out-Null
+
+            # Microsoft EdgeWebView
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /f | Out-Null
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\ClientState\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /f | Out-Null
+
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f | Out-Null
+
+            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeWebView" -Type Container) {
+                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeWebView" -Recurse -Force | Out-Null
+            }
+
+            # Edge Core
+            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeCore" -Type Container) {
+                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeCore" -Recurse -Force | Out-Null
+            }
+
+            # Microsoft Edge Update
+            reg delete "HKLM\zSOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MicrosoftEdgeUpdate.exe" /f | Out-Null
+
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate" /f | Out-Null
+            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f | Out-Null
+
+            # Microsoft Edge Update :: Services
+            reg delete "HKLM\zSYSTEM\ControlSet001\Services\edgeupdate" /f | Out-Null
+            reg delete "HKLM\zSYSTEM\ControlSet001\Services\edgeupdatem" /f | Out-Null
+
+            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeUpdate" -Type Container) {
+                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeUpdate" -Recurse -Force | Out-Null
+            }
+
+            # Prevent EdgeChromium from Installing in the future
+            reg add "HKLM\zSOFTWARE\Microsoft\EdgeUpdate" /v "DoNotUpdateToEdgeWithChromium" /t REG_DWORD /d "1" /f | Out-Null
+        }
+
+        # Prevent Windows Update Installing so called Expedited Apps
+        @(
+            'EdgeUpdate',
+            'DevHomeUpdate',
+            'OutlookUpdate',
+            'CrossDeviceUpdate'
+        ) | ForEach-Object {
+            Write-Host "Removing Windows Expedited App: $_"
+
+            # Copied here After Installation (Online)
+            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
+            
+            # When in Offline Image
+            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
         }
 
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
@@ -341,7 +390,7 @@ public class PowerManagement {
         Write-Host "Cleanup complete."
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
     }
 
     try {
@@ -403,7 +452,7 @@ public class PowerManagement {
         reg unload HKLM\zSYSTEM
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
 
         Write-Host "Creating ISO image"
 
@@ -417,7 +466,7 @@ public class PowerManagement {
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 
-        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
+        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b`"$mountDir\boot\etfsboot.com`"#pEF,e,b`"$mountDir\efi\microsoft\boot\efisys.bin`" `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
 
         $LASTEXITCODE = $oscdimgProc.ExitCode
 
