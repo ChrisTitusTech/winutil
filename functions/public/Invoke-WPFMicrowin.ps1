@@ -159,10 +159,8 @@ public class PowerManagement {
         Remove-ProvisionedPackages
 
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
@@ -175,9 +173,7 @@ public class PowerManagement {
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Windows.Search*" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
         Write-Host "Removal complete!"
 
@@ -238,59 +234,6 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-
-        if (!$keepEdge) {
-            # Undo changes made by -> Dism Add-Edge Edge.wim (Trust Me: this is the non-destructive way to unintegrate Edge)
-
-            Write-Host "Removing Edge"
-
-            # Microsoft Edge
-            reg delete "HKLM\zSOFTWARE\Microsoft\Active Setup\Installed Components\{9459C573-B17A-45AE-9F64-1857B5D58CEE}" /f | Out-Null
-
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\Clients\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /f | Out-Null
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\ClientState\{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}" /f | Out-Null
-
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f | Out-Null
-
-            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\Edge" -Type Container) {
-                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\Edge" -Recurse -Force | Out-Null
-            }
-
-            # Extra
-            reg delete "HKLM\zSOFTWARE\Microsoft\MicrosoftEdge" /f | Out-Null
-
-            # Microsoft EdgeWebView
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /f | Out-Null
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate\ClientState\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /f | Out-Null
-
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f | Out-Null
-
-            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeWebView" -Type Container) {
-                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeWebView" -Recurse -Force | Out-Null
-            }
-
-            # Edge Core
-            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeCore" -Type Container) {
-                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeCore" -Recurse -Force | Out-Null
-            }
-
-            # Microsoft Edge Update
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\MicrosoftEdgeUpdate.exe" /f | Out-Null
-
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\EdgeUpdate" /f | Out-Null
-            reg delete "HKLM\zSOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f | Out-Null
-
-            # Microsoft Edge Update :: Services
-            reg delete "HKLM\zSYSTEM\ControlSet001\Services\edgeupdate" /f | Out-Null
-            reg delete "HKLM\zSYSTEM\ControlSet001\Services\edgeupdatem" /f | Out-Null
-
-            if (Test-Path "$scratchDir\Program Files (x86)\Microsoft\EdgeUpdate" -Type Container) {
-                Remove-Item "$scratchDir\Program Files (x86)\Microsoft\EdgeUpdate" -Recurse -Force | Out-Null
-            }
-
-            # Prevent EdgeChromium from Installing in the future
-            reg add "HKLM\zSOFTWARE\Microsoft\EdgeUpdate" /v "DoNotUpdateToEdgeWithChromium" /t REG_DWORD /d "1" /f | Out-Null
-        }
 
         # Prevent Windows Update Installing so called Expedited Apps
         @(
