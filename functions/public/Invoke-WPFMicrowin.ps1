@@ -347,7 +347,7 @@ public class PowerManagement {
 
             # Copied here After Installation (Online)
             # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
-            
+
             # When in Offline Image
             reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
         }
