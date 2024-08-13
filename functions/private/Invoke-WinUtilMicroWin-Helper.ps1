@@ -25,25 +25,22 @@ function Test-CompatibleImage() {
     }
 }
 
-function Remove-Features([switch]$dumpFeatures = $false, [switch]$keepDefender = $false) {
+function Remove-Features() {
     <#
         .SYNOPSIS
             Removes certain features from ISO image
 
         .PARAMETER Name
-            dumpFeatures - Dumps all features found in the ISO into a file called allfeaturesdump.txt. This file can be examined and used to decide what to remove.
-            keepDefender - Should Defender be removed from the ISO?
+            No Params
 
         .EXAMPLE
-            Remove-Features -keepDefender:$false
+            Remove-Features
     #>
     try {
         $featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
-        if ($dumpFeatures) {
-            $featlist > allfeaturesdump.txt
-        }
 
         $featlist = $featlist | Where-Object {
+            $_ -NotLike "*Defender*" -AND
             $_ -NotLike "*Printing*" -AND
             $_ -NotLike "*TelnetClient*" -AND
             $_ -NotLike "*PowerShell*" -AND
@@ -51,8 +48,6 @@ function Remove-Features([switch]$dumpFeatures = $false, [switch]$keepDefender =
             $_ -NotLike "*Media*" -AND
             $_ -NotLike "*NFS*"
         }
-
-        if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
 
         foreach($feature in $featlist) {
             $status = "Removing feature $feature"
@@ -126,16 +121,16 @@ function Remove-Packages {
     }
 }
 
-function Remove-ProvisionedPackages([switch]$keepSecurity = $false) {
+function Remove-ProvisionedPackages() {
     <#
         .SYNOPSIS
         Removes AppX packages from a Windows image during MicroWin processing
 
         .PARAMETER Name
-        keepSecurity - Boolean that determines whether to keep "Microsoft.SecHealthUI" (Windows Security) in the Windows image
+        No Params
 
         .EXAMPLE
-        Remove-ProvisionedPackages -keepSecurity:$false
+        Remove-ProvisionedPackages
     #>
     $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object    {
             $_.PackageName -NotLike "*AppInstaller*" -AND
@@ -151,22 +146,19 @@ function Remove-ProvisionedPackages([switch]$keepSecurity = $false) {
         }
 
     if ($?) {
-    if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
-        $counter = 0
-        foreach ($appx in $appxProvisionedPackages) {
-            $status = "Removing Provisioned $($appx.PackageName)"
-            Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-            try {
-                Remove-AppxProvisionedPackage -Path "$scratchDir" -PackageName $appx.PackageName -ErrorAction SilentlyContinue
-            } catch {
-                Write-Host "Application $($appx.PackageName) could not be removed"
-                continue
-            }
+    $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }
+    $counter = 0
+    foreach ($appx in $appxProvisionedPackages) {
+        $status = "Removing Provisioned $($appx.PackageName)"
+        Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
+        try {
+            Remove-AppxProvisionedPackage -Path "$scratchDir" -PackageName $appx.PackageName -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "Application $($appx.PackageName) could not be removed"
+            continue
         }
-        Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
-    } else {
-    Write-Host "Could not get Provisioned App information. Skipping process..."
     }
+    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
 }
 
 function Copy-ToUSB([string]$fileToCopy) {
@@ -199,22 +191,6 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 
     $yesNo = Get-LocalizedYesNo
     Write-Host "[INFO] In Your local takeown expects '$($yesNo[0])' as a Yes answer."
-
-    # Specify the path to the directory
-    # $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
-    # takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-    # icacls "$($directoryPath)" /q /c /t /reset > $null
-    # icacls $directoryPath /setowner "*S-1-5-32-544"
-    # icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-    # Remove-Item -Path $directoryPath -Recurse -Force
-
-    # # Grant full control to BUILTIN\Administrators using icacls
-    # $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc"
-    # takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-    # icacls "$($directoryPath)" /q /c /t /reset > $null
-    # icacls $directoryPath /setowner "*S-1-5-32-544"
-    # icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-    # Remove-Item -Path $directoryPath -Recurse -Force
 
     $itemsToDelete = [System.Collections.ArrayList]::new()
 
@@ -253,46 +229,6 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 }
 
 function New-Unattend {
-
-    # later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
-    # Below is an example how to do it we probably should create a drop down with common locals
-    #     <settings pass="specialize">
-    #     <!-- Specify English (World) locale -->
-    #     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    #       <SetupUILanguage>
-    #     <UILanguage>en-US</UILanguage>
-    #       </SetupUILanguage>
-    #       <InputLocale>en-US</InputLocale>
-    #       <SystemLocale>en-US</SystemLocale>
-    #       <UILanguage>en-US</UILanguage>
-    #       <UserLocale>en-US</UserLocale>
-    #     </component>
-    #   </settings>
-
-    #   <settings pass="oobeSystem">
-    #     <!-- Specify English (World) locale -->
-    #     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    #       <InputLocale>en-US</InputLocale>
-    #       <SystemLocale>en-US</SystemLocale>
-    #       <UILanguage>en-US</UILanguage>
-    #       <UserLocale>en-US</UserLocale>
-    #     </component>
-    #   </settings>
-    # using here string to embedd unattend
-    #     <RunSynchronousCommand wcm:action="add">
-    #     <Order>1</Order>
-    #     <Path>net user administrator /active:yes</Path>
-    # </RunSynchronousCommand>
-
-    # this section doesn't work in win10/????
-#     <settings pass="specialize">
-#     <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <CEIPEnabled>0</CEIPEnabled>
-#     </component>
-#     <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-#         <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
-#     </component>
-# </settings>
 
     $unattend = @'
     <?xml version="1.0" encoding="utf-8"?>

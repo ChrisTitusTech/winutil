@@ -904,11 +904,6 @@
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
-                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="-10,5,0,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
                             <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
@@ -970,11 +965,8 @@
                                 Foreground="{ComboBoxForegroundColor}">
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
-                                - Add ability to use local accounts <LineBreak/>
-                                - Remove Wifi requirement to finish install <LineBreak/>
-                                - Ability to remove Edge <LineBreak/>
-                                - Ability to remove Defender <LineBreak/>
-                                - Remove Teams <LineBreak/>
+                                - Fast Install using "User" local account <LineBreak/>
+                                - No internet requirement for install <LineBreak/>
                                 - Apps debloat <LineBreak/>
                                 <LineBreak/>
                                 <LineBreak/>
@@ -988,7 +980,6 @@
                                 - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
                                 It will be processed and unpacked which may take some time <LineBreak/>
                                 - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
-                                - Choose which features you want to keep <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>
                                 The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
                                 - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>

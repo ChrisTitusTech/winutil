@@ -151,37 +151,15 @@ public class PowerManagement {
         }
 
         Write-Host "Remove Features from the image"
-        Remove-Features -keepDefender:$keepDefender
+        Remove-Features
         Write-Host "Removing features complete!"
+        Write-Host "Removing OS packages"
+        Remove-Packages
+        Write-Host "Removing Appx Bloat"
+        Remove-ProvisionedPackages
 
-        if (!$keepPackages) {
-            Write-Host "Removing OS packages"
-            Remove-Packages
-        }
-        if (!$keepProvisionedPackages) {
-            Write-Host "Removing Appx Bloat"
-            Remove-ProvisionedPackages -keepSecurity:$keepDefender
-        }
-
-        # special code, for some reason when you try to delete some inbox apps
-        # we have to get and delete log files directory.
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
-
-        # Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
-        if (!$keepDefender) {
-            Write-Host "Removing Defender"
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
-        }
-        # if (!$keepEdge) {
-        #     # this is destructive and might result in touching SystemApps is not recommended unless you going complete rogue on trimming edge and telemetry
-        #     Write-Host "Removing Edge"
-        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
-        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
-        #     Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
-        # }
-
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
@@ -225,28 +203,6 @@ public class PowerManagement {
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
         New-Item -ItemType Directory -Force -Path "$desktopDir"
         dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-
-        # $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-        # $shortcutPath = "$desktopDir\WinUtil.lnk"
-        # $shell = New-Object -ComObject WScript.Shell
-        # $shortcut = $shell.CreateShortcut($shortcutPath)
-
-        # if (Test-Path -Path "$env:TEMP\cttlogo.png")
-        # {
-        #     $pngPath = "$env:TEMP\cttlogo.png"
-        #     $icoPath = "$env:TEMP\cttlogo.ico"
-        #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
-        #     Write-Host "ICO file created at: $icoPath"
-        #     Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-        #     Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
-        #     $shortcut.IconLocation = "c:\Windows\cttlogo.ico"
-        # }
-
-        # $shortcut.TargetPath = "powershell.exe"
-        # $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-        # $shortcut.Save()
-        # Write-Host "Shortcut to winutil created at: $shortcutPath"
-        # *************************** Automation black ***************************
 
         Write-Host "Copy checkinstall.cmd into the ISO"
         New-CheckInstall
