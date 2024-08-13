@@ -708,12 +708,6 @@ function New-FirstRun {
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
 
-    $process = Get-Process -Name "explorer"
-    Stop-Process -InputObject $process
-    # Wait for the process to exit
-    Wait-Process -InputObject $process
-    Start-Sleep -Seconds 3
-
     # Delete Edge Icon from the desktop
     $edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
     # Check if Edge shortcuts exist on the desktop
