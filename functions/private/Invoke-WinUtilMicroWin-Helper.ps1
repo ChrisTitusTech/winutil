@@ -142,10 +142,20 @@ function Remove-ProvisionedPackages() {
             $_.PackageName -NotLike "*Notepad*" -and
             $_.PackageName -NotLike "*Printing*" -and
             $_.PackageName -NotLike "*Wifi*" -and
-            $_.PackageName -NotLike "*Foundation*"
+            $_.PackageName -NotLike "*Foundation*" -and
+            $_.PackageName -NotLike "*YourPhone*" -and
+            $_.PackageName -NotLike "*Xbox*" -and
+            $_.PackageName -NotLike "*WindowsTerminal*" -and
+            $_.PackageName -NotLike "*Calculator*" -and
+            $_.PackageName -NotLike "*Photos*" -and
+            $_.PackageName -NotLike "*VCLibs*" -and
+            $_.PackageName -NotLike "*Paint*" -and
+            $_.PackageName -NotLike "*Gaming*" -and
+            $_.PackageName -NotLike "*Extension*" -and
+            $_.PackageName -NotLike "*SecHealthUI*"
+
         }
 
-    $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }
     $counter = 0
     foreach ($appx in $appxProvisionedPackages) {
         $status = "Removing Provisioned $($appx.PackageName)"
