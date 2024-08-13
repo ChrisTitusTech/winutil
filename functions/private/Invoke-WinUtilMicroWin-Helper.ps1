@@ -145,7 +145,6 @@ function Remove-ProvisionedPackages() {
             $_.PackageName -NotLike "*Foundation*"
         }
 
-    if ($?) {
     $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }
     $counter = 0
     foreach ($appx in $appxProvisionedPackages) {
