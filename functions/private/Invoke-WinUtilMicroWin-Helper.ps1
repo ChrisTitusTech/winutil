@@ -699,93 +699,7 @@ function New-FirstRun {
         }
     }
 
-    function Stop-UnnecessaryServices {
-        $servicesToExclude = @(
-            "AudioSrv",
-            "AudioEndpointBuilder",
-            "BFE",
-            "BITS",
-            "BrokerInfrastructure",
-            "CDPSvc",
-            "CDPUserSvc_dc2a4",
-            "CoreMessagingRegistrar",
-            "CryptSvc",
-            "DPS",
-            "DcomLaunch",
-            "Dhcp",
-            "DispBrokerDesktopSvc",
-            "Dnscache",
-            "DoSvc",
-            "DusmSvc",
-            "EventLog",
-            "EventSystem",
-            "FontCache",
-            "LSM",
-            "LanmanServer",
-            "LanmanWorkstation",
-            "MapsBroker",
-            "MpsSvc",
-            "OneSyncSvc_dc2a4",
-            "Power",
-            "ProfSvc",
-            "RpcEptMapper",
-            "RpcSs",
-            "SCardSvr",
-            "SENS",
-            "SamSs",
-            "Schedule",
-            "SgrmBroker",
-            "ShellHWDetection",
-            "Spooler",
-            "SysMain",
-            "SystemEventsBroker",
-            "TextInputManagementService",
-            "Themes",
-            "TrkWks",
-            "UserManager",
-            "VGAuthService",
-            "VMTools",
-            "WSearch",
-            "Wcmsvc",
-            "WinDefend",
-            "Winmgmt",
-            "WlanSvc",
-            "WpnService",
-            "WpnUserService_dc2a4",
-            "cbdhsvc_dc2a4",
-            "edgeupdate",
-            "gpsvc",
-            "iphlpsvc",
-            "mpssvc",
-            "nsi",
-            "sppsvc",
-            "tiledatamodelsvc",
-            "vm3dservice",
-            "webthreatdefusersvc_dc2a4",
-            "wscsvc"
-)
-
-        $runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
-        foreach($service in $runningServices) {
-        Stop-Service -Name $service.Name -PassThru
-            Set-Service $service.Name -StartupType Manual
-            "Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-        }
-    }
-
     "FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-
-    $Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-    Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
-    Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
-
-    # figure this out later how to set updates to security only
-    #Import-Module -Name PSWindowsUpdate;
-    #Stop-Service -Name wuauserv
-    #Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
-    #Start-Service -Name wuauserv
-
-    Stop-UnnecessaryServices
 
     $taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
     # Delete all files on the Taskbar
@@ -793,8 +707,6 @@ function New-FirstRun {
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
     Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
-
-    # Stop-Process -Name explorer -Force
 
     $process = Get-Process -Name "explorer"
     Stop-Process -InputObject $process
