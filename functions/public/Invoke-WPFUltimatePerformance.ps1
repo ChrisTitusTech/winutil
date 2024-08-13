@@ -24,11 +24,12 @@ Function Invoke-WPFUltimatePerformance {
 
             # Extract the new GUID from the duplicateOutput
             foreach ($line in $duplicateOutput) {
-                if ($line -match "GUID du mode de gestion de l'alimentation\s*:\s*([a-fA-F0-9\-]+)") {
-                    $guid = $matches[1]
+                if ($line -match "\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b") {
+                    $guid = $matches[0]  # $matches[0] will contain the first match, which is the GUID
                     Write-Output "GUID: $guid has been extracted and stored in the variable."
                     break
                 }
+            }
             }
 
             if (-not $guid) {
