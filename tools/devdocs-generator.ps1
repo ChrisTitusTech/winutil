@@ -563,17 +563,17 @@ function Add-LinkAttributeToJson {
 }
 
 Update-Progress "Loading JSON files" 10
-$tweaks = Get-Content -Path "config/tweaks.json" | ConvertFrom-Json
-$features = Get-Content -Path "config/feature.json" | ConvertFrom-Json
+$tweaks = Get-Content -Path "../config/tweaks.json" | ConvertFrom-Json
+$features = Get-Content -Path "../config/feature.json" | ConvertFrom-Json
 
 Update-Progress "Getting last modified dates of the JSON files" 20
-$tweaksLastModified = (Get-Item "config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd")
-$featuresLastModified = (Get-Item "config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
+$tweaksLastModified = (Get-Item "../config/tweaks.json").LastWriteTime.ToString("yyyy-MM-dd")
+$featuresLastModified = (Get-Item "../config/feature.json").LastWriteTime.ToString("yyyy-MM-dd")
 
-$tweaksOutputDir = "docs/dev/tweaks"
-$featuresOutputDir = "docs/dev/features"
-$privateFunctionsDir = "functions/private"
-$publicFunctionsDir = "functions/public"
+$tweaksOutputDir = "../docs/dev/tweaks"
+$featuresOutputDir = "../docs/dev/features"
+$privateFunctionsDir = "../functions/private"
+$publicFunctionsDir = "../functions/public"
 $functions = @{}
 $itemnametocut = "WPF(WinUtil|Toggle|Features?|Tweaks?|Panel|Fix(es)?)?"
 
@@ -592,7 +592,7 @@ Load-Functions -dir $publicFunctionsDir
 Update-Progress "Adding documentation links to JSON files" 50
 
 # Define the JSON file paths
-$jsonPaths = @(".\config\feature.json", ".\config\tweaks.json")
+$jsonPaths = @("../config/feature.json", "../config/tweaks.json")
 
 # Loop through each JSON file path
 foreach ($jsonPath in $jsonPaths) {
@@ -612,12 +612,12 @@ foreach ($jsonPath in $jsonPaths) {
     Set-Content -Path $jsonPath -Value $jsonString
 }
 
-Add-LinkAttributeToJson -jsonFilePath "config/tweaks.json" -outputDir "dev/tweaks"
-Add-LinkAttributeToJson -jsonFilePath "config/feature.json" -outputDir "dev/features"
+Add-LinkAttributeToJson -jsonFilePath "../config/tweaks.json" -outputDir "dev/tweaks"
+Add-LinkAttributeToJson -jsonFilePath "../config/feature.json" -outputDir "dev/features"
 
 Update-Progress "Generating content for documentation" 60
-$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
-$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
+$tweakResult = Generate-MarkdownFiles -data $tweaks -outputDir $tweaksOutputDir -jsonFilePath "../config/tweaks.json" -lastModified $tweaksLastModified -type "tweak" -initialProgress 60
+$featureResult = Generate-MarkdownFiles -data $features -outputDir $featuresOutputDir -jsonFilePath "../config/feature.json" -lastModified $featuresLastModified -type "feature" -initialProgress 70
 
 Update-Progress "Generating table of contents" 80
 $allTocEntries = $tweakResult.TocEntries + $featureResult.TocEntries
@@ -639,6 +639,6 @@ $indexContent += Process-MultilineStrings @"
     \\
 "@
 $indexContent += $(Generate-TypeSectionContent $featureEntries) + "`r`n"
-Set-Content -Path "docs/devdocs.md" -Value $indexContent -Encoding utf8
+Set-Content -Path "../docs/devdocs.md" -Value $indexContent -Encoding utf8
 
 Update-Progress "Process Completed" 100
