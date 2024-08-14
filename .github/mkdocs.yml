@@ -13,6 +13,7 @@ nav:
 theme:
   name: material
   custom_dir: '../overrides'
+  docs_dir: '../docs'
   features:
     - navigation.tabs
     - navigation.sections
