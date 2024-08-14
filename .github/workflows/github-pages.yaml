@@ -24,8 +24,8 @@ jobs:
           python-version: 3.x  # Install latest Stable release of Python 3
           cache: 'pip'  # caching pip dependencies
 
-      - name: Install Necessary Dependencies using 'pip install -r requirements.txt'
-        run: pip install -r requirements.txt
+      - name: Install Necessary Dependencies using 'pip install -r .github/requirements.txt'
+        run: pip install -r .github/requirements.txt
 
       - name: Build & Deploy using 'mkdocs'
-        run: mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force -f .github/mkdocs.yml

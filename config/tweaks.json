@@ -2562,15 +2562,10 @@
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
-      "
-      Uninstall-WinUtilEdgeBrowser
-      "
+      "Uninstall-WinUtilEdgeBrowser -action \"Uninstall\""
     ],
     "UndoScript": [
-      "
-      Write-Host \"Install Microsoft Edge\"
-      Start-Process -FilePath winget -ArgumentList \"install --force -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
-      "
+      "Uninstall-WinUtilEdgeBrowser -action \"Install\""
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
   },
