@@ -63,11 +63,11 @@ public class PowerManagement {
     $scratchDir = $sync.MicrowinScratchDir.Text
 
     # Detect if the Windows image is an ESD file and convert it to WIM
-    if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf)) {
+    if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
         Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
         Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
         if ($?) {
-            Remove-Item -Path $mountDir\sources\install.esd -Force
+            Remove-Item -Path "$mountDir\sources\install.esd" -Force
             # Since we've already exported the image index we wanted, switch to the first one
             $index = 1
         } else {
@@ -116,7 +116,7 @@ public class PowerManagement {
             if (Test-Path "$env:TEMP\DRV_EXPORT") {
                 Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
             }
-            if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text))) {
+            if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
                 Write-Host "Using specified driver source..."
                 dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
                 if ($?) {
@@ -151,39 +151,16 @@ public class PowerManagement {
         }
 
         Write-Host "Remove Features from the image"
-        Remove-Features -keepDefender:$keepDefender
+        Remove-Features
         Write-Host "Removing features complete!"
+        Write-Host "Removing OS packages"
+        Remove-Packages
+        Write-Host "Removing Appx Bloat"
+        Remove-ProvisionedPackages
 
-        if (!$keepPackages) {
-            Write-Host "Removing OS packages"
-            Remove-Packages
-        }
-        if (!$keepProvisionedPackages) {
-            Write-Host "Removing Appx Bloat"
-            Remove-ProvisionedPackages -keepSecurity:$keepDefender
-        }
-
-        # special code, for some reason when you try to delete some inbox apps
-        # we have to get and delete log files directory.
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
-
-        # Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
-        if (!$keepDefender) {
-            Write-Host "Removing Defender"
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
-        }
-        if (!$keepEdge) {
-            Write-Host "Removing Edge"
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
-            Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
-        }
-
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
@@ -196,9 +173,7 @@ public class PowerManagement {
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Windows.Search*" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
-        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
         Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
         Write-Host "Removal complete!"
 
@@ -224,28 +199,6 @@ public class PowerManagement {
         $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
         New-Item -ItemType Directory -Force -Path "$desktopDir"
         dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
-
-        # $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-        # $shortcutPath = "$desktopDir\WinUtil.lnk"
-        # $shell = New-Object -ComObject WScript.Shell
-        # $shortcut = $shell.CreateShortcut($shortcutPath)
-
-        # if (Test-Path -Path "$env:TEMP\cttlogo.png")
-        # {
-        #     $pngPath = "$env:TEMP\cttlogo.png"
-        #     $icoPath = "$env:TEMP\cttlogo.ico"
-        #     ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
-        #     Write-Host "ICO file created at: $icoPath"
-        #     Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-        #     Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
-        #     $shortcut.IconLocation = "c:\Windows\cttlogo.ico"
-        # }
-
-        # $shortcut.TargetPath = "powershell.exe"
-        # $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-        # $shortcut.Save()
-        # Write-Host "Shortcut to winutil created at: $shortcutPath"
-        # *************************** Automation black ***************************
 
         Write-Host "Copy checkinstall.cmd into the ISO"
         New-CheckInstall
@@ -282,25 +235,20 @@ public class PowerManagement {
         reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
         reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
-        if (!$keepEdge) {
-            Write-Host "Removing Edge icon from taskbar"
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Favorites" /f           >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "FavoritesChanges" /f   >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
-            reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
-            Write-Host "Edge icon removed from taskbar"
-            if (Test-Path "HKLM:\zSOFTWARE\WOW6432Node") {
-                # Remove leftovers of 64-bit installations
-                # ---
-                # Remove registry values first...
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /va /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /va /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /va /f > $null 2>&1
-                # ...then the registry keys
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f > $null 2>&1
-                reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f > $null 2>&1
-            }
+        # Prevent Windows Update Installing so called Expedited Apps
+        @(
+            'EdgeUpdate',
+            'DevHomeUpdate',
+            'OutlookUpdate',
+            'CrossDeviceUpdate'
+        ) | ForEach-Object {
+            Write-Host "Removing Windows Expedited App: $_"
+
+            # Copied here After Installation (Online)
+            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
+
+            # When in Offline Image
+            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
         }
 
         reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
@@ -341,7 +289,7 @@ public class PowerManagement {
         Write-Host "Cleanup complete."
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
     }
 
     try {
@@ -403,7 +351,7 @@ public class PowerManagement {
         reg unload HKLM\zSYSTEM
 
         Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Dismount-WindowsImage -Path "$scratchDir" -Save
 
         Write-Host "Creating ISO image"
 
@@ -417,7 +365,7 @@ public class PowerManagement {
 
         Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 
-        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
+        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b`"$mountDir\boot\etfsboot.com`"#pEF,e,b`"$mountDir\efi\microsoft\boot\efisys.bin`" `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
 
         $LASTEXITCODE = $oscdimgProc.ExitCode
 

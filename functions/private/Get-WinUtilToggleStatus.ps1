@@ -140,8 +140,9 @@ Function Get-WinUtilToggleStatus {
         }
     }
     if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
-        $DetailedBSoD = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
-        if($DetailedBSoD -eq 0) {
+        $DetailedBSoD1 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
+        $DetailedBSoD2 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisableEmoticon
+        if (($DetailedBSoD1 -eq 0) -or ($DetailedBSoD2 -eq 0) -or !$DetailedBSoD1 -or !$DetailedBSoD2) {
             return $false
         } else {
             return $true
