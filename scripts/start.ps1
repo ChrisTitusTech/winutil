@@ -44,12 +44,23 @@ $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
-# If script isn't running as admin, show error message and quit
-If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544") {
-    Write-Host "===========================================" -Foregroundcolor Red
-    Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
-    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
-    Write-Host "===========================================" -Foregroundcolor Red
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+
+    $wtInstalled = Get-Command wt.exe -ErrorAction SilentlyContinue
+    $pwshInstalled = Get-Command pwsh -ErrorAction SilentlyContinue 
+    if ($pwshInstalled) {
+        $powershellcmd = "pwsh"
+    } else {
+        $powershellcmd = "powershell"
+    }
+    
+    if ($wtInstalled) {
+        Start-Process wt.exe -ArgumentList "new-tab $powershellcmd -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+    } else {
+        Start-Process $powershellcmd -ArgumentList "-ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+    }
+
     break
 }
 
