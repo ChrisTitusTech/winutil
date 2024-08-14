@@ -1,4 +1,5 @@
 site_name: WinUtil Documentation
+docs_dir: '../docs'
 repo_url: https://github.com/ChrisTitusTech/winutil
 
 nav:
@@ -13,7 +14,6 @@ nav:
 theme:
   name: material
   custom_dir: '../overrides'
-  docs_dir: '../docs'
   features:
     - navigation.tabs
     - navigation.sections
