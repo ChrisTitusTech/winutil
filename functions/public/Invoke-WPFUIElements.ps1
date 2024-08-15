@@ -48,7 +48,7 @@ function Invoke-WPFUIElements {
             Content = $entryInfo.Content
             Choco = $entryInfo.choco
             Winget = $entryInfo.winget
-            Panel = if ($entryInfo.Panel -ne $null) { $entryInfo.Panel } else { "0" }
+            Panel = if ($entryInfo.Panel) { $entryInfo.Panel } else { "0" }
             Link = $entryInfo.link
             Description = $entryInfo.description
             Type = $entryInfo.type
@@ -222,17 +222,6 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $toggleButton
                     }
 
-                    "Image" {
-                        $image = New-Object Windows.Controls.Image
-                        $image.Name = $entryInfo.Name
-                        $image.Source = $entryInfo.Content
-                        $image.Height = $theme.ImageHeight
-                        $image.Width = $theme.ImageWidth
-                        $image.HorizontalAlignment = "Center"
-                        $image.Margin = $theme.ImageMargin
-                        $stackPanel.Children.Add($image) | Out-Null
-                    }
-
                     "Combobox" {
                         $horizontalStackPanel = New-Object Windows.Controls.StackPanel
                         $horizontalStackPanel.Orientation = "Horizontal"
@@ -276,17 +265,12 @@ function Invoke-WPFUIElements {
                         $button.Margin = "5"
                         $button.Padding = "20,5"
                         $button.FontSize = $theme.ButtonFontSize
-                        if ($entryInfo.ButtonWidth -ne $null) {
+                        if ($entryInfo.ButtonWidth) {
                             $button.Width = $entryInfo.ButtonWidth
                         }
                         $stackPanel.Children.Add($button) | Out-Null
 
                         $sync[$entryInfo.Name] = $button
-
-                        $sync[$entryInfo.Name].Add_Click({
-                            [System.Object]$Sender = $args[0]
-                            Invoke-WPFButton $Sender.name
-                        })
                     }
 
                     default {
@@ -299,12 +283,12 @@ function Invoke-WPFUIElements {
                         $checkBox.FontSize = $theme.FontSize
                         $checkBox.ToolTip = $entryInfo.Description
                         $checkBox.Margin = $theme.CheckBoxMargin
-                        if ($entryInfo.Checked -ne $null) {
+                        if ($entryInfo.Checked) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
                         $horizontalStackPanel.Children.Add($checkBox) | Out-Null
 
-                        if ($entryInfo.Link -ne $null) {
+                        if ($entryInfo.Link) {
                             $textBlock = New-Object Windows.Controls.TextBlock
                             $textBlock.Name = $checkBox.Name + "Link"
                             $textBlock.Text = "(?)"

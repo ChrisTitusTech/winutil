@@ -773,32 +773,59 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
+                <Grid>
+                    <!-- Main content area with a ScrollViewer -->
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="45px"/>
-                        <RowDefinition Height=".70*"/>
-                        <RowDefinition Height=".10*"/>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                        <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
-                        <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
-                        <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
-                        <Button Name="WPFclear" Content=" Clear " Margin="2"/>
-                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
-                    </StackPanel>
-                    <Grid Name="tweakspanel" Grid.Row="1">
-                    </Grid>
-                    <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBlock Padding="10">
-                                Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
-                            </TextBlock>
-                        </StackPanel>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="45px"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                                <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
+                                <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
+                                <Button Name="WPFclear" Content=" Clear " Margin="2"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
+                            </StackPanel>
+                            
+                            <Grid Name="tweakspanel" Grid.Row="1">
+                                <!-- Your tweakspanel content goes here -->
+                            </Grid>
+
+                            <!-- TextBlock with note on the right half -->
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
+                                <TextBlock Padding="5">
+                                    Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+                                    <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <!-- Centered border with buttons and text -->
+                    <Border Grid.Row="1" Background="{MainBackgroundColor}" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Buttons on the left half -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                                <Button Name="WPFApplyButton" Content="Apply" Margin="5"/>
+                                <Button Name="WPFCancelButton" Content="Cancel" Margin="5"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
-                    </Grid>
-                </ScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
