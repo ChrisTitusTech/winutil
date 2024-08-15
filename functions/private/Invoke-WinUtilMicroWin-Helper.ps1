@@ -101,7 +101,9 @@ function Remove-Packages {
                 $_ -NotLike "*DesktopAppInstaller*" -AND
                 $_ -NotLike "*WebMediaExtensions*" -AND
                 $_ -NotLike "*WMIC*" -AND
-                $_ -NotLike "*UI.XaML*"
+                $_ -NotLike "*UI.XaML*" -AND
+                $_ -NotLike "*Ethernet*" -AND
+                $_ -NotLike "*Wifi*"
             }
 
         foreach ($pkg in $pkglist) {
@@ -143,7 +145,6 @@ function Remove-ProvisionedPackages() {
                 $_.PackageName -NotLike "*LanguageFeatures*" -and
                 $_.PackageName -NotLike "*Notepad*" -and
                 $_.PackageName -NotLike "*Printing*" -and
-                $_.PackageName -NotLike "*Wifi*" -and
                 $_.PackageName -NotLike "*Foundation*" -and
                 $_.PackageName -NotLike "*YourPhone*" -and
                 $_.PackageName -NotLike "*Xbox*" -and
