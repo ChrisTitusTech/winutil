@@ -410,6 +410,19 @@ $sync["SearchBar"].Add_TextChanged({
             }
         }
     }
+
+    $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
+
+    foreach ($category in $activeCategories) {
+        $sync[$category].Visibility = "Visible"
+    }
+    if ($activeCategories) {
+        $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
+    } else {
+        $inactiveCategories = $allCategories
+    }
+    foreach ($category in $inactiveCategories) {
+        $sync[$category].Visibility = "Collapsed"}
 })
 
 # Initialize the hashtable
