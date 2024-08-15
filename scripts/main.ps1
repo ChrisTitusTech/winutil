@@ -372,7 +372,6 @@ $labels = @{}
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
 $sync["SearchBar"].Add_TextChanged({
-
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     }
@@ -398,34 +397,19 @@ $sync["SearchBar"].Add_TextChanged({
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
-             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            # Set the corresponding text block visibility
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Visible"
             }
         }
         else {
-             $CheckBox.Value.Visibility = "Collapsed"
+            $CheckBox.Value.Visibility = "Collapsed"
             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Collapsed"
             }
         }
     }
-    $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
-
-    foreach ($category in $activeCategories){
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Visible"
-    }
-    if ($activeCategories){
-        $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
-    }
-    else{
-        $inactiveCategories = $allCategories
-    }
-    foreach ($category in $inactiveCategories){
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Collapsed"}
 })
 
 # Initialize the hashtable

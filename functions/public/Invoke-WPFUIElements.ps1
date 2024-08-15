@@ -138,6 +138,9 @@ function Invoke-WPFUIElements {
             $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
 
+            $sync[$category] = $label
+            write-host $sync[$category]
+
             # Sort entries by Order and then by Name, but only display Name
             $entries = $organizedData[$panelKey][$category] | Sort-Object Order, Name
             foreach ($entryInfo in $entries) {
@@ -176,7 +179,6 @@ function Invoke-WPFUIElements {
                         $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.FontSize = $theme.FontSize
-                        # Implement for consistent theming later on $label.Style = $window.FindResource("labelfortweaks")
                         $dockPanel.Children.Add($label) | Out-Null
                         $stackPanel.Children.Add($dockPanel) | Out-Null
 
@@ -290,6 +292,9 @@ function Invoke-WPFUIElements {
                     }
 
                     default {
+                        $horizontalStackPanel = New-Object Windows.Controls.StackPanel
+                        $horizontalStackPanel.Orientation = "Horizontal"
+
                         $checkBox = New-Object Windows.Controls.CheckBox
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.Content = $entryInfo.Content
@@ -299,12 +304,11 @@ function Invoke-WPFUIElements {
                         if ($entryInfo.Checked -ne $null) {
                             $checkBox.IsChecked = $entryInfo.Checked
                         }
-                        if ($entryInfo.Link -ne $null) {
-                            $horizontalStackPanel = New-Object Windows.Controls.StackPanel
-                            $horizontalStackPanel.Orientation = "Horizontal"
-                            $horizontalStackPanel.Children.Add($checkBox) | Out-Null
+                        $horizontalStackPanel.Children.Add($checkBox) | Out-Null
 
+                        if ($entryInfo.Link -ne $null) {
                             $textBlock = New-Object Windows.Controls.TextBlock
+                            $textBlock.Name = $checkBox.Name + "Link"
                             $textBlock.Text = "(?)"
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $window.FindResource("HoverTextBlockStyle")
@@ -318,11 +322,10 @@ function Invoke-WPFUIElements {
 
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 
-                            $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
-                        } else {
-                            $stackPanel.Children.Add($checkBox) | Out-Null
+                            $sync[$textBlock.Name] = $textBlock
                         }
 
+                        $stackPanel.Children.Add($horizontalStackPanel) | Out-Null
                         $sync[$entryInfo.Name] = $checkBox
                     }
                 }
