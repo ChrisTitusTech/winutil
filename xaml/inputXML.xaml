@@ -950,8 +950,7 @@
                                 <LineBreak/>
 
                                 <Bold>INSTRUCTIONS</Bold> <LineBreak/>
-                                - Download the latest Windows 11 image from Microsoft <LineBreak/>
-                                LINK: https://www.microsoft.com/software-download/windows11 <LineBreak/>
+                                - <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Download</TextBlock> the latest Windows 11 image from Microsoft <LineBreak/>
                                 May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
                                 - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                 - Launch WinUtil and MicroWin  <LineBreak/>
