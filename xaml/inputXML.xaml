@@ -340,6 +340,47 @@
                  </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <Setter Property="FontSize" Value="{FontSize}" />
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Orientation="Horizontal" Margin="{CheckBoxMargin}">
+                            <Grid Width="14" Height="14">
+                                <Ellipse x:Name="OuterCircle"
+                                        Stroke="{ButtonBackgroundPressedColor}"
+                                        Fill="{ButtonBackgroundColor}"
+                                        StrokeThickness="1"
+                                        Width="14"
+                                        Height="14"
+                                        SnapsToDevicePixels="True"/>
+                                <Ellipse x:Name="InnerCircle"
+                                        Fill="{MainForegroundColor}"
+                                        Width="8"
+                                        Height="8"
+                                        Visibility="Collapsed"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                            </Grid>
+                            <ContentPresenter Margin="4,0,0,0"
+                                            VerticalAlignment="Center"
+                                            RecognizesAccessKey="True"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="InnerCircle" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterCircle" Property="Stroke" Value="{BorderColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="Template">
                 <Setter.Value>
@@ -895,10 +936,15 @@
                                 TextWrapping="Wrap"
                                 Foreground="{LabelboxForegroundColor}"
                             />
+                            <RadioButton x:Name="ISOoption1" Content="Get newest ISO automatically" GroupName="Options" IsChecked="True"/>
+                            <ComboBox x:Name="ISORelease"/>
+                            <ComboBox x:Name="ISOLanguage"/>
+                            <ComboBox x:Name="ISOArchitecture"/>
+                            <RadioButton x:Name="ISOoption2" Content="Select your own ISO" GroupName="Options"/>
                             <Button Name="WPFGetIso" Margin="2" Padding="15">
                                 <Button.Content>
                                     <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
-                                        Select Windows <Underline>I</Underline>SO
+                                        Get Windows <Underline>I</Underline>SO
                                     </TextBlock>
                                 </Button.Content>
                             </Button>

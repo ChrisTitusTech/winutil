@@ -62,17 +62,28 @@ function Invoke-WPFGetIso {
         }
     }
 
-    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
-    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-    $openFileDialog.initialDirectory = $initialDirectory
-    $openFileDialog.filter = "ISO files (*.iso)| *.iso"
-    $openFileDialog.ShowDialog() | Out-Null
-    $filePath = $openFileDialog.FileName
+    if ($sync["ISOoption2"].IsChecked) {
+        # Open file dialog to let user choose the ISO file
+        [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+        $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+        $openFileDialog.initialDirectory = $initialDirectory
+        $openFileDialog.filter = "ISO files (*.iso)| *.iso"
+        $openFileDialog.ShowDialog() | Out-Null
+        $filePath = $openFileDialog.FileName
 
-    if ([string]::IsNullOrEmpty($filePath)) {
-        Write-Host "No ISO is chosen"
-        $sync.BusyMessage.Visibility="Hidden"
-        return
+        if ([string]::IsNullOrEmpty($filePath)) {
+            Write-Host "No ISO is chosen"
+            $sync.BusyMessage.Visibility="Hidden"
+            return
+        }
+    } elseif ($sync["ISOoption1"].IsChecked) {
+        # Auto download newest ISO
+        $Win = "Win11"
+        $Rel = "23H2"
+        $Outpath = "$env:TEMP\$Win" + "_$Rel.iso"
+        Invoke-Webrequest -Uri $finalurl -OutFile $Outpath
+        $filePath = $Outpath
+
     }
 
     Write-Host "File path $($filePath)"

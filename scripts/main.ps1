@@ -356,6 +356,31 @@ Add-Type @"
 
 })
 
+$sync["ISORelease"].Items.Add("23H2")
+$sync["ISORelease"].Items.Add("22H2")
+$sync["ISORelease"].Items.Add("21H2")
+$sync["ISORelease"].SelectedItem = "23H2"
+
+$sync["ISOLanguage"].Items.Add((Get-Culture).Name)
+if ((Get-Culture).Name -ne "en-US") {
+    $sync["ISOLanguage"].Items.Add("en-US")
+}
+$sync["ISOLanguage"].SelectedItem = (Get-Culture).Name
+
+$sync["ISOArchitecture"].Items.Add("64-bit")
+$sync["ISOArchitecture"].Items.Add("86-bit")
+$sync["ISOArchitecture"].SelectedItem = (Get-WmiObject -Class Win32_OperatingSystem).OSArchitecture
+
+if ($sync["ISOoption1"].IsChecked) {
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOArchitecture"].Visibility = [System.Windows.Visibility]::Visible
+} else {
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOArchitecture"].Visibility = [System.Windows.Visibility]::Collapsed
+}
+
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
 $CheckBoxes = ($sync.GetEnumerator()).where{ $psitem.Key -in $filter }
