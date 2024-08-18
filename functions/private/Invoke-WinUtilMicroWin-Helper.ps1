@@ -153,7 +153,7 @@ function Remove-ProvisionedPackages() {
                 $_.PackageName -NotLike "*Paint*" -and
                 $_.PackageName -NotLike "*SecHealthUI*"
         }
-
+        
         $counter = 0
         foreach ($appx in $appxProvisionedPackages) {
             $status = "Removing Provisioned $($appx.PackageName)"
