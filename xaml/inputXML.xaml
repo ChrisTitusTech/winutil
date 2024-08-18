@@ -1015,7 +1015,7 @@
                                 Foreground="{ComboBoxForegroundColor}">
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
-                                - Fast Install using "User" local account <LineBreak/>
+                                - Fast Install using either the "User" local account or the account of your choosing <LineBreak/>
                                 - No internet requirement for install <LineBreak/>
                                 - Apps debloat <LineBreak/>
                                 <LineBreak/>
