@@ -248,7 +248,7 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 function New-Unattend {
 
     param (
-        [Parameter(Mandatory, Position = 0)] [string]$userName,
+        [Parameter(Mandatory, Position = 0)] [string] $userName,
         [Parameter(Position = 1)] [string] $userPassword
     )
 
