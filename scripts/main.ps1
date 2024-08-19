@@ -356,16 +356,18 @@ Add-Type @"
 
 })
 
+$locale = (Get-Culture).Name
+
 $sync["ISORelease"].Items.Add("23H2")
 $sync["ISORelease"].Items.Add("22H2")
 $sync["ISORelease"].Items.Add("21H2")
 $sync["ISORelease"].SelectedItem = "23H2"
 
-$sync["ISOLanguage"].Items.Add((Get-Culture).Name)
-if ((Get-Culture).Name -ne "en-US") {
+$sync["ISOLanguage"].Items.Add($locale)
+if ($locale -ne "en-US") {
     $sync["ISOLanguage"].Items.Add("en-US")
 }
-$sync["ISOLanguage"].SelectedItem = (Get-Culture).Name
+$sync["ISOLanguage"].SelectedItem = $locale
 
 $sync["ISOArchitecture"].Items.Add("64-bit")
 $sync["ISOArchitecture"].Items.Add("86-bit")

@@ -78,12 +78,7 @@ function Invoke-WPFGetIso {
         }
     } elseif ($sync["ISOoption1"].IsChecked) {
         # Auto download newest ISO
-        $Win = "Win11"
-        $Rel = "23H2"
-        $Outpath = "$env:TEMP\$Win" + "_$Rel.iso"
-        Invoke-Webrequest -Uri $finalurl -OutFile $Outpath
-        $filePath = $Outpath
-
+        $filePath = Invoke-WinUtilDownloadISO
     }
 
     Write-Host "File path $($filePath)"
