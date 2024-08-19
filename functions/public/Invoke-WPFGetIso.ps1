@@ -78,7 +78,16 @@ function Invoke-WPFGetIso {
         }
     } elseif ($sync["ISOoption1"].IsChecked) {
         # Auto download newest ISO
-        $filePath = Invoke-WinUtilDownloadISO -rel $rel -locale $locale -arch $arch
+        # Credit: https://github.com/pbatard/Fido
+        $fidopath = "$env:temp\Fido.ps1"
+        Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
+
+        $selectedItem = ($sync["ISOArchitecture"].SelectedItem -split '-')[0]
+        $rel = "x" + $selectedItem
+
+        # Have to correct the language to actually be a working one
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch $rel
+        $filePath = "$workingdir\*.iso"
     }
 
     Write-Host "File path $($filePath)"
