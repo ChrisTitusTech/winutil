@@ -78,7 +78,7 @@ function Invoke-WPFGetIso {
         }
     } elseif ($sync["ISOoption1"].IsChecked) {
         # Auto download newest ISO
-        $filePath = Invoke-WinUtilDownloadISO
+        $filePath = Invoke-WinUtilDownloadISO -rel $rel -locale $locale -arch $arch
     }
 
     Write-Host "File path $($filePath)"
