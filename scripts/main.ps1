@@ -96,8 +96,8 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+    if($sync.$psitem) {
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFButton $Sender.name

@@ -790,7 +790,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            
+
                             <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
                                 <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
@@ -798,7 +798,7 @@
                                 <Button Name="WPFclear" Content=" Clear " Margin="2"/>
                                 <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
                             </StackPanel>
-                            
+
                             <Grid Name="tweakspanel" Grid.Row="1">
                                 <!-- Your tweakspanel content goes here -->
                             </Grid>

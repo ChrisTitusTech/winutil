@@ -25,7 +25,7 @@ function Invoke-WPFUIElements {
 
         [Parameter(Mandatory)]
         [int]$columncount
-    )    
+    )
 
     $theme = $sync.configs.themes.$ctttheme
 
