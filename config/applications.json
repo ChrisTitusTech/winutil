@@ -2950,5 +2950,13 @@
         "description": "Fork - a fast and friendly git client.",
         "link": "https://git-fork.com/",
         "winget": "Fork.Fork"
+    },
+    "SucroseWallpaperEngine": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Sucrose Wallpaper Engine",
+        "description": "Sucrose is a versatile wallpaper engine that brings life to your desktop with a wide range of interactive themes.",
+        "link": "https://github.com/Taiizor/Sucrose",
+        "winget": "Taiizor.SucroseWallpaperEngine"
     }
 }
