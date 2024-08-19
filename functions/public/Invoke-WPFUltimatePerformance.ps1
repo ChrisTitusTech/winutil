@@ -9,10 +9,10 @@ Function Invoke-WPFUltimatePerformance {
 
     #>
     param($State)
-    Try{
+    try {
         # Check if Ultimate Performance plan is installed
         $ultimatePlan = powercfg -list | Select-String -Pattern "Ultimate Performance"
-        if($state -eq "Enable"){
+        if($state -eq "Enable") {
             if ($ultimatePlan) {
                 Write-Host "Ultimate Performance plan is already installed."
             } else {
@@ -29,7 +29,7 @@ Function Invoke-WPFUltimatePerformance {
 
 
         }
-        elseif($state -eq "Disable"){
+        elseif($state -eq "Disable") {
             if ($ultimatePlan) {
                 # Extract the GUID of the Ultimate Performance plan
                 $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
@@ -47,7 +47,7 @@ Function Invoke-WPFUltimatePerformance {
                 Write-Host "Ultimate Performance plan is not installed."
             }
         }
-    } Catch{
+    } catch {
         Write-Warning $psitem.Exception.Message
     }
 }

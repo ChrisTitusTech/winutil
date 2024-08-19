@@ -12,23 +12,21 @@ function Set-WinUtilDNS {
 
     #>
     param($DNSProvider)
-    if($DNSProvider -eq "Default"){return}
-    Try{
+    if($DNSProvider -eq "Default") {return}
+    try {
         $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
         Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
         Write-Host $($Adapters | Out-String)
 
-        Foreach ($Adapter in $Adapters){
-            if($DNSProvider -eq "DHCP"){
+        Foreach ($Adapter in $Adapters) {
+            if($DNSProvider -eq "DHCP") {
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
-            }
-            Else{
+            } else {
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary6)", "$($sync.configs.dns.$DNSProvider.Secondary6)")
             }
         }
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }

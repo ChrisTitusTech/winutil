@@ -20,10 +20,9 @@ function Invoke-WPFPresets {
         [bool]$imported = $false
     )
 
-    if($imported -eq $true){
+    if($imported -eq $true) {
         $CheckBoxesToCheck = $preset
-    }
-    Else{
+    } else {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
@@ -39,8 +38,7 @@ function Invoke-WPFPresets {
     foreach ($CheckBox in $CheckBoxes) {
         $checkboxName = $CheckBox.Key
 
-        if (-not $CheckBoxesToCheck)
-        {
+        if (-not $CheckBoxesToCheck) {
             $sync.$checkboxName.IsChecked = $false
             continue
         }

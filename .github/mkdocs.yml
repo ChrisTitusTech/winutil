@@ -1,0 +1,88 @@
+site_name: WinUtil Documentation
+docs_dir: '../docs'
+repo_url: https://github.com/ChrisTitusTech/winutil
+
+nav:
+  - Introduction: 'index.md'
+  - User Guide: 'userguide.md'
+  - Contributing Guide: 'contribute.md'
+  - Documentation:
+      - Dev Docs: 'devdocs.md'
+      - Known Issues: 'KnownIssues.md'
+  - FAQ: 'faq.md'
+
+theme:
+  name: material
+  custom_dir: '../overrides'
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  logo: assets/favicon.png
+  favicon: assets/favicon.png
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - abbr
+  - attr_list
+  - pymdownx.snippets
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - awesome-pages
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true

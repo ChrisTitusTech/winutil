@@ -10,7 +10,7 @@ function Invoke-WPFControlPanel {
     #>
     param($Panel)
 
-    switch ($Panel){
+    switch ($Panel) {
         "WPFPanelcontrol" {cmd /c control}
         "WPFPanelnetwork" {cmd /c ncpa.cpl}
         "WPFPanelpower"   {cmd /c powercfg.cpl}

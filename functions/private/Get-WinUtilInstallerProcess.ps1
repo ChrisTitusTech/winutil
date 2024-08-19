@@ -14,10 +14,10 @@ function Get-WinUtilInstallerProcess {
 
     param($Process)
 
-    if ($Null -eq $Process){
+    if ($Null -eq $Process) {
         return $false
     }
-    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue){
+    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue) {
         return $true
     }
     return $false
