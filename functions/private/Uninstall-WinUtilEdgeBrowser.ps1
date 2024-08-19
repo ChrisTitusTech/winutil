@@ -25,7 +25,12 @@ Function Uninstall-WinUtilEdgeBrowser {
         $tmpNation = 68 # Ireland
         [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $tmpNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
 
-        $baseKey = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        $baseKey = if ([Environment]::Is64BitOperatingSystem) {
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        } else {
+            'HKLM:\SOFTWARE\Microsoft\EdgeUpdate'
+        }
+
         $registryPath = $baseKey + '\ClientState\' + $Key
 
         if (!(Test-Path -Path $registryPath)) {
@@ -66,9 +71,17 @@ Function Uninstall-WinUtilEdgeBrowser {
     }
 
     function Uninstall-Edge {
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        }
 
-        [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+        } else {
+            [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+        }
 
         Uninstall-EdgeClient -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
 
@@ -80,13 +93,21 @@ Function Uninstall-WinUtilEdgeBrowser {
         Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
 
         # Remove Edge reg keys
-        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        }
     }
 
     function Uninstall-WebView {
         # FIXME: might not work on some systems
 
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        }
 
         Uninstall-EdgeClient -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
     }
@@ -94,9 +115,17 @@ Function Uninstall-WinUtilEdgeBrowser {
     function Uninstall-EdgeUpdate {
         # FIXME: might not work on some systems
 
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+        }
 
-        $registryPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        $registryPath = if ([Environment]::Is64BitOperatingSystem) {
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        } else {
+            'HKLM:\SOFTWARE\Microsoft\EdgeUpdate'
+        }
         if (!(Test-Path -Path $registryPath)) {
             Write-Host "Registry key not found: $registryPath"
             return
@@ -111,7 +140,11 @@ Function Uninstall-WinUtilEdgeBrowser {
         Start-Process cmd.exe "/c $uninstallCmdLine" -WindowStyle Hidden -Wait
 
         # Remove EdgeUpdate reg keys
-        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        if ([Environment]::Is64BitOperatingSystem) {
+            Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
+        }
     }
 
     function Install-Edge {
