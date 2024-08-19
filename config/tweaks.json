@@ -2713,6 +2713,9 @@
       reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
       reg unload \"hku\\Default\"
 
+      Write-Host \"Removing autostart key\"
+      reg delete \"HKEY_CURRENT_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDrive\" /f
+
       Write-Host \"Removing startmenu entry\"
       Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
 
