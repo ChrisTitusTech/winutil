@@ -39,7 +39,7 @@
         .EXAMPLE
         Invoke-Preprocessing -ThrowExceptionOnEmptyFilesList -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
 
-        Same as Example No. 1, but will throw an exception when 'Invoke-Preprocessing' function doesn't find any files in 'WorkingDir' (not including 'ExcludedFiles' list).
+        Same as Example No. 1, but uses '-ThrowExceptionOnEmptyFilesList', which's an optional parameter that'll make 'Invoke-Preprocessing' throw an exception when no files are found in 'WorkingDir' (not including the ExcludedFiles, of course), useful when you want to double check your parameters & you're sure there's files to process in the 'WorkingDir'.
 
         .EXAMPLE
         Invoke-Preprocessing -Skip -WorkingDir "DRIVE:\Path\To\Folder\" -ExcludedFiles @('file.txt', '.\.git\', '*.png') -ProgressStatusMessage "Doing Preprocessing"
