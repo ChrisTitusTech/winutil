@@ -80,14 +80,18 @@ function Invoke-WPFGetIso {
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
         $fidopath = "$env:temp\Fido.ps1"
+        $originalLocation = Get-Location
+
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
         $selectedItem = ($sync["ISOArchitecture"].SelectedItem -split '-')[0]
         $rel = "x" + $selectedItem
 
-        # Have to correct the language to actually be a working one
+        # TODO: Have to correct the language to actually be a working one
+        Set-Location -Path $env:temp
         & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch $rel
-        $filePath = "$workingdir\*.iso"
+        Set-Location $originalLocation
+        $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
 
     Write-Host "File path $($filePath)"
