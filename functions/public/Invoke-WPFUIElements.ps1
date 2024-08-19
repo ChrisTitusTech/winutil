@@ -9,11 +9,9 @@ function Invoke-WPFUIElements {
     .PARAMETER columncount
         The number of columns to be used in the Grid. If not provided, a default value is used based on the panel.
     .EXAMPLE
-        $categoryPanelMap = @{
-            "Essential Tweaks" = 0
-            "Customize Preferences" = 1
-        }
         Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "install" -columncount 5
+    .NOTES
+        Future me/contributer: If possible please wrap this into a runspace to make it load all panels at the same time.
     #>
 
     param(

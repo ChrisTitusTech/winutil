@@ -414,7 +414,8 @@ $sync["SearchBar"].Add_TextChanged({
         $inactiveCategories = $allCategories
     }
     foreach ($category in $inactiveCategories) {
-        $sync[$category].Visibility = "Collapsed"}
+        $sync[$category].Visibility = "Collapsed"
+    }
 })
 
 # Initialize the hashtable
