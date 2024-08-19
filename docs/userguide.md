@@ -201,25 +201,6 @@ The utility provides three distinct settings for managing Windows updates: Defau
     By default, MicroWin will debloat the Pro edition, but you can choose any edition you want.
 
 
-##### Customization options
-
-* **Keep Provisioned Packages**: leaving this option unticked (default) will try to remove every operating system package.
-
-    Some packages may remain after processing. This can happen if the packages in question are permanent or have been superseded by newer versions.
-
-* **Keep Appx Packages**: leaving this option unticked (default) will try to remove every Microsoft Store app from the Windows image.
-
-    This option will exclude some applications that are essential in the event that you want or need to add a Store app later on.
-
-* **Keep Defender**: leaving this option unticked will try to remove every part of Windows Defender, including the Windows Security app.
-
-    Leaving this option unticked is **NOT recommended** unless you plan to use a third-party antivirus solution on your MicroWin installation. In that regard, don't install AVs with bad reputations or rogueware.
-
-* **Keep Edge**: leaving this option unticked will try to remove every part of the Microsoft Edge browser using the best methods available.
-
-    Leaving this option unticked is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
-
-
 ##### Driver integration options
 
 * **Inject drivers** will add the drivers in the folder that you specify to the target Windows image.
