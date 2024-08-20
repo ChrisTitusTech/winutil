@@ -25,7 +25,32 @@ function Invoke-WPFUIElements {
         [int]$columncount
     )
 
+    $window = $sync["Form"]
+
     $theme = $sync.configs.themes.$ctttheme
+    $borderstyle = $window.FindResource("BorderStyle")
+    $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
+    $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
+
+    $targetGrid = $window.FindName($targetGridName)
+
+    # Clear existing ColumnDefinitions and Children
+    $targetGrid.ColumnDefinitions.Clear() | Out-Null
+    $targetGrid.Children.Clear() | Out-Null
+
+    # Add ColumnDefinitions to the target Grid
+    for ($i = 0; $i -lt $columncount; $i++) {
+        $colDef = New-Object Windows.Controls.ColumnDefinition
+        $colDef.Width = New-Object Windows.GridLength(1, [Windows.GridUnitType]::Star)
+        $targetGrid.ColumnDefinitions.Add($colDef) | Out-Null
+    }
+
+    # Only apply the logic for distributing entries across columns if the targetGridName is "appspanel"
+    if ($targetGridName -eq "appspanel") {
+        $panelcount = 0
+        $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
+        $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
+    }
 
     # Convert PSCustomObject to Hashtable
     $configHashtable = @{}
@@ -67,28 +92,6 @@ function Invoke-WPFUIElements {
         $organizedData[$entryObject.Panel][$entryObject.Category] += $entryObject
     }
 
-    # Retrieve the main window and the target Grid by name
-    $window = $sync["Form"]
-    $targetGrid = $window.FindName($targetGridName)
-
-    # Clear existing ColumnDefinitions and Children
-    $targetGrid.ColumnDefinitions.Clear() | Out-Null
-    $targetGrid.Children.Clear() | Out-Null
-
-    # Add ColumnDefinitions to the target Grid
-    for ($i = 0; $i -lt $columncount; $i++) {
-        $colDef = New-Object Windows.Controls.ColumnDefinition
-        $colDef.Width = New-Object Windows.GridLength(1, [Windows.GridUnitType]::Star)
-        $targetGrid.ColumnDefinitions.Add($colDef) | Out-Null
-    }
-
-    # Only apply the logic for distributing entries across columns if the targetGridName is "appspanel"
-    if ($targetGridName -eq "appspanel") {
-        $panelcount = 0
-        $entrycount = $configHashtable.Keys.Count + $organizedData["0"].Keys.Count
-        $maxcount = [Math]::Round($entrycount / $columncount + 0.5)
-    }
-
     # Iterate through 'organizedData' by panel, category, and application
     $count = 0
     foreach ($panelKey in ($organizedData.Keys | Sort-Object)) {
@@ -96,7 +99,7 @@ function Invoke-WPFUIElements {
         $border = New-Object Windows.Controls.Border
         $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-        $border.style = $window.FindResource("BorderStyle")
+        $border.style = $borderstyle
         $targetGrid.Children.Add($border) | Out-Null
 
         # Create a StackPanel inside the Border
@@ -116,7 +119,7 @@ function Invoke-WPFUIElements {
                     $border = New-Object Windows.Controls.Border
                     $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
                     [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                    $border.style = $window.FindResource("BorderStyle")
+                    $border.style = $borderstyle
                     $targetGrid.Children.Add($border) | Out-Null
 
                     # Create a new StackPanel inside the Border
@@ -148,7 +151,7 @@ function Invoke-WPFUIElements {
                         $border = New-Object Windows.Controls.Border
                         $border.VerticalAlignment = "Stretch" # Ensure the border stretches vertically
                         [System.Windows.Controls.Grid]::SetColumn($border, $panelcount)
-                        $border.style = $window.FindResource("BorderStyle")
+                        $border.style = $borderstyle
                         $targetGrid.Children.Add($border) | Out-Null
 
                         # Create a new StackPanel inside the Border
@@ -168,7 +171,7 @@ function Invoke-WPFUIElements {
                         $checkBox.Name = $entryInfo.Name
                         $checkBox.HorizontalAlignment = "Right"
                         $dockPanel.Children.Add($checkBox) | Out-Null
-                        $checkBox.Style = $window.FindResource("ColorfulToggleSwitchStyle")
+                        $checkBox.Style = $ColorfulToggleSwitchStyle
 
                         $label = New-Object Windows.Controls.Label
                         $label.Content = $entryInfo.Content
@@ -290,7 +293,7 @@ function Invoke-WPFUIElements {
                             $textBlock.Name = $checkBox.Name + "Link"
                             $textBlock.Text = "(?)"
                             $textBlock.ToolTip = $entryInfo.Link
-                            $textBlock.Style = $window.FindResource("HoverTextBlockStyle")
+                            $textBlock.Style = $HoverTextBlockStyle
 
                             # Add event handler for click to open link
                             $handler = [System.Windows.Input.MouseButtonEventHandler]{
