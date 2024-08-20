@@ -238,7 +238,7 @@ function Invoke-WPFUIElements {
                         $comboBox.Width = $theme.ButtonWidth
                         $comboBox.HorizontalAlignment = "Left"
                         $comboBox.VerticalAlignment = "Center"
-                        $comboBox.Margin = "5,5"
+                        $comboBox.Margin = $theme.ButtonMargin
 
                         foreach ($comboitem in ($entryInfo.ComboItems -split " ")) {
                             $comboBoxItem = New-Object Windows.Controls.ComboBoxItem
@@ -260,8 +260,7 @@ function Invoke-WPFUIElements {
                         $button.Name = $entryInfo.Name
                         $button.Content = $entryInfo.Content
                         $button.HorizontalAlignment = "Left"
-                        $button.Margin = "5"
-                        $button.Padding = "20,5"
+                        $button.Margin = $theme.ButtonMargin
                         $button.FontSize = $theme.ButtonFontSize
                         if ($entryInfo.ButtonWidth) {
                             $button.Width = $entryInfo.ButtonWidth
