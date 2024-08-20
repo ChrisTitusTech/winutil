@@ -41,12 +41,24 @@ function Invoke-WPFUnInstall {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
             foreach ($package in $PackagesToInstall) {
-                if ($package.winget -eq "na") {
-                    $packagesChoco.add($package)
-                    Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
-                } else {
-                    $packagesWinget.add($($package.winget))
-                    Write-Host "Queueing $($package.winget) for Winget Uninstall"
+                switch ($Sync.DownloadEngine){
+                    "Chocolatey"{
+                        $packagesChoco.add($package)
+                        Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"    
+                    }
+                    "Winget" {
+                        $null = $packagesWinget.add($($package.winget))
+                        Write-Host "Queueing $($package.winget) for Winget Uninstall"    
+                    }
+                    default {
+                        if ($package.winget -eq "na") {
+                            $packagesChoco.add($package)
+                            Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
+                        } else {
+                            $null = $packagesWinget.add($($package.winget))
+                            Write-Host "Queueing $($package.winget) for Winget Uninstall"
+                        }
+                    }
                 }
             }
             return $packagesWinget, $packagesChoco

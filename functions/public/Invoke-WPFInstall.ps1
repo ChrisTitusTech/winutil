@@ -32,12 +32,25 @@ function Invoke-WPFInstall {
             $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
             foreach ($package in $PackagesToInstall) {
-                if ($package.winget -eq "na") {
-                    $packagesChoco.add($package)
-                    Write-Host "Queueing $($package.choco) for Chocolatey install"
-                } else {
-                    $null = $packagesWinget.add($($package.winget))
-                    Write-Host "Queueing $($package.winget) for Winget install"
+                switch ($Sync.DownloadEngine){
+                    "Chocolatey"{
+                        # TODO: Handle Upgrade if version is already installed
+                        $packagesChoco.add($package)
+                        Write-Host "Queueing $($package.choco) for Chocolatey install"    
+                    }
+                    "Winget" {
+                        $null = $packagesWinget.add($($package.winget))
+                        Write-Host "Queueing $($package.winget) for Winget install"    
+                    }
+                    default {
+                        if ($package.winget -eq "na") {
+                            $packagesChoco.add($package)
+                            Write-Host "Queueing $($package.choco) for Chocolatey install"
+                        } else {
+                            $null = $packagesWinget.add($($package.winget))
+                            Write-Host "Queueing $($package.winget) for Winget install"
+                        }
+                    }
                 }
             }
             return $packagesWinget, $packagesChoco
