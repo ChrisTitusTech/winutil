@@ -7,7 +7,7 @@ on:
       - '.github/requirements.txt'
       - 'docs/**'
       - 'overrides/**'
-      - '.github/CONTRIBUTING.mb'
+      - '.github/CONTRIBUTING.md'
   workflow_dispatch:
 
 jobs:
