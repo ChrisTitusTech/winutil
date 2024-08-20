@@ -14,6 +14,7 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "5,0,0,1",
 
+                    "TabContentMargin": "5",
                     "TabButtonFontSize":      "14",
                     "TabButtonWidth":         "100",
                     "TabButtonHeight":        "25",
@@ -88,6 +89,7 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "5,0,0,1",
 
+                    "TabContentMargin": "5",
                     "TabButtonFontSize":      "14",
                     "TabButtonWidth":         "100",
                     "TabButtonHeight":        "25",
@@ -160,6 +162,7 @@
                     "CheckBoxBulletDecoratorFontSize": "14",
                     "CheckBoxMargin": "5,0,0,1",
 
+                    "TabContentMargin": "5",
                     "TabButtonFontSize":      "14",
                     "TabButtonWidth":         "100",
                     "TabButtonHeight":        "25",

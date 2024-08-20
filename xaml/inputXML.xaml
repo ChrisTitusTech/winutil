@@ -787,7 +787,7 @@
                         <RowDefinition Height="45px"/>
                         <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="{TabContentMargin}">
                         <Button Name="WPFinstall" Content=" Install/Upgrade Selected" Margin="2" />
                         <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
                         <Button Name="WPFuninstall" Content=" Uninstall Selected" Margin="2"/>
@@ -795,7 +795,7 @@
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                 BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid Name="appspanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         </Grid>
@@ -813,7 +813,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0" Margin="{TabContentMargin}">
                         <Grid Background="Transparent">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="45px"/>
@@ -846,13 +846,13 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
                     <Grid Name="featurespanel" Grid.Row="1" Background="Transparent">
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -882,7 +882,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
