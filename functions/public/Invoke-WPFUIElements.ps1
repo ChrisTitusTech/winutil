@@ -130,7 +130,7 @@ function Invoke-WPFUIElements {
             }
 
             $label = New-Object Windows.Controls.Label
-            $label.Content = $category -replace ".*__"
+            $label.Content = $category -replace ".*__", ""
             $label.FontSize = $theme.FontSizeHeading
             $label.FontFamily = $theme.HeaderFontFamily
             $stackPanel.Children.Add($label) | Out-Null
