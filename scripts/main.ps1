@@ -369,18 +369,12 @@ if ($locale -ne "en-US") {
 }
 $sync["ISOLanguage"].SelectedItem = $locale
 
-$sync["ISOArchitecture"].Items.Add("64-bit")
-$sync["ISOArchitecture"].Items.Add("86-bit")
-$sync["ISOArchitecture"].SelectedItem = (Get-WmiObject -Class Win32_OperatingSystem).OSArchitecture
-
 if ($sync["ISOoption1"].IsChecked) {
     $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
-    $sync["ISOArchitecture"].Visibility = [System.Windows.Visibility]::Visible
 } else {
     $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
-    $sync["ISOArchitecture"].Visibility = [System.Windows.Visibility]::Collapsed
 }
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons

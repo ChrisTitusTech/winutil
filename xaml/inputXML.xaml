@@ -969,7 +969,6 @@
                             <RadioButton x:Name="ISOoption1" Content="Get newest ISO automatically" GroupName="Options" IsChecked="True"/>
                             <ComboBox x:Name="ISORelease"/>
                             <ComboBox x:Name="ISOLanguage"/>
-                            <ComboBox x:Name="ISOArchitecture"/>
                             <RadioButton x:Name="ISOoption2" Content="Select your own ISO" GroupName="Options"/>
                             <Button Name="WPFGetIso" Margin="2" Padding="15">
                                 <Button.Content>

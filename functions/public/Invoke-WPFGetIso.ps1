@@ -84,12 +84,9 @@ function Invoke-WPFGetIso {
 
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
-        $selectedItem = ($sync["ISOArchitecture"].SelectedItem -split '-')[0]
-        $rel = "x" + $selectedItem
-
         # TODO: Have to correct the language to actually be a working one
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch $rel
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64"
         Set-Location $originalLocation
         $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
