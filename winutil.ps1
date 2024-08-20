@@ -8,7 +8,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : 24.08.03
+    Version        : 24.08.16
 #>
 param (
     [switch]$Debug,
@@ -45,13 +45,12 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "24.08.03"
+$sync.version = "24.08.16"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
 # If script isn't running as admin, show error message and quit
-If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544")
-{
+If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544") {
     Write-Host "===========================================" -Foregroundcolor Red
     Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
     Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
@@ -115,15 +114,15 @@ function ConvertTo-Icon {
             # Handle the thrown exception here...
         }
 
-        This Example make use of '-overrideIconFile' Optional Parameter, the default for this paramter is $true.
+        This Example make use of '-overrideIconFile' Optional Parameter, the default for this parameter is $true.
         By doing '-overrideIconFile $false', the 'ConvertTo-Icon' function will raise an exception that needs to be catched throw a 'catch' Code Block,
         otherwise it'll crash the running PowerShell instance/process.
 
     #>
     param(
-        [Parameter(Mandatory=$true, position=0)]
+        [Parameter(Mandatory, position=0)]
         [string]$bitmapPath,
-        [Parameter(Mandatory=$true, position=1)]
+        [Parameter(Mandatory, position=1)]
         [string]$iconPath,
         [Parameter(position=2)]
         [bool]$overrideIconFile = $true
@@ -150,8 +149,7 @@ function ConvertTo-Icon {
         $icon.Save($file)
         $file.Close()
         $icon.Dispose()
-    }
-    else {
+    } else {
         throw [System.IO.FileNotFoundException] "[ConvertTo-Icon] The provided bitmap File Path is not found at '$bitmapPath'."
     }
 }
@@ -167,38 +165,33 @@ function Copy-Files {
 
     #>
     param (
-        [string] $Path,
-        [string] $Destination,
-        [switch] $Recurse = $false,
-        [switch] $Force = $false
+        [string]$Path,
+        [string]$Destination,
+        [switch]$Recurse = $false,
+        [switch]$Force = $false
     )
 
     try {
 
- 	$files = Get-ChildItem -Path $path -Recurse:$recurse
-	Write-Host "Copy $($files.Count)(s) from $path to $destination"
+        $files = Get-ChildItem -Path $path -Recurse:$recurse
+        Write-Host "Copy $($files.Count)(s) from $path to $destination"
 
-        foreach($file in $files)
-        {
+        foreach ($file in $files) {
             $status = "Copy files {0} on {1}: {2}" -f $counter, $files.Count, $file.Name
             Write-Progress -Activity "Copy Windows files" -Status $status -PercentComplete ($counter++/$files.count*100)
             $restpath = $file.FullName -Replace $path, ''
 
-            if($file.PSIsContainer -eq $true)
-            {
+            if ($file.PSIsContainer -eq $true) {
                 Write-Debug "Creating $($destination + $restpath)"
                 New-Item ($destination+$restpath) -Force:$force -Type Directory -ErrorAction SilentlyContinue
-            }
-            else
-            {
+            } else {
                 Write-Debug "Copy from $($file.FullName) to $($destination+$restpath)"
                 Copy-Item $file.FullName ($destination+$restpath) -ErrorAction SilentlyContinue -Force:$force
                 Set-ItemProperty -Path ($destination+$restpath) -Name IsReadOnly -Value $false
             }
         }
         Write-Progress -Activity "Copy Windows files" -Status "Ready" -Completed
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to Copy all the files due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -239,16 +232,18 @@ function Get-LocalizedYesNo {
   }
 function Get-Oscdimg {
     <#
-
         .DESCRIPTION
         This function will download oscdimg file from github Release folders and put it into env:temp folder
 
         .EXAMPLE
         Get-Oscdimg
     #>
-    param( [Parameter(Mandatory=$true)]
+
+    param(
+        [Parameter(Mandatory, position=0)]
         [string]$oscdimgPath
     )
+
     $oscdimgPath = "$env:TEMP\oscdimg.exe"
     $downloadUrl = "https://github.com/ChrisTitusTech/winutil/raw/main/releases/oscdimg.exe"
     Invoke-RestMethod -Uri $downloadUrl -OutFile $oscdimgPath
@@ -266,20 +261,24 @@ function Get-Oscdimg {
 }
 function Get-TabXaml {
     <#
-    .SYNOPSIS
-        Generates XAML for a tab in the WinUtil GUI
-        This function is used to generate the XAML for the applications tab in the WinUtil GUI
-        It takes the tabname and the number of columns to display the applications in as input and returns the XAML for the tab as output
-    .PARAMETER tabname
-        The name of the tab to generate XAML for
-        Note: the 'tabname' parameter must equal one of the json files found in $sync.configs variable
-              Otherwise, it'll throw an exception
-    .PARAMETER columncount
-        The number of columns to display the applications in, default is 0
-    .OUTPUTS
-        The XAML for the tab
-    .EXAMPLE
-        Get-TabXaml "applications" 3
+        .SYNOPSIS
+            Generates XAML for a tab in the WinUtil GUI
+            This function is used to generate the XAML for the applications tab in the WinUtil GUI
+            It takes the tabname and the number of columns to display the applications in as input and returns the XAML for the tab as output
+
+        .PARAMETER tabname
+            The name of the tab to generate XAML for
+            Note: the 'tabname' parameter must equal one of the json files found in $sync.configs variable
+                  Otherwise, it'll throw an exception
+
+        .PARAMETER columncount
+            The number of columns to display the applications in, default is 0
+
+        .OUTPUTS
+            The XAML for the tab
+
+        .EXAMPLE
+            Get-TabXaml "applications" 3
     #>
 
 
@@ -381,7 +380,7 @@ function Get-TabXaml {
             }
 
             # Dot-source the Get-WPFObjectName function
-            . .\functions\private\Get-WPFObjectName
+            . "$($sync.PSScriptRoot)\functions\private\Get-WPFObjectName.ps1"
 
             $categorycontent = $($category -replace '^.__', '')
             $categoryname = Get-WPFObjectName -type "Label" -name $categorycontent
@@ -454,7 +453,7 @@ function Get-TabXaml {
 
                     # else it is a checkbox
                     default {
-                        $checkedStatus = If ($appInfo.Checked -eq $null) {""} Else {" IsChecked=""$($appInfo.Checked)"""}
+                        $checkedStatus = If ($appInfo.Checked -eq $null) {""} else {" IsChecked=""$($appInfo.Checked)"""}
                         if ($appInfo.Link -eq $null) {
                             $blockXml += $precal_indent +
                                             "<CheckBox Name=""$($appInfo.Name)"" Content=""$($appInfo.Content)""$($checkedStatus) Margin=""5,0""" + " " +
@@ -580,10 +579,10 @@ function Get-WinUtilInstallerProcess {
 
     param($Process)
 
-    if ($Null -eq $Process){
+    if ($Null -eq $Process) {
         return $false
     }
-    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue){
+    if (Get-Process -Id $Process.Id -ErrorAction SilentlyContinue) {
         return $true
     }
     return $false
@@ -603,125 +602,112 @@ Function Get-WinUtilToggleStatus {
     #>
 
     Param($ToggleSwitch)
-    if($ToggleSwitch -eq "WPFToggleDarkMode"){
+    if($ToggleSwitch -eq "WPFToggleDarkMode") {
         $app = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').AppsUseLightTheme
         $system = (Get-ItemProperty -path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize').SystemUsesLightTheme
-        if($app -eq 0 -and $system -eq 0){
+        if($app -eq 0 -and $system -eq 0) {
             return $true
-        }
-        else{
+        } else {
             return $false
         }
     }
-    if($ToggleSwitch -eq "WPFToggleBingSearch"){
+    if($ToggleSwitch -eq "WPFToggleBingSearch") {
         $bingsearch = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search').BingSearchEnabled
-        if($bingsearch -eq 0){
+        if($bingsearch -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
-    if($ToggleSwitch -eq "WPFToggleNumLock"){
+    if($ToggleSwitch -eq "WPFToggleNumLock") {
         $numlockvalue = (Get-ItemProperty -path 'HKCU:\Control Panel\Keyboard').InitialKeyboardIndicators
-        if($numlockvalue -eq 2){
+        if($numlockvalue -eq 2) {
             return $true
-        }
-        else{
+        } else {
             return $false
         }
     }
-    if($ToggleSwitch -eq "WPFToggleVerboseLogon"){
+    if($ToggleSwitch -eq "WPFToggleVerboseLogon") {
         $VerboseStatusvalue = (Get-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System').VerboseStatus
-        if($VerboseStatusvalue -eq 1){
+        if($VerboseStatusvalue -eq 1) {
             return $true
-        }
-        else{
+        } else {
             return $false
         }
     }
-    if($ToggleSwitch -eq "WPFToggleShowExt"){
+    if($ToggleSwitch -eq "WPFToggleShowExt") {
         $hideextvalue = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').HideFileExt
-        if($hideextvalue -eq 0){
+        if($hideextvalue -eq 0) {
             return $true
-        }
-        else{
+        } else {
             return $false
         }
     }
-    if($ToggleSwitch -eq "WPFToggleSnapWindow"){
+    if($ToggleSwitch -eq "WPFToggleSnapWindow") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Control Panel\Desktop').WindowArrangementActive
-        if($hidesnap -eq 0){
+        if($hidesnap -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
-    if($ToggleSwitch -eq "WPFToggleSnapFlyout"){
+    if($ToggleSwitch -eq "WPFToggleSnapFlyout") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').EnableSnapAssistFlyout
-        if($hidesnap -eq 0){
+        if($hidesnap -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
-    if($ToggleSwitch -eq "WPFToggleSnapSuggestion"){
+    if($ToggleSwitch -eq "WPFToggleSnapSuggestion") {
         $hidesnap = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').SnapAssist
-        if($hidesnap -eq 0){
+        if($hidesnap -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
-    if($ToggleSwitch -eq "WPFToggleMouseAcceleration"){
+    if($ToggleSwitch -eq "WPFToggleMouseAcceleration") {
         $MouseSpeed = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseSpeed
         $MouseThreshold1 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold1
         $MouseThreshold2 = (Get-ItemProperty -path 'HKCU:\Control Panel\Mouse').MouseThreshold2
 
-        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10){
+        if($MouseSpeed -eq 1 -and $MouseThreshold1 -eq 6 -and $MouseThreshold2 -eq 10) {
             return $true
-        }
-        else{
+        } else {
             return $false
         }
     }
-    if($ToggleSwitch -eq "WPFToggleTaskbarSearch"){
+    if($ToggleSwitch -eq "WPFToggleTaskbarSearch") {
         $SearchButton = (Get-ItemProperty -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search").SearchboxTaskbarMode
-        if($SearchButton -eq 0){
+        if($SearchButton -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
     if ($ToggleSwitch -eq "WPFToggleStickyKeys") {
         $StickyKeys = (Get-ItemProperty -path 'HKCU:\Control Panel\Accessibility\StickyKeys').Flags
-        if($StickyKeys -eq 58){
+        if($StickyKeys -eq 58) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
     if ($ToggleSwitch -eq "WPFToggleTaskView") {
         $TaskView = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').ShowTaskViewButton
-        if($TaskView -eq 0){
+        if($TaskView -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
 
     if ($ToggleSwitch -eq "WPFToggleHiddenFiles") {
         $HiddenFiles = (Get-ItemProperty -path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced').Hidden
-        if($HiddenFiles -eq 0){
+        if($HiddenFiles -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
@@ -730,8 +716,7 @@ Function Get-WinUtilToggleStatus {
         $TaskbarWidgets = (Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskBarDa
         if($TaskbarWidgets -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
@@ -739,17 +724,16 @@ Function Get-WinUtilToggleStatus {
         $TaskbarAlignment = (Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced").TaskbarAl
         if($TaskbarAlignment -eq 0) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
     if ($ToggleSwitch -eq "WPFToggleDetailedBSoD") {
-        $DetailedBSoD = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
-        if($DetailedBSoD -eq 0) {
+        $DetailedBSoD1 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisplayParameters
+        $DetailedBSoD2 = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl').DisableEmoticon
+        if (($DetailedBSoD1 -eq 0) -or ($DetailedBSoD2 -eq 0) -or !$DetailedBSoD1 -or !$DetailedBSoD2) {
             return $false
-        }
-        else{
+        } else {
             return $true
         }
     }
@@ -770,13 +754,12 @@ function Get-WinUtilVariables {
     $keys = ($sync.keys).where{ $_ -like "WPF*" }
     if ($Type) {
         $output = $keys | ForEach-Object {
-            Try {
+            try {
                 $objType = $sync["$psitem"].GetType().Name
                 if ($Type -contains $objType) {
                     Write-Output $psitem
                 }
-            }
-            Catch {
+            } catch {
                 <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>
             }
         }
@@ -794,7 +777,7 @@ function Get-WinUtilWingetLatest {
     # Invoke-WebRequest is notoriously slow when the byte progress is displayed. The following lines disable the progress bar and reset them at the end of the function
     $PreviousProgressPreference = $ProgressPreference
     $ProgressPreference = "silentlyContinue"
-    Try{
+    try {
         # Grabs the latest release of Winget from the Github API for the install process.
         $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/Winget-cli/releases/latest" -Method Get -ErrorAction Stop
         $latestVersion = $response.tag_name #Stores version number of latest release.
@@ -805,8 +788,7 @@ function Get-WinUtilWingetLatest {
         Invoke-WebRequest -Uri $licenseWingetUrl -OutFile $ENV:TEMP\License1.xml
         # The only pain is that the msixbundle for winget-cli is 246MB. In some situations this can take a bit, with slower connections.
         Invoke-WebRequest -Uri $assetUrl -OutFile $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle
-    }
-    Catch{
+    } catch {
         throw [WingetFailedInstall]::new('Failed to get latest Winget release and license')
     }
     $ProgressPreference = $PreviousProgressPreference
@@ -830,42 +812,45 @@ function Get-WinUtilWingetPrerequisites {
     $fileUIXaml = "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v${versionUIXamlPatch}/Microsoft.UI.Xaml.${versionUIXamlMinor}.x64.appx"
     # Write-Host "$fileUIXaml"
 
-    Try{
+    try {
         Write-Host "Downloading Microsoft.VCLibs Dependency..."
         Invoke-WebRequest -Uri $fileVCLibs -OutFile $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx
         Write-Host "Downloading Microsoft.UI.Xaml Dependency...`n"
         Invoke-WebRequest -Uri $fileUIXaml -OutFile $ENV:TEMP\Microsoft.UI.Xaml.x64.appx
-    }
-    Catch{
+    } catch {
         throw [WingetFailedInstall]::new('Failed to install prerequsites')
     }
 }
 function Get-WPFObjectName {
-        <#
-    .SYNOPSIS
-        This is a helper function that generates an objectname with the prefix WPF that can be used as a Powershell Variable after compilation.
-        To achieve this, all characters that are not a-z, A-Z or 0-9 are simply removed from the name.
-    .PARAMETER type
-        The type of object for which the name should be generated. (e.g. Label, Button, CheckBox...)
-    .PARAMETER name
-        The name or description to be used for the object. (invalid characters are removed)
-    .OUTPUTS
-        A string that can be used as a object/variable name in powershell.
-        For example: WPFLabelMicrosoftTools
+    <#
+        .SYNOPSIS
+            This is a helper function that generates an objectname with the prefix WPF that can be used as a Powershell Variable after compilation.
+            To achieve this, all characters that are not a-z, A-Z or 0-9 are simply removed from the name.
 
-    .EXAMPLE
-        Get-WPFObjectName -type Label -name "Microsoft Tools"
+        .PARAMETER type
+            The type of object for which the name should be generated. (e.g. Label, Button, CheckBox...)
+
+        .PARAMETER name
+            The name or description to be used for the object. (invalid characters are removed)
+
+        .OUTPUTS
+            A string that can be used as a object/variable name in powershell.
+            For example: WPFLabelMicrosoftTools
+
+        .EXAMPLE
+            Get-WPFObjectName -type Label -name "Microsoft Tools"
     #>
 
-    param( [Parameter(Mandatory=$true)]
-    $type,
-    $name
-)
+    param(
+        [Parameter(Mandatory, position=0)]
+        [string]$type,
 
-$Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', ''
+        [Parameter(position=1)]
+        [string]$name
+    )
 
-return $Output
-
+    $Output = $("WPF"+$type+$name) -replace '[^a-zA-Z0-9]', ''
+    return $Output
 }
 function Install-WinUtilChoco {
 
@@ -887,8 +872,7 @@ function Install-WinUtilChoco {
         Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop
         powershell choco feature enable -n allowGlobalConfirmation
 
-    }
-    Catch {
+    } catch {
         Write-Host "===========================================" -Foregroundcolor Red
         Write-Host "--     Chocolatey failed to install     ---" -Foregroundcolor Red
         Write-Host "===========================================" -Foregroundcolor Red
@@ -930,26 +914,26 @@ function Install-WinUtilProgramChoco {
     Write-Host "==========================================="
     Write-Host "--   Configuring Chocolatey pacakages   ---"
     Write-Host "==========================================="
-    Foreach ($Program in $ProgramsToInstall){
+    Foreach ($Program in $ProgramsToInstall) {
         Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.choco) $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        if($manage -eq "Installing"){
+        if($manage -eq "Installing") {
             write-host "Starting install of $($Program.choco) with Chocolatey."
-            try{
+            try {
                 $tryUpgrade = $false
-		$installOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
+        $installOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
         New-Item -ItemType File -Path $installOutputFilePath
-		$chocoInstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "install $($Program.choco) -y" -Wait -PassThru -RedirectStandardOutput $installOutputFilePath).ExitCode
+        $chocoInstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "install $($Program.choco) -y" -Wait -PassThru -RedirectStandardOutput $installOutputFilePath).ExitCode
             if(($chocoInstallStatus -eq 0) -AND (Test-Path -Path $installOutputFilePath)) {
                 $keywordsFound = Get-Content -Path $installOutputFilePath | Where-Object {$_ -match "reinstall" -OR $_ -match "already installed"}
-		        if ($keywordsFound) {
-		            $tryUpgrade = $true
-		        }
+                if ($keywordsFound) {
+                    $tryUpgrade = $true
+                }
             }
-		# TODO: Implement the Upgrade part using 'choco upgrade' command, this will make choco consistent with WinGet, as WinGet tries to Upgrade when you use the install command.
-		if ($tryUpgrade) {
-		    throw "Automatic Upgrade for Choco isn't implemented yet, a feature to make it consistent with WinGet, the install command using choco simply failed because $($Program.choco) is already installed."
-		}
-		if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)){
+        # TODO: Implement the Upgrade part using 'choco upgrade' command, this will make choco consistent with WinGet, as WinGet tries to Upgrade when you use the install command.
+        if ($tryUpgrade) {
+            throw "Automatic Upgrade for Choco isn't implemented yet, a feature to make it consistent with WinGet, the install command using choco simply failed because $($Program.choco) is already installed."
+        }
+        if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)) {
                     Write-Host "$($Program.choco) installed successfully using Chocolatey."
                     $X++
                     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
@@ -966,13 +950,13 @@ function Install-WinUtilProgramChoco {
             }
         }
 
-	if($manage -eq "Uninstalling"){
+    if($manage -eq "Uninstalling") {
             write-host "Starting uninstall of $($Program.choco) with Chocolatey."
-            try{
-		$uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
+            try {
+        $uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
         New-Item -ItemType File -Path $uninstallOutputFilePath
-		$chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
-		if($chocoUninstallStatus -eq 0){
+        $chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
+        if($chocoUninstallStatus -eq 0) {
                     Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
                     $x++
                     $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
@@ -987,13 +971,13 @@ function Install-WinUtilProgramChoco {
                 $x++
                 $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
             }
-	}
+    }
     }
     Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
 
     # Cleanup leftovers files
-    if(Test-Path -Path $installOutputFilePath){ Remove-Item -Path $installOutputFilePath }
-    if(Test-Path -Path $uninstallOutputFilePath){ Remove-Item -Path $uninstallOutputFilePath }
+    if(Test-Path -Path $installOutputFilePath) { Remove-Item -Path $installOutputFilePath }
+    if(Test-Path -Path $uninstallOutputFilePath) { Remove-Item -Path $uninstallOutputFilePath }
 
     return;
 }
@@ -1008,7 +992,7 @@ function Install-WinUtilWinget {
     #>
     $isWingetInstalled = Test-WinUtilPackageManager -winget
 
-    Try {
+    try {
         if ($isWingetInstalled -eq "installed") {
             Write-Host "`nWinget is already installed.`r" -ForegroundColor Green
             return
@@ -1020,7 +1004,7 @@ function Install-WinUtilWinget {
 
 
         # Gets the computer's information
-        if ($null -eq $sync.ComputerInfo){
+        if ($null -eq $sync.ComputerInfo) {
             $ComputerInfo = Get-ComputerInfo -ErrorAction Stop
         } else {
             $ComputerInfo = $sync.ComputerInfo
@@ -1040,8 +1024,8 @@ function Install-WinUtilWinget {
         Get-WinUtilWingetLatest
         Write-Host "Installing Winget w/ Prerequsites`r"
         Add-AppxProvisionedPackage -Online -PackagePath $ENV:TEMP\Microsoft.DesktopAppInstaller.msixbundle -DependencyPackagePath $ENV:TEMP\Microsoft.VCLibs.x64.Desktop.appx, $ENV:TEMP\Microsoft.UI.Xaml.x64.appx -LicensePath $ENV:TEMP\License1.xml
-		Write-Host "Manually adding Winget Sources, from Winget CDN."
-		Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time.
+        Write-Host "Manually adding Winget Sources, from Winget CDN."
+        Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix #Seems some installs of Winget don't add the repo source, this should makes sure that it's installed every time.
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Host "Enabling NuGet and Module..."
         Install-PackageProvider -Name NuGet -Force
@@ -1049,689 +1033,21 @@ function Install-WinUtilWinget {
         # Winget only needs a refresh of the environment variables to be used.
         Write-Output "Refreshing Environment Variables...`n"
         $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-    } Catch {
+    } catch {
         Write-Host "Failure detected while installing via GitHub method. Continuing with Chocolatey method as fallback." -ForegroundColor Red
         # In case install fails via GitHub method.
-        Try {
+        try {
         # Install Choco if not already present
         Install-WinUtilChoco
         Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install winget-cli"
         Write-Host "Winget Installed" -ForegroundColor Green
         Write-Output "Refreshing Environment Variables...`n"
         $ENV:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-        } Catch {
+        } catch {
             throw [WingetFailedInstall]::new('Failed to install!')
         }
     }
 
-}
-function Test-CompatibleImage() {
-<#
-
-    .SYNOPSIS
-        Checks the version of a Windows image and determines whether or not it is compatible with a specific feature depending on a desired version
-
-    .PARAMETER Name
-        imgVersion - The version of the Windows image
-        desiredVersion - The version to compare the image version with
-
-#>
-
-    param
-    (
-        [Parameter(Mandatory = $true, Position=0)] [string] $imgVersion,
-        [Parameter(Mandatory = $true, Position=1)] [Version] $desiredVersion
-    )
-
-    try {
-        $version = [Version]$imgVersion
-        return $version -ge $desiredVersion
-    } catch {
-        return $False
-    }
-}
-
-function Remove-Features([switch] $dumpFeatures = $false, [switch] $keepDefender = $false) {
-<#
-
-    .SYNOPSIS
-        Removes certain features from ISO image
-
-    .PARAMETER Name
-        dumpFeatures - Dumps all features found in the ISO into a file called allfeaturesdump.txt. This file can be examined and used to decide what to remove.
-		keepDefender - Should Defender be removed from the ISO?
-
-    .EXAMPLE
-        Remove-Features -keepDefender:$false
-
-#>
-	try
-	{
-		$featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
-		if ($dumpFeatures)
-		{
-			$featlist > allfeaturesdump.txt
-		}
-
-		$featlist = $featlist | Where-Object {
-			$_ -NotLike "*Printing*" -AND
-			$_ -NotLike "*TelnetClient*" -AND
-			$_ -NotLike "*PowerShell*" -AND
-			$_ -NotLike "*NetFx*" -AND
-			$_ -NotLike "*Media*" -AND
-			$_ -NotLike "*NFS*"
-		}
-
-		if ($keepDefender) { $featlist = $featlist | Where-Object { $_ -NotLike "*Defender*" }}
-
-		foreach($feature in $featlist)
-		{
-			$status = "Removing feature $feature"
-			Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-			Write-Debug "Removing feature $feature"
-			Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
-		}
-		Write-Progress -Activity "Removing features" -Status "Ready" -Completed
-		Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."		
-	}
-	catch
-	{
-		Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
-	}
-}
-
-function Remove-Packages
-{
-	try
-	{
-		$pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
-
-		$pkglist = $pkglist | Where-Object {
-				$_ -NotLike "*ApplicationModel*" -AND
-				$_ -NotLike "*indows-Client-LanguagePack*" -AND
-				$_ -NotLike "*LanguageFeatures-Basic*" -AND
-				$_ -NotLike "*Package_for_ServicingStack*" -AND
-				$_ -NotLike "*.NET*" -AND
-				$_ -NotLike "*Store*" -AND
-				$_ -NotLike "*VCLibs*" -AND
-				$_ -NotLike "*AAD.BrokerPlugin",
-				$_ -NotLike "*LockApp*" -AND
-				$_ -NotLike "*Notepad*" -AND
-				$_ -NotLike "*immersivecontrolpanel*" -AND
-				$_ -NotLike "*ContentDeliveryManager*" -AND
-				$_ -NotLike "*PinningConfirMationDialog*" -AND
-				$_ -NotLike "*SecHealthUI*" -AND
-				$_ -NotLike "*SecureAssessmentBrowser*" -AND
-				$_ -NotLike "*PrintDialog*" -AND
-				$_ -NotLike "*AssignedAccessLockApp*" -AND
-				$_ -NotLike "*OOBENetworkConnectionFlow*" -AND
-				$_ -NotLike "*Apprep.ChxApp*" -AND
-				$_ -NotLike "*CBS*" -AND
-				$_ -NotLike "*OOBENetworkCaptivePortal*" -AND
-				$_ -NotLike "*PeopleExperienceHost*" -AND
-				$_ -NotLike "*ParentalControls*" -AND
-				$_ -NotLike "*Win32WebViewHost*" -AND
-				$_ -NotLike "*InputApp*" -AND
-				$_ -NotLike "*AccountsControl*" -AND
-				$_ -NotLike "*AsyncTextService*" -AND
-				$_ -NotLike "*CapturePicker*" -AND
-				$_ -NotLike "*CredDialogHost*" -AND
-				$_ -NotLike "*BioEnrollMent*" -AND
-				$_ -NotLike "*ShellExperienceHost*" -AND
-				$_ -NotLike "*DesktopAppInstaller*" -AND
-				$_ -NotLike "*WebMediaExtensions*" -AND
-				$_ -NotLike "*WMIC*" -AND
-				$_ -NotLike "*UI.XaML*"
-			}
-
-		foreach ($pkg in $pkglist)
-		{
-			try {
-				$status = "Removing $pkg"
-				Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
-				Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
-			}
-			catch {
-				# This can happen if the package that is being removed is a permanent one, like FodMetadata
-				Write-Host "Could not remove OS package $($pkg)"
-				continue
-			}
-		}
-		Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed		
-	}
-	catch
-	{
-		Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"		
-	}
-}
-
-function Remove-ProvisionedPackages([switch] $keepSecurity = $false)
-{
-<#
-
-    .SYNOPSIS
-        Removes AppX packages from a Windows image during MicroWin processing
-
-    .PARAMETER Name
-        keepSecurity - Boolean that determines whether to keep "Microsoft.SecHealthUI" (Windows Security) in the Windows image
-
-    .EXAMPLE
-        Remove-ProvisionedPackages -keepSecurity:$false
-
-#>
-	$appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object	{
-			$_.PackageName -NotLike "*AppInstaller*" -AND
-			$_.PackageName -NotLike "*Store*" -and
-			$_.PackageName -NotLike "*dism*" -and
-			$_.PackageName -NotLike "*Foundation*" -and
-			$_.PackageName -NotLike "*FodMetadata*" -and
-			$_.PackageName -NotLike "*LanguageFeatures*" -and
-			$_.PackageName -NotLike "*Notepad*" -and
-			$_.PackageName -NotLike "*Printing*" -and
-			$_.PackageName -NotLike "*Wifi*" -and
-			$_.PackageName -NotLike "*Foundation*"
-		}
-
-    if ($?)
-    {
-        if ($keepSecurity) { $appxProvisionedPackages = $appxProvisionedPackages | Where-Object { $_.PackageName -NotLike "*SecHealthUI*" }}
-	    $counter = 0
-	    foreach ($appx in $appxProvisionedPackages)
-	    {
-		    $status = "Removing Provisioned $($appx.PackageName)"
-		    Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
-			try {
-				Remove-AppxProvisionedPackage -Path $scratchDir -PackageName $appx.PackageName -ErrorAction SilentlyContinue
-			}
-			catch {
-				Write-Host "Application $($appx.PackageName) could not be removed"
-				continue
-			}
-	    }
-	    Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
-    }
-    else
-    {
-        Write-Host "Could not get Provisioned App information. Skipping process..."
-    }
-}
-
-function Copy-ToUSB([string] $fileToCopy)
-{
-	foreach ($volume in Get-Volume) {
-		if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
-			$destinationPath = "$($volume.DriveLetter):\"
-			#Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
-			# Get the total size of the file
-			$totalSize = (Get-Item $fileToCopy).length
-
-			Copy-Item -Path $fileToCopy -Destination $destinationPath -Verbose -Force -Recurse -Container -PassThru |
-				ForEach-Object {
-					# Calculate the percentage completed
-					$completed = ($_.BytesTransferred / $totalSize) * 100
-
-					# Display the progress bar
-					Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
-				}
-
-			Write-Host "File copied to Ventoy drive $($volume.DriveLetter)"
-			return
-		}
-	}
-	Write-Host "Ventoy USB Key is not inserted"
-}
-
-function Remove-FileOrDirectory([string] $pathToDelete, [string] $mask = "", [switch] $Directory = $false)
-{
-	if(([string]::IsNullOrEmpty($pathToDelete))) { return }
-	if (-not (Test-Path -Path "$($pathToDelete)")) { return }
-
-	$yesNo = Get-LocalizedYesNo
-	Write-Host "[INFO] In Your local takeown expects '$($yesNo[0])' as a Yes answer."
-
-	# Specify the path to the directory
-	# $directoryPath = "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup"
-	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-	# icacls "$($directoryPath)" /q /c /t /reset > $null
-	# icacls $directoryPath /setowner "*S-1-5-32-544"
-	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-	# Remove-Item -Path $directoryPath -Recurse -Force
-
-	# # Grant full control to BUILTIN\Administrators using icacls
-	# $directoryPath = "$($scratchDir)\Windows\System32\WebThreatDefSvc"
-	# takeown /a /r /d $yesNo[0] /f "$($directoryPath)" > $null
-	# icacls "$($directoryPath)" /q /c /t /reset > $null
-	# icacls $directoryPath /setowner "*S-1-5-32-544"
-	# icacls $directoryPath /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-	# Remove-Item -Path $directoryPath -Recurse -Force
-
-	$itemsToDelete = [System.Collections.ArrayList]::new()
-
-	if ($mask -eq "")
-	{
-		Write-Debug "Adding $($pathToDelete) to array."
-		[void]$itemsToDelete.Add($pathToDelete)
-	}
-	else
-	{
-		Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)"
-		if ($Directory)	{ $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory }
-		else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
-	}
-
-	foreach($itemToDelete in $itemsToDelete)
-	{
-		$status = "Deleting $($itemToDelete)"
-		Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
-
-		if (Test-Path -Path "$($itemToDelete)" -PathType Container)
-		{
-			$status = "Deleting directory: $($itemToDelete)"
-
-			takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
-			icacls "$($itemToDelete)" /q /c /t /reset
-			icacls $itemToDelete /setowner "*S-1-5-32-544"
-			icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-			Remove-Item -Force -Recurse "$($itemToDelete)"
-		}
-		elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf)
-		{
-			$status = "Deleting file: $($itemToDelete)"
-
-			takeown /a /f "$($itemToDelete)"
-			icacls "$($itemToDelete)" /q /c /t /reset
-			icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
-			icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
-			Remove-Item -Force "$($itemToDelete)"
-		}
-	}
-	Write-Progress -Activity "Removing Items" -Status "Ready" -Completed
-}
-
-function New-Unattend {
-
-	# later if we wont to remove even more bloat EU requires MS to remove everything from English(world)
-	# Below is an example how to do it we probably should create a drop down with common locals
-	# 	<settings pass="specialize">
-	#     <!-- Specify English (World) locale -->
-	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	#       <SetupUILanguage>
-	#         <UILanguage>en-US</UILanguage>
-	#       </SetupUILanguage>
-	#       <InputLocale>en-US</InputLocale>
-	#       <SystemLocale>en-US</SystemLocale>
-	#       <UILanguage>en-US</UILanguage>
-	#       <UserLocale>en-US</UserLocale>
-	#     </component>
-	#   </settings>
-
-	#   <settings pass="oobeSystem">
-	#     <!-- Specify English (World) locale -->
-	#     <component name="Microsoft-Windows-International-Core" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	#       <InputLocale>en-US</InputLocale>
-	#       <SystemLocale>en-US</SystemLocale>
-	#       <UILanguage>en-US</UILanguage>
-	#       <UserLocale>en-US</UserLocale>
-	#     </component>
-	#   </settings>
-	# using here string to embedd unattend
-	# 	<RunSynchronousCommand wcm:action="add">
-	# 	<Order>1</Order>
-	# 	<Path>net user administrator /active:yes</Path>
-	# </RunSynchronousCommand>
-
-	# this section doesn't work in win10/????
-# 	<settings pass="specialize">
-# 	<component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-# 		<CEIPEnabled>0</CEIPEnabled>
-# 	</component>
-# 	<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-# 		<ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
-# 	</component>
-# </settings>
-
-	$unattend = @'
-	<?xml version="1.0" encoding="utf-8"?>
-	<unattend xmlns="urn:schemas-microsoft-com:unattend"
-			xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <#REPLACEME#>
-		<settings pass="auditUser">
-			<component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<RunSynchronous>
-					<RunSynchronousCommand wcm:action="add">
-						<Order>1</Order>
-						<CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
-						<Description>StartMenu</Description>
-					</RunSynchronousCommand>
-				</RunSynchronous>
-			</component>
-		</settings>
-		<settings pass="oobeSystem">
-			<component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-				<OOBE>
-                	<HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
-	                <SkipUserOOBE>false</SkipUserOOBE>
-                	<SkipMachineOOBE>false</SkipMachineOOBE>
-					<HideOnlineAccountScreens>true</HideOnlineAccountScreens>
-					<HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-					<HideEULAPage>true</HideEULAPage>
-					<ProtectYourPC>3</ProtectYourPC>
-				</OOBE>
-				<FirstLogonCommands>
-					<SynchronousCommand wcm:action="add">
-						<Order>1</Order>
-						<CommandLine>cmd.exe /c echo 23&gt;c:\windows\csup.txt</CommandLine>
-					</SynchronousCommand>
-					<SynchronousCommand wcm:action="add">
-						<Order>2</Order>
-						<CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
-					</SynchronousCommand>
-					<SynchronousCommand wcm:action="add">
-						<Order>3</Order>
-						<CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
-					</SynchronousCommand>
-				</FirstLogonCommands>
-			</component>
-		</settings>
-	</unattend>
-'@
-    $specPass = @'
-<settings pass="specialize">
-            <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                <CEIPEnabled>0</CEIPEnabled>
-            </component>
-            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
-            </component>
-        </settings>
-'@
-    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false)
-    {
-        # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
-        $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
-    }
-    else
-    {
-        # Replace the placeholder text with the Specialize pass
-        $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
-    }
-	$unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
-}
-
-function New-CheckInstall {
-
-	# using here string to embedd firstrun
-	$checkInstall = @'
-	@echo off
-	if exist "C:\windows\cpu.txt" (
-		echo C:\windows\cpu.txt exists
-	) else (
-		echo C:\windows\cpu.txt does not exist
-	)
-	if exist "C:\windows\SerialNumber.txt" (
-		echo C:\windows\SerialNumber.txt exists
-	) else (
-		echo C:\windows\SerialNumber.txt does not exist
-	)
-	if exist "C:\unattend.xml" (
-		echo C:\unattend.xml exists
-	) else (
-		echo C:\unattend.xml does not exist
-	)
-	if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
-		echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
-	) else (
-		echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
-	)
-	if exist "C:\Windows\Panther\unattend.xml" (
-		echo C:\Windows\Panther\unattend.xml exists
-	) else (
-		echo C:\Windows\Panther\unattend.xml does not exist
-	)
-	if exist "C:\Windows\System32\Sysprep\unattend.xml" (
-		echo C:\Windows\System32\Sysprep\unattend.xml exists
-	) else (
-		echo C:\Windows\System32\Sysprep\unattend.xml does not exist
-	)
-	if exist "C:\Windows\FirstStartup.ps1" (
-		echo C:\Windows\FirstStartup.ps1 exists
-	) else (
-		echo C:\Windows\FirstStartup.ps1 does not exist
-	)
-	if exist "C:\Windows\winutil.ps1" (
-		echo C:\Windows\winutil.ps1 exists
-	) else (
-		echo C:\Windows\winutil.ps1 does not exist
-	)
-	if exist "C:\Windows\LogSpecialize.txt" (
-		echo C:\Windows\LogSpecialize.txt exists
-	) else (
-		echo C:\Windows\LogSpecialize.txt does not exist
-	)
-	if exist "C:\Windows\LogAuditUser.txt" (
-		echo C:\Windows\LogAuditUser.txt exists
-	) else (
-		echo C:\Windows\LogAuditUser.txt does not exist
-	)
-	if exist "C:\Windows\LogOobeSystem.txt" (
-		echo C:\Windows\LogOobeSystem.txt exists
-	) else (
-		echo C:\Windows\LogOobeSystem.txt does not exist
-	)
-	if exist "c:\windows\csup.txt" (
-		echo c:\windows\csup.txt exists
-	) else (
-		echo c:\windows\csup.txt does not exist
-	)
-	if exist "c:\windows\LogFirstRun.txt" (
-		echo c:\windows\LogFirstRun.txt exists
-	) else (
-		echo c:\windows\LogFirstRun.txt does not exist
-	)
-'@
-	$checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
-}
-
-function New-FirstRun {
-
-	# using here string to embedd firstrun
-	$firstRun = @'
-	# Set the global error action preference to continue
-	$ErrorActionPreference = "Continue"
-	function Remove-RegistryValue
-	{
-		param (
-			[Parameter(Mandatory = $true)]
-			[string]$RegistryPath,
-
-			[Parameter(Mandatory = $true)]
-			[string]$ValueName
-		)
-
-		# Check if the registry path exists
-		if (Test-Path -Path $RegistryPath)
-		{
-			$registryValue = Get-ItemProperty -Path $RegistryPath -Name $ValueName -ErrorAction SilentlyContinue
-
-			# Check if the registry value exists
-			if ($registryValue)
-			{
-				# Remove the registry value
-				Remove-ItemProperty -Path $RegistryPath -Name $ValueName -Force
-				Write-Host "Registry value '$ValueName' removed from '$RegistryPath'."
-			}
-			else
-			{
-				Write-Host "Registry value '$ValueName' not found in '$RegistryPath'."
-			}
-		}
-		else
-		{
-			Write-Host "Registry path '$RegistryPath' not found."
-		}
-	}
-
-	function Stop-UnnecessaryServices
-	{
-		$servicesToExclude = @(
-			"AudioSrv",
-			"AudioEndpointBuilder",
-			"BFE",
-			"BITS",
-			"BrokerInfrastructure",
-			"CDPSvc",
-			"CDPUserSvc_dc2a4",
-			"CoreMessagingRegistrar",
-			"CryptSvc",
-			"DPS",
-			"DcomLaunch",
-			"Dhcp",
-			"DispBrokerDesktopSvc",
-			"Dnscache",
-			"DoSvc",
-			"DusmSvc",
-			"EventLog",
-			"EventSystem",
-			"FontCache",
-			"LSM",
-			"LanmanServer",
-			"LanmanWorkstation",
-			"MapsBroker",
-			"MpsSvc",
-			"OneSyncSvc_dc2a4",
-			"Power",
-			"ProfSvc",
-			"RpcEptMapper",
-			"RpcSs",
-			"SCardSvr",
-			"SENS",
-			"SamSs",
-			"Schedule",
-			"SgrmBroker",
-			"ShellHWDetection",
-			"Spooler",
-			"SysMain",
-			"SystemEventsBroker",
-			"TextInputManagementService",
-			"Themes",
-			"TrkWks",
-			"UserManager",
-			"VGAuthService",
-			"VMTools",
-			"WSearch",
-			"Wcmsvc",
-			"WinDefend",
-			"Winmgmt",
-			"WlanSvc",
-			"WpnService",
-			"WpnUserService_dc2a4",
-			"cbdhsvc_dc2a4",
-			"edgeupdate",
-			"gpsvc",
-			"iphlpsvc",
-			"mpssvc",
-			"nsi",
-			"sppsvc",
-			"tiledatamodelsvc",
-			"vm3dservice",
-			"webthreatdefusersvc_dc2a4",
-			"wscsvc"
-)
-
-		$runningServices = Get-Service | Where-Object { $servicesToExclude -notcontains $_.Name }
-		foreach($service in $runningServices)
-		{
-            Stop-Service -Name $service.Name -PassThru
-			Set-Service $service.Name -StartupType Manual
-			"Stopping service $($service.Name)" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-		}
-	}
-
-	"FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
-
-	$Theme = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-	Set-ItemProperty -Path $Theme -Name AppsUseLightTheme -Value 1
-	Set-ItemProperty -Path $Theme -Name SystemUsesLightTheme -Value 1
-
-	# figure this out later how to set updates to security only
-	#Import-Module -Name PSWindowsUpdate;
-	#Stop-Service -Name wuauserv
-	#Set-WUSettings -MicrosoftUpdateEnabled -AutoUpdateOption 'Never'
-	#Start-Service -Name wuauserv
-
-	Stop-UnnecessaryServices
-
-	$taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-	# Delete all files on the Taskbar
-	Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
-	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
-	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
-	Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
-
-	# Stop-Process -Name explorer -Force
-
-	$process = Get-Process -Name "explorer"
-	Stop-Process -InputObject $process
-	# Wait for the process to exit
-	Wait-Process -InputObject $process
-	Start-Sleep -Seconds 3
-
-	# Delete Edge Icon from the desktop
-	$edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
-	# Check if Edge shortcuts exist on the desktop
-	if ($edgeShortcutFiles)
-	{
-		foreach ($shortcutFile in $edgeShortcutFiles)
-		{
-			# Remove each Edge shortcut
-			Remove-Item -Path $shortcutFile.FullName -Force
-			Write-Host "Edge shortcut '$($shortcutFile.Name)' removed from the desktop."
-		}
-	}
-	Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
-	Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
-
-	# ************************************************
-	# Create WinUtil shortcut on the desktop
-	#
-	$desktopPath = "$($env:USERPROFILE)\Desktop"
-	# Specify the target PowerShell command
-	$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-	# Specify the path for the shortcut
-	$shortcutPath = Join-Path $desktopPath 'winutil.lnk'
-	# Create a shell object
-	$shell = New-Object -ComObject WScript.Shell
-
-	# Create a shortcut object
-	$shortcut = $shell.CreateShortcut($shortcutPath)
-
-	if (Test-Path -Path "c:\Windows\cttlogo.png")
-	{
-		$shortcut.IconLocation = "c:\Windows\cttlogo.png"
-	}
-
-	# Set properties of the shortcut
-	$shortcut.TargetPath = "powershell.exe"
-	$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-	# Save the shortcut
-	$shortcut.Save()
-
-        # Make the shortcut have 'Run as administrator' property on
-        $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
-        # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
-        $bytes[0x15] = $bytes[0x15] -bor 0x20
-        [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
-
-	Write-Host "Shortcut created at: $shortcutPath"
-	#
-	# Done create WinUtil shortcut on the desktop
-	# ************************************************
-
-	Start-Process explorer
-
-'@
-	$firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }
 function Invoke-WinUtilBingSearch {
     <#
@@ -1744,25 +1060,21 @@ function Invoke-WinUtilBingSearch {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Bing Search"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Bing Search"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
         Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -1783,7 +1095,7 @@ Function Invoke-WinUtilCurrentSystem {
         $CheckBox
     )
 
-    if ($checkbox -eq "winget"){
+    if ($checkbox -eq "winget") {
 
         $originalEncoding = [Console]::OutputEncoding
         [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
@@ -1800,9 +1112,9 @@ Function Invoke-WinUtilCurrentSystem {
         }
     }
 
-    if($CheckBox -eq "tweaks"){
+    if($CheckBox -eq "tweaks") {
 
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+        if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
         $ScheduledTasks = Get-ScheduledTask
 
         $sync.configs.tweaks | Get-Member -MemberType NoteProperty | ForEach-Object {
@@ -1813,62 +1125,60 @@ Function Invoke-WinUtilCurrentSystem {
             $scheduledtaskKeys = $sync.configs.tweaks.$Config.scheduledtask
             $serviceKeys = $sync.configs.tweaks.$Config.service
 
-            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys){
+            if($registryKeys -or $scheduledtaskKeys -or $serviceKeys) {
                 $Values = @()
 
 
-                Foreach ($tweaks in $registryKeys){
-                    Foreach($tweak in $tweaks){
+                Foreach ($tweaks in $registryKeys) {
+                    Foreach($tweak in $tweaks) {
 
-                        if(test-path $tweak.Path){
+                        if(test-path $tweak.Path) {
                             $actualValue = Get-ItemProperty -Name $tweak.Name -Path $tweak.Path -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $($tweak.Name)
                             $expectedValue = $tweak.Value
-                            if ($expectedValue -notlike $actualValue){
+                            if ($expectedValue -notlike $actualValue) {
                                 $values += $False
                             }
-                        }
-                        else {
+                        } else {
                             $values += $False
                         }
                     }
                 }
 
-                Foreach ($tweaks in $scheduledtaskKeys){
-                    Foreach($tweak in $tweaks){
+                Foreach ($tweaks in $scheduledtaskKeys) {
+                    Foreach($tweak in $tweaks) {
                         $task = $ScheduledTasks | Where-Object {$($psitem.TaskPath + $psitem.TaskName) -like "\$($tweak.name)"}
 
-                        if($task){
+                        if($task) {
                             $actualValue = $task.State
                             $expectedValue = $tweak.State
-                            if ($expectedValue -ne $actualValue){
+                            if ($expectedValue -ne $actualValue) {
                                 $values += $False
                             }
                         }
                     }
                 }
 
-                Foreach ($tweaks in $serviceKeys){
-                    Foreach($tweak in $tweaks){
+                Foreach ($tweaks in $serviceKeys) {
+                    Foreach($tweak in $tweaks) {
                         $Service = Get-Service -Name $tweak.Name
 
-                        if($Service){
+                        if($Service) {
                             $actualValue = $Service.StartType
                             $expectedValue = $tweak.StartupType
-                            if ($expectedValue -ne $actualValue){
+                            if ($expectedValue -ne $actualValue) {
                                 $values += $False
                             }
                         }
                     }
                 }
 
-                if($values -notcontains $false){
+                if($values -notcontains $false) {
                     Write-Output $Config
                 }
             }
         }
     }
 }
-
 Function Invoke-WinUtilDarkMode {
     <#
 
@@ -1880,12 +1190,11 @@ Function Invoke-WinUtilDarkMode {
 
     #>
     Param($DarkMoveEnabled)
-    Try{
-        if ($DarkMoveEnabled -eq $false){
+    try {
+        if ($DarkMoveEnabled -eq $false) {
             Write-Host "Enabling Dark Mode"
             $DarkMoveValue = 0
-        }
-        else {
+        } else {
             Write-Host "Disabling Dark Mode"
             $DarkMoveValue = 1
         }
@@ -1893,14 +1202,11 @@ Function Invoke-WinUtilDarkMode {
         $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
         Set-ItemProperty -Path $Path -Name AppsUseLightTheme -Value $DarkMoveValue
         Set-ItemProperty -Path $Path -Name SystemUsesLightTheme -Value $DarkMoveValue
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -1911,30 +1217,30 @@ Function Invoke-WinUtilDetailedBSoD {
     .SYNOPSIS
         Enables/Disables Detailed BSoD
         (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters').DisplayParameters
-        
+
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Detailed BSoD"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Detailed BSoD"
             $value =0
         }
 
         $Path = "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl"
+        $dwords = ("DisplayParameters", "DisableEmoticon")
+        foreach ($name in $dwords) {
+            Set-ItemProperty -Path $Path -Name $name -Value $value
+        }
         Set-ItemProperty -Path $Path -Name DisplayParameters -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -1954,19 +1260,16 @@ function Invoke-WinUtilFeatureInstall {
     $x = 0
 
     $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
+        if($sync.configs.feature.$psitem.feature) {
+            Foreach( $feature in $sync.configs.feature.$psitem.feature ) {
+                try {
                     Write-Host "Installing $feature"
                     Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                } catch {
+                    if ($psitem.Exception.Message -like "*requires elevation*") {
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    }
-
-                    else{
+                    } else {
 
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
@@ -1974,21 +1277,18 @@ function Invoke-WinUtilFeatureInstall {
                 }
             }
         }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
+        if($sync.configs.feature.$psitem.InvokeScript) {
+            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ) {
+                try {
                     $Scriptblock = [scriptblock]::Create($script)
 
                     Write-Host "Running Script for $psitem"
                     Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                } catch {
+                    if ($psitem.Exception.Message -like "*requires elevation*") {
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    }
-
-                    else{
+                    } else {
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
@@ -2013,7 +1313,7 @@ function Invoke-WinUtilGPU {
     )
 
     foreach ($gpu in $gpuInfo) {
-        foreach ($gpuPattern in $lowPowerGPUs){
+        foreach ($gpuPattern in $lowPowerGPUs) {
             if ($gpu.Name -like $gpuPattern) {
                 return $false
             }
@@ -2032,28 +1332,740 @@ function Invoke-WinUtilHiddenFiles {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Hidden Files"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Hidden Files"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name Hidden -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
+}
+function Test-CompatibleImage() {
+    <#
+        .SYNOPSIS
+            Checks the version of a Windows image and determines whether or not it is compatible with a specific feature depending on a desired version
+
+        .PARAMETER Name
+            imgVersion - The version of the Windows image
+            desiredVersion - The version to compare the image version with
+    #>
+
+    param
+    (
+    [Parameter(Mandatory, position=0)]
+    [string]$imgVersion,
+
+    [Parameter(Mandatory, position=1)]
+    [Version]$desiredVersion
+    )
+
+    try {
+        $version = [Version]$imgVersion
+        return $version -ge $desiredVersion
+    } catch {
+        return $False
+    }
+}
+
+function Remove-Features() {
+    <#
+        .SYNOPSIS
+            Removes certain features from ISO image
+
+        .PARAMETER Name
+            No Params
+
+        .EXAMPLE
+            Remove-Features
+    #>
+    try {
+        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+
+        $featlist = $featlist | Where-Object {
+            $_ -NotLike "*Defender*" -AND
+            $_ -NotLike "*Printing*" -AND
+            $_ -NotLike "*TelnetClient*" -AND
+            $_ -NotLike "*PowerShell*" -AND
+            $_ -NotLike "*NetFx*" -AND
+            $_ -NotLike "*Media*" -AND
+            $_ -NotLike "*NFS*"
+        }
+
+        foreach($feature in $featlist) {
+            $status = "Removing feature $feature"
+            Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
+            Write-Debug "Removing feature $feature"
+            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+        }
+        Write-Progress -Activity "Removing features" -Status "Ready" -Completed
+        Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
+    } catch {
+        Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
+    }
+}
+
+function Remove-Packages {
+    try {
+        $pkglist = (Get-WindowsPackage -Path "$scratchDir").PackageName
+
+        $pkglist = $pkglist | Where-Object {
+                $_ -NotLike "*ApplicationModel*" -AND
+                $_ -NotLike "*indows-Client-LanguagePack*" -AND
+                $_ -NotLike "*LanguageFeatures-Basic*" -AND
+                $_ -NotLike "*Package_for_ServicingStack*" -AND
+                $_ -NotLike "*.NET*" -AND
+                $_ -NotLike "*Store*" -AND
+                $_ -NotLike "*VCLibs*" -AND
+                $_ -NotLike "*AAD.BrokerPlugin",
+                $_ -NotLike "*LockApp*" -AND
+                $_ -NotLike "*Notepad*" -AND
+                $_ -NotLike "*immersivecontrolpanel*" -AND
+                $_ -NotLike "*ContentDeliveryManager*" -AND
+                $_ -NotLike "*PinningConfirMationDialog*" -AND
+                $_ -NotLike "*SecHealthUI*" -AND
+                $_ -NotLike "*SecureAssessmentBrowser*" -AND
+                $_ -NotLike "*PrintDialog*" -AND
+                $_ -NotLike "*AssignedAccessLockApp*" -AND
+                $_ -NotLike "*OOBENetworkConnectionFlow*" -AND
+                $_ -NotLike "*Apprep.ChxApp*" -AND
+                $_ -NotLike "*CBS*" -AND
+                $_ -NotLike "*OOBENetworkCaptivePortal*" -AND
+                $_ -NotLike "*PeopleExperienceHost*" -AND
+                $_ -NotLike "*ParentalControls*" -AND
+                $_ -NotLike "*Win32WebViewHost*" -AND
+                $_ -NotLike "*InputApp*" -AND
+                $_ -NotLike "*AccountsControl*" -AND
+                $_ -NotLike "*AsyncTextService*" -AND
+                $_ -NotLike "*CapturePicker*" -AND
+                $_ -NotLike "*CredDialogHost*" -AND
+                $_ -NotLike "*BioEnrollMent*" -AND
+                $_ -NotLike "*ShellExperienceHost*" -AND
+                $_ -NotLike "*DesktopAppInstaller*" -AND
+                $_ -NotLike "*WebMediaExtensions*" -AND
+                $_ -NotLike "*WMIC*" -AND
+                $_ -NotLike "*UI.XaML*" -AND
+                $_ -NotLike "*Ethernet*" -AND
+                $_ -NotLike "*Wifi*"
+            }
+
+        foreach ($pkg in $pkglist) {
+            try {
+                $status = "Removing $pkg"
+                Write-Progress -Activity "Removing Apps" -Status $status -PercentComplete ($counter++/$pkglist.Count*100)
+                Remove-WindowsPackage -Path "$scratchDir" -PackageName $pkg -NoRestart -ErrorAction SilentlyContinue
+            } catch {
+                # This can happen if the package that is being removed is a permanent one, like FodMetadata
+                Write-Host "Could not remove OS package $($pkg)"
+                continue
+            }
+        }
+        Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+    } catch {
+        Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"
+    }
+}
+
+function Remove-ProvisionedPackages() {
+    <#
+        .SYNOPSIS
+        Removes AppX packages from a Windows image during MicroWin processing
+
+        .PARAMETER Name
+        No Params
+
+        .EXAMPLE
+        Remove-ProvisionedPackages
+    #>
+    try
+    {
+        $appxProvisionedPackages = Get-AppxProvisionedPackage -Path "$($scratchDir)" | Where-Object {
+                $_.PackageName -NotLike "*AppInstaller*" -AND
+                $_.PackageName -NotLike "*Store*" -and
+                $_.PackageName -NotLike "*dism*" -and
+                $_.PackageName -NotLike "*Foundation*" -and
+                $_.PackageName -NotLike "*FodMetadata*" -and
+                $_.PackageName -NotLike "*LanguageFeatures*" -and
+                $_.PackageName -NotLike "*Notepad*" -and
+                $_.PackageName -NotLike "*Printing*" -and
+                $_.PackageName -NotLike "*Foundation*" -and
+                $_.PackageName -NotLike "*YourPhone*" -and
+                $_.PackageName -NotLike "*Xbox*" -and
+                $_.PackageName -NotLike "*WindowsTerminal*" -and
+                $_.PackageName -NotLike "*Calculator*" -and
+                $_.PackageName -NotLike "*Photos*" -and
+                $_.PackageName -NotLike "*VCLibs*" -and
+                $_.PackageName -NotLike "*Paint*" -and
+                $_.PackageName -NotLike "*Gaming*" -and
+                $_.PackageName -NotLike "*Extension*" -and
+                $_.PackageName -NotLike "*SecHealthUI*"
+        }
+
+        $counter = 0
+        foreach ($appx in $appxProvisionedPackages) {
+            $status = "Removing Provisioned $($appx.PackageName)"
+            Write-Progress -Activity "Removing Provisioned Apps" -Status $status -PercentComplete ($counter++/$appxProvisionedPackages.Count*100)
+            try {
+                Remove-AppxProvisionedPackage -Path "$scratchDir" -PackageName $appx.PackageName -ErrorAction SilentlyContinue
+            } catch {
+                Write-Host "Application $($appx.PackageName) could not be removed"
+                continue
+            }
+        }
+        Write-Progress -Activity "Removing Provisioned Apps" -Status "Ready" -Completed
+    }
+    catch
+    {
+        # This can happen if getting AppX packages fails
+        Write-Host "Unable to get information about the AppX packages. MicroWin processing will continue, but AppX packages will not be processed"
+    }
+}
+
+function Copy-ToUSB([string]$fileToCopy) {
+    foreach ($volume in Get-Volume) {
+        if ($volume -and $volume.FileSystemLabel -ieq "ventoy") {
+            $destinationPath = "$($volume.DriveLetter):\"
+            #Copy-Item -Path $fileToCopy -Destination $destinationPath -Force
+            # Get the total size of the file
+            $totalSize = (Get-Item "$fileToCopy").length
+
+            Copy-Item -Path "$fileToCopy" -Destination "$destinationPath" -Verbose -Force -Recurse -Container -PassThru |
+                ForEach-Object {
+                    # Calculate the percentage completed
+                    $completed = ($_.BytesTransferred / $totalSize) * 100
+
+                    # Display the progress bar
+                    Write-Progress -Activity "Copying File" -Status "Progress" -PercentComplete $completed -CurrentOperation ("{0:N2} MB / {1:N2} MB" -f ($_.BytesTransferred / 1MB), ($totalSize / 1MB))
+                }
+
+            Write-Host "File copied to Ventoy drive $($volume.DriveLetter)"
+            return
+        }
+    }
+    Write-Host "Ventoy USB Key is not inserted"
+}
+
+function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [switch]$Directory = $false) {
+    if(([string]::IsNullOrEmpty($pathToDelete))) { return }
+    if (-not (Test-Path -Path "$($pathToDelete)")) { return }
+
+    $yesNo = Get-LocalizedYesNo
+    Write-Host "[INFO] In Your local takeown expects '$($yesNo[0])' as a Yes answer."
+
+    $itemsToDelete = [System.Collections.ArrayList]::new()
+
+    if ($mask -eq "") {
+        Write-Debug "Adding $($pathToDelete) to array."
+        [void]$itemsToDelete.Add($pathToDelete)
+    } else {
+        Write-Debug "Adding $($pathToDelete) to array and mask is $($mask)"
+        if ($Directory) { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse -Directory } else { $itemsToDelete = Get-ChildItem $pathToDelete -Include $mask -Recurse }
+    }
+
+    foreach($itemToDelete in $itemsToDelete) {
+        $status = "Deleting $($itemToDelete)"
+        Write-Progress -Activity "Removing Items" -Status $status -PercentComplete ($counter++/$itemsToDelete.Count*100)
+
+        if (Test-Path -Path "$($itemToDelete)" -PathType Container) {
+            $status = "Deleting directory: $($itemToDelete)"
+
+            takeown /r /d $yesNo[0] /a /f "$($itemToDelete)"
+            icacls "$($itemToDelete)" /q /c /t /reset
+            icacls $itemToDelete /setowner "*S-1-5-32-544"
+            icacls $itemToDelete /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+            Remove-Item -Force -Recurse "$($itemToDelete)"
+        }
+        elseif (Test-Path -Path "$($itemToDelete)" -PathType Leaf) {
+            $status = "Deleting file: $($itemToDelete)"
+
+            takeown /a /f "$($itemToDelete)"
+            icacls "$($itemToDelete)" /q /c /t /reset
+            icacls "$($itemToDelete)" /setowner "*S-1-5-32-544"
+            icacls "$($itemToDelete)" /grant "*S-1-5-32-544:(OI)(CI)F" /t /c /q
+            Remove-Item -Force "$($itemToDelete)"
+        }
+    }
+    Write-Progress -Activity "Removing Items" -Status "Ready" -Completed
+}
+
+function New-Unattend {
+
+    $unattend = @'
+    <?xml version="1.0" encoding="utf-8"?>
+    <unattend xmlns="urn:schemas-microsoft-com:unattend"
+            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <#REPLACEME#>
+        <settings pass="auditUser">
+            <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <RunSynchronous>
+                    <RunSynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <CommandLine>CMD /C echo LAU GG&gt;C:\Windows\LogAuditUser.txt</CommandLine>
+                        <Description>StartMenu</Description>
+                    </RunSynchronousCommand>
+                </RunSynchronous>
+            </component>
+        </settings>
+        <settings pass="oobeSystem">
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <UserAccounts>
+                    <LocalAccounts>
+                        <LocalAccount wcm:action="add">
+                            <Name>User</Name>
+                            <Group>Administrators</Group>
+                            <Password>
+                                <Value></Value>
+                                <PlainText>true</PlainText>
+                            </Password>
+                        </LocalAccount>
+                    </LocalAccounts>
+                </UserAccounts>
+                <AutoLogon>
+                    <Username>User</Username>
+                    <Enabled>true</Enabled>
+                    <LogonCount>1</LogonCount>
+                    <Password>
+                        <Value></Value>
+                        <PlainText>true</PlainText>
+                    </Password>
+                </AutoLogon>
+                <OOBE>
+                    <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+                    <SkipUserOOBE>true</SkipUserOOBE>
+                    <SkipMachineOOBE>true</SkipMachineOOBE>
+                    <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                    <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                    <HideEULAPage>true</HideEULAPage>
+                    <ProtectYourPC>3</ProtectYourPC>
+                </OOBE>
+                <FirstLogonCommands>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <CommandLine>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" /v AutoLogonCount /t REG_DWORD /d 0 /f</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>2</Order>
+                        <CommandLine>cmd.exe /c echo 23&gt;c:\windows\csup.txt</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>3</Order>
+                        <CommandLine>CMD /C echo GG&gt;C:\Windows\LogOobeSystem.txt</CommandLine>
+                    </SynchronousCommand>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>4</Order>
+                        <CommandLine>powershell -ExecutionPolicy Bypass -File c:\windows\FirstStartup.ps1</CommandLine>
+                    </SynchronousCommand>
+                </FirstLogonCommands>
+            </component>
+        </settings>
+    </unattend>
+'@
+    $specPass = @'
+<settings pass="specialize">
+        <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <CEIPEnabled>0</CEIPEnabled>
+        </component>
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
+        </component>
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v BypassNRO /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>3</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Runonce" /v "UninstallCopilot" /t REG_SZ /d "powershell.exe -NoProfile -Command \"Get-AppxPackage -Name 'Microsoft.Windows.Ai.Copilot.Provider' | Remove-AppxPackage;\"" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>4</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Policies\Microsoft\Windows\WindowsCopilot" /v TurnOffWindowsCopilot /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>5</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>6</Order>
+                    <Path>reg.exe delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\DevHomeUpdate" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>7</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>8</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Notepad" /v ShowStoreBanner /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>9</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>10</Order>
+                    <Path>cmd.exe /c "del "C:\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk""</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>11</Order>
+                    <Path>cmd.exe /c "del "C:\Windows\System32\OneDriveSetup.exe""</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>12</Order>
+                    <Path>cmd.exe /c "del "C:\Windows\SysWOW64\OneDriveSetup.exe""</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>13</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>14</Order>
+                    <Path>reg.exe delete "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Run" /v OneDriveSetup /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>15</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>16</Order>
+                    <Path>reg.exe delete "HKLM\SOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\OutlookUpdate" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>17</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v ConfigureChatAutoInstall /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>18</Order>
+                    <Path>powershell.exe -NoProfile -Command "$xml = [xml]::new(); $xml.Load('C:\Windows\Panther\unattend.xml'); $sb = [scriptblock]::Create( $xml.unattend.Extensions.ExtractScript ); Invoke-Command -ScriptBlock $sb -ArgumentList $xml;"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>19</Order>
+                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\remove-packages.ps1' -Raw | Invoke-Expression;"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>20</Order>
+                    <Path>powershell.exe -NoProfile -Command "Get-Content -LiteralPath 'C:\Windows\Temp\remove-caps.ps1' -Raw | Invoke-Expression;"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>21</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /v ConfigureStartPins /t REG_SZ /d "{ \"pinnedList\": [] }" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>22</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /v ConfigureStartPins_ProviderSet /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>23</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start" /v ConfigureStartPins_WinningProvider /t REG_SZ /d B5292708-1619-419B-9923-E5D9F3925E71 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>24</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\providers\B5292708-1619-419B-9923-E5D9F3925E71\default\Device\Start" /v ConfigureStartPins /t REG_SZ /d "{ \"pinnedList\": [] }" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>25</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Microsoft\PolicyManager\providers\B5292708-1619-419B-9923-E5D9F3925E71\default\Device\Start" /v ConfigureStartPins_LastWrite /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>26</Order>
+                    <Path>net.exe accounts /maxpwage:UNLIMITED</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>27</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>28</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>29</Order>
+                    <Path>reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v AllowNewsAndInterests /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>30</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>31</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "ContentDeliveryAllowed" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>32</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "FeatureManagementEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>33</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OEMPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>34</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>35</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEverEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>36</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>37</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SoftLandingEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>38</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContentEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>39</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-310093Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>40</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338387Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>41</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338388Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>42</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338389Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>43</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-338393Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>44</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SubscribedContent-353698Enabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>45</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SystemPaneSuggestionsEnabled" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>46</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>47</Order>
+                    <Path>reg.exe add "HKLM\Software\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 0 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>48</Order>
+                    <Path>reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\BitLocker" /v "PreventDeviceEncryption" /t REG_DWORD /d 1 /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>49</Order>
+                    <Path>reg.exe load "HKU\DefaultUser" "C:\Users\Default\NTUSER.DAT"</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>50</Order>
+                    <Path>reg.exe add "HKU\DefaultUser\Software\Microsoft\Windows\CurrentVersion\Runonce" /v "ClassicContextMenu" /t REG_SZ /d "reg.exe add \"HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32\" /ve /f" /f</Path>
+                </RunSynchronousCommand>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>51</Order>
+                    <Path>reg.exe unload "HKU\DefaultUser"</Path>
+                </RunSynchronousCommand>
+            </RunSynchronous>
+        </component>
+    </settings>
+'@
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,22000,1))) -eq $false) {
+    # Replace the placeholder text with an empty string to make it valid for Windows 10 Setup
+    $unattend = $unattend.Replace("<#REPLACEME#>", "").Trim()
+    } else {
+    # Replace the placeholder text with the Specialize pass
+    $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
+    }
+    $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
+}
+
+function New-CheckInstall {
+
+    # using here string to embedd firstrun
+    $checkInstall = @'
+    @echo off
+    if exist "C:\windows\cpu.txt" (
+        echo C:\windows\cpu.txt exists
+    ) else (
+        echo C:\windows\cpu.txt does not exist
+    )
+    if exist "C:\windows\SerialNumber.txt" (
+        echo C:\windows\SerialNumber.txt exists
+    ) else (
+        echo C:\windows\SerialNumber.txt does not exist
+    )
+    if exist "C:\unattend.xml" (
+        echo C:\unattend.xml exists
+    ) else (
+        echo C:\unattend.xml does not exist
+    )
+    if exist "C:\Windows\Setup\Scripts\SetupComplete.cmd" (
+        echo C:\Windows\Setup\Scripts\SetupComplete.cmd exists
+    ) else (
+        echo C:\Windows\Setup\Scripts\SetupComplete.cmd does not exist
+    )
+    if exist "C:\Windows\Panther\unattend.xml" (
+        echo C:\Windows\Panther\unattend.xml exists
+    ) else (
+        echo C:\Windows\Panther\unattend.xml does not exist
+    )
+    if exist "C:\Windows\System32\Sysprep\unattend.xml" (
+        echo C:\Windows\System32\Sysprep\unattend.xml exists
+    ) else (
+        echo C:\Windows\System32\Sysprep\unattend.xml does not exist
+    )
+    if exist "C:\Windows\FirstStartup.ps1" (
+        echo C:\Windows\FirstStartup.ps1 exists
+    ) else (
+        echo C:\Windows\FirstStartup.ps1 does not exist
+    )
+    if exist "C:\Windows\winutil.ps1" (
+        echo C:\Windows\winutil.ps1 exists
+    ) else (
+        echo C:\Windows\winutil.ps1 does not exist
+    )
+    if exist "C:\Windows\LogSpecialize.txt" (
+        echo C:\Windows\LogSpecialize.txt exists
+    ) else (
+        echo C:\Windows\LogSpecialize.txt does not exist
+    )
+    if exist "C:\Windows\LogAuditUser.txt" (
+        echo C:\Windows\LogAuditUser.txt exists
+    ) else (
+        echo C:\Windows\LogAuditUser.txt does not exist
+    )
+    if exist "C:\Windows\LogOobeSystem.txt" (
+        echo C:\Windows\LogOobeSystem.txt exists
+    ) else (
+        echo C:\Windows\LogOobeSystem.txt does not exist
+    )
+    if exist "c:\windows\csup.txt" (
+        echo c:\windows\csup.txt exists
+    ) else (
+        echo c:\windows\csup.txt does not exist
+    )
+    if exist "c:\windows\LogFirstRun.txt" (
+        echo c:\windows\LogFirstRun.txt exists
+    ) else (
+        echo c:\windows\LogFirstRun.txt does not exist
+    )
+'@
+    $checkInstall | Out-File -FilePath "$env:temp\checkinstall.cmd" -Force -Encoding Ascii
+}
+
+function New-FirstRun {
+
+    # using here string to embedd firstrun
+    $firstRun = @'
+    # Set the global error action preference to continue
+    $ErrorActionPreference = "Continue"
+    function Remove-RegistryValue {
+        param (
+            [Parameter(Mandatory = $true)]
+            [string]$RegistryPath,
+
+            [Parameter(Mandatory = $true)]
+            [string]$ValueName
+        )
+
+        # Check if the registry path exists
+        if (Test-Path -Path $RegistryPath) {
+            $registryValue = Get-ItemProperty -Path $RegistryPath -Name $ValueName -ErrorAction SilentlyContinue
+
+            # Check if the registry value exists
+            if ($registryValue) {
+                # Remove the registry value
+                Remove-ItemProperty -Path $RegistryPath -Name $ValueName -Force
+                Write-Host "Registry value '$ValueName' removed from '$RegistryPath'."
+            } else {
+                Write-Host "Registry value '$ValueName' not found in '$RegistryPath'."
+            }
+        } else {
+            Write-Host "Registry path '$RegistryPath' not found."
+        }
+    }
+
+    "FirstStartup has worked" | Out-File -FilePath c:\windows\LogFirstRun.txt -Append -NoClobber
+
+    $taskbarPath = "$env:AppData\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
+    # Delete all files on the Taskbar
+    Get-ChildItem -Path $taskbarPath -File | Remove-Item -Force
+    Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesRemovedChanges"
+    Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "FavoritesChanges"
+    Remove-RegistryValue -RegistryPath "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" -ValueName "Favorites"
+
+    # Delete Edge Icon from the desktop
+    $edgeShortcutFiles = Get-ChildItem -Path $desktopPath -Filter "*Edge*.lnk"
+    # Check if Edge shortcuts exist on the desktop
+    if ($edgeShortcutFiles) {
+        foreach ($shortcutFile in $edgeShortcutFiles) {
+            # Remove each Edge shortcut
+            Remove-Item -Path $shortcutFile.FullName -Force
+            Write-Host "Edge shortcut '$($shortcutFile.Name)' removed from the desktop."
+        }
+    }
+    Remove-Item -Path "$env:USERPROFILE\Desktop\*.lnk"
+    Remove-Item -Path "C:\Users\Default\Desktop\*.lnk"
+
+    # ************************************************
+    # Create WinUtil shortcut on the desktop
+    #
+    $desktopPath = "$($env:USERPROFILE)\Desktop"
+    # Specify the target PowerShell command
+    $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
+    # Specify the path for the shortcut
+    $shortcutPath = Join-Path $desktopPath 'winutil.lnk'
+    # Create a shell object
+    $shell = New-Object -ComObject WScript.Shell
+
+    # Create a shortcut object
+    $shortcut = $shell.CreateShortcut($shortcutPath)
+
+    if (Test-Path -Path "c:\Windows\cttlogo.png") {
+        $shortcut.IconLocation = "c:\Windows\cttlogo.png"
+    }
+
+    # Set properties of the shortcut
+    $shortcut.TargetPath = "powershell.exe"
+    $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+    # Save the shortcut
+    $shortcut.Save()
+
+    # Make the shortcut have 'Run as administrator' property on
+    $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+    # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
+    $bytes[0x15] = $bytes[0x15] -bor 0x20
+    [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
+
+    Write-Host "Shortcut created at: $shortcutPath"
+    #
+    # Done create WinUtil shortcut on the desktop
+    # ************************************************
+
+    Start-Process explorer
+
+'@
+    $firstRun | Out-File -FilePath "$env:temp\FirstStartup.ps1" -Force
 }
 Function Invoke-WinUtilMouseAcceleration {
     <#
@@ -2066,14 +2078,13 @@ Function Invoke-WinUtilMouseAcceleration {
 
     #>
     Param($MouseAccelerationEnabled)
-    Try{
-        if ($MouseAccelerationEnabled -eq $false){
+    try {
+        if ($MouseAccelerationEnabled -eq $false) {
             Write-Host "Enabling Mouse Acceleration"
             $MouseSpeed = 1
             $MouseThreshold1 = 6
             $MouseThreshold2 = 10
-        }
-        else {
+        } else {
             Write-Host "Disabling Mouse Acceleration"
             $MouseSpeed = 0
             $MouseThreshold1 = 0
@@ -2085,14 +2096,11 @@ Function Invoke-WinUtilMouseAcceleration {
         Set-ItemProperty -Path $Path -Name MouseSpeed -Value $MouseSpeed
         Set-ItemProperty -Path $Path -Name MouseThreshold1 -Value $MouseThreshold1
         Set-ItemProperty -Path $Path -Name MouseThreshold2 -Value $MouseThreshold2
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2105,26 +2113,25 @@ function Invoke-WinUtilNumLock {
         Indicates whether to enable or disable Numlock on startup
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Numlock on startup"
             $value = 2
-        }
-        else {
+        } else {
             Write-Host "Disabling Numlock on startup"
             $value = 0
         }
         New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
-        $Path = "HKU:\.Default\Control Panel\Keyboard"
-        Set-ItemProperty -Path $Path -Name InitialKeyboardIndicators -Value $value
+        $HKUPath = "HKU:\.Default\Control Panel\Keyboard"
+        $HKCUPath = "HKCU:\Control Panel\Keyboard"
+        Set-ItemProperty -Path $HKUPath -Name InitialKeyboardIndicators -Value $value
+        Set-ItemProperty -Path $HKCUPath -Name InitialKeyboardIndicators -Value $value
     }
     Catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2151,27 +2158,22 @@ function Invoke-WinUtilScript {
         [scriptblock]$scriptblock
     )
 
-    Try {
+    try {
         Write-Host "Running Script for $name"
         Invoke-Command $scriptblock -ErrorAction Stop
-    }
-    Catch [System.Management.Automation.CommandNotFoundException] {
+    } catch [System.Management.Automation.CommandNotFoundException] {
         Write-Warning "The specified command was not found."
         Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Management.Automation.RuntimeException] {
+    } catch [System.Management.Automation.RuntimeException] {
         Write-Warning "A runtime exception occurred."
         Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "A security exception occurred."
         Write-Warning $PSItem.Exception.message
-    }
-    Catch [System.UnauthorizedAccessException] {
+    } catch [System.UnauthorizedAccessException] {
         Write-Warning "Access denied. You do not have permission to perform this operation."
         Write-Warning $PSItem.Exception.message
-    }
-    Catch {
+    } catch {
         # Generic catch block to handle any other type of exception
         Write-Warning "Unable to run script for $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
@@ -2186,25 +2188,21 @@ function Invoke-WinUtilShowExt {
         Indicates whether to enable or disable Show file extentions
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Showing file extentions"
             $value = 0
-        }
-        else {
+        } else {
             Write-Host "hiding file extensions"
             $value = 1
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name HideFileExt -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2217,12 +2215,11 @@ function Invoke-WinUtilSnapFlyout {
         Indicates whether to enable or disable Snap Assist Flyout on startup
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Snap Assist Flyout On startup"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Snap Assist Flyout On startup"
             $value = 0
         }
@@ -2231,14 +2228,11 @@ function Invoke-WinUtilSnapFlyout {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
         Start-Process "explorer.exe"
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2251,12 +2245,11 @@ function Invoke-WinUtilSnapSuggestion {
         Indicates whether to enable or disable Snap Assist Suggestions on startup
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Snap Assist Suggestion On startup"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Snap Assist Suggestion On startup"
             $value = 0
         }
@@ -2265,14 +2258,11 @@ function Invoke-WinUtilSnapSuggestion {
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name SnapAssist -Value $value
         Start-Process "explorer.exe"
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2285,25 +2275,21 @@ function Invoke-WinUtilSnapWindow {
         Indicates whether to enable or disable Snapping Windows on startup
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Snap Windows On startup | Relogin Required"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Snap Windows On startup | Relogin Required"
             $value = 0
         }
         $Path = "HKCU:\Control Panel\Desktop"
         Set-ItemProperty -Path $Path -Name WindowArrangementActive -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2347,8 +2333,7 @@ Function Invoke-WinUtilSponsors {
 
         # Return the sponsors
         return $sponsors
-    }
-    catch {
+    } catch {
         Write-Error "An error occurred while fetching or processing the sponsors: $_"
         return $null
     }
@@ -2361,25 +2346,21 @@ Function Invoke-WinUtilStickyKeys {
         Indicates whether to enable or disable Sticky Keys on startup
     #>
     Param($Enabled)
-    Try {
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Sticky Keys On startup"
             $value = 510
-        }
-        else {
+        } else {
             Write-Host "Disabling Sticky Keys On startup"
             $value = 58
         }
         $Path = "HKCU:\Control Panel\Accessibility\StickyKeys"
         Set-ItemProperty -Path $Path -Name Flags -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2395,25 +2376,21 @@ function Invoke-WinUtilTaskbarAlignment {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Making Taskbar Alignment to the Center"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Making Taskbar Alignment to the Left"
             $value = 0
         }
         $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name "TaskbarAl" -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2429,25 +2406,21 @@ function Invoke-WinUtilTaskbarSearch {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Search Button"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Search Button"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\"
         Set-ItemProperty -Path $Path -Name SearchboxTaskbarMode -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2463,25 +2436,21 @@ function Invoke-WinUtilTaskbarWidgets {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Taskbar Widgets"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Taskbar Widgets"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name TaskbarDa -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2497,25 +2466,21 @@ function Invoke-WinUtilTaskView {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Task View"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Task View"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         Set-ItemProperty -Path $Path -Name ShowTaskViewButton -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2544,7 +2509,7 @@ function Invoke-WinUtilTweaks {
     )
 
     Write-Debug "Tweaks: $($CheckBox)"
-    if($undo){
+    if($undo) {
         $Values = @{
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
@@ -2552,8 +2517,7 @@ function Invoke-WinUtilTweaks {
             ScriptType = "UndoScript"
         }
 
-    }
-    Else{
+    } else {
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
@@ -2562,18 +2526,18 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
+    if($sync.configs.tweaks.$CheckBox.ScheduledTask) {
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
+    if($sync.configs.tweaks.$CheckBox.service) {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
             $changeservice = $true
 
-	    # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
+        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
             if($KeepServiceStartup -AND !($undo)) {
                 try {
                     # Check if the service exists
@@ -2582,8 +2546,7 @@ function Invoke-WinUtilTweaks {
                         Write-Debug "Service $($service.Name) was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
                         $changeservice = $false
                     }
-                }
-                catch [System.ServiceProcess.ServiceNotFoundException] {
+                } catch [System.ServiceProcess.ServiceNotFoundException] {
                     Write-Warning "Service $($psitem.Name) was not found"
                 }
             }
@@ -2594,13 +2557,13 @@ function Invoke-WinUtilTweaks {
             }
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
+    if($sync.configs.tweaks.$CheckBox.registry) {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
         $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
@@ -2608,8 +2571,8 @@ function Invoke-WinUtilTweaks {
         }
     }
 
-    if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
+    if(!$undo) {
+        if($sync.configs.tweaks.$CheckBox.appx) {
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem
@@ -2626,25 +2589,21 @@ function Invoke-WinUtilVerboseLogon {
         Indicates whether to enable or disable VerboseLogon messages
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Verbose Logon Messages"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Verbose Logon Messages"
             $value = 0
         }
         $Path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
         Set-ItemProperty -Path $Path -Name VerboseStatus -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2666,9 +2625,8 @@ Function Invoke-WinUtilWingetProgram {
     #>
 
     param(
-        [Parameter(Mandatory, Position=0)]
-        $Programs,
-        
+        [Parameter(Mandatory, Position=0)]$Programs,
+
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("Install", "Uninstall")]
         [String]$Action
@@ -2687,7 +2645,7 @@ Function Invoke-WinUtilWingetProgram {
 
     .PARAMETER credential
     The PSCredential Object of the user that should be used to run winget
-    
+
     .NOTES
     Invoke Winget uses the public variable $Action defined outside the function to determine if a Program should be installed or removed
     #>
@@ -2698,10 +2656,9 @@ Function Invoke-WinUtilWingetProgram {
         )
 
         $commonArguments = "--id $wingetId --silent"
-        $arguments = if ($Action -eq "Install"){
-            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})" 
-        }
-        else {
+        $arguments = if ($Action -eq "Install") {
+            "install $commonArguments --accept-source-agreements --accept-package-agreements $(if ($scope) {" --scope $scope"})"
+        } else {
             "uninstall $commonArguments"
         }
 
@@ -2716,15 +2673,15 @@ Function Invoke-WinUtilWingetProgram {
         if ($credential) {
             $processParams.credential = $credential
         }
-        
-        return (Start-Process @processParams).ExitCode           
+
+        return (Start-Process @processParams).ExitCode
     }
 
     Function Invoke-Install {
     <#
     .SYNOPSIS
     Contains the Install Logic and return code handling from winget
-    
+
     .PARAMETER Program
     The Winget ID of the Program that should be installed
     #>
@@ -2770,14 +2727,14 @@ Function Invoke-WinUtilWingetProgram {
         <#
         .SYNOPSIS
         Contains the Uninstall Logic and return code handling from winget
-        
+
         .PARAMETER Program
         The Winget ID of the Program that should be uninstalled
         #>
         param (
             [psobject]$Program
         )
-        
+
         try {
             $status = Invoke-Winget -wingetId $Program
             if ($status -eq 0) {
@@ -2795,21 +2752,21 @@ Function Invoke-WinUtilWingetProgram {
 
     $count = $Programs.Count
     $failedPackages = @()
-    
+
     Write-Host "==========================================="
     Write-Host "--    Configuring winget packages       ---"
     Write-Host "==========================================="
-    
+
     for ($i = 0; $i -lt $count; $i++) {
         $Program = $Programs[$i]
         $result = $false
         Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($i / $count * 100)
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i / $count)})
-        
+
         $result = switch ($Action) {
             "Install" {Invoke-Install -Program $Program}
             "Uninstall" {Invoke-Uninstall -Program $Program}
-            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}    
+            default {throw "[Install-WinUtilProgramWinget] Invalid action: $Action"}
         }
 
         if (-not $result) {
@@ -2837,21 +2794,18 @@ function Remove-WinUtilAPPX {
         $Name
     )
 
-    Try {
+    try {
         Write-Host "Removing $Name"
         Get-AppxPackage "*$Name*" | Remove-AppxPackage -ErrorAction SilentlyContinue
         Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like "*$Name*" | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
-    }
-    Catch [System.Exception] {
+    } catch [System.Exception] {
         if ($psitem.Exception.Message -like "*The requested operation requires elevation*") {
             Write-Warning "Unable to uninstall $name due to a Security Exception"
-        }
-        else {
+        } else {
             Write-Warning "Unable to uninstall $name due to unhandled exception"
             Write-Warning $psitem.Exception.StackTrace
         }
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to uninstall $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2870,23 +2824,21 @@ function Set-WinUtilDNS {
 
     #>
     param($DNSProvider)
-    if($DNSProvider -eq "Default"){return}
-    Try{
+    if($DNSProvider -eq "Default") {return}
+    try {
         $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
         Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces"
         Write-Host $($Adapters | Out-String)
 
-        Foreach ($Adapter in $Adapters){
-            if($DNSProvider -eq "DHCP"){
+        Foreach ($Adapter in $Adapters) {
+            if($DNSProvider -eq "DHCP") {
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses
-            }
-            Else{
+            } else {
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary)", "$($sync.configs.dns.$DNSProvider.Secondary)")
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ServerAddresses ("$($sync.configs.dns.$DNSProvider.Primary6)", "$($sync.configs.dns.$DNSProvider.Secondary6)")
             }
         }
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set DNS Provider due to an unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2894,12 +2846,12 @@ function Set-WinUtilDNS {
 function Set-WinUtilProgressbar{
     <#
     .SYNOPSIS
-        This function is used to Update the Progress Bar displayed in the winutil GUI. 
-        It will be automatically hidden if the user clicks something and no process is running 
+        This function is used to Update the Progress Bar displayed in the winutil GUI.
+        It will be automatically hidden if the user clicks something and no process is running
     .PARAMETER Label
         The Text to be overlayed onto the Progress Bar
     .PARAMETER PERCENT
-        The percentage of the Progress Bar that should be filled (0-100) 
+        The percentage of the Progress Bar that should be filled (0-100)
     .PARAMETER Hide
         If provided, the Progress Bar and the label will be hidden
     #>
@@ -2909,18 +2861,17 @@ function Set-WinUtilProgressbar{
         [int]$Percent,
         $Hide
     )
-    if ($hide){
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"}) 
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})     
+    if ($hide) {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Collapsed"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Collapsed"})
+    } else {
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"})
+        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})
     }
-    else{
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Visibility = "Visible"}) 
-        $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBar.Visibility = "Visible"})     
-    }
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label}) 
-    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label}) 
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.Text = $label})
+    $sync.form.Dispatcher.Invoke([action]{$sync.ProgressBarLabel.Content.ToolTip = $label})
     $sync.form.Dispatcher.Invoke([action]{ $sync.ProgressBar.Value = $percent})
-    
+
 }
 function Set-WinUtilRegistry {
     <#
@@ -2951,8 +2902,8 @@ function Set-WinUtilRegistry {
         $Value
     )
 
-    Try{
-        if(!(Test-Path 'HKU:\')){New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
+    try {
+        if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS}
 
         If (!(Test-Path $Path)) {
             Write-Host "$Path was not found, Creating..."
@@ -2961,14 +2912,11 @@ function Set-WinUtilRegistry {
 
         Write-Host "Set $Path\$Name to $Value"
         Set-ItemProperty -Path $Path -Name $Name -Type $Type -Value $Value -Force -ErrorAction Stop | Out-Null
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -2994,26 +2942,23 @@ function Set-WinUtilScheduledTask {
         $State
     )
 
-    Try{
-        if($State -eq "Disabled"){
+    try {
+        if($State -eq "Disabled") {
             Write-Host "Disabling Scheduled Task $Name"
             Disable-ScheduledTask -TaskName $Name -ErrorAction Stop
         }
-        if($State -eq "Enabled"){
+        if($State -eq "Enabled") {
             Write-Host "Enabling Scheduled Task $Name"
             Enable-ScheduledTask -TaskName $Name -ErrorAction Stop
         }
-    }
-    Catch [System.Exception]{
-        if($psitem.Exception.Message -like "*The system cannot find the file specified*"){
+    } catch [System.Exception] {
+        if($psitem.Exception.Message -like "*The system cannot find the file specified*") {
             Write-Warning "Scheduled Task $name was not Found"
-        }
-        Else{
+        } else {
             Write-Warning "Unable to set $Name due to unhandled exception"
             Write-Warning $psitem.Exception.Message
         }
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to run script for $name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -3046,11 +2991,9 @@ Function Set-WinUtilService {
 
         # Service exists, proceed with changing properties
         $service | Set-Service -StartupType $StartupType -ErrorAction Stop
-    }
-    catch [System.ServiceProcess.ServiceNotFoundException] {
+    } catch [System.ServiceProcess.ServiceNotFoundException] {
         Write-Warning "Service $Name was not found"
-    }
-    catch {
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $_.Exception.Message
     }
@@ -3144,26 +3087,25 @@ function Set-WinUtilTaskbaritem {
 }
 function Set-WinUtilUITheme {
     <#
+        .SYNOPSIS
+            Sets the theme of the XAML file
 
-    .SYNOPSIS
-        Sets the theme of the XAML file
+        .PARAMETER inputXML
+            A string representing the XAML object to modify
 
-    .PARAMETER inputXML
-        A string representing the XAML object to modify
+        .PARAMETER themeName
+            The name of the theme to set the XAML to. Defaults to 'matrix'
 
-    .PARAMETER themeName
-        The name of the theme to set the XAML to. Defaults to 'matrix'
-
-    .EXAMPLE
-        Set-WinUtilUITheme -inputXAML $inputXAML
-
+        .EXAMPLE
+            Set-WinUtilUITheme -inputXAML $inputXAML
     #>
+
     param
     (
-         [Parameter(Mandatory=$true, Position=0)]
-         [string] $inputXML,
-         [Parameter(Mandatory=$false, Position=1)]
-         [string] $themeName = 'matrix'
+         [Parameter(Mandatory, position=0)]
+         [string]$inputXML,
+         [Parameter(position=1)]
+         [string]$themeName = 'matrix'
     )
 
     try {
@@ -3182,13 +3124,11 @@ function Set-WinUtilUITheme {
                 # Replace the key with the value in the input XML
                 $inputXML = $inputXML.Replace($formattedKey, $value)
             }
-        }
-        else {
+        } else {
             Write-Host "Theme '$themeName' not found."
         }
 
-    }
-    catch {
+    } catch {
         Write-Warning "Unable to apply theme"
         Write-Warning $psitem.Exception.StackTrace
     }
@@ -3241,13 +3181,14 @@ function Show-CustomDialog {
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = [Windows.Media.Brushes]::White
-    $backgroundColor = [Windows.Media.Brushes]::Black
+    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
+    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = [Windows.Media.Brushes]::Green
-    $buttonBackgroundColor = [Windows.Media.Brushes]::Black
-    $buttonForegroundColor = [Windows.Media.Brushes]::White
+    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
+    $logocolor = $sync.configs.themes.$ctttheme.ButtonBackgroundPressedColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -3377,7 +3318,7 @@ $cttLogoPath = @"
     # Add SVG path
     $svgPath = New-Object Windows.Shapes.Path
     $svgPath.Data = [Windows.Media.Geometry]::Parse($cttLogoPath)
-    $svgPath.Fill = $foregroundColor  # Set fill color to white
+    $svgPath.Fill = $logocolor  # Set fill color to white
 
     # Add SVG path to Viewbox
     $viewbox.Child = $svgPath
@@ -3389,7 +3330,7 @@ $cttLogoPath = @"
     $winutilTextBlock = New-Object Windows.Controls.TextBlock
     $winutilTextBlock.Text = "Winutil"
     $winutilTextBlock.FontSize = $HeaderFontSize
-    $winutilTextBlock.Foreground = $foregroundColor
+    $winutilTextBlock.Foreground = $logocolor
     $winutilTextBlock.Margin = New-Object Windows.Thickness(10, 5, 10, 5)  # Add margins around the text block
     $stackPanel.Children.Add($winutilTextBlock)
     # Add TextBlock for information with text wrapping and margins
@@ -3416,18 +3357,19 @@ $cttLogoPath = @"
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $foregroundColor
+        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+
         $hyperlink.Add_Click({
             param($sender, $args)
             Start-Process $sender.NavigateUri.AbsoluteUri
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = [Windows.Media.Brushes]::LightGray
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $foregroundColor
+            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)
@@ -3523,12 +3465,12 @@ function Test-WinUtilPackageManager {
         } catch {
             Write-Warning "Winget was not found due to un-known reasons, The Stack Trace is:`n$($psitem.Exception.StackTrace)"
             $wingetExists = $false
-	}
+    }
 
         # If Winget is available, Parse it's Version and give proper information to Terminal Output.
-	# If it isn't available, the return of this funtion will be "not-installed", indicating that
+    # If it isn't available, the return of this funtion will be "not-installed", indicating that
         # Winget isn't installed/available on The System.
-	if ($wingetExists) {
+    if ($wingetExists) {
             # Check if Preview Version
             if ($wingetVersionFull.Contains("-preview")) {
                 $wingetVersion = $wingetVersionFull.Trim("-preview")
@@ -3558,8 +3500,7 @@ function Test-WinUtilPackageManager {
             if (!$wingetOutdated) {
                 Write-Host "    - Winget is Up to Date" -ForegroundColor Green
                 $status = "installed"
-            }
-            else {
+            } else {
                 Write-Host "    - Winget is Out of Date" -ForegroundColor Red
                 $status = "outdated"
             }
@@ -3587,6 +3528,144 @@ function Test-WinUtilPackageManager {
     }
 
     return $status
+}
+Function Uninstall-WinUtilEdgeBrowser {
+    <#
+    .SYNOPSIS
+        Uninstall the Edge Browser (Chromium) from the system in an elegant way.
+    .DESCRIPTION
+        This will switch up the region to one of the EEA countries temporarily and uninstall the Edge Browser (Chromium).
+    #>
+
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("install", "uninstall")]
+        [string]$action
+    )
+
+    function Uninstall-EdgeClient {
+        param (
+            [Parameter(Mandatory = $true)]
+            [string]$Key
+        )
+
+        $originalNation = [microsoft.win32.registry]::GetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', [Microsoft.Win32.RegistryValueKind]::String)
+
+        # Set Nation to any of the EEA regions temporarily
+        # Refer: https://learn.microsoft.com/en-us/windows/win32/intl/table-of-geographical-locations
+        $tmpNation = 68 # Ireland
+        [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $tmpNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+
+        $baseKey = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        $registryPath = $baseKey + '\ClientState\' + $Key
+
+        if (!(Test-Path -Path $registryPath)) {
+            Write-Host "[$Mode] Registry key not found: $registryPath"
+            return
+        }
+
+        # Remove the status flag
+        Remove-ItemProperty -Path $baseKey -Name "IsEdgeStableUninstalled" -ErrorAction SilentlyContinue | Out-Null
+
+        Remove-ItemProperty -Path $registryPath -Name "experiment_control_labels" -ErrorAction SilentlyContinue | Out-Null
+
+        $uninstallString = (Get-ItemProperty -Path $registryPath).UninstallString
+        $uninstallArguments = (Get-ItemProperty -Path $registryPath).UninstallArguments
+
+        if ([string]::IsNullOrEmpty($uninstallString) -or [string]::IsNullOrEmpty($uninstallArguments)) {
+            Write-Host "[$Mode] Cannot find uninstall methods for $Mode"
+            return
+        }
+
+        # Extra arguments to nuke it
+        $uninstallArguments += " --force-uninstall --delete-profile"
+
+        # $uninstallCommand = "`"$uninstallString`"" + $uninstallArguments
+        if (!(Test-Path -Path $uninstallString)) {
+            Write-Host "[$Mode] setup.exe not found at: $uninstallString"
+            return
+        }
+        Start-Process -FilePath $uninstallString -ArgumentList $uninstallArguments -Wait -NoNewWindow -Verbose
+
+        # Restore Nation back to the original
+        [microsoft.win32.registry]::SetValue('HKEY_USERS\.DEFAULT\Control Panel\International\Geo', 'Nation', $originalNation, [Microsoft.Win32.RegistryValueKind]::String) | Out-Null
+
+        # might not exist in some cases
+        if ((Get-ItemProperty -Path $baseKey).IsEdgeStableUninstalled -eq 1) {
+            Write-Host "[$Mode] Edge Stable has been successfully uninstalled"
+        }
+    }
+
+    function Uninstall-Edge {
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+
+        [microsoft.win32.registry]::SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdateDev", "AllowUninstall", 1, [Microsoft.Win32.RegistryValueKind]::DWord) | Out-Null
+
+        Uninstall-EdgeClient -Key '{56EB18F8-B008-4CBD-B6D2-8C97FE7E9062}'
+
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgePDF" -ErrorAction SilentlyContinue | Out-Null
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeHTM" -ErrorAction SilentlyContinue | Out-Null
+        Remove-Item -Path "Computer\\HKEY_CLASSES_ROOT\\MSEdgeMHT" -ErrorAction SilentlyContinue | Out-Null
+
+        # Remove Edge Polocy reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+
+        # Remove Edge reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue | Out-Null
+    }
+
+    function Uninstall-WebView {
+        # FIXME: might not work on some systems
+
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+
+        Uninstall-EdgeClient -Key '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+    }
+
+    function Uninstall-EdgeUpdate {
+        # FIXME: might not work on some systems
+
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" -Name "NoRemove" -ErrorAction SilentlyContinue | Out-Null
+
+        $registryPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate'
+        if (!(Test-Path -Path $registryPath)) {
+            Write-Host "Registry key not found: $registryPath"
+            return
+        }
+        $uninstallCmdLine = (Get-ItemProperty -Path $registryPath).UninstallCmdLine
+
+        if ([string]::IsNullOrEmpty($uninstallCmdLine)) {
+            Write-Host "Cannot find uninstall methods for $Mode"
+            return
+        }
+
+        Start-Process cmd.exe "/c $uninstallCmdLine" -WindowStyle Hidden -Wait
+
+        # Remove EdgeUpdate reg keys
+        Remove-Item -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" -Recurse -ErrorAction SilentlyContinue | Out-Null
+    }
+
+    function Install-Edge {
+        $tempEdgePath = "$env:TEMP\MicrosoftEdgeSetup.exe"
+
+        try {
+            write-host "Installing Edge ..."
+            Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2109047&Channel=Stable&language=en&consent=1" -OutFile $tempEdgePath
+            Start-Process -FilePath $tempEdgePath -ArgumentList "/silent /install" -Wait
+            Remove-item $tempEdgePath
+            write-host "Edge Installed Successfully"
+        } catch {
+            write-host "Failed to install Edge"
+        }
+    }
+
+    if ($action -eq "Install") {
+        Install-Edge
+    } elseif ($action -eq "Uninstall") {
+        Uninstall-Edge
+        Uninstall-EdgeUpdate
+        # Uninstall-WebView - WebView is needed for Visual Studio and some MS Store Games like Forza
+    }
 }
 Function Update-WinUtilProgramWinget {
 
@@ -3629,8 +3708,7 @@ function Invoke-ScratchDialog {
     $filePath = $Dialog.SelectedPath
         Write-Host "No ISO is chosen+  $filePath"
 
-    if ([string]::IsNullOrEmpty($filePath))
-    {
+    if ([string]::IsNullOrEmpty($filePath)) {
         Write-Host "No Folder had chosen"
         return
     }
@@ -3654,12 +3732,12 @@ function Invoke-WPFButton {
 
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
-    if (-not $sync.ProcessRunning){
+    if (-not $sync.ProcessRunning) {
         Set-WinUtilProgressBar  -label "" -percent 0 -hide $true
     }
-    
-    Switch -Wildcard ($Button){
-    
+
+    Switch -Wildcard ($Button) {
+
         "WPFTab?BT" {Invoke-WPFTab $Button}
         "WPFinstall" {Invoke-WPFInstall}
         "WPFuninstall" {Invoke-WPFUnInstall}
@@ -3723,7 +3801,7 @@ function Invoke-WPFControlPanel {
     #>
     param($Panel)
 
-    switch ($Panel){
+    switch ($Panel) {
         "WPFPanelcontrol" {cmd /c control}
         "WPFPanelnetwork" {cmd /c ncpa.cpl}
         "WPFPanelpower"   {cmd /c powercfg.cpl}
@@ -3741,7 +3819,7 @@ function Invoke-WPFFeatureInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFFeatureInstall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -3752,7 +3830,7 @@ function Invoke-WPFFeatureInstall {
     Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
         param($Features, $DebugPreference)
         $sync.ProcessRunning = $true
-        if ($Features.count -eq 1){
+        if ($Features.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -3866,7 +3944,7 @@ function Invoke-WPFFixesUpdate {
                 ).Trim()} catch {0}) `
                 <# And the current percentage is greater than the previous one #>`
                 -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running chkdsk... ($percent%)" -PercentComplete $percent
@@ -3893,7 +3971,7 @@ function Invoke-WPFFixesUpdate {
                         ) -join ''
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
@@ -3912,7 +3990,7 @@ function Invoke-WPFFixesUpdate {
                     [int]($_ -replace "\[" -replace "=" -replace " " -replace "%" -replace "\]")
                 } catch {0}) `
                 -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running DISM... ($percent%)" -PercentComplete $percent
@@ -3937,7 +4015,7 @@ function Invoke-WPFFixesUpdate {
                         ) -join ''
                     ).TrimStart()} catch {0}
                 ) -and $percent -gt $oldpercent
-            ){
+            ) {
                 # Update the progress bar
                 $oldpercent = $percent
                 Write-Progress -Id 1 -ParentId 0 -Activity "Scanning for corruption" -Status "Running SFC... ($percent%)" -PercentComplete $percent
@@ -4115,7 +4193,7 @@ Function Invoke-WPFFormVariables {
 
 
     Write-Host ""
-    Write-Host "   CCCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT    "
+    Write-Host "    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT   "
     Write-Host " CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T   "
     Write-Host "CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T  "
     Write-Host "C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T "
@@ -4129,13 +4207,12 @@ Function Invoke-WPFFormVariables {
     Write-Host "C:::::C       CCCCCC        T:::::T                T:::::T        "
     Write-Host "C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT       "
     Write-Host "CC:::::::::::::::C       T:::::::::T            T:::::::::T       "
-    Write-Host "CCC::::::::::::CC        T:::::::::T            T:::::::::T       "
-    Write-Host "  CCCCCCCCCCCCCC         TTTTTTTTTTT            TTTTTTTTTTT       "
+    Write-Host "CCC::::::::::::C         T:::::::::T            T:::::::::T       "
+    Write-Host "  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT       "
     Write-Host ""
     Write-Host "====Chris Titus Tech====="
     Write-Host "=====Windows Toolbox====="
-    Write-Host ""
-	
+
     #====DEBUG GUI Elements====
 
     #Write-Host "Found the following interactable elements from our form" -ForegroundColor Cyan
@@ -4153,13 +4230,13 @@ function Invoke-WPFGetInstalled {
     #>
     param($checkbox)
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFGetInstalled] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget"){
+    if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
 
@@ -4169,17 +4246,17 @@ function Invoke-WPFGetInstalled {
         $sync.ProcessRunning = $true
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
 
-        if($checkbox -eq "winget"){
+        if($checkbox -eq "winget") {
             Write-Host "Getting Installed Programs..."
         }
-        if($checkbox -eq "tweaks"){
+        if($checkbox -eq "tweaks") {
             Write-Host "Getting Installed Tweaks..."
         }
 
         $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
 
         $sync.form.Dispatcher.invoke({
-            foreach($checkbox in $Checkboxes){
+            foreach($checkbox in $Checkboxes) {
                 $sync.$checkbox.ischecked = $True
             }
         })
@@ -4197,7 +4274,7 @@ function Invoke-WPFGetIso {
 
     Write-Host "Invoking WPFGetIso"
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -4209,22 +4286,20 @@ function Invoke-WPFGetIso {
 
 
     Write-Host "         _                     __    __  _         "
-	Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
-	Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
-	Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
-	Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
+    Write-Host "  /\/\  (_)  ___  _ __   ___  / / /\ \ \(_) _ __   "
+    Write-Host " /    \ | | / __|| '__| / _ \ \ \/  \/ /| || '_ \  "
+    Write-Host "/ /\/\ \| || (__ | |   | (_) | \  /\  / | || | | | "
+    Write-Host "\/    \/|_| \___||_|    \___/   \/  \/  |_||_| |_| "
 
     $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
     $oscdImgFound = [bool] (Get-Command -ErrorAction Ignore -Type Application oscdimg.exe) -or (Test-Path $oscdimgPath -PathType Leaf)
     Write-Host "oscdimg.exe on system: $oscdImgFound"
 
-    if (!$oscdImgFound)
-    {
+    if (!$oscdImgFound) {
         $downloadFromGitHub = $sync.WPFMicrowinDownloadFromGitHub.IsChecked
         $sync.BusyMessage.Visibility="Hidden"
 
-        if (!$downloadFromGitHub)
-        {
+        if (!$downloadFromGitHub) {
             # only show the message to people who did check the box to download from github, if you check the box
             # you consent to downloading it, no need to show extra dialogs
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it using choco. This might take a long time.")
@@ -4233,8 +4308,7 @@ function Invoke-WPFGetIso {
             Install-WinUtilChoco
             $chocoFound = [bool] (Get-Command -ErrorAction Ignore -Type Application choco)
             Write-Host "choco on system: $chocoFound"
-            if (!$chocoFound)
-            {
+            if (!$chocoFound) {
                 [System.Windows.MessageBox]::Show("choco.exe is not found on the system, you need choco to download oscdimg.exe")
                 return
             }
@@ -4242,8 +4316,7 @@ function Invoke-WPFGetIso {
             Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "choco install windows-adk-oscdimg"
             [System.Windows.MessageBox]::Show("oscdimg is installed, now close, reopen PowerShell terminal and re-launch winutil.ps1")
             return
-        }
-        else {
+        } else {
             [System.Windows.MessageBox]::Show("oscdimge.exe is not found on the system, winutil will now attempt do download and install it from github. This might take a long time.")
             Get-Oscdimg -oscdimgPath $oscdimgPath
             $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
@@ -4251,8 +4324,7 @@ function Invoke-WPFGetIso {
                 $msg = "oscdimg was not downloaded can not proceed"
                 [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
                 return
-            }
-            else {
+            } else {
                 Write-Host "oscdimg.exe was successfully downloaded from github"
             }
         }
@@ -4265,16 +4337,14 @@ function Invoke-WPFGetIso {
     $openFileDialog.ShowDialog() | Out-Null
     $filePath = $openFileDialog.FileName
 
-    if ([string]::IsNullOrEmpty($filePath))
-    {
+    if ([string]::IsNullOrEmpty($filePath)) {
         Write-Host "No ISO is chosen"
         $sync.BusyMessage.Visibility="Hidden"
         return
     }
 
     Write-Host "File path $($filePath)"
-    if (-not (Test-Path -Path $filePath -PathType Leaf))
-    {
+    if (-not (Test-Path -Path "$filePath" -PathType Leaf)) {
         $msg = "File you've chosen doesn't exist"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
         return
@@ -4283,26 +4353,22 @@ function Invoke-WPFGetIso {
     Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     # Detect the file size of the ISO and compare it with the free space of the system drive
-    $isoSize = (Get-Item -Path $filePath).Length
+    $isoSize = (Get-Item -Path "$filePath").Length
     Write-Debug "Size of ISO file: $($isoSize) bytes"
     # Use this procedure to get the free space of the drive depending on where the user profile folder is stored.
     # This is done to guarantee a dynamic solution, as the installation drive may be mounted to a letter different than C
     $driveSpace = (Get-Volume -DriveLetter ([IO.Path]::GetPathRoot([Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)).Replace(":\", "").Trim())).SizeRemaining
     Write-Debug "Free space on installation drive: $($driveSpace) bytes"
-    if ($driveSpace -lt ($isoSize * 2))
-    {
+    if ($driveSpace -lt ($isoSize * 2)) {
         # It's not critical and we _may_ continue. Output a warning
         Write-Warning "You may not have enough space for this operation. Proceed at your own risk."
     }
-    elseif ($driveSpace -lt $isoSize)
-    {
+    elseif ($driveSpace -lt $isoSize) {
         # It's critical and we can't continue. Output an error
         Write-Host "You don't have enough space for this operation. You need at least $([Math]::Round(($isoSize / ([Math]::Pow(1024, 2))) * 2, 2)) MB of free space to copy the ISO files to a temp directory and to be able to perform additional operations."
         Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
-    }
-    else
-    {
+    } else {
         Write-Host "You have enough space for this operation."
     }
 
@@ -4324,7 +4390,7 @@ function Invoke-WPFGetIso {
     # there is probably a better way of doing this, I don't have time to figure this out
     $sync.MicrowinIsoDrive.Text = $driveLetter
 
-    $mountedISOPath = (Split-Path -Path $filePath)
+    $mountedISOPath = (Split-Path -Path "$filePath")
      if ($sync.MicrowinScratchDirBox.Text.Trim() -eq "Scratch") {
         $sync.MicrowinScratchDirBox.Text =""
     }
@@ -4342,14 +4408,12 @@ function Invoke-WPFGetIso {
     }
 
     # Detect if the folders already exist and remove them
-    if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text))
-    {
+    if (($sync.MicrowinMountDir.Text -ne "") -and (Test-Path -Path $sync.MicrowinMountDir.Text)) {
         try {
             Write-Host "Deleting temporary files from previous run. Please wait..."
             Remove-Item -Path $sync.MicrowinMountDir.Text -Recurse -Force
             Remove-Item -Path $sync.MicrowinScratchDir.Text -Recurse -Force
-        }
-        catch {
+        } catch {
             Write-Host "Could not delete temporary files. You need to delete those manually."
         }
     }
@@ -4390,16 +4454,14 @@ function Invoke-WPFGetIso {
         $wimFile = "$mountDir\sources\install.wim"
         Write-Host "Getting image information $wimFile"
 
-        if ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (-not (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf)))
-        {
+        if ((-not (Test-Path -Path "$wimFile" -PathType Leaf)) -and (-not (Test-Path -Path "$($wimFile.Replace(".wim", ".esd").Trim())" -PathType Leaf))) {
             $msg = "Neither install.wim nor install.esd exist in the image, this could happen if you use unofficial Windows images. Please don't use shady images from the internet, use only official images. Here are instructions how to download ISO images if the Microsoft website is not showing the link to download and ISO. https://www.techrepublic.com/article/how-to-download-a-windows-10-iso-file-without-using-the-media-creation-tool/"
             Write-Host $msg
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
             Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             throw
         }
-        elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf))
-        {
+        elseif ((-not (Test-Path -Path $wimFile -PathType Leaf)) -and (Test-Path -Path $wimFile.Replace(".wim", ".esd").Trim() -PathType Leaf)) {
             Write-Host "Install.esd found on the image. It needs to be converted to a WIM file in order to begin processing"
             $wimFile = $wimFile.Replace(".wim", ".esd").Trim()
         }
@@ -4412,8 +4474,7 @@ function Invoke-WPFGetIso {
         $sync.MicrowinWindowsFlavors.SelectedIndex = 0
         Write-Host "Finding suitable Pro edition. This can take some time. Do note that this is an automatic process that might not select the edition you want."
         Get-WindowsImage -ImagePath $wimFile | ForEach-Object {
-            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional")
-            {
+            if ((Get-WindowsImage -ImagePath $wimFile -Index $_.ImageIndex).EditionId -eq "Professional") {
                 # We have found the Pro edition
                 $sync.MicrowinWindowsFlavors.SelectedIndex = $_.ImageIndex - 1
             }
@@ -4438,8 +4499,6 @@ function Invoke-WPFGetIso {
     $sync.ProcessRunning = $false
     Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
 }
-
-
 function Invoke-WPFImpex {
     <#
 
@@ -4461,31 +4520,30 @@ function Invoke-WPFImpex {
         $Config = $null
     )
 
-    if ($type -eq "export"){
+    if ($type -eq "export") {
         $FileBrowser = New-Object System.Windows.Forms.SaveFileDialog
     }
-    if ($type -eq "import"){
+    if ($type -eq "import") {
         $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog
     }
 
-    if (-not $Config){
+    if (-not $Config) {
         $FileBrowser.InitialDirectory = [Environment]::GetFolderPath('Desktop')
         $FileBrowser.Filter = "JSON Files (*.json)|*.json"
         $FileBrowser.ShowDialog() | Out-Null
 
-        if($FileBrowser.FileName -eq ""){
+        if($FileBrowser.FileName -eq "") {
             return
-        }
-        else{
+        } else {
             $Config = $FileBrowser.FileName
         }
     }
 
-    if ($type -eq "export"){
+    if ($type -eq "export") {
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
     }
-    if ($type -eq "import"){
+    if ($type -eq "import") {
         $jsonFile = Get-Content $Config | ConvertFrom-Json
 
         $flattenedJson = @()
@@ -4509,7 +4567,7 @@ function Invoke-WPFInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -4526,7 +4584,7 @@ function Invoke-WPFInstall {
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1){
+        if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -4546,15 +4604,15 @@ function Invoke-WPFInstall {
             return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
 
-        try{
+        try {
             $sync.ProcessRunning = $true
             $errorPackages = @()
-            if($packagesWinget.Count -gt 0){
+            if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
-                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget 
+                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget
                 $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
             }
-            if($packagesChoco.Count -gt 0){
+            if($packagesChoco.Count -gt 0) {
                 Install-WinUtilChoco
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco
             }
@@ -4562,8 +4620,7 @@ function Invoke-WPFInstall {
             Write-Host "--      Installs have finished          ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
-        }
-        Catch {
+        } catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
@@ -4579,11 +4636,11 @@ function Invoke-WPFInstallUpgrade {
         Invokes the function that upgrades all installed programs using winget
 
     #>
-    if((Test-WinUtilPackageManager -winget) -eq "not-installed"){
+    if((Test-WinUtilPackageManager -winget) -eq "not-installed") {
         return
     }
 
-    if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall){
+    if(Get-WinUtilInstallerProcess -Process $global:WinGetInstall) {
         $msg = "[Invoke-WPFInstallUpgrade] Install process is currently running. Please check for a powershell window labeled 'Winget Install'"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -4605,32 +4662,32 @@ function Invoke-WPFMicrowin {
     #>
 
 
-	if($sync.ProcessRunning) {
+    if($sync.ProcessRunning) {
         $msg = "GetIso process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-	# Define the constants for Windows API
+    # Define the constants for Windows API
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 
 public class PowerManagement {
-	[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-	public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
 
-	[FlagsAttribute]
-	public enum EXECUTION_STATE : uint {
-		ES_SYSTEM_REQUIRED = 0x00000001,
-		ES_DISPLAY_REQUIRED = 0x00000002,
-		ES_CONTINUOUS = 0x80000000,
-	}
+    [FlagsAttribute]
+    public enum EXECUTION_STATE : uint {
+        ES_SYSTEM_REQUIRED = 0x00000001,
+        ES_DISPLAY_REQUIRED = 0x00000002,
+        ES_CONTINUOUS = 0x80000000,
+    }
 }
 "@
 
-	# Prevent the machine from sleeping
-	[PowerManagement]::SetThreadExecutionState([PowerManagement]::EXECUTION_STATE::ES_CONTINUOUS -bor [PowerManagement]::EXECUTION_STATE::ES_SYSTEM_REQUIRED -bor [PowerManagement]::EXECUTION_STATE::ES_DISPLAY_REQUIRED)
+    # Prevent the machine from sleeping
+    [PowerManagement]::SetThreadExecutionState([PowerManagement]::EXECUTION_STATE::ES_CONTINUOUS -bor [PowerManagement]::EXECUTION_STATE::ES_SYSTEM_REQUIRED -bor [PowerManagement]::EXECUTION_STATE::ES_DISPLAY_REQUIRED)
 
     # Ask the user where to save the file
     $SaveDialog = New-Object System.Windows.Forms.SaveFileDialog
@@ -4640,472 +4697,379 @@ public class PowerManagement {
 
     if ($SaveDialog.FileName -eq "") {
         Write-Host "No file name for the target image was specified"
-		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
-	Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
+    Set-WinUtilTaskbaritem -state "Indeterminate" -overlay "logo"
 
     Write-Host "Target ISO location: $($SaveDialog.FileName)"
 
-	$index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
-	Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
+    $index = $sync.MicrowinWindowsFlavors.SelectedValue.Split(":")[0].Trim()
+    Write-Host "Index chosen: '$index' from $($sync.MicrowinWindowsFlavors.SelectedValue)"
 
-	$keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
-	$keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
-	$keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
-	$keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
-	$copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
-	$injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
-	$importDrivers = $sync.MicrowinImportDrivers.IsChecked
+    $keepPackages = $sync.WPFMicrowinKeepProvisionedPackages.IsChecked
+    $keepProvisionedPackages = $sync.WPFMicrowinKeepAppxPackages.IsChecked
+    $keepDefender = $sync.WPFMicrowinKeepDefender.IsChecked
+    $keepEdge = $sync.WPFMicrowinKeepEdge.IsChecked
+    $copyToUSB = $sync.WPFMicrowinCopyToUsb.IsChecked
+    $injectDrivers = $sync.MicrowinInjectDrivers.IsChecked
+    $importDrivers = $sync.MicrowinImportDrivers.IsChecked
 
     $mountDir = $sync.MicrowinMountDir.Text
     $scratchDir = $sync.MicrowinScratchDir.Text
 
-	# Detect if the Windows image is an ESD file and convert it to WIM
-	if (-not (Test-Path -Path $mountDir\sources\install.wim -PathType Leaf) -and (Test-Path -Path $mountDir\sources\install.esd -PathType Leaf))
-	{
-		Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
-		Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
-		if ($?)
-		{
-            Remove-Item -Path $mountDir\sources\install.esd -Force
-			# Since we've already exported the image index we wanted, switch to the first one
-			$index = 1
-		}
-		else
-		{
+    # Detect if the Windows image is an ESD file and convert it to WIM
+    if (-not (Test-Path -Path "$mountDir\sources\install.wim" -PathType Leaf) -and (Test-Path -Path "$mountDir\sources\install.esd" -PathType Leaf)) {
+        Write-Host "Exporting Windows image to a WIM file, keeping the index we want to work on. This can take several minutes, depending on the performance of your computer..."
+        Export-WindowsImage -SourceImagePath $mountDir\sources\install.esd -SourceIndex $index -DestinationImagePath $mountDir\sources\install.wim -CompressionType "Max"
+        if ($?) {
+            Remove-Item -Path "$mountDir\sources\install.esd" -Force
+            # Since we've already exported the image index we wanted, switch to the first one
+            $index = 1
+        } else {
             $msg = "The export process has failed and MicroWin processing cannot continue"
             Write-Host "Failed to export the image"
             [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
-			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
-		}
-	}
+        }
+    }
 
     $imgVersion = (Get-WindowsImage -ImagePath $mountDir\sources\install.wim -Index $index).Version
 
     # Detect image version to avoid performing MicroWin processing on Windows 8 and earlier
-    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false)
-    {
-		$msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
+    if ((Test-CompatibleImage $imgVersion $([System.Version]::new(10,0,10240,0))) -eq $false) {
+        $msg = "This image is not compatible with MicroWin processing. Make sure it isn't a Windows 8 or earlier image."
         $dlg_msg = $msg + "`n`nIf you want more information, the version of the image selected is $($imgVersion)`n`nIf an image has been incorrectly marked as incompatible, report an issue to the developers."
-		Write-Host $msg
-		[System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
-		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Write-Host $msg
+        [System.Windows.MessageBox]::Show($dlg_msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Exclamation)
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
-	$mountDirExists = Test-Path $mountDir
+    $mountDirExists = Test-Path $mountDir
     $scratchDirExists = Test-Path $scratchDir
-	if (-not $mountDirExists -or -not $scratchDirExists)
-	{
+    if (-not $mountDirExists -or -not $scratchDirExists) {
         Write-Error "Required directories '$mountDirExists' '$scratchDirExists' and do not exist."
-		Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+        Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
         return
     }
 
-	try {
+    try {
 
-		Write-Host "Mounting Windows image. This may take a while."
+        Write-Host "Mounting Windows image. This may take a while."
         Mount-WindowsImage -ImagePath "$mountDir\sources\install.wim" -Index $index -Path "$scratchDir"
-        if ($?)
-        {
-		    Write-Host "Mounting complete! Performing removal of applications..."
-        }
-        else
-        {
+        if ($?) {
+            Write-Host "Mounting complete! Performing removal of applications..."
+        } else {
             Write-Host "Could not mount image. Exiting..."
-			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
             return
         }
 
-		if ($importDrivers)
-		{
-			Write-Host "Exporting drivers from active installation..."
-			if (Test-Path "$env:TEMP\DRV_EXPORT")
-			{
-				Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
-			}
-			if (($injectDrivers -and (Test-Path $sync.MicrowinDriverLocation.Text)))
-			{
-				Write-Host "Using specified driver source..."
-				dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
-				if ($?)
-				{
-					# Don't add exported drivers yet, that is run later
-					Write-Host "Drivers have been exported successfully."
-				}
-				else
-				{
-					Write-Host "Failed to export drivers."
-				}
-			}
-			else
-			{
-				New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
-				dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
-				if ($?)
-				{
-					Write-Host "Adding exported drivers..."
-					dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
-				}
-				else
-				{
-					Write-Host "Failed to export drivers. Continuing without importing them..."
-				}
-				if (Test-Path "$env:TEMP\DRV_EXPORT")
-				{
-					Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
-				}
-			}
-		}
+        if ($importDrivers) {
+            Write-Host "Exporting drivers from active installation..."
+            if (Test-Path "$env:TEMP\DRV_EXPORT") {
+                Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+            }
+            if (($injectDrivers -and (Test-Path "$($sync.MicrowinDriverLocation.Text)"))) {
+                Write-Host "Using specified driver source..."
+                dism /english /online /export-driver /destination="$($sync.MicrowinDriverLocation.Text)" | Out-Host
+                if ($?) {
+                    # Don't add exported drivers yet, that is run later
+                    Write-Host "Drivers have been exported successfully."
+                } else {
+                    Write-Host "Failed to export drivers."
+                }
+            } else {
+                New-Item -Path "$env:TEMP\DRV_EXPORT" -ItemType Directory -Force
+                dism /english /online /export-driver /destination="$env:TEMP\DRV_EXPORT" | Out-Host
+                if ($?) {
+                    Write-Host "Adding exported drivers..."
+                    dism /english /image="$scratchDir" /add-driver /driver="$env:TEMP\DRV_EXPORT" /recurse | Out-Host
+                } else {
+                    Write-Host "Failed to export drivers. Continuing without importing them..."
+                }
+                if (Test-Path "$env:TEMP\DRV_EXPORT") {
+                    Remove-Item "$env:TEMP\DRV_EXPORT" -Recurse -Force
+                }
+            }
+        }
 
-		if ($injectDrivers)
-		{
-			$driverPath = $sync.MicrowinDriverLocation.Text
-			if (Test-Path $driverPath)
-			{
-				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-			}
-			else
-			{
-				Write-Host "Path to drivers is invalid continuing without driver injection"
-			}
-		}
+        if ($injectDrivers) {
+            $driverPath = $sync.MicrowinDriverLocation.Text
+            if (Test-Path $driverPath) {
+                Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+            } else {
+                Write-Host "Path to drivers is invalid continuing without driver injection"
+            }
+        }
 
-		Write-Host "Remove Features from the image"
-		Remove-Features -keepDefender:$keepDefender
-		Write-Host "Removing features complete!"
+        Write-Host "Remove Features from the image"
+        Remove-Features
+        Write-Host "Removing features complete!"
+        Write-Host "Removing OS packages"
+        Remove-Packages
+        Write-Host "Removing Appx Bloat"
+        Remove-ProvisionedPackages
 
-		if (!$keepPackages)
-		{
-			Write-Host "Removing OS packages"
-			Remove-Packages
-		}
-		if (!$keepProvisionedPackages)
-		{
-			Write-Host "Removing Appx Bloat"
-			Remove-ProvisionedPackages -keepSecurity:$keepDefender
-		}
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
+        Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
+        Write-Host "Removal complete!"
 
-		# special code, for some reason when you try to delete some inbox apps
-		# we have to get and delete log files directory.
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LogFiles\WMI\RtBackup" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\WebThreatDefSvc" -Directory
+        Write-Host "Create unattend.xml"
+        New-Unattend
+        Write-Host "Done Create unattend.xml"
+        Write-Host "Copy unattend.xml file into the ISO"
+        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
+        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
+        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
+        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
+        Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
+        Write-Host "Done Copy unattend.xml"
 
-		# Defender is hidden in 2 places we removed a feature above now need to remove it from the disk
-		if (!$keepDefender)
-		{
-			Write-Host "Removing Defender"
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Defender" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Defender"
-		}
-		if (!$keepEdge)
-		{
-			Write-Host "Removing Edge"
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Microsoft" -mask "*edge*" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Microsoft" -mask "*edge*" -Directory
-			Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*edge*" -Directory
-		}
+        Write-Host "Create FirstRun"
+        New-FirstRun
+        Write-Host "Done create FirstRun"
+        Write-Host "Copy FirstRun.ps1 into the ISO"
+        Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
+        Write-Host "Done copy FirstRun.ps1"
 
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\DiagTrack" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\InboxApps" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\SecurityHealthSystray.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\LocationNotificationWindows.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Photo Viewer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Photo Viewer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Media Player" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Media Player" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Windows Mail" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Windows Mail" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files (x86)\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Program Files\Internet Explorer" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\GameBarPresenceWriter"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDriveSetup.exe"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\System32\OneDrive.ico"
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Windows.Search*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*narratorquickstart*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*Xbox*" -Directory
-		Remove-FileOrDirectory -pathToDelete "$($scratchDir)\Windows\SystemApps" -mask "*ParentalControls*" -Directory
-		Write-Host "Removal complete!"
+        Write-Host "Copy link to winutil.ps1 into the ISO"
+        $desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
+        New-Item -ItemType Directory -Force -Path "$desktopDir"
+        dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
 
-		Write-Host "Create unattend.xml"
-		New-Unattend
-		Write-Host "Done Create unattend.xml"
-		Write-Host "Copy unattend.xml file into the ISO"
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\Panther\unattend.xml" -force
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\Sysprep"
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\Windows\System32\Sysprep\unattend.xml" -force
-		Copy-Item "$env:temp\unattend.xml" "$($scratchDir)\unattend.xml" -force
-		Write-Host "Done Copy unattend.xml"
+        Write-Host "Copy checkinstall.cmd into the ISO"
+        New-CheckInstall
+        Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
+        Write-Host "Done copy checkinstall.cmd"
 
-		Write-Host "Create FirstRun"
-		New-FirstRun
-		Write-Host "Done create FirstRun"
-		Write-Host "Copy FirstRun.ps1 into the ISO"
-		Copy-Item "$env:temp\FirstStartup.ps1" "$($scratchDir)\Windows\FirstStartup.ps1" -force
-		Write-Host "Done copy FirstRun.ps1"
+        Write-Host "Creating a directory that allows to bypass Wifi setup"
+        New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
 
-		Write-Host "Copy link to winutil.ps1 into the ISO"
-		$desktopDir = "$($scratchDir)\Windows\Users\Default\Desktop"
-		New-Item -ItemType Directory -Force -Path "$desktopDir"
-	    dism /English /image:$($scratchDir) /set-profilepath:"$($scratchDir)\Windows\Users\Default"
+        Write-Host "Loading registry"
+        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
+        reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
+        reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
+        reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
 
-		# $command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://christitus.com/win | iex'"
-		# $shortcutPath = "$desktopDir\WinUtil.lnk"
-		# $shell = New-Object -ComObject WScript.Shell
-		# $shortcut = $shell.CreateShortcut($shortcutPath)
+        Write-Host "Disabling Teams"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
+        reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
+        reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
+        # Write-Host Error code $LASTEXITCODE
+        Write-Host "Done disabling Teams"
 
-		# if (Test-Path -Path "$env:TEMP\cttlogo.png")
-		# {
-		# 	$pngPath = "$env:TEMP\cttlogo.png"
-		# 	$icoPath = "$env:TEMP\cttlogo.ico"
-		# 	ConvertTo-Icon -bitmapPath $pngPath -iconPath $icoPath
-		# 	Write-Host "ICO file created at: $icoPath"
-		# 	Copy-Item "$env:TEMP\cttlogo.png" "$($scratchDir)\Windows\cttlogo.png" -force
-		# 	Copy-Item "$env:TEMP\cttlogo.ico" "$($scratchDir)\Windows\cttlogo.ico" -force
-		# 	$shortcut.IconLocation = "c:\Windows\cttlogo.ico"
-		# }
+        Write-Host "Bypassing system requirements (system image)"
+        reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
 
-		# $shortcut.TargetPath = "powershell.exe"
-		# $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
-		# $shortcut.Save()
-		# Write-Host "Shortcut to winutil created at: $shortcutPath"
-		# *************************** Automation black ***************************
+        # Prevent Windows Update Installing so called Expedited Apps
+        @(
+            'EdgeUpdate',
+            'DevHomeUpdate',
+            'OutlookUpdate',
+            'CrossDeviceUpdate'
+        ) | ForEach-Object {
+            Write-Host "Removing Windows Expedited App: $_"
 
-		Write-Host "Copy checkinstall.cmd into the ISO"
-		New-CheckInstall
-		Copy-Item "$env:temp\checkinstall.cmd" "$($scratchDir)\Windows\checkinstall.cmd" -force
-		Write-Host "Done copy checkinstall.cmd"
+            # Copied here After Installation (Online)
+            # reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Orchestrator\UScheduler\$_" /f | Out-Null
 
-		Write-Host "Creating a directory that allows to bypass Wifi setup"
-		New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\System32\OOBE\BYPASSNRO"
+            # When in Offline Image
+            reg delete "HKLM\zSOFTWARE\Microsoft\WindowsUpdate\Orchestrator\UScheduler_Oobe\$_" /f | Out-Null
+        }
 
-		Write-Host "Loading registry"
-		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS"
-		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default"
-		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat"
-		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE"
-		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
+        Write-Host "Setting all services to start manually"
+        reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
+        # Write-Host $LASTEXITCODE
 
-		Write-Host "Disabling Teams"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall" /t REG_DWORD /d 0 /f   >$null 2>&1
-		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat" /v ChatIcon /t REG_DWORD /d 2 /f                             >$null 2>&1
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "TaskbarMn" /t REG_DWORD /d 0 /f        >$null 2>&1
-		reg query "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Communications" /v "ConfigureChatAutoInstall"                      >$null 2>&1
-		# Write-Host Error code $LASTEXITCODE
-		Write-Host "Done disabling Teams"
+        Write-Host "Enabling Local Accounts on OOBE"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
 
-		Write-Host "Bypassing system requirements (system image)"
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
+        Write-Host "Disabling Sponsored Apps"
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OemPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
+        Write-Host "Done removing Sponsored Apps"
 
-		if (!$keepEdge)
-		{
-			Write-Host "Removing Edge icon from taskbar"
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Favorites" /f 		  >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "FavoritesChanges" /f   >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "Pinned" /f             >$null 2>&1
-			reg delete "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /v "LayoutCycle" /f        >$null 2>&1
-			Write-Host "Edge icon removed from taskbar"
-			if (Test-Path "HKLM:\zSOFTWARE\WOW6432Node")
-			{
-				# Remove leftovers of 64-bit installations
-				# ---
-				# Remove registry values first...
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /va /f > $null 2>&1
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /va /f > $null 2>&1
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /va /f > $null 2>&1
-				# ...then the registry keys
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" /f > $null 2>&1
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update" /f > $null 2>&1
-				reg delete "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView" /f > $null 2>&1
-			}
-		}
+        Write-Host "Disabling Reserved Storage"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
 
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
-		Write-Host "Setting all services to start manually"
-		reg add "HKLM\zSOFTWARE\CurrentControlSet\Services" /v Start /t REG_DWORD /d 3 /f
-		# Write-Host $LASTEXITCODE
+        Write-Host "Changing theme to dark. This only works on Activated Windows"
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
 
-		Write-Host "Enabling Local Accounts on OOBE"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\OOBE" /v "BypassNRO" /t REG_DWORD /d "1" /f
-
-		Write-Host "Disabling Sponsored Apps"
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "OemPreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "PreInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SilentInstalledAppsEnabled" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSOFTWARE\Policies\Microsoft\Windows\CloudContent" /v "DisableWindowsConsumerFeatures" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSOFTWARE\Microsoft\PolicyManager\current\device\Start" /v "ConfigureStartPins" /t REG_SZ /d '{\"pinnedList\": [{}]}' /f
-		Write-Host "Done removing Sponsored Apps"
-
-		Write-Host "Disabling Reserved Storage"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager" /v "ShippedWithReserves" /t REG_DWORD /d 0 /f
-
-		Write-Host "Changing theme to dark. This only works on Activated Windows"
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "AppsUseLightTheme" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v "SystemUsesLightTheme" /t REG_DWORD /d 0 /f
-
-	} catch {
+    } catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
-		Write-Host "Unmounting Registry..."
-		reg unload HKLM\zCOMPONENTS
-		reg unload HKLM\zDEFAULT
-		reg unload HKLM\zNTUSER
-		reg unload HKLM\zSOFTWARE
-		reg unload HKLM\zSYSTEM
+        Write-Host "Unmounting Registry..."
+        reg unload HKLM\zCOMPONENTS
+        reg unload HKLM\zDEFAULT
+        reg unload HKLM\zNTUSER
+        reg unload HKLM\zSOFTWARE
+        reg unload HKLM\zSYSTEM
 
-		Write-Host "Cleaning up image..."
-		dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
-		Write-Host "Cleanup complete."
+        Write-Host "Cleaning up image..."
+        dism /English /image:$scratchDir /Cleanup-Image /StartComponentCleanup /ResetBase
+        Write-Host "Cleanup complete."
 
-		Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
-	}
+        Write-Host "Unmounting image..."
+        Dismount-WindowsImage -Path "$scratchDir" -Save
+    }
 
-	try {
+    try {
 
-		Write-Host "Exporting image into $mountDir\sources\install2.wim"
+        Write-Host "Exporting image into $mountDir\sources\install2.wim"
         Export-WindowsImage -SourceImagePath "$mountDir\sources\install.wim" -SourceIndex $index -DestinationImagePath "$mountDir\sources\install2.wim" -CompressionType "Max"
-		Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
-		Remove-Item "$mountDir\sources\install.wim"
-		Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
+        Write-Host "Remove old '$mountDir\sources\install.wim' and rename $mountDir\sources\install2.wim"
+        Remove-Item "$mountDir\sources\install.wim"
+        Rename-Item "$mountDir\sources\install2.wim" "$mountDir\sources\install.wim"
 
-		if (-not (Test-Path -Path "$mountDir\sources\install.wim"))
-		{
-			Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
-			Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
-			return
-		}
-		Write-Host "Windows image completed. Continuing with boot.wim."
+        if (-not (Test-Path -Path "$mountDir\sources\install.wim")) {
+            Write-Error "Something went wrong and '$mountDir\sources\install.wim' doesn't exist. Please report this bug to the devs"
+            Set-WinUtilTaskbaritem -state "Error" -value 1 -overlay "warning"
+            return
+        }
+        Write-Host "Windows image completed. Continuing with boot.wim."
 
-		# Next step boot image
-		Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
+        # Next step boot image
+        Write-Host "Mounting boot image $mountDir\sources\boot.wim into $scratchDir"
         Mount-WindowsImage -ImagePath "$mountDir\sources\boot.wim" -Index 2 -Path "$scratchDir"
 
-		if ($injectDrivers)
-		{
-			$driverPath = $sync.MicrowinDriverLocation.Text
-			if (Test-Path $driverPath)
-			{
-				Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
-				dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
-			}
-			else
-			{
-				Write-Host "Path to drivers is invalid continuing without driver injection"
-			}
-		}
+        if ($injectDrivers) {
+            $driverPath = $sync.MicrowinDriverLocation.Text
+            if (Test-Path $driverPath) {
+                Write-Host "Adding Windows Drivers image($scratchDir) drivers($driverPath) "
+                dism /English /image:$scratchDir /add-driver /driver:$driverPath /recurse | Out-Host
+            } else {
+                Write-Host "Path to drivers is invalid continuing without driver injection"
+            }
+        }
 
-		Write-Host "Loading registry..."
-		reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
-		reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
-		reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
-		reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
-		reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
-		Write-Host "Bypassing system requirements on the setup image"
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
-		reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
-		# Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
-		reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
-	} catch {
+        Write-Host "Loading registry..."
+        reg load HKLM\zCOMPONENTS "$($scratchDir)\Windows\System32\config\COMPONENTS" >$null
+        reg load HKLM\zDEFAULT "$($scratchDir)\Windows\System32\config\default" >$null
+        reg load HKLM\zNTUSER "$($scratchDir)\Users\Default\ntuser.dat" >$null
+        reg load HKLM\zSOFTWARE "$($scratchDir)\Windows\System32\config\SOFTWARE" >$null
+        reg load HKLM\zSYSTEM "$($scratchDir)\Windows\System32\config\SYSTEM" >$null
+        Write-Host "Bypassing system requirements on the setup image"
+        reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV1" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache" /v "SV2" /t REG_DWORD /d 0 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassRAMCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassSecureBootCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d 1 /f
+        reg add "HKLM\zSYSTEM\Setup\MoSetup" /v "AllowUpgradesWithUnsupportedTPMOrCPU" /t REG_DWORD /d 1 /f
+        # Fix Computer Restarted Unexpectedly Error on New Bare Metal Install
+        reg add "HKLM\zSYSTEM\Setup\Status\ChildCompletion" /v "setup.exe" /t REG_DWORD /d 3 /f
+    } catch {
         Write-Error "An unexpected error occurred: $_"
     } finally {
-		Write-Host "Unmounting Registry..."
-		reg unload HKLM\zCOMPONENTS
-		reg unload HKLM\zDEFAULT
-		reg unload HKLM\zNTUSER
-		reg unload HKLM\zSOFTWARE
-		reg unload HKLM\zSYSTEM
+        Write-Host "Unmounting Registry..."
+        reg unload HKLM\zCOMPONENTS
+        reg unload HKLM\zDEFAULT
+        reg unload HKLM\zNTUSER
+        reg unload HKLM\zSOFTWARE
+        reg unload HKLM\zSYSTEM
 
-		Write-Host "Unmounting image..."
-        Dismount-WindowsImage -Path $scratchDir -Save
+        Write-Host "Unmounting image..."
+        Dismount-WindowsImage -Path "$scratchDir" -Save
 
-		Write-Host "Creating ISO image"
+        Write-Host "Creating ISO image"
 
-		# if we downloaded oscdimg from github it will be in the temp directory so use it
-		# if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
-		$oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
-		$oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
-		if (!$oscdImgFound)
-		{
-			$oscdimgPath = "oscdimg.exe"
-		}
+        # if we downloaded oscdimg from github it will be in the temp directory so use it
+        # if it is not in temp it is part of ADK and is in global PATH so just set it to oscdimg.exe
+        $oscdimgPath = Join-Path $env:TEMP 'oscdimg.exe'
+        $oscdImgFound = Test-Path $oscdimgPath -PathType Leaf
+        if (!$oscdImgFound) {
+            $oscdimgPath = "oscdimg.exe"
+        }
 
-		Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
-		
-		$oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b$mountDir\boot\etfsboot.com#pEF,e,b$mountDir\efi\microsoft\boot\efisys.bin `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
-		
-		$LASTEXITCODE = $oscdimgProc.ExitCode
-		
-		Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
+        Write-Host "[INFO] Using oscdimg.exe from: $oscdimgPath"
 
-		if ($copyToUSB)
-		{
-			Write-Host "Copying target ISO to the USB drive"
-			Copy-ToUSB("$($SaveDialog.FileName)")
-			if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
-		}
+        $oscdimgProc = Start-Process -FilePath "$oscdimgPath" -ArgumentList "-m -o -u2 -udfver102 -bootdata:2#p0,e,b`"$mountDir\boot\etfsboot.com`"#pEF,e,b`"$mountDir\efi\microsoft\boot\efisys.bin`" `"$mountDir`" `"$($SaveDialog.FileName)`"" -Wait -PassThru -NoNewWindow
 
-		Write-Host " _____                       "
-		Write-Host "(____ \                      "
-		Write-Host " _   \ \ ___  ____   ____    "
-		Write-Host "| |   | / _ \|  _ \ / _  )   "
-		Write-Host "| |__/ / |_| | | | ( (/ /    "
-		Write-Host "|_____/ \___/|_| |_|\____)   "
+        $LASTEXITCODE = $oscdimgProc.ExitCode
 
-		# Check if the ISO was successfully created - CTT edit
-		if ($LASTEXITCODE -eq 0) {
-			Write-Host "`n`nPerforming Cleanup..."
-				Remove-Item -Recurse -Force "$($scratchDir)"
-				Remove-Item -Recurse -Force "$($mountDir)"
-			$msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
-			Write-Host $msg
-			Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
-			[System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
-		} else {
-			Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
-			try
-			{
-				# This creates a new Win32 exception from which we can extract a message in the system language.
-				# Now, this will NOT throw an exception
-				$exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
-				Write-Host "Reason: $($exitCode.Message)"
-			}
-			catch
-			{
-				# Could not get error description from Windows APIs
-			}
-		}
+        Write-Host "OSCDIMG Error Level : $($oscdimgProc.ExitCode)"
 
-		$sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+        if ($copyToUSB) {
+            Write-Host "Copying target ISO to the USB drive"
+            Copy-ToUSB("$($SaveDialog.FileName)")
+            if ($?) { Write-Host "Done Copying target ISO to USB drive!" } else { Write-Host "ISO copy failed." }
+        }
 
-		#$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
+        Write-Host " _____                       "
+        Write-Host "(____ \                      "
+        Write-Host " _   \ \ ___  ____   ____    "
+        Write-Host "| |   | / _ \|  _ \ / _  )   "
+        Write-Host "| |__/ / |_| | | | ( (/ /    "
+        Write-Host "|_____/ \___/|_| |_|\____)   "
+
+        # Check if the ISO was successfully created - CTT edit
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "`n`nPerforming Cleanup..."
+                Remove-Item -Recurse -Force "$($scratchDir)"
+                Remove-Item -Recurse -Force "$($mountDir)"
+            $msg = "Done. ISO image is located here: $($SaveDialog.FileName)"
+            Write-Host $msg
+            Set-WinUtilTaskbaritem -state "None" -overlay "checkmark"
+            [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
+        } else {
+            Write-Host "ISO creation failed. The "$($mountDir)" directory has not been removed."
+            try {
+                # This creates a new Win32 exception from which we can extract a message in the system language.
+                # Now, this will NOT throw an exception
+                $exitCode = New-Object System.ComponentModel.Win32Exception($LASTEXITCODE)
+                Write-Host "Reason: $($exitCode.Message)"
+            } catch {
+                # Could not get error description from Windows APIs
+            }
+        }
+
+        $sync.MicrowinOptionsPanel.Visibility = 'Collapsed'
+
+        #$sync.MicrowinFinalIsoLocation.Text = "$env:temp\microwin.iso"
         $sync.MicrowinFinalIsoLocation.Text = "$($SaveDialog.FileName)"
-		# Allow the machine to sleep again (optional)
-		[PowerManagement]::SetThreadExecutionState(0)
-		$sync.ProcessRunning = $false
-	}
+        # Allow the machine to sleep again (optional)
+        [PowerManagement]::SetThreadExecutionState(0)
+        $sync.ProcessRunning = $false
+    }
 }
 function Invoke-WPFOOSU {
     <#
@@ -5119,8 +5083,7 @@ function Invoke-WPFOOSU {
         Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
         Write-Host "Starting OO Shutup 10 ..."
         Start-Process $OOSU_filepath
-    }
-    catch {
+    } catch {
         Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
     }
     finally {
@@ -5191,10 +5154,9 @@ function Invoke-WPFPresets {
         [bool]$imported = $false
     )
 
-    if($imported -eq $true){
+    if($imported -eq $true) {
         $CheckBoxesToCheck = $preset
-    }
-    Else{
+    } else {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
@@ -5210,8 +5172,7 @@ function Invoke-WPFPresets {
     foreach ($CheckBox in $CheckBoxes) {
         $checkboxName = $CheckBox.Key
 
-        if (-not $CheckBoxesToCheck)
-        {
+        if (-not $CheckBoxesToCheck) {
             $sync.$checkboxName.IsChecked = $false
             continue
         }
@@ -5300,8 +5261,7 @@ function Invoke-WPFRunspace {
     $script:handle = $script:powershell.BeginInvoke()
 
     # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted)
-    {
+    if ($script:handle.IsCompleted) {
         $script:powershell.EndInvoke($script:handle)
         $script:powershell.Dispose()
         $sync.runspace.Dispose()
@@ -5309,7 +5269,6 @@ function Invoke-WPFRunspace {
         [System.GC]::Collect()
     }
 }
-
 function Invoke-WPFShortcut {
     <#
 
@@ -5333,17 +5292,15 @@ function Invoke-WPFShortcut {
     Switch ($ShortcutToAdd) {
         "WinUtil" {
             # Use Powershell 7 if installed and fallback to PS5 if not
-            if (Get-Command "pwsh" -ErrorAction SilentlyContinue){
+            if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
                 $shell = "pwsh.exe"
-            }
-            else{
+            } else {
                 $shell = "powershell.exe"
             }
 
             $shellArgs = "-ExecutionPolicy Bypass -Command `"Start-Process $shell -verb runas -ArgumentList `'-Command `"irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1 | iex`"`'"
 
             $DestinationName = "WinUtil.lnk"
-
         }
     }
 
@@ -5363,8 +5320,8 @@ function Invoke-WPFShortcut {
     # Prepare the Shortcut paramter
     $WshShell = New-Object -comObject WScript.Shell
     $Shortcut = $WshShell.CreateShortcut($FileBrowser.FileName)
-    $Shortcut.TargetPath = $SourceExe
-    $Shortcut.Arguments = $ArgumentsToSourceExe
+    $Shortcut.TargetPath = $shell
+    $Shortcut.Arguments = $shellArgs
     if (Test-Path -Path $winutildir["logo.ico"]) {
         $shortcut.IconLocation = $winutildir["logo.ico"]
     }
@@ -5404,8 +5361,7 @@ function Invoke-WPFTab {
             $sync[$PSItem.Name].IsChecked = $false
             # $tabNumber = [int]($PSItem.Name -replace "WPFTab","" -replace "BT","") - 1
             # $sync.$tabNav.Items[$tabNumber].IsSelected = $false
-        }
-        else {
+        } else {
             $sync["$ClickedTab"].IsChecked = $true
             $tabNumber = [int]($ClickedTab-replace "WPFTab","" -replace "BT","") - 1
             $sync.$tabNav.Items[$tabNumber].IsSelected = $true
@@ -5429,7 +5385,7 @@ function Invoke-WPFToggle {
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
-    Switch -Wildcard ($Button){
+    Switch -Wildcard ($Button) {
 
         "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
         "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
@@ -5477,13 +5433,13 @@ function Invoke-WPFTweakPS7{
         }
     }
     # Check if the Windows Terminal is installed and return if not (Prerequisite for the following code)
-    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)){
+    if (-not (Get-Command "wt" -ErrorAction SilentlyContinue)) {
         Write-Host "Windows Terminal not installed. Skipping Terminal preference"
         return
     }
     # Check if the Windows Terminal settings.json file exists and return if not (Prereqisite for the following code)
     $settingsPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-    if (-not (Test-Path -Path $settingsPath)){
+    if (-not (Test-Path -Path $settingsPath)) {
         Write-Host "Windows Terminal Settings file not found at $settingsPath"
         return
     }
@@ -5510,7 +5466,7 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
-  if($sync.ProcessRunning){
+  if($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -5520,7 +5476,7 @@ function Invoke-WPFtweaksbutton {
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 
-  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default"){
+  if ($tweaks.count -eq 0 -and  $sync["WPFchangedns"].text -eq "Default") {
     $msg = "Please check the tweaks you wish to perform."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
@@ -5534,17 +5490,16 @@ function Invoke-WPFtweaksbutton {
 
     $sync.ProcessRunning = $true
 
-    if ($Tweaks.count -eq 1){
+    if ($Tweaks.count -eq 1) {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
     } else {
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
     }
     # Execute other selected tweaks
-    
-    for ($i = 0; $i -lt $Tweaks.Count; $i++){
+
+    for ($i = 0; $i -lt $Tweaks.Count; $i++) {
       Set-WinUtilProgressBar -Label "Applying $($tweaks[$i])" -Percent ($i / $Tweaks.Count * 100)
-      Invoke-WinUtilTweaks $tweaks[$i]
-      $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
+      Invoke-WinUtilTweaks $tweaks[$i]$sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$Tweaks.Count) })
     }
     Set-WinUtilProgressBar -Label "Tweaks finished" -Percent 100
     $sync.ProcessRunning = $false
@@ -5571,10 +5526,10 @@ Function Invoke-WPFUltimatePerformance {
 
     #>
     param($State)
-    Try{
+    try {
         # Check if Ultimate Performance plan is installed
         $ultimatePlan = powercfg -list | Select-String -Pattern "Ultimate Performance"
-        if($state -eq "Enable"){
+        if($state -eq "Enable") {
             if ($ultimatePlan) {
                 Write-Host "Ultimate Performance plan is already installed."
             } else {
@@ -5591,7 +5546,7 @@ Function Invoke-WPFUltimatePerformance {
 
 
         }
-        elseif($state -eq "Disable"){
+        elseif($state -eq "Disable") {
             if ($ultimatePlan) {
                 # Extract the GUID of the Ultimate Performance plan
                 $ultimatePlanGUID = $ultimatePlan.Line.Split()[3]
@@ -5609,7 +5564,7 @@ Function Invoke-WPFUltimatePerformance {
                 Write-Host "Ultimate Performance plan is not installed."
             }
         }
-    } Catch{
+    } catch {
         Write-Warning $psitem.Exception.Message
     }
 }
@@ -5621,7 +5576,7 @@ function Invoke-WPFundoall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFundoall] Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -5629,7 +5584,7 @@ function Invoke-WPFundoall {
 
     $tweaks = (Get-WinUtilCheckBoxes)["WPFtweaks"]
 
-    if ($tweaks.count -eq 0){
+    if ($tweaks.count -eq 0) {
         $msg = "Please check the tweaks you wish to undo."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -5639,14 +5594,14 @@ function Invoke-WPFundoall {
         param($tweaks, $DebugPreference)
 
         $sync.ProcessRunning = $true
-        if ($tweaks.count -eq 1){
+        if ($tweaks.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
         }
-        
 
-        for ($i = 0; $i -lt $tweaks.Count; $i++){
+
+        for ($i = 0; $i -lt $tweaks.Count; $i++) {
             Set-WinUtilProgressBar -Label "Undoing $($tweaks[$i])" -Percent ($i / $tweaks.Count * 100)
             Invoke-WinUtiltweaks $tweaks[$i] -undo $true
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($i/$tweaks.Count) })
@@ -5654,7 +5609,7 @@ function Invoke-WPFundoall {
 
         Set-WinUtilProgressBar -Label "Undo Tweaks Finished" -Percent 100
         $sync.ProcessRunning = $false
-        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })        
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
         Write-Host "=================================="
         Write-Host "---  Undo Tweaks are Finished  ---"
         Write-Host "=================================="
@@ -5669,7 +5624,7 @@ function Invoke-WPFUnInstall {
 
     #>
 
-    if($sync.ProcessRunning){
+    if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFUnInstall] Install process is currently running"
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
@@ -5690,12 +5645,12 @@ function Invoke-WPFUnInstall {
 
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
-    if($confirm -eq "No"){return}
+    if($confirm -eq "No") {return}
 
 
     Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
         param($PackagesToInstall, $DebugPreference)
-        if ($PackagesToInstall.count -eq 1){
+        if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value 0.01 -overlay "logo" })
@@ -5714,14 +5669,14 @@ function Invoke-WPFUnInstall {
             }
             return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
-        try{
+        try {
             $sync.ProcessRunning = $true
 
             # Install all selected programs in new window
-            if($packagesWinget.Count -gt 0){
+            if($packagesWinget.Count -gt 0) {
                 Invoke-WinUtilWingetProgram -Action Uninstall -Programs $packagesWinget
             }
-            if($packagesChoco.Count -gt 0){
+            if($packagesChoco.Count -gt 0) {
                 Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco -Manage "Uninstalling"
             }
 
@@ -5729,8 +5684,7 @@ function Invoke-WPFUnInstall {
             Write-Host "--       Uninstalls have finished       ---"
             Write-Host "==========================================="
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "None" -overlay "checkmark" })
-        }
-        Catch {
+        } catch {
             Write-Host "==========================================="
             Write-Host "Error: $_"
             Write-Host "==========================================="
@@ -8888,7 +8842,8 @@ $sync.configs.feature = '{
       "NetFx4-AdvSrvs",
       "NetFx3"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/dotnet"
   },
   "WPFFeatureshyperv": {
     "Content": "HyperV Virtualization",
@@ -8908,7 +8863,8 @@ $sync.configs.feature = '{
     ],
     "InvokeScript": [
       "Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /set hypervisorschedulertype classic'' -Wait"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/hyperv"
   },
   "WPFFeatureslegacymedia": {
     "Content": "Legacy Media (WMP, DirectPlay)",
@@ -8922,7 +8878,8 @@ $sync.configs.feature = '{
       "DirectPlay",
       "LegacyComponents"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/legacymedia"
   },
   "WPFFeaturewsl": {
     "Content": "Windows Subsystem for Linux",
@@ -8934,7 +8891,8 @@ $sync.configs.feature = '{
       "VirtualMachinePlatform",
       "Microsoft-Windows-Subsystem-Linux"
     ],
-    "InvokeScript": []
+    "InvokeScript": [],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/wsl"
   },
   "WPFFeaturenfs": {
     "Content": "NFS - Network File System",
@@ -8953,7 +8911,8 @@ $sync.configs.feature = '{
       "Set-ItemProperty -Path ''HKLM:\\SOFTWARE\\Microsoft\\ClientForNFS\\CurrentVersion\\Default'' -Name ''AnonymousGID'' -Type DWord -Value 0",
       "nfsadmin client start",
       "nfsadmin client localhost config fileaccess=755 SecFlavors=+sys -krb5 -krb5i"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/nfs"
   },
   "WPFFeatureEnableSearchSuggestions": {
     "Content": "Enable Search Box Web Suggestions in Registry(explorer restart)",
@@ -8970,7 +8929,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 0 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"
   },
   "WPFFeatureDisableSearchSuggestions": {
     "Content": "Disable Search Box Web Suggestions in Registry(explorer restart)",
@@ -8987,7 +8947,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer'' -Name ''DisableSearchBoxSuggestions'' -Type DWord -Value 1 -Force
       Stop-Process -name explorer -force
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"
   },
   "WPFFeatureRegBackup": {
     "Content": "Enable Daily Registry Backup Task 12.30am",
@@ -9004,7 +8965,8 @@ $sync.configs.feature = '{
       $trigger = New-ScheduledTaskTrigger -Daily -At 00:30
       Register-ScheduledTask -Action $action -Trigger $trigger -TaskName ''AutoRegBackup'' -Description ''Create System Registry Backups'' -User ''System''
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/RegBackup"
   },
   "WPFFeatureEnableLegacyRecovery": {
     "Content": "Enable Legacy F8 Boot Recovery",
@@ -9021,7 +8983,8 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 1 -Force
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Legacy'' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"
   },
   "WPFFeatureDisableLegacyRecovery": {
     "Content": "Disable Legacy F8 Boot Recovery",
@@ -9038,14 +9001,16 @@ $sync.configs.feature = '{
       New-ItemProperty -Path ''HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Configuration Manager\\LastKnownGood'' -Name ''Enabled'' -Type DWord -Value 0 -Force
       Start-Process -FilePath cmd.exe -ArgumentList ''/c bcdedit /Set {Current} BootMenuPolicy Standard'' -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"
   },
-  "WPFFeaturesandbox": {
+  "WPFFeaturesSandbox": {
     "Content": "Windows Sandbox",
     "category": "Features",
     "panel": "1",
     "Order": "a021_",
-    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+    "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation.",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Sandbox"
   },
   "WPFFeatureInstall": {
     "Content": "Install Features",
@@ -9053,7 +9018,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a060_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Features/Install"
   },
   "WPFPanelAutologin": {
     "Content": "Set Up Autologin",
@@ -9061,7 +9027,8 @@ $sync.configs.feature = '{
     "Order": "a040_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Autologin"
   },
   "WPFFixesUpdate": {
     "Content": "Reset Windows Update",
@@ -9069,7 +9036,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a041_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Update"
   },
   "WPFFixesNetwork": {
     "Content": "Reset Network",
@@ -9077,7 +9045,8 @@ $sync.configs.feature = '{
     "Order": "a042_",
     "panel": "1",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Network"
   },
   "WPFPanelDISM": {
     "Content": "System Corruption Scan",
@@ -9085,7 +9054,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a043_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/DISM"
   },
   "WPFFixesWinget": {
     "Content": "WinGet Reinstall",
@@ -9093,7 +9063,8 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a044_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/Winget"
   },
   "WPFRunAdobeCCCleanerTool": {
     "Content": "Remove Adobe Creative Cloud",
@@ -9101,56 +9072,64 @@ $sync.configs.feature = '{
     "panel": "1",
     "Order": "a045_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
   },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/network"
   },
   "WPFPanelcontrol": {
     "Content": "Control Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/control"
   },
   "WPFPanelpower": {
     "Content": "Power Panel",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/power"
   },
   "WPFPanelregion": {
     "Content": "Region",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/region"
   },
   "WPFPanelsound": {
     "Content": "Sound Settings",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/system"
   },
   "WPFPaneluser": {
     "Content": "User Accounts",
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/user"
   }
 }' | convertfrom-json
 $sync.configs.preset = '{
@@ -9398,7 +9377,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"
   },
   "WPFTweaksHiber": {
     "Content": "Disable Hibernation",
@@ -9427,7 +9407,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "powercfg.exe /hibernate on"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"
   },
   "WPFTweaksLaptopHibernation": {
     "Content": "Set Hibernation as default (good for laptops)",
@@ -9474,7 +9455,8 @@ $sync.configs.tweaks = '{
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-ac 15\" -NoNewWindow -Wait
       Start-Process -FilePath powercfg -ArgumentList \"/change monitor-timeout-dc 15\" -NoNewWindow -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"
   },
   "WPFTweaksHome": {
     "Content": "Disable Homegroup",
@@ -9493,7 +9475,8 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"
   },
   "WPFTweaksLoc": {
     "Content": "Disable Location Tracking",
@@ -9530,7 +9513,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"
   },
   "WPFTweaksServices": {
     "Content": "Set Services to Manual",
@@ -10949,7 +10933,165 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Manual"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"
+  },
+  "WPFTweaksEdgeDebloat": {
+    "Content": "Debloat Edge",
+    "Description": "Disables various telemetry options, popups, and other annoyances in Edge.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a016_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
+        "Name": "CreateDesktopShortcutDefault",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeEnhanceImagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowRecommendationsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "HideFirstRunExperience",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "UserFeedbackAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "AlternateErrorPagesEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeFollowEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeShoppingAssistantEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "MicrosoftEdgeInsiderPromotionEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "PersonalizationReportingEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ShowMicrosoftRewards",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WebWidgetAllowed",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "DiagnosticData",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeAssetDeliveryServiceEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "EdgeCollectionsEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "CryptoWalletEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "ConfigureDoNotTrack",
+        "Type": "DWord",
+        "Value": "1",
+        "OriginalValue": "0"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Edge",
+        "Name": "WalletDonationEnabled",
+        "Type": "DWord",
+        "Value": "0",
+        "OriginalValue": "1"
+      }
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"
   },
   "WPFTweaksConsumerFeatures": {
     "Content": "Disable ConsumerFeatures",
@@ -10965,7 +11107,8 @@ $sync.configs.tweaks = '{
         "Value": "1",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"
   },
   "WPFTweaksTele": {
     "Content": "Disable Telemetry",
@@ -11336,7 +11479,8 @@ $sync.configs.tweaks = '{
         # Disable Defender Auto Sample Submission
         Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
         "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"
   },
   "WPFTweaksWifi": {
     "Content": "Disable Wifi-Sense",
@@ -11359,7 +11503,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"
   },
   "WPFTweaksUTC": {
     "Content": "Set Time to UTC (Dual Boot)",
@@ -11375,7 +11520,8 @@ $sync.configs.tweaks = '{
         "Value": "1",
         "OriginalValue": "0"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"
   },
   "WPFTweaksRemoveHomeGallery": {
     "Content": "Remove Home and Gallery from explorer",
@@ -11396,7 +11542,8 @@ $sync.configs.tweaks = '{
       REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}\" /f /ve /t REG_SZ /d \"CLSID_MSGraphHomeFolder\"
       REG DELETE \"HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v \"LaunchTo\"
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
   },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
@@ -11502,7 +11649,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Remove-ItemProperty -Path \"HKCU:\\Control Panel\\Desktop\" -Name \"UserPreferencesMask\""
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"
   },
   "WPFTweaksDeBloat": {
     "Content": "Remove ALL MS Store Apps - NOT RECOMMENDED",
@@ -11547,6 +11695,7 @@ $sync.configs.tweaks = '{
 	  "Microsoft.RawImageExtension",
 	  "Microsoft.Todos",
       "Microsoft.SkypeApp",
+      "Microsoft.ScreenSketch",
       "Microsoft.Wallet",
       "Microsoft.Whiteboard",
       "Microsoft.WindowsMaps",
@@ -11561,7 +11710,7 @@ $sync.configs.tweaks = '{
       "Microsoft.XboxGameCallableUI",
       "Microsoft.XboxIdentityProvider",
       "Microsoft.XboxSpeechToTextOverlay",
-      "Microsoft.ZuneVideo",
+      "Microsoft.ZuneMusic",
 	  "Microsoft.YourPhone",
 	  "MicrosoftCorporationII.QuickAssist",
 	  "MicrosoftWindows.Client.WebExperience",
@@ -11628,7 +11777,8 @@ $sync.configs.tweaks = '{
             $proc.WaitForExit()
         }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"
   },
   "WPFTweaksRestorePoint": {
     "Content": "Create Restore Point",
@@ -11655,7 +11805,7 @@ $sync.configs.tweaks = '{
 
         # Check if the SystemRestorePointCreationFrequency value exists
         $exists = Get-ItemProperty -path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -ErrorAction SilentlyContinue
-        if($null -eq $exists){
+        if($null -eq $exists) {
             write-host ''Changing system to allow multiple restore points per day''
             Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore\" -Name \"SystemRestorePointCreationFrequency\" -Value \"0\" -Type DWord -Force -ErrorAction Stop | Out-Null
         }
@@ -11684,7 +11834,8 @@ $sync.configs.tweaks = '{
             Write-Host -ForegroundColor Green \"System Restore Point Created Successfully\"
         }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"
   },
   "WPFTweaksEndTaskOnTaskbar": {
     "Content": "Enable End Task With Right Click",
@@ -11717,7 +11868,8 @@ $sync.configs.tweaks = '{
 
       # Set the property, creating it if it doesn''t exist
       New-ItemProperty -Path $path -Name $name -PropertyType DWord -Value $value -Force | Out-Null"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"
   },
   "WPFTweaksPowershell7": {
     "Content": "Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7",
@@ -11730,7 +11882,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Invoke-WPFTweakPS7 -action \"PS5\""
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"
   },
   "WPFTweaksPowershell7Tele": {
     "Content": "Disable Powershell 7 Telemetry",
@@ -11743,7 +11896,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "[Environment]::SetEnvironmentVariable(''POWERSHELL_TELEMETRY_OPTOUT'', '''', ''Machine'')"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"
   },
   "WPFTweaksStorage": {
     "Content": "Disable Storage Sense",
@@ -11756,27 +11910,22 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Set-ItemProperty -Path \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\" -Name \"01\" -Value 1 -Type Dword -Force"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"
   },
   "WPFTweaksRemoveEdge": {
-    "Content": "Remove Microsoft Edge - NOT RECOMMENDED",
-    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: AveYo",
+    "Content": "Remove Microsoft Edge",
+    "Description": "Removes MS Edge when it gets reinstalled by updates. Credit: Psyirius",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a029_",
     "InvokeScript": [
-      "
-        #:: Standalone script by AveYo Source: https://raw.githubusercontent.com/AveYo/fox/main/Edge_Removal.bat
-        Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/edgeremoval.bat\" -OutFile \"$ENV:TEMP\\edgeremoval.bat\"
-        Start-Process $ENV:temp\\edgeremoval.bat
-        "
+      "Uninstall-WinUtilEdgeBrowser -action \"Uninstall\""
     ],
     "UndoScript": [
-      "
-      Write-Host \"Install Microsoft Edge\"
-      Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.Edge \" -NoNewWindow -Wait
-      "
-    ]
+      "Uninstall-WinUtilEdgeBrowser -action \"Install\""
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"
   },
   "WPFTweaksRemoveCopilot": {
     "Content": "Disable Microsoft Copilot",
@@ -11818,7 +11967,8 @@ $sync.configs.tweaks = '{
       Write-Host \"Install Copilot\"
       dism /online /add-package /package-name:Microsoft.Windows.Copilot
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"
   },
   "WPFTweaksDisableLMS1": {
     "Content": "Disable Intel MM (vPro LMS)",
@@ -11875,7 +12025,8 @@ $sync.configs.tweaks = '{
       Write-Host \"LMS vPro needs to be redownloaded from intel.com\"
 
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"
   },
   "WPFTweaksRemoveOnedrive": {
     "Content": "Remove OneDrive",
@@ -11888,17 +12039,16 @@ $sync.configs.tweaks = '{
       $OneDrivePath = $($env:OneDrive)
       Write-Host \"Removing OneDrive\"
       $regPath = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe\"
-      if (Test-Path $regPath){
+      if (Test-Path $regPath) {
           $OneDriveUninstallString = Get-ItemPropertyValue \"$regPath\" -Name \"UninstallString\"
           $OneDriveExe, $OneDriveArgs = $OneDriveUninstallString.Split(\" \")
           Start-Process -FilePath $OneDriveExe -ArgumentList \"$OneDriveArgs /silent\" -NoNewWindow -Wait
-      }
-      else{
+      } else {
           Write-Host \"Onedrive dosn''t seem to be installed anymore\" -ForegroundColor Red
           return
       }
       # Check if OneDrive got Uninstalled
-      if (-not (Test-Path $regPath)){
+      if (-not (Test-Path $regPath)) {
       Write-Host \"Copy downloaded Files from the OneDrive Folder to Root UserProfile\"
       Start-Process -FilePath powershell -ArgumentList \"robocopy ''$($OneDrivePath)'' ''$($env:USERPROFILE.TrimEnd())\\'' /mov /e /xj\" -NoNewWindow -Wait
 
@@ -11960,8 +12110,7 @@ $sync.configs.tweaks = '{
       Write-Host \"Please Note - The OneDrive folder at $OneDrivePath may still have items in it. You must manually delete it, but all the files should already be copied to the base user folder.\"
       Write-Host \"If there are Files missing afterwards, please Login to Onedrive.com and Download them manually\" -ForegroundColor Yellow
       Start-Sleep 5
-      }
-      else{
+      } else {
       Write-Host \"Something went Wrong during the Unistallation of OneDrive\" -ForegroundColor Red
       }
       "
@@ -11971,7 +12120,8 @@ $sync.configs.tweaks = '{
       Write-Host \"Install OneDrive\"
       Start-Process -FilePath winget -ArgumentList \"install -e --accept-source-agreements --accept-package-agreements --silent Microsoft.OneDrive \" -NoNewWindow -Wait
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
   },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
@@ -11994,7 +12144,8 @@ $sync.configs.tweaks = '{
         "Value": "0",
         "OriginalValue": "1"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"
   },
   "WPFTweaksDebloatAdobe": {
     "Content": "Adobe Debloat",
@@ -12142,7 +12293,8 @@ $sync.configs.tweaks = '{
         "StartupType": "Manual",
         "OriginalType": "Automatic"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"
   },
   "WPFTweaksBlockAdobeNet": {
     "Content": "Adobe Network Block",
@@ -12161,8 +12313,7 @@ $sync.configs.tweaks = '{
       try {
           Invoke-WebRequest -Uri $remoteHostsUrl -OutFile $tempHostsPath
           Write-Output \"Downloaded the remote HOSTS file to a temporary location.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to download the HOSTS file. Error: $_\"
       }
 
@@ -12188,8 +12339,7 @@ $sync.configs.tweaks = '{
               $combinedContent | Set-Content $localHostsPath -Encoding ASCII
               Write-Output \"Successfully added the AdobeNetBlock.\"
           }
-      }
-      catch {
+      } catch {
           Write-Error \"Error during processing: $_\"
       }
 
@@ -12200,8 +12350,7 @@ $sync.configs.tweaks = '{
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
@@ -12214,8 +12363,7 @@ $sync.configs.tweaks = '{
       # Load the content of the HOSTS file
       try {
           $hostsContent = Get-Content $localHostsPath -ErrorAction Stop
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to load the HOSTS file. Error: $_\"
           return
       }
@@ -12241,8 +12389,7 @@ $sync.configs.tweaks = '{
       try {
           $newContent | Set-Content $localHostsPath -Encoding ASCII
           Write-Output \"Successfully removed the AdobeNetBlock section from the HOSTS file.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to write back to the HOSTS file. Error: $_\"
       }
 
@@ -12250,12 +12397,12 @@ $sync.configs.tweaks = '{
       try {
           Invoke-Expression \"ipconfig /flushdns\"
           Write-Output \"DNS cache flushed successfully.\"
-      }
-      catch {
+      } catch {
           Write-Error \"Failed to flush DNS cache. Error: $_\"
       }
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"
   },
   "WPFTweaksRightClickMenu": {
     "Content": "Set Classic Right-Click Menu ",
@@ -12279,7 +12426,8 @@ $sync.configs.tweaks = '{
       $process = Get-Process -Name \"explorer\"
       Stop-Process -InputObject $process
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"
   },
   "WPFTweaksDiskCleanup": {
     "Content": "Run Disk Cleanup",
@@ -12292,7 +12440,8 @@ $sync.configs.tweaks = '{
       cleanmgr.exe /d C: /VERYLOWDISK
       Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
       "
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"
   },
   "WPFTweaksDeleteTempFiles": {
     "Content": "Delete Temporary Files",
@@ -12303,7 +12452,8 @@ $sync.configs.tweaks = '{
     "InvokeScript": [
       "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
     Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
   },
   "WPFTweaksDVR": {
     "Content": "Disable GameDVR",
@@ -12347,7 +12497,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "1",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -12369,7 +12520,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "netsh interface teredo set state default"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
@@ -12391,7 +12543,8 @@ $sync.configs.tweaks = '{
     ],
     "UndoScript": [
       "Enable-NetAdapterBinding -Name \"*\" -ComponentID ms_tcpip6"
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Disable Background Apps",
@@ -12407,7 +12560,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "0",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"
   },
   "WPFTweaksDisableFSO": {
     "Content": "Disable Fullscreen Optimizations",
@@ -12423,7 +12577,8 @@ $sync.configs.tweaks = '{
         "OriginalValue": "0",
         "Type": "DWord"
       }
-    ]
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"
   },
   "WPFToggleDarkMode": {
     "Content": "Dark Theme for Windows",
@@ -12431,7 +12586,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a100_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DarkMode"
   },
   "WPFToggleBingSearch": {
     "Content": "Bing Search in Start Menu",
@@ -12439,7 +12595,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a101_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/BingSearch"
   },
   "WPFToggleNumLock": {
     "Content": "NumLock on Startup",
@@ -12447,7 +12604,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a102_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/NumLock"
   },
   "WPFToggleVerboseLogon": {
     "Content": "Verbose Messages During Logon",
@@ -12455,7 +12613,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a103_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/VerboseLogon"
   },
   "WPFToggleSnapWindow": {
     "Content": "Snap Window",
@@ -12463,7 +12622,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a104_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapWindow"
   },
   "WPFToggleSnapFlyout": {
     "Content": "Snap Assist Flyout",
@@ -12471,7 +12631,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a105_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapFlyout"
   },
   "WPFToggleSnapSuggestion": {
     "Content": "Snap Assist Suggestion",
@@ -12479,7 +12640,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a106_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/SnapSuggestion"
   },
   "WPFToggleMouseAcceleration": {
     "Content": "Mouse Acceleration",
@@ -12487,7 +12649,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a107_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/MouseAcceleration"
   },
   "WPFToggleStickyKeys": {
     "Content": "Sticky Keys",
@@ -12495,7 +12658,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a108_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/StickyKeys"
   },
   "WPFToggleHiddenFiles": {
     "Content": "Show Hidden Files",
@@ -12503,7 +12667,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a200_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/HiddenFiles"
   },
   "WPFToggleShowExt": {
     "Content": "Show File Extensions",
@@ -12511,7 +12676,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a201_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/ShowExt"
   },
   "WPFToggleTaskbarSearch": {
     "Content": "Search Button in Taskbar",
@@ -12519,7 +12685,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a202_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarSearch"
   },
   "WPFToggleTaskView": {
     "Content": "Task View Button in Taskbar",
@@ -12527,7 +12694,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a203_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskView"
   },
   "WPFToggleTaskbarWidgets": {
     "Content": "Widgets Button in Taskbar",
@@ -12535,7 +12703,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarWidgets"
   },
   "WPFToggleTaskbarAlignment": {
     "Content": "Center Taskbar Items",
@@ -12543,7 +12712,8 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a204_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/TaskbarAlignment"
   },
   "WPFToggleDetailedBSoD": {
     "Content": "Detailed BSoD",
@@ -12551,14 +12721,16 @@ $sync.configs.tweaks = '{
     "category": "Customize Preferences",
     "panel": "2",
     "Order": "a205_",
-    "Type": "Toggle"
+    "Type": "Toggle",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Customize-Preferences/DetailedBSoD"
   },
   "WPFOOSUbutton": {
     "Content": "Run OO Shutup 10",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a039_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/OOSUbutton"
   },
   "WPFchangedns": {
     "Content": "DNS",
@@ -12566,21 +12738,24 @@ $sync.configs.tweaks = '{
     "panel": "1",
     "Order": "a040_",
     "Type": "Combobox",
-    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult"
+    "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
   },
   "WPFTweaksbutton": {
     "Content": "Run Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a041_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button"
   },
   "WPFUndoall": {
     "Content": "Undo Selected Tweaks",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a042_",
-    "Type": "Button"
+    "Type": "Button",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",
@@ -12588,7 +12763,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a080_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/AddUltPerf"
   },
   "WPFRemoveUltPerf": {
     "Content": "Remove Ultimate Performance Profile",
@@ -12596,7 +12772,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a081_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Performance-Plans/RemoveUltPerf"
   },
   "WPFWinUtilShortcut": {
     "Content": "Create WinUtil Shortcut",
@@ -12604,7 +12781,8 @@ $sync.configs.tweaks = '{
     "panel": "2",
     "Order": "a082_",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Shortcuts/Shortcut"
   }
 }' | convertfrom-json
 $inputXML =  '<Window x:Class="WinUtility.MainWindow"
@@ -13256,23 +13434,25 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Consider using a Math Solver, will help in making
                     development of these things much easier
                 -->
+                <!-- Changed the font size from {SearchBarTextBoxFontSize} to 12. This now display the text box correctly in the text box.-->
                 <TextBox
                     Grid.Column="0"
                     Width="{SearchBarWidth}"
                     Height="{SearchBarHeight}"
-                    FontSize="{SearchBarTextBoxFontSize}"
+                    FontSize="12"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     BorderThickness="1"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
+                <!--Changed the margin from 16 to 180, which now places the magnifying glass icon on the right side of the text box. Now able to see what is been searched for.-->
                 <TextBlock
                     Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="{IconFontSize}"
-                    Margin="16,0,0,0">&#xE721;</TextBlock>
+                    Margin="180,0,0,0">&#xE721;</TextBlock>
                 <!--
                   TODO:
                     Make this ClearButton Positioning react to
@@ -13280,11 +13460,12 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Consider using a Math Solver, will help in making
                     development of these things much easier
                 -->
+                <!-- changed the {SearchBarClearButtonMargin} value from 193 to 205, which now places the clear button on the outside of the text box. -->
                 <Button Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="193,0,0,0" Visibility="Collapsed"/>
+                    Margin="205,0,0,0" Visibility="Collapsed"/>
 
                 <ProgressBar
                     Grid.Column="1"
@@ -13292,7 +13473,7 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Maximum="100"
                     Width="250"
                     Height="{SearchBarHeight}"
-                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}" 
+                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}"
                     Visibility="Collapsed"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
@@ -13308,13 +13489,13 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                     Visibility="Collapsed"
                     Margin="2,0,0,0" BorderThickness="0" Padding="6,2,2,2"
                     Name="ProgressBarLabel">
-                    <TextBlock 
-                        TextTrimming="CharacterEllipsis" 
+                    <TextBlock
+                        TextTrimming="CharacterEllipsis"
                         Background="Transparent"
                         Foreground="{ProgressBarTextColor}">
                     </TextBlock>
                 </Label>
-                
+
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
@@ -14929,42 +15110,145 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                             <Label Name="WPFLabelEssentialTweaks" Content="Essential Tweaks" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" Margin="5,0" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications"/>
-                            <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" Margin="5,0" ToolTip="Erases TEMP Folders"/>
-                            <CheckBox Name="WPFTweaksConsumerFeatures" Content="Disable ConsumerFeatures" Margin="5,0" ToolTip="Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)"/>
-                            <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" Margin="5,0" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser."/>
-                            <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" Margin="5,0" ToolTip="This erases recent docs, clipboard, and run history."/>
-                            <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" Margin="5,0" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd."/>
-                            <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" Margin="5,0" ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation."/>
-                            <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" Margin="5,0" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network."/>
-                            <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" Margin="5,0" ToolTip="Disables Location Tracking...DUH!"/>
-                            <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" Margin="5,0" ToolTip="Storage Sense deletes temp files automatically."/>
-                            <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" Margin="5,0" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency."/>
-                            <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" Margin="5,0" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location."/>
-                            <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" Margin="5,0" ToolTip="Enables option to end task when right clicking a program in the taskbar"/>
-                            <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" Margin="5,0" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates."/>
-                            <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" Margin="5,0" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary"/>
-                            <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" Margin="5,0" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data."/>
-                            <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" Margin="5,0" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399"/>
-                            <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" Margin="5,0" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRestorePoint" Content="Create Restore Point" IsChecked="False" ToolTip="Creates a restore point at runtime in case a revert is needed from WinUtil modifications" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRestorePointLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RestorePoint"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDeleteTempFiles" Content="Delete Temporary Files" ToolTip="Erases TEMP Folders" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDeleteTempFilesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksConsumerFeatures" Content="Disable ConsumerFeatures" ToolTip="Windows 10 will not automatically install any games, third-party apps, or application links from the Windows Store for the signed-in user. Some default Apps will be inaccessible (eg. Phone Link)" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksConsumerFeaturesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/ConsumerFeatures"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksTele" Content="Disable Telemetry" ToolTip="Disables Microsoft Telemetry. Note: This will lock many Edge Browser settings. Microsoft spies heavily on you when using the Edge browser." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksTeleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Tele"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksAH" Content="Disable Activity History" ToolTip="This erases recent docs, clipboard, and run history." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksAHLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/AH"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDVR" Content="Disable GameDVR" ToolTip="GameDVR is a Windows App that is a dependency for some Store Games. I&#39;ve never met someone that likes it, but it&#39;s there for the XBOX crowd." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDVRLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksHiber" Content="Disable Hibernation" ToolTip="Hibernation is really meant for laptops as it saves what&#39;s in memory before turning the pc off. It really should never be used, but some people are lazy and rely on it. Don&#39;t be like Bob. Bob likes hibernation." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksHiberLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Hiber"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksHome" Content="Disable Homegroup" ToolTip="Disables HomeGroup - HomeGroup is a password-protected home networking service that lets you share your stuff with other PCs that are currently running and connected to your network." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksHomeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Home"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksLoc" Content="Disable Location Tracking" ToolTip="Disables Location Tracking...DUH!" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksLocLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Loc"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksStorage" Content="Disable Storage Sense" ToolTip="Storage Sense deletes temp files automatically." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksStorageLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Storage"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksTeredo" Content="Disable Teredo" ToolTip="Teredo network tunneling is a ipv6 feature that can cause additional latency." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksTeredoLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksWifi" Content="Disable Wifi-Sense" ToolTip="Wifi Sense is a spying service that phones home all nearby scanned wifi networks and your current geo location." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksWifiLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Wifi"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksEndTaskOnTaskbar" Content="Enable End Task With Right Click" ToolTip="Enables option to end task when right clicking a program in the taskbar" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksEndTaskOnTaskbarLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EndTaskOnTaskbar"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDiskCleanup" Content="Run Disk Cleanup" ToolTip="Runs Disk Cleanup on Drive C: and removes old Windows Updates." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDiskCleanupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DiskCleanup"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksPowershell7" Content="Change Windows Terminal default: PowerShell 5 -&#62; PowerShell 7" ToolTip="This will edit the config file of the Windows Terminal replacing PowerShell 5 with PowerShell 7 and installing PS7 if necessary" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksPowershell7Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksPowershell7Tele" Content="Disable Powershell 7 Telemetry" ToolTip="This will create an Environment Variable called &#39;POWERSHELL_TELEMETRY_OPTOUT&#39; with a value of &#39;1&#39; which will tell Powershell 7 to not send Telemetry Data." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksPowershell7TeleLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Powershell7Tele"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksLaptopHibernation" Content="Set Hibernation as default (good for laptops)" ToolTip="Most modern laptops have connected standby enabled which drains the battery, this sets hibernation as default which will not drain the battery. See issue https://github.com/ChrisTitusTech/winutil/issues/1399" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksLaptopHibernationLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/LaptopHibernation"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksServices" Content="Set Services to Manual" ToolTip="Turns a bunch of system services to manual that don&#39;t need to be running all the time. This is pretty harmless as if the service is needed, it will simply start on demand." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksServicesLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Services"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksEdgeDebloat" Content="Debloat Edge" ToolTip="Disables various telemetry options, popups, and other annoyances in Edge." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksEdgeDebloatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/EdgeDebloat"/>
+                            </StackPanel>
 
                             <Label Name="WPFLabelAdvancedTweaksCAUTION" Content="Advanced Tweaks - CAUTION" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" Margin="5,0" ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs"/>
-                            <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" Margin="5,0" ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates"/>
-                            <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" Margin="5,0" ToolTip="Disables IPv6."/>
-                            <CheckBox Name="WPFTweaksDisableBGapps" Content="Disable Background Apps" Margin="5,0" ToolTip="Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11"/>
-                            <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" Margin="5,0" ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen"/>
-                            <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" Margin="5,0" ToolTip="Disables MS Copilot AI built into Windows since 23H2."/>
-                            <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" Margin="5,0" ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions."/>
-                            <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" Margin="5,0" ToolTip="Disables all Notifications INCLUDING Calendar"/>
-                            <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" Margin="5,0" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."/>
-                            <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " Margin="5,0" ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer."/>
-                            <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" Margin="5,0" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems."/>
-                            <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" Margin="5,0" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!"/>
-                            <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge - NOT RECOMMENDED" Margin="5,0" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: AveYo"/>
-                            <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" Margin="5,0" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default"/>
-                            <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" Margin="5,0" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksBlockAdobeNet" Content="Adobe Network Block" ToolTip="Reduce user interruptions by selectively blocking connections to Adobe&#39;s activation and telemetry servers. Credit: Ruddernation-Designs" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksBlockAdobeNetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/BlockAdobeNet"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDebloatAdobe" Content="Adobe Debloat" ToolTip="Manages Adobe Services, Adobe Desktop Service, and Acrobat Updates" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDebloatAdobeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DebloatAdobe"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableipsix" Content="Disable IPv6" ToolTip="Disables IPv6." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableipsixLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Disableipsix"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableBGapps" Content="Disable Background Apps" ToolTip="Disables all Microsoft Store apps from running in the background, which has to be done individually since Win11" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableBGappsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableBGapps"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableFSO" Content="Disable Fullscreen Optimizations" ToolTip="Disables FSO in all applications. NOTE: This will disable Color Management in Exclusive Fullscreen" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableFSOLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableFSO"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveCopilot" Content="Disable Microsoft Copilot" ToolTip="Disables MS Copilot AI built into Windows since 23H2." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveCopilotLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveCopilot"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableLMS1" Content="Disable Intel MM (vPro LMS)" ToolTip="Intel LMS service is always listening on all ports and could be a huge security risk. There is no need to run LMS on home machines and even in the Enterprise there are better solutions." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableLMS1Link" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableLMS1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisableNotifications" Content="Disable Notification Tray/Calendar" ToolTip="Disables all Notifications INCLUDING Calendar" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisableNotificationsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DisableNotifications"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDisplay" Content="Set Display for Performance" ToolTip="Sets the system preferences to performance. You can do this manually with sysdm.cpl as well." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDisplayLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Display"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRightClickMenu" Content="Set Classic Right-Click Menu " ToolTip="Great Windows 11 tweak to bring back good context menus when right clicking things in explorer." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRightClickMenuLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RightClickMenu"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksUTC" Content="Set Time to UTC (Dual Boot)" ToolTip="Essential for computers that are dual booting. Fixes the time sync with Linux Systems." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksUTCLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/UTC"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksDeBloat" Content="Remove ALL MS Store Apps - NOT RECOMMENDED" ToolTip="USE WITH CAUTION!!!!! This will remove ALL Microsoft store apps other than the essentials to make winget work. Games installed by MS Store ARE INCLUDED!" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksDeBloatLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/DeBloat"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveEdge" Content="Remove Microsoft Edge" ToolTip="Removes MS Edge when it gets reinstalled by updates. Credit: Psyirius" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveEdgeLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveEdge"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveHomeGallery" Content="Remove Home and Gallery from explorer" ToolTip="Removes the Home and Gallery from explorer and sets This PC as default" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveHomeGalleryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFTweaksRemoveOnedrive" Content="Remove OneDrive" ToolTip="Moves OneDrive files to Default Home Folders and Uninstalls it." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFTweaksRemoveOnedriveLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"/>
+                            </StackPanel>
                             <Button Name="WPFOOSUbutton" Content="Run OO Shutup 10" HorizontalAlignment="Left" Margin="5" Padding="20,5" />
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <Label Content="DNS" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="{FontSize}"/>
@@ -15097,17 +15381,50 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
 
                             <Label Name="WPFLabelFeatures" Content="Features" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
 
-                            <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" Margin="5,0" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."/>
-                            <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" Margin="5,0" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."/>
-                            <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" Margin="5,0" ToolTip="Enables legacy programs from previous versions of windows"/>
-                            <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" Margin="5,0" ToolTip="Network File System (NFS) is a mechanism for storing files on a network."/>
-                            <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Enables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" Margin="5,0" ToolTip="Disables web suggestions when searching using Windows Search."/>
-                            <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" Margin="5,0" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."/>
-                            <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" Margin="5,0" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."/>
-                            <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" Margin="5,0" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."/>
-                            <CheckBox Name="WPFFeaturesandbox" Content="Windows Sandbox" Margin="5,0" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."/>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturesdotnet" Content="All .Net Framework (2,3,4)" ToolTip=".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturesdotnetLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/dotnet"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureshyperv" Content="HyperV Virtualization" ToolTip="Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureshypervLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/hyperv"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureslegacymedia" Content="Legacy Media (WMP, DirectPlay)" ToolTip="Enables legacy programs from previous versions of windows" Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureslegacymediaLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/legacymedia"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturenfs" Content="NFS - Network File System" ToolTip="Network File System (NFS) is a mechanism for storing files on a network." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturenfsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/nfs"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureEnableSearchSuggestions" Content="Enable Search Box Web Suggestions in Registry(explorer restart)" ToolTip="Enables web suggestions when searching using Windows Search." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureEnableSearchSuggestionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/EnableSearchSuggestions"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureDisableSearchSuggestions" Content="Disable Search Box Web Suggestions in Registry(explorer restart)" ToolTip="Disables web suggestions when searching using Windows Search." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureDisableSearchSuggestionsLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/DisableSearchSuggestions"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureRegBackup" Content="Enable Daily Registry Backup Task 12.30am" ToolTip="Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureRegBackupLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/RegBackup"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureEnableLegacyRecovery" Content="Enable Legacy F8 Boot Recovery" ToolTip="Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureEnableLegacyRecoveryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/EnableLegacyRecovery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeatureDisableLegacyRecovery" Content="Disable Legacy F8 Boot Recovery" ToolTip="Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeatureDisableLegacyRecoveryLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/DisableLegacyRecovery"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturewsl" Content="Windows Subsystem for Linux" ToolTip="Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturewslLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/wsl"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Name="WPFFeaturesSandbox" Content="Windows Sandbox" ToolTip="Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation." Margin="0,0,2,0"/>
+                                <TextBlock Name="WPFFeaturesSandboxLink" Style="{StaticResource HoverTextBlockStyle}" Text="(?)" ToolTip="https://christitustech.github.io/winutil/dev/features/Features/Sandbox"/>
+                            </StackPanel>
                             <Button Name="WPFFeatureInstall" Content="Install Features" HorizontalAlignment="Left" Margin="5" Padding="20,5" Width="300"/>
 
                             <Label Name="WPFLabelFixes" Content="Fixes" FontSize="{FontSizeHeading}" FontFamily="{HeaderFontFamily}"/>
@@ -15234,11 +15551,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                            <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows features you want to remove from the ISO</TextBlock>
-                            <CheckBox Name="WPFMicrowinKeepProvisionedPackages" Content="Keep Provisioned Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Provisioned packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepAppxPackages" Content="Keep Appx Packages" Margin="-10,5,0,0" ToolTip="Do not remove Microsoft Appx packages from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepDefender" Content="Keep Defender" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Antivirus from the ISO."/>
-                            <CheckBox Name="WPFMicrowinKeepEdge" Content="Keep Edge" Margin="-10,5,0,0" IsChecked="True" ToolTip="Do not remove Microsoft Edge from the ISO."/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I''M DOING)" Margin="-10,5,0,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
                             <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
@@ -15300,11 +15612,8 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 Foreground="{ComboBoxForegroundColor}">
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
-                                - Add ability to use local accounts <LineBreak/>
-                                - Remove Wifi requirement to finish install <LineBreak/>
-                                - Ability to remove Edge <LineBreak/>
-                                - Ability to remove Defender <LineBreak/>
-                                - Remove Teams <LineBreak/>
+                                - Fast Install using "User" local account <LineBreak/>
+                                - No internet requirement for install <LineBreak/>
                                 - Apps debloat <LineBreak/>
                                 <LineBreak/>
                                 <LineBreak/>
@@ -15318,7 +15627,6 @@ $inputXML =  '<Window x:Class="WinUtility.MainWindow"
                                 - Click on the "Select Windows ISO" button and wait for WinUtil to process the image <LineBreak/>
                                 It will be processed and unpacked which may take some time <LineBreak/>
                                 - Once complete, choose which Windows flavor you want to base your image on <LineBreak/>
-                                - Choose which features you want to keep <LineBreak/>
                                 - Click the "Start Process" button <LineBreak/>
                                 The process of creating the Windows image may take some time, please check the console and wait for it to say "Done" <LineBreak/>
                                 - Once complete, the target ISO file will be in the directory you have specified <LineBreak/>
@@ -15366,7 +15674,7 @@ $InitialSessionState.Variables.Add($hashVars)
 
 # Get every private function and add them to the session state
 $functions = (Get-ChildItem function:\).where{$_.name -like "*winutil*" -or $_.name -like "*WPF*"}
-foreach ($function in $functions){
+foreach ($function in $functions) {
     $functionDefinition = Get-Content function:\$($function.name)
     $functionEntry = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $($function.name), $functionDefinition
 
@@ -15410,12 +15718,10 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
-    }
-    else {
+    } else {
         $ctttheme = 'Dark'
     }
-}
-else {
+} else {
     $ctttheme = 'Classic'
 }
 $inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
@@ -15445,9 +15751,9 @@ try {
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
 $sync.keys | ForEach-Object {
-    if($sync.$psitem){
+    if($sync.$psitem) {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*"){
+                -and $sync["$psitem"].Name -like "WPFToggle*") {
             $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
 
             $sync["$psitem"].Add_Click({
@@ -15456,14 +15762,14 @@ $sync.keys | ForEach-Object {
             })
         }
 
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton"){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFButton $Sender.name
             })
         }
 
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button"){
+        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "Button") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
                 Invoke-WPFButton $Sender.name
@@ -15489,7 +15795,7 @@ $sync.keys | ForEach-Object {
 
 # Load computer information in the background
 Invoke-WPFRunspace -ScriptBlock {
-    try{
+    try {
         $oldProgressPreference = $ProgressPreference
         $ProgressPreference = "SilentlyContinue"
         $sync.ConfigLoaded = $False
@@ -15534,8 +15840,7 @@ $commonKeyEvents = {
         return
     }
 
-    if ($_.Key -eq "Escape")
-    {
+    if ($_.Key -eq "Escape") {
         $sync.SearchBar.SelectAll()
         $sync.SearchBar.Text = ""
         $sync.SearchBarClearButton.Visibility = "Collapsed"
@@ -15543,8 +15848,7 @@ $commonKeyEvents = {
     }
 
     # don't ask, I know what I'm doing, just go...
-    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl"))
-    {
+    if (($_.Key -eq "Q" -and $_.KeyboardDevice.Modifiers -eq "Ctrl")) {
         $this.Close()
     }
     if ($_.KeyboardDevice.Modifiers -eq "Alt") {
@@ -15587,12 +15891,9 @@ $sync["Form"].Add_MouseLeftButtonDown({
 })
 
 $sync["Form"].Add_MouseDoubleClick({
-    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal)
-    {
+    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
         $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
-    }
-    else
-    {
+    } else {
         $sync["Form"].WindowState = [Windows.WindowState]::Normal;
     }
 })
@@ -15638,11 +15939,11 @@ Add-Type @"
 
    foreach ($proc in (Get-Process).where{ $_.MainWindowTitle -and $_.MainWindowTitle -like "*titus*" }) {
         # Check if the process's MainWindowHandle is valid
-    	if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
+        if ($proc.MainWindowHandle -ne [System.IntPtr]::Zero) {
             Write-Debug "MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle) $($proc.MainWindowHandle)"
             $windowHandle = $proc.MainWindowHandle
-	    } else {
-        	Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
+        } else {
+            Write-Warning "Process found, but no MainWindowHandle: $($proc.Id) $($proc.MainWindowTitle)"
 
         }
     }
@@ -15683,9 +15984,9 @@ Add-Type @"
 
     # maybe this is not the best place to load and execute config file?
     # maybe community can help?
-    if ($PARAM_CONFIG){
+    if ($PARAM_CONFIG) {
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        if ($PARAM_RUN){
+        if ($PARAM_RUN) {
             while ($sync.ProcessRunning) {
                 Start-Sleep -Seconds 5
             }
@@ -15732,8 +16033,7 @@ $sync["SearchBar"].Add_TextChanged({
 
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
-    }
-    else {
+    } else {
         $sync.SearchBarClearButton.Visibility = "Collapsed"
     }
 
@@ -15759,8 +16059,7 @@ $sync["SearchBar"].Add_TextChanged({
             if ($textBlock -ne $null) {
                 $textBlock.Visibility = "Visible"
             }
-        }
-        else {
+        } else {
              $CheckBox.Value.Visibility = "Collapsed"
             # Set the corresponding text block visibility
             if ($textBlock -ne $null) {
@@ -15770,17 +16069,16 @@ $sync["SearchBar"].Add_TextChanged({
     }
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
-    foreach ($category in $activeCategories){
+    foreach ($category in $activeCategories) {
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Visible"
     }
-    if ($activeCategories){
+    if ($activeCategories) {
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
-    }
-    else{
+    } else {
         $inactiveCategories = $allCategories
     }
-    foreach ($category in $inactiveCategories){
+    foreach ($category in $inactiveCategories) {
         $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
         $label.Visibility = "Collapsed"}
 })
@@ -15826,8 +16124,7 @@ $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
     if ($sync["SettingsPopup"].IsOpen) {
         $sync["SettingsPopup"].IsOpen = $false
-    }
-    else {
+    } else {
         $sync["SettingsPopup"].IsOpen = $true
     }
     $_.Handled = $false
@@ -15883,8 +16180,7 @@ $sync["SponsorMenuItem"].Add_Click({
 
         # Append the sponsors to the authorInfo
         $sponsors | ForEach-Object { $authorInfo += "$_`n" }
-    }
-    catch {
+    } catch {
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 
@@ -15901,8 +16197,8 @@ Stop-Transcript
 # SIG # Begin signature block
 # MIIQRwYJKoZIhvcNAQcCoIIQODCCEDQCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCCpr3PCAiIU+717
-# XjBk+klB20McRwzbj5pzZuVN6LMCqqCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBgaUh31fKKvX8F
+# c4cNgpFTAh3XavapigG3bnzVbFejgaCCDIMwggYaMIIEAqADAgECAhBiHW0MUgGe
 # O5B5FSCJIRwKMA0GCSqGSIb3DQEBDAUAMFYxCzAJBgNVBAYTAkdCMRgwFgYDVQQK
 # Ew9TZWN0aWdvIExpbWl0ZWQxLTArBgNVBAMTJFNlY3RpZ28gUHVibGljIENvZGUg
 # U2lnbmluZyBSb290IFI0NjAeFw0yMTAzMjIwMDAwMDBaFw0zNjAzMjEyMzU5NTla
@@ -15974,16 +16270,16 @@ Stop-Transcript
 # ZSBTaWduaW5nIENBIFIzNgIQJs052f8oQtNfSG2ygwabxTANBglghkgBZQMEAgEF
 # AKCBhDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgor
 # BgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMC8GCSqGSIb3
-# DQEJBDEiBCBksIhprWGO//zFcDUtab07MIdidY5PBTZLCjP4yEt1nTANBgkqhkiG
-# 9w0BAQEFAASCAgCEDYnFHtAMbkhtCzhKM8Ic2zNdo44on8+MfFSbBBfE87X+II12
-# XkSr/L/bbErIRmOCTf3QYQ+EmbRxv9q0i9p5UWos54kp81xga1lSE6riab9++tMS
-# a6kp+4z9JrPb0T0I5efJfmoF7hS/ydkzupyvxGjq6Xq59Oj4c2/fqBEOFNssTiru
-# QM2dusKgYUfCw2iThpbF+UyPtZRU3xh+ycRW2HNOMHdaBa92CY3SyzubGRKgz3qp
-# X5WBY+8VqMJaAIlY4ZrhMMEzVul+QytL75ms8fg0CT1unkyawRGhpb/FyqBQBsS3
-# ORDe3TyROZ6jvGNb3qLJy1TH9VfPRx8XzTmFBlNrZAGs86BpVPtHfgaChza5AIv3
-# IywTr4qgBux4Q2MXY5dBMEahGZn9edtF0FLkj/yV0US3fPgAQ2vMnXsStW+GmXs9
-# wxj1WKEIGhzYfMmuiuW8Jr3rAABIZBx1F4HM3+0vsBXsGg/ZLf17wNTB/UC8iePX
-# YVOB0KrO1GkzZzrZXGdmYNYbxlEJNRaVVcXj9jTU+zFEUWKN90xO3IErGVQBprnQ
-# t3Y00j3gnI08K0tuvg+7QwFPNi3gn7DZ4LBX0n4LZvD9cvMar3VS4TEHqAPkPqkG
-# BgRSLMjIbSeQnLJfIBe2/1GJwKqpM8NPthc2rsBxzmKFqRc7vqNT9ROFzw==
+# DQEJBDEiBCBFKUygZZ9hH2j6ayzWSbnKy9jM503vKtGaOQEYQElY2zANBgkqhkiG
+# 9w0BAQEFAASCAgAFwcVlGpBQsTW7yy1soyZ8GLudl73+LSUzbRRp72aE9YAlRz57
+# R7meosjsKLgXDA/5A2oEctgowhfQqmS++i7EzisTu383+ClGlLHQY5oANR489u4G
+# +mTox58VnEJubsafJ+JF64jXEYbMX8OcBAt0QxidOeXsidetjnbqUeyaZ/9UNMll
+# BTjNtYcFH8/i8/NEv7VoKzMiGVbhi3YzmB5uonkcunwgcbqGM84R13wBxpj+Dd8z
+# 4wrFGTTXpX7WYJ4j0TmrfsWWTAre5M60BtOtp9tyYiFaJOe8OC9EuvGGnu9PjFfc
+# +3dRK0nmDraehExyZyg4Ib/rgTp0hIOcyZP9nFW4MULtmJdKVV5sJCMJCHwIzsr1
+# z9SfwbMm2RHA0ccd5Y3UWdGWKKJ45JIB/2k+idwaMOW88enD4u0O55ugfKb9E+Dx
+# TGzayurdgI7fi3F7fJrKBSSavy6JGmen3mn4UNzbIk2NFjHKtO/Ieosoz6eofXTE
+# FAVQqjMBSX+epCcosDI4gtNu36TT+mFOKFuQaxSrdM5W+RObQQdubZ0Hsgtvrw2F
+# mXHkL2Labh1Uy4iwXeqdSQvnePL2Tof+nq8Nk2bf7MolUAMYS6h0CYhV8ryT07rk
+# Bj+MXXn5q5AuEs4pSatn/DsTR6RLJhutFPav2bS5yKKzTaTKRen4uQnuPw==
 # SIG # End signature block
