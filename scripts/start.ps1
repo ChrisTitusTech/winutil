@@ -11,6 +11,79 @@ param (
     [switch]$Run
 )
 
+& {
+    $ErrorActionPreference = "Stop"
+
+    # Run as administrator if not already (only for script on disk, not in memory)
+    if (-not ([Security.Principal.WindowsPrincipal]([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        # If script not on disk, show error message and quit
+        if (-not $MyInvocation.MyCommand.Source) {
+            Write-Host "===========================================" -Foregroundcolor Red
+            Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
+            Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
+            Write-Host "===========================================" -Foregroundcolor Red
+            exit
+        }
+        
+        # Use the modern 'PowerShell' if available, otherwise use 'Windows PowerShell'
+        if (Get-Command "pwsh" -ErrorAction SilentlyContinue) {
+            $PwshExecutable = "pwsh.exe"
+        }
+        else {
+            $PwshExecutable = "powershell.exe"
+        }
+
+        # Elevate the script and exit the current non-elevated script
+        $PwshArgList = @(
+            "-NoLogo",                                  # Don't print PowerShell header in CLI
+            "-NoProfile",                               # Don't load PowerShell profile
+            "-File", $MyInvocation.MyCommand.Source,    # Script path
+            $args | ForEach-Object { $_ }               # Script arguments
+        ) | ForEach-Object { "`"$_`"" }
+
+        $WorkingDirectory = Get-Location
+
+        $ProcessParameters = @{
+            FilePath            = $PwshExecutable;
+            ArgumentList        = $PwshArgList;
+            WorkingDirectory    = $WorkingDirectory;
+            Verb                = 'RunAs';
+            PassThru            = $true;
+        }
+
+        $process = $null
+        try {
+            $process = Start-Process @ProcessParameters
+        }
+        catch {
+            $exception = $_.Exception
+        
+            # Optional: Check for specific error messages or types
+            if ($exception.Message -like "*The operation was canceled by the user*") {
+                Write-Host "===========================================" -Foregroundcolor Red
+                Write-Host "---- This must be run as Administrator ----" -Foregroundcolor Red
+                Write-Host "------ Click 'Yes' in the UAC Prompt ------" -Foregroundcolor Red
+                Write-Host "------------------ (OR) -------------------" -Foregroundcolor Red
+                Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
+                Write-Host "===========================================" -Foregroundcolor Red
+            }
+            else {
+                $ErrorMessage = @(
+                    "An unexpected error occurred:",
+                    ($exception.Message -split ":" | Select-Object -Index 1).Trim()
+                ) -join "`n"
+
+                Write-Host $ErrorMessage -Foregroundcolor Red
+
+                $process.Kill()
+            }
+        }
+        finally {
+            exit
+        }
+    }
+}
+
 # Set DebugPreference based on the -Debug switch
 if ($Debug) {
     $DebugPreference = "Continue"
@@ -43,15 +116,6 @@ $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
-
-# If script isn't running as admin, show error message and quit
-If (([Security.Principal.WindowsIdentity]::GetCurrent()).Owner.Value -ne "S-1-5-32-544") {
-    Write-Host "===========================================" -Foregroundcolor Red
-    Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
-    Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
-    Write-Host "===========================================" -Foregroundcolor Red
-    break
-}
 
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"

@@ -41,8 +41,6 @@ param(
 & {
     $ErrorActionPreference = "Stop"
 
-
-
     $IsAdmin = [bool](
         [Security.Principal.WindowsPrincipal](
             [Security.Principal.WindowsIdentity]::GetCurrent()
