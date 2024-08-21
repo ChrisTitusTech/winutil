@@ -57,13 +57,13 @@ $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
 $commitHash = (git rev-parse HEAD).Substring(0,16)
-$gitStatus = (git status --porcelain).Trim()
+$gitDirty = !([string]::IsNullOrEmpty($(git status --porcelain)))
 
 $scriptPrelude = $(Get-Content "$workingdir\scripts\start.ps1")
 
 $scriptPrelude = $scriptPrelude -replace '#{replaceme-version}', "$(Get-Date -Format yy.MM.dd)"
 $scriptPrelude = $scriptPrelude -replace '#{replaceme-commit}', "$commitHash"
-$scriptPrelude = $scriptPrelude -replace '#{replaceme-gitstat}', "$gitStatus"
+$scriptPrelude = $scriptPrelude -replace '#{replaceme-gitdirty}', ($gitDirty.ToString())
 
 $script_content.Add($scriptPrelude)
 

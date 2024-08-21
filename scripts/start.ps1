@@ -42,7 +42,7 @@ $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
 $sync.version = "#{replaceme-version}"
 $sync.commit = "#{replaceme-commit}"
-$sync.gitstat = "#{replaceme-gitstat}"
+$sync.gitdirty = [System.Convert]::ToBoolean("#{replaceme-gitdirty}")
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 
