@@ -15,13 +15,13 @@ function Invoke-WPFUIElements {
     #>
 
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, position=0)]
         [PSCustomObject]$configVariable,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, position=1)]
         [string]$targetGridName,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, position=2)]
         [int]$columncount
     )
 
