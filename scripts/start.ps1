@@ -53,13 +53,13 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         "irm christitus.com/win | iex"
     }
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-        "pwsh"
+        "pwsh.exe"
     } else {
-        "powershell"
+        "powershell.exe"
     }
 
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
-        "wt"
+        "wt.exe"
     } else {
         $powershellcmd
     }
