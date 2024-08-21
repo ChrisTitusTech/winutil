@@ -57,7 +57,7 @@ $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
 $commitHash = (git rev-parse HEAD).Substring(0,16)
-$gitStatus = if ((git status --porcelain=v1 2>$null).Count -gt 0) { "dirty" } else { "clean" }
+$gitStatus = (git status --porcelain).Trim()
 
 $scriptPrelude = $(Get-Content "$workingdir\scripts\start.ps1")
 
