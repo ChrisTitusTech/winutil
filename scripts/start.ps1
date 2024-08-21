@@ -39,7 +39,15 @@ param (
             "-NoProfile",                               # Don't load PowerShell profile
             "-File", $MyInvocation.MyCommand.Source,    # Script path
             $args | ForEach-Object { $_ }               # Script arguments
-        ) | ForEach-Object { "`"$_`"" }
+        )
+
+        if ($Debug) {
+            $PwshArgList = @(
+                "-NoExit"                               # Don't exit after running the command
+            ) + $PwshArgList
+        }
+
+        $PwshArgList = $PwshArgList | ForEach-Object { "`"$_`"" }
 
         $WorkingDirectory = Get-Location
 
@@ -49,6 +57,17 @@ param (
             WorkingDirectory    = $WorkingDirectory;
             Verb                = 'RunAs';
             PassThru            = $true;
+        }
+
+        # Use 'wt' if available
+        if (Get-Command "wt" -ErrorAction SilentlyContinue) {
+            $WtArgList = @(
+                "new-tab",
+                $ProcessParameters.FilePath
+            ) + $PwshArgList
+
+            $ProcessParameters.FilePath = "wt.exe"
+            $ProcessParameters.ArgumentList = $WtArgList
         }
 
         $process = $null
