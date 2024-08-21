@@ -47,19 +47,23 @@ $sync.ProcessRunning = $false
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
 
-    $wtInstalled = Get-Command wt.exe -ErrorAction SilentlyContinue
-    $pwshInstalled = Get-Command pwsh -ErrorAction SilentlyContinue
-    if ($pwshInstalled) {
-        $powershellcmd = "pwsh"
+    $script = if (Test-Path "$PSScriptRoot\winutil.ps1") {
+        "$PSScriptRoot\winutil.ps1"
     } else {
-        $powershellcmd = "powershell"
+        "irm christitus.com/win | iex"
+    }
+    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+        "pwsh"
+    } else {
+        "powershell"
     }
 
-    if ($wtInstalled) {
-        Start-Process wt.exe -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -File $PSScriptRoot\winutil.ps1 -Run" -Verb RunAs
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
+        "wt"
     } else {
-        Start-Process $powershellcmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -File $PSScriptRoot\\winutil.ps1 -Run" -Verb RunAs
+        $powershellcmd
     }
+    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
 
     break
 }

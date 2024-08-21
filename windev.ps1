@@ -12,6 +12,27 @@
     Run in Admin Powershell >  ./windev.ps1
 #>
 
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+
+    $script = "irm christitus.com/windev | iex"
+
+    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+        "pwsh"
+    } else {
+        "powershell"
+    }
+
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
+        "wt"
+    } else {
+        $powershellcmd
+    }
+    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
+
+    break
+}
+
 # Function to fetch the latest release tag from the GitHub API
 function Get-LatestRelease {
     try {
