@@ -16,8 +16,10 @@ param (
 
     # Run as administrator if not already (only for script on disk, not in memory)
     if (-not ([Security.Principal.WindowsPrincipal]([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        $MyScriptPath = $MyInvocation.PSCommandPath
+        
         # If script not on disk, show error message and quit
-        if (-not $MyInvocation.MyCommand.Source) {
+        if (-not $MyScriptPath) {
             Write-Host "===========================================" -Foregroundcolor Red
             Write-Host "-- Scripts must be run as Administrator ---" -Foregroundcolor Red
             Write-Host "-- Right-Click Start -> Terminal(Admin) ---" -Foregroundcolor Red
@@ -37,7 +39,7 @@ param (
         $PwshArgList = @(
             "-NoLogo",                                  # Don't print PowerShell header in CLI
             "-NoProfile",                               # Don't load PowerShell profile
-            "-File", $MyInvocation.MyCommand.Source,    # Script path
+            "-File", $MyScriptPath,                     # Script path
             $args | ForEach-Object { $_ }               # Script arguments
         )
 

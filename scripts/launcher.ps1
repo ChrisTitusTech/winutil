@@ -85,7 +85,9 @@ param(
 
     $url = if (-not $Preview) {
         # This must be pointing to the latest stable release (Chris-Hosted)
-        "https://christitus.com/win/stable"
+        # FIXME: change me to the below url and host me here
+        "https://christitus.com/win"
+        # "https://christitus.com/win/stable"
     } else {
         # This must be pointing to the latest pre-release or the release (GitHub releases)
         Get-Latest-PreRelease-Url
