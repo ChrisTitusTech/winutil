@@ -243,6 +243,11 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 
 function New-Unattend {
 
+    param (
+        [Parameter(Mandatory, Position = 0)] [string] $userName,
+        [Parameter(Position = 1)] [string] $userPassword
+    )
+
     $unattend = @'
     <?xml version="1.0" encoding="utf-8"?>
     <unattend xmlns="urn:schemas-microsoft-com:unattend"
@@ -265,21 +270,21 @@ function New-Unattend {
                 <UserAccounts>
                     <LocalAccounts>
                         <LocalAccount wcm:action="add">
-                            <Name>User</Name>
+                            <Name>USER-REPLACEME</Name>
                             <Group>Administrators</Group>
                             <Password>
-                                <Value></Value>
+                                <Value>PW-REPLACEME</Value>
                                 <PlainText>true</PlainText>
                             </Password>
                         </LocalAccount>
                     </LocalAccounts>
                 </UserAccounts>
                 <AutoLogon>
-                    <Username>User</Username>
+                    <Username>USER-REPLACEME</Username>
                     <Enabled>true</Enabled>
                     <LogonCount>1</LogonCount>
                     <Password>
-                        <Value></Value>
+                        <Value>PW-REPLACEME</Value>
                         <PlainText>true</PlainText>
                     </Password>
                 </AutoLogon>
@@ -539,6 +544,11 @@ function New-Unattend {
     # Replace the placeholder text with the Specialize pass
     $unattend = $unattend.Replace("<#REPLACEME#>", $specPass).Trim()
     }
+    # Replace default User and Password values with the provided parameters
+    $unattend = $unattend.Replace("USER-REPLACEME", $userName).Trim()
+    $unattend = $unattend.Replace("PW-REPLACEME", $userPassword).Trim()
+
+    # Save unattended answer file with UTF-8 encoding
     $unattend | Out-File -FilePath "$env:temp\unattend.xml" -Force -Encoding utf8
 }
 

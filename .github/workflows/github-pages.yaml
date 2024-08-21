@@ -1,15 +1,16 @@
 name: GitHub Pages Deploy
 
 on:
-  release:
-    types: [published, prereleased]
+  push:
+    paths:
+      - '.github/mkdocs.yml'
+      - '.github/requirements.txt'
+      - 'docs/**'
+      - 'overrides/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,10 +23,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.x  # Install latest Stable release of Python 3
-          cache: 'pip'  # caching pip dependencies
+          cache: 'pip'  # Caching pip dependencies
 
-      - name: Install Necessary Dependencies using 'pip install -r .github/requirements.txt'
+      - name: Install Necessary Dependencies
         run: pip install -r .github/requirements.txt
 
-      - name: Build & Deploy using 'mkdocs'
+      - name: Build & Deploy using mkdocs
         run: mkdocs gh-deploy --force -f .github/mkdocs.yml
