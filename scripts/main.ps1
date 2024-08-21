@@ -157,7 +157,7 @@ $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
 Set-WinUtilTaskbaritem -state "None"
 
 # Set the titlebar
-$sync["Form"].title = $sync["Form"].title + " " + $sync.version
+$sync["Form"].title = $sync["Form"].title + " " + $sync.version + " " + $sync.commit + " " + $sync.gitstat
 # Set the commands that will run when the form is closed
 $sync["Form"].Add_Closing({
     $sync.runspace.Dispose()
@@ -494,6 +494,7 @@ Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>
 MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
+Commit   : <a href="https://github.com/ChrisTitusTech/winutil/commit/$($sync.commit)">$($sync.commit) ($($sync.gitstat))</a>
 "@
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader

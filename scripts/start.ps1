@@ -3,7 +3,7 @@
     Author         : Chris Titus @christitustech
     Runspace Author: @DeveloperDurp
     GitHub         : https://github.com/ChrisTitusTech
-    Version        : #{replaceme}
+    Version        : #{replaceme-version}
 #>
 param (
     [switch]$Debug,
@@ -40,7 +40,9 @@ Add-Type -AssemblyName System.Windows.Forms
 # Variable to sync between runspaces
 $sync = [Hashtable]::Synchronized(@{})
 $sync.PSScriptRoot = $PSScriptRoot
-$sync.version = "#{replaceme}"
+$sync.version = "#{replaceme-version}"
+$sync.commit = "#{replaceme-commit}"
+$sync.gitstat = "#{replaceme-gitstat}"
 $sync.configs = @{}
 $sync.ProcessRunning = $false
 

@@ -56,7 +56,16 @@ Update-Progress "Adding: Header" 5
 $script_content.Add($header)
 
 Update-Progress "Adding: Version" 10
-$script_content.Add($(Get-Content "$workingdir\scripts\start.ps1").replace('#{replaceme}',"$(Get-Date -Format yy.MM.dd)"))
+$commitHash = (git rev-parse HEAD).Substring(0,16)
+$gitStatus = if ((git status --porcelain=v1 2>$null).Count -gt 0) { "dirty" } else { "clean" }
+
+$scriptPrelude = $(Get-Content "$workingdir\scripts\start.ps1")
+
+$scriptPrelude = $scriptPrelude -replace '#{replaceme-version}', "$(Get-Date -Format yy.MM.dd)"
+$scriptPrelude = $scriptPrelude -replace '#{replaceme-commit}', "$commitHash"
+$scriptPrelude = $scriptPrelude -replace '#{replaceme-gitstat}', "$gitStatus"
+
+$script_content.Add($scriptPrelude)
 
 Update-Progress "Adding: Functions" 20
 Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
