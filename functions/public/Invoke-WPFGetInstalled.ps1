@@ -19,7 +19,9 @@ function Invoke-WPFGetInstalled {
     if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-
+    if ($sync.WPFpreferChocolatey.IsChecked) {
+        Write-Host "The Function `"Get Installed`" is only supported for Winget at the moment" -ForegroundColor Red
+    }
     Invoke-WPFRunspace -ArgumentList $checkbox -DebugPreference $DebugPreference -ScriptBlock {
         param($checkbox, $DebugPreference)
 

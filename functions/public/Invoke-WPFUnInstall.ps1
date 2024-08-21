@@ -28,10 +28,10 @@ function Invoke-WPFUnInstall {
     $confirm = [System.Windows.MessageBox]::Show($Messageboxbody, $MessageboxTitle, $ButtonType, $MessageIcon)
 
     if($confirm -eq "No") {return}
+    $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
 
-
-    Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToInstall, $DebugPreference)
+    Invoke-WPFRunspace -ArgumentList $PackagesToInstall, $ChocoPreference -DebugPreference $DebugPreference -ScriptBlock {
+        param($PackagesToInstall, $ChocoPreference, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
@@ -41,23 +41,23 @@ function Invoke-WPFUnInstall {
             $packagesWinget = [System.Collections.Generic.List`1[System.Object]]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
             foreach ($package in $PackagesToInstall) {
-                switch ($Sync.DownloadEngine){
-                    "Chocolatey"{
+                if ($ChocoPreference) {
+                    if ($packagesChoco.choco -eq "na") {
+                        $null = $packagesWinget.add($package.winget)
+                        Write-Host "Queueing $($package.winget) for Winget Uninstall"
+                    }
+                    else {
                         $packagesChoco.add($package)
-                        Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"    
+                        Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
                     }
-                    "Winget" {
+                }
+                else {
+                    if ($package.winget -eq "na") {
+                        $packagesChoco.add($package)
+                        Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
+                    } else {
                         $null = $packagesWinget.add($($package.winget))
-                        Write-Host "Queueing $($package.winget) for Winget Uninstall"    
-                    }
-                    default {
-                        if ($package.winget -eq "na") {
-                            $packagesChoco.add($package)
-                            Write-Host "Queueing $($package.choco) for Chocolatey Uninstall"
-                        } else {
-                            $null = $packagesWinget.add($($package.winget))
-                            Write-Host "Queueing $($package.winget) for Winget Uninstall"
-                        }
+                        Write-Host "Queueing $($package.winget) for Winget Uninstall"
                     }
                 }
             }

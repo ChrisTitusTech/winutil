@@ -19,10 +19,9 @@ function Invoke-WPFInstall {
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
-
-
-    Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToInstall, $DebugPreference)
+    $ChocoPreference = $($sync.WPFpreferChocolatey.IsChecked)
+    Invoke-WPFRunspace -ArgumentList $PackagesToInstall,$ChocoPreference -DebugPreference $DebugPreference -ScriptBlock {
+        param($PackagesToInstall, $ChocoPreference, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
@@ -31,29 +30,31 @@ function Invoke-WPFInstall {
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.ArrayList]::new()
             $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
-            foreach ($package in $PackagesToInstall) {
-                switch ($Sync.DownloadEngine){
-                    "Chocolatey"{
-                        # TODO: Handle Upgrade if version is already installed
-                        $packagesChoco.add($package)
-                        Write-Host "Queueing $($package.choco) for Chocolatey install"    
-                    }
-                    "Winget" {
-                        $null = $packagesWinget.add($($package.winget))
-                        Write-Host "Queueing $($package.winget) for Winget install"    
-                    }
-                    default {
-                        if ($package.winget -eq "na") {
-                            $packagesChoco.add($package)
-                            Write-Host "Queueing $($package.choco) for Chocolatey install"
-                        } else {
-                            $null = $packagesWinget.add($($package.winget))
-                            Write-Host "Queueing $($package.winget) for Winget install"
-                        }
-                    }
+
+        foreach ($package in $PackagesToInstall) {
+            if ($ChocoPreference) {
+                Write-Host "Prefer Choco"
+                if ($package.choco -eq "na") {
+                    $packagesWinget.add($package.winget)
+                    Write-Host "Queueing $($package.winget) for Winget install"
+                } else {
+                    $null = $packagesChoco.add($package)
+                    Write-Host "Queueing $($package) for Chocolatey install"
                 }
             }
-            return $packagesWinget, $packagesChoco
+            else {
+                Write-Host "Prefer Winget"
+                if ($package.winget -eq "na") {
+                    $packagesChoco.add($package)
+                    Write-Host "Queueing $($package.choco) for Chocolatey install"
+                } else {
+                    $null = $packagesWinget.add($($package.winget))
+                    Write-Host "Queueing $($package.winget) for Winget install"
+                }
+            }
+        }
+
+        return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
 
         try {

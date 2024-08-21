@@ -87,19 +87,6 @@ try {
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
-#Initialize Download Engine
-$selectedItem = $sync.WPFselectDownloadEngine.SelectedItem
-$selectedText = $selectedItem.Content
-$sync.DownloadEngine = $selectedText
-Set-DownloadEngine
-
-$sync.WPFselectDownloadEngine.Add_SelectionChanged({
-  $selectedItem = $sync.WPFselectDownloadEngine.SelectedItem
-  $selectedText = $selectedItem.Content
-  $sync.DownloadEngine = $selectedText
-  Set-DownloadEngine
-})
-
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
