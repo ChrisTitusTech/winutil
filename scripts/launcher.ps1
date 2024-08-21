@@ -41,6 +41,8 @@ param(
 & {
     $ErrorActionPreference = "Stop"
 
+
+
     $IsAdmin = [bool](
         [Security.Principal.WindowsPrincipal](
             [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -52,12 +54,43 @@ param(
     # Enable TLSv1.2 for compatibility with older clients for current session
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+    # Function to redirect to the latest pre-release version
+    function Get-Latest-PreRelease-Url {
+        function Get-LatestRelease {
+            try {
+                $releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
+                $latestRelease = $releases | Where-Object {$_.prerelease -eq $true} | Select-Object -First 1
+                return $latestRelease.tag_name
+            } catch {
+                Write-Host "Error fetching release data: $_" -ForegroundColor Red
+                return $latestRelease.tag_name
+            }
+        }
+        
+        # Function to redirect to the latest pre-release version
+        function RedirectToLatestPreRelease {
+            $latestRelease = Get-LatestRelease
+
+            if ($latestRelease) {
+                $url = "https://github.com/ChrisTitusTech/winutil/releases/download/$latestRelease/winutil.ps1"
+            } else {
+                Write-Host 'Unable to determine latest pre-release version.' -ForegroundColor Red
+                Write-Host "Using latest Full Release"
+                $url = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
+            }
+
+            return $url
+        }
+
+        return RedirectToLatestPreRelease
+    }
+
     $url = if (-not $Preview) {
-        # This must be pointing to the latest release
+        # This must be pointing to the latest stable release (Chris-Hosted)
         "https://christitus.com/win/stable"
     } else {
-        # This must be pointing to the latest pre-release
-        "https://christitus.com/win/preview"
+        # This must be pointing to the latest pre-release or the release (GitHub releases)
+        Get-Latest-PreRelease-Url
     }
 
     if ($IsAdmin) {
