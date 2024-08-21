@@ -48,17 +48,17 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
 
     $wtInstalled = Get-Command wt.exe -ErrorAction SilentlyContinue
-    $pwshInstalled = Get-Command pwsh -ErrorAction SilentlyContinue 
+    $pwshInstalled = Get-Command pwsh -ErrorAction SilentlyContinue
     if ($pwshInstalled) {
         $powershellcmd = "pwsh"
     } else {
         $powershellcmd = "powershell"
     }
-    
+
     if ($wtInstalled) {
-        Start-Process wt.exe -ArgumentList "new-tab $powershellcmd -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+        Start-Process wt.exe -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -File $PSScriptRoot\winutil.ps1 -Run" -Verb RunAs
     } else {
-        Start-Process $powershellcmd -ArgumentList "-ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+        Start-Process $powershellcmd -ArgumentList "-ExecutionPolicy Bypass -NoProfile -File $PSScriptRoot\\winutil.ps1 -Run" -Verb RunAs
     }
 
     break
