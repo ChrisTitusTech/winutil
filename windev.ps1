@@ -1,13 +1,13 @@
 <#
 .SYNOPSIS
-    This Script is used as a target for the https://christitus.com/win/dev alias.
+    This Script is used as a target for the https://christitus.com/win/preview alias.
     It queries the latest winget release (no matter if Pre-Release, Draft or Full Release) and invokes It
 .DESCRIPTION
     This Script provides a simple way to always start the bleeding edge release even if it's not yet a full release.
     This function should be run with administrative privileges.
     Because this way of recursively invoking scripts via Invoke-Expression it might very well happen that AV Programs flag this because it's a common way of mulitstage exploits to run
 .EXAMPLE
-    irm https://christitus.com/win/dev | iex
+    iex "& { $(iwr 'https://christitus.com/win/preview') }"
     OR
     Run in Admin Powershell > ./windev.ps1
 #>

@@ -20,12 +20,14 @@
 .EXAMPLE
     Launch the latest release of winutil. (one-liner)
     Invoke-Expression "& { $(Invoke-RestMethod 'https://christitus.com/win') }"
+    iex "& { $(iwr 'https://christitus.com/win') }"
 .EXAMPLE
     Launch the latest preview release of winutil.
     .\launcher.ps1 -preview
 .EXAMPLE
     Launch the latest preview release of winutil. (one-liner)
     Invoke-Expression "& { $(Invoke-RestMethod 'https://christitus.com/win') } -preview"
+    iex "& { $(iwr 'https://christitus.com/win') } -preview"
 #>
 [CmdletBinding()]
 param(
