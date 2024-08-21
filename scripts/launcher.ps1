@@ -54,33 +54,26 @@ param(
 
     # Function to redirect to the latest pre-release version
     function Get-Latest-PreRelease-Url {
-        function Get-LatestRelease {
-            try {
-                $releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/ChrisTitusTech/winutil/releases'
-                $latestRelease = $releases | Where-Object {$_.prerelease -eq $true} | Select-Object -First 1
-                return $latestRelease.tag_name
-            } catch {
-                Write-Host "Error fetching release data: $_" -ForegroundColor Red
-                return $latestRelease.tag_name
-            }
-        }
-        
-        # Function to redirect to the latest pre-release version
-        function RedirectToLatestPreRelease {
-            $latestRelease = Get-LatestRelease
+        $repo = 'ChrisTitusTech/winutil'
 
-            if ($latestRelease) {
-                $url = "https://github.com/ChrisTitusTech/winutil/releases/download/$latestRelease/winutil.ps1"
-            } else {
-                Write-Host 'Unable to determine latest pre-release version.' -ForegroundColor Red
-                Write-Host "Using latest Full Release"
-                $url = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
-            }
+        $latestPreRelease = $null
 
-            return $url
+        try {
+            $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases"
+            $latestRelease = $releases | Where-Object {$_.prerelease -eq $true} | Select-Object -First 1
+            $latestPreRelease = $latestRelease.tag_name
+        } catch {
+            Write-Host "Error fetching release data: $_" -ForegroundColor Red
+            $latestPreRelease = $latestRelease.tag_name
         }
 
-        return RedirectToLatestPreRelease
+        if ($latestPreRelease) {
+            return "https://github.com/$repo/releases/download/$latestPreRelease/winutil.ps1"
+        } else {
+            Write-Host 'Unable to determine latest pre-release version.' -ForegroundColor Red
+            Write-Host "Using latest Stable Release"
+            return "https://github.com/$repo/releases/latest/download/winutil.ps1"
+        }
     }
 
     $url = if (-not $Preview) {
@@ -97,6 +90,7 @@ param(
         # If running as Administrator, run in the current session
         & {
             # Using iwr to show download progress
+            # TODO(psyirius): Check the output of Invoke-WebRequest and handle errors
             Invoke-WebRequest $url | Invoke-Expression
         }
         
@@ -116,6 +110,7 @@ param(
     }
 
     # Using iwr to show download progress
+    # TODO(psyirius): Check the output of Invoke-WebRequest and handle errors
     $PwshCommand = "iwr '$url' | iex"
 
     # Elevate the script
