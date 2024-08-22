@@ -2175,6 +2175,14 @@
         "link": "https://telegram.org/",
         "winget": "Telegram.TelegramDesktop"
     },
+    "ayugram": {
+        "category": "Communications",
+        "choco": "na",
+        "content": "AyuGram",
+        "description": "AyuGram is a telegram fork with Full ghost mode, Messages history,Anti-recall,Font customization,Streamer mode, Enhanced appearance and many more.",
+        "link": "https://github.com/AyuGram/AyuGramDesktop",
+        "winget": "RadolynLabs.AyuGramDesktop"
+    },
     "unigram": {
         "category": "Communications",
         "choco": "na",
