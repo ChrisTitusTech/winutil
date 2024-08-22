@@ -841,6 +841,21 @@
                             </Border>
                         </Grid>
                     </ScrollViewer>
+                    <!-- Centered border with buttons and text -->
+                    <Border Grid.Row="1" Background="{MainBackgroundColor}" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Buttons on the left half -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
+                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
