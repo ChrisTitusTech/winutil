@@ -17,7 +17,7 @@ function Invoke-WPFPresets {
 
     param (
         [Parameter(position=0)]
-        [string]$preset,
+        [string]$preset = "",
 
         [Parameter(position=1)]
         [bool]$imported = $false,
@@ -35,7 +35,7 @@ function Invoke-WPFPresets {
     $CheckBoxes = ($sync.GetEnumerator()).where{ $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" -and $_.Name -like "$checkboxfilterpattern"}
     Write-Debug "Getting checkboxes to set, number of checkboxes: $($CheckBoxes.Count)"
 
-    if ($CheckBoxesToCheck -ne $null) {
+    if ($CheckBoxesToCheck -ne "") {
         $debugMsg = "CheckBoxes to Check are: "
         $CheckBoxesToCheck | ForEach-Object { $debugMsg += "$_, " }
         $debugMsg = $debugMsg -replace (',\s*$', '')
