@@ -36,10 +36,8 @@ function Invoke-WPFUIElements {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
     }
 
-    try {
-        $targetGrid = $window.FindName($targetGridName)
-    } catch {
-        throw "Failed to find the target grid '$targetGridName' in the main window."
+    if (!$targetGrid) {
+        throw "Failed to retrieve Target Grid by name, provided name: $targetGrid"
     }
 
     # Clear existing ColumnDefinitions and Children
