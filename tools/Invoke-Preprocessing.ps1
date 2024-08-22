@@ -75,22 +75,30 @@
     $count = $ExcludedFiles.Count
 
     # Make sure there's a * at the end of folders in ExcludedFiles list
-    if ($count -gt 0) {
-        for ($i = 0; $i -lt $count; $i++) {
-            $excludedFile = $ExcludedFiles[$i]
-            $isFolder = ($excludedFile) -match '\\$'
-            if ($isFolder) { $ExcludedFiles[$i] = $excludedFile + '*' }
-        }
+    for ($i = 0; $i -lt $count; $i++) {
+        $excludedFile = $ExcludedFiles[$i]
+        $isFolder = ($excludedFile) -match '\\$'
+        if ($isFolder) { $ExcludedFiles[$i] = $excludedFile + '*' }
     }
 
     # Validate the ExcludedFiles List before continuing on,
     # that's if there's a list in the first place, and '-SkipExcludedFilesValidation' was not provided.
-    if ((-NOT ($count -eq 0)) -AND (-NOT $SkipExcludedFilesValidation)) {
+    if (-not $SkipExcludedFilesValidation) {
         for ($i = 0; $i -lt $count; $i++) {
             $excludedFile = $ExcludedFiles[$i]
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
-            if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
-                $failedFilesList += "'$filePath', "
+
+            # Handle paths with wildcards in a different implementation
+            $matches = ($filePath) -match '^.*?\*'
+
+            if ($matches) {
+                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
+                    $failedFilesList += "'$filePath', "
+                }
+            } else {
+                if (-NOT (Test-Path -Path "$filePath")) {
+                    $failedFilesList += "'$filePath', "
+                }
             }
         }
         $failedFilesList = $failedFilesList -replace (',\s*$', '')
