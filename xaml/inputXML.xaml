@@ -800,7 +800,7 @@
                         </Grid>
                     </ScrollViewer>
 
-                    <Rectangle Grid.Row="1" Grid.Column="0" Width="18" Height="18" Fill="{MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
+                    <Rectangle Grid.Row="1" Grid.Column="0" Width="22" Height="22" Fill="{MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
 
                 </Grid>
             </TabItem>
