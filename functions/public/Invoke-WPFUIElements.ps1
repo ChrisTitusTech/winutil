@@ -31,7 +31,7 @@ function Invoke-WPFUIElements {
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
-    
+
     if (!$borderstyle -or !$HoverTextBlockStyle -or !$ColorfulToggleSwitchStyle) {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
     }
