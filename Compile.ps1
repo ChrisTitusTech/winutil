@@ -46,7 +46,7 @@ if (-NOT $SkipPreprocessing) {
     $preprocessingFilePath = ".\tools\Invoke-Preprocessing.ps1"
     . $preprocessingFilePath
 
-    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\LICENSE', "$preprocessingFilePath", '*.png', '*.exe')
+    $excludedFiles = @('.\.git\', '.\.gitignore', '.\.gitattributes', '.\.github\CODEOWNERS', '.\.github\LICENSE', "$preprocessingFilePath", '*.png', '*.exe')
     $msg = "Pre-req: Code Formatting"
     Invoke-Preprocessing -WorkingDir "$workingdir" -ExcludedFiles $excludedFiles -ProgressStatusMessage $msg -ThrowExceptionOnEmptyFilesList
 }
