@@ -47,7 +47,7 @@
         Same as Example No. 1, but uses '-SkipExcludedFilesValidation', which'll skip the validation step for 'ExcludedFiles' list. This can be useful when 'ExcludedFiles' list is generated from another function, or from unreliable source (you can't guarantee every item in list is a valid path), but you want to silently continue through the function.
     #>
 
-     param (
+    param (
         [Parameter(position=0)]
         [switch]$SkipExcludedFilesValidation,
 
@@ -66,7 +66,7 @@
 
         [Parameter(position=5)]
         [string]$ProgressActivity = "Preprocessing"
-     )
+    )
 
     if (-NOT (Test-Path -PathType Container -Path "$WorkingDir")) {
         throw "[Invoke-Preprocessing] Invalid Paramter Value for 'WorkingDir', passed value: '$WorkingDir'. Either the path is a File or Non-Existing/Invlid, please double check your code."
