@@ -16,14 +16,12 @@ function Invoke-WPFGetInstalled {
         return
     }
 
-    if(((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
+    if(($sync.WPFpreferChocolatey.IsChecked -eq $false) -and ((Test-WinUtilPackageManager -winget) -eq "not-installed") -and $checkbox -eq "winget") {
         return
     }
-    if ($sync.WPFpreferChocolatey.IsChecked) {
-        Write-Host "The Function `"Get Installed`" is only supported for Winget at the moment" -ForegroundColor Red
-    }
-    Invoke-WPFRunspace -ArgumentList $checkbox -DebugPreference $DebugPreference -ScriptBlock {
-        param($checkbox, $DebugPreference)
+    $preferChoco = $sync.WPFpreferChocolatey.IsChecked
+    Invoke-WPFRunspace -ArgumentList $checkbox, $preferChoco -DebugPreference $DebugPreference -ScriptBlock {
+        param($checkbox, $preferChoco, $DebugPreference)
 
         $sync.ProcessRunning = $true
         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" })
@@ -34,8 +32,12 @@ function Invoke-WPFGetInstalled {
         if($checkbox -eq "tweaks") {
             Write-Host "Getting Installed Tweaks..."
         }
-
-        $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+        if ($preferChoco -and $checkbox -eq "winget") {
+            $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox "choco"
+        }
+        else{
+            $Checkboxes = Invoke-WinUtilCurrentSystem -CheckBox $checkbox
+        }
 
         $sync.form.Dispatcher.invoke({
             foreach($checkbox in $Checkboxes) {
