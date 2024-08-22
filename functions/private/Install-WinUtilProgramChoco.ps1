@@ -78,7 +78,7 @@ function Install-WinUtilProgramChoco {
 
         if ($manage -eq "Uninstalling") {
             Write-Host "Searching for Metapackages of of $($Program.choco) (.install or .portable)"
-            $chocoPackages = ((choco list | Select-String -Pattern "$($Program.choco)(\.install|\.portable){0,1}").Matches.Value) -join " "
+            $chocoPackages = ((choco list | Select-String -Pattern "$($Program.choco)(\.install|\.portable) {0,1}").Matches.Value) -join " "
             Write-Host "Starting uninstall of $chocoPackages with Chocolatey."
             try {
                 $uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"

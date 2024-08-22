@@ -91,7 +91,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 $ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
 $sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
 $sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
-if (Test-Path $ChocoPreferencePath){
+if (Test-Path $ChocoPreferencePath) {
     $sync.WPFpreferChocolatey.IsChecked = $true
 }
 
