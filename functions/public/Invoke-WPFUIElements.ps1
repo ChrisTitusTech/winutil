@@ -35,7 +35,7 @@ function Invoke-WPFUIElements {
     if (!$borderstyle -or !$HoverTextBlockStyle -or !$ColorfulToggleSwitchStyle) {
         throw "Failed to retrieve Styles using 'FindResource' from main window element."
     }
-    
+
     $targetGrid = $window.FindName($targetGridName)
 
     if (!$targetGrid) {

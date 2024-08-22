@@ -686,7 +686,8 @@
                     BorderThickness="1"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
-                    Padding="3,3,0,0"
+                    Padding="3,3,30,0"
+                    Margin="5,0,0,0"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
                 <TextBlock
