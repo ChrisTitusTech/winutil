@@ -26,7 +26,7 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 #### Stable Release (Recommended)
 
 ```ps1
-iex "& { $(iwr 'https://christitus.com/win') }"
+iwr "https://christitus.com/win" | iex
 ```
 #### Pre-Release Branch
 
