@@ -15,19 +15,10 @@
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
 
-    $script = "irm christitus.com/windev | iex"
+    $script = if (!$MyInvocation.MyCommand.Path) { "& '" + $MyInvocation.MyCommand.Path + "'" } else { "irm 'https://github.com/ChrisTitusTech/winutil/raw/main/windev.ps1' | iex"}
+    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
 
-    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-        "pwsh.exe"
-    } else {
-        "powershell.exe"
-    }
-
-    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) {
-        "wt.exe"
-    } else {
-        $powershellcmd
-    }
     Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
 
     break
