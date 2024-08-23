@@ -29,23 +29,21 @@ function Invoke-WPFInstall {
         }
         $packagesWinget, $packagesChoco = {
             $packagesWinget = [System.Collections.ArrayList]::new()
-            $packagesChoco = [System.Collections.Generic.List`1[System.Object]]::new()
+            $packagesChoco = [System.Collections.ArrayList]::new()
 
         foreach ($package in $PackagesToInstall) {
             if ($ChocoPreference) {
-                Write-Host "Prefer Choco"
                 if ($package.choco -eq "na") {
                     $packagesWinget.add($package.winget)
                     Write-Host "Queueing $($package.winget) for Winget install"
                 } else {
-                    $null = $packagesChoco.add($package)
-                    Write-Host "Queueing $($package) for Chocolatey install"
+                    $null = $packagesChoco.add($package.choco)
+                    Write-Host "Queueing $($package.choco) for Chocolatey install"
                 }
             }
             else {
-                Write-Host "Prefer Winget"
                 if ($package.winget -eq "na") {
-                    $packagesChoco.add($package)
+                    $packagesChoco.add($package.choco)
                     Write-Host "Queueing $($package.choco) for Chocolatey install"
                 } else {
                     $null = $packagesWinget.add($($package.winget))
@@ -53,7 +51,6 @@ function Invoke-WPFInstall {
                 }
             }
         }
-
         return $packagesWinget, $packagesChoco
         }.Invoke($PackagesToInstall)
 
@@ -62,12 +59,12 @@ function Invoke-WPFInstall {
             $errorPackages = @()
             if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
-                $errorPackages += Invoke-WinUtilWingetProgram -Action Install -Programs $packagesWinget
-                $errorPackages| ForEach-Object {if($_.choco -ne "na") {$packagesChoco += $_}}
+                Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
+                
             }
             if($packagesChoco.Count -gt 0) {
                 Install-WinUtilChoco
-                Install-WinUtilProgramChoco -ProgramsToInstall $packagesChoco
+                Install-WinUtilProgramChoco -Action Install -Programs $packagesChoco
             }
             Write-Host "==========================================="
             Write-Host "--      Installs have finished          ---"
