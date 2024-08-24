@@ -315,7 +315,7 @@
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
-                                              Stroke="{TemplateBinding Foreground}"
+                                              Stroke="{ToggleButtonOnColor}"
                                               StrokeThickness="2"
                                               Data="M 0 5 L 5 10 L 12 0"
                                               Visibility="Collapsed"/>
@@ -427,7 +427,11 @@
                                 Width="34" Height="17">
                             <Ellipse x:Name="Ellipse" Fill="{MainForegroundColor}" Stretch="Uniform"
                                     Margin="2,2,2,1"
-                                    HorizontalAlignment="Left" Width="12">
+                                    HorizontalAlignment="Left" Width="10.8"
+                                    RenderTransformOrigin="0.5, 0.5">
+                                <Ellipse.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Ellipse.RenderTransform>
                             </Ellipse>
                         </Border>
                         </Grid>
@@ -438,12 +442,35 @@
                                 <Setter TargetName="Border" Property="Background" Value="{LinkHoverForegroundColor}"/>
                                 <Setter Property="Cursor" Value="Hand" />
                                 <Setter Property="Panel.ZIndex" Value="1000"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Ellipse"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.1" Duration="0:0:0.1" />
+                                            <DoubleAnimation Storyboard.TargetName="Ellipse"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.1" Duration="0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Ellipse"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                            To="1.0" Duration="0:0:0.1" />
+                                            <DoubleAnimation Storyboard.TargetName="Ellipse"
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                            To="1.0" Duration="0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                             <Trigger Property="ToggleButton.IsChecked" Value="False">
                                 <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
-                                <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
-
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#707070" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="#707070" />
                             </Trigger>
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
