@@ -6,14 +6,22 @@ function Invoke-WPFInstall {
 
     #>
 
+    param (
+        $InstallConfig
+    )
+
     if($sync.ProcessRunning) {
         $msg = "[Invoke-WPFInstall] An Install process is currently running."
         [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
         return
     }
 
-    $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
-    Write-Host $PackagesToInstall
+    if ($InstallConfig) {
+        $PackagesToInstall = $InstallConfig
+    } else {
+        $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
+    }
+
     if ($PackagesToInstall.Count -eq 0) {
         $WarningMsg = "Please select the program(s) to install or upgrade"
         [System.Windows.MessageBox]::Show($WarningMsg, $AppTitle, [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)

@@ -6,13 +6,21 @@ function Invoke-WPFtweaksbutton {
 
   #>
 
+  param (
+    $TweaksConfig
+  )
+
   if($sync.ProcessRunning) {
     $msg = "[Invoke-WPFtweaksbutton] Install process is currently running."
     [System.Windows.MessageBox]::Show($msg, "Winutil", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
     return
   }
 
-  $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  if ($TweaksConfig) {
+    $Tweaks = $TweaksConfig
+  } else {
+    $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+  }
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
 

@@ -322,38 +322,45 @@ Add-Type @"
     # maybe this is not the best place to load and execute config file?
     # maybe community can help?
     if ($PARAM_CONFIG) {
-        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         if ($PARAM_RUN) {
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
+            $installConfig = Get-Content $PARAM_CONFIG -Raw | ConvertFrom-Json
+            if ($installConfig.WPFTweaks) {
+                write-host "Running Tweaks"
+                Invoke-WPFtweaksbutton -TweaksConfig $installConfig.WPFTweaks
             }
-            Start-Sleep -Seconds 5
-
-            Write-Host "Applying tweaks..."
-            Invoke-WPFtweaksbutton
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
+            if ($installConfig.WPFFeature) {
+                write-host "Installing Features"
+                Invoke-WPFFeatureInstall -FeatureConfig $installConfig.WPFFeature
             }
-            Start-Sleep -Seconds 5
+            if ($installConfig.WPFInstall) {
+                write-host "Installing Programs"
 
-            Write-Host "Installing features..."
-            Invoke-WPFFeatureInstall
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 5
+                # Create a new array to hold the combined install configurations
+                $combinedInstallConfig = @()
+
+                # Iterate over each WPFInstall entry
+                for ($i = 0; $i -lt $installConfig.WPFInstall.Count; $i++) {
+                    $wpfInstallEntry = $installConfig.WPFInstall[$i]
+                    $installEntry = $installConfig.Install[$i]
+
+                    # Create a new object with the combined values
+                    $combinedEntry = @{
+                        Name = $wpfInstallEntry
+                        Winget = $installEntry.winget
+                        Choco = $installEntry.choco
+                    }
+
+                    # Add the combined entry to the array
+                    $combinedInstallConfig += $combinedEntry
+                }
+
+                # Invoke the WPFInstall function with the combined configuration
+                Invoke-WPFInstall -InstallConfig $combinedInstallConfig
             }
-
-            Start-Sleep -Seconds 5
-            Write-Host "Installing applications..."
-            while ($sync.ProcessRunning) {
-                Start-Sleep -Seconds 1
-            }
-            Invoke-WPFInstall
-            Start-Sleep -Seconds 5
-
-            Write-Host "Done."
+        } else {
+            Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
         }
     }
-
 })
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
