@@ -215,7 +215,12 @@ With MicroWin, you can also configure your user before proceeding if you don't w
 !!! info
 
      Please make sure that you remember your password. MicroWin will configure auto-login settings, so you won't have to enter your password. However, if you are required to enter your password, it's best that you don't forget it.
+	 
+##### Automatic WinUtil configuration
 
+You can also use your WinUtil configuration files. Simply export your chosen settings using the Export menu item and specify the resulting JSON file in the MicroWin screen.
+
+On first run, WinUtil will process the configuration file. Please read the **Automation** section for more information.
 
 ##### Ventoy options
 
