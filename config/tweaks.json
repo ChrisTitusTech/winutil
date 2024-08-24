@@ -3197,7 +3197,6 @@
     "Content": "Dark Theme for Windows",
     "Description": "Enable/Disable Dark Mode.",
     "category": "Customize Preferences",
-    "attributes": "epRestart",
     "panel": "2",
     "Order": "a100_",
     "Type": "Toggle"
@@ -3230,7 +3229,6 @@
     "Content": "Snap Window",
     "Description": "If enabled you can align windows by dragging them. | Relogin Required",
     "category": "Customize Preferences",
-    "attributes": "epRestart",
     "panel": "2",
     "Order": "a104_",
     "Type": "Toggle"
@@ -3239,7 +3237,6 @@
     "Content": "Snap Assist Flyout",
     "Description": "If enabled then Snap preview is disabled when maximize button is hovered.",
     "category": "Customize Preferences",
-    "attributes": "epRestart",
     "panel": "2",
     "Order": "a105_",
     "Type": "Toggle"
@@ -3248,7 +3245,6 @@
     "Content": "Snap Assist Suggestion",
     "Description": "If enabled then you will get suggestions to snap other applications in the left over spaces.",
     "category": "Customize Preferences",
-    "attributes": "epRestart",
     "panel": "2",
     "Order": "a106_",
     "Type": "Toggle"

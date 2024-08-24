@@ -36,8 +36,4 @@ function Invoke-WPFToggle {
         "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $ToggleStatus}
         "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $ToggleStatus}
     }
-    if ($sync.configs.tweaks.$($button).attributes -contains "epRestart") {
-        taskkill.exe /F /IM "explorer.exe"
-        Start-Process "explorer.exe"
-    }
 }
