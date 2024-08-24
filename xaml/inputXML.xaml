@@ -707,7 +707,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="205,0,0,0" Visibility="Collapsed"/>
+                    Margin="210,0,0,0" Visibility="Collapsed"/>
 
                 <ProgressBar
                     Grid.Column="1"
