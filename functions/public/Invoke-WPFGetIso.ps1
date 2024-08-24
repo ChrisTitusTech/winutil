@@ -86,7 +86,7 @@ function Invoke-WPFGetIso {
 
         # TODO: Have to correct the language to actually be a working one
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64"
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang "$(Get-FidoLangFromCulture -langName `"$($sync.ISOLanguage.SelectedItem)`")"
         Set-Location $originalLocation
         $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }
