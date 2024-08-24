@@ -248,7 +248,7 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 function New-Unattend {
 
     param (
-        [Parameter(Mandatory, Position = 0)] [string] $userName,
+        [Parameter(Mandatory, Position = 0)] [string]$userName,
         [Parameter(Position = 1)] [string] $userPassword
     )
 
@@ -718,6 +718,12 @@ function New-FirstRun {
     #
     # Done create WinUtil shortcut on the desktop
     # ************************************************
+
+    if (Test-Path -Path "$env:HOMEDRIVE\winutil-config.json")
+    {
+        Write-Host "Configuration file detected. Applying..."
+        iex "& { $(irm christitus.com/win) } -Config `"$env:HOMEDRIVE\winutil-config.json`" -Run"
+    }
 
     Start-Process explorer
 

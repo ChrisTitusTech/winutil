@@ -178,7 +178,21 @@ public class PowerManagement {
         Write-Host "Removal complete!"
 
         Write-Host "Create unattend.xml"
-        #New-Unattend
+
+        if (($sync.MicrowinAutoConfigBox.Text -ne "") -and (Test-Path "$($sync.MicrowinAutoConfigBox.Text)"))
+        {
+            try
+            {
+                Write-Host "A configuration file has been specified. Copying to WIM file..."
+                Copy-Item "$($sync.MicrowinAutoConfigBox.Text)" "$($scratchDir)\winutil-config.json"
+            }
+            catch
+            {
+                Write-Host "The config file could not be copied. Continuing without it..."
+            }
+        }
+
+        # Create unattended answer file with user information - Check condition to learn more about this functionality
         if ($sync.MicrowinUserName.Text -eq "")
         {
             New-Unattend -userName "User"

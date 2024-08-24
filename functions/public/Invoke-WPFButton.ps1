@@ -57,5 +57,6 @@ function Invoke-WPFButton {
         "WPFMicrowin" {Invoke-WPFMicrowin}
         "WPFCloseButton" {Invoke-WPFCloseButton}
         "MicrowinScratchDirBT" {Invoke-ScratchDialog}
+        "MicrowinAutoConfigBtn" {Invoke-AutoConfigDialog}
     }
 }
