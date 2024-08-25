@@ -85,6 +85,6 @@ function Set-WinUtilTaskbaritem {
             $sync["Form"].taskbarItemInfo.Description = $description
         }
     } catch {
-        #nothing
+        #do nothing
     }
 }

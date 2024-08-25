@@ -2430,12 +2430,6 @@
     "Order": "a001_",
     "InvokeScript": [
       "
-        # Check if the user has administrative privileges
-        if (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-            Write-Host \"Please run this script as an administrator.\"
-            return
-        }
-
         # Check if System Restore is enabled for the main drive
         try {
             # Try getting restore points to check if System Restore is enabled
