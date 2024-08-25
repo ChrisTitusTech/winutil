@@ -18,12 +18,14 @@ function Invoke-WPFFeatureInstall {
 
     if ($FeatureConfig) {
         $Features = $FeatureConfig
+        $automation = $true
     } else {
         $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
+        $automation = $false
     }
 
-    Invoke-WPFRunspace -ArgumentList $Features -DebugPreference $DebugPreference -ScriptBlock {
-        param($Features, $DebugPreference)
+    Invoke-WPFRunspace -ArgumentList $Features, $automation -DebugPreference $DebugPreference -ScriptBlock {
+        param($Features, $automation, $DebugPreference)
         $sync.ProcessRunning = $true
         if ($Features.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })

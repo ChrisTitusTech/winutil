@@ -22,10 +22,11 @@ function Invoke-WPFRunspace {
     Param (
         $ScriptBlock,
         $ArgumentList,
-        $DebugPreference
+        $DebugPreference,
+        $automation
     )
 
-    if ($PARAM_RUN) {
+    if ($automation = $true) {
         & $ScriptBlock @ArgumentList @DebugPreference
     } else {
         # Create a PowerShell instance

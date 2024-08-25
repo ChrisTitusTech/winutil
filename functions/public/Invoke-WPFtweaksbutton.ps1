@@ -18,8 +18,10 @@ function Invoke-WPFtweaksbutton {
 
   if ($TweaksConfig) {
     $Tweaks = $TweaksConfig
+    $automation = $true
   } else {
     $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
+    $automation = $false
   }
 
   Set-WinUtilDNS -DNSProvider $sync["WPFchangedns"].text
@@ -32,8 +34,8 @@ function Invoke-WPFtweaksbutton {
 
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
-  Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
-    param($Tweaks, $DebugPreference)
+  Invoke-WPFRunspace -ArgumentList $Tweaks, $automation -DebugPreference $DebugPreference -ScriptBlock {
+    param($Tweaks, $automation, $DebugPreference)
     Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
     $sync.ProcessRunning = $true
