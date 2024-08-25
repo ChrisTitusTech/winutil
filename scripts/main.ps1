@@ -146,11 +146,59 @@ Invoke-WPFRunspace -ScriptBlock {
 } | Out-Null
 
 #===========================================================================
-# Setup and Show the Form
+# Print Logo into Console
 #===========================================================================
 
-# Print the logo
 Invoke-WPFFormVariables
+
+#===========================================================================
+# Run Automation
+#===========================================================================
+
+if ($PARAM_CONFIG) {
+    if ($PARAM_RUN) {
+        $installConfig = Get-Content $PARAM_CONFIG -Raw | ConvertFrom-Json
+        if ($installConfig.WPFInstall) {
+            write-host "Installing Programs"
+
+            # Create a new array to hold the combined install configurations
+            $combinedInstallConfig = @()
+
+            # Iterate over each WPFInstall entry
+            for ($i = 0; $i -lt $installConfig.WPFInstall.Count; $i++) {
+                $wpfInstallEntry = $installConfig.WPFInstall[$i]
+                $installEntry = $installConfig.Install[$i]
+
+                # Create a new object with the combined values
+                $combinedEntry = @{
+                    Name = $wpfInstallEntry
+                    Winget = $installEntry.winget
+                    Choco = $installEntry.choco
+                }
+
+                # Add the combined entry to the array
+                $combinedInstallConfig += $combinedEntry
+            }
+
+            # Invoke the WPFInstall function with the combined configuration
+            Invoke-WPFInstall -InstallConfig $combinedInstallConfig
+        }
+        if ($installConfig.WPFTweaks) {
+            write-host "Running Tweaks"
+            Invoke-WPFtweaksbutton -TweaksConfig $installConfig.WPFTweaks
+        }
+        if ($installConfig.WPFFeature) {
+            write-host "Installing Features"
+            Invoke-WPFFeatureInstall -FeatureConfig $installConfig.WPFFeature
+        }
+    } else {
+        Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
+    }
+}
+
+#===========================================================================
+# Setup and Show the Form
+#===========================================================================
 
 # Progress bar in taskbaritem > Set-WinUtilProgressbar
 $sync["Form"].TaskbarItemInfo = New-Object System.Windows.Shell.TaskbarItemInfo
@@ -318,49 +366,6 @@ Add-Type @"
 
     Invoke-WPFTab "WPFTab1BT"
     $sync["Form"].Focus()
-
-    # maybe this is not the best place to load and execute config file?
-    # maybe community can help?
-    if ($PARAM_CONFIG) {
-        if ($PARAM_RUN) {
-            $installConfig = Get-Content $PARAM_CONFIG -Raw | ConvertFrom-Json
-            if ($installConfig.WPFTweaks) {
-                write-host "Running Tweaks"
-                Invoke-WPFtweaksbutton -TweaksConfig $installConfig.WPFTweaks
-            }
-            if ($installConfig.WPFFeature) {
-                write-host "Installing Features"
-                Invoke-WPFFeatureInstall -FeatureConfig $installConfig.WPFFeature
-            }
-            if ($installConfig.WPFInstall) {
-                write-host "Installing Programs"
-
-                # Create a new array to hold the combined install configurations
-                $combinedInstallConfig = @()
-
-                # Iterate over each WPFInstall entry
-                for ($i = 0; $i -lt $installConfig.WPFInstall.Count; $i++) {
-                    $wpfInstallEntry = $installConfig.WPFInstall[$i]
-                    $installEntry = $installConfig.Install[$i]
-
-                    # Create a new object with the combined values
-                    $combinedEntry = @{
-                        Name = $wpfInstallEntry
-                        Winget = $installEntry.winget
-                        Choco = $installEntry.choco
-                    }
-
-                    # Add the combined entry to the array
-                    $combinedInstallConfig += $combinedEntry
-                }
-
-                # Invoke the WPFInstall function with the combined configuration
-                Invoke-WPFInstall -InstallConfig $combinedInstallConfig
-            }
-        } else {
-            Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG
-        }
-    }
 })
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
@@ -535,5 +540,8 @@ $sync["SponsorMenuItem"].Add_Click({
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
 })
-$sync["Form"].ShowDialog() | out-null
-Stop-Transcript
+
+if (!$PARAM_RUN) {
+    $sync["Form"].ShowDialog() | out-null
+    Stop-Transcript
+}

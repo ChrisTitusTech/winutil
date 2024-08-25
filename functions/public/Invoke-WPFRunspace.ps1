@@ -25,24 +25,28 @@ function Invoke-WPFRunspace {
         $DebugPreference
     )
 
-    # Create a PowerShell instance
-    $script:powershell = [powershell]::Create()
+    if ($PARAM_RUN) {
+        & $ScriptBlock @ArgumentList @DebugPreference
+    } else {
+        # Create a PowerShell instance
+        $script:powershell = [powershell]::Create()
 
-    # Add Scriptblock and Arguments to runspace
-    $script:powershell.AddScript($ScriptBlock)
-    $script:powershell.AddArgument($ArgumentList)
-    $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
-    $script:powershell.RunspacePool = $sync.runspace
+        # Add Scriptblock and Arguments to runspace
+        $script:powershell.AddScript($ScriptBlock)
+        $script:powershell.AddArgument($ArgumentList)
+        $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
+        $script:powershell.RunspacePool = $sync.runspace
 
-    # Execute the RunspacePool
-    $script:handle = $script:powershell.BeginInvoke()
+        # Execute the RunspacePool
+        $script:handle = $script:powershell.BeginInvoke()
 
-    # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-    if ($script:handle.IsCompleted) {
-        $script:powershell.EndInvoke($script:handle)
-        $script:powershell.Dispose()
-        $sync.runspace.Dispose()
-        $sync.runspace.Close()
-        [System.GC]::Collect()
+        # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
+        if ($script:handle.IsCompleted) {
+            $script:powershell.EndInvoke($script:handle)
+            $script:powershell.Dispose()
+            $sync.runspace.Dispose()
+            $sync.runspace.Close()
+            [System.GC]::Collect()
+        }
     }
 }
