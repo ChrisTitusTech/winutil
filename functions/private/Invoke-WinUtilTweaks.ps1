@@ -60,7 +60,7 @@ function Invoke-WinUtilTweaks {
                         $changeservice = $false
                     }
                 } catch {
-                    # do nothing
+                    write-host "Unable to get service $($psitem.Name)"
                 }
             }
 

@@ -27,6 +27,6 @@ Function Set-WinUtilService {
         # Service exists, proceed with changing properties
         $service | Set-Service -StartupType $StartupType -ErrorAction Stop
     } catch {
-        # do nothing
+        write-host "Unable to get service $($Name)"
     }
 }
