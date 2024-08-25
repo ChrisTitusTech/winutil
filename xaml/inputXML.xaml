@@ -919,7 +919,7 @@
                                 </Button>
                             </Grid>
                             <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
-                                Text="ISO location will be printed here"
+                                Text="MicroWin-created ISO location will be printed here"
                                 Margin="2"
                                 IsReadOnly="True"
                                 TextWrapping="Wrap"
