@@ -26,11 +26,7 @@ Function Set-WinUtilService {
 
         # Service exists, proceed with changing properties
         $service | Set-Service -StartupType $StartupType -ErrorAction Stop
-    } catch [System.ServiceProcess.ServiceNotFoundException] {
-        Write-Warning "Service $Name was not found"
     } catch {
-        Write-Warning "Unable to set $Name due to unhandled exception"
-        Write-Warning $_.Exception.Message
+        # do nothing
     }
-
 }

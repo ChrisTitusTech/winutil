@@ -22,13 +22,14 @@ function Invoke-WPFRunspace {
     Param (
         $ScriptBlock,
         $ArgumentList,
-        $DebugPreference,
-        $automation
+        $DebugPreference
     )
 
-    if ($automation = $true) {
+    if ($PARAM_RUN) {
+        write-host "Running in Main Thread"
         & $ScriptBlock @ArgumentList @DebugPreference
     } else {
+        write-host "Running in Runspace"
         # Create a PowerShell instance
         $script:powershell = [powershell]::Create()
 

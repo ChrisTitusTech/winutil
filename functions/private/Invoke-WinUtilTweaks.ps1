@@ -59,8 +59,8 @@ function Invoke-WinUtilTweaks {
                         Write-Debug "Service $($service.Name) was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
                         $changeservice = $false
                     }
-                } catch [System.ServiceProcess.ServiceNotFoundException] {
-                    Write-Warning "Service $($psitem.Name) was not found"
+                } catch {
+                    # do nothing
                 }
             }
 
