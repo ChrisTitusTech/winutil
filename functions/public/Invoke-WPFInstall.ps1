@@ -18,10 +18,8 @@ function Invoke-WPFInstall {
 
     if ($InstallConfig) {
         $PackagesToInstall = $InstallConfig
-        $automation = $true
     } else {
         $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
-        $automation = $false
     }
 
     if ($PackagesToInstall.Count -eq 0) {
@@ -31,8 +29,8 @@ function Invoke-WPFInstall {
     }
 
 
-    Invoke-WPFRunspace -ArgumentList $PackagesToInstall, $automation -DebugPreference $DebugPreference -ScriptBlock {
-        param($PackagesToInstall, $automation, $DebugPreference)
+    Invoke-WPFRunspace -ArgumentList $PackagesToInstall -DebugPreference $DebugPreference -ScriptBlock {
+        param($PackagesToInstall, $DebugPreference)
         if ($PackagesToInstall.count -eq 1) {
             $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Indeterminate" -value 0.01 -overlay "logo" })
         } else {
