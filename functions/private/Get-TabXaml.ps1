@@ -132,6 +132,7 @@ function Get-TabXaml {
 
                 if ($columncount -gt 0) {
                     $panelcount2 = [Int](($count)/$maxcount-0.5)
+                    # Verify the indentation actually works...
                     if ($panelcount -eq $panelcount2 ) {
                         $blockXml += $precal_indent_m1 +
                                         "</StackPanel>" + "`r`n"
@@ -189,7 +190,7 @@ function Get-TabXaml {
                                         "HorizontalAlignment=""Left"" Margin=""5"" Padding=""20,5"" $($ButtonWidthStr)/>" + "`r`n"
                     }
 
-                    # else it's a checkbox
+                    # else it is a checkbox
                     default {
                         $checkedStatus = If ($appInfo.Checked -eq $null) {""} else {" IsChecked=""$($appInfo.Checked)"""}
                         if ($appInfo.Link -eq $null) {
