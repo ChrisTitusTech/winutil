@@ -62,16 +62,15 @@ if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Classic'
 }
 
-$returnVal = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
-if ($returnVal.err -eq $null) {
+$inputXML = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme
+if ($inputXML -eq "") {
     Write-Warning "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages."
     Write-Warning "Quitting winutil..."
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
-    return
+    exit 1
 }
-$inputXML = $returnVal.processedXML
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
@@ -94,11 +93,12 @@ try {
 }
 
 if (-NOT ($readerOperationSuccessful)) {
-    Write-Warning "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method, quitting winutil..."
+    Write-Warning "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method."
+    Write-Warning "Quitting winutil..."
     $sync.runspace.Dispose()
     $sync.runspace.Close()
     [System.GC]::Collect()
-    return
+    exit 1
 }
 
 #===========================================================================
