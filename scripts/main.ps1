@@ -181,15 +181,18 @@ if ($PARAM_CONFIG) {
             }
 
             # Invoke the WPFInstall function with the combined configuration
-            Invoke-WPFInstall -InstallConfig $combinedInstallConfig
+            Invoke-WPFInstall -PackagesToInstall $combinedInstallConfig
         }
+
         if ($installConfig.WPFTweaks) {
             write-host "Running Tweaks"
-            Invoke-WPFtweaksbutton -TweaksConfig $installConfig.WPFTweaks
+
+            Invoke-WPFtweaksbutton -Tweaks $installConfig.WPFTweaks
         }
+
         if ($installConfig.WPFFeature) {
             write-host "Installing Features"
-            Invoke-WPFFeatureInstall -FeatureConfig $installConfig.WPFFeature
+            Invoke-WPFFeatureInstall -Features $installConfig.WPFFeature
         }
     } else {
         Invoke-WPFImpex -type "import" -Config $PARAM_CONFIG

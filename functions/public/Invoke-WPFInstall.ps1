@@ -7,7 +7,7 @@ function Invoke-WPFInstall {
     #>
 
     param (
-        $InstallConfig
+        $PackagesToInstall
     )
 
     if($sync.ProcessRunning) {
@@ -16,9 +16,7 @@ function Invoke-WPFInstall {
         return
     }
 
-    if ($InstallConfig) {
-        $PackagesToInstall = $InstallConfig
-    } else {
+    if ([string]::IsNullOrEmpty($InstallConfig)) {
         $PackagesToInstall = (Get-WinUtilCheckBoxes)["Install"]
     }
 

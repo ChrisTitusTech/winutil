@@ -7,7 +7,7 @@ function Invoke-WPFtweaksbutton {
   #>
 
   param (
-    $TweaksConfig
+    $Tweaks
   )
 
   if($sync.ProcessRunning) {
@@ -16,9 +16,7 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
-  if ($TweaksConfig) {
-    $Tweaks = $TweaksConfig
-  } else {
+  if ([string]::IsNullOrEmpty($Tweaks)) {
     $Tweaks = (Get-WinUtilCheckBoxes)["WPFTweaks"]
   }
 
@@ -32,8 +30,8 @@ function Invoke-WPFtweaksbutton {
 
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
-  Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
-    param($Tweaks, $DebugPreference)
+  Invoke-WPFRunspace -ArgumentList $Tweaks, $testvar -DebugPreference $DebugPreference -ScriptBlock {
+    param($Tweaks, $testvar, $DebugPreference)
     Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
     $sync.ProcessRunning = $true

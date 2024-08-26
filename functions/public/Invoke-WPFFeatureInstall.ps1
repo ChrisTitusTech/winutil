@@ -7,7 +7,7 @@ function Invoke-WPFFeatureInstall {
     #>
 
     param (
-        $FeatureConfig
+        $Features
     )
 
     if($sync.ProcessRunning) {
@@ -16,9 +16,7 @@ function Invoke-WPFFeatureInstall {
         return
     }
 
-    if ($FeatureConfig) {
-        $Features = $FeatureConfig
-    } else {
+    if ([string]::IsNullOrEmpty($Features)) {
         $Features = (Get-WinUtilCheckBoxes)["WPFFeature"]
     }
 
