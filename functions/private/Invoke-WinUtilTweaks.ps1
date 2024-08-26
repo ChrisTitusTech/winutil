@@ -22,7 +22,7 @@ function Invoke-WinUtilTweaks {
     )
 
     Write-Debug "Tweaks: $($CheckBox)"
-    if($undo){
+    if($undo) {
         $Values = @{
             Registry = "OriginalValue"
             ScheduledTask = "OriginalState"
@@ -30,8 +30,7 @@ function Invoke-WinUtilTweaks {
             ScriptType = "UndoScript"
         }
 
-    }
-    Else{
+    } else {
         $Values = @{
             Registry = "Value"
             ScheduledTask = "State"
@@ -40,18 +39,18 @@ function Invoke-WinUtilTweaks {
             ScriptType = "InvokeScript"
         }
     }
-    if($sync.configs.tweaks.$CheckBox.ScheduledTask){
+    if($sync.configs.tweaks.$CheckBox.ScheduledTask) {
         $sync.configs.tweaks.$CheckBox.ScheduledTask | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.ScheduledTask))"
             Set-WinUtilScheduledTask -Name $psitem.Name -State $psitem.$($values.ScheduledTask)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.service){
+    if($sync.configs.tweaks.$CheckBox.service) {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
             $changeservice = $true
 
-	    # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
+        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
             if($KeepServiceStartup -AND !($undo)) {
                 try {
                     # Check if the service exists
@@ -60,8 +59,7 @@ function Invoke-WinUtilTweaks {
                         Write-Debug "Service $($service.Name) was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
                         $changeservice = $false
                     }
-                }
-                catch [System.ServiceProcess.ServiceNotFoundException] {
+                } catch [System.ServiceProcess.ServiceNotFoundException] {
                     Write-Warning "Service $($psitem.Name) was not found"
                 }
             }
@@ -72,13 +70,13 @@ function Invoke-WinUtilTweaks {
             }
         }
     }
-    if($sync.configs.tweaks.$CheckBox.registry){
+    if($sync.configs.tweaks.$CheckBox.registry) {
         $sync.configs.tweaks.$CheckBox.registry | ForEach-Object {
             Write-Debug "$($psitem.Name) and state is $($psitem.$($values.registry))"
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }
-    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)){
+    if($sync.configs.tweaks.$CheckBox.$($values.ScriptType)) {
         $sync.configs.tweaks.$CheckBox.$($values.ScriptType) | ForEach-Object {
             Write-Debug "$($psitem) and state is $($psitem.$($values.ScriptType))"
             $Scriptblock = [scriptblock]::Create($psitem)
@@ -86,8 +84,8 @@ function Invoke-WinUtilTweaks {
         }
     }
 
-    if(!$undo){
-        if($sync.configs.tweaks.$CheckBox.appx){
+    if(!$undo) {
+        if($sync.configs.tweaks.$CheckBox.appx) {
             $sync.configs.tweaks.$CheckBox.appx | ForEach-Object {
                 Write-Debug "UNDO $($psitem.Name)"
                 Remove-WinUtilAPPX -Name $psitem

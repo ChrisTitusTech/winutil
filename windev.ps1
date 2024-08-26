@@ -28,7 +28,7 @@ function Get-LatestRelease {
 function RedirectToLatestPreRelease {
     $latestRelease = Get-LatestRelease
     if ($latestRelease) {
-        $url = "https://raw.githubusercontent.com/ChrisTitusTech/winutil/$latestRelease/winutil.ps1"
+        $url = "https://github.com/ChrisTitusTech/winutil/releases/download/$latestRelease/winutil.ps1"
     } else {
         Write-Host 'Unable to determine latest pre-release version.' -ForegroundColor Red
         Write-Host "Using latest Full Release"

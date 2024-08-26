@@ -10,8 +10,7 @@ function Invoke-WPFOOSU {
         Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $OOSU_filepath
         Write-Host "Starting OO Shutup 10 ..."
         Start-Process $OOSU_filepath
-    }
-    catch {
+    } catch {
         Write-Host "Error Downloading and Running OO Shutup 10" -ForegroundColor Red
     }
     finally {

@@ -1,0 +1,48 @@
+name: Close Discussion on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  closeDiscussion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if PR was merged
+        if: github.event.pull_request.merged == true
+        run: echo "PR was merged"
+
+      - name: Extract Discussion Number & Close If any Were Found
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event.pull_request.merged == true
+        id: extract-discussion
+        run: |
+          pr_body="${{ github.event.pull_request.body }}"
+          discussion_ids=$(echo "$pr_body" | grep -oP '(?i)(resolve|fix|close)[s|d]? #\K[0-9]+')
+
+          if [ -z "$discussion_ids" ]; then
+            echo "No discussion IDs found."
+            exit 0
+          fi
+
+          for discussion_id in $discussion_ids; do
+            echo "Attempting to close discussion #$discussion_id"
+            response=$(curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+                 -H "Accept: application/vnd.github.v3+json" \
+                 -d '{"state": "closed"}' \
+                 "https://api.github.com/repos/${{ github.repository }}/discussions/$discussion_id")
+
+            if echo "$response" | jq -e '.id' > /dev/null; then
+              echo "Successfully closed discussion #$discussion_id"
+            else
+              error_message=$(echo "$response" | jq -r '.message // "Unknown error"')
+              echo "Warning: Failed to close discussion #$discussion_id. Error: $error_message"
+              echo "Full response: $response"
+            fi
+          done
+        shell: bash
+        continue-on-error: true

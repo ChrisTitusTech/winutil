@@ -13,19 +13,16 @@ function Invoke-WinUtilFeatureInstall {
     $x = 0
 
     $CheckBox | ForEach-Object {
-        if($sync.configs.feature.$psitem.feature){
-            Foreach( $feature in $sync.configs.feature.$psitem.feature ){
-                Try{
+        if($sync.configs.feature.$psitem.feature) {
+            Foreach( $feature in $sync.configs.feature.$psitem.feature ) {
+                try {
                     Write-Host "Installing $feature"
                     Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                } catch {
+                    if ($psitem.Exception.Message -like "*requires elevation*") {
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    }
-
-                    else{
+                    } else {
 
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace
@@ -33,21 +30,18 @@ function Invoke-WinUtilFeatureInstall {
                 }
             }
         }
-        if($sync.configs.feature.$psitem.InvokeScript){
-            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ){
-                Try{
+        if($sync.configs.feature.$psitem.InvokeScript) {
+            Foreach( $script in $sync.configs.feature.$psitem.InvokeScript ) {
+                try {
                     $Scriptblock = [scriptblock]::Create($script)
 
                     Write-Host "Running Script for $psitem"
                     Invoke-Command $scriptblock -ErrorAction stop
-                }
-                Catch{
-                    if ($psitem.Exception.Message -like "*requires elevation*"){
+                } catch {
+                    if ($psitem.Exception.Message -like "*requires elevation*") {
                         Write-Warning "Unable to Install $feature due to permissions. Are you running as admin?"
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
-                    }
-
-                    else{
+                    } else {
                         $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" })
                         Write-Warning "Unable to Install $feature due to unhandled exception"
                         Write-Warning $psitem.Exception.StackTrace

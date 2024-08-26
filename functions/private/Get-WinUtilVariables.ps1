@@ -14,13 +14,12 @@ function Get-WinUtilVariables {
     $keys = ($sync.keys).where{ $_ -like "WPF*" }
     if ($Type) {
         $output = $keys | ForEach-Object {
-            Try {
+            try {
                 $objType = $sync["$psitem"].GetType().Name
                 if ($Type -contains $objType) {
                     Write-Output $psitem
                 }
-            }
-            Catch {
+            } catch {
                 <#I am here so errors don't get outputted for a couple variables that don't have the .GetType() attribute#>
             }
         }

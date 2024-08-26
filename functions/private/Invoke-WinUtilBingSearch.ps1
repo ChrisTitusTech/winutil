@@ -9,25 +9,21 @@ function Invoke-WinUtilBingSearch {
 
     #>
     Param($Enabled)
-    Try{
-        if ($Enabled -eq $false){
+    try {
+        if ($Enabled -eq $false) {
             Write-Host "Enabling Bing Search"
             $value = 1
-        }
-        else {
+        } else {
             Write-Host "Disabling Bing Search"
             $value = 0
         }
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search"
         Set-ItemProperty -Path $Path -Name BingSearchEnabled -Value $value
-    }
-    Catch [System.Security.SecurityException] {
+    } catch [System.Security.SecurityException] {
         Write-Warning "Unable to set $Path\$Name to $Value due to a Security Exception"
-    }
-    Catch [System.Management.Automation.ItemNotFoundException] {
+    } catch [System.Management.Automation.ItemNotFoundException] {
         Write-Warning $psitem.Exception.ErrorRecord
-    }
-    Catch{
+    } catch {
         Write-Warning "Unable to set $Name due to unhandled exception"
         Write-Warning $psitem.Exception.StackTrace
     }

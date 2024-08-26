@@ -51,15 +51,15 @@ function ConvertTo-Icon {
             # Handle the thrown exception here...
         }
 
-        This Example make use of '-overrideIconFile' Optional Parameter, the default for this paramter is $true.
+        This Example make use of '-overrideIconFile' Optional Parameter, the default for this parameter is $true.
         By doing '-overrideIconFile $false', the 'ConvertTo-Icon' function will raise an exception that needs to be catched throw a 'catch' Code Block,
         otherwise it'll crash the running PowerShell instance/process.
 
     #>
     param(
-        [Parameter(Mandatory=$true, position=0)]
+        [Parameter(Mandatory, position=0)]
         [string]$bitmapPath,
-        [Parameter(Mandatory=$true, position=1)]
+        [Parameter(Mandatory, position=1)]
         [string]$iconPath,
         [Parameter(position=2)]
         [bool]$overrideIconFile = $true
@@ -86,8 +86,7 @@ function ConvertTo-Icon {
         $icon.Save($file)
         $file.Close()
         $icon.Dispose()
-    }
-    else {
+    } else {
         throw [System.IO.FileNotFoundException] "[ConvertTo-Icon] The provided bitmap File Path is not found at '$bitmapPath'."
     }
 }

@@ -198,26 +198,7 @@ The utility provides three distinct settings for managing Windows updates: Defau
 * Selecting a scratch directory will copy the contents of the ISO file to the directory you specify instead of an automatically generated folder in the `%TEMP%` directory.
 * You can select an edition of Windows to debloat (**SKU**) using the convenient drop-down menu.
 
-    By default, MicroWin will debloat the Pro edition, but you can choose any edition you want.
-
-
-##### Customization options
-
-* **Keep Provisioned Packages**: leaving this option unticked (default) will try to remove every operating system package.
-
-    Some packages may remain after processing. This can happen if the packages in question are permanent or have been superseded by newer versions.
-
-* **Keep Appx Packages**: leaving this option unticked (default) will try to remove every Microsoft Store app from the Windows image.
-
-    This option will exclude some applications that are essential in the event that you want or need to add a Store app later on.
-
-* **Keep Defender**: leaving this option unticked will try to remove every part of Windows Defender, including the Windows Security app.
-
-    Leaving this option unticked is **NOT recommended** unless you plan to use a third-party antivirus solution on your MicroWin installation. In that regard, don't install AVs with bad reputations or rogueware.
-
-* **Keep Edge**: leaving this option unticked will try to remove every part of the Microsoft Edge browser using the best methods available.
-
-    Leaving this option unticked is not recommended because it might break some applications that might depend on the `Edge WebView2` runtime. However, if that happens, you can easily [reinstall it](https://developer.microsoft.com/en-us/microsoft-edge/webview2)
+By default, MicroWin will debloat the Pro edition, but you can choose any edition you want.
 
 
 ##### Driver integration options
@@ -225,7 +206,15 @@ The utility provides three distinct settings for managing Windows updates: Defau
 * **Inject drivers** will add the drivers in the folder that you specify to the target Windows image.
 * **Import drivers from the current system** will add every third-party driver that is present in your active installation.
 
-    This makes the target image have the same hardware compatibility as the active installation. However, this means that you will only be able to install the target Windows image and take full advantage of it on computers with **the same hardware**. To avoid this, you'll need to customize the `install.wim` file of the target ISO in the 'sources` folder.
+This makes the target image have the same hardware compatibility as the active installation. However, this means that you will only be able to install the target Windows image and take full advantage of it on computers with **the same hardware**. To avoid this, you'll need to customize the `install.wim` file of the target ISO in the 'sources` folder.
+
+##### Custom user settings
+
+With MicroWin, you can also configure your user before proceeding if you don't want to use the default `User` account. To do this, simply type the account name (20 characters maximum), and a password. Then, let MicroWin do the rest.
+
+!!! info
+
+     Please make sure that you remember your password. MicroWin will configure auto-login settings, so you won't have to enter your password. However, if you are required to enter your password, it's best that you don't forget it.
 
 
 ##### Ventoy options

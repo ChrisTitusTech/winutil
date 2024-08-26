@@ -11,7 +11,7 @@ function Invoke-WinUtilGPU {
     )
 
     foreach ($gpu in $gpuInfo) {
-        foreach ($gpuPattern in $lowPowerGPUs){
+        foreach ($gpuPattern in $lowPowerGPUs) {
             if ($gpu.Name -like $gpuPattern) {
                 return $false
             }
