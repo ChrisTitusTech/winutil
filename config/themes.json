@@ -6,9 +6,9 @@
         "CustomDialogWidth":          "400",
         "CustomDialogHeight":         "200",
 
-        "FontSize":         "0.35cm",
+        "FontSize":         "14",
         "FontFamily":       "Arial",
-        "FontSizeHeading":  "0.4cm",
+        "FontSizeHeading":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
 
         "CheckBoxBulletDecoratorSize": "14",
