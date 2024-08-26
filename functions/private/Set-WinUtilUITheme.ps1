@@ -65,8 +65,8 @@ function Set-WinUtilUITheme {
         }
     }
     catch {
-        Write-Debug "[Set-WinUtilTheme] Unable to apply theme"
-        Write-Debug $psitem.Exception.Message
+        Write-Host "[Set-WinUtilTheme] Unable to apply theme" -ForegroundColor Red
+        Write-Host "$($psitem.Exception.Message)" -ForegroundColor Red
         $inputXML = "" # Make inputXML equal an empty string, indicating something went wrong to the function caller.
     }
 
