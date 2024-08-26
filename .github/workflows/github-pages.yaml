@@ -28,5 +28,5 @@ jobs:
       - name: Install Necessary Dependencies
         run: pip install -r .github/requirements.txt
 
-      - name: Build & Deploy using mkdocs
+      - name: Build & Deploy using 'mkdocs'
         run: mkdocs gh-deploy --force -f .github/mkdocs.yml
