@@ -48,25 +48,34 @@ function Invoke-WinUtilTweaks {
     if($sync.configs.tweaks.$CheckBox.service) {
         Write-Debug "KeepServiceStartup is $KeepServiceStartup"
         $sync.configs.tweaks.$CheckBox.service | ForEach-Object {
-            $changeservice = $true
+            # Reset variable on each iteraction
+            $canchangeservice = $false
+            $service = $null
 
-        # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber, which's the 'OriginalService' Property
-            if($KeepServiceStartup -AND !($undo)) {
-                try {
-                    # Check if the service exists
-                    $service = Get-Service -Name $psitem.Name -ErrorAction Stop
-                    if(!($service.StartType.ToString() -eq $psitem.$($values.OriginalService))) {
-                        Write-Debug "Service $($service.Name) was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
-                        $changeservice = $false
-                    }
-                } catch {
-                    write-host "Unable to get service $($psitem.Name)"
+            $servicename = $psitem.Name
+            try {
+                $service = Get-Service -Name "$servicename" -ErrorAction Stop
+            } catch [Microsoft.PowerShell.Commands.ServiceCommandException] {
+                Write-Debug "[Invoke-WinUtilTweaks] Service $servicename was not found"
+            } catch {
+                Write-Debug "[Invoke-WinUtilTweaks] Unable to validate $servicename due to unhandled exception"
+                Write-Debug "$($psitem.Exception.Message)"
+            }
+
+            # Note:
+            # The check for !($undo) is required, without it the script will throw an error for accessing unavailable memeber,
+            # which's the 'OriginalService' Property
+            if($service -AND $KeepServiceStartup -AND !$undo) {
+                if($service.StartType.ToString() -ne $psitem.$($values.OriginalService)) {
+                    Write-Debug "Service $servicename was changed in the past to $($service.StartType.ToString()) from it's original type of $($psitem.$($values.OriginalService)), will not change it to $($psitem.$($values.service))"
+                } else {
+                    $canchangeservice = $true
                 }
             }
 
-            if($changeservice) {
-                Write-Debug "$($psitem.Name) and state is $($psitem.$($values.service))"
-                Set-WinUtilService -Name $psitem.Name -StartupType $psitem.$($values.Service)
+            if($service -AND ($canchangeservice -OR $undo)) {
+                Write-Host "Setting Service $servicename to $($psitem.$($values.Service))"
+                Set-Service -InputObject $service -StartupType $psitem.$($values.Service)
             }
         }
     }
