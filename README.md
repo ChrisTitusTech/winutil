@@ -1,5 +1,4 @@
 # Chris Titus Tech's Windows Utility
-
 [![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
 ![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/winutil.ps1?label=Total%20Downloads&style=for-the-badge)
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/RUbZUZyByQ?theme=default-inverted&style=for-the-badge)](https://discord.gg/RUbZUZyByQ)
@@ -9,7 +8,6 @@ This utility is a compilation of Windows tasks I perform on each Windows system 
 ![screen-install](./docs/assets/Title-Screen.png)
 
 ## 💡 Usage
-
 Winutil must be run in Admin mode because it performs system-wide tweaks. To achieve this, run PowerShell as an administrator. Here are a few ways to do it:
 
 1. **Start menu Method:**
@@ -24,12 +22,10 @@ Winutil must be run in Admin mode because it performs system-wide tweaks. To ach
 ### Launch Command
 
 #### Stable Branch (Recommended)
-
 ```ps1
 irm "https://christitus.com/win" | iex
 ```
 #### Dev Branch
-
 ```ps1
 irm "https://christitus.com/windev" | iex
 ```
@@ -37,7 +33,6 @@ irm "https://christitus.com/windev" | iex
 If you have Issues, refer to [Known Issues](https://christitustech.github.io/winutil/KnownIssues/)
 
 ## 🎓 Documentation
-
 ### [WinUtil Official Documentation](https://christitustech.github.io/winutil/)
 
 ### [YouTube Tutorial](https://www.youtube.com/watch?v=6UQZ5oQg8XA)
@@ -45,20 +40,18 @@ If you have Issues, refer to [Known Issues](https://christitustech.github.io/win
 ### [ChrisTitus.com Article](https://christitus.com/windows-tool/)
 
 ## 💖 Support
-- To morally and mentally support the project, make sure to leave a ⭐️!
-- EXE Wrapper for $10 @ https://www.cttstore.com/windows-toolbox
+If you find Winutil helpful, please consider giving it a ⭐️ to show your support!  
+EXE Wrapper for $10 @ [https://www.cttstore.com/windows-toolbox](https://www.cttstore.com/windows-toolbox)
 
 ## 💖 Sponsors
-
 These are the sponsors that help keep this project alive with monthly contributions.
 
 <!-- sponsors --><a href="https://github.com/ysaito8015"><img src="https://github.com/ysaito8015.png" width="60px" alt="Yusuke Saito" /></a><a href="https://github.com/TriHydera"><img src="https://github.com/TriHydera.png" width="60px" alt="TriHydera" /></a><a href="https://github.com/jozozovko"><img src="https://github.com/jozozovko.png" width="60px" alt="" /></a><a href="https://github.com/DelDongo"><img src="https://github.com/DelDongo.png" width="60px" alt="" /></a><a href="https://github.com/markamos"><img src="https://github.com/markamos.png" width="60px" alt="Mark Amos" /></a><a href="https://github.com/dwelfusius"><img src="https://github.com/dwelfusius.png" width="60px" alt="" /></a><a href="https://github.com/mews-se"><img src="https://github.com/mews-se.png" width="60px" alt="" /></a><a href="https://github.com/jdiegmueller"><img src="https://github.com/jdiegmueller.png" width="60px" alt="Jason A. Diegmueller" /></a><a href="https://github.com/AlanTristar"><img src="https://github.com/AlanTristar.png" width="60px" alt="" /></a><a href="https://github.com/JennJones89"><img src="https://github.com/JennJones89.png" width="60px" alt="" /></a><a href="https://github.com/zepled112"><img src="https://github.com/zepled112.png" width="60px" alt="wyatt" /></a><a href="https://github.com/altugtekiner"><img src="https://github.com/altugtekiner.png" width="60px" alt="" /></a><a href="https://github.com/robertsandrock"><img src="https://github.com/robertsandrock.png" width="60px" alt="" /></a><a href="https://github.com/mmomega"><img src="https://github.com/mmomega.png" width="60px" alt="" /></a><a href="https://github.com/KenichiQaz"><img src="https://github.com/KenichiQaz.png" width="60px" alt="Stefan" /></a><a href="https://github.com/thaddl"><img src="https://github.com/thaddl.png" width="60px" alt="thaddl" /></a><a href="https://github.com/paulsheets"><img src="https://github.com/paulsheets.png" width="60px" alt="Paul" /></a><a href="https://github.com/djones369"><img src="https://github.com/djones369.png" width="60px" alt="Dave Jones" /></a><a href="https://github.com/anthonymendez"><img src="https://github.com/anthonymendez.png" width="60px" alt="Anthony Mendez" /></a><a href="https://github.com/woobe-studio"><img src="https://github.com/woobe-studio.png" width="60px" alt="Michael Wozniak" /></a><a href="https://github.com/xBandaku"><img src="https://github.com/xBandaku.png" width="60px" alt="xPandaku" /></a><a href="https://github.com/claudemods"><img src="https://github.com/claudemods.png" width="60px" alt="Claudemods" /></a><a href="https://github.com/hkolatan"><img src="https://github.com/hkolatan.png" width="60px" alt="Halil Kolatan" /></a><!-- sponsors -->
 
 ## 🏅 Thanks to all Contributors
-Thanks a lot for spending your time helping Winutil grow. Thanks a lot! Keep rocking 🍻.
+Thank you to everyone who has contributed to the development of Winutil. Your efforts are greatly appreciated, and you’re helping make this tool better for everyone!
 
 [![Contributors](https://contrib.rocks/image?repo=ChrisTitusTech/winutil)](https://github.com/ChrisTitusTech/winutil/graphs/contributors)
 
 ## 📊 GitHub Stats
-
 ![Alt](https://repobeats.axiom.co/api/embed/aad37eec9114c507f109d34ff8d38a59adc9503f.svg "Repobeats analytics image")
