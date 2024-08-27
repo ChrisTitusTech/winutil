@@ -27,7 +27,7 @@ if ($Run) {
     $PARAM_RUN = $true
 }
 
-$dateTime = Get-Date -Format "dd-MM-yyyy_HH-mm-ss"
+$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
 $logdir = "$env:localappdata\winutil\logs"
 [System.IO.Directory]::CreateDirectory("$logdir")
