@@ -29,9 +29,9 @@ if ($Run) {
 
 $dateTime = Get-Date -Format "dd-MM-yyyy_HH-mm-ss"
 
-$logdir = "$env:localappdata\Winutil\Log"
+$logdir = "$env:localappdata\winutil\logs"
 [System.IO.Directory]::CreateDirectory("$logdir")
-Start-Transcript -Path "$logdir\Winutil_$dateTime.log" -Append
+Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append
 
 # Load DLLs
 Add-Type -AssemblyName PresentationFramework
