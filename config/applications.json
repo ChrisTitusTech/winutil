@@ -87,14 +87,6 @@
         "link": "https://anydesk.com/",
         "winget": "AnyDeskSoftwareGmbH.AnyDesk"
     },
-    "ATLauncher": {
-        "category": "Games",
-        "choco": "na",
-        "content": "ATLauncher",
-        "description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly.",
-        "link": "https://github.com/ATLauncher/ATLauncher",
-        "winget": "ATLauncher.ATLauncher"
-    },
     "audacity": {
         "category": "Multimedia Tools",
         "choco": "audacity",
