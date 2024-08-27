@@ -77,5 +77,5 @@ You can find information about the registry on [Wikipedia](https://www.wikiwand.
 <!-- END SECOND CUSTOM CONTENT -->
 
 
-[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/../config/tweaks.json)
+[View the JSON file](https://github.com/ChrisTitusTech/winutil/tree/main/config/tweaks.json)
 
