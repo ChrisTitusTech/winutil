@@ -3156,7 +3156,7 @@
         "Type": "DWord"
       }
     ],
-    "link": "[auto generated if i understand #2481 corectly]"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/IPv46"
   },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
@@ -3179,7 +3179,7 @@
     "UndoScript": [
       "netsh interface teredo set state default"
     ],
-    "link": "[auto generated if i understand #2481 corectly]"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo"
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
