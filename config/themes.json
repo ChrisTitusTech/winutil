@@ -14,6 +14,7 @@
         "CheckBoxBulletDecoratorSize": "14",
         "CheckBoxMargin": "15,0,0,2",
 
+        "TabContentMargin":       "5",
         "TabButtonFontSize":      "14",
         "TabButtonWidth":         "100",
         "TabButtonHeight":        "25",
@@ -48,7 +49,7 @@
 
         "SearchBarWidth":               "200",
         "SearchBarHeight":              "25",
-        "SearchBarTextBoxFontSize":     "16",
+        "SearchBarTextBoxFontSize":     "12",
         "SearchBarClearButtonFontSize": "14",
 
         "ButtonInstallBackgroundColor":  "#FFFFFF",
