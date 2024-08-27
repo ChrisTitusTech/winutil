@@ -239,14 +239,6 @@
         "link": "https://www.google.com/chrome/",
         "winget": "Google.Chrome"
     },
-    "chromium": {
-        "category": "Browsers",
-        "choco": "chromium",
-        "content": "Chromium",
-        "description": "Chromium is the open-source project that serves as the foundation for various web browsers, including Chrome.",
-        "link": "https://github.com/Hibbiki/chromium-win64",
-        "winget": "Hibbiki.Chromium"
-    },
     "arc": {
         "category": "Browsers",
         "choco": "na",
