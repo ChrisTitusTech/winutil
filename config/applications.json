@@ -495,14 +495,6 @@
         "link": "https://www.epicgames.com/store/en-US/",
         "winget": "EpicGames.EpicGamesLauncher"
     },
-    "errorlookup": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "Windows Error Code Lookup",
-        "description": "ErrorLookup is a tool for looking up Windows error codes and their descriptions.",
-        "link": "https://github.com/HenryPP/ErrorLookup",
-        "winget": "Henry++.ErrorLookup"
-    },
     "esearch": {
         "category": "Utilities",
         "choco": "everything",
