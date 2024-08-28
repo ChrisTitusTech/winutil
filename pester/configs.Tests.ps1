@@ -1,7 +1,11 @@
 # Import Config Files
 $global:importedconfigs = @{}
 Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Object {
-    $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
+    try {
+        $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
+    } catch {
+        Write-Warning "Failed to import config file: $($psitem.FullName). Error: $_"
+    }
 }
 
 
@@ -35,15 +39,16 @@ foreach ($configuration in $configurations) {
 
         Context "$name config file" {
             It "Imports with no errors" {
-                $global:importedconfigs.$name | Should -Not -BeNullOrEmpty
+                $global:importedconfigs.ContainsKey($name) | Should -BeTrue -Because "The configuration '$name' should exist in the imported configs"
+                $global:importedconfigs[$name] | Should -Not -BeNullOrEmpty -Because "The configuration '$name' should not be null or empty"
             }
-            if ($config) {
+            if ($config -and $global:importedconfigs.ContainsKey($name)) {
                 It "Imports should be the correct structure" {
-                    $applications = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
+                    $applications = $global:importedconfigs[$name] | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                     $template = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                     $result = New-Object System.Collections.Generic.List[System.Object]
                     Foreach ($application in $applications) {
-                        $compare = $global:importedconfigs.$name.$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
+                        $compare = $global:importedconfigs[$name].$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                         if ($(Compare-Object $compare $template)) {
                             $result.Add($application)
                         }
@@ -52,7 +57,7 @@ foreach ($configuration in $configurations) {
                     $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
                 }
             }
-            if($undo) {
+            if($undo -and $global:importedconfigs.ContainsKey($name)) {
                 It "Tweaks should contain original Value" {
                     $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                     $result = New-Object System.Collections.Generic.List[System.Object]
