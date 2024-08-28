@@ -1,6 +1,50 @@
 # Enable verbose output
 $VerbosePreference = "Continue"
 
+# Define Test-Schema function
+function Test-Schema {
+    param (
+        $Object,
+        $Schema
+    )
+
+    $errors = @()
+
+    $Object.PSObject.Properties | ForEach-Object {
+        $propName = $_.Name
+        $propValue = $_.Value
+
+        $propSchema = $Schema.Properties[$propName]
+        if (-not $propSchema) {
+            $errors += "Property '$propName' is not defined in the schema"
+            return
+        }
+
+        switch ($propSchema.Type) {
+            "String" { 
+                if ($propValue -isnot [string]) {
+                    $errors += "Property '$propName' should be a string but is $($propValue.GetType())"
+                }
+            }
+            "Object" { 
+                if ($propValue -isnot [PSCustomObject]) {
+                    $errors += "Property '$propName' should be an object but is $($propValue.GetType())"
+                } else {
+                    $errors += Test-Schema -Object $propValue -Schema $propSchema
+                }
+            }
+        }
+    }
+
+    foreach ($requiredProp in $Schema.Required) {
+        if (-not $Object.PSObject.Properties.Name.Contains($requiredProp)) {
+            $errors += "Required property '$requiredProp' is missing"
+        }
+    }
+
+    return $errors
+}
+
 # Import Config Files
 $global:importedConfigs = @{}
 Get-ChildItem .\config -Filter *.json | ForEach-Object {
@@ -62,49 +106,6 @@ Describe "Config Files Validation" {
                 }
             }
         }
-
-        function Test-Schema {
-            param (
-                $Object,
-                $Schema
-            )
-
-            $errors = @()
-
-            $Object.PSObject.Properties | ForEach-Object {
-                $propName = $_.Name
-                $propValue = $_.Value
-
-                $propSchema = $Schema.Properties[$propName]
-                if (-not $propSchema) {
-                    $errors += "Property '$propName' is not defined in the schema"
-                    return
-                }
-
-                switch ($propSchema.Type) {
-                    "String" { 
-                        if ($propValue -isnot [string]) {
-                            $errors += "Property '$propName' should be a string but is $($propValue.GetType())"
-                        }
-                    }
-                    "Object" { 
-                        if ($propValue -isnot [PSCustomObject]) {
-                            $errors += "Property '$propName' should be an object but is $($propValue.GetType())"
-                        } else {
-                            $errors += Test-Schema -Object $propValue -Schema $propSchema
-                        }
-                    }
-                }
-            }
-
-            foreach ($requiredProp in $Schema.Required) {
-                if (-not $Object.PSObject.Properties.Name.Contains($requiredProp)) {
-                    $errors += "Required property '$requiredProp' is missing"
-                }
-            }
-
-            return $errors
-        }
     }
 
     Context "Config File Structure" {
@@ -113,6 +114,8 @@ Describe "Config Files Validation" {
         }
 
         It "Should have the correct structure for all configs" {
+            $testSchemaScriptBlock = ${function:Test-Schema}.ToString()
+
             $results = $configSchemas.Keys | ForEach-Object -Parallel {
                 $configName = $_
                 $importedConfigs = $using:global:importedConfigs
@@ -124,7 +127,8 @@ Describe "Config Files Validation" {
                     return "Config file '$configName' is missing or empty"
                 }
 
-                & $using:Test-Schema -Object $config -Schema $schema
+                $testSchemaFunction = [ScriptBlock]::Create($using:testSchemaScriptBlock)
+                & $testSchemaFunction -Object $config -Schema $schema
             } -ThrottleLimit 4
 
             $results | Should -BeNullOrEmpty -Because "The following schema violations were found: $($results -join '; ')"
