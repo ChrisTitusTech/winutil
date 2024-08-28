@@ -37,6 +37,12 @@ Describe "Config Files" -ForEach @(
                 $result = New-Object System.Collections.Generic.List[System.Object]
                 Foreach ($application in $applications) {
                     $compare = $global:importedconfigs.$name.$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
+                    if (-not $compare) {
+                        throw "Comparison object for application '$application' is null."
+                    }
+                    if (-not $template) {
+                        throw "Template object for application '$application' is null."
+                    }
                     if ($(Compare-Object $compare $template) -ne $null) {
                         $result.Add($application)
                     }
