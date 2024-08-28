@@ -116,8 +116,9 @@ Describe "Config Files Validation" {
             $results = $configSchemas.Keys | ForEach-Object -Parallel {
                 $configName = $_
                 $importedConfigs = $using:global:importedConfigs
+                $configSchemas = $using:configSchemas
                 $config = $importedConfigs[$configName]
-                $schema = $using:configSchemas[$configName]
+                $schema = $configSchemas[$configName]
                 
                 if (-not $config) {
                     return "Config file '$configName' is missing or empty"
