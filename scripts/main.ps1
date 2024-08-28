@@ -95,6 +95,12 @@ try {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
+# Load the configuration files
+#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+
 if (-NOT ($readerOperationSuccessful)) {
     Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
     Write-Host "Quitting winutil..." -ForegroundColor Red
@@ -112,16 +118,6 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] 
 
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*") {
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
-            })
-        }
-
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
@@ -390,7 +386,6 @@ $labels = @{}
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
 $sync["SearchBar"].Add_TextChanged({
-
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     } else {
@@ -399,13 +394,14 @@ $sync["SearchBar"].Add_TextChanged({
 
     $activeApplications = @()
 
+    $textToSearch = $sync.SearchBar.Text.ToLower()
+
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
             continue
         }
 
-        $textToSearch = $sync.SearchBar.Text.ToLower()
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
 
@@ -415,23 +411,23 @@ $sync["SearchBar"].Add_TextChanged({
         if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
-             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            # Set the corresponding text block visibility
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Visible"
             }
         } else {
-             $CheckBox.Value.Visibility = "Collapsed"
+            $CheckBox.Value.Visibility = "Collapsed"
             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Collapsed"
             }
         }
     }
+
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
     foreach ($category in $activeCategories) {
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Visible"
+        $sync[$category].Visibility = "Visible"
     }
     if ($activeCategories) {
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
@@ -439,8 +435,8 @@ $sync["SearchBar"].Add_TextChanged({
         $inactiveCategories = $allCategories
     }
     foreach ($category in $inactiveCategories) {
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Collapsed"}
+        $sync[$category].Visibility = "Collapsed"
+    }
 })
 
 # Initialize the hashtable
