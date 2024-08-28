@@ -95,12 +95,6 @@ try {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
-# Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
-
 if (-NOT ($readerOperationSuccessful)) {
     Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
     Write-Host "Quitting winutil..." -ForegroundColor Red
@@ -109,6 +103,12 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
+
+# Load the configuration files
+#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
 #===========================================================================
 # Store Form Objects In PowerShell
