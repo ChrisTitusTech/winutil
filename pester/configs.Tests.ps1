@@ -35,7 +35,7 @@ foreach ($configuration in $configurations) {
 
         Context "$name config file" {
             It "Imports with no errors" {
-                $global:importedconfigs.$name | should -Not -BeNullOrEmpty
+                $global:importedconfigs.$name | Should -Not -BeNullOrEmpty
             }
             if ($config) {
                 It "Imports should be the correct structure" {
@@ -44,12 +44,12 @@ foreach ($configuration in $configurations) {
                     $result = New-Object System.Collections.Generic.List[System.Object]
                     Foreach ($application in $applications) {
                         $compare = $global:importedconfigs.$name.$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                        if ($(Compare-Object $compare $template) -ne $null) {
+                        if ($(Compare-Object $compare $template)) {
                             $result.Add($application)
                         }
                     }
 
-                    $result | Select-String "WPF*" | should -BeNullOrEmpty
+                    $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
                 }
             }
             if($undo) {
@@ -80,7 +80,7 @@ foreach ($configuration in $configurations) {
                             }
                         }
                     }
-                    $result | Select-String "WPF*" | should -BeNullOrEmpty
+                    $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
                 }
             }
         }
