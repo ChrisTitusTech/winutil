@@ -1,96 +1,94 @@
+# Enable verbose output
+$VerbosePreference = "Continue"
+
 # Import Config Files
-$global:importedconfigs = @{}
-Get-ChildItem .\config | Where-Object {$_.Extension -eq ".json"} | ForEach-Object {
+$global:importedConfigs = @{}
+Get-ChildItem .\config -Filter *.json | ForEach-Object {
     try {
-        $global:importedconfigs[$psitem.BaseName] = Get-Content $psitem.FullName | ConvertFrom-Json
+        $global:importedConfigs[$_.BaseName] = Get-Content $_.FullName | ConvertFrom-Json
+        Write-Verbose "Successfully imported config file: $($_.FullName)"
     } catch {
-        Write-Warning "Failed to import config file: $($psitem.FullName). Error: $_"
+        Write-Error "Failed to import config file: $($_.FullName). Error: $_"
     }
 }
 
-
-#===========================================================================
-# Tests - Application Installs
-#===========================================================================
-
-$configurations = @(
-    @{
-        name = "applications"
-        config = $('{
-            "winget": "value",
-            "choco": "value",
-            "category": "value",
-            "content": "value",
-            "description": "value",
-            "link": "value"
-          }' | ConvertFrom-Json)
-    },
-    @{
-        name = "tweaks"
-        undo = $true
+Describe "Config Files Validation" {
+    $configTemplates = @{
+        applications = @("winget", "choco", "category", "content", "description", "link")
+        tweaks = @("registry", "service", "ScheduledTask")
     }
-)
 
-foreach ($configuration in $configurations) {
-    Describe "Config Files - $($configuration.name)" {
-        $name = $configuration.name
-        $config = $configuration.config
-        $undo = $configuration.undo
+    Context "Config File Structure" {
+        It "Should import all config files without errors" {
+            $global:importedConfigs | Should -Not -BeNullOrEmpty -Because "No config files were imported successfully"
+            Write-Verbose "Imported configs: $($global:importedConfigs.Keys -join ', ')"
+        }
 
-        Context "$name config file" {
-            It "Imports with no errors" {
-                $global:importedconfigs | Should -Not -BeNullOrEmpty -Because "The imported configs should not be null or empty"
-                $global:importedconfigs.ContainsKey($name) | Should -BeTrue -Because "The configuration '$name' should exist in the imported configs"
-                $global:importedconfigs[$name] | Should -Not -BeNullOrEmpty -Because "The configuration '$name' should not be null or empty"
-            }
-            
-            if ($config -and $global:importedconfigs -and $global:importedconfigs.ContainsKey($name)) {
-                It "Imports should be the correct structure" {
-                    $applications = $global:importedconfigs[$name] | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                    $template = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                    $result = New-Object System.Collections.Generic.List[System.Object]
-                    Foreach ($application in $applications) {
-                        $compare = $global:importedconfigs[$name].$application | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                        if ($(Compare-Object $compare $template)) {
-                            $result.Add($application)
-                        }
+        foreach ($configName in $configTemplates.Keys) {
+            It "Should have the correct structure for $configName" {
+                $global:importedConfigs.ContainsKey($configName) | Should -BeTrue -Because "Config file '$configName' is missing"
+                $config = $global:importedConfigs[$configName]
+                $config | Should -Not -BeNullOrEmpty -Because "Config file '$configName' is empty"
+
+                $properties = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+                foreach ($prop in $properties) {
+                    $itemProperties = $config.$prop | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+                    $missingProperties = Compare-Object $configTemplates[$configName] $itemProperties | Where-Object { $_.SideIndicator -eq "<=" } | Select-Object -ExpandProperty InputObject
+                    $missingProperties | Should -BeNullOrEmpty -Because "Item '$prop' in '$configName' config is missing properties: $($missingProperties -join ', ')"
+                    if ($missingProperties) {
+                        Write-Verbose "Missing properties in $configName.$prop: $($missingProperties -join ', ')"
                     }
-
-                    $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
-                }
-            }
-            
-            if ($undo -and $global:importedconfigs -and $global:importedconfigs.ContainsKey($name)) {
-                It "Tweaks should contain original Value" {
-                    $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
-                    $result = New-Object System.Collections.Generic.List[System.Object]
-
-                    foreach ($tweak in $tweaks) {
-                        $Originals = @(
-                            @{
-                                name = "registry"
-                                value = "OriginalValue"
-                            },
-                            @{
-                                name = "service"
-                                value = "OriginalType"
-                            },
-                            @{
-                                name = "ScheduledTask"
-                                value = "OriginalState"
-                            }
-                        )
-                        Foreach ($original in $Originals) {
-                            $TotalCount = ($global:importedconfigs.$name.$tweak.$($original.name)).count
-                            $OriginalCount = ($global:importedconfigs.$name.$tweak.$($original.name).$($original.value) | Where-Object {$_}).count
-                            if($TotalCount -ne $OriginalCount) {
-                                $result.Add("$Tweak,$($original.name)")
-                            }
-                        }
-                    }
-                    $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
                 }
             }
         }
     }
+
+    Context "Tweaks Configuration" {
+        It "Should have original values for all tweaks" {
+            $tweaks = $global:importedConfigs.tweaks
+            $tweaks | Should -Not -BeNullOrEmpty -Because "Tweaks configuration is missing or empty"
+
+            $originals = @{
+                registry = "OriginalValue"
+                service = "OriginalType"
+                ScheduledTask = "OriginalState"
+            }
+
+            foreach ($tweak in ($tweaks | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)) {
+                foreach ($type in $originals.Keys) {
+                    $totalCount = ($tweaks.$tweak.$type).Count
+                    $originalCount = ($tweaks.$tweak.$type.$($originals[$type]) | Where-Object { $_ }).Count
+                    $originalCount | Should -Be $totalCount -Because "Tweak '$tweak' of type '$type' is missing some original values"
+                    if ($originalCount -ne $totalCount) {
+                        Write-Verbose "Tweak '$tweak' of type '$type' has $originalCount original values out of $totalCount total values"
+                    }
+                }
+            }
+        }
+    }
+
+    Context "Applications Configuration" {
+        It "Should have all required fields for each application" {
+            $apps = $global:importedConfigs.applications
+            $apps | Should -Not -BeNullOrEmpty -Because "Applications configuration is missing or empty"
+
+            foreach ($app in ($apps | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)) {
+                foreach ($field in $configTemplates.applications) {
+                    $apps.$app.$field | Should -Not -BeNullOrEmpty -Because "Application '$app' is missing the '$field' field"
+                    if (-not $apps.$app.$field) {
+                        Write-Verbose "Application '$app' is missing the '$field' field"
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Summarize test results
+$testResults = Invoke-Pester -PassThru
+if ($testResults.FailedCount -gt 0) {
+    Write-Error "Tests failed. $($testResults.FailedCount) out of $($testResults.TotalCount) tests failed."
+    exit 1
+} else {
+    Write-Output "All tests passed successfully!"
 }
