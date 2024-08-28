@@ -36,7 +36,7 @@ Describe "Config Files Validation" {
                     $missingProperties = Compare-Object $configTemplates[$configName] $itemProperties | Where-Object { $_.SideIndicator -eq "<=" } | Select-Object -ExpandProperty InputObject
                     $missingProperties | Should -BeNullOrEmpty -Because "Item '$prop' in '$configName' config is missing properties: $($missingProperties -join ', ')"
                     if ($missingProperties) {
-                        Write-Verbose "Missing properties in $configName.$prop: $($missingProperties -join ', ')"
+                        Write-Verbose "Missing properties in ${configName}['${prop}']: $($missingProperties -join ', ')"
                     }
                 }
             }
