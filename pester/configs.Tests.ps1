@@ -115,7 +115,8 @@ Describe "Config Files Validation" {
         It "Should have the correct structure for all configs" {
             $results = $configSchemas.Keys | ForEach-Object -Parallel {
                 $configName = $_
-                $config = $using:global:importedConfigs[$configName]
+                $importedConfigs = $using:global:importedConfigs
+                $config = $importedConfigs[$configName]
                 $schema = $using:configSchemas[$configName]
                 
                 if (-not $config) {
