@@ -14,7 +14,7 @@ function Invoke-WinUtilSnapFlyout {
             Write-Host "Disabling Snap Assist Flyout On startup"
             $value = 0
         }
-        # taskkill.exe /F /IM "explorer.exe"
+
         $Path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
         taskkill.exe /F /IM "explorer.exe"
         Set-ItemProperty -Path $Path -Name EnableSnapAssistFlyout -Value $value
