@@ -39,10 +39,12 @@ foreach ($configuration in $configurations) {
 
         Context "$name config file" {
             It "Imports with no errors" {
+                $global:importedconfigs | Should -Not -BeNullOrEmpty -Because "The imported configs should not be null or empty"
                 $global:importedconfigs.ContainsKey($name) | Should -BeTrue -Because "The configuration '$name' should exist in the imported configs"
                 $global:importedconfigs[$name] | Should -Not -BeNullOrEmpty -Because "The configuration '$name' should not be null or empty"
             }
-            if ($config -and $global:importedconfigs.ContainsKey($name)) {
+            
+            if ($config -and $global:importedconfigs -and $global:importedconfigs.ContainsKey($name)) {
                 It "Imports should be the correct structure" {
                     $applications = $global:importedconfigs[$name] | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                     $template = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
@@ -57,7 +59,8 @@ foreach ($configuration in $configurations) {
                     $result | Where-Object { $_ -like "WPF*" } | Should -BeNullOrEmpty
                 }
             }
-            if($undo -and $global:importedconfigs.ContainsKey($name)) {
+            
+            if ($undo -and $global:importedconfigs -and $global:importedconfigs.ContainsKey($name)) {
                 It "Tweaks should contain original Value" {
                     $tweaks = $global:importedconfigs.$name | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty name
                     $result = New-Object System.Collections.Generic.List[System.Object]
