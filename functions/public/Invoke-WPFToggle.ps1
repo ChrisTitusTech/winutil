@@ -15,23 +15,25 @@ function Invoke-WPFToggle {
     # Use this to get the name of the button
     #[System.Windows.MessageBox]::Show("$Button","Chris Titus Tech's Windows Utility","OK","Info")
 
+    $ToggleStatus = (Get-WinUtilToggleStatus $Button)
+
     Switch -Wildcard ($Button) {
 
-        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode -DarkMoveEnabled $(Get-WinUtilToggleStatus WPFToggleDarkMode)}
-        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $(Get-WinUtilToggleStatus WPFToggleBingSearch)}
-        "WPFToggleNumLock" {Invoke-WinUtilNumLock $(Get-WinUtilToggleStatus WPFToggleNumLock)}
-        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $(Get-WinUtilToggleStatus WPFToggleVerboseLogon)}
-        "WPFToggleShowExt" {Invoke-WinUtilShowExt $(Get-WinUtilToggleStatus WPFToggleShowExt)}
-        "WPFToggleSnapWindow" {Invoke-WinUtilSnapWindow $(Get-WinUtilToggleStatus WPFToggleSnapWindow)}
-        "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $(Get-WinUtilToggleStatus WPFToggleSnapFlyout)}
-        "WPFToggleSnapSuggestion" {Invoke-WinUtilSnapSuggestion $(Get-WinUtilToggleStatus WPFToggleSnapSuggestion)}
-        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $(Get-WinUtilToggleStatus WPFToggleMouseAcceleration)}
-        "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $(Get-WinUtilToggleStatus WPFToggleStickyKeys)}
-        "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $(Get-WinUtilToggleStatus WPFToggleTaskbarWidgets)}
-        "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $(Get-WinUtilToggleStatus WPFToggleTaskbarSearch)}
-        "WPFToggleTaskView" {Invoke-WinUtilTaskView $(Get-WinUtilToggleStatus WPFToggleTaskView)}
-        "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $(Get-WinUtilToggleStatus WPFToggleHiddenFiles)}
-        "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $(Get-WinUtilToggleStatus WPFToggleTaskbarAlignment)}
-        "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $(Get-WinUtilToggleStatus WPFToggleDetailedBSoD)}
+        "WPFToggleDarkMode" {Invoke-WinUtilDarkMode $ToggleStatus}
+        "WPFToggleBingSearch" {Invoke-WinUtilBingSearch $ToggleStatus}
+        "WPFToggleNumLock" {Invoke-WinUtilNumLock $ToggleStatus}
+        "WPFToggleVerboseLogon" {Invoke-WinUtilVerboseLogon $ToggleStatus}
+        "WPFToggleShowExt" {Invoke-WinUtilShowExt $ToggleStatus}
+        "WPFToggleSnapWindow" {Invoke-WinUtilSnapWindow $ToggleStatus}
+        "WPFToggleSnapFlyout" {Invoke-WinUtilSnapFlyout $ToggleStatus}
+        "WPFToggleSnapSuggestion" {Invoke-WinUtilSnapSuggestion $ToggleStatus}
+        "WPFToggleMouseAcceleration" {Invoke-WinUtilMouseAcceleration $ToggleStatus}
+        "WPFToggleStickyKeys" {Invoke-WinUtilStickyKeys $ToggleStatus}
+        "WPFToggleTaskbarWidgets" {Invoke-WinUtilTaskbarWidgets $ToggleStatus}
+        "WPFToggleTaskbarSearch" {Invoke-WinUtilTaskbarSearch $ToggleStatus}
+        "WPFToggleTaskView" {Invoke-WinUtilTaskView $ToggleStatus}
+        "WPFToggleHiddenFiles" {Invoke-WinUtilHiddenFiles $ToggleStatus}
+        "WPFToggleTaskbarAlignment" {Invoke-WinUtilTaskbarAlignment $ToggleStatus}
+        "WPFToggleDetailedBSoD" {Invoke-WinUtilDetailedBSoD $ToggleStatus}
     }
 }

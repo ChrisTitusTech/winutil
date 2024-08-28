@@ -284,12 +284,12 @@
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="Red"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="BorderThickness" Value="10"/>
+                    <Setter Property="Cursor" Value="Hand"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -305,13 +305,13 @@
                         <Grid Background="{TemplateBinding Background}" Margin="{CheckBoxMargin}">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Grid Width="{CheckBoxBulletDecoratorFontSize}" Height="{CheckBoxBulletDecoratorFontSize}">
+                                    <Grid Width="{CheckBoxBulletDecoratorSize}" Height="{CheckBoxBulletDecoratorSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{ButtonBackgroundColor}"
                                                 BorderThickness="1"
-                                                Width="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
-                                                Height="{Binding Path={CheckBoxBulletDecoratorFontSize}-2}"
+                                                Width="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
+                                                Height="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
@@ -502,7 +502,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style TargetType="Border">
+        <Style x:Key="BorderStyle" TargetType="Border">
             <Setter Property="Background" Value="{MainBackgroundColor}"/>
             <Setter Property="BorderBrush" Value="{BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -677,19 +677,19 @@
                     Consider using a Math Solver, will help in making
                     development of these things much easier
                 -->
-                <!-- Changed the font size from {SearchBarTextBoxFontSize} to 12. This now display the text box correctly in the text box.-->
                 <TextBox
                     Grid.Column="0"
                     Width="{SearchBarWidth}"
                     Height="{SearchBarHeight}"
-                    FontSize="12"
+                    FontSize="{SearchBarTextBoxFontSize}"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     BorderThickness="1"
                     Name="SearchBar"
                     Foreground="{MainForegroundColor}" Background="{MainBackgroundColor}"
+                    Padding="3,3,30,0"
+                    Margin="5,0,0,0"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
                 </TextBox>
-                <!--Changed the margin from 16 to 180, which now places the magnifying glass icon on the right side of the text box. Now able to see what is been searched for.-->
                 <TextBlock
                     Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -703,12 +703,11 @@
                     Consider using a Math Solver, will help in making
                     development of these things much easier
                 -->
-                <!-- changed the {SearchBarClearButtonMargin} value from 193 to 205, which now places the clear button on the outside of the text box. -->
                 <Button Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="205,0,0,0" Visibility="Collapsed"/>
+                    Margin="210,0,0,0" Visibility="Collapsed"/>
 
                 <ProgressBar
                     Grid.Column="1"
@@ -774,7 +773,7 @@
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="{IconFontSize}" Name="WPFCloseButton" />
+                Foreground="{MainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 
         </DockPanel>
@@ -787,7 +786,7 @@
                         <RowDefinition Height="45px"/>
                         <RowDefinition Height="0.95*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="5">
+                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" Margin="{TabContentMargin}">
                         <Button Name="WPFinstall" Content=" Install/Upgrade Selected" Margin="2" />
                         <Button Name="WPFInstallUpgrade" Content=" Upgrade All" Margin="2"/>
                         <Button Name="WPFuninstall" Content=" Uninstall Selected" Margin="2"/>
@@ -795,73 +794,83 @@
                         <Button Name="WPFclearWinget" Content=" Clear Selection" Margin="2"/>
                     </StackPanel>
 
-                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Padding="-1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                    <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                 BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            {{InstallPanel_applications}}
+                        <Grid Name="appspanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         </Grid>
                     </ScrollViewer>
 
-                    <Rectangle Grid.Row="1" Grid.Column="0" Width="18" Height="18" Fill="{MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
+                    <Rectangle Grid.Row="1" Grid.Column="0" Width="22" Height="22" Fill="{MainBackgroundColor}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource ScrollVisibilityRectangle}"/>
 
                 </Grid>
             </TabItem>
             <TabItem Header="Tweaks" Visibility="Collapsed" Name="WPFTab2">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
+                <Grid>
+                    <!-- Main content area with a ScrollViewer -->
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="45px"/>
-                        <RowDefinition Height=".70*"/>
-                        <RowDefinition Height=".10*"/>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    {{InstallPanel_tweaks}}
-                    <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                        <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
-                        <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
-                        <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
-                        <Button Name="WPFclear" Content=" Clear " Margin="2"/>
-                        <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
-                    </StackPanel>
-                    <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0">
-                        <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBlock Padding="10">
-                                Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
-                                <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
 
-                    </Grid>
-                </ScrollViewer>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="0" Margin="{TabContentMargin}">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="45px"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
+                                <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
+                                <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
+                                <Button Name="WPFclear" Content=" Clear " Margin="2"/>
+                                <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
+                            </StackPanel>
+
+                            <Grid Name="tweakspanel" Grid.Row="1">
+                                <!-- Your tweakspanel content goes here -->
+                            </Grid>
+
+                            <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
+                                <StackPanel Background="{MainBackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBlock Padding="10">
+                                        Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
+                                        <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem Header="Config" Visibility="Collapsed" Name="WPFTab3">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Background="Transparent">
-                    {{InstallPanel_features}}
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
+                    <Grid Name="featurespanel" Grid.Row="1" Background="Transparent">
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Updates" Visibility="Collapsed" Name="WPFTab4">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
                 <Grid Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.Column="0">
+                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource BorderStyle}">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Button Name="WPFUpdatesdefault" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Default (Out of Box) Settings" Margin="20,4,20,10" Padding="10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is the default settings that come with Windows. <LineBreak/><LineBreak/> No modifications are made and will remove any custom windows update settings.<LineBreak/><LineBreak/>Note: If you still encounter update errors, reset all updates in the config tab. That will restore ALL Microsoft Update Services from their servers and reinstall them to default settings.</TextBlock>
                         </StackPanel>
                     </Border>
-                    <Border Grid.Row="0" Grid.Column="1">
+                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource BorderStyle}">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Button Name="WPFUpdatessecurity" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Security (Recommended) Settings" Margin="20,4,20,10" Padding="10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This is my recommended setting I use on all computers.<LineBreak/><LineBreak/> It will delay feature updates by 2 years and will install security updates 4 days after release.<LineBreak/><LineBreak/>Feature Updates: Adds features and often bugs to systems when they are released. You want to delay these as long as possible.<LineBreak/><LineBreak/>Security Updates: Typically these are pressing security flaws that need to be patched quickly. You only want to delay these a couple of days just to see if they are safe and don't break other systems. You don't want to go without these for ANY extended periods of time.</TextBlock>
                         </StackPanel>
                     </Border>
-                    <Border Grid.Row="0" Grid.Column="2">
+                    <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource BorderStyle}">
                         <StackPanel Background="{MainBackgroundColor}" SnapsToDevicePixels="True">
                             <Button Name="WPFUpdatesdisable" FontSize="{ConfigTabButtonFontSize}" Height="Auto" Width="Auto" Content="Disable ALL Updates (NOT RECOMMENDED!)" Margin="20,4,20,10" Padding="10,10,10,10"/>
                             <TextBlock Margin="20,0,20,0" Padding="10" TextWrapping="WrapWithOverflow" MaxWidth="300">This completely disables ALL Windows Updates and is NOT RECOMMENDED.<LineBreak/><LineBreak/> However, it can be suitable if you use your system for a select purpose and do not actively browse the internet. <LineBreak/><LineBreak/>Note: Your system will be easier to hack and infect without security updates.</TextBlock>
@@ -872,7 +881,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="MicroWin" Visibility="Collapsed" Name="WPFTab5">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{TabContentMargin}">
                 <Grid Width="Auto" Height="Auto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -882,16 +891,17 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Grid.Column="0"
+                        Style="{StaticResource BorderStyle}"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="-10,1,1,1" />
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="{CheckBoxMargin}" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="-10,1,1,1"
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{CheckBoxMargin}"
                                 ToolTip="Use ISO directory for ScratchDir " />
                             <Grid>
                             <Grid.ColumnDefinitions>
@@ -947,9 +957,9 @@
                                 Foreground="{LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
-                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="-10,5,0,0" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="-10,5,0,0" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
@@ -979,6 +989,7 @@
                     </StackPanel>
                     </Border>
                     <Border
+                        Style="{StaticResource BorderStyle}"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         Grid.Row="0" Grid.Column="1">

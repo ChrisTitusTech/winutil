@@ -64,38 +64,14 @@ Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
     }
 Update-Progress "Adding: Config *.json" 40
 Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
-
     $json = (Get-Content $psitem.FullName).replace("'","''")
-
-    # Replace every XML Special Character so it'll render correctly in final build
-    # Only do so if json files has content to be displayed (for example the applications, tweaks, features json files)
-        # Make an Array List containing every name at first level of Json File
-        $jsonAsObject = $json | convertfrom-json
-        $firstLevelJsonList = [System.Collections.ArrayList]::new()
-        $jsonAsObject.PSObject.Properties.Name | ForEach-Object {$null = $firstLevelJsonList.Add($_)}
-        # Note:
-        #  Avoid using HTML Entity Codes, for example '&rdquo;' (stands for "Right Double Quotation Mark"),
-        #  Use **HTML decimal/hex codes instead**, as using HTML Entity Codes will result in XML parse Error when running the compiled script.
-        for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
-            $firstLevelName = $firstLevelJsonList[$i]
-            if ($jsonAsObject.$firstLevelName.content -ne $null) {
-                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
-                $jsonAsObject.$firstLevelName.content = $jsonAsObject.$firstLevelName.content.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-            }
-            if ($jsonAsObject.$firstLevelName.description -ne $null) {
-                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&','&#38;').replace('“','&#8220;').replace('”','&#8221;').replace("'",'&#39;').replace('<','&#60;').replace('>','&#62;').replace('—','&#8212;')
-                $jsonAsObject.$firstLevelName.description = $jsonAsObject.$firstLevelName.description.replace('&#39;&#39;',"&#39;") # resolves the Double Apostrophe caused by the first replace function in the main loop
-            }
-        }
+    $jsonAsObject = $json | convertfrom-json
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
     if ($psitem.Name -eq "applications.json") {
-        for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
-            $appEntryName = $firstLevelJsonList[$i]
+        foreach ($appEntryName in $jsonAsObject.PSObject.Properties.Name) {
             $appEntryContent = $jsonAsObject.$appEntryName
-            # Remove the entire app entry, so we could add it later with a different name
             $jsonAsObject.PSObject.Properties.Remove($appEntryName)
-            # Add the app entry, but with a different name (WPFInstall + The App Entry Name)
             $jsonAsObject | Add-Member -MemberType NoteProperty -Name "WPFInstall$appEntryName" -Value $appEntryContent
         }
     }
@@ -110,20 +86,7 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
 
 $xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
 
-# Dot-source the Get-TabXaml function
-. "$workingdir\functions\private\Get-TabXaml.ps1"
-
-Update-Progress "Building: Xaml " 75
-$appXamlContent = Get-TabXaml "applications" 5
-$tweaksXamlContent = Get-TabXaml "tweaks"
-$featuresXamlContent = Get-TabXaml "feature"
-
-
 Update-Progress "Adding: Xaml " 90
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
-$xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
