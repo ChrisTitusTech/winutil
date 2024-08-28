@@ -85,21 +85,15 @@ try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
     $readerOperationSuccessful = $true
 } catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+    Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
 
     If ($error[0].Exception.Message -like "*button*") {
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
+        write-Host "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n" -ForegroundColor Red
     }
 } catch {
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed." -ForegroundColor Red
 }
-
-# Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
 if (-NOT ($readerOperationSuccessful)) {
     Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
@@ -109,6 +103,12 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
+
+# Load the configuration files
+#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
 #===========================================================================
 # Store Form Objects In PowerShell
