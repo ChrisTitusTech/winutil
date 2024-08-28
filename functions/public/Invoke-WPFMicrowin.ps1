@@ -178,7 +178,22 @@ public class PowerManagement {
         Write-Host "Removal complete!"
 
         Write-Host "Create unattend.xml"
-        New-Unattend
+        #New-Unattend
+        if ($sync.MicrowinUserName.Text -eq "")
+        {
+            New-Unattend -userName "User"
+        }
+        else
+        {
+            if ($sync.MicrowinUserPassword.Password -eq "")
+            {
+                New-Unattend -userName "$($sync.MicrowinUserName.Text)"
+            }
+            else
+            {
+                New-Unattend -userName "$($sync.MicrowinUserName.Text)" -userPassword "$($sync.MicrowinUserPassword.Password)"
+            }
+        }
         Write-Host "Done Create unattend.xml"
         Write-Host "Copy unattend.xml file into the ISO"
         New-Item -ItemType Directory -Force -Path "$($scratchDir)\Windows\Panther"

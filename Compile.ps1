@@ -64,7 +64,6 @@ Get-ChildItem "$workingdir\functions" -Recurse -File | ForEach-Object {
     }
 Update-Progress "Adding: Config *.json" 40
 Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-Object {
-
     $json = (Get-Content $psitem.FullName).replace("'","''")
 
     # Replace every XML Special Character so it'll render correctly in final build
@@ -98,12 +97,9 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
 
     # Add 'WPFInstall' as a prefix to every entry-name in 'applications.json' file
     if ($psitem.Name -eq "applications.json") {
-        for ($i = 0; $i -lt $firstLevelJsonList.Count; $i += 1) {
-            $appEntryName = $firstLevelJsonList[$i]
+        foreach ($appEntryName in $jsonAsObject.PSObject.Properties.Name) {
             $appEntryContent = $jsonAsObject.$appEntryName
-            # Remove the entire app entry, so we could add it later with a different name
             $jsonAsObject.PSObject.Properties.Remove($appEntryName)
-            # Add the app entry, but with a different name (WPFInstall + The App Entry Name)
             $jsonAsObject | Add-Member -MemberType NoteProperty -Name "WPFInstall$appEntryName" -Value $appEntryContent
         }
     }
@@ -118,20 +114,7 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
 
 $xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
 
-# Dot-source the Get-TabXaml function
-. "$workingdir\functions\private\Get-TabXaml.ps1"
-
-Update-Progress "Building: Xaml " 75
-$appXamlContent = Get-TabXaml "applications" 5
-$tweaksXamlContent = Get-TabXaml "tweaks"
-$featuresXamlContent = Get-TabXaml "feature"
-
-
 Update-Progress "Adding: Xaml " 90
-# Replace the placeholder in $inputXML with the content of inputApp.xaml
-$xaml = $xaml -replace "{{InstallPanel_applications}}", $appXamlContent
-$xaml = $xaml -replace "{{InstallPanel_tweaks}}", $tweaksXamlContent
-$xaml = $xaml -replace "{{InstallPanel_features}}", $featuresXamlContent
 
 $script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
 
