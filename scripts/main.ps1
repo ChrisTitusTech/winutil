@@ -52,6 +52,7 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+$defaulttheme = '_default'
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
@@ -62,8 +63,8 @@ if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     $ctttheme = 'Classic'
 }
 
-$inputXML = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme
-if ($inputXML -eq "") {
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
+if ($returnVal[0] -eq "") {
     Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
     Write-Host "Quitting winutil..." -ForegroundColor Red
     $sync.runspace.Dispose()
@@ -71,6 +72,8 @@ if ($inputXML -eq "") {
     [System.GC]::Collect()
     exit 1
 }
+$inputXML = $returnVal[0]
+$ctttheme = $returnVal[1]
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML

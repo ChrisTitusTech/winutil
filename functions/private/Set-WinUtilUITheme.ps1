@@ -41,21 +41,23 @@ function Set-WinUtilUITheme {
             throw [GenericException]::new("[Set-WinUtilTheme] Did not find '$defaultThemeName' theme in the themes config file.")
         }
 
-        if ($sync.configs.themes.$customThemeName) {
+        $themeToUse = $customThemeName
+        if ($sync.configs.themes.$themeToUse) {
             # Loop through every default theme option, and modify the custom theme in $sync variable,
             # so that it has full options available for other functions to use.
             foreach ($option in $sync.configs.themes.$defaultThemeName.PSObject.Properties) {
                 $optionName = $option.Name
                 $optionValue = $option.Value
-                if (-NOT $sync.configs.themes.$customThemeName.$optionName) {
-                    $sync.configs.themes.$customThemeName | Add-Member -MemberType NoteProperty -Name $optionName -Value $optionValue
+                if (-NOT $sync.configs.themes.$themeToUse.$optionName) {
+                    $sync.configs.themes.$themeToUse | Add-Member -MemberType NoteProperty -Name $optionName -Value $optionValue
                 }
             }
         } else {
-            Write-Debug "[Set-WinUtilTheme] Theme '$customThemeName' was not found."
+            Write-Debug "[Set-WinUtilTheme] Theme '$customThemeName' was not found, using '$defaultThemeName' instead."
+            $themeToUse = $defaultThemeName
         }
 
-        foreach ($property in $sync.configs.themes.$customThemeName.PSObject.Properties) {
+        foreach ($property in $sync.configs.themes.$themeToUse.PSObject.Properties) {
             $key = $property.Name
             $value = $property.Value
             # Add curly braces around the key
@@ -70,5 +72,5 @@ function Set-WinUtilUITheme {
         $inputXML = "" # Make inputXML equal an empty string, indicating something went wrong to the function caller.
     }
 
-    return $inputXML;
+    return @($inputXML, $themeToUse);
 }
