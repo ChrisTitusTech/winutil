@@ -3,19 +3,68 @@ $VerbosePreference = "Continue"
 
 # Import Config Files
 $global:importedConfigs = @{}
-Get-ChildItem .\config -Filter *.json | ForEach-Object {
-    try {
-        $global:importedConfigs[$_.BaseName] = Get-Content $_.FullName | ConvertFrom-Json
-        Write-Verbose "Successfully imported config file: $($_.FullName)"
-    } catch {
-        Write-Error "Failed to import config file: $($_.FullName). Error: $_"
+$configFiles = Get-ChildItem .\config -Filter *.json -ErrorAction SilentlyContinue
+if ($configFiles) {
+    foreach ($file in $configFiles) {
+        try {
+            $global:importedConfigs[$file.BaseName] = Get-Content $file.FullName | ConvertFrom-Json
+            Write-Verbose "Successfully imported config file: $($file.FullName)"
+        } catch {
+            Write-Error "Failed to import config file: $($file.FullName). Error: $_"
+        }
     }
+} else {
+    Write-Warning "No config files found in the .\config directory"
 }
 
 Describe "Config Files Validation" {
-    $configTemplates = @{
-        applications = @("winget", "choco", "category", "content", "description", "link")
-        tweaks = @("registry", "service", "ScheduledTask")
+    $configSchemas = @{
+        applications = @{
+            Type = "Object"
+            Properties = @{
+                winget = @{ Type = "String" }
+                choco = @{ Type = "String" }
+                category = @{ Type = "String" }
+                content = @{ Type = "String" }
+                description = @{ Type = "String" }
+                link = @{ Type = "String" }
+            }
+            Required = @("winget", "choco", "category", "content", "description", "link")
+        }
+        tweaks = @{
+            Type = "Object"
+            Properties = @{
+                registry = @{
+                    Type = "Object"
+                    Properties = @{
+                        Path = @{ Type = "String" }
+                        Name = @{ Type = "String" }
+                        Type = @{ Type = "String" }
+                        Value = @{ Type = "String" }
+                        OriginalValue = @{ Type = "String" }
+                    }
+                    Required = @("Path", "Name", "Type", "Value", "OriginalValue")
+                }
+                service = @{
+                    Type = "Object"
+                    Properties = @{
+                        Name = @{ Type = "String" }
+                        StartupType = @{ Type = "String" }
+                        OriginalType = @{ Type = "String" }
+                    }
+                    Required = @("Name", "StartupType", "OriginalType")
+                }
+                ScheduledTask = @{
+                    Type = "Object"
+                    Properties = @{
+                        Name = @{ Type = "String" }
+                        State = @{ Type = "String" }
+                        OriginalState = @{ Type = "String" }
+                    }
+                    Required = @("Name", "State", "OriginalState")
+                }
+            }
+        }
     }
 
     Context "Config File Structure" {
@@ -24,61 +73,43 @@ Describe "Config Files Validation" {
             Write-Verbose "Imported configs: $($global:importedConfigs.Keys -join ', ')"
         }
 
-        foreach ($configName in $configTemplates.Keys) {
+        foreach ($configName in $configSchemas.Keys) {
             It "Should have the correct structure for $configName" {
+                $global:importedConfigs | Should -Not -BeNullOrEmpty
                 $global:importedConfigs.ContainsKey($configName) | Should -BeTrue -Because "Config file '$configName' is missing"
                 $config = $global:importedConfigs[$configName]
                 $config | Should -Not -BeNullOrEmpty -Because "Config file '$configName' is empty"
 
-                $properties = $config | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-                foreach ($prop in $properties) {
-                    $itemProperties = $config.$prop | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-                    $missingProperties = Compare-Object $configTemplates[$configName] $itemProperties | Where-Object { $_.SideIndicator -eq "<=" } | Select-Object -ExpandProperty InputObject
-                    $missingProperties | Should -BeNullOrEmpty -Because "Item '$prop' in '$configName' config is missing properties: $($missingProperties -join ', ')"
-                    if ($missingProperties) {
-                        Write-Verbose "Missing properties in ${configName}['${prop}']: $($missingProperties -join ', ')"
+                $schema = $configSchemas[$configName]
+                
+                function Test-Schema {
+                    param (
+                        $Object,
+                        $Schema
+                    )
+
+                    $Object.PSObject.Properties | ForEach-Object {
+                        $propName = $_.Name
+                        $propValue = $_.Value
+
+                        $propSchema = $Schema.Properties[$propName]
+                        $propSchema | Should -Not -BeNullOrEmpty -Because "Property '$propName' is not defined in the schema"
+
+                        switch ($propSchema.Type) {
+                            "String" { $propValue | Should -BeOfType [string] }
+                            "Object" { 
+                                $propValue | Should -BeOfType [PSCustomObject]
+                                Test-Schema -Object $propValue -Schema $propSchema
+                            }
+                        }
+                    }
+
+                    foreach ($requiredProp in $Schema.Required) {
+                        $Object.PSObject.Properties.Name | Should -Contain $requiredProp -Because "Required property '$requiredProp' is missing"
                     }
                 }
-            }
-        }
-    }
 
-    Context "Tweaks Configuration" {
-        It "Should have original values for all tweaks" {
-            $tweaks = $global:importedConfigs.tweaks
-            $tweaks | Should -Not -BeNullOrEmpty -Because "Tweaks configuration is missing or empty"
-
-            $originals = @{
-                registry = "OriginalValue"
-                service = "OriginalType"
-                ScheduledTask = "OriginalState"
-            }
-
-            foreach ($tweak in ($tweaks | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)) {
-                foreach ($type in $originals.Keys) {
-                    $totalCount = ($tweaks.$tweak.$type).Count
-                    $originalCount = ($tweaks.$tweak.$type.$($originals[$type]) | Where-Object { $_ }).Count
-                    $originalCount | Should -Be $totalCount -Because "Tweak '$tweak' of type '$type' is missing some original values"
-                    if ($originalCount -ne $totalCount) {
-                        Write-Verbose "Tweak '$tweak' of type '$type' has $originalCount original values out of $totalCount total values"
-                    }
-                }
-            }
-        }
-    }
-
-    Context "Applications Configuration" {
-        It "Should have all required fields for each application" {
-            $apps = $global:importedConfigs.applications
-            $apps | Should -Not -BeNullOrEmpty -Because "Applications configuration is missing or empty"
-
-            foreach ($app in ($apps | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)) {
-                foreach ($field in $configTemplates.applications) {
-                    $apps.$app.$field | Should -Not -BeNullOrEmpty -Because "Application '$app' is missing the '$field' field"
-                    if (-not $apps.$app.$field) {
-                        Write-Verbose "Application '$app' is missing the '$field' field"
-                    }
-                }
+                Test-Schema -Object $config -Schema $schema
             }
         }
     }
