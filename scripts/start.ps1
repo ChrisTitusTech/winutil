@@ -27,11 +27,11 @@ if ($Run) {
     $PARAM_RUN = $true
 }
 
-if (!(Test-Path -Path $ENV:TEMP)) {
-    New-Item -ItemType Directory -Force -Path $ENV:TEMP
-}
+$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
 
-Start-Transcript $ENV:TEMP\Winutil.log -Append
+$logdir = "$env:localappdata\winutil\logs"
+[System.IO.Directory]::CreateDirectory("$logdir")
+Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append
 
 # Load DLLs
 Add-Type -AssemblyName PresentationFramework
