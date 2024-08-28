@@ -13,7 +13,14 @@ function Set-WinUtilUITheme {
             The name of the default theme to use when setting the XAML. Defaults to '_default'
 
         .EXAMPLE
-            Set-WinUtilUITheme -inputXAML $inputXAML
+            $returnVal = Set-WinUtilUITheme -inputXAML $inputXAML
+            if ($returnVal[0] -eq "") {
+                Write-Host "Failed to process inputXML"
+            } else {
+                $inputXML = $returnVal[0]
+            }
+            # to know which theme this function has used, access the second item in returned value.
+            Write-Host "Theme used in processing: $($returnVal[1])"
     #>
 
     param (
