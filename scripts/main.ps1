@@ -52,6 +52,7 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+$defaulttheme = '_default'
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
@@ -61,15 +62,28 @@ if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
 } else {
     $ctttheme = 'Classic'
 }
-$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
+
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
+if ($returnVal[0] -eq "") {
+    Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
+    Write-Host "Quitting winutil..." -ForegroundColor Red
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    exit 1
+}
+$inputXML = $returnVal[0]
+$ctttheme = $returnVal[1]
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
 # Read the XAML file
+$readerOperationSuccessful = $false # There's more cases of failure then success.
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
+    $readerOperationSuccessful = $true
 } catch [System.Management.Automation.MethodInvocationException] {
     Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
     Write-Host $error[0].Exception.Message -ForegroundColor Red
@@ -81,13 +95,20 @@ try {
     Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 }
 
-
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
 Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
 Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
+if (-NOT ($readerOperationSuccessful)) {
+    Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
+    Write-Host "Quitting winutil..." -ForegroundColor Red
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    exit 1
+}
 
 #===========================================================================
 # Store Form Objects In PowerShell
