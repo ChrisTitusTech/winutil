@@ -10,29 +10,36 @@ function Invoke-WPFPresets {
     .PARAMETER imported
         If the preset is imported from a file, defaults to false
 
-    .PARAMETER checkbox
-        The checkbox to set the options to, defaults to 'WPFTweaks'
+    .PARAMETER checkboxfilterpattern
+        The Pattern to use when filtering through CheckBoxes, defaults to "**"
 
     #>
 
-    param(
-        $preset,
-        [bool]$imported = $false
+    param (
+        [Parameter(position=0)]
+        [string]$preset = "",
+
+        [Parameter(position=1)]
+        [bool]$imported = $false,
+
+        [Parameter(position=2)]
+        [string]$checkboxfilterpattern = "**"
     )
 
-    if($imported -eq $true) {
+    if ($imported -eq $true) {
         $CheckBoxesToCheck = $preset
     } else {
         $CheckBoxesToCheck = $sync.configs.preset.$preset
     }
 
-    $CheckBoxes = $sync.GetEnumerator() | Where-Object { $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" }
-    Write-Debug "Getting checkboxes to set $($CheckBoxes.Count)"
+    $CheckBoxes = ($sync.GetEnumerator()).where{ $_.Value -is [System.Windows.Controls.CheckBox] -and $_.Name -notlike "WPFToggle*" -and $_.Name -like "$checkboxfilterpattern"}
+    Write-Debug "Getting checkboxes to set, number of checkboxes: $($CheckBoxes.Count)"
 
-    $CheckBoxesToCheck | ForEach-Object {
-        if ($_ -ne $null) {
-            Write-Debug $_
-        }
+    if ($CheckBoxesToCheck -ne "") {
+        $debugMsg = "CheckBoxes to Check are: "
+        $CheckBoxesToCheck | ForEach-Object { $debugMsg += "$_, " }
+        $debugMsg = $debugMsg -replace (',\s*$', '')
+        Write-Debug "$debugMsg"
     }
 
     foreach ($CheckBox in $CheckBoxes) {
