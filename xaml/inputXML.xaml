@@ -9,7 +9,11 @@
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
-        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
+        Width="Auto"
+        Height="Auto"
+        MaxWidth="1380"
+        MaxHeight="800"
+        Title="Chris Titus Tech's Windows Utility">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
@@ -722,7 +726,8 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="{IconFontSize}"
-                    Margin="180,0,0,0">&#xE721;</TextBlock>
+                    Margin="180,0,0,0">&#xE721;
+                </TextBlock>
                 <!--
                   TODO:
                     Make this ClearButton Positioning react to
@@ -734,7 +739,8 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="210,0,0,0" Visibility="Collapsed"/>
+                    Margin="210,0,0,0" Visibility="Collapsed">
+                </Button>
 
                 <ProgressBar
                     Grid.Column="1"
@@ -773,7 +779,7 @@
                     FontSize="{SettingsIconFontSize}"
                     Width="{IconButtonSize}" Height="{IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,5,5,0"
+                    Margin="0,5,0,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
                 <Popup Grid.Column="2" Name="SettingsPopup"
@@ -869,19 +875,11 @@
                             </Border>
                         </Grid>
                     </ScrollViewer>
-                    <Border Grid.Row="1" Background="{MainBackgroundColor}" BorderBrush="{BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Buttons on the left half -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
-                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
-                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
-                            </StackPanel>
-                        </Grid>
+                    <Border Grid.Row="1" Background="{MainBackgroundColor}" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                            <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
+                            <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
+                        </StackPanel>
                     </Border>
                 </Grid>
             </TabItem>

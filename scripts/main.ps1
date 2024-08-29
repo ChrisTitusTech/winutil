@@ -246,14 +246,6 @@ $sync["Form"].Add_MouseLeftButtonDown({
     $sync["Form"].DragMove()
 })
 
-$sync["Form"].Add_MouseDoubleClick({
-    if ($sync["Form"].WindowState -eq [Windows.WindowState]::Normal) {
-        $sync["Form"].WindowState = [Windows.WindowState]::Maximized;
-    } else {
-        $sync["Form"].WindowState = [Windows.WindowState]::Normal;
-    }
-})
-
 $sync["Form"].Add_Deactivated({
     Write-Debug "WinUtil lost focus"
     if ($sync["SettingsPopup"].IsOpen) {
@@ -437,6 +429,12 @@ $sync["SearchBar"].Add_TextChanged({
     foreach ($category in $inactiveCategories) {
         $sync[$category].Visibility = "Collapsed"
     }
+})
+
+$sync["Form"].Add_Loaded({
+    param($e)
+    $sync["Form"].MaxWidth = [Double]::PositiveInfinity
+    $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })
 
 # Initialize the hashtable

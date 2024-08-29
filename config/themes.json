@@ -6,7 +6,7 @@
         "CustomDialogWidth":          "400",
         "CustomDialogHeight":         "200",
 
-        "FontSize":         "14",
+        "FontSize":         "12",
         "FontFamily":       "Arial",
         "FontSizeHeading":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
