@@ -101,9 +101,8 @@ jobs:
         id: prepare_body
         run: |
           $newChanges = '${{ steps.generate_notes.outputs.body }}'
-          $formattedChanges = "Changes since ${{ env.LATEST_TAG }}:`n`n$newChanges"
-          $escapedChanges = $formattedChanges -replace "`n", "%0A" -replace "'", "``'" -replace '"', '`"'
-          echo "body=$escapedChanges" >> $env:GITHUB_OUTPUT
+          $escapedChanges = $newChanges -replace '(?m)^\s*(.+)\s*$', '$1' -replace "'", "''" -replace '"', '\"' -replace "`n", "\n" -replace "`r", ""
+          echo "body=$escapedChanges" | Out-File -Append -Encoding utf8 $env:GITHUB_OUTPUT
         shell: pwsh
 
       - name: Create and Upload Release
