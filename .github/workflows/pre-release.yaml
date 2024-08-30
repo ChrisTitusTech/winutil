@@ -100,12 +100,10 @@ jobs:
       - name: Prepare Release Body
         id: prepare_body
         run: |
-          $newChanges = @'
-          ${{ steps.generate_notes.outputs.body }}
-          '@
+          $newChanges = '${{ steps.generate_notes.outputs.body }}'
           $formattedChanges = "Changes since ${{ env.LATEST_TAG }}:`n`n$newChanges"
-          $encodedChanges = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($formattedChanges))
-          echo "body=$encodedChanges" >> $env:GITHUB_OUTPUT
+          $escapedChanges = $formattedChanges -replace '%', '%25' -replace '\n', '%0A' -replace '\r', '%0D' -replace "'", '%27' -replace '"', '%22'
+          echo "body=$escapedChanges" >> $env:GITHUB_OUTPUT
         shell: pwsh
 
       - name: Create and Upload Release
@@ -115,7 +113,7 @@ jobs:
           tag_name: ${{ env.version }}
           name: Pre-Release ${{ env.version }}
           body: |
-            ${{ '{{' }} fromJson(format('"{0}"', steps.prepare_body.outputs.body)) | base64decode {{ '}}' }}
+            ${{ steps.prepare_body.outputs.body }}
             
             ![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ env.VERSION }}/winutil.ps1)
           append_body: false
