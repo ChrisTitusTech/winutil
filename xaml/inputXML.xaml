@@ -693,10 +693,10 @@
             </ToggleButton>
             <Grid Background="{MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="50px"/>
-                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="*"/> <!-- Main content area -->
+                    <ColumnDefinition Width="Auto"/> <!-- Space for options button -->
+                    <ColumnDefinition Width="Auto"/> <!-- Space for close button -->
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!--
@@ -779,7 +779,7 @@
                     FontSize="{SettingsIconFontSize}"
                     Width="{IconButtonSize}" Height="{IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,5,0,0"
+                    Margin="5,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
                 <Popup Grid.Column="2" Name="SettingsPopup"
