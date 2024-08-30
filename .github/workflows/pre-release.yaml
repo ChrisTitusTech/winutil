@@ -78,8 +78,8 @@ jobs:
         id: get_latest_release
         run: |
           git fetch --tags --force
-          $latestTag = git describe --tags --abbrev=0
-          if ($LASTEXITCODE -ne 0) {
+          $latestTag = git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags --count 1
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrEmpty($latestTag)) {
             Write-Error "Failed to get latest tag. Error code: $LASTEXITCODE"
             exit 1
           }
