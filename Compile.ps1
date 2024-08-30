@@ -2,7 +2,7 @@ param (
     [switch]$Debug,
     [switch]$Run,
     [switch]$SkipPreprocessing,
-    [string]$arg
+    [string]$Arguments
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
@@ -119,7 +119,7 @@ catch {
 Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
-    $script = "& '$workingdir\$scriptname' $arg"
+    $script = "& '$workingdir\$scriptname' $Arguments"
 
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
