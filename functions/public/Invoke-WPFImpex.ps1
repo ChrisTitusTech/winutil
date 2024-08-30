@@ -41,6 +41,8 @@ function Invoke-WPFImpex {
     if ($type -eq "export") {
         $jsonFile = Get-WinUtilCheckBoxes -unCheck $false
         $jsonFile | ConvertTo-Json | Out-File $FileBrowser.FileName -Force
+        $runscript = "iex ""& { `$(irm christitus.com/win) } -Config '$($FileBrowser.FileName)'"""
+        $runscript | Set-Clipboard
     }
     if ($type -eq "import") {
         $jsonFile = Get-Content $Config | ConvertFrom-Json
