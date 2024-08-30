@@ -100,10 +100,11 @@ jobs:
       - name: Prepare Release Body
         id: prepare_body
         run: |
-          $newChanges = "${{ steps.generate_notes.outputs.body }}"
+          $newChanges = '${{ steps.generate_notes.outputs.body }}'
           $formattedChanges = "Changes since ${{ env.LATEST_TAG }}:`n`n$newChanges"
+          $escapedChanges = $formattedChanges -replace '"', '\"'
           echo "body<<EOF" >> $env:GITHUB_OUTPUT
-          echo "$formattedChanges" >> $env:GITHUB_OUTPUT
+          echo "$escapedChanges" >> $env:GITHUB_OUTPUT
           echo "EOF" >> $env:GITHUB_OUTPUT
         shell: pwsh
 
