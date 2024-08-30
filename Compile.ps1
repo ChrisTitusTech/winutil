@@ -1,7 +1,8 @@
 param (
     [switch]$Debug,
     [switch]$Run,
-    [switch]$SkipPreprocessing
+    [switch]$SkipPreprocessing,
+    [string]$args
 )
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
@@ -116,6 +117,19 @@ catch {
     Write-Host "$($Error[0])" -ForegroundColor Red
 }
 Write-Progress -Activity "Validating" -Completed
+
+if ($run) {
+    $script = "& { & '$($workingdir)\$($scriptname)' $($args) }"
+
+    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
+
+    Start-Process $processCmd -ArgumentList "$powershellcmd -NoProfile -Command $script"
+
+    break
+}
+
+
 
 if ($run) {
     try {
