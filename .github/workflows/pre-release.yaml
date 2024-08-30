@@ -102,7 +102,7 @@ jobs:
         run: |
           $newChanges = '${{ steps.generate_notes.outputs.body }}'
           $formattedChanges = "Changes since ${{ env.LATEST_TAG }}:`n`n$newChanges"
-          $escapedChanges = $formattedChanges -replace '%', '%25' -replace '\n', '%0A' -replace '\r', '%0D' -replace "'", '%27' -replace '"', '%22'
+          $escapedChanges = $formattedChanges -replace "`n", "%0A" -replace "'", "``'" -replace '"', '`"'
           echo "body=$escapedChanges" >> $env:GITHUB_OUTPUT
         shell: pwsh
 
