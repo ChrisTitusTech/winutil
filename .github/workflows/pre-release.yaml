@@ -95,16 +95,7 @@ jobs:
         with:
           config-name: release-drafter.yml
           version: ${{ env.version }}
-          tag: ${{ env.LATEST_TAG }}
-
-      - name: Prepare Release Body
-        id: prepare_body
-        run: |
-          $newChanges = '${{ steps.generate_notes.outputs.body }}'
-          $escapedChanges = $newChanges -replace '(?m)^\s*(.+)\s*$', '$1' -replace "'", '\"' -replace '"', '\"' -replace "`n", "\n" -replace "`r", ""
-          echo "body=$escapedChanges" | Out-File -Append -Encoding utf8 $env:GITHUB_OUTPUT
-        shell: pwsh
-
+        
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
