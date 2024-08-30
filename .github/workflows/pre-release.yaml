@@ -74,6 +74,13 @@ jobs:
           name: winutil
           path: ./winutil.ps1
 
+      - name: Get latest release tag
+        id: get_latest_release
+        run: |
+          $latestTag = git describe --tags --abbrev=0
+          echo "LATEST_TAG=$latestTag" >> $env:GITHUB_ENV
+        shell: pwsh
+
       - name: Generate Release Notes
         id: generate_notes
         uses: release-drafter/release-drafter@v5
@@ -82,14 +89,17 @@ jobs:
         with:
           config-name: release-drafter.yml
           version: ${{ env.version }}
+          tag: ${{ env.LATEST_TAG }}
 
       - name: Prepare Release Body
         id: prepare_body
         run: |
-          new_changes="${{ steps.generate_notes.outputs.body }}"
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$new_changes" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          $newChanges = "${{ steps.generate_notes.outputs.body }}"
+          $formattedChanges = "Changes since ${{ env.LATEST_TAG }}:`n`n$newChanges"
+          echo "body<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$formattedChanges" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
       - name: Create and Upload Release
         id: create_release
