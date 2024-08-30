@@ -11,7 +11,7 @@
         WindowStyle="None"
         Width="Auto"
         Height="Auto"
-        MaxWidth="1380"
+        MaxWidth="1280"
         MaxHeight="800"
         Title="Chris Titus Tech's Windows Utility">
     <WindowChrome.WindowChrome>
