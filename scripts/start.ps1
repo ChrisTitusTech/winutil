@@ -28,12 +28,6 @@ if ($Run) {
     $PARAM_RUN = $true
 }
 
-$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-
-$logdir = "$env:localappdata\winutil\logs"
-[System.IO.Directory]::CreateDirectory("$logdir")
-Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
-
 # Load DLLs
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
@@ -70,6 +64,12 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
     break
 }
+
+$dateTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+
+$logdir = "$env:localappdata\winutil\logs"
+[System.IO.Directory]::CreateDirectory("$logdir") | Out-Null
+Start-Transcript -Path "$logdir\winutil_$dateTime.log" -Append -NoClobber | Out-Null
 
 # Set PowerShell window title
 $Host.UI.RawUI.WindowTitle = $myInvocation.MyCommand.Definition + "(Admin)"
