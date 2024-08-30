@@ -851,7 +851,7 @@
                                 <Label Content="Recommended Selections:" FontSize="{FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <Button Name="WPFstandard" Content=" Standard " Margin="2"/>
                                 <Button Name="WPFminimal" Content=" Minimal " Margin="2"/>
-                                <Button Name="WPFclear" Content=" Clear " Margin="2"/>
+                                <Button Name="WPFClearTweaksSelection" Content=" Clear " Margin="2"/>
                                 <Button Name="WPFGetInstalledTweaks" Content=" Get Installed " Margin="2"/>
                             </StackPanel>
 
