@@ -101,7 +101,7 @@ jobs:
         id: prepare_body
         run: |
           $newChanges = '${{ steps.generate_notes.outputs.body }}'
-          $escapedChanges = $newChanges -replace '(?m)^\s*(.+)\s*$', '$1' -replace "'", "''" -replace '"', '\"' -replace "`n", "\n" -replace "`r", ""
+          $escapedChanges = $newChanges -replace '(?m)^\s*(.+)\s*$', '$1' -replace "'", '\"' -replace '"', '\"' -replace "`n", "\n" -replace "`r", ""
           echo "body=$escapedChanges" | Out-File -Append -Encoding utf8 $env:GITHUB_OUTPUT
         shell: pwsh
 
