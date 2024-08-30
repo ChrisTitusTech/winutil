@@ -77,7 +77,13 @@ jobs:
       - name: Get latest release tag
         id: get_latest_release
         run: |
+          git fetch --tags --force
           $latestTag = git describe --tags --abbrev=0
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to get latest tag. Error code: $LASTEXITCODE"
+            exit 1
+          }
+          Write-Host "Latest tag: $latestTag"
           echo "LATEST_TAG=$latestTag" >> $env:GITHUB_ENV
         shell: pwsh
 
