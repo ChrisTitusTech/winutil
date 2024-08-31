@@ -282,6 +282,13 @@
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/sound"
   },
+  "WPFPanelprinter": {
+    "Content": "Printer Settings",
+    "category": "Legacy Windows Panels",
+    "panel": "2",
+    "Type": "Button",
+    "ButtonWidth": "300"
+  },
   "WPFPanelsystem": {
     "Content": "System Properties",
     "category": "Legacy Windows Panels",
