@@ -121,7 +121,7 @@ try {
 Write-Progress -Activity "Validating" -Completed
 
 if ($run) {
-    $script = "& '$scriptname' $Arguments"
+    $script = "& '$workingdir\$scriptname' $Arguments"
 
     $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
