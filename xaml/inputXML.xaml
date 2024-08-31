@@ -827,6 +827,7 @@
                         <Button Name="WPFUninstall" Content=" Uninstall Selected" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
                         <Button Name="WPFClearInstallSelection" Content=" Clear Selection" Margin="2"/>
+                        <Button Name="WPFChangeColor" Content=" Change Color" Margin="2"/>
                     </StackPanel>
 
                     <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
