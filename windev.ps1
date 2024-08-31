@@ -35,8 +35,7 @@ function RedirectToLatestPreRelease {
         $url = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
     }
 
-    $runscript = "iex ""& { `$(irm $url) } '$($argList)'"""
-    Invoke-Expression $runscript
+    iex "& { $(irm $url) }"
 }
 
 # Call the redirect function
