@@ -287,7 +287,8 @@
     "category": "Legacy Windows Panels",
     "panel": "2",
     "Type": "Button",
-    "ButtonWidth": "300"
+    "ButtonWidth": "300",
+    "link": "https://christitustech.github.io/winutil/dev/features/Legacy-Windows-Panels/printer"
   },
   "WPFPanelsystem": {
     "Content": "System Properties",
