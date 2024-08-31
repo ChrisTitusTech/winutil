@@ -22,8 +22,8 @@ jobs:
         exempt-issue-labels: "Keep Issue Open"
         # Split it into two weeks, after one week the issue will be marked as stale,
         # after another week have pasted without any update.. the issue will then be closed.
-        days-before-issue-stale: 7
-        days-before-issue-close: 7
+        days-before-issue-stale: 90
+        days-before-issue-close: 365
         # NEVER mark PRs as Stale or Close + this workflow should never have write permissions on PRs, EVER!
         days-before-pr-stale: -1
         days-before-pr-close: -1

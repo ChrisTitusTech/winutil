@@ -186,6 +186,7 @@ function Invoke-WPFUIElements {
                         $label.ToolTip = $entryInfo.Description
                         $label.HorizontalAlignment = "Left"
                         $label.FontSize = $theme.FontSize
+                        $label.Foreground = $theme.MainForegroundColor
                         $dockPanel.Children.Add($label) | Out-Null
                         $stackPanel.Children.Add($dockPanel) | Out-Null
 
