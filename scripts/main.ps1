@@ -450,9 +450,7 @@ $winutildir = @{}
 
 # Set the path for the winutil directory
 $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
-if (-NOT (Test-Path -Path $winutildir["path"])) {
-    New-Item -Path $winutildir["path"] -ItemType Directory
-}
+[System.IO.Directory]::CreateDirectory("$winutildir") | Out-Null
 
 # Set the path for the logo and checkmark images
 $winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
@@ -460,7 +458,6 @@ $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
 if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
     Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
 }
-
 if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
     ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
 }
