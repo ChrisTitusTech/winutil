@@ -61,13 +61,13 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
+                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "Logo" -Size 80 -Render)
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
+                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "checkmark" -Size 80 -Render)
             }
             'warning' {
-                $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
+                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "warning" -Size 80 -Render)
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null

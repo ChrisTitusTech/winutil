@@ -129,7 +129,7 @@ function Show-CustomDialog {
     [Windows.Controls.Grid]::SetRow($stackPanel, 0)  # Set the row to the second row (0-based index)
 
     # Add SVG path to the stack panel
-    $stackPanel.Children.Add((Invoke-WinUtilLogoviewbox -Size 25))
+    $stackPanel.Children.Add((Invoke-WinUtilLogoviewbox -Type "logo" -Size 25))
 
     # Add "Winutil" text
     $winutilTextBlock = New-Object Windows.Controls.TextBlock

@@ -446,7 +446,7 @@ $sync["Form"].Add_Loaded({
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
-$NavLogoPanel.Children.Add((Invoke-WinUtilLogoviewbox -Size 25)) | Out-Null
+$NavLogoPanel.Children.Add((Invoke-WinUtilLogoviewbox -Type "logo" -Size 25)) | Out-Null
 
 # Initialize the hashtable
 $winutildir = @{}
