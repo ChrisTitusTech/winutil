@@ -2713,6 +2713,9 @@
       reg delete \"HKEY_USERS\\Default\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDriveSetup\" /f
       reg unload \"hku\\Default\"
 
+      Write-Host \"Removing autostart key\"
+      reg delete \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"OneDrive\" /f
+
       Write-Host \"Removing startmenu entry\"
       Remove-Item -Force -ErrorAction SilentlyContinue \"$env:userprofile\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\OneDrive.lnk\"
 
@@ -3141,12 +3144,29 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DVR"
   },
-  "WPFTweaksTeredo": {
-    "Content": "Disable Teredo",
-    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
+  "WPFTweaksIPv46": {
+    "Content": "Prefer IPv4 over IPv6",
+    "Description": "To set the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "Essential Tweaks",
     "panel": "1",
     "Order": "a005_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+        "Name": "DisabledComponents",
+        "Value": "32",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/IPv46"
+  },
+  "WPFTweaksTeredo": {
+    "Content": "Disable Teredo",
+    "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a023_",
     "registry": [
       {
         "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -3162,7 +3182,7 @@
     "UndoScript": [
       "netsh interface teredo set state default"
     ],
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo"
   },
   "WPFTweaksDisableipsix": {
     "Content": "Disable IPv6",
@@ -3381,22 +3401,6 @@
     "Type": "Combobox",
     "ComboItems": "Default DHCP Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/changedns"
-  },
-  "WPFTweaksbutton": {
-    "Content": "Run Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a041_",
-    "Type": "Button",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/button"
-  },
-  "WPFUndoall": {
-    "Content": "Undo Selected Tweaks",
-    "category": "z__Advanced Tweaks - CAUTION",
-    "panel": "1",
-    "Order": "a042_",
-    "Type": "Button",
-    "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Undoall"
   },
   "WPFAddUltPerf": {
     "Content": "Add and Activate Ultimate Performance Profile",

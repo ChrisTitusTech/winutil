@@ -1,13 +1,13 @@
 # Disable Teredo
 
-Last Updated: 2024-08-07
+Last Updated: 2024-08-27
 
 
 !!! info
      The Development Documentation is auto generated for every compilation of WinUtil, meaning a part of it will always stay up-to-date. **Developers do have the ability to add custom content, which won't be updated automatically.**
 ## Description
 
-Teredo network tunneling is a ipv6 feature that can cause additional latency.
+Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games
 
 <!-- BEGIN CUSTOM CONTENT -->
 
@@ -19,10 +19,10 @@ Teredo network tunneling is a ipv6 feature that can cause additional latency.
 ```json
 {
   "Content": "Disable Teredo",
-  "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency.",
-  "category": "Essential Tweaks",
+  "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
+  "category": "z__Advanced Tweaks - CAUTION",
   "panel": "1",
-  "Order": "a005_",
+  "Order": "a023_",
   "registry": [
     {
       "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
@@ -38,7 +38,7 @@ Teredo network tunneling is a ipv6 feature that can cause additional latency.
   "UndoScript": [
     "netsh interface teredo set state default"
   ],
-  "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/Teredo"
+  "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/Teredo"
 }
 ```
 

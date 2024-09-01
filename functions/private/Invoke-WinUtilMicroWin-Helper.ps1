@@ -109,6 +109,7 @@ function Remove-Features() {
         Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
     } catch {
         Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
@@ -156,6 +157,8 @@ function Remove-Packages {
                 $_ -NotLike "*Wifi*"
             }
 
+        $failedCount = 0
+
         foreach ($pkg in $pkglist) {
             try {
                 $status = "Removing $pkg"
@@ -164,12 +167,18 @@ function Remove-Packages {
             } catch {
                 # This can happen if the package that is being removed is a permanent one, like FodMetadata
                 Write-Host "Could not remove OS package $($pkg)"
+                $failedCount += 1
                 continue
             }
         }
         Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+        if ($failedCount -gt 0)
+        {
+            Write-Host "Some packages could not be removed. Do not worry: your image will still work fine. This can happen if the package is permanent or has been superseded by a newer one."
+        }
     } catch {
         Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
@@ -225,6 +234,7 @@ function Remove-ProvisionedPackages() {
     {
         # This can happen if getting AppX packages fails
         Write-Host "Unable to get information about the AppX packages. MicroWin processing will continue, but AppX packages will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
