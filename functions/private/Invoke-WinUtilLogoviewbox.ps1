@@ -24,7 +24,6 @@ function Invoke-WinUtilLogoviewbox {
 
     switch ($type) {
         'logo' {
-
           $LogoPathData1 = @"
        M 18.00,14.00
        C 18.00,14.00 45.00,27.74 45.00,27.74
@@ -86,7 +85,6 @@ function Invoke-WinUtilLogoviewbox {
 
         }
         'checkmark' {
-          $canvas = New-Object Windows.Controls.Canvas
           $canvas.Width = 512
           $canvas.Height = 512
 
@@ -98,7 +96,7 @@ function Invoke-WinUtilLogoviewbox {
           $circlePathData = "M 1.27,0 A 1.27,1.27 0 1,0 1.27,2.54 A 1.27,1.27 0 1,0 1.27,0"
           $circlePath = New-Object Windows.Shapes.Path
           $circlePath.Data = [Windows.Media.Geometry]::Parse($circlePathData)
-          $circlePath.Fill = [Windows.Media.Brushes]::Green
+          $circlePath.Fill = [Windows.Media.Brushes]::LimeGreen
 
           # Define the checkmark path
           $checkmarkPathData = "M 0.873 1.89 L 0.41 1.391 A 0.17 0.17 0 0 1 0.418 1.151 A 0.17 0.17 0 0 1 0.658 1.16 L 1.016 1.543 L 1.583 1.013 A 0.17 0.17 0 0 1 1.599 1 L 1.865 0.751 A 0.17 0.17 0 0 1 2.105 0.759 A 0.17 0.17 0 0 1 2.097 0.999 L 1.282 1.759 L 0.999 2.022 L 0.874 1.888 Z"
@@ -111,9 +109,7 @@ function Invoke-WinUtilLogoviewbox {
           $canvas.Children.Add($checkmarkPath) | Out-Null
         }
         'warning' {
-            # Create a Canvas to hold the paths
-            $canvas = New-Object Windows.Controls.Canvas
-            $canvas.Width = 512  # Adjust to the needed size for the warning icon
+            $canvas.Width = 512
             $canvas.Height = 512
 
             # Define a scale factor for the content inside the Canvas
