@@ -5,7 +5,6 @@ function Invoke-WinUtilLogoviewbox {
       [switch]$render
     )
 
-
     # Create the Viewbox and set its size
     $LogoViewbox = New-Object Windows.Controls.Viewbox
     $LogoViewbox.Width = $Size
@@ -26,7 +25,6 @@ function Invoke-WinUtilLogoviewbox {
     switch ($type) {
         'logo' {
 
-          # Part 1
           $LogoPathData1 = @"
        M 18.00,14.00
        C 18.00,14.00 45.00,27.74 45.00,27.74
@@ -41,9 +39,8 @@ function Invoke-WinUtilLogoviewbox {
 "@
           $LogoPath1 = New-Object Windows.Shapes.Path
           $LogoPath1.Data = [Windows.Media.Geometry]::Parse($LogoPathData1)
-          $LogoPath1.Fill = [Windows.Media.Brushes]::Blue  # Set fill color for left part
+          $LogoPath1.Fill = [Windows.Media.Brushes]::Blue
 
-          # Part 2
           $LogoPathData2 = @"
        M 107.00,14.00
        C 109.01,19.06 108.93,30.37 104.66,34.21
@@ -58,9 +55,8 @@ function Invoke-WinUtilLogoviewbox {
 "@
           $LogoPath2 = New-Object Windows.Shapes.Path
           $LogoPath2.Data = [Windows.Media.Geometry]::Parse($LogoPathData2)
-          $LogoPath2.Fill = [Windows.Media.Brushes]::Blue  # Set fill color for right part
+          $LogoPath2.Fill = [Windows.Media.Brushes]::Blue
 
-          # Part 3
           $LogoPathData3 = @"
        M 20.00,46.00
        C 22.36,47.14 29.67,50.71 31.01,52.63
@@ -82,22 +78,19 @@ function Invoke-WinUtilLogoviewbox {
 "@
           $LogoPath3 = New-Object Windows.Shapes.Path
           $LogoPath3.Data = [Windows.Media.Geometry]::Parse($LogoPathData3)
-          $LogoPath3.Fill = [Windows.Media.Brushes]::Gray  # Set fill color for bottom part
+          $LogoPath3.Fill = [Windows.Media.Brushes]::Gray
 
-          # Add the paths to the Canvas
           $canvas.Children.Add($LogoPath1) | Out-Null
           $canvas.Children.Add($LogoPath2) | Out-Null
           $canvas.Children.Add($LogoPath3) | Out-Null
 
         }
         'checkmark' {
-          # Create a Canvas to hold the paths
           $canvas = New-Object Windows.Controls.Canvas
-          $canvas.Width = 2.54  # Adjust to the needed size for the content
-          $canvas.Height = 2.54
+          $canvas.Width = 512
+          $canvas.Height = 512
 
-          # Define a scale factor for the content inside the Canvas
-          $scaleFactor = $Size / 2.54  # Adjust scaling based on the canvas size
+          $scaleFactor = $Size / 2.54
           $scaleTransform = New-Object Windows.Media.ScaleTransform($scaleFactor, $scaleFactor)
           $canvas.LayoutTransform = $scaleTransform
 
@@ -105,13 +98,13 @@ function Invoke-WinUtilLogoviewbox {
           $circlePathData = "M 1.27,0 A 1.27,1.27 0 1,0 1.27,2.54 A 1.27,1.27 0 1,0 1.27,0"
           $circlePath = New-Object Windows.Shapes.Path
           $circlePath.Data = [Windows.Media.Geometry]::Parse($circlePathData)
-          $circlePath.Fill = [Windows.Media.Brushes]::Green  # Set fill color to green
+          $circlePath.Fill = [Windows.Media.Brushes]::Green
 
           # Define the checkmark path
           $checkmarkPathData = "M 0.873 1.89 L 0.41 1.391 A 0.17 0.17 0 0 1 0.418 1.151 A 0.17 0.17 0 0 1 0.658 1.16 L 1.016 1.543 L 1.583 1.013 A 0.17 0.17 0 0 1 1.599 1 L 1.865 0.751 A 0.17 0.17 0 0 1 2.105 0.759 A 0.17 0.17 0 0 1 2.097 0.999 L 1.282 1.759 L 0.999 2.022 L 0.874 1.888 Z"
           $checkmarkPath = New-Object Windows.Shapes.Path
           $checkmarkPath.Data = [Windows.Media.Geometry]::Parse($checkmarkPathData)
-          $checkmarkPath.Fill = [Windows.Media.Brushes]::White  # Set fill color to white
+          $checkmarkPath.Fill = [Windows.Media.Brushes]::White
 
           # Add the paths to the Canvas
           $canvas.Children.Add($circlePath) | Out-Null

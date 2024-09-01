@@ -64,10 +64,10 @@ function Set-WinUtilTaskbaritem {
                 $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "Logo" -Size 80 -Render)
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "checkmark" -Size 80 -Render)
+                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "checkmark" -Size 512 -Render)
             }
             'warning' {
-                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "warning" -Size 80 -Render)
+                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilLogoviewbox -Type "warning" -Size 512 -Render)
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null
