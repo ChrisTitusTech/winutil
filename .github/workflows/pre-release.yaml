@@ -76,7 +76,7 @@ jobs:
 
       - name: Generate Release Notes
         id: generate_notes
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
