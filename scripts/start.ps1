@@ -41,20 +41,26 @@ $sync.ProcessRunning = $false
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "Winutil needs to be run as Administrator. Attempting to relaunch."
+    $argList = @()
 
-    $wtInstalled = Get-Command wt.exe -ErrorAction SilentlyContinue
-    $pwshInstalled = Get-Command pwsh -ErrorAction SilentlyContinue 
-    if ($pwshInstalled) {
-        $powershellcmd = "pwsh"
-    } else {
-        $powershellcmd = "powershell"
+    $PSBoundParameters.GetEnumerator() | ForEach-Object {
+        $argList += if ($_.Value -is [switch] -and $_.Value) {
+            "-$($_.Key)"
+        } elseif ($_.Value) {
+            "-$($_.Key) `"$($_.Value)`""
+        }
     }
 
-    if ($wtInstalled) {
-        Start-Process wt.exe -ArgumentList "new-tab $powershellcmd -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+    $script = if ($MyInvocation.MyCommand.Path) {
+        "& { & '$($MyInvocation.MyCommand.Path)' $argList }"
     } else {
-        Start-Process $powershellcmd -ArgumentList "-ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs
+        "iex '& { $(irm https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1) } $argList'"
     }
+
+    $powershellcmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { $powershellcmd }
+
+    Start-Process $processCmd -ArgumentList "$powershellcmd -ExecutionPolicy Bypass -NoProfile -Command $script" -Verb RunAs
 
     break
 }
