@@ -84,11 +84,26 @@ function Invoke-WPFGetIso {
 
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
-        # TODO: Have to correct the language to actually be a working one
+        # TODO: on get iso, script gets downloaded and function is taken & called to get & display languages. after selection user can press proceed, which will start the fido process and select the output iso for further processing
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang "$(Get-FidoLangFromCulture -langName `"$($sync.ISOLanguage.SelectedItem)`")"
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem
         Set-Location $originalLocation
         $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+        # WIP positioning, wont work as expected currently
+        $sync["ISOLanguage"].Items.Add($locale)
+        if ($locale -ne "en-US") {
+            $sync["ISOLanguage"].Items.Add("en-US")
+        }
+        $sync["ISOLanguage"].SelectedItem = $locale
+
+        if ($sync["ISOoption1"].IsChecked) {
+            $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+            $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+        } else {
+            $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+            $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+        }
     }
 
     Write-Host "File path $($filePath)"
