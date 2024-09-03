@@ -1,4 +1,4 @@
-function Invoke-WinUtilLogoviewbox {
+function Invoke-WinUtilAssets {
   param (
       $type,
       $Size,
@@ -38,7 +38,7 @@ C 18.00,14.00 45.00,27.74 45.00,27.74
 "@
           $LogoPath1 = New-Object Windows.Shapes.Path
           $LogoPath1.Data = [Windows.Media.Geometry]::Parse($LogoPathData1)
-          $LogoPath1.Fill = [Windows.Media.Brushes]::Blue
+          $LogoPath1.Fill = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0567ff")
 
           $LogoPathData2 = @"
 M 107.00,14.00
@@ -54,7 +54,7 @@ C 109.01,19.06 108.93,30.37 104.66,34.21
 "@
           $LogoPath2 = New-Object Windows.Shapes.Path
           $LogoPath2.Data = [Windows.Media.Geometry]::Parse($LogoPathData2)
-          $LogoPath2.Fill = [Windows.Media.Brushes]::Blue
+          $LogoPath2.Fill = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0567ff")
 
           $LogoPathData3 = @"
 M 20.00,46.00

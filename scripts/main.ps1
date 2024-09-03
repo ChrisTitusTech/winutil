@@ -446,7 +446,7 @@ $sync["Form"].Add_Loaded({
 })
 
 $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
-$NavLogoPanel.Children.Add((Invoke-WinUtilLogoviewbox -Type "logo" -Size 25)) | Out-Null
+$NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
 
 # Initialize the hashtable
 $winutildir = @{}
@@ -456,9 +456,6 @@ $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
 [System.IO.Directory]::CreateDirectory($winutildir["path"]) | Out-Null
 
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
-
-#$sync["Form"].Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($winutildir["logo.ico"]).ToBitmap()
-#$sync["logo.svg"] = [System.Drawing.Bitmap]::FromStream([System.IO.MemoryStream]::new([System.Convert]::FromBase64String($sync["icon.svg"])))
 
 Set-WinUtilTaskbaritem -overlay "logo"
 
