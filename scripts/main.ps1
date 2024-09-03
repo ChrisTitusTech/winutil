@@ -457,6 +457,10 @@ $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
 
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
 
+$sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
+$sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
+$sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
+
 Set-WinUtilTaskbaritem -overlay "logo"
 
 $sync["Form"].Add_Activated({

@@ -61,13 +61,13 @@ function Set-WinUtilTaskbaritem {
     if ($overlay) {
         switch ($overlay) {
             'logo' {
-                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilAssets -Type "Logo" -Size 80 -Render)
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["logorender"]
             }
             'checkmark' {
-                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["checkmarkrender"]
             }
             'warning' {
-                $sync["Form"].taskbarItemInfo.Overlay = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["warningrender"]
             }
             'None' {
                 $sync["Form"].taskbarItemInfo.Overlay = $null
