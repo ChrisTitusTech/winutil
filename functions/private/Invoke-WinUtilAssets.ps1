@@ -77,7 +77,7 @@ C 21.36,47.14 28.67,50.71 30.01,52.63
 "@
           $LogoPath3 = New-Object Windows.Shapes.Path
           $LogoPath3.Data = [Windows.Media.Geometry]::Parse($LogoPathData3)
-          $LogoPath3.Fill = [Windows.Media.Brushes]::Gray
+          $LogoPath3.Fill = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#a3a4a6")
 
           $canvas.Children.Add($LogoPath1) | Out-Null
           $canvas.Children.Add($LogoPath2) | Out-Null
