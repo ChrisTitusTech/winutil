@@ -5,7 +5,8 @@ param (
     [string]$Arguments
 )
 
-if ((Get-Item ".\winutil.ps1").IsReadOnly) {
+$getwinutil = (Get-Item ".\winutil.ps1") -ErrorAction SilentlyContinue
+if ($getwinutil.IsReadOnly) {
     Remove-Item ".\winutil.ps1" -Force
 }
 
