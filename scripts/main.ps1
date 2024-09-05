@@ -457,7 +457,11 @@ $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
 
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
 
-$sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
+if (Test-Path $winutildir["logo.ico"]) {
+    $sync["logorender"] = $winutildir["logo.ico"]
+} else {
+    $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
+}
 $sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
 $sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
 
