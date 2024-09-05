@@ -95,7 +95,7 @@ C 21.36,47.14 28.67,50.71 30.01,52.63
           $circlePathData = "M 1.27,0 A 1.27,1.27 0 1,0 1.27,2.54 A 1.27,1.27 0 1,0 1.27,0"
           $circlePath = New-Object Windows.Shapes.Path
           $circlePath.Data = [Windows.Media.Geometry]::Parse($circlePathData)
-          $circlePath.Fill = [Windows.Media.Brushes]::LimeGreen
+          $circlePath.Fill = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#39ba00")
 
           # Define the checkmark path
           $checkmarkPathData = "M 0.873 1.89 L 0.41 1.391 A 0.17 0.17 0 0 1 0.418 1.151 A 0.17 0.17 0 0 1 0.658 1.16 L 1.016 1.543 L 1.583 1.013 A 0.17 0.17 0 0 1 1.599 1 L 1.865 0.751 A 0.17 0.17 0 0 1 2.105 0.759 A 0.17 0.17 0 0 1 2.097 0.999 L 1.282 1.759 L 0.999 2.022 L 0.874 1.888 Z"
@@ -120,13 +120,13 @@ C 21.36,47.14 28.67,50.71 30.01,52.63
           $circlePathData = "M 256,0 A 256,256 0 1,0 256,512 A 256,256 0 1,0 256,0"
           $circlePath = New-Object Windows.Shapes.Path
           $circlePath.Data = [Windows.Media.Geometry]::Parse($circlePathData)
-          $circlePath.Fill = [Windows.Media.Brushes]::Red  # Set fill color to red
+          $circlePath.Fill = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#f41b43")
 
           # Define the exclamation mark path
           $exclamationPathData = "M 256 307.2 A 35.89 35.89 0 0 1 220.14 272.74 L 215.41 153.3 A 35.89 35.89 0 0 1 251.27 116 H 260.73 A 35.89 35.89 0 0 1 296.59 153.3 L 291.86 272.74 A 35.89 35.89 0 0 1 256 307.2 Z"
           $exclamationPath = New-Object Windows.Shapes.Path
           $exclamationPath.Data = [Windows.Media.Geometry]::Parse($exclamationPathData)
-          $exclamationPath.Fill = [Windows.Media.Brushes]::White  # Set fill color to white
+          $exclamationPath.Fill = [Windows.Media.Brushes]::White
 
           # Get the bounds of the exclamation mark path
           $exclamationBounds = $exclamationPath.Data.Bounds
