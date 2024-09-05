@@ -439,6 +439,12 @@ $sync["SearchBar"].Add_TextChanged({
     }
 })
 
+$sync["Form"].Add_Loaded({
+    param($e)
+    $sync["Form"].MaxWidth = [Double]::PositiveInfinity
+    $sync["Form"].MaxHeight = [Double]::PositiveInfinity
+})
+
 # Initialize the hashtable
 $winutildir = @{}
 

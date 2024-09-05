@@ -12,6 +12,7 @@
     Run in Admin Powershell >  ./windev.ps1
 #>
 
+
 # Function to fetch the latest release tag from the GitHub API
 function Get-LatestRelease {
     try {
@@ -34,9 +35,9 @@ function RedirectToLatestPreRelease {
         Write-Host "Using latest Full Release"
         $url = "https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1"
     }
-    Invoke-RestMethod $url | Invoke-Expression
+
+    iex "& { $(irm $url) } $argList"
 }
 
 # Call the redirect function
-
 RedirectToLatestPreRelease
