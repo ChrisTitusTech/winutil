@@ -89,21 +89,6 @@ function Invoke-WPFGetIso {
         & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem
         Set-Location $originalLocation
         $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-
-        # WIP positioning, wont work as expected currently
-        $sync["ISOLanguage"].Items.Add($locale)
-        if ($locale -ne "en-US") {
-            $sync["ISOLanguage"].Items.Add("en-US")
-        }
-        $sync["ISOLanguage"].SelectedItem = $locale
-
-        if ($sync["ISOoption1"].IsChecked) {
-            $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
-            $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
-        } else {
-            $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
-            $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
-        }
     }
 
     Write-Host "File path $($filePath)"

@@ -486,6 +486,22 @@ $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
 
+# WIP positioning, wont work as expected currently
+$sync["ISOLanguage"].Items.Add($locale)
+if ($locale -ne "en-US") {
+    $sync["ISOLanguage"].Items.Add("en-US")
+}
+$sync["ISOLanguage"].SelectedItem = $locale
+
+if ($sync["ISOoption1"].IsChecked) {
+    
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+} else {
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+}
+
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
     Write-Debug "SettingsButton clicked"
