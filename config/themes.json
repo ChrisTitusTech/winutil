@@ -72,37 +72,10 @@
         "ButtonMargin":  "1",
         "ButtonCornerRadius": "2",
         "BorderColor": "#000000",
-        "BorderOpacity": "0.2",
-        "ShadowPulse": "Forever"
+        "BorderOpacity": "0.2"
+        
     },
-    "Classic": {
-        "ComboBoxBackgroundColor":  "#FFFFFF",
-        "LabelboxForegroundColor":  "#000000",
-        "MainForegroundColor":  "#000000",
-        "MainBackgroundColor":  "#FFFFFF",
-        "LabelBackgroundColor":  "#FFFFFF",
-        "LinkForegroundColor":  "#000000",
-        "LinkHoverForegroundColor":  "#000000",
-        "GroupBorderBackgroundColor":  "#000000",
-        "ComboBoxForegroundColor":  "#000000",
-
-        "ButtonInstallBackgroundColor":  "#FFFFFF",
-        "ButtonTweaksBackgroundColor":  "#FFFFFF",
-        "ButtonConfigBackgroundColor":  "#FFFFFF",
-        "ButtonUpdatesBackgroundColor":  "#FFFFFF",
-        "ButtonInstallForegroundColor":  "#000000",
-        "ButtonTweaksForegroundColor":  "#000000",
-        "ButtonConfigForegroundColor":  "#000000",
-        "ButtonUpdatesForegroundColor":  "#000000",
-        "ButtonBackgroundColor":  "#F5F5F5",
-        "ButtonBackgroundPressedColor":  "#1A1A1A",
-        "CheckboxMouseOverColor": "#999999",
-        "ButtonBackgroundMouseoverColor":  "#C2C2C2",
-        "ButtonBackgroundSelectedColor":  "#F0F0F0",
-        "ButtonForegroundColor":  "#000000",
-        "ToggleButtonOnColor":  "#2e77ff"
-    },
-    "Matrix": {
+    "Dark": {
         "ComboBoxBackgroundColor":  "#000000",
         "LabelboxForegroundColor":  "#FFEE58",
         "MainForegroundColor":  "#9CCC65",
@@ -115,7 +88,6 @@
         "ProgressBarForegroundColor": "#222222",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#cccccc",
-
         "ButtonInstallBackgroundColor":  "#222222",
         "ButtonTweaksBackgroundColor":  "#333333",
         "ButtonConfigBackgroundColor":  "#444444",
@@ -132,38 +104,6 @@
         "ToggleButtonOnColor":  "#2e77ff",
 
         "BorderColor": "#FFAC1C",
-        "BorderOpacity": "0.8",
-        "ShadowPulse": "0:0:3"
-    },
-    "Dark": {
-        "ComboBoxBackgroundColor":  "#000000",
-        "LabelboxForegroundColor":  "#FFEE58",
-        "MainForegroundColor":  "#9CCC65",
-        "MainBackgroundColor":  "#000000",
-        "LabelBackgroundColor":  "#000000",
-        "LinkForegroundColor":  "#add8e6",
-        "LinkHoverForegroundColor":  "#FFFFFF",
-        "ComboBoxForegroundColor":  "#FFEE58",
-
-        "ProgressBarForegroundColor": "#222222",
-        "ProgressBarBackgroundColor": "Transparent",
-        "ProgressBarTextColor": "#cccccc",
-
-        "ButtonInstallBackgroundColor": "#222222",
-        "ButtonTweaksBackgroundColor":  "#333333",
-        "ButtonConfigBackgroundColor":  "#444444",
-        "ButtonUpdatesBackgroundColor": "#555555",
-        "ButtonInstallForegroundColor": "#FFFFFF",
-        "ButtonTweaksForegroundColor":  "#FFFFFF",
-        "ButtonConfigForegroundColor":  "#FFFFFF",
-        "ButtonUpdatesForegroundColor": "#FFFFFF",
-        "ButtonBackgroundColor":  "#000019",
-        "ButtonBackgroundPressedColor":   "#9CCC65",
-        "ButtonBackgroundMouseoverColor": "#FF5733",
-        "ButtonBackgroundSelectedColor":  "#FF5733",
-        "ButtonForegroundColor":  "#9CCC65",
-        "ToggleButtonOnColor":    "#2e77ff",
-
-        "BorderColor": "#FFAC1C"
+        "BorderOpacity": "0.8"
     }
 }
