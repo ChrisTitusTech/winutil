@@ -6,7 +6,7 @@
         "CustomDialogWidth":          "400",
         "CustomDialogHeight":         "200",
 
-        "FontSize":         "14",
+        "FontSize":         "12",
         "FontFamily":       "Arial",
         "FontSizeHeading":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
@@ -26,6 +26,7 @@
         "CloseIconFontSize":      "18",
 
         "MicroWinLogoSize": "10",
+        "MicrowinCheckBoxMargin": "-10,5,0,0",
 
         "ProgressBarForegroundColor": "#FFAC1C",
         "ProgressBarBackgroundColor": "Transparent",
@@ -73,7 +74,7 @@
         "ButtonCornerRadius": "2",
         "BorderColor": "#000000",
         "BorderOpacity": "0.2"
-        
+
     },
     "Dark": {
         "ComboBoxBackgroundColor":  "#000000",
