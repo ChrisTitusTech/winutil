@@ -31,7 +31,6 @@ function Invoke-WPFChangeColor {
     $sync.Form.Resources["DButtonInstallBackgroundColor"] = Get-RandomColor
     $sync.Form.Resources["DButtonTweaksBackgroundColor"] = Get-RandomColor
     $sync.Form.Resources["DButtonConfigBackgroundColor"] = Get-RandomColor
-
     $sync.Form.Resources["DButtonUpdatesBackgroundColor"] = Get-RandomColor
     $sync.Form.Resources["DButtonInstallForegroundColor"] = Get-RandomColor
     $sync.Form.Resources["DButtonTweaksForegroundColor"] = Get-RandomColor
