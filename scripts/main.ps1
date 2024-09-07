@@ -547,5 +547,6 @@ $sync["SponsorMenuItem"].Add_Click({
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
 })
+Invoke-WPFChangeColor
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

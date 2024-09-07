@@ -14,8 +14,33 @@
     </WindowChrome.WindowChrome>
     <Window.Resources>
     <!-- Color Resources-->
-    <SolidColorBrush x:Key="DMainBackgroundColor" Color="magenta" />
-
+    <SolidColorBrush x:Key="DComboBoxBackgroundColor"/>
+    <SolidColorBrush x:Key="DLabelboxForegroundColor"/>
+    <SolidColorBrush x:Key="DMainForegroundColor"/>
+    <SolidColorBrush x:Key="DMainBackgroundColor"/>
+    <SolidColorBrush x:Key="DLabelBackgroundColor"/>
+    <SolidColorBrush x:Key="DLinkForegroundColor"/>
+    <SolidColorBrush x:Key="DLinkHoverForegroundColor"/>
+    <SolidColorBrush x:Key="DComboBoxForegroundColor"/>
+    <SolidColorBrush x:Key="DProgressBarForegroundColor"/>
+    <SolidColorBrush x:Key="DProgressBarBackgroundColor"/>
+    <SolidColorBrush x:Key="DProgressBarTextColor"/>
+    <SolidColorBrush x:Key="DButtonInstallBackgroundColor"/>
+    <SolidColorBrush x:Key="DButtonTweaksBackgroundColor"/>
+    <SolidColorBrush x:Key="DButtonConfigBackgroundColor"/>
+    <SolidColorBrush x:Key="DButtonUpdatesBackgroundColor"/>
+    <SolidColorBrush x:Key="DButtonInstallForegroundColor"/>
+    <SolidColorBrush x:Key="DButtonTweaksForegroundColor"/>
+    <SolidColorBrush x:Key="DButtonConfigForegroundColor"/>
+    <SolidColorBrush x:Key="DButtonUpdatesForegroundColor"/>
+    <SolidColorBrush x:Key="DButtonBackgroundColor"/>
+    <SolidColorBrush x:Key="DButtonBackgroundPressedColor"/>
+    <SolidColorBrush x:Key="DButtonBackgroundMouseoverColor"/>
+    <SolidColorBrush x:Key="DButtonBackgroundSelectedColor"/>    
+    <SolidColorBrush x:Key="DButtonForegroundColor"/>
+    <SolidColorBrush x:Key="DToggleButtonOnColor"/>
+    <SolidColorBrush x:Key="DBorderColor"/>
+    
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -37,11 +62,11 @@
     </Style>
 
     <Style TargetType="TextBlock" x:Key="HoverTextBlockStyle">
-        <Setter Property="Foreground" Value="{LinkForegroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource DLinkForegroundColor}" />
         <Setter Property="TextDecorations" Value="Underline" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{LinkHoverForegroundColor}" />
+                <Setter Property="Foreground" Value="{DynamicResource DLinkHoverForegroundColor}" />
                 <Setter Property="TextDecorations" Value="Underline" />
                 <Setter Property="Cursor" Value="Hand" />
             </Trigger>
@@ -49,7 +74,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="HoverButtonStyle">
-        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="{ButtonFontSize}" />
         <Setter Property="TextElement.FontFamily" Value="{ButtonFontFamily}"/>
@@ -63,7 +88,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="FontWeight" Value="Bold" />
-                            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+                            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}" />
                             <Setter Property="Cursor" Value="Hand" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -75,7 +100,7 @@
     <!--ScrollBars-->
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}" />
         <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}" />
         <Setter Property="Width" Value="6" />
         <Setter Property="Template">
@@ -101,10 +126,10 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{DynamicResource DButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
                         <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                            <Setter Value="{ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{DynamicResource DButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="false">
@@ -133,8 +158,8 @@
         </Setter>
         </Style>
         <Style TargetType="ComboBox">
-            <Setter Property="Foreground" Value="{ComboBoxForegroundColor}" />
-            <Setter Property="Background" Value="{ComboBoxBackgroundColor}" />
+            <Setter Property="Foreground" Value="{DynamicResource DComboBoxForegroundColor}" />
+            <Setter Property="Background" Value="{DynamicResource DComboBoxBackgroundColor}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
@@ -173,15 +198,15 @@
             </Setter>
         </Style>
         <Style TargetType="Label">
-            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
-            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DLabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource DLabelBackgroundColor}"/>
         </Style>
 
         <!-- TextBlock template -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="{FontSize}"/>
-            <Setter Property="Foreground" Value="{LabelboxForegroundColor}"/>
-            <Setter Property="Background" Value="{LabelBackgroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DLabelboxForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource DLabelBackgroundColor}"/>
         </Style>
         <!-- Toggle button template x:Key="TabToggleButton" -->
         <Style TargetType="{x:Type ToggleButton}">
@@ -193,13 +218,13 @@
                         <Grid>
                             <Border x:Name="ButtonGlow"
                                         Background="{TemplateBinding Background}"
-                                        BorderBrush="{ButtonForegroundColor}"
+                                        BorderBrush="{DynamicResource DButtonForegroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
                                 <Grid>
                                     <Border x:Name="BackgroundBorder"
                                         Background="{TemplateBinding Background}"
-                                        BorderBrush="{ButtonBackgroundColor}"
+                                        BorderBrush="{DynamicResource DButtonBackgroundColor}"
                                         BorderThickness="{ButtonBorderThickness}"
                                         CornerRadius="{ButtonCornerRadius}">
                                         <ContentPresenter
@@ -212,7 +237,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource DButtonBackgroundMouseoverColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
@@ -223,7 +248,7 @@
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter Property="BorderBrush" Value="Pink"/>
                                 <Setter Property="BorderThickness" Value="2"/>
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource DButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
@@ -242,8 +267,8 @@
         <!-- Button Template -->
         <Style TargetType="Button">
             <Setter Property="Margin" Value="{ButtonMargin}"/>
-            <Setter Property="Foreground" Value="{ButtonForegroundColor}"/>
-            <Setter Property="Background" Value="{ButtonBackgroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DButtonForegroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource DButtonBackgroundColor}"/>
             <Setter Property="Height" Value="{ButtonHeight}"/>
             <Setter Property="Width" Value="{ButtonWidth}"/>
             <Setter Property="FontSize" Value="{ButtonFontSize}"/>
@@ -261,13 +286,13 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundPressedColor}"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource DButtonBackgroundPressedColor}"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundMouseoverColor}"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource DButtonBackgroundMouseoverColor}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{ButtonBackgroundSelectedColor}"/>
+                                <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource DButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Foreground" Value="DimGray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -282,7 +307,7 @@
             <Setter Property="Height" Value="{SearchBarClearButtonFontSize}"/>
             <Setter Property="Width" Value="{SearchBarClearButtonFontSize}"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -297,7 +322,7 @@
         </Style>
         <!-- Checkbox template -->
         <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}" />
             <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
@@ -310,14 +335,14 @@
                                     <Grid Width="{CheckBoxBulletDecoratorSize}" Height="{CheckBoxBulletDecoratorSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
-                                                Background="{ButtonBackgroundColor}"
+                                                Background="{DynamicResource DButtonBackgroundColor}"
                                                 BorderThickness="1"
                                                 Width="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
                                                 Height="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
-                                              Stroke="{ToggleButtonOnColor}"
+                                              Stroke="{DynamicResource DToggleButtonOnColor}"
                                               StrokeThickness="2"
                                               Data="M 0 5 L 5 10 L 12 0"
                                               Visibility="Collapsed"/>
@@ -334,8 +359,8 @@
                                 <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <!--Setter TargetName="Border" Property="Background" Value="{ButtonBackgroundPressedColor}"/-->
-                                <Setter Property="Foreground" Value="{ButtonBackgroundPressedColor}"/>
+                                <!--Setter TargetName="Border" Property="Background" Value="{DynamicResource DButtonBackgroundPressedColor}"/-->
+                                <Setter Property="Foreground" Value="{DynamicResource DButtonBackgroundPressedColor}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -427,7 +452,7 @@
                         <Border Grid.Column="1" x:Name="Border" CornerRadius="8"
                                 BorderThickness="1"
                                 Width="34" Height="17">
-                            <Ellipse x:Name="Ellipse" Fill="{MainForegroundColor}" Stretch="Uniform"
+                            <Ellipse x:Name="Ellipse" Fill="{DynamicResource DMainForegroundColor}" Stretch="Uniform"
                                     Margin="2,2,2,1"
                                     HorizontalAlignment="Left" Width="10.8"
                                     RenderTransformOrigin="0.5, 0.5">
@@ -440,8 +465,8 @@
 
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
-                                <Setter TargetName="Border" Property="Background" Value="{LinkHoverForegroundColor}"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DMainForegroundColor}" />
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource DLinkHoverForegroundColor}"/>
                                 <Setter Property="Cursor" Value="Hand" />
                                 <Setter Property="Panel.ZIndex" Value="1000"/>
                                 <Trigger.EnterActions>
@@ -477,22 +502,12 @@
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
                                 <Setter TargetName="Border" Property="Background" Value="{DynamicResource DMainBackgroundColor}" />
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{MainForegroundColor}" />
-                                <Setter TargetName="Ellipse" Property="Fill" Value="{MainForegroundColor}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DMainForegroundColor}" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="{DynamicResource DMainForegroundColor}" />
 
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Border"
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />
-                                            <ColorAnimation Storyboard.TargetName="Border"
-                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
-                                                    To="{ToggleButtonOnColor}" Duration="0:0:0.1" />
-
-                                            <ColorAnimation Storyboard.TargetName="Ellipse"
-                                                    Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"
-                                                    To="White" Duration="0:0:0.1" />
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
                                                     To="18,2,2,2" Duration="0:0:0.1" />
@@ -502,14 +517,9 @@
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="Border"
-                                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
-                                                    To="{MainBackgroundColor}" Duration="0:0:0.1" />
-
                                             <ThicknessAnimation Storyboard.TargetName="Ellipse"
                                                     Storyboard.TargetProperty="Margin"
                                                     To="2,2,2,1" Duration="0:0:0.1" />
-
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
@@ -522,7 +532,7 @@
         </Style>
 
         <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
-            <Setter Property="Foreground" Value="{MainForegroundColor}" />
+            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}" />
             <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -567,9 +577,9 @@
 
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{MainForegroundColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -597,9 +607,9 @@
         </Style>
         <Style TargetType="PasswordBox">
             <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{MainForegroundColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+            <Setter Property="Foreground" Value="{DynamicResource DMainForegroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -650,41 +660,41 @@
             <Image Height="{WinUtilIconSize}" Width="{WinUtilIconSize}" Name="WPFIcon"
                 SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
             <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
-                Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
+                Background="{DynamicResource DButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
-                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource DButtonInstallForegroundColor}" >
                         <Underline>I</Underline>nstall
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
-                Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
+                Background="{DynamicResource DButtonTweaksBackgroundColor}" Foreground="{DynamicResource DButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                 <ToggleButton.Content>
-                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource DButtonTweaksForegroundColor}">
                         <Underline>T</Underline>weaks
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
-                Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
+                Background="{DynamicResource DButtonConfigBackgroundColor}" Foreground="{DynamicResource DButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                 <ToggleButton.Content>
-                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource DButtonConfigForegroundColor}">
                         <Underline>C</Underline>onfig
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
+                Background="{DynamicResource DButtonUpdatesBackgroundColor}" Foreground="{DynamicResource DButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                 <ToggleButton.Content>
-                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource DButtonUpdatesForegroundColor}">
                         <Underline>U</Underline>pdates
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
-                Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
+                Background="{DynamicResource DButtonUpdatesBackgroundColor}" Foreground="{DynamicResource DButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                 <ToggleButton.Content>
-                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
+                    <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource DButtonUpdatesForegroundColor}">
                         <Underline>M</Underline>icroWin
                     </TextBlock>
                 </ToggleButton.Content>
@@ -714,7 +724,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     BorderThickness="1"
                     Name="SearchBar"
-                    Foreground="{MainForegroundColor}" Background="{DynamicResource DMainBackgroundColor}"
+                    Foreground="{DynamicResource DMainForegroundColor}" Background="{DynamicResource DMainBackgroundColor}"
                     Padding="3,3,30,0"
                     Margin="5,0,0,0"
                     ToolTip="Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter">
@@ -744,7 +754,7 @@
                     Maximum="100"
                     Width="250"
                     Height="{SearchBarHeight}"
-                    Foreground="{ProgressBarForegroundColor}" Background="{ProgressBarBackgroundColor}" BorderBrush="{ProgressBarForegroundColor}"
+                    Foreground="{DynamicResource DProgressBarForegroundColor}" Background="{DynamicResource DProgressBarBackgroundColor}" BorderBrush="{DynamicResource DProgressBarForegroundColor}"
                     Visibility="Collapsed"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Margin="2,0,0,0" BorderThickness="1" Padding="6,2,2,2"
@@ -763,7 +773,7 @@
                     <TextBlock
                         TextTrimming="CharacterEllipsis"
                         Background="Transparent"
-                        Foreground="{ProgressBarTextColor}">
+                        Foreground="{DynamicResource DProgressBarTextColor}">
                     </TextBlock>
                 </Label>
 
@@ -771,7 +781,7 @@
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
                     Background="{DynamicResource DMainBackgroundColor}"
-                    Foreground="{MainForegroundColor}"
+                    Foreground="{DynamicResource DMainForegroundColor}"
                     FontSize="{SettingsIconFontSize}"
                     Width="{IconButtonSize}" Height="{IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -782,21 +792,21 @@
                     IsOpen="False"
                     PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Border Background="{DynamicResource DMainBackgroundColor}" BorderBrush="{MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
+                    <Border Background="{DynamicResource DMainBackgroundColor}" BorderBrush="{DynamicResource DMainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{DynamicResource DMainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <MenuItem FontSize="{ButtonFontSize}" Header="Import" Name="ImportMenuItem" Foreground="{MainForegroundColor}">
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Import" Name="ImportMenuItem" Foreground="{DynamicResource DMainForegroundColor}">
                                 <MenuItem.ToolTip>
                                     <ToolTip Content="Import Configuration from exported file."/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
-                            <MenuItem FontSize="{ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{MainForegroundColor}">
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Export" Name="ExportMenuItem" Foreground="{DynamicResource DMainForegroundColor}">
                                 <MenuItem.ToolTip>
                                     <ToolTip Content="Export Selected Elements and copy execution command to clipboard."/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
                             <Separator/>
-                            <MenuItem FontSize="{ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{MainForegroundColor}"/>
-                            <MenuItem FontSize="{ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{MainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource DMainForegroundColor}"/>
+                            <MenuItem FontSize="{ButtonFontSize}" Header="Sponsors" Name="SponsorMenuItem" Foreground="{DynamicResource DMainForegroundColor}"/>
                         </StackPanel>
                     </Border>
                 </Popup>
@@ -810,7 +820,7 @@
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
                 FontFamily="Arial"
-                Foreground="{MainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
+                Foreground="{DynamicResource DMainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 
         </DockPanel>
@@ -949,7 +959,7 @@
                     <StackPanel Name="MicrowinMain" Background="{DynamicResource DMainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
                             <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="{CheckBoxMargin}" />
-                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{ComboBoxForegroundColor}">
+                            <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource DComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
@@ -960,14 +970,14 @@
                                 <ColumnDefinition Width="*" /> <!-- Takes the remaining space -->
                                 <ColumnDefinition Width="30" /> <!-- Fixed width for Button -->
                             </Grid.ColumnDefinitions>
-                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                                <TextBox Name="MicrowinScratchDirBox" Background="Transparent" BorderBrush="{DynamicResource DMainForegroundColor}"
                                         Text="Scratch"
                                         Margin="2"
                                         IsReadOnly="False"
                                         ToolTip="Alt Path For Scratch Directory"
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        Foreground="{LabelboxForegroundColor}">
+                                        Foreground="{DynamicResource DLabelboxForegroundColor}">
                                 </TextBox>
                                 <Button Name="MicrowinScratchDirBT"
                                     Width="Auto"
@@ -980,16 +990,16 @@
                                     </Button.Content>
                                 </Button>
                             </Grid>
-                            <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{MainForegroundColor}"
+                            <TextBox Name="MicrowinFinalIsoLocation" Background="Transparent" BorderBrush="{DynamicResource DMainForegroundColor}"
                                 Text="ISO location will be printed here"
                                 Margin="2"
                                 IsReadOnly="True"
                                 TextWrapping="Wrap"
-                                Foreground="{LabelboxForegroundColor}"
+                                Foreground="{DynamicResource DLabelboxForegroundColor}"
                             />
                             <Button Name="WPFGetIso" Margin="2" Padding="15">
                                 <Button.Content>
-                                    <TextBlock Background="Transparent" Foreground="{ButtonForegroundColor}">
+                                    <TextBlock Background="Transparent" Foreground="{DynamicResource DButtonForegroundColor}">
                                         Select Windows <Underline>I</Underline>SO
                                     </TextBlock>
                                 </Button.Content>
@@ -999,44 +1009,44 @@
                         <StackPanel Name="MicrowinOptionsPanel" HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Hidden">
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <Rectangle Fill="{DynamicResource DMainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="-10,5,0,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
-                            <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                            <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource DMainForegroundColor}"
                                 Margin="6"
                                 Text=""
                                 IsReadOnly="False"
                                 TextWrapping="Wrap"
-                                Foreground="{LabelboxForegroundColor}"
+                                Foreground="{DynamicResource DLabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
                             <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <Rectangle Fill="{DynamicResource DMainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <Rectangle Fill="{DynamicResource DMainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
-                            <TextBox Name="MicrowinUserName" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                            <TextBox Name="MicrowinUserName" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource DMainForegroundColor}"
                                 Margin="6"
                                 Text=""
                                 IsReadOnly="False"
                                 TextWrapping="Wrap"
-                                Foreground="{LabelboxForegroundColor}"
+                                Foreground="{DynamicResource DLabelboxForegroundColor}"
                                 MaxLength="20"
                             />
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Password (characters will not be shown for your security):</TextBlock>
-                            <PasswordBox Name="MicrowinUserPassword" Background="Transparent" BorderThickness="1" BorderBrush="{MainForegroundColor}"
+                            <PasswordBox Name="MicrowinUserPassword" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource DMainForegroundColor}"
                                 Margin="6"
                                 PasswordChar="*"
-                                Foreground="{LabelboxForegroundColor}"
+                                Foreground="{DynamicResource DLabelboxForegroundColor}"
                             />
-                            <Rectangle Fill="{MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
+                            <Rectangle Fill="{DynamicResource DMainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <Button Name="WPFMicrowin" Content="Start the process" Margin="2" Padding="15"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left" SnapsToDevicePixels="True" Margin="1" Visibility="Collapsed">
-                            <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinIsoLocation" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinMountDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
-                            <TextBlock Name="MicrowinScratchDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{ComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinIsoDrive" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource DComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinIsoLocation" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource DComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinMountDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource DComboBoxForegroundColor}"/>
+                            <TextBlock Name="MicrowinScratchDir" VerticalAlignment="Center"  Margin="1" Padding="1" TextWrapping="WrapWithOverflow" Foreground="{DynamicResource DComboBoxForegroundColor}"/>
                         </StackPanel>
                     </StackPanel>
                     </Border>
@@ -1075,7 +1085,7 @@
                                 TextWrapping="WrapWithOverflow"
                                 Height = "Auto"
                                 Width = "Auto"
-                                Foreground="{ComboBoxForegroundColor}">
+                                Foreground="{DynamicResource DComboBoxForegroundColor}">
                                 <Bold>MicroWin features:</Bold><LineBreak/>
                                 - Remove Telemetry and Tracking <LineBreak/>
                                 - Fast Install using either the "User" local account or the account of your choosing <LineBreak/>
@@ -1105,7 +1115,7 @@
                                 Height = "Auto"
                                 Width = "Auto"
                                 VerticalAlignment = "Top"
-                                Foreground = "{ComboBoxForegroundColor}"
+                                Foreground = "{DynamicResource DComboBoxForegroundColor}"
                                 xml:space = "preserve"
                             >
 <Bold>Example:</Bold>
