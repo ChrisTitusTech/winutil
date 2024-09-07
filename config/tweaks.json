@@ -2196,8 +2196,8 @@
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
   },
   "WPFTweaksRemoveOndriveExplorer": {
-    "Content": "Remove OneDrive Shortcut from explorer",
-    "Description": "Removes the OneDrive shortcut from explorer but keeps it installed",
+    "Content": "Remove OneDrive Shortcut from Navigation Pane",
+    "Description": "Removes the OneDrive shortcut from File Explorer's Navigation Pane but keeps it installed",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
@@ -2218,6 +2218,7 @@
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
+  },
   "WPFTweaksDisplay": {
     "Content": "Set Display for Performance",
     "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well.",
