@@ -70,7 +70,10 @@ function Set-WinUtilUITheme {
             # Add curly braces around the key
             $formattedKey = "{$key}"
             # Replace the key with the value in the input XML
-            $inputXML = $inputXML.Replace($formattedKey, $value)
+            if (-not ($key -like "*color*")){
+                $inputXML = $inputXML.Replace($formattedKey, $value)
+            }
+            
         }
     }
     catch {
