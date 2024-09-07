@@ -1,13 +1,23 @@
 function Invoke-WPFChangeColor {
+
     $random = New-Object System.Random
     function Get-RandomColor {
+        param (
+            $type
+        )
         $r = $random.Next(0, 256)
         $g = $random.Next(0, 256)
         $b = $random.Next(0, 256)
-        
+            if ($type -eq "Color"){
+                return [Windows.Media.Color]::FromRgb($r, $g, $b)
+            }
+            else{
+                return [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb($r, $g, $b))
+            }
+            
+        }
         # Return a new SolidColorBrush with random RGB values
-        return [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb($r, $g, $b))
-    }
+
     $sync.Form.Resources["DComboBoxBackgroundColor"] = Get-RandomColor
     $sync.Form.Resources["DLabelboxForegroundColor"] = Get-RandomColor
     $sync.Form.Resources["DMainForegroundColor"] = Get-RandomColor
@@ -34,5 +44,6 @@ function Invoke-WPFChangeColor {
     $sync.Form.Resources["DButtonForegroundColor"] = Get-RandomColor
     $sync.Form.Resources["DToggleButtonOnColor"] = Get-RandomColor
     $sync.Form.Resources["DBorderColor"] = Get-RandomColor
+    $sync.Form.Resources["CBorderColor"] = Get-RandomColor -type "Color"
 
 }
