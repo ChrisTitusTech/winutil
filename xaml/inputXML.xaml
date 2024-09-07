@@ -8,7 +8,11 @@
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
-        Title="Chris Titus Tech's Windows Utility" Height="800" Width="1280">
+        Width="Auto"
+        Height="Auto"
+        MaxWidth="1280"
+        MaxHeight="800"
+        Title="Chris Titus Tech's Windows Utility">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
@@ -653,11 +657,11 @@
             </ToggleButton>
             <Grid Background="{DynamicResource MainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="50px"/>
-                    <ColumnDefinition Width="50px"/>
-                    <ColumnDefinition Width="50px"/>
+                    <ColumnDefinition Width="*"/> <!-- Main content area -->
+                    <ColumnDefinition Width="Auto"/><!-- Space for options button -->
+                    <ColumnDefinition Width="Auto"/><!-- Space for close button -->
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!--
@@ -687,7 +691,8 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontFamily="Segoe MDL2 Assets"
                     FontSize="{IconFontSize}"
-                    Margin="180,0,0,0">&#xE721;</TextBlock>
+                    Margin="180,0,0,0">&#xE721;
+                </TextBlock>
                 <!--
                   TODO:
                     Make this ClearButton Positioning react to
@@ -699,7 +704,8 @@
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     Name="SearchBarClearButton"
                     Style="{StaticResource SearchBarClearButtonStyle}"
-                    Margin="210,0,0,0" Visibility="Collapsed"/>
+                    Margin="210,0,0,0" Visibility="Collapsed">
+                </Button>
 
                 <ProgressBar
                     Grid.Column="1"
@@ -752,7 +758,7 @@
                     FontSize="{SettingsIconFontSize}"
                     Width="{IconButtonSize}" Height="{IconButtonSize}"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,5,5,0"
+                    Margin="5,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
                 <Popup Grid.Column="3" Name="SettingsPopup"
@@ -857,18 +863,10 @@
                         </Grid>
                     </ScrollViewer>
                     <Border Grid.Row="1" Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Stretch" Padding="10">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Buttons on the left half -->
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
-                                <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
-                                <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
-                            </StackPanel>
-                        </Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                            <Button Name="WPFTweaksbutton" Content="Run Tweaks" Margin="5"/>
+                            <Button Name="WPFUndoall" Content="Undo Selected Tweaks" Margin="5"/>
+                        </StackPanel>
                     </Border>
                 </Grid>
             </TabItem>
@@ -924,12 +922,12 @@
                         HorizontalAlignment="Stretch">
                     <StackPanel Name="MicrowinMain" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
                         <StackPanel Background="Transparent" SnapsToDevicePixels="True" Margin="1">
-                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="{CheckBoxMargin}" />
+                            <CheckBox x:Name="WPFMicrowinDownloadFromGitHub" Content="Download oscdimg.exe from CTT Github repo" IsChecked="False" Margin="{MicrowinCheckBoxMargin}" />
                             <TextBlock Margin="5" Padding="1" TextWrapping="Wrap" Foreground="{DynamicResource ComboBoxForegroundColor}">
                                 Choose a Windows ISO file that you've downloaded <LineBreak/>
                                 Check the status in the console
                             </TextBlock>
-                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{CheckBoxMargin}"
+                            <CheckBox x:Name="WPFMicrowinISOScratchDir" Content="Use ISO directory for ScratchDir " IsChecked="False" Margin="{MicrowinCheckBoxMargin}"
                                 ToolTip="Use ISO directory for ScratchDir " />
                             <Grid>
                             <Grid.ColumnDefinitions>
@@ -976,7 +974,7 @@
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">Choose Windows SKU</TextBlock>
                             <ComboBox x:Name = "MicrowinWindowsFlavors" Margin="1" />
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="-10,5,0,0" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
+                            <CheckBox Name="MicrowinInjectDrivers" Content="Inject drivers (I KNOW WHAT I'M DOING)" Margin="{MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"/>
                             <TextBox Name="MicrowinDriverLocation" Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource MainForegroundColor}"
                                 Margin="6"
                                 Text=""
@@ -985,9 +983,9 @@
                                 Foreground="{DynamicResource LabelboxForegroundColor}"
                                 ToolTip="Path to unpacked drivers all sys and inf files for devices that need drivers"
                             />
-                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
+                            <CheckBox Name="MicrowinImportDrivers" Content="Import drivers from current system" Margin="{MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Export all third-party drivers from your system and inject them to the MicroWin image"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
-                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{CheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
+                            <CheckBox Name="WPFMicrowinCopyToUsb" Content="Copy to Ventoy" Margin="{MicrowinCheckBoxMargin}" IsChecked="False" ToolTip="Copy to USB disk with a label Ventoy"/>
                             <Rectangle Fill="{DynamicResource MainForegroundColor}" Height="2" HorizontalAlignment="Stretch" Margin="0,10,0,10"/>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap"><Bold>Custom user settings (leave empty for default user)</Bold></TextBlock>
                             <TextBlock Margin="6" Padding="1" TextWrapping="Wrap">User name (20 characters max.):</TextBlock>
