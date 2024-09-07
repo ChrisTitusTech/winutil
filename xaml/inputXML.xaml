@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinUtility"
         mc:Ignorable="d"
-        Background="{MainBackgroundColor}"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         WindowStyle="None"
@@ -14,6 +13,9 @@
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
+    <!-- Color Resources-->
+    <SolidColorBrush x:Key="DMainBackgroundColor" Color="magenta" />
+
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -51,7 +53,7 @@
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontSize" Value="{ButtonFontSize}" />
         <Setter Property="TextElement.FontFamily" Value="{ButtonFontFamily}"/>
-        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -74,7 +76,7 @@
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
         <Setter Property="Foreground" Value="{MainForegroundColor}" />
-        <Setter Property="Background" Value="{MainBackgroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}" />
         <Setter Property="Width" Value="6" />
         <Setter Property="Template">
             <Setter.Value>
@@ -296,7 +298,7 @@
         <!-- Checkbox template -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="{MainForegroundColor}"/>
-            <Setter Property="Background" Value="{MainBackgroundColor}"/>
+            <Setter Property="Background" Value="{DynamicResource DMainBackgroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}" />
             <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
             <Setter Property="Template">
