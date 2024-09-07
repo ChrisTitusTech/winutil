@@ -748,7 +748,7 @@
                     FontFamily="Segoe MDL2 Assets"
                     Content="&#xE708;"
                 />
-                
+
 
                 <Button Name="SettingsButton"
                     Style="{StaticResource HoverButtonStyle}"

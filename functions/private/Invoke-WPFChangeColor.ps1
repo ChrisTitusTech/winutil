@@ -3,7 +3,7 @@ function Invoke-WPFChangeColor {
     param (
         $init = $false
     )
-    if ($init -eq $true){
+    if ($init -eq $true) {
         if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
 
             $Script:ctttheme = "Dark"
@@ -12,7 +12,7 @@ function Invoke-WPFChangeColor {
         }
     }
     else{
-        if ($ctttheme -eq "Dark"){
+        if ($ctttheme -eq "Dark") {
             $Script:ctttheme = "_default"
         }
         else {
@@ -20,22 +20,22 @@ function Invoke-WPFChangeColor {
         }
     }
 
-    switch ($ctttheme){
-        "_default"{  
+    switch ($ctttheme) {
+        "_default"{
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE708
         }
         "Dark"{
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE706
         }
     }
-    
-    # Colors are stored as a SolidColorBrush Object 
+
+    # Colors are stored as a SolidColorBrush Object
     $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
-    foreach ($entry in $jsonColors){
+    foreach ($entry in $jsonColors) {
         $sync.Form.Resources[$($entry.Name)] = [Windows.Media.SolidColorBrush]::new($entry.Value)
-        
-        # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource 
-        if ($($entry.Name) -eq "BorderColor"){
+
+        # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource
+        if ($($entry.Name) -eq "BorderColor") {
             $hexColor = $entry.Value.TrimStart("#")
             $r = [Convert]::ToInt32($hexColor.Substring(0, 2), 16)
             $g = [Convert]::ToInt32($hexColor.Substring(2, 2), 16)
@@ -43,12 +43,12 @@ function Invoke-WPFChangeColor {
             $sync.Form.Resources["CBorderColor"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
         }
     }
-    # Opacity is storead as a number 
+    # Opacity is storead as a number
     $jsonOpacity = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*opacity*"} | Select-Object Name, Value
-    foreach ($entry in $jsonOpacity){
+    foreach ($entry in $jsonOpacity) {
         $sync.Form.Resources[$entry.Name] = [double]$entry.Value
     }
-    
+
     # $random = New-Object System.Random
     # function Get-RandomColor {
     #     param (
@@ -57,13 +57,13 @@ function Invoke-WPFChangeColor {
     #     $r = $random.Next(0, 256)
     #     $g = $random.Next(0, 256)
     #     $b = $random.Next(0, 256)
-    #         if ($type -eq "Color"){
+    #         if ($type -eq "Color") {
     #             return [Windows.Media.Color]::FromRgb($r, $g, $b)
     #         }
     #         else{
     #             return [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb($r, $g, $b))
     #         }
-            
+
     #     }
     #     # Return a new SolidColorBrush with random RGB values
 
