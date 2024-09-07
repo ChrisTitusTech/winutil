@@ -14,7 +14,7 @@
     </WindowChrome.WindowChrome>
     <Window.Resources>
     <!-- Color Resources-->
-    <SolidColorBrush x:Key="DComboBoxBackgroundColor"/>
+    <!-- <SolidColorBrush x:Key="DComboBoxBackgroundColor"/>
     <SolidColorBrush x:Key="DLabelboxForegroundColor"/>
     <SolidColorBrush x:Key="DMainForegroundColor"/>
     <SolidColorBrush x:Key="DMainBackgroundColor"/>
@@ -39,8 +39,7 @@
     <SolidColorBrush x:Key="DButtonBackgroundSelectedColor"/>    
     <SolidColorBrush x:Key="DButtonForegroundColor"/>
     <SolidColorBrush x:Key="DToggleButtonOnColor"/>
-    <SolidColorBrush x:Key="DBorderColor"/>
-    
+    <SolidColorBrush x:Key="DBorderColor"/> -->
     
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
@@ -700,10 +699,11 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <Grid Background="{DynamicResource DMainBackgroundColor}" ShowGridLines="False" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
+            <Grid Background="{DynamicResource DMainBackgroundColor}" ShowGridLines="True" Width="Auto" Height="Auto" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                     <ColumnDefinition Width="50px"/>
                 </Grid.ColumnDefinitions>
@@ -777,8 +777,8 @@
                         Foreground="{DynamicResource DProgressBarTextColor}">
                     </TextBlock>
                 </Label>
-
-                <Button Name="SettingsButton"
+                <Button Name="ThemeSelectorButton"
+                    ToolTip="Change Theme"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
                     Background="{DynamicResource DMainBackgroundColor}"
@@ -788,8 +788,22 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
+                    Content="&#xE706;"
+                />
+                
+
+                <Button Name="SettingsButton"
+                    Style="{StaticResource HoverButtonStyle}"
+                    Grid.Column="3" BorderBrush="Transparent"
+                    Background="{DynamicResource DMainBackgroundColor}"
+                    Foreground="{DynamicResource DMainForegroundColor}"
+                    FontSize="{SettingsIconFontSize}"
+                    Width="{IconButtonSize}" Height="{IconButtonSize}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,5,5,0"
+                    FontFamily="Segoe MDL2 Assets"
                     Content="&#xE713;"/>
-                <Popup Grid.Column="2" Name="SettingsPopup"
+                <Popup Grid.Column="3" Name="SettingsPopup"
                     IsOpen="False"
                     PlacementTarget="{Binding ElementName=SettingsButton}" Placement="Bottom"
                     HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -813,7 +827,7 @@
                 </Popup>
 
             <Button
-                Grid.Column="3"
+                Grid.Column="4"
                 Content="&#xD7;" BorderThickness="0"
                 BorderBrush="Transparent"
                 Background="{DynamicResource DMainBackgroundColor}"
@@ -840,7 +854,6 @@
                         <Button Name="WPFUninstall" Content=" Uninstall Selected" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
                         <Button Name="WPFClearInstallSelection" Content=" Clear Selection" Margin="2"/>
-                        <Button Name="WPFChangeColor" Content=" Change Color" Margin="2"/>
                     </StackPanel>
 
                     <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
