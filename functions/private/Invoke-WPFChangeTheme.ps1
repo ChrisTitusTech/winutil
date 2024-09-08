@@ -22,27 +22,27 @@ function Invoke-WPFChangeTheme {
             }
         }
         $jsonRadius = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Radius*")} | Select-Object Name, Value
-        foreach ($entry in $jsonRadius){
+        foreach ($entry in $jsonRadius) {
             $sync.Form.Resources[$entry.Name] = [System.Windows.CornerRadius]::new($entry.Value)
         }
         $jsonRowHeight = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*RowHeight*")} | Select-Object Name, Value
-        foreach ($entry in $jsonRowHeight){
+        foreach ($entry in $jsonRowHeight) {
             $sync.Form.Resources[$entry.Name] = [System.Windows.GridLength]::new($entry.Value)
         }
-        
+
         $jsonThickness = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")} | Select-Object Name, Value
-        foreach ($entry in $jsonThickness){
+        foreach ($entry in $jsonThickness) {
             $values = $entry.Value -split ","
-            switch ($values.Count){
+            switch ($values.Count) {
                 1{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0])}
                 2{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1])}
                 4{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1],[double]$values[2],[double]$values[3])}
             }
-            
+
             # Write-Host "$($entry.Name), $($sync.Form.Resources[$entry.Name])"
         }
         $jsonFontFamilys = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*FontFamily*"} | Select-Object Name, Value
-        foreach ($entry in $jsonFontFamilys){
+        foreach ($entry in $jsonFontFamilys) {
             $sync.Form.Resources[$entry.Name] = [Windows.Media.FontFamily]::new($entry.Value)
         }
 
@@ -55,11 +55,11 @@ function Invoke-WPFChangeTheme {
             catch {
                 # Write-Host "$($entry.Name), $($entry.Value) Could not be converted. Kept as a String"
                 $sync.Form.Resources[$entry.Name] = $entry.Value
-            
+
             }
-            
+
         }
-        
+
     }
     if ($init -eq $true) {
         if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
@@ -87,7 +87,7 @@ function Invoke-WPFChangeTheme {
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE706
         }
     }
-    
+
     applyTheme -ctttheme $ctttheme
 
     # $random = New-Object System.Random
@@ -136,3 +136,4 @@ function Invoke-WPFChangeTheme {
     # $sync.Form.Resources["CBorderColor"] = Get-RandomColor -type "Color"
 
 }
+#endregion
