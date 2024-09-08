@@ -64,7 +64,7 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 # }
 
 $returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName "shared" -defaultThemeName "shared"
-if ($returnVal[0] -eq "") {
+ if ($returnVal[0] -eq "") {
     Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
     Write-Host "Quitting winutil..." -ForegroundColor Red
     $sync.runspace.Dispose()
@@ -72,7 +72,7 @@ if ($returnVal[0] -eq "") {
     [System.GC]::Collect()
     exit 1
 }
-$inputXML = $returnVal[0]
+# #$inputXML = $returnVal[0]
 $ctttheme = $returnVal[1]
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')

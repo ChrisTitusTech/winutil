@@ -21,6 +21,15 @@ function Invoke-WPFChangeTheme {
                 $sync.Form.Resources["CBorderColor"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
             }
         }
+        $jsonRadius = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Radius*")} | Select-Object Name, Value
+        foreach ($entry in $jsonRadius){
+            $sync.Form.Resources[$entry.Name] = [System.Windows.CornerRadius]::new($entry.Value)
+        }
+        $jsonRowHeight = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*RowHeight*")} | Select-Object Name, Value
+        foreach ($entry in $jsonRowHeight){
+            $sync.Form.Resources[$entry.Name] = [System.Windows.GridLength]::new($entry.Value)
+        }
+        
         $jsonThickness = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")} | Select-Object Name, Value
         foreach ($entry in $jsonThickness){
             $values = $entry.Value -split ","
@@ -32,13 +41,12 @@ function Invoke-WPFChangeTheme {
             
             # Write-Host "$($entry.Name), $($sync.Form.Resources[$entry.Name])"
         }
-
         $jsonFontFamilys = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*FontFamily*"} | Select-Object Name, Value
         foreach ($entry in $jsonFontFamilys){
             $sync.Form.Resources[$entry.Name] = [Windows.Media.FontFamily]::new($entry.Value)
         }
 
-        $jsonFontSize = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -notlike "*color*") -and ($_.Name -notlike "*margin*")-and ($_.Name -notlike "*FontFamily*")-and ($_.Name -notlike "*thickness*")} | Select-Object Name, Value
+        $jsonFontSize = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -notlike "*color*") -and ($_.Name -notlike "*margin*")-and ($_.Name -notlike "*FontFamily*")-and ($_.Name -notlike "*thickness*") -and ($_.Name -notlike "*RowHeight*") -and ($_.Name -notlike "*Radius*")} | Select-Object Name, Value
         foreach ($entry in $jsonFontSize) {
             try {
                 $sync.Form.Resources[$entry.Name] = [double]$entry.Value
