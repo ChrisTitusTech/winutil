@@ -176,6 +176,7 @@
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="{DynamicResource LabelboxForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource LabelBackgroundColor}"/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
         </Style>
 
         <!-- TextBlock template -->
@@ -188,6 +189,7 @@
         <Style TargetType="{x:Type ToggleButton}">
             <Setter Property="Margin" Value="{ButtonMargin}"/>
             <Setter Property="Content" Value=""/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
@@ -248,6 +250,7 @@
             <Setter Property="Height" Value="{ButtonHeight}"/>
             <Setter Property="Width" Value="{ButtonWidth}"/>
             <Setter Property="FontSize" Value="{ButtonFontSize}"/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -277,7 +280,7 @@
             </Setter>
         </Style>
         <Style x:Key="SearchBarClearButtonStyle" TargetType="Button">
-            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="FontSize" Value="{SearchBarClearButtonFontSize}"/>
             <Setter Property="Content" Value="X"/>
             <Setter Property="Height" Value="{SearchBarClearButtonFontSize}"/>
@@ -301,6 +304,7 @@
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}" />
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="TextElement.FontFamily" Value="{FontFamily}"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -308,13 +312,13 @@
                         <Grid Background="{TemplateBinding Background}" Margin="{CheckBoxMargin}">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Grid Width="{CheckBoxBulletDecoratorSize}" Height="{CheckBoxBulletDecoratorSize}">
+                                    <Grid Width="{DynamicResource CheckBoxBulletDecoratorSize}" Height="{DynamicResource CheckBoxBulletDecoratorSize}">
                                         <Border x:Name="Border"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 Background="{DynamicResource ButtonBackgroundColor}"
                                                 BorderThickness="1"
-                                                Width="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
-                                                Height="{Binding Path={CheckBoxBulletDecoratorSize}-2}"
+                                                Width="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
+                                                Height="{DynamicResource CheckBoxBulletDecoratorSize *0.85}"
                                                 Margin="2"
                                                 SnapsToDevicePixels="True"/>
                                         <Path x:Name="CheckMark"
@@ -510,6 +514,7 @@
         <Style x:Key="labelfortweaks" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}" />
             <Setter Property="Background" Value="{DynamicResource MainBackgroundColor}" />
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="White" />
@@ -537,6 +542,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}"/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -567,6 +573,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground" Value="{DynamicResource MainForegroundColor}"/>
             <Setter Property="FontSize" Value="{FontSize}"/>
+            <Setter Property="FontFamily" Value="{FontFamily}"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -792,7 +799,7 @@
                 Width="{IconButtonSize}" Height="{IconButtonSize}"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
                 Margin="0,5,5,0"
-                FontFamily="Arial"
+                FontFamily="{FontFamily}"
                 Foreground="{DynamicResource MainForegroundColor}" FontSize="{CloseIconFontSize}" Name="WPFCloseButton" />
             </Grid>
 

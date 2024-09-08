@@ -1,19 +1,16 @@
 {
-    "_default": {
+    "shared":{        
         "CustomDialogFontSize":       "12",
         "CustomDialogFontSizeHeader": "14",
         "CustomDialogIconSize":       "25",
         "CustomDialogWidth":          "400",
         "CustomDialogHeight":         "200",
-
         "FontSize":         "12",
         "FontFamily":       "Arial",
         "FontSizeHeading":  "16",
         "HeaderFontFamily": "Consolas, Monaco",
-
         "CheckBoxBulletDecoratorSize": "14",
         "CheckBoxMargin": "15,0,0,2",
-
         "TabContentMargin":       "5",
         "TabButtonFontSize":      "14",
         "TabButtonWidth":         "100",
@@ -24,14 +21,27 @@
         "WinUtilIconSize":        "Auto",
         "SettingsIconFontSize":   "18",
         "CloseIconFontSize":      "18",
-
         "MicroWinLogoSize": "10",
         "MicrowinCheckBoxMargin": "-10,5,0,0",
-
+        "GroupBorderBackgroundColor":  "#000000",
+        "ButtonFontSize":   "12",
+        "ButtonFontFamily": "Arial",
+        "ButtonWidth":      "200",
+        "ButtonHeight":     "25",
+        "ConfigTabButtonFontSize":      "16",
+        "SearchBarWidth":               "200",
+        "SearchBarHeight":              "25",
+        "SearchBarTextBoxFontSize":     "12",
+        "SearchBarClearButtonFontSize": "14",
+        "CheckboxMouseOverColor": "#999999",
+        "ButtonBorderThickness":  "1",
+        "ButtonMargin":  "1",
+        "ButtonCornerRadius": "2"
+    },
+    "Light": {
         "ProgressBarForegroundColor": "#FFAC1C",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#000000",
-
         "ComboBoxBackgroundColor":  "#FFFFFF",
         "LabelboxForegroundColor":  "#000000",
         "MainForegroundColor":  "#000000",
@@ -39,20 +49,7 @@
         "LabelBackgroundColor":  "#FFFFFF",
         "LinkForegroundColor":  "#000000",
         "LinkHoverForegroundColor":  "#000000",
-        "GroupBorderBackgroundColor":  "#000000",
         "ComboBoxForegroundColor":  "#000000",
-
-        "ButtonFontSize":   "12",
-        "ButtonFontFamily": "Arial",
-        "ButtonWidth":      "200",
-        "ButtonHeight":     "25",
-        "ConfigTabButtonFontSize":      "16",
-
-        "SearchBarWidth":               "200",
-        "SearchBarHeight":              "25",
-        "SearchBarTextBoxFontSize":     "12",
-        "SearchBarClearButtonFontSize": "14",
-
         "ButtonInstallBackgroundColor":  "#FFFFFF",
         "ButtonTweaksBackgroundColor":  "#FFFFFF",
         "ButtonConfigBackgroundColor":  "#FFFFFF",
@@ -62,16 +59,11 @@
         "ButtonConfigForegroundColor":  "#000000",
         "ButtonUpdatesForegroundColor":  "#000000",
         "ButtonBackgroundColor":  "#F5F5F5",
-        "ButtonBackgroundPressedColor":  "#1A1A1A",
-        "CheckboxMouseOverColor": "#999999",
+        "ButtonBackgroundPressedColor":  "#1A1A1A",      
         "ButtonBackgroundMouseoverColor":  "#C2C2C2",
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#000000",
         "ToggleButtonOnColor":  "#2e77ff",
-
-        "ButtonBorderThickness":  "1",
-        "ButtonMargin":  "1",
-        "ButtonCornerRadius": "2",
         "BorderColor": "#000000",
         "BorderOpacity": "0.2"
 
@@ -85,7 +77,6 @@
         "LinkForegroundColor":  "#add8e6",
         "LinkHoverForegroundColor":  "#FFFFFF",
         "ComboBoxForegroundColor":  "#FFEE58",
-
         "ProgressBarForegroundColor": "#222222",
         "ProgressBarBackgroundColor": "Transparent",
         "ProgressBarTextColor": "#cccccc",
@@ -103,7 +94,6 @@
         "ButtonBackgroundSelectedColor":  "#FF5733",
         "ButtonForegroundColor":  "#9CCC65",
         "ToggleButtonOnColor":  "#2e77ff",
-
         "BorderColor": "#FFAC1C",
         "BorderOpacity": "0.8"
     }

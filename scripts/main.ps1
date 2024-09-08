@@ -52,18 +52,18 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
-$defaulttheme = '_default'
-if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
-    if (Invoke-WinUtilGPU -eq $True) {
-        $ctttheme = 'Matrix'
-    } else {
-        $ctttheme = 'Dark'
-    }
-} else {
-    $ctttheme = 'Classic'
-}
+# $defaulttheme = '_default'
+# if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
+#     if (Invoke-WinUtilGPU -eq $True) {
+#         $ctttheme = 'Matrix'
+#     } else {
+#         $ctttheme = 'Dark'
+#     }
+# } else {
+#     $ctttheme = 'Classic'
+# }
 
-$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName "shared" -defaultThemeName "shared"
 if ($returnVal[0] -eq "") {
     Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
     Write-Host "Quitting winutil..." -ForegroundColor Red
@@ -553,6 +553,6 @@ $sync["SponsorMenuItem"].Add_Click({
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
 })
-Invoke-WPFChangeColor -init $true
+Invoke-WPFChangeTheme -init $true
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

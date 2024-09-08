@@ -1,19 +1,70 @@
 
-function Invoke-WPFChangeColor {
+function Invoke-WPFChangeTheme {
     param (
         $init = $false
     )
+    function applyTheme{
+        param (
+            $ctttheme
+        )
+        # Colors are stored as a SolidColorBrush Object
+        $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
+        foreach ($entry in $jsonColors) {
+            $sync.Form.Resources[$($entry.Name)] = [Windows.Media.SolidColorBrush]::new($entry.Value)
+
+            # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource
+            if ($($entry.Name) -eq "BorderColor") {
+                $hexColor = $entry.Value.TrimStart("#")
+                $r = [Convert]::ToInt32($hexColor.Substring(0, 2), 16)
+                $g = [Convert]::ToInt32($hexColor.Substring(2, 2), 16)
+                $b = [Convert]::ToInt32($hexColor.Substring(4, 2), 16)
+                $sync.Form.Resources["CBorderColor"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
+            }
+        }
+        $jsonThickness = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Thickness*") -or ($_.Name -like "*margin")} | Select-Object Name, Value
+        foreach ($entry in $jsonThickness){
+            $values = $entry.Value -split ","
+            switch ($values.Count){
+                1{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0])}
+                2{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1])}
+                4{$sync.Form.Resources[$entry.Name] = [System.Windows.Thickness]::new([double]$values[0],[double]$values[1],[double]$values[2],[double]$values[3])}
+            }
+            
+            # Write-Host "$($entry.Name), $($sync.Form.Resources[$entry.Name])"
+        }
+
+        $jsonFontFamilys = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*FontFamily*"} | Select-Object Name, Value
+        foreach ($entry in $jsonFontFamilys){
+            $sync.Form.Resources[$entry.Name] = [Windows.Media.FontFamily]::new($entry.Value)
+        }
+
+        $jsonFontSize = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -notlike "*color*") -and ($_.Name -notlike "*margin*")-and ($_.Name -notlike "*FontFamily*")-and ($_.Name -notlike "*thickness*")} | Select-Object Name, Value
+        foreach ($entry in $jsonFontSize) {
+            try {
+                $sync.Form.Resources[$entry.Name] = [double]$entry.Value
+                # Write-Host "$($entry.Name), $($entry.Value) Converted to double"
+            }
+            catch {
+                # Write-Host "$($entry.Name), $($entry.Value) Could not be converted. Kept as a String"
+                $sync.Form.Resources[$entry.Name] = $entry.Value
+            
+            }
+            
+        }
+        
+    }
     if ($init -eq $true) {
         if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
 
             $Script:ctttheme = "Dark"
         } else {
-            $Script:ctttheme = "_default"
+            $Script:ctttheme = "Light"
         }
+        applyTheme -ctttheme "shared"
     }
     else{
         if ($ctttheme -eq "Dark") {
-            $Script:ctttheme = "_default"
+            $Script:ctttheme = "Light"
         }
         else {
             $Script:ctttheme = "Dark"
@@ -21,33 +72,15 @@ function Invoke-WPFChangeColor {
     }
 
     switch ($ctttheme) {
-        "_default"{
+        "Light"{
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE708
         }
         "Dark"{
             $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE706
         }
     }
-
-    # Colors are stored as a SolidColorBrush Object
-    $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
-    foreach ($entry in $jsonColors) {
-        $sync.Form.Resources[$($entry.Name)] = [Windows.Media.SolidColorBrush]::new($entry.Value)
-
-        # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource
-        if ($($entry.Name) -eq "BorderColor") {
-            $hexColor = $entry.Value.TrimStart("#")
-            $r = [Convert]::ToInt32($hexColor.Substring(0, 2), 16)
-            $g = [Convert]::ToInt32($hexColor.Substring(2, 2), 16)
-            $b = [Convert]::ToInt32($hexColor.Substring(4, 2), 16)
-            $sync.Form.Resources["CBorderColor"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
-        }
-    }
-    # Opacity is storead as a number
-    $jsonOpacity = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*opacity*"} | Select-Object Name, Value
-    foreach ($entry in $jsonOpacity) {
-        $sync.Form.Resources[$entry.Name] = [double]$entry.Value
-    }
+    
+    applyTheme -ctttheme $ctttheme
 
     # $random = New-Object System.Random
     # function Get-RandomColor {
