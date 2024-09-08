@@ -477,9 +477,9 @@
                             </Trigger>
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource MainBackgroundColor}" />
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource MainForegroundColor}" />
-                                <Setter TargetName="Ellipse" Property="Fill" Value="{DynamicResource MainForegroundColor}" />
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ToggleButtonOnColor}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ToggleButtonOnColor}" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="White" />
 
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
