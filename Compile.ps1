@@ -85,11 +85,15 @@ Get-ChildItem "$workingdir\config" | Where-Object {$psitem.extension -eq ".json"
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
 
-$xaml = (Get-Content "$workingdir\xaml\inputXML.xaml").replace("'","''")
+$xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 
 Update-Progress "Adding: Xaml " 90
 
-$script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
+$script_content.Add(@"
+`$inputXML = @'
+$xaml
+'@
+"@)
 
 $script_content.Add($(Get-Content "$workingdir\scripts\main.ps1"))
 
