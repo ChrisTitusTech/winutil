@@ -68,6 +68,7 @@
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#000000",
         "ToggleButtonOnColor":  "#2e77ff",
+        "ToggleButtonOffColor": "#707070",
 
         "ButtonBorderThickness":  "1",
         "ButtonMargin":  "1",

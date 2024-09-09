@@ -355,14 +355,14 @@
                         <StackPanel Orientation="Horizontal" Margin="{CheckBoxMargin}">
                             <Grid Width="14" Height="14">
                                 <Ellipse x:Name="OuterCircle"
-                                        Stroke="{ButtonBackgroundPressedColor}"
+                                        Stroke="{ToggleButtonOffColor}"
                                         Fill="{ButtonBackgroundColor}"
                                         StrokeThickness="1"
                                         Width="14"
                                         Height="14"
                                         SnapsToDevicePixels="True"/>
                                 <Ellipse x:Name="InnerCircle"
-                                        Fill="{MainForegroundColor}"
+                                        Fill="{ToggleButtonOnColor}"
                                         Width="8"
                                         Height="8"
                                         Visibility="Collapsed"
@@ -514,8 +514,8 @@
                             </Trigger>
                             <Trigger Property="ToggleButton.IsChecked" Value="False">
                                 <Setter TargetName="Border" Property="Background" Value="{MainBackgroundColor}" />
-                                <Setter TargetName="Border" Property="BorderBrush" Value="#707070" />
-                                <Setter TargetName="Ellipse" Property="Fill" Value="#707070" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{ToggleButtonOffColor}" />
+                                <Setter TargetName="Ellipse" Property="Fill" Value="{ToggleButtonOffColor}" />
                             </Trigger>
 
                             <Trigger Property="ToggleButton.IsChecked" Value="True">
