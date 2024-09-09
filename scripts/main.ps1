@@ -386,16 +386,16 @@ $sync["ISOoption2"].add_Checked({
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
 })
 
-$sync["ISORelease"].Items.Add("23H2")
-$sync["ISORelease"].Items.Add("22H2")
-$sync["ISORelease"].Items.Add("21H2")
+$sync["ISORelease"].Items.Add("23H2") | Out-Null
+$sync["ISORelease"].Items.Add("22H2") | Out-Null
+$sync["ISORelease"].Items.Add("21H2") | Out-Null
 $sync["ISORelease"].SelectedItem = "23H2"
 
 $currentCulture = Get-FidoLangFromCulture -langName (Get-Culture).Name
 
-$sync["ISOLanguage"].Items.Add($currentCulture)
+$sync["ISOLanguage"].Items.Add($currentCulture) | Out-Null
 if ($currentCulture -ne "English International") {
-    $sync["ISOLanguage"].Items.Add("English International")
+    $sync["ISOLanguage"].Items.Add("English International") | Out-Null
 }
 if ($sync["ISOLanguage"].Items.Count -eq 1) {
     $sync["ISOLanguage"].IsEnabled = $false
