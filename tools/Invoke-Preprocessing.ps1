@@ -77,7 +77,7 @@
         for ($i = 0; $i -lt $count; $i++) {
             $excludedFile = $ExcludedFiles[$i]
             $filePath = "$(($WorkingDir -replace ('\\$', '')) + '\' + ($excludedFile -replace ('\.\\', '')))"
-            if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
+            if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File -Force)) {
                 $failedFilesList += "'$filePath', "
             }
         }
@@ -87,7 +87,8 @@
         }
     }
 
-    $files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File
+    $files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File -Force
+
     $numOfFiles = $files.Count
 
     if ($numOfFiles -eq 0) {
