@@ -84,9 +84,8 @@ function Invoke-WPFGetIso {
 
         Invoke-WebRequest "https://github.com/pbatard/Fido/raw/master/Fido.ps1" -OutFile $fidopath
 
-        # TODO: on get iso, script gets downloaded and function is taken & called to get & display languages. after selection user can press proceed, which will start the fido process and select the output iso for further processing
         Set-Location -Path $env:temp
-        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem
+        & $fidopath -Win 'Windows 11' -Rel $sync["ISORelease"].SelectedItem -Arch "x64" -Lang $sync["ISOLanguage"].SelectedItem -Ed "Windows 11 Home/Pro/Edu"
         Set-Location $originalLocation
         $filePath = Get-ChildItem -Path "$env:temp" -Filter "Win11*.iso" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     }

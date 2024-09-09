@@ -375,10 +375,33 @@ Add-Type @"
 
 })
 
+# Add event handlers for the RadioButtons
+$sync["ISOoption1"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
+})
+
+$sync["ISOoption2"].add_Checked({
+    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
+    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
+})
+
 $sync["ISORelease"].Items.Add("23H2")
 $sync["ISORelease"].Items.Add("22H2")
 $sync["ISORelease"].Items.Add("21H2")
 $sync["ISORelease"].SelectedItem = "23H2"
+
+$currentCulture = Get-FidoLangFromCulture -langName (Get-Culture).Name
+
+$sync["ISOLanguage"].Items.Add($currentCulture)
+if ($currentCulture -ne "English International") {
+    $sync["ISOLanguage"].Items.Add("English International")
+}
+if ($sync["ISOLanguage"].Items.Count -eq 1) {
+    $sync["ISOLanguage"].IsEnabled = $false
+}
+$sync["ISOLanguage"].SelectedItem = $currentCulture
+
 
 # Load Checkboxes and Labels outside of the Filter function only once on startup for performance reasons
 $filter = Get-WinUtilVariables -Type CheckBox
@@ -485,22 +508,6 @@ Set-WinUtilTaskbaritem -overlay "logo"
 $sync["Form"].Add_Activated({
     Set-WinUtilTaskbaritem -overlay "logo"
 })
-
-# WIP positioning, wont work as expected currently
-$sync["ISOLanguage"].Items.Add($locale)
-if ($locale -ne "en-US") {
-    $sync["ISOLanguage"].Items.Add("en-US")
-}
-$sync["ISOLanguage"].SelectedItem = $locale
-
-if ($sync["ISOoption1"].IsChecked) {
-    
-    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
-    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
-} else {
-    $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
-    $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
-}
 
 # Define event handler for button click
 $sync["SettingsButton"].Add_Click({
