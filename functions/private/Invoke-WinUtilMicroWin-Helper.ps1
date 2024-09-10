@@ -42,7 +42,7 @@ function Get-FidoLangFromCulture {
         "cs*" { return "Czech" }
         "da*" { return "Danish" }
         "nl*" { return "Dutch" }
-        "en-US" { return "English (United States)" }
+        "en-US" { return "English" }
         {($_ -like "en*") -and ($_ -ne "en-US")} { return "English International" }
         "et*" { return "Estonian" }
         "fi*" { return "Finnish" }
