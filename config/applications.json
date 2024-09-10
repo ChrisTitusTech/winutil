@@ -797,7 +797,7 @@
         "content": "Google Drive",
         "description": "File syncing across devices all tied to your google account",
         "link": "https://www.google.com/drive/",
-        "winget": "Google.Drive"
+        "winget": "Google.GoogleDrive"
     },
     "gpuz": {
         "category": "Utilities",

@@ -1,102 +1,258 @@
 function Install-WinUtilProgramChoco {
     <#
     .SYNOPSIS
-    Manages the provided programs using Chocolatey
+    Manages the installation or uninstallation of a list of Chocolatey packages.
 
-    .PARAMETER ProgramsToInstall
-    A list of programs to manage
+    .PARAMETER Programs
+    A string array containing the programs to be installed or uninstalled.
 
-    .PARAMETER manage
-    The action to perform on the programs, can be either 'Installing' or 'Uninstalling'
+    .PARAMETER Action
+    Specifies the action to perform: "Install" or "Uninstall". The default value is "Install".
 
-    .NOTES
-    The triple quotes are required any time you need a " in a normal script block.
+    .DESCRIPTION
+    This function processes a list of programs to be managed using Chocolatey. Depending on the specified action, it either installs or uninstalls each program in the list, updating the taskbar progress accordingly. After all operations are completed, temporary output files are cleaned up.
+
+    .EXAMPLE
+    Install-WinUtilProgramChoco -Programs @("7zip","chrome") -Action "Uninstall"
     #>
 
     param(
-        [Parameter(Mandatory, Position=0)]
-        [PsCustomObject]$ProgramsToInstall,
+        [Parameter(Mandatory, Position = 0)]
+        [string[]]$Programs,
 
-        [Parameter(Position=1)]
-        [String]$manage = "Installing"
+        [Parameter(Position = 1)]
+        [String]$Action = "Install"
     )
 
-    $x = 0
-    $count = $ProgramsToInstall.Count
+    function Initialize-OutputFile {
+        <#
+        .SYNOPSIS
+        Initializes an output file by removing any existing file and creating a new, empty file at the specified path.
 
-    # This check isn't really necessary, as there's a couple of checks before this Private Function gets called, but just to make sure ;)
-    if($count -le 0) {
-        throw "Private Function 'Install-WinUtilProgramChoco' expected Parameter 'ProgramsToInstall' to be of size 1 or greater, instead got $count,`nPlease double check your code and re-compile WinUtil."
+        .PARAMETER filePath
+        The full path to the file to be initialized.
+
+        .DESCRIPTION
+        This function ensures that the specified file is reset by removing any existing file at the provided path and then creating a new, empty file. It is useful when preparing a log or output file for subsequent operations.
+
+        .EXAMPLE
+        Initialize-OutputFile -filePath "C:\temp\output.txt"
+        #>
+
+        param ($filePath)
+        Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
+        New-Item -ItemType File -Path $filePath | Out-Null
     }
 
-    Write-Progress -Activity "$manage Applications" -Status "Starting" -PercentComplete 0
-    Write-Host "==========================================="
-    Write-Host "--   Configuring Chocolatey pacakages   ---"
-    Write-Host "==========================================="
-    Foreach ($Program in $ProgramsToInstall) {
-        Write-Progress -Activity "$manage Applications" -Status "$manage $($Program.choco) $($x + 1) of $count" -PercentComplete $($x/$count*100)
-        if($manage -eq "Installing") {
-            write-host "Starting install of $($Program.choco) with Chocolatey."
-            try {
-                $tryUpgrade = $false
-        $installOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
-        New-Item -ItemType File -Path $installOutputFilePath
-        $chocoInstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "install $($Program.choco) -y" -Wait -PassThru -RedirectStandardOutput $installOutputFilePath).ExitCode
-            if(($chocoInstallStatus -eq 0) -AND (Test-Path -Path $installOutputFilePath)) {
-                $keywordsFound = Get-Content -Path $installOutputFilePath | Where-Object {$_ -match "reinstall" -OR $_ -match "already installed"}
-                if ($keywordsFound) {
-                    $tryUpgrade = $true
+    function Run-ChocoCommand {
+        <#
+        .SYNOPSIS
+        Executes a Chocolatey command with the specified arguments and returns the exit code.
+
+        .PARAMETER arguments
+        The arguments to be passed to the Chocolatey command.
+
+        .DESCRIPTION
+        This function runs a specified Chocolatey command by passing the provided arguments to the `choco` executable. It waits for the process to complete and then returns the exit code, allowing the caller to determine success or failure based on the exit code.
+
+        .RETURNS
+        [int]
+        The exit code of the Chocolatey command.
+
+        .EXAMPLE
+        $exitCode = Run-ChocoCommand -arguments "install 7zip -y"
+        #>
+
+        param ($arguments)
+        return (Start-Process -FilePath "choco" -ArgumentList $arguments -Wait -PassThru).ExitCode
+    }
+
+    function Check-UpgradeNeeded {
+        <#
+        .SYNOPSIS
+        Checks if an upgrade is needed for a Chocolatey package based on the content of a log file.
+
+        .PARAMETER filePath
+        The path to the log file that contains the output of a Chocolatey install command.
+
+        .DESCRIPTION
+        This function reads the specified log file and checks for keywords that indicate whether an upgrade is needed. It returns a boolean value indicating whether the terms "reinstall" or "already installed" are present, which suggests that the package might need an upgrade.
+
+        .RETURNS
+        [bool]
+        True if the log file indicates that an upgrade is needed; otherwise, false.
+
+        .EXAMPLE
+        $isUpgradeNeeded = Check-UpgradeNeeded -filePath "C:\temp\install-output.txt"
+        #>
+
+        param ($filePath)
+        return Get-Content -Path $filePath | Select-String -Pattern "reinstall|already installed" -Quiet
+    }
+
+    function Update-TaskbarProgress {
+        <#
+        .SYNOPSIS
+        Updates the taskbar progress based on the current installation progress.
+
+        .PARAMETER currentIndex
+        The current index of the program being installed or uninstalled.
+
+        .PARAMETER totalPrograms
+        The total number of programs to be installed or uninstalled.
+
+        .DESCRIPTION
+        This function calculates the progress of the installation or uninstallation process and updates the taskbar accordingly. The taskbar is set to "Normal" if all programs have been processed, otherwise, it is set to "Error" as a placeholder.
+
+        .EXAMPLE
+        Update-TaskbarProgress -currentIndex 3 -totalPrograms 10
+        #>
+
+        param (
+            [int]$currentIndex,
+            [int]$totalPrograms
+        )
+        $progressState = if ($currentIndex -eq $totalPrograms) { "Normal" } else { "Error" }
+        $sync.form.Dispatcher.Invoke([action] { Set-WinUtilTaskbaritem -state $progressState -value ($currentIndex / $totalPrograms) })
+    }
+
+    function Install-ChocoPackage {
+        <#
+        .SYNOPSIS
+        Installs a Chocolatey package and optionally upgrades it if needed.
+
+        .PARAMETER Program
+        A string containing the name of the Chocolatey package to be installed.
+
+        .PARAMETER currentIndex
+        The current index of the program in the list of programs to be managed.
+
+        .PARAMETER totalPrograms
+        The total number of programs to be installed.
+
+        .DESCRIPTION
+        This function installs a Chocolatey package by running the `choco install` command. If the installation output indicates that an upgrade might be needed, the function will attempt to upgrade the package. The taskbar progress is updated after each package is processed.
+
+        .EXAMPLE
+        Install-ChocoPackage -Program $Program -currentIndex 0 -totalPrograms 5
+        #>
+
+        param (
+            [string]$Program,
+            [int]$currentIndex,
+            [int]$totalPrograms
+        )
+
+        $installOutputFile = "$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt"
+        Initialize-OutputFile $installOutputFile
+
+        Write-Host "Starting installation of $Program with Chocolatey."
+
+        try {
+            $installStatusCode = Run-ChocoCommand "install $Program -y --log-file $installOutputFile"
+            if ($installStatusCode -eq 0) {
+
+                if (Check-UpgradeNeeded $installOutputFile) {
+                    $upgradeStatusCode = Run-ChocoCommand "upgrade $Program -y"
+                    Write-Host "$Program was" $(if ($upgradeStatusCode -eq 0) { "upgraded successfully." } else { "not upgraded." })
+                }
+                else {
+                    Write-Host "$Program installed successfully."
                 }
             }
-        # TODO: Implement the Upgrade part using 'choco upgrade' command, this will make choco consistent with WinGet, as WinGet tries to Upgrade when you use the install command.
-        if ($tryUpgrade) {
-            throw "Automatic Upgrade for Choco isn't implemented yet, a feature to make it consistent with WinGet, the install command using choco simply failed because $($Program.choco) is already installed."
+            else {
+                Write-Host "Failed to install $Program."
+            }
         }
-        if(($chocoInstallStatus -eq 0) -AND ($tryUpgrade -eq $false)) {
-                    Write-Host "$($Program.choco) installed successfully using Chocolatey."
-                    $X++
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
-                    continue
-                } else {
-                    Write-Host "Failed to install $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $installOutputFilePath)."
-                    $X++
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
-                }
-            } catch {
-                Write-Host "Failed to install $($Program.choco) due to an error: $_"
-                $X++
-                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
+        catch {
+            Write-Host "Failed to install $Program due to an error: $_"
+        }
+        finally {
+            Update-TaskbarProgress $currentIndex $totalPrograms
+        }
+    }
+
+    function Uninstall-ChocoPackage {
+        <#
+        .SYNOPSIS
+        Uninstalls a Chocolatey package and any related metapackages.
+
+        .PARAMETER Program
+        A string containing the name of the Chocolatey package to be uninstalled.
+
+        .PARAMETER currentIndex
+        The current index of the program in the list of programs to be managed.
+
+        .PARAMETER totalPrograms
+        The total number of programs to be uninstalled.
+
+        .DESCRIPTION
+        This function uninstalls a Chocolatey package and any related metapackages (e.g., .install or .portable variants). It updates the taskbar progress after processing each package.
+
+        .EXAMPLE
+        Uninstall-ChocoPackage -Program $Program -currentIndex 0 -totalPrograms 5
+        #>
+
+        param (
+            [string]$Program,
+            [int]$currentIndex,
+            [int]$totalPrograms
+        )
+
+        $uninstallOutputFile = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
+        Initialize-OutputFile $uninstallOutputFile
+
+        Write-Host "Searching for metapackages of $Program (.install or .portable)"
+        $chocoPackages = ((choco list | Select-String -Pattern "$Program(\.install|\.portable)?").Matches.Value) -join " "
+        if ($chocoPackages) {
+            Write-Host "Starting uninstallation of $chocoPackages with Chocolatey."
+            try {
+                $uninstallStatusCode = Run-ChocoCommand "uninstall $chocoPackages -y"
+                Write-Host "$Program" $(if ($uninstallStatusCode -eq 0) { "uninstalled successfully." } else { "failed to uninstall." })
+            }
+            catch {
+                Write-Host "Failed to uninstall $Program due to an error: $_"
+            }
+            finally {
+                Update-TaskbarProgress $currentIndex $totalPrograms
             }
         }
+        else {
+            Write-Host "$Program is not installed."
+        }
+    }
 
-    if($manage -eq "Uninstalling") {
-            write-host "Starting uninstall of $($Program.choco) with Chocolatey."
-            try {
-        $uninstallOutputFilePath = "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt"
-        New-Item -ItemType File -Path $uninstallOutputFilePath
-        $chocoUninstallStatus = $(Start-Process -FilePath "choco" -ArgumentList "uninstall $($Program.choco) -y" -Wait -PassThru).ExitCode
-        if($chocoUninstallStatus -eq 0) {
-                    Write-Host "$($Program.choco) uninstalled successfully using Chocolatey."
-                    $x++
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Normal" -value ($x/$count) })
-                    continue
-                } else {
-                    Write-Host "Failed to uninstall $($Program.choco) using Chocolatey, Chocolatey output:`n`n$(Get-Content -Path $uninstallOutputFilePath)."
-                    $x++
-                    $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
-                }
-            } catch {
-                Write-Host "Failed to uninstall $($Program.choco) due to an error: $_"
-                $x++
-                $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -state "Error" -value ($x/$count) })
+    $totalPrograms = $Programs.Count
+    if ($totalPrograms -le 0) {
+        throw "Parameter 'Programs' must have at least one item."
+    }
+
+    Write-Host "==========================================="
+    Write-Host "--   Configuring Chocolatey packages   ---"
+    Write-Host "==========================================="
+
+    for ($currentIndex = 0; $currentIndex -lt $totalPrograms; $currentIndex++) {
+        $Program = $Programs[$currentIndex]
+        Set-WinUtilProgressBar -label "$Action $($Program)" -percent ($currentIndex / $totalPrograms * 100)
+        $sync.form.Dispatcher.Invoke([action]{ Set-WinUtilTaskbaritem -value ($currentIndex / $totalPrograms)})
+
+        switch ($Action) {
+            "Install" {
+                Install-ChocoPackage -Program $Program -currentIndex $currentIndex -totalPrograms $totalPrograms
             }
+            "Uninstall" {
+                Uninstall-ChocoPackage -Program $Program -currentIndex $currentIndex -totalPrograms $totalPrograms
+            }
+            default {
+                throw "Invalid action parameter value: '$Action'."
+            }
+        }
     }
+    Set-WinUtilProgressBar -label "$($Action)ation done" -percent 100
+    # Cleanup Output Files
+    $outputFiles = @("$env:TEMP\Install-WinUtilProgramChoco.install-command.output.txt", "$env:TEMP\Install-WinUtilProgramChoco.uninstall-command.output.txt")
+    foreach ($filePath in $outputFiles) {
+        Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
     }
-    Write-Progress -Activity "$manage Applications" -Status "Finished" -Completed
-
-    # Cleanup leftovers files
-    if(Test-Path -Path $installOutputFilePath) { Remove-Item -Path $installOutputFilePath }
-    if(Test-Path -Path $uninstallOutputFilePath) { Remove-Item -Path $uninstallOutputFilePath }
-
-    return;
 }
+

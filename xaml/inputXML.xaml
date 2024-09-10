@@ -218,7 +218,7 @@
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundMouseoverColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="Gold" Direction="-100" BlurRadius="45"/>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="5" Color="{ButtonBackgroundMouseoverColor}" Direction="-100" BlurRadius="15"/>
                                     </Setter.Value>
                                 </Setter>
                                 <Setter Property="Panel.ZIndex" Value="2000"/>
@@ -229,7 +229,7 @@
                                 <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource ButtonBackgroundSelectedColor}"/>
                                 <Setter Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="Gold" Direction="-111" BlurRadius="25"/>
+                                        <DropShadowEffect Opacity="1" ShadowDepth="2" Color="{ButtonBackgroundMouseoverColor}" Direction="-111" BlurRadius="10"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -620,8 +620,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <DockPanel HorizontalAlignment="Stretch" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
-            <Image Name="WPFIcon"
-                SnapsToDevicePixels="True" Source="https://christitus.com/images/logo-full.png" Margin="10"/>
+            <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
+            </StackPanel>
             <ToggleButton HorizontalAlignment="Left" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
                 Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
@@ -819,6 +819,9 @@
                         <Button Name="WPFUninstall" Content=" Uninstall Selected" Margin="2"/>
                         <Button Name="WPFGetInstalled" Content=" Get Installed" Margin="2"/>
                         <Button Name="WPFClearInstallSelection" Content=" Clear Selection" Margin="2"/>
+                        <CheckBox Name="WPFpreferChocolatey" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <TextBlock Text="Prefer Chocolatey" ToolTip="Prefers Chocolatey as Download Engine instead of Winget" VerticalAlignment="Center" />
+                        </CheckBox>
                     </StackPanel>
 
                     <ScrollViewer x:Name="scrollViewer" Grid.Row="1" Grid.Column="0" Margin="{DynamicResource TabContentMargin}" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"

@@ -1,9 +1,4 @@
-# Pull Request
-
 <!--Before you make this PR have you followed the docs here? - https://christitustech.github.io/winutil/contribute/ -->
-
-## Title
-<!--[Provide a succinct and descriptive title for the pull request.]-->
 
 ## Type of Change
 - [ ] New feature
