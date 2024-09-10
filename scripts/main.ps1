@@ -397,6 +397,9 @@ $sync["ISOLanguage"].Items.Add($currentCulture) | Out-Null
 if ($currentCulture -ne "English International") {
     $sync["ISOLanguage"].Items.Add("English International") | Out-Null
 }
+if ($currentCulture -ne "English") {
+    $sync["ISOLanguage"].Items.Add("English") | Out-Null
+}
 if ($sync["ISOLanguage"].Items.Count -eq 1) {
     $sync["ISOLanguage"].IsEnabled = $false
 }
