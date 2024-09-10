@@ -76,7 +76,7 @@ jobs:
 
       - name: Generate Release Notes
         id: generate_notes
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -91,7 +91,7 @@ jobs:
           name: Pre-Release ${{ env.version }}
           body: |
             ${{ steps.generate_notes.outputs.body }}
-            
+
             ![GitHub Downloads (specific asset, specific tag)](https://img.shields.io/github/downloads/ChrisTitusTech/winutil/${{ env.VERSION }}/winutil.ps1)
           append_body: false
           files: ./winutil.ps1
