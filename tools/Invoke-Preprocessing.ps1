@@ -1,4 +1,4 @@
- function Invoke-Preprocessing {
+function Invoke-Preprocessing {
     <#
         .SYNOPSIS
         A function that does Code Formatting using RegEx, useful when trying to force specific coding standard(s) to a project.
@@ -92,7 +92,7 @@
             $matches = ($filePath) -match '^.*?\*'
 
             if ($matches) {
-                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
+                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File -Force)) {
                     $failedFilesList += "'$filePath', "
                 }
             } else {
@@ -108,7 +108,7 @@
     }
 
     # Get Files List
-    [System.Collections.ArrayList]$files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File
+    [System.Collections.ArrayList]$files = Get-ChildItem $WorkingDir -Recurse -Exclude $ExcludedFiles -File -Force
     $numOfFiles = $files.Count
 
     # Only keep the 'FullName' Property for every entry in the list
@@ -130,7 +130,7 @@
         $matches = ($pathToFind) -match '^.*?\*'
 
         if ($matches) {
-             $filesToCheck = Get-ChildItem -Recurse -Path "$pathToFind" -File
+             $filesToCheck = Get-ChildItem -Recurse -Path "$pathToFind" -File -Force
              if ($filesToCheck) {
                 for ($k = 0; $k -lt $filesToCheck.Count; $k++) {
                     $fileToCheck = $filesToCheck[$k]
