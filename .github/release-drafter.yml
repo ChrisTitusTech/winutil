@@ -57,9 +57,4 @@ replacers:
 exclude-labels:
   - 'skip-changelog'
 
-# Add this section
-version-resolver:
-  default: $YEAR.$MONTH.$DAY
-
-# Add this line
-filter-by-commitish: ['main', 'master']
+filter-by-commitish: true
