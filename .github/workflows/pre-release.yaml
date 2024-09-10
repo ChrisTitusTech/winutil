@@ -80,7 +80,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config-name: .github/release-drafter.yml
+          config-name: release-drafter.yml
           version: ${{ env.VERSION }} # Pass the version variable
 
       - name: Create and Upload Release
