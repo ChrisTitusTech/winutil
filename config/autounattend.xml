@@ -293,7 +293,7 @@
     <Extensions xmlns="https://schneegans.de/windows/unattend-generator/">
         <ExtractScript>
 param(
-    [xml] $Document
+    [xml]$Document
 );
 
 $scriptsDir = 'C:\Windows\Setup\Scripts\';

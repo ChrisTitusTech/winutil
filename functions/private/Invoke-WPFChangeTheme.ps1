@@ -13,12 +13,12 @@ function Invoke-WPFChangeTheme {
             $sync.Form.Resources[$($entry.Name)] = [Windows.Media.SolidColorBrush]::new($entry.Value)
 
             # Because Border color is also used in a Drop Shadow, it's nesessary to also store it as a Color Resource
-            if ($($entry.Name) -eq "BorderColor") {
+            if (($entry.Name -eq "BorderColor") -or ($entry.Name -eq "ButtonBackgroundMouseoverColor"))  {
                 $hexColor = $entry.Value.TrimStart("#")
                 $r = [Convert]::ToInt32($hexColor.Substring(0, 2), 16)
                 $g = [Convert]::ToInt32($hexColor.Substring(2, 2), 16)
                 $b = [Convert]::ToInt32($hexColor.Substring(4, 2), 16)
-                $sync.Form.Resources["CBorderColor"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
+                $sync.Form.Resources["C$($entry.Name)"] = [Windows.Media.Color]::FromRgb($r, $g, $b)
             }
         }
         $jsonRadius = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {($_.Name -like "*Radius*")} | Select-Object Name, Value
