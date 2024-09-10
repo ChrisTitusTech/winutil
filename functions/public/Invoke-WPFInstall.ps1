@@ -60,7 +60,7 @@ function Invoke-WPFInstall {
             if($packagesWinget.Count -gt 0) {
                 Install-WinUtilWinget
                 Install-WinUtilProgramWinget -Action Install -Programs $packagesWinget
-                
+
             }
             if($packagesChoco.Count -gt 0) {
                 Install-WinUtilChoco
