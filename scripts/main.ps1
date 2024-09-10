@@ -445,32 +445,25 @@ $sync["Form"].Add_Loaded({
     $sync["Form"].MaxHeight = [Double]::PositiveInfinity
 })
 
+$NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
+$NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
+
 # Initialize the hashtable
 $winutildir = @{}
 
 # Set the path for the winutil directory
 $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
-[System.IO.Directory]::CreateDirectory("$winutildir") | Out-Null
+[System.IO.Directory]::CreateDirectory($winutildir["path"]) | Out-Null
 
-# Set the path for the logo and checkmark images
-$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
-if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
-}
-if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
-    ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
-}
 
-$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
-$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
-if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
+if (Test-Path $winutildir["logo.ico"]) {
+    $sync["logorender"] = $winutildir["logo.ico"]
+} else {
+    $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
 }
-if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
-}
-
+$sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
+$sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
 
 Set-WinUtilTaskbaritem -overlay "logo"
 
@@ -519,10 +512,10 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
 "@
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -545,10 +538,10 @@ $sync["SponsorMenuItem"].Add_Click({
 
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript
