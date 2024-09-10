@@ -29,6 +29,11 @@
     * Click the `Clear Selection` button.
     * This will unselect all checked programs.
 
+=== "prefer Chocolatey"
+    * Check the `prefer Chocolatey` checkbox
+    * By default Winutil will use winget to install/upgrade/remove packages and fallback to Chocolatey. This option reverses the preference. 
+    * This preference will be used for all Buttons on the Install page and persist across Winutil restarts 
+
 ![Install Image](assets/Install-Tab-Dark.png#only-dark)
 ![Install Image](assets/Install-Tab-Light.png#only-light)
 !!! tip
