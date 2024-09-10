@@ -30,7 +30,6 @@ Function Invoke-WPFUltimatePerformance {
                     break
                 }
             }
-            }
 
             if (-not $guid) {
                 Write-Output "No GUID found in the duplicateOutput. Check the output format."
