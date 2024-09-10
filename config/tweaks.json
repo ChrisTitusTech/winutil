@@ -2201,20 +2201,20 @@
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a030_",
-    "InvokeScript": [
+        "InvokeScript": [
       "
-      REG ADD "HKEY_CLASSES_ROOT\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f /v "System.IsPinnedToNameSpaceTree" /t REG_DWORD /d "0"
-      REG ADD "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f /v "System.IsPinnedToNameSpaceTree" /t REG_DWORD /d "0"
-      REG ADD "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f /v "HiddenByDefault" /t REG_DWORD /d "1"
-      REG ADD "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum" /f /v "{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /t REG_DWORD /d "1"
-	"
+      REG ADD \"HKEY_CLASSES_ROOT\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f /v \"System.IsPinnedToNameSpaceTree\" /t REG_DWORD /d \"0\"
+      REG ADD \"HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f /v \"System.IsPinnedToNameSpaceTree\" /t REG_DWORD /d \"0\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f /v \"HiddenByDefault\" /t REG_DWORD /d \"1\"
+      REG ADD \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum\" /f /v \"{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /t REG_DWORD /d \"1\"
+      "
     ],
     "UndoScript": [
       "
-      REG ADD "HKEY_CLASSES_ROOT\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f /v "System.IsPinnedToNameSpaceTree" /t REG_DWORD /d "1"
-      REG ADD "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f /v "System.IsPinnedToNameSpaceTree" /t REG_DWORD /d "1"
-      REG DELETE "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /v "HiddenByDefault" /f
-      REG DELETE "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum" /v "{018D5C66-4533-4307-9B53-224DE2ED1FE6}" /f
+      REG ADD \"HKEY_CLASSES_ROOT\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f /v \"System.IsPinnedToNameSpaceTree\" /t REG_DWORD /d \"1\"
+      REG ADD \"HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f /v \"System.IsPinnedToNameSpaceTree\" /t REG_DWORD /d \"1\"
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /v \"HiddenByDefault\" /f
+      REG DELETE \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum\" /v \"{018D5C66-4533-4307-9B53-224DE2ED1FE6}\" /f
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveHomeGallery"
