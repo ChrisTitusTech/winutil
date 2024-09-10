@@ -1,6 +1,3 @@
-name-template: '$YEAR.$MONTH.$DAY'
-tag-template: '$YEAR.$MONTH.$DAY'
-tag-prefix: ""
 categories:
   - title: '🚀 Features'
     labels:
