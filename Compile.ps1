@@ -4,6 +4,11 @@ param (
     [switch]$SkipPreprocessing,
     [string]$Arguments
 )
+
+if ((Get-Item ".\winutil.ps1" -ErrorAction SilentlyContinue).IsReadOnly) {
+    Remove-Item ".\winutil.ps1" -Force
+}
+
 $OFS = "`r`n"
 $scriptname = "winutil.ps1"
 $workingdir = $PSScriptRoot
