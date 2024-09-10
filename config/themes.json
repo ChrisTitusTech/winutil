@@ -102,7 +102,7 @@
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
 
         "ButtonForegroundColor":  "#232629",
-        "ToggleButtonOnColor":  "#2e77ff"
+        "ToggleButtonOnColor":  "#2e77ff",
         "ToggleButtonOffColor": "#707070"
     },
     "Matrix": {
