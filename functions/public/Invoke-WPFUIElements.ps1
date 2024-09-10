@@ -304,13 +304,6 @@ function Invoke-WPFUIElements {
                             $textBlock.ToolTip = $entryInfo.Link
                             $textBlock.Style = $HoverTextBlockStyle
 
-                            # Add event handler for click to open link
-                            $handler = [System.Windows.Input.MouseButtonEventHandler]{
-                                param($sender, $e)
-                                Start-Process $sender.ToolTip.ToString()
-                            }
-                            $textBlock.AddHandler([Windows.Controls.TextBlock]::MouseLeftButtonUpEvent, $handler)
-
                             $horizontalStackPanel.Children.Add($textBlock) | Out-Null
 
                             $sync[$textBlock.Name] = $textBlock

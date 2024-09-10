@@ -32,19 +32,19 @@ $sync.runspace.Open()
 # Create classes for different exceptions
 
     class WingetFailedInstall : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         WingetFailedInstall($Message) : base($Message) {}
     }
 
     class ChocoFailedInstall : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         ChocoFailedInstall($Message) : base($Message) {}
     }
 
     class GenericException : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         GenericException($Message) : base($Message) {}
     }
