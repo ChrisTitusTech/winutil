@@ -37,23 +37,24 @@ function Remove-Features() {
             Remove-Features
     #>
     try {
-        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir)
 
         $featlist = $featlist | Where-Object {
-            $_ -NotLike "*Defender*" -AND
-            $_ -NotLike "*Printing*" -AND
-            $_ -NotLike "*TelnetClient*" -AND
-            $_ -NotLike "*PowerShell*" -AND
-            $_ -NotLike "*NetFx*" -AND
-            $_ -NotLike "*Media*" -AND
-            $_ -NotLike "*NFS*"
+            $_.FeatureName -NotLike "*Defender*" -AND
+            $_.FeatureName -NotLike "*Printing*" -AND
+            $_.FeatureName -NotLike "*TelnetClient*" -AND
+            $_.FeatureName -NotLike "*PowerShell*" -AND
+            $_.FeatureName -NotLike "*NetFx*" -AND
+            $_.FeatureName -NotLike "*Media*" -AND
+            $_.FeatureName -NotLike "*NFS*" -AND
+            $_.State -ne "Disabled"
         }
 
         foreach($feature in $featlist) {
-            $status = "Removing feature $feature"
+            $status = "Removing feature $($feature.FeatureName)"
             Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-            Write-Debug "Removing feature $feature"
-            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+            Write-Debug "Removing feature $($feature.FeatureName)"
+            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $($feature.FeatureName) -Remove  -ErrorAction SilentlyContinue -NoRestart
         }
         Write-Progress -Activity "Removing features" -Status "Ready" -Completed
         Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
