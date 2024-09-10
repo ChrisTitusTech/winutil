@@ -1,5 +1,5 @@
-name-template: '$RESOLVED_VERSION'
-tag-template: '$RESOLVED_VERSION'
+name-template: '$YEAR.$MONTH.$DAY'
+tag-template: '$YEAR.$MONTH.$DAY'
 tag-prefix: ""
 categories:
   - title: '🚀 Features'
@@ -56,3 +56,10 @@ replacers:
     replace: ''
 exclude-labels:
   - 'skip-changelog'
+
+# Add this section
+version-resolver:
+  default: $YEAR.$MONTH.$DAY
+
+# Add this line
+filter-by-commitish: ['main', 'master']
