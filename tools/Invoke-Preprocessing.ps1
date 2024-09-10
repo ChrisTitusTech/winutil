@@ -92,7 +92,7 @@ function Invoke-Preprocessing {
             $matches = ($filePath) -match '^.*?\*'
 
             if ($matches) {
-                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File)) {
+                if (-NOT (Get-ChildItem -Recurse -Path "$filePath" -File -Force)) {
                     $failedFilesList += "'$filePath', "
                 }
             } else {
