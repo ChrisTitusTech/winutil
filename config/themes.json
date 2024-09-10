@@ -101,7 +101,8 @@
         "ButtonBackgroundMouseoverColor":  "#C2C2C2",
         "ButtonBackgroundSelectedColor":  "#F0F0F0",
         "ButtonForegroundColor":  "#000000",
-        "ToggleButtonOnColor":  "#2e77ff"
+        "ToggleButtonOnColor":  "#2e77ff",
+        "ToggleButtonOffColor": "#707070"
     },
     "Matrix": {
         "ComboBoxBackgroundColor":  "#000000",
@@ -131,6 +132,7 @@
         "ButtonBackgroundSelectedColor":  "#FF5733",
         "ButtonForegroundColor":  "#9CCC65",
         "ToggleButtonOnColor":  "#2e77ff",
+        "ToggleButtonOffColor": "#707070",
 
         "BorderColor": "#FFAC1C",
         "BorderOpacity": "0.8",
@@ -164,6 +166,7 @@
         "ButtonBackgroundSelectedColor":  "#FF5733",
         "ButtonForegroundColor":  "#9CCC65",
         "ToggleButtonOnColor":    "#2e77ff",
+        "ToggleButtonOffColor": "#707070",
 
         "BorderColor": "#FFAC1C"
     }
