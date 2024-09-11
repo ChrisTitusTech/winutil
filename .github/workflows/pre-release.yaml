@@ -81,14 +81,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-name: release-drafter.yml
-          version: ${{ env.version }}
+          version: ${{ env.VERSION }} # Pass the version variable
 
       - name: Create and Upload Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.version }}
-          name: Pre-Release ${{ env.version }}
+          tag_name: ${{ env.VERSION }}
+          name: Pre-Release ${{ env.VERSION }}
           body: |
             ${{ steps.generate_notes.outputs.body }}
 

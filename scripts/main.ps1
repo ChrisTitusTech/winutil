@@ -116,6 +116,14 @@ Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "feat
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
+#Persist the Chocolatey preference across winutil restarts
+$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
+$sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
+$sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
+if (Test-Path $ChocoPreferencePath) {
+    $sync.WPFpreferChocolatey.IsChecked = $true
+}
+
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
@@ -408,7 +416,7 @@ $sync["SearchBar"].Add_TextChanged({
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
 
-        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+        if ($CheckBox.Value.Content.ToString().ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
             # Set the corresponding text block visibility
