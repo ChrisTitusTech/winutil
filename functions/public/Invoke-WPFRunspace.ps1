@@ -55,4 +55,6 @@ function Invoke-WPFRunspace {
         $sync.runspace.Close()
         [System.GC]::Collect()
     }
+    # Return the handle
+    return $handle
 }
