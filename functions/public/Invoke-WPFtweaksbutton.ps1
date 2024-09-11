@@ -24,7 +24,7 @@ function Invoke-WPFtweaksbutton {
 
   Write-Debug "Number of tweaks to process: $($Tweaks.Count)"
 
-  Invoke-WPFRunspace -ArgumentList $Tweaks -DebugPreference $DebugPreference -ScriptBlock {
+  Invoke-WPFRunspace -ArgumentList (,$Tweaks) -DebugPreference $DebugPreference -ScriptBlock {
     param($Tweaks, $DebugPreference)
     Write-Debug "Inside Number of tweaks to process: $($Tweaks.Count)"
 
