@@ -48,7 +48,6 @@ function Invoke-WPFButton {
         "WPFFixesUpdate" {Invoke-WPFFixesUpdate}
         "WPFFixesWinget" {Invoke-WPFFixesWinget}
         "WPFRunAdobeCCCleanerTool" {Invoke-WPFRunAdobeCCCleanerTool}
-        "WPFRazerBlock" {Invoke-WPFRazerBlock}
         "WPFFixesNetwork" {Invoke-WPFFixesNetwork}
         "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable}
         "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}

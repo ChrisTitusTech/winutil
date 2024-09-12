@@ -2767,6 +2767,42 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
   },
+  "WPFTweaksRazerBlock": {
+    "Content": "Block Razer software autoinstall",
+    "Description": "It disables the automatic driver installation and denies write permission of Razer folder to system which prevents the automatic install.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "Order": "a031_",
+    "InvokeScript": [
+      "
+        function RazerBlock {
+          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching\" -Name \"SearchOrderConfig\" -Type DWord -Value 0
+          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer\" -Name \"DisableCoInstallers\" -Type DWord -Value 1
+          Remove-Item $RazerPath -Recurse -Force
+          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+          $Acl = Get-Acl $RazerPath
+          $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\",\"Write\",\"ContainerInherit,ObjectInherit\",\"None\",\"Deny\")
+          $Acl.SetAccessRule($Ar)
+          Set-Acl $RazerPath $Acl
+          }
+        RazerBlock
+      "
+    ],
+    "UndoScript": [
+      "
+        function RazerUnblock {
+          $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching\" -Name \"SearchOrderConfig\" -Type DWord -Value 1
+          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer\" -Name \"DisableCoInstallers\" -Type DWord -Value 0
+          Remove-Item $RazerPath -Recurse -Force
+          New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+          }
+        RazerUnblock
+      "
+    ],
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RazerBlock"
+  },
   "WPFTweaksDisableNotifications": {
     "Content": "Disable Notification Tray/Calendar",
     "Description": "Disables all Notifications INCLUDING Calendar",

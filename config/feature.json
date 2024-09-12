@@ -242,15 +242,6 @@
     "ButtonWidth": "300",
     "link": "https://christitustech.github.io/winutil/dev/features/Fixes/RunAdobeCCCleanerTool"
   },
-  "WPFRazerBlock": {
-    "Content": "Block Razer",
-    "category": "Fixes",
-    "panel": "1",
-    "Order": "a046_",
-    "Type": "Button",
-    "ButtonWidth": "300",
-    "link": "https://christitustech.github.io/winutil/dev/features/Fixes/razer"
-  },
   "WPFPanelnetwork": {
     "Content": "Network Connections",
     "category": "Legacy Windows Panels",
