@@ -10,9 +10,9 @@ function Invoke-WPFRunspace {
 
     .PARAMETER ArgumentList
         A list of arguments to pass to the runspace
-    
+
     .PARAMETER ParameterList
-        A list of named parameters that should be provided. 
+        A list of named parameters that should be provided.
     .EXAMPLE
         Invoke-WPFRunspace `
             -ScriptBlock $sync.ScriptsInstallPrograms `
@@ -37,8 +37,8 @@ function Invoke-WPFRunspace {
     # Add Scriptblock and Arguments to runspace
     $script:powershell.AddScript($ScriptBlock)
     $script:powershell.AddArgument($ArgumentList)
-    
-    foreach ($parameter in $ParameterList){
+
+    foreach ($parameter in $ParameterList) {
         $script:powershell.AddParameter($parameter[0], $parameter[1])
     }
     $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
