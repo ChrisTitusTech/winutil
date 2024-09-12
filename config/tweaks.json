@@ -2768,37 +2768,43 @@
     "link": "https://christitustech.github.io/winutil/dev/tweaks/z--Advanced-Tweaks---CAUTION/RemoveOnedrive"
   },
   "WPFTweaksRazerBlock": {
-    "Content": "Block Razer software autoinstall",
-    "Description": "It disables the automatic driver installation and denies write permission of Razer folder to system which prevents the automatic install.",
+    "Content": "Block Razer Software Installs",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "Order": "a031_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "Name": "SearchOrderConfig",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer",
+        "Name": "DisableCoInstallers",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
     "InvokeScript": [
       "
-        function RazerBlock {
           $RazerPath = \"C:\\Windows\\Installer\\Razer\"
-          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching\" -Name \"SearchOrderConfig\" -Type DWord -Value 0
-          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer\" -Name \"DisableCoInstallers\" -Type DWord -Value 1
           Remove-Item $RazerPath -Recurse -Force
           New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
           $Acl = Get-Acl $RazerPath
           $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\",\"Write\",\"ContainerInherit,ObjectInherit\",\"None\",\"Deny\")
           $Acl.SetAccessRule($Ar)
           Set-Acl $RazerPath $Acl
-          }
-        RazerBlock
       "
     ],
     "UndoScript": [
       "
-        function RazerUnblock {
           $RazerPath = \"C:\\Windows\\Installer\\Razer\"
-          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching\" -Name \"SearchOrderConfig\" -Type DWord -Value 1
-          Set-ItemProperty -Path \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer\" -Name \"DisableCoInstallers\" -Type DWord -Value 0
           Remove-Item $RazerPath -Recurse -Force
           New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
-          }
-        RazerUnblock
       "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/RazerBlock"
