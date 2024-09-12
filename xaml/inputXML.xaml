@@ -11,13 +11,36 @@
         WindowStyle="None"
         Width="Auto"
         Height="Auto"
-        MaxWidth="1280"
+        MaxWidth="1380"
         MaxHeight="800"
         Title="Chris Titus Tech's Windows Utility">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{MainBackgroundColor}"/>
+        <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+        <Setter Property="BorderBrush" Value="{ButtonBackgroundSelectedColor}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="FontSize" Value="{FontSize}"/>
+        <Setter Property="FontFamily" Value="{FontFamily}"/>
+    </Style>
+    <ItemsPanelTemplate x:Key="MenuItemPanelTemplate">
+        <StackPanel Margin="-20,0,0,0" Background="{MainBackgroundColor}"/>
+    </ItemsPanelTemplate>
+
+    <Style TargetType="{x:Type MenuItem}">
+        <Setter Property="Background" Value="{MainBackgroundColor}"/>
+        <Setter Property="Foreground" Value="{MainForegroundColor}"/>
+        <Setter Property="FontSize" Value="{FontSize}"/>
+        <Setter Property="FontFamily" Value="{FontFamily}"/>
+        <Setter Property="Padding" Value="5,2,5,2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ItemsPanel" Value="{StaticResource MenuItemPanelTemplate}"/>
+    </Style>
+
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
@@ -77,7 +100,7 @@
     <!--ScrollBars-->
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Foreground" Value="{MainForegroundColor}" />
+        <Setter Property="Foreground" Value="{ScrollBarBackgroundColor}" />
         <Setter Property="Background" Value="{MainBackgroundColor}" />
         <Setter Property="Width" Value="6" />
         <Setter Property="Template">
@@ -103,10 +126,10 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="{ButtonBackgroundMouseoverColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{ScrollBarHoverColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
                         <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                            <Setter Value="{ButtonBackgroundSelectedColor}" TargetName="Thumb" Property="Background" />
+                            <Setter Value="{ScrollBarDraggingColor}" TargetName="Thumb" Property="Background" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="false">
@@ -577,6 +600,15 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <MenuItem Command="Cut" Header="Cut"/>
+                        <MenuItem Command="Copy" Header="Copy"/>
+                        <MenuItem Command="Paste" Header="Paste"/>
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -725,6 +757,7 @@
                     Grid.Column="0"
                     VerticalAlignment="Center" HorizontalAlignment="Left"
                     FontFamily="Segoe MDL2 Assets"
+                    Foreground="{ButtonBackgroundSelectedColor}"
                     FontSize="{IconFontSize}"
                     Margin="180,0,0,0">&#xE721;
                 </TextBlock>

@@ -40,6 +40,9 @@
     "LinkHoverForegroundColor": "#232629",
     "GroupBorderBackgroundColor": "#232629",
     "ComboBoxForegroundColor": "#232629",
+    "ScrollBarBackgroundColor": "#4A4D52",
+    "ScrollBarHoverColor": "#2E3135",
+    "ScrollBarDraggingColor": "#3A3D42",
 
     "ButtonFontSize": "12",
     "ButtonFontFamily": "Arial",
@@ -85,6 +88,9 @@
     "LinkHoverForegroundColor": "#232629",
     "GroupBorderBackgroundColor": "#232629",
     "ComboBoxForegroundColor": "#232629",
+    "ScrollBarBackgroundColor": "#4A4D52",
+    "ScrollBarHoverColor": "#2E3135",
+    "ScrollBarDraggingColor": "#3A3D42",
 
     "ButtonInstallBackgroundColor": "#F7F7F7",
     "ButtonTweaksBackgroundColor": "#F7F7F7",
@@ -111,6 +117,9 @@
     "LinkForegroundColor": "#add8e6",
     "LinkHoverForegroundColor": "#F7F7F7",
     "ComboBoxForegroundColor": "#81a1c1",
+    "ScrollBarBackgroundColor": "#2E3135",
+    "ScrollBarHoverColor": "#3B4252",
+    "ScrollBarDraggingColor": "#5E81AC",
 
     "ProgressBarForegroundColor": "#222222",
     "ProgressBarBackgroundColor": "Transparent",
@@ -144,6 +153,9 @@
     "LinkForegroundColor": "#add8e6",
     "LinkHoverForegroundColor": "#F7F7F7",
     "ComboBoxForegroundColor": "#f7f7f7",
+    "ScrollBarBackgroundColor": "#2E3135",
+    "ScrollBarHoverColor": "#3B4252",
+    "ScrollBarDraggingColor": "#5E81AC",
 
     "ProgressBarForegroundColor": "#222222",
     "ProgressBarBackgroundColor": "Transparent",
