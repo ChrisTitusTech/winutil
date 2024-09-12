@@ -651,7 +651,7 @@
         <DockPanel HorizontalAlignment="Stretch" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Grid.Row="0" Width="Auto">
             <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
             </StackPanel>
-            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
+            <ToggleButton Margin="0,0,5,0" HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonInstallForegroundColor}" >
@@ -659,7 +659,7 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
+            <ToggleButton Margin="0,0,5,0" HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonTweaksBackgroundColor}" Foreground="{ButtonTweaksForegroundColor}" FontWeight="Bold" Name="WPFTab2BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonTweaksForegroundColor}">
@@ -667,7 +667,7 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
+            <ToggleButton Margin="0,0,5,0" HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonConfigBackgroundColor}" Foreground="{ButtonConfigForegroundColor}" FontWeight="Bold" Name="WPFTab3BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonConfigForegroundColor}">
@@ -675,7 +675,7 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
+            <ToggleButton Margin="0,0,5,0" HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab4BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
@@ -683,7 +683,7 @@
                     </TextBlock>
                 </ToggleButton.Content>
             </ToggleButton>
-            <ToggleButton HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
+            <ToggleButton Margin="0,0,5,0" HorizontalAlignment="Left" Height="{TabButtonHeight}" Width="{TabButtonWidth}"
                 Background="{ButtonUpdatesBackgroundColor}" Foreground="{ButtonUpdatesForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                 <ToggleButton.Content>
                     <TextBlock FontSize="{TabButtonFontSize}" Background="Transparent" Foreground="{ButtonUpdatesForegroundColor}">
