@@ -447,7 +447,7 @@ $sync["SearchBar"].Add_TextChanged({
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
 
-        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+        if ($CheckBox.Value.Content.ToString().ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
             # Set the corresponding text block visibility

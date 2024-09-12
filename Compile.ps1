@@ -93,11 +93,17 @@ Get-ChildItem "config" | Where-Object {$psitem.extension -eq ".json"} | ForEach-
     $script_content.Add($(Write-output "`$sync.configs.$($psitem.BaseName) = '$json' `| convertfrom-json" ))
 }
 
-$xaml = (Get-Content "xaml\inputXML.xaml").replace("'","''")
+# Read the entire XAML file as a single string, preserving line breaks
+$xaml = Get-Content "$workingdir\xaml\inputXML.xaml" -Raw
 
 Update-Progress "Adding: Xaml " 90
 
-$script_content.Add($(Write-output "`$inputXML =  '$xaml'"))
+# Add the XAML content to $script_content using a here-string
+$script_content.Add(@"
+`$inputXML = @'
+$xaml
+'@
+"@)
 
 $script_content.Add($(Get-Content "scripts\main.ps1"))
 

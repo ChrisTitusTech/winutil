@@ -13,10 +13,11 @@ function Install-WinUtilChoco {
         if((Test-WinUtilPackageManager -choco) -eq "installed") {
             return
         }
-
+        # Install logic taken from https://chocolatey.org/install#individual
         Write-Host "Seems Chocolatey is not installed, installing now."
-        Start-Process -FilePath "powershell" -ArgumentList "Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) -ErrorAction Stop" -Wait -NoNewWindow
-        Start-Process -FilePath "powershell" -ArgumentList "choco feature enable -n allowGlobalConfirmation" -Wait -NoNewWindow
+        Set-ExecutionPolicy Bypass -Scope Process -Force;
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
     } catch {
         Write-Host "===========================================" -Foregroundcolor Red

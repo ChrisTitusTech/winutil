@@ -1,6 +1,4 @@
-name-template: '$RESOLVED_VERSION'
-tag-template: '$RESOLVED_VERSION'
-tag-prefix: ""
+tag-prefix: ''
 categories:
   - title: '🚀 Features'
     labels:
@@ -20,10 +18,6 @@ template: |
   ## Changes
 
   $CHANGES
-
-  ## Contributors
-
-  $CONTRIBUTORS
 
 change-title-escapes: '\<*_&"'''
 autolabeler:
@@ -56,3 +50,5 @@ replacers:
     replace: ''
 exclude-labels:
   - 'skip-changelog'
+
+filter-by-commitish: true
