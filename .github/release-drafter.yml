@@ -19,10 +19,6 @@ template: |
 
   $CHANGES
 
-  ## Contributors
-
-  $CONTRIBUTORS
-
 change-title-escapes: '\<*_&"'''
 autolabeler:
   - label: 'documentation'
