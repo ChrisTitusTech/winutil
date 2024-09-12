@@ -3161,6 +3161,56 @@
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/IPv46"
   },
+  "WPFTweaksRazerBlock": {
+    "Content": "Block Razer Software Installs",
+    "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software.",
+    "category": "Essential Tweaks",
+    "panel": "1",
+    "Order": "a007_",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "Name": "SearchOrderConfig",
+        "Value": "0",
+        "OriginalValue": "1",
+        "Type": "DWord"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer",
+        "Name": "DisableCoInstallers",
+        "Value": "1",
+        "OriginalValue": "0",
+        "Type": "DWord"
+      }
+    ],
+    "InvokeScript": [
+      "
+      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+      if (Test-Path $RazerPath) {
+          $AclBackup = Get-Acl $RazerPath
+          $AclBackup | Export-Clixml -Path \"C:\\Windows\\Installer\\RazerAclBackup.xml\"
+          Remove-Item $RazerPath -Recurse -Force
+      }
+      New-Item -Path \"C:\\Windows\\Installer\\\" -Name \"Razer\" -ItemType \"directory\"
+      $Acl = Get-Acl $RazerPath
+      $Ar = New-Object System.Security.AccessControl.FileSystemAccessRule(\"NT AUTHORITY\\SYSTEM\", \"Write\", \"ContainerInherit,ObjectInherit\", \"None\", \"Deny\")
+      $Acl.SetAccessRule($Ar)
+      Set-Acl $RazerPath $Acl
+      "
+    ],
+    "UndoScript": [
+      "
+      $RazerPath = \"C:\\Windows\\Installer\\Razer\"
+      $BackupPath = \"C:\\Windows\\Installer\\RazerAclBackup.xml\"
+      if (Test-Path $BackupPath) {
+          $AclBackup = Import-Clixml -Path $BackupPath
+          Set-Acl $RazerPath $AclBackup
+      }
+      Remove-Item $BackupPath
+      "
+    ]
+    "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/IPv46"
+  },
   "WPFTweaksTeredo": {
     "Content": "Disable Teredo",
     "Description": "Teredo network tunneling is a ipv6 feature that can cause additional latency, but may cause problems with some games",
