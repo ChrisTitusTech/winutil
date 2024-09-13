@@ -69,7 +69,7 @@ function Invoke-WPFTweakPS7{
                 Write-Host "Powershell 7 is already installed."
             } else {
                 Write-Host "Installing Powershell 7..."
-                Invoke-WinUtilWingetProgram -Action Install -Programs @("Microsoft.PowerShell")
+                Install-WinUtilProgramWinget -Action Install -Programs @("Microsoft.PowerShell")
             }
             $targetTerminalName = "PowerShell"
         }
@@ -105,10 +105,10 @@ function Invoke-WPFTweakPS7{
 }
 
 ```
-## Function: Invoke-WinUtilWingetProgram
+## Function: Install-WinUtilProgramWinget
 
 ```powershell
-Function Invoke-WinUtilWingetProgram {
+Function Install-WinUtilProgramWinget {
     <#
     .SYNOPSIS
     Runs the designated action on the provided programs using Winget

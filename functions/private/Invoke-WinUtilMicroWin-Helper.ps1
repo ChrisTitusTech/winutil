@@ -37,28 +37,30 @@ function Remove-Features() {
             Remove-Features
     #>
     try {
-        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir).FeatureName
+        $featlist = (Get-WindowsOptionalFeature -Path $scratchDir)
 
         $featlist = $featlist | Where-Object {
-            $_ -NotLike "*Defender*" -AND
-            $_ -NotLike "*Printing*" -AND
-            $_ -NotLike "*TelnetClient*" -AND
-            $_ -NotLike "*PowerShell*" -AND
-            $_ -NotLike "*NetFx*" -AND
-            $_ -NotLike "*Media*" -AND
-            $_ -NotLike "*NFS*"
+            $_.FeatureName -NotLike "*Defender*" -AND
+            $_.FeatureName -NotLike "*Printing*" -AND
+            $_.FeatureName -NotLike "*TelnetClient*" -AND
+            $_.FeatureName -NotLike "*PowerShell*" -AND
+            $_.FeatureName -NotLike "*NetFx*" -AND
+            $_.FeatureName -NotLike "*Media*" -AND
+            $_.FeatureName -NotLike "*NFS*" -AND
+            $_.State -ne "Disabled"
         }
 
         foreach($feature in $featlist) {
-            $status = "Removing feature $feature"
+            $status = "Removing feature $($feature.FeatureName)"
             Write-Progress -Activity "Removing features" -Status $status -PercentComplete ($counter++/$featlist.Count*100)
-            Write-Debug "Removing feature $feature"
-            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $feature -Remove  -ErrorAction SilentlyContinue -NoRestart
+            Write-Debug "Removing feature $($feature.FeatureName)"
+            Disable-WindowsOptionalFeature -Path "$scratchDir" -FeatureName $($feature.FeatureName) -Remove  -ErrorAction SilentlyContinue -NoRestart
         }
         Write-Progress -Activity "Removing features" -Status "Ready" -Completed
         Write-Host "You can re-enable the disabled features at any time, using either Windows Update or the SxS folder in <installation media>\Sources."
     } catch {
         Write-Host "Unable to get information about the features. MicroWin processing will continue, but features will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
@@ -106,6 +108,8 @@ function Remove-Packages {
                 $_ -NotLike "*Wifi*"
             }
 
+        $failedCount = 0
+
         foreach ($pkg in $pkglist) {
             try {
                 $status = "Removing $pkg"
@@ -114,12 +118,18 @@ function Remove-Packages {
             } catch {
                 # This can happen if the package that is being removed is a permanent one, like FodMetadata
                 Write-Host "Could not remove OS package $($pkg)"
+                $failedCount += 1
                 continue
             }
         }
         Write-Progress -Activity "Removing Apps" -Status "Ready" -Completed
+        if ($failedCount -gt 0)
+        {
+            Write-Host "Some packages could not be removed. Do not worry: your image will still work fine. This can happen if the package is permanent or has been superseded by a newer one."
+        }
     } catch {
         Write-Host "Unable to get information about the packages. MicroWin processing will continue, but packages will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
@@ -175,6 +185,7 @@ function Remove-ProvisionedPackages() {
     {
         # This can happen if getting AppX packages fails
         Write-Host "Unable to get information about the AppX packages. MicroWin processing will continue, but AppX packages will not be processed"
+        Write-Host "Error information: $($_.Exception.Message)" -ForegroundColor Yellow
     }
 }
 
@@ -248,8 +259,8 @@ function Remove-FileOrDirectory([string]$pathToDelete, [string]$mask = "", [swit
 function New-Unattend {
 
     param (
-        [Parameter(Mandatory, Position = 0)] [string] $userName,
-        [Parameter(Position = 1)] [string] $userPassword
+        [Parameter(Mandatory, Position = 0)] [string]$userName,
+        [Parameter(Position = 1)] [string]$userPassword
     )
 
     $unattend = @'

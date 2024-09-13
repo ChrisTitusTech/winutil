@@ -48,6 +48,7 @@ function Set-WinUtilTaskbaritem {
             $sync["Form"].taskbarItemInfo.ProgressValue = $value
         }
 
+<<<<<<< automation
         if ($state) {
             switch ($state) {
                 'None' { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
@@ -77,6 +78,25 @@ function Set-WinUtilTaskbaritem {
                     if (Test-Path $overlay) {
                         $sync["Form"].taskbarItemInfo.Overlay = $overlay
                     }
+=======
+    if ($overlay) {
+        switch ($overlay) {
+            'logo' {
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["logorender"]
+            }
+            'checkmark' {
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["checkmarkrender"]
+            }
+            'warning' {
+                $sync["Form"].taskbarItemInfo.Overlay = $sync["warningrender"]
+            }
+            'None' {
+                $sync["Form"].taskbarItemInfo.Overlay = $null
+            }
+            default {
+                if (Test-Path $overlay) {
+                    $sync["Form"].taskbarItemInfo.Overlay = $overlay
+>>>>>>> main
                 }
             }
         }

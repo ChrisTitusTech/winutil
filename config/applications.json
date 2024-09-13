@@ -87,14 +87,6 @@
         "link": "https://anydesk.com/",
         "winget": "AnyDeskSoftwareGmbH.AnyDesk"
     },
-    "ATLauncher": {
-        "category": "Games",
-        "choco": "na",
-        "content": "ATLauncher",
-        "description": "ATLauncher is a Launcher for Minecraft which integrates multiple different ModPacks to allow you to download and install ModPacks easily and quickly.",
-        "link": "https://github.com/ATLauncher/ATLauncher",
-        "winget": "ATLauncher.ATLauncher"
-    },
     "audacity": {
         "category": "Multimedia Tools",
         "choco": "audacity",
@@ -511,14 +503,6 @@
         "link": "https://www.epicgames.com/store/en-US/",
         "winget": "EpicGames.EpicGamesLauncher"
     },
-    "errorlookup": {
-        "category": "Utilities",
-        "choco": "na",
-        "content": "Windows Error Code Lookup",
-        "description": "ErrorLookup is a tool for looking up Windows error codes and their descriptions.",
-        "link": "https://github.com/HenryPP/ErrorLookup",
-        "winget": "Henry++.ErrorLookup"
-    },
     "esearch": {
         "category": "Utilities",
         "choco": "everything",
@@ -813,7 +797,7 @@
         "content": "Google Drive",
         "description": "File syncing across devices all tied to your google account",
         "link": "https://www.google.com/drive/",
-        "winget": "Google.Drive"
+        "winget": "Google.GoogleDrive"
     },
     "gpuz": {
         "category": "Utilities",

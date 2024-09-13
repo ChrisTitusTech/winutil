@@ -32,19 +32,19 @@ $sync.runspace.Open()
 # Create classes for different exceptions
 
     class WingetFailedInstall : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         WingetFailedInstall($Message) : base($Message) {}
     }
 
     class ChocoFailedInstall : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         ChocoFailedInstall($Message) : base($Message) {}
     }
 
     class GenericException : Exception {
-        [string] $additionalData
+        [string]$additionalData
 
         GenericException($Message) : base($Message) {}
     }
@@ -52,6 +52,7 @@ $sync.runspace.Open()
 
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 
+$defaulttheme = '_default'
 if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
     if (Invoke-WinUtilGPU -eq $True) {
         $ctttheme = 'Matrix'
@@ -61,25 +62,53 @@ if ((Get-WinUtilToggleStatus WPFToggleDarkMode) -eq $True) {
 } else {
     $ctttheme = 'Classic'
 }
-$inputXML = Set-WinUtilUITheme -inputXML $inputXML -themeName $ctttheme
+
+$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName $ctttheme -defaultThemeName $defaulttheme
+if ($returnVal[0] -eq "") {
+    Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
+    Write-Host "Quitting winutil..." -ForegroundColor Red
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    exit 1
+}
+$inputXML = $returnVal[0]
+$ctttheme = $returnVal[1]
 
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
 # Read the XAML file
+$readerOperationSuccessful = $false # There's more cases of failure then success.
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 try {
     $sync["Form"] = [Windows.Markup.XamlReader]::Load( $reader )
+    $readerOperationSuccessful = $true
 } catch [System.Management.Automation.MethodInvocationException] {
-    Write-Warning "We ran into a problem with the XAML code.  Check the syntax for this control..."
+    Write-Host "We ran into a problem with the XAML code.  Check the syntax for this control..." -ForegroundColor Red
     Write-Host $error[0].Exception.Message -ForegroundColor Red
 
     If ($error[0].Exception.Message -like "*button*") {
-        write-warning "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n"
+        write-Host "Ensure your &lt;button in the `$inputXML does NOT have a Click=ButtonClick property.  PS can't handle this`n`n`n`n" -ForegroundColor Red
     }
 } catch {
-    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
+    Write-Host "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed." -ForegroundColor Red
 }
+
+if (-NOT ($readerOperationSuccessful)) {
+    Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
+    Write-Host "Quitting winutil..." -ForegroundColor Red
+    $sync.runspace.Dispose()
+    $sync.runspace.Close()
+    [System.GC]::Collect()
+    exit 1
+}
+
+# Load the configuration files
+#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
 
 #===========================================================================
 # Store Form Objects In PowerShell
@@ -87,18 +116,16 @@ try {
 
 $xaml.SelectNodes("//*[@Name]") | ForEach-Object {$sync["$("$($psitem.Name)")"] = $sync["Form"].FindName($psitem.Name)}
 
+#Persist the Chocolatey preference across winutil restarts
+$ChocoPreferencePath = "$env:LOCALAPPDATA\winutil\preferChocolatey.ini"
+$sync.WPFpreferChocolatey.Add_Checked({New-Item -Path $ChocoPreferencePath -Force })
+$sync.WPFpreferChocolatey.Add_Unchecked({Remove-Item $ChocoPreferencePath -Force})
+if (Test-Path $ChocoPreferencePath) {
+    $sync.WPFpreferChocolatey.IsChecked = $true
+}
+
 $sync.keys | ForEach-Object {
     if($sync.$psitem) {
-        if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "CheckBox" `
-                -and $sync["$psitem"].Name -like "WPFToggle*") {
-            $sync["$psitem"].IsChecked = Get-WinUtilToggleStatus $sync["$psitem"].Name
-
-            $sync["$psitem"].Add_Click({
-                [System.Object]$Sender = $args[0]
-                Invoke-WPFToggle $Sender.name
-            })
-        }
-
         if($($sync["$psitem"].GetType() | Select-Object -ExpandProperty Name) -eq "ToggleButton") {
             $sync["$psitem"].Add_Click({
                 [System.Object]$Sender = $args[0]
@@ -382,7 +409,6 @@ $labels = @{}
 $allCategories = $checkBoxes.Name | ForEach-Object {$sync.configs.applications.$_} | Select-Object  -Unique -ExpandProperty category
 
 $sync["SearchBar"].Add_TextChanged({
-
     if ($sync.SearchBar.Text -ne "") {
         $sync.SearchBarClearButton.Visibility = "Visible"
     } else {
@@ -391,39 +417,40 @@ $sync["SearchBar"].Add_TextChanged({
 
     $activeApplications = @()
 
+    $textToSearch = $sync.SearchBar.Text.ToLower()
+
     foreach ($CheckBox in $CheckBoxes) {
         # Check if the checkbox is null or if it doesn't have content
         if ($CheckBox -eq $null -or $CheckBox.Value -eq $null -or $CheckBox.Value.Content -eq $null) {
             continue
         }
 
-        $textToSearch = $sync.SearchBar.Text.ToLower()
         $checkBoxName = $CheckBox.Key
         $textBlockName = $checkBoxName + "Link"
 
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
 
-        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+        if ($CheckBox.Value.Content.ToString().ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
-             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            # Set the corresponding text block visibility
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Visible"
             }
         } else {
-             $CheckBox.Value.Visibility = "Collapsed"
+            $CheckBox.Value.Visibility = "Collapsed"
             # Set the corresponding text block visibility
-            if ($textBlock -ne $null) {
+            if ($textBlock -ne $null -and $textBlock -is [System.Windows.Controls.TextBlock]) {
                 $textBlock.Visibility = "Collapsed"
             }
         }
     }
+
     $activeCategories = $activeApplications | Select-Object -ExpandProperty category -Unique
 
     foreach ($category in $activeCategories) {
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Visible"
+        $sync[$category].Visibility = "Visible"
     }
     if ($activeCategories) {
         $inactiveCategories = Compare-Object -ReferenceObject $allCategories -DifferenceObject $activeCategories -PassThru
@@ -431,39 +458,35 @@ $sync["SearchBar"].Add_TextChanged({
         $inactiveCategories = $allCategories
     }
     foreach ($category in $inactiveCategories) {
-        $label = $labels[$(Get-WPFObjectName -type "Label" -name $category)]
-        $label.Visibility = "Collapsed"}
+        $sync[$category].Visibility = "Collapsed"
+    }
 })
+
+$sync["Form"].Add_Loaded({
+    param($e)
+    $sync["Form"].MaxWidth = [Double]::PositiveInfinity
+    $sync["Form"].MaxHeight = [Double]::PositiveInfinity
+})
+
+$NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
+$NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
 
 # Initialize the hashtable
 $winutildir = @{}
 
 # Set the path for the winutil directory
 $winutildir["path"] = "$env:LOCALAPPDATA\winutil\"
-if (-NOT (Test-Path -Path $winutildir["path"])) {
-    New-Item -Path $winutildir["path"] -ItemType Directory
-}
+[System.IO.Directory]::CreateDirectory($winutildir["path"]) | Out-Null
 
-# Set the path for the logo and checkmark images
-$winutildir["logo.png"] = $winutildir["path"] + "cttlogo.png"
 $winutildir["logo.ico"] = $winutildir["path"] + "cttlogo.ico"
-if (-NOT (Test-Path -Path $winutildir["logo.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/logo-full.png" -OutFile $winutildir["logo.png"]
-}
 
-if (-NOT (Test-Path -Path $winutildir["logo.ico"])) {
-    ConvertTo-Icon -bitmapPath $winutildir["logo.png"] -iconPath $winutildir["logo.ico"]
+if (Test-Path $winutildir["logo.ico"]) {
+    $sync["logorender"] = $winutildir["logo.ico"]
+} else {
+    $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
 }
-
-$winutildir["checkmark.png"] = $winutildir["path"] + "checkmark.png"
-$winutildir["warning.png"] = $winutildir["path"] + "warning.png"
-if (-NOT (Test-Path -Path $winutildir["checkmark.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/checkmark.png" -OutFile $winutildir["checkmark.png"]
-}
-if (-NOT (Test-Path -Path $winutildir["warning.png"])) {
-    Invoke-WebRequest -Uri "https://christitus.com/images/warning.png" -OutFile $winutildir["warning.png"]
-}
-
+$sync["checkmarkrender"] = (Invoke-WinUtilAssets -Type "checkmark" -Size 512 -Render)
+$sync["warningrender"] = (Invoke-WinUtilAssets -Type "warning" -Size 512 -Render)
 
 Set-WinUtilTaskbaritem -overlay "logo"
 
@@ -512,10 +535,10 @@ Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sy
 "@
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -538,10 +561,10 @@ $sync["SponsorMenuItem"].Add_Click({
 
     $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
     $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $IconSize = $sync.configs.themes.$ctttheme.CustomDialogIconSize
+    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
     $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
     $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -IconSize $IconSize -EnableScroll $true
+    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
 
 if (!$PARAM_RUN) {

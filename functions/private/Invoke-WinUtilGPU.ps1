@@ -7,7 +7,9 @@ function Invoke-WinUtilGPU {
         "*NVIDIA GeForce*Laptop*",
         "*NVIDIA GeForce*GT*",
         "*AMD Radeon(TM)*",
+        "*Intel(R) HD Graphics*",
         "*UHD*"
+
     )
 
     foreach ($gpu in $gpuInfo) {
