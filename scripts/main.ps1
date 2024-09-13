@@ -105,10 +105,12 @@ if (-NOT ($readerOperationSuccessful)) {
 }
 
 # Load the configuration files
-#Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
-Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
-Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
-Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+if (!$PARAM_RUN) {
+    #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
+    Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
+    Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2
+    Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2
+}
 
 #===========================================================================
 # Store Form Objects In PowerShell
@@ -213,7 +215,6 @@ if ($PARAM_CONFIG) {
 
         if ($installConfig.WPFTweaks) {
             write-host "Running Tweaks"
-
             Invoke-WPFtweaksbutton -Tweaks $installConfig.WPFTweaks
         }
 
@@ -567,7 +568,7 @@ $sync["SponsorMenuItem"].Add_Click({
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
 
-if (!$PARAM_RUN) {
+if ($PARAM_RUN) {
     $sync["Form"].ShowDialog() | out-null
     Stop-Transcript
 }
