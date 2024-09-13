@@ -568,7 +568,7 @@ $sync["SponsorMenuItem"].Add_Click({
     Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
 })
 
-if ($PARAM_RUN) {
+if (!$PARAM_RUN) {
     $sync["Form"].ShowDialog() | out-null
     Stop-Transcript
 }
