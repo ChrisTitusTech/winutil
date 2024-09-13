@@ -43,42 +43,21 @@ function Set-WinUtilTaskbaritem {
         [string]$description
     )
 
-    try {
-        if ($value) {
-            $sync["Form"].taskbarItemInfo.ProgressValue = $value
-        }
+    if ($value) {
+        $sync["Form"].taskbarItemInfo.ProgressValue = $value
+    }
 
-<<<<<<< automation
-        if ($state) {
-            switch ($state) {
-                'None' { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
-                'Indeterminate' { $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate" }
-                'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
-                'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
-                'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
-                default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
-            }
+    if ($state) {
+        switch ($state) {
+            'None' { $sync["Form"].taskbarItemInfo.ProgressState = "None" }
+            'Indeterminate' { $sync["Form"].taskbarItemInfo.ProgressState = "Indeterminate" }
+            'Normal' { $sync["Form"].taskbarItemInfo.ProgressState = "Normal" }
+            'Error' { $sync["Form"].taskbarItemInfo.ProgressState = "Error" }
+            'Paused' { $sync["Form"].taskbarItemInfo.ProgressState = "Paused" }
+            default { throw "[Set-WinUtilTaskbarItem] Invalid state" }
         }
+    }
 
-        if ($overlay) {
-            switch ($overlay) {
-                'logo' {
-                    $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\cttlogo.png"
-                }
-                'checkmark' {
-                    $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\checkmark.png"
-                }
-                'warning' {
-                    $sync["Form"].taskbarItemInfo.Overlay = "$env:LOCALAPPDATA\winutil\warning.png"
-                }
-                'None' {
-                    $sync["Form"].taskbarItemInfo.Overlay = $null
-                }
-                default {
-                    if (Test-Path $overlay) {
-                        $sync["Form"].taskbarItemInfo.Overlay = $overlay
-                    }
-=======
     if ($overlay) {
         switch ($overlay) {
             'logo' {
@@ -96,15 +75,12 @@ function Set-WinUtilTaskbaritem {
             default {
                 if (Test-Path $overlay) {
                     $sync["Form"].taskbarItemInfo.Overlay = $overlay
->>>>>>> main
                 }
             }
         }
+    }
 
-        if ($description) {
-            $sync["Form"].taskbarItemInfo.Description = $description
-        }
-    } catch {
-        #do nothing
+    if ($description) {
+        $sync["Form"].taskbarItemInfo.Description = $description
     }
 }
