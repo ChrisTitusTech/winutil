@@ -31,33 +31,6 @@ function Invoke-WPFRunspace {
         $DebugPreference
     )
 
-<<<<<<< automation
-    if ($PARAM_RUN) {
-        write-host "Running in Main Thread"
-        & $ScriptBlock @ArgumentList @DebugPreference
-    } else {
-        write-host "Running in Runspace"
-        # Create a PowerShell instance
-        $script:powershell = [powershell]::Create()
-
-        # Add Scriptblock and Arguments to runspace
-        $script:powershell.AddScript($ScriptBlock)
-        $script:powershell.AddArgument($ArgumentList)
-        $script:powershell.AddArgument($DebugPreference)  # Pass DebugPreference to the script block
-        $script:powershell.RunspacePool = $sync.runspace
-
-        # Execute the RunspacePool
-        $script:handle = $script:powershell.BeginInvoke()
-
-        # Clean up the RunspacePool threads when they are complete, and invoke the garbage collector to clean up the memory
-        if ($script:handle.IsCompleted) {
-            $script:powershell.EndInvoke($script:handle)
-            $script:powershell.Dispose()
-            $sync.runspace.Dispose()
-            $sync.runspace.Close()
-            [System.GC]::Collect()
-        }
-=======
     # Create a PowerShell instance
     $script:powershell = [powershell]::Create()
 
@@ -81,7 +54,6 @@ function Invoke-WPFRunspace {
         $sync.runspace.Dispose()
         $sync.runspace.Close()
         [System.GC]::Collect()
->>>>>>> main
     }
     # Return the handle
     return $handle
