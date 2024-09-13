@@ -3088,8 +3088,10 @@
     "panel": "1",
     "Order": "a002_",
     "InvokeScript": [
-      "Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
-    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
+      "
+      Get-ChildItem -Path \"C:\\Windows\\Temp\" *.* -Recurse | Remove-Item -Force -Recurse
+      Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse
+      "
     ],
     "link": "https://christitustech.github.io/winutil/dev/tweaks/Essential-Tweaks/DeleteTempFiles"
   },
