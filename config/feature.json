@@ -314,12 +314,4 @@
     "Type": "Button",
     "ButtonWidth": "300"
   },
-  "WPFWinUtilSSHServer": {
-    "Content": "Enable OpenSSH Server",
-    "category": "Remote Access",
-    "panel": "2",
-    "Order": "a084_",
-    "Type": "Button",
-    "ButtonWidth": "300"
-  },
 }
