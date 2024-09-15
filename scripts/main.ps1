@@ -384,12 +384,12 @@ Add-Type @"
 })
 
 # Add event handlers for the RadioButtons
-$sync["ISOoption1"].add_Checked({
+$sync["ISOdownloader"].add_Checked({
     $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Visible
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Visible
 })
 
-$sync["ISOoption2"].add_Checked({
+$sync["ISOmanual"].add_Checked({
     $sync["ISORelease"].Visibility = [System.Windows.Visibility]::Collapsed
     $sync["ISOLanguage"].Visibility = [System.Windows.Visibility]::Collapsed
 })

@@ -62,7 +62,7 @@ function Invoke-WPFGetIso {
         }
     }
 
-    if ($sync["ISOoption2"].IsChecked) {
+    if ($sync["ISOmanual"].IsChecked) {
         # Open file dialog to let user choose the ISO file
         [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
         $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -76,7 +76,7 @@ function Invoke-WPFGetIso {
             $sync.BusyMessage.Visibility="Hidden"
             return
         }
-    } elseif ($sync["ISOoption1"].IsChecked) {
+    } elseif ($sync["ISOdownloader"].IsChecked) {
         # Auto download newest ISO
         # Credit: https://github.com/pbatard/Fido
         $fidopath = "$env:temp\Fido.ps1"
