@@ -1131,7 +1131,7 @@
                                 - Download a Windows 11 ISO through the following options: <LineBreak/>
                                     <TextBlock Margin="15,0,0,0" Text="- Select your own ISO: Manually download the latest Windows 11 image from " Foreground="{ComboBoxForegroundColor}"/>
                                     <TextBlock Name="Win11DownloadLink" Style="{StaticResource HoverTextBlockStyle}" ToolTip="https://www.microsoft.com/software-download/windows11">Microsoft</TextBlock>. <LineBreak/>
-                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{ComboBoxForegroundColor}"/>
+                                    <TextBlock Margin="15,0,0,0" Text="- Get newest ISO automatically: Choose Windows 11 Edition and preferred language." Foreground="{ComboBoxForegroundColor}"/> <LineBreak/>
                                 May take several minutes to process the ISO depending on your machine and connection <LineBreak/>
                                 - Put it somewhere on the C:\ drive so it is easily accessible <LineBreak/>
                                 - Launch WinUtil and MicroWin  <LineBreak/>
