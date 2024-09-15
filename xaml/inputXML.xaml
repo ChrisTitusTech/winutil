@@ -743,7 +743,6 @@
                     </TextBlock>
                 </Label>
                 <Button Name="ThemeSelectorButton"
-                    ToolTip="Change Theme"
                     Style="{StaticResource HoverButtonStyle}"
                     Grid.Column="2" BorderBrush="Transparent"
                     Background="{DynamicResource MainBackgroundColor}"
@@ -753,7 +752,7 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,5,5,0"
                     FontFamily="Segoe MDL2 Assets"
-                    Content="&#xE708;"
+                    Content="N/A"
                 />
 
 

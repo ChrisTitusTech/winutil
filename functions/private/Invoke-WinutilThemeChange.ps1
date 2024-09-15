@@ -7,7 +7,6 @@ function Invoke-WinutilThemeChange {
         param (
             $ctttheme
         )
-        Write-host $ctttheme
         # Colors are stored as a SolidColorBrush Object
         $jsonColors = $sync.configs.themes.$ctttheme.PSOBject.Properties | Where-Object {$_.Name -like "*color*"} | Select-Object Name, Value
         foreach ($entry in $jsonColors) {
@@ -64,30 +63,17 @@ function Invoke-WinutilThemeChange {
     }
     if ($init -eq $true) {
         $systemUsesDarkMode = Get-WinUtilToggleStatus WPFToggleDarkMode
-        if ($systemUsesDarkMode -eq $True) {
-
-            $sync.ctttheme = "Dark"
-        } else {
-            $sync.ctttheme = "Light"
-        }
+        $sync.ctttheme = $systemUsesDarkMode ? "Dark" : "Light"
         Set-WinutilTheme -ctttheme "shared"
+    } else{
+        $sync.ctttheme -eq "Dark" ? ($sync.ctttheme = "Light") : ($sync.ctttheme = "Dark")
     }
-    else{
-        if ($sync.ctttheme -eq "Dark") {
-            $sync.ctttheme = "Light"
-        }
-        else {
-            $sync.ctttheme = "Dark"
-        }
-    }
-    switch ($sync.ctttheme) {
-        "Light"{
-            $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE708
-        }
-        "Dark"{
-            $sync.Form.FindName("ThemeSelectorButton").Content = [char]0xE706
-        }
-    }
-
     Set-WinutilTheme -ctttheme $sync.ctttheme
+    
+    # Update the Button to reflect the Theme
+    $themeIcon = $sync.ctttheme -eq "Light" ? ([char]0xE708) : ([char]0xE706)
+    $ToolTip = $sync.ctttheme -eq "Light" ? "Use Dark Mode" : "Use Light Mode"
+    $ThemeSelectorButton = $sync.Form.FindName("ThemeSelectorButton")
+    $ThemeSelectorButton.Content = [string]$themeIcon
+    $ThemeSelectorButton.ToolTip = $ToolTip
 }
