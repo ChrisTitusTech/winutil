@@ -33,25 +33,25 @@ function Show-CustomDialog {
     #>
     param(
         [string]$Message,
-        [int]$Width = 300,
-        [int]$Height = 200,
-        [int]$FontSize = 10,
-        [int]$HeaderFontSize = 14,
-        [int]$IconSize = 25,
+        [int]$Width = $sync.Form.Resources.CustomDialogWidth,
+        [int]$Height = $sync.Form.Resources.CustomDialogHeight,
+        [int]$FontSize = $sync.Form.Resources.CustomDialogFontSize,
+        [int]$HeaderFontSize = $sync.Form.Resources.CustomDialogFontSizeHeader,
+        [int]$IconSize = $sync.Form.Resources.CustomDialogLogoSize,
         [bool]$EnableScroll = $false
     )
 
     Add-Type -AssemblyName PresentationFramework
 
     # Define theme colors
-    $foregroundColor = $sync.configs.themes.$ctttheme.MainForegroundColor
-    $backgroundColor = $sync.configs.themes.$ctttheme.MainBackgroundColor
+    $foregroundColor = $sync.Form.Resources.MainForegroundColor
+    $backgroundColor = $sync.Form.Resources.MainBackgroundColor
     $font = New-Object Windows.Media.FontFamily("Consolas")
-    $borderColor = $sync.configs.themes.$ctttheme.BorderColor # ButtonInstallBackgroundColor
-    $buttonBackgroundColor = $sync.configs.themes.$ctttheme.ButtonInstallBackgroundColor
-    $buttonForegroundColor = $sync.configs.themes.$ctttheme.ButtonInstallForegroundColor
+    $borderColor = $sync.Form.Resources.BorderColor # ButtonInstallBackgroundColor
+    $buttonBackgroundColor = $sync.Form.Resources.ButtonInstallBackgroundColor
+    $buttonForegroundColor = $sync.Form.Resources.ButtonInstallForegroundColor
     $shadowColor = [Windows.Media.ColorConverter]::ConvertFromString("#AAAAAAAA")
-    $logocolor = $sync.configs.themes.$ctttheme.LabelboxForegroundColor
+    $logocolor = $sync.Form.Resources.LabelboxForegroundColor
 
     # Create a custom dialog window
     $dialog = New-Object Windows.Window
@@ -162,7 +162,7 @@ function Show-CustomDialog {
         $hyperlink.NavigateUri = New-Object System.Uri($match.Groups[1].Value)
         $hyperlink.Inlines.Add($match.Groups[2].Value)
         $hyperlink.TextDecorations = [Windows.TextDecorations]::None  # Remove underline
-        $hyperlink.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+        $hyperlink.Foreground = $sync.Form.Resources.LinkForegroundColor
 
         $hyperlink.Add_Click({
             param($sender, $args)
@@ -170,11 +170,11 @@ function Show-CustomDialog {
         })
         $hyperlink.Add_MouseEnter({
             param($sender, $args)
-            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkHoverForegroundColor
+            $sender.Foreground = $sync.Form.Resources.LinkHoverForegroundColor
         })
         $hyperlink.Add_MouseLeave({
             param($sender, $args)
-            $sender.Foreground = $sync.configs.themes.$ctttheme.LinkForegroundColor
+            $sender.Foreground = $sync.Form.Resources.LinkForegroundColor
         })
 
         $messageTextBlock.Inlines.Add($hyperlink)

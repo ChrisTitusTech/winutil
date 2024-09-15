@@ -63,18 +63,6 @@ $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -repla
 #     $ctttheme = 'Classic'
 # }
 
-$returnVal = Set-WinUtilUITheme -inputXML $inputXML -customThemeName "shared" -defaultThemeName "shared"
- if ($returnVal[0] -eq "") {
-    Write-Host "Failed to statically apply theming to xaml content using Set-WinUtilTheme, please check previous Error/Warning messages." -ForegroundColor Red
-    Write-Host "Quitting winutil..." -ForegroundColor Red
-    $sync.runspace.Dispose()
-    $sync.runspace.Close()
-    [System.GC]::Collect()
-    exit 1
-}
-# #$inputXML = $returnVal[0]
-$ctttheme = $returnVal[1]
-
 [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 [xml]$XAML = $inputXML
 
@@ -103,7 +91,7 @@ if (-NOT ($readerOperationSuccessful)) {
     [System.GC]::Collect()
     exit 1
 }
-
+Invoke-WPFChangeTheme -init $true
 # Load the configuration files
 #Invoke-WPFUIElements -configVariable $sync.configs.nav -targetGridName "WPFMainGrid"
 Invoke-WPFUIElements -configVariable $sync.configs.applications -targetGridName "appspanel" -columncount 5
@@ -416,7 +404,7 @@ $sync["SearchBar"].Add_TextChanged({
         # Retrieve the corresponding text block based on the generated name
         $textBlock = $sync[$textBlockName]
 
-        if ($CheckBox.Value.Content.ToLower().Contains($textToSearch)) {
+        if ($CheckBox.Value.Content.ToString().ToLower().Contains($textToSearch)) {
             $CheckBox.Value.Visibility = "Visible"
             $activeApplications += $sync.configs.applications.$checkboxName
             # Set the corresponding text block visibility
@@ -518,12 +506,8 @@ MicroWin : <a href="https://github.com/KonTy">@KonTy</a>
 GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
 Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
-    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
-    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
-    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
-    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize
+
+    Show-CustomDialog -Message $authorInfo -LogoSize $LogoSize
 })
 
 $sync["SponsorMenuItem"].Add_Click({
@@ -544,13 +528,8 @@ $sync["SponsorMenuItem"].Add_Click({
         $authorInfo += "An error occurred while fetching or processing the sponsors: $_`n"
     }
 
-    $FontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSize
-    $HeaderFontSize = $sync.configs.themes.$ctttheme.CustomDialogFontSizeHeader
-    $LogoSize = $sync.configs.themes.$ctttheme.CustomDialogLogoSize
-    $Width = $sync.configs.themes.$ctttheme.CustomDialogWidth
-    $Height = $sync.configs.themes.$ctttheme.CustomDialogHeight
-    Show-CustomDialog -Message $authorInfo -Width $Width -Height $Height -FontSize $FontSize -HeaderFontSize $HeaderFontSize -LogoSize $LogoSize -EnableScroll $true
+    Show-CustomDialog -Message $authorInfo -EnableScroll $true
 })
-Invoke-WPFChangeTheme -init $true
+
 $sync["Form"].ShowDialog() | out-null
 Stop-Transcript

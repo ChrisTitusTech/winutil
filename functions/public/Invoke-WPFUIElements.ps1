@@ -27,7 +27,7 @@ function Invoke-WPFUIElements {
 
     $window = $sync["Form"]
 
-    $theme = $sync.configs.themes.$ctttheme
+    $theme = $sync.Form.Resources
     $borderstyle = $window.FindResource("BorderStyle")
     $HoverTextBlockStyle = $window.FindResource("HoverTextBlockStyle")
     $ColorfulToggleSwitchStyle = $window.FindResource("ColorfulToggleSwitchStyle")
